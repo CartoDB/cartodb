@@ -1,13 +1,11 @@
+/*
+ * Styles for the CartoDB table
+ */
 
-  /*
-   * Styles for the CartoDB table
-   */
-  
   @import "../common/vars";
   @import "../common/form-elements";
   @import "../table/table-sprite";
   @import "../elements/progress-bar";
-
 
   // Table/vis options menu
   .dropdown.table-options {
@@ -15,710 +13,955 @@
     div.progress-bar { margin-top:10px }
   }
 
-  div.panes {
-    position:absolute;
-    top:148px;
-    right:0;
-    bottom:0;
-    left:0;
+@media only screen and (max-width: 350px) { }
 
-    // When table/layer is synced
-    &.synced {top:177px}
+@media only screen and (max-width: 710px) {
 
-    .emptyTableContainer {
-      position:fixed;
-      display: inline-block;
-      width:100%;
-      text-align: center;
-      @include transform-style("linear");
-      @include transition-property("text-indent");
-      @include transition-duration(300ms);
+  body.public .export_options .download_options {
+    display:block!important;
+    margin: 10px 0 20px 0!Important;
+  }
 
-      .emptynessInfo {
-        position: relative;
-        top: 1.5em;
-        display: inline-block;
-        width: 600px;
-        height: 375px;
+}
 
-        &.emptyTableInfo {
-          background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
-        }
-        &.emptyPublicTableInfo {
-          background: image-url('layout/empty_public.png') no-repeat center 70px #FFF;
-        }
-        &.emptySQLInfo {
-          background: image-url('layout/empty_sql.png') no-repeat 40px 0 #FFF;
-        }
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
 
-        h4 {
-          margin-top: 8em;
-          color: #333;
-          font-weight: bold;
-          font-size: 17px;
-          font-family: helvetica;
-          text-indent:0;
-        }
+  body.public .export_options .download_options {
+    display:block!important;
+    margin: 10px 0 20px 0!Important;
+  }
+
+}
+
+body.public { /* Public table CSS */
+
+  &.table .panes { top:68px; }
+  &.map .panes   { top:0px; overflow-x: hidden; }
+
+  min-width: inherit;
+
+  .dialog {
+
+    position:relative;
+    z-index: 10000;
+
+    .block.modal.api {
+
+      .content {
+        padding: 0;
+        position:relative;
+      }
+
+      .inner {
+        padding: 28px 40px 0 40px;
+        position:relative;
+      }
+
+      .shadow {
+        position: absolute;
+        height: 60px;
+        bottom: 0;
+        width: 100%;
+        @extend .white-gradient-shadow-bottom;
+      }
+
+      code {
+        color: #666666;
+        font-size: 13px;
+        line-height: 120%;
+      }
+
+      .sample {
+        padding: 23px 40px;
+        background: #F2F2F2;
+        border-bottom: 1px solid #E5E5E5;
 
         p {
-          margin: 1em auto;
-          width: 325px;
-          color: #999;
-          font-size: 15px;
-          text-indent:0;
+          font-size: 13px;
+          color: #999999;
+        }
 
-          a {text-decoration:underline;}
+      }
+
+      h4 {
+        margin: 0 0 5px 0;
+        color: #666666;
+        text-transform: uppercase;
+        font-family:"Helvetica Neue", "Helvetica", Arial;
+        font-size:11px;
+      }
+
+      .foot {
+
+        padding: 38px;
+
+        p {
+          float:left;
+          width: 357px;
+          color: #666666;
+          font-size: 13px;
+          line-height: 120%;
+          padding: 5px 0;
+          a { text-decoration: underline; }
         }
       }
     }
   }
 
-  div.table {
+  .cartodb-public-header { 
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
 
-    table {
-      position:relative;
-      z-index:1;
-      width:100%;
-      background:white;
+  div.separator.bottom {
+    display:none;
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #E5E5E5;
+  }
 
-      // Table head
-      thead {
-        width:100%;
-        height:60px;
+  div.separator_shadow {
+    display:none;
+    position: relative;
+    height: 20px;
+    margin-top: -20px;
+    width: 100%;
+    @extend .black-gradient-shadow-bottom;
+    z-index: 100;
+  }
 
-        div.sqlview {
-          position: absolute;
-          top: 55px;
-          right: 0;
-          left: 0;
-          display: block;
-          width: 100%;
-          height: 37px;
-          z-index:0;
 
-          p {
-            position: fixed;
-            left: 50%;
-            display: inline;
-            margin: 12px 0 0 -50%;
-            padding: 12px 0;
-            width: 100%;
-            border-bottom: 1px solid #ccc;
-            background-color: #E5FAEA;
-            color: #333;
-            color: #666666;
-            text-align: center;
-            font-size: 13px;
-            font-family: $text-fonts;
-            text-indent:0;
-            z-index:2;
-            @include transform-style("linear");
-            @include transition-property("text-indent");
-            @include transition-duration(300ms);
-            @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
-          }
+  div.table table thead tr th>div label.interactuable .coloptions:after {
+    display:none;
+  }
+
+  .navigation {
+
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+
+    position:relative;
+    z-index: 100;
+    @include opacity(0);
+
+    pointer-events: none;
+
+    ul {
+
+      max-width: 1024px;
+      margin: auto;
+      @include clearfix();
+
+      li {
+
+        float: left;
+        list-style:none;
+        margin: 0 1px 0 0;
+        pointer-events:all;
+
+        a.selected { 
+          text-decoration: none;
+          color: rgba(#fff, .7);
         }
 
-        tr {
-          width:100%;
-          height:64px;
-          z-index:2;
-          background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+        &:first-child a { @include border-radius(2px 0 0 2px); }
+        &:last-child  a { @include border-radius(0 2px 2px 0); }
 
-          th {
+        a {
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          font-family:"Helvetica Neue", "Helvetica", Arial;
+
+          display:block;
+          padding: 9px 10px 10px 10px;
+          background: rgba(#000000, .7);
+          font-size: 11px;
+          font-weight:bold;
+          color: #FFFFFF;
+          text-transform: uppercase;
+        }
+
+      }
+    }
+
+  }
+
+  div.table table thead tr th>div p.auto {
+    @include opacity(0);
+  }
+
+  .cartodb-map-data {
+    position: relative;
+    top: 300px;
+    z-index: 100;
+  }
+
+  .export_options {
+    clear:both;
+    padding: 13px 0 0 0;
+    margin: 30px 0 0 0;
+    @include clearfix();
+    
+    &.disabled {
+      display:none;
+    }
+
+    border-top: 1px solid #E5E5E5;
+
+    .row_count {
+      @include inline-block();
+      vertical-align: middle;
+      color: #858585;
+      font-size: 15px;
+    }
+
+    .download_options {
+
+      @include clearfix();
+      @include inline-block();
+      vertical-align: middle;
+      margin: 0 0 0 7px;
+
+
+      a { 
+        @include inline-block();
+        margin: 0 0 0 0;
+        padding: 7px 8px;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+
+    }
+
+    .generating {
+      display: block;
+    }
+
+  }
+
+  div.panes {
+    overflow-y:hidden;
+    overflow-x:scroll;
+    clear:both;
+
+    div.shadow { display:none; }
+
+    div.table table thead tr th > div > div {
+      position:relative;
+    }
+  }
+}
+
+div.panes {
+  position:absolute;
+  top:148px;
+  right:0;
+  bottom:0;
+  left:0;
+
+  // When table/layer is synced
+  &.synced {top:177px}
+
+  .emptyTableContainer {
+    position:fixed;
+    display: inline-block;
+    width:100%;
+    text-align: center;
+    @include transform-style("linear");
+    @include transition-property("text-indent");
+    @include transition-duration(300ms);
+
+    .emptynessInfo {
+      position: relative;
+      top: 1.5em;
+      display: inline-block;
+      width: 600px;
+      height: 375px;
+
+      &.emptyTableInfo {
+        background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
+      }
+      &.emptyPublicTableInfo {
+        background: image-url('layout/empty_public.png') no-repeat center 70px #FFF;
+      }
+      &.emptySQLInfo {
+        background: image-url('layout/empty_sql.png') no-repeat 40px 0 #FFF;
+      }
+
+      h4 {
+        margin-top: 8em;
+        color: #333;
+        font-weight: bold;
+        font-size: 17px;
+        font-family: helvetica;
+        text-indent:0;
+      }
+
+      p {
+        margin: 1em auto;
+        width: 325px;
+        color: #999;
+        font-size: 15px;
+        text-indent:0;
+
+        a {text-decoration:underline;}
+      }
+    }
+  }
+}
+
+div.table {
+
+  table {
+    position:relative;
+    z-index:1;
+    width:100%;
+    background:white;
+
+    // Table head
+    thead {
+      width:100%;
+      height:60px;
+
+      div.sqlview {
+        position: absolute;
+        top: 55px;
+        right: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: 37px;
+        z-index:0;
+
+        p {
+          position: fixed;
+          left: 50%;
+          display: inline;
+          margin: 12px 0 0 -50%;
+          padding: 12px 0;
+          width: 100%;
+          border-bottom: 1px solid #ccc;
+          background-color: #E5FAEA;
+          color: #333;
+          color: #666666;
+          text-align: center;
+          font-size: 13px;
+          font-family: $text-fonts;
+          text-indent:0;
+          z-index:2;
+          @include transform-style("linear");
+          @include transition-property("text-indent");
+          @include transition-duration(300ms);
+          @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+        }
+      }
+
+      tr {
+        width:100%;
+        height:64px;
+        z-index:2;
+        background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+
+        th {
+          position:relative;
+          vertical-align: top;
+
+          & > div {
             position:relative;
-            vertical-align: top;
+            display:block;
+            width:100%;
+            height:66px;
+            z-index:1;
 
             & > div {
-              position:relative;
-              display:block;
-              width:100%;
-              height:66px;
+              position:fixed;
+              @include inline-block();
+              width: inherit;
+              height:41px;
+              margin:0;
+              padding:10px 0 15px;
+              background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+              border-bottom:1px solid #CCCCCC;
               z-index:1;
 
-              & > div {
-                position:fixed;
-                @include inline-block();
-                width: inherit;
-                height:41px;
-                margin:0;
-                padding:10px 0 15px;
-                background: image-url('layout/thead_bkg.jpg') repeat 0 0;
-                border-bottom:1px solid #CCCCCC;
-                z-index:1;
-
-                &:after {
-                  position:absolute;
-                  top:13px;
-                  left:0px;
-                  z-index:0;
-                  width:1px;
-                  height:42px;
-                  background:rgba(#D9D9D9,0.5);
-                  content:' ';
-                }
+              &:after {
+                position:absolute;
+                top:13px;
+                left:0px;
+                z-index:0;
+                width:1px;
+                height:42px;
+                background:rgba(#D9D9D9,0.5);
+                content:' ';
               }
+            }
 
-              label {
-                display:block;
-                padding:0 5px;
+            label {
+              display:block;
+              padding:0 5px;
 
-                &.nonInteractuable {
-                  padding: 10px 5px;
+              &.nonInteractuable {
+                padding: 10px 5px;
 
-                  span {
-                    @include inline-block();
-                    margin:6px 0 5px 5px;
-                    color:#7C7C7C;
-
-                  }
-                }
-
-                &.interactuable {
-                  a {
-                    @include inline-block();
-                    margin:6px 0 5px 5px;
-                    color:#7C7C7C;
-
-
-                    &:after {
-                      @include inline-block();
-                      position:relative;
-                      left:2px;
-                      border-top:3px solid #7C7C7C;
-                      border-right:3px solid transparent;
-                      border-left:3px solid transparent;
-                      content:'';
-                    }
-
-                    &:hover {
-                      color:#565656;
-                      text-decoration:none;
-                      &:after {border-top-color:#565656;}
-                    }
-
-
-                  }
-                }
-                a {
+                span {
                   @include inline-block();
                   margin:6px 0 5px 5px;
                   color:#7C7C7C;
 
-                  &:hover { text-decoration:none; }
-
-                  span.geo {
-                    @include border-radius(2px);
-                    margin:0 0 0 3px;
-                    padding:1px 2px;
-                    border:1px solid #C17400;
-                    background:orange;
-                    color:white;
-                    text-decoration:uppercase;
-                    &:hover { cursor:pointer; }
-                  }
-                }
-                // Default and then replace it
-                @include default-input();
-
-                input {
-                  @include border-radius(3px);
-                  margin:0;
-                  padding:3px 4px;
-                  border:1px solid #CCCCCC;
-                  background:white;
-                  color:#333333;
-                  font:bold 13px $text-fonts;
                 }
               }
 
-              p {
-                padding:0 10px;
-                a {
-                  padding:0 10px 0 0;
-                  color:#999999;
+              &.interactuable {
+                div, a {
+                  @include inline-block();
+                  margin:6px 0 5px 5px;
+                  color:#7C7C7C;
 
-                  &.disabled {
-                    color: #666666;
+
+                  &:after {
+                    @include inline-block();
+                    position:relative;
+                    left:2px;
+                    border-top:3px solid #7C7C7C;
+                    border-right:3px solid transparent;
+                    border-left:3px solid transparent;
+                    content:'';
                   }
 
                   &:hover {
-                    position:relative;
-                    padding:0 10px 0 0;
-                    color:#666666;
+                    color:#565656;
                     text-decoration:none;
+                    &:after {border-top-color:#565656;}
+                  }
 
-                    &.own:after {
-                      position:absolute;
-                      right:0;
-                      margin:8px 0 0 5px;
-                      border-top:3px solid #7C7C7C;
-                      border-right:3px solid transparent;
-                      border-left:3px solid transparent;
-                      content:' ';
-                    }
+
+                }
+              }
+              a, div {
+                @include inline-block();
+                margin:6px 0 5px 5px;
+                color:#7C7C7C;
+
+                &:hover { text-decoration:none; }
+
+                span.geo {
+                  @include border-radius(2px);
+                  margin:0 0 0 3px;
+                  padding:1px 2px;
+                  border:1px solid #C17400;
+                  background:orange;
+                  color:white;
+                  text-decoration:uppercase;
+                  &:hover { cursor:pointer; }
+                }
+              }
+              // Default and then replace it
+              @include default-input();
+
+              input {
+                @include border-radius(3px);
+                margin:0;
+                padding:3px 4px;
+                border:1px solid #CCCCCC;
+                background:white;
+                color:#333333;
+                font:bold 13px $text-fonts;
+              }
+            }
+
+            p {
+              padding:0 10px;
+              a {
+                padding:0 10px 0 0;
+                color:#999999;
+
+                &.disabled {
+                  color: #666666;
+                }
+
+                &:hover {
+                  position:relative;
+                  padding:0 10px 0 0;
+                  color:#666666;
+                  text-decoration:none;
+
+                  &.own:after {
+                    position:absolute;
+                    right:0;
+                    margin:8px 0 0 5px;
+                    border-top:3px solid #7C7C7C;
+                    border-right:3px solid transparent;
+                    border-left:3px solid transparent;
+                    content:' ';
                   }
                 }
-
-                // Fake column name added to each th
-                &.auto {@include opacity(0); padding:0 25px 0 0;}
               }
-            }
 
-            &:first-child {
-              min-width:35px;
-              width:35px;
-            }
-
-            &:last-child {
-              @include transform-style("linear");
-              @include transition-property("padding-right");
-              @include transition-duration(500ms);
-              padding-right:62px;
-            }
-
-            // Column options
-            div.dropdown {
-              width:147px!important;
+              // Fake column name added to each th
+              &.auto {@include opacity(0); padding:0 25px 0 0;}
             }
           }
-        }
 
-        // Shadow
-        div.shadow {
-          position:fixed;
-          left:0;
-          top:215px;
-          right:0;
-          width:100%;
-          height:10px;
-          background: image-url('layout/thead_shadow.png') repeat 0 0;
-          pointer-events:none;
-          z-index:0;
-        }
+          &:first-child {
+            min-width:35px;
+            width:35px;
+          }
 
-        // Horizontal movement
-        &.horizontal {
-          tr th > div > div {
-            position:absolute;
-            left:0;
-            top:0;
+          &:last-child {
+            @include transform-style("linear");
+            @include transition-property("padding-right");
+            @include transition-duration(500ms);
+            padding-right:62px;
+          }
+
+          // Column options
+          div.dropdown {
+            width:147px!important;
           }
         }
-      } // thead
+      }
 
-      // Table body
-      tbody {
+      // Shadow
+      div.shadow {
+        position:fixed;
+        left:0;
+        top:215px;
+        right:0;
         width:100%;
-        border:none;
-        z-index:1;
+        height:10px;
+        background: image-url('layout/thead_shadow.png') repeat 0 0;
+        pointer-events:none;
+        z-index:0;
+      }
 
-        tr.empty_table {}
+      // Horizontal movement
+      &.horizontal {
+        tr th > div > div {
+          position:absolute;
+          left:0;
+          top:0;
+        }
+      }
+    } // thead
 
-        tr.placeholder, tr.placeholder td {
-          border:1px solid #ECECEC;
-          height: 40px;
-          cursor:pointer;
+    // Table body
+    tbody {
+      width:100%;
+      border:none;
+      z-index:1;
 
-          .addNewRow {
-            color: #e5e5e5;
-            vertical-align: middle;
-            text-align: center;
-            font-weight:bolder;
-            font-size:22px;
-          }
+      tr.empty_table {}
 
+      tr.placeholder, tr.placeholder td {
+        border:1px solid #ECECEC;
+        height: 40px;
+        cursor:pointer;
+
+        .addNewRow {
+          color: #e5e5e5;
+          vertical-align: middle;
+          text-align: center;
+          font-weight:bolder;
+          font-size:22px;
         }
 
-        tr.placeholder.decoration {
-          height: 15px;
-          border-bottom:0px;
+      }
 
-          &:hover {
-            border-color:#ECECEC;
-            background:inherit;
+      tr.placeholder.decoration {
+        height: 15px;
+        border-bottom:0px;
 
-            & + tr {
-              border-top-color:#ECECEC;
-            }
-          }
-        }
+        &:hover {
+          border-color:#ECECEC;
+          background:inherit;
 
-        tr.placeholder.decoration td{
-          height: 15px;
-          border-top:0px;
-          border-bottom:0px;
-
-          &:hover {
-            border-color:#ECECEC;
-            border-top: 0px;
+          & + tr {
             border-top-color:#ECECEC;
-            background:inherit;
           }
         }
+      }
+
+      tr.placeholder.decoration td{
+        height: 15px;
+        border-top:0px;
+        border-bottom:0px;
+
+        &:hover {
+          border-color:#ECECEC;
+          border-top: 0px;
+          border-top-color:#ECECEC;
+          background:inherit;
+        }
+      }
 
 
-        tr {
-          position:relative;
-          width:100%;
-          // z-index:0;
-          background:white;
-          border-top:1px solid #ECECEC;
+      tr {
+        position:relative;
+        width:100%;
+        // z-index:0;
+        background:white;
+        border-top:1px solid #ECECEC;
 
-          td {
-            &:not(.row_header) {
-              div.cell:not(.disabled) {
-                cursor: pointer;
-              }
+        td {
+          &:not(.row_header) {
+            div.cell:not(.disabled) {
+              cursor: pointer;
+            }
+          }
+
+          div.cell {
+            display:block;
+            overflow: hidden;
+            padding:15px 10px;
+            max-width:280px;
+            min-height:13px;
+            max-height:26px;
+            color:#666666;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size:13px;
+            border-left:1px solid #ECECEC;
+
+            &.disabled {
+              color: #AAA;
             }
 
-            div.cell {
+            &.isNull {
+              color: #AAA;
+              font-style: italic;
+            }
+          }
+
+          // Different column types
+          div.number {
+            color:#4DC964;
+          }
+
+          &.rowHeader:first-child {
+
+            & > div.row_header {
+              position:relative;
               display:block;
-              overflow: hidden;
-              padding:15px 10px;
-              max-width:280px;
-              min-height:13px;
-              max-height:26px;
-              color:#666666;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              font-size:13px;
-              border-left:1px solid #ECECEC;
+              height:100%;
+              overflow:visible;
 
-              &.disabled {
-                color: #AAA;
+              &:before {
+                content:'';
+                position:absolute;
+                top:15px;
+                left:10px;
+                @include border-radius(3px);
+                background:#FAFAFA;
+                @include background(linear-gradient(#FAFAFA,#E8E8E8));
+                display:none;
+                padding:0;
+                width:12px;
+                height:12px;
+                border:1px solid #999999;
+                z-index:0;
               }
 
-              &.isNull {
-                color: #AAA;
-                font-style: italic;
+              &:after {
+                position:absolute;
+                display:none;
+                content:'';
+                top:21px;
+                left:15px;
+                width:0;
+                height:0;
+                border-top:3px solid #666666;
+                border-right:2px solid transparent;
+                border-left:2px solid transparent;
+                @include opacity(1);
+                z-index:0;
+                line-height:16px;
               }
-            }
 
-            // Different column types
-            div.number {
-              color:#4DC964;
-            }
-
-            &.rowHeader:first-child {
-
-              & > div.row_header {
-                position:relative;
-                display:block;
-                height:100%;
-                overflow:visible;
-
-                &:before {
-                  content:'';
-                  position:absolute;
-                  top:15px;
-                  left:10px;
-                  @include border-radius(3px);
-                  background:#FAFAFA;
-                  @include background(linear-gradient(#FAFAFA,#E8E8E8));
-                  display:none;
-                  padding:0;
-                  width:12px;
-                  height:12px;
-                  border:1px solid #999999;
-                  z-index:0;
-                }
-
-                &:after {
-                  position:absolute;
-                  display:none;
-                  content:'';
-                  top:21px;
-                  left:15px;
-                  width:0;
-                  height:0;
-                  border-top:3px solid #666666;
-                  border-right:2px solid transparent;
-                  border-left:2px solid transparent;
-                  @include opacity(1);
-                  z-index:0;
-                  line-height:16px;
-                }
-
-                &:hover:before {
-                  background:#E8E8E8;
-                  @include background(linear-gradient(#FAFAFA,#E3D3E3));
-                  cursor:pointer;
-                }
-
-                &:active:before {
-                  background:#E3D3E3;
-                  @include background(linear-gradient(#E3D3E3,#FAFAFA));
-                }
+              &:hover:before {
+                background:#E8E8E8;
+                @include background(linear-gradient(#FAFAFA,#E3D3E3));
+                cursor:pointer;
               }
-            }
 
-            &:last-child {
-              @include transform-style("linear");
-              @include transition-property("padding-right");
-              @include transition-duration(500ms);
-              border-right:none;
-              padding-right:65px;
+              &:active:before {
+                background:#E3D3E3;
+                @include background(linear-gradient(#E3D3E3,#FAFAFA));
+              }
             }
           }
 
           &:last-child {
-            border-bottom:1px solid #ECECEC;
-          }
-
-          &:hover {
-            background:#E8F9EC;
-            border-color:#CCCCCC;
-
-            & + tr {border-top-color:#CCCCCC;}
-
-            div.row_header:before, div.row_header:after {
-              display: block !important;
-            }
-          }
-        } // tr
-      }
-
-      // Sync table
-      &.synced {
-        tbody tr td div.cell {
-          color:rgba(#666666,.5);
-        }
-        div.shadow {
-          top:244px;
-        }
-      }
-      // Visualization table
-      &.vis {
-        div.shadow {
-          top:215px;
-        } 
-      }
-
-      // tbody
-
-      // Loaders
-      tfoot {
-        padding:100px 0;
-
-        &.sql_loader {
-
-          div.float_info {
-            position:fixed;
-            @include inline-block();
-            left:50%;
-            top:50%;
-            width:240px;
-            height:36px;
-            margin:-100px 0 0 -120px;
-            padding:0;
-            vertical-align:top;
             @include transform-style("linear");
-            @include transition-property("margin");
-            @include transition-duration(300ms);
-
-            img {margin-left:101px;}
-            h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
+            @include transition-property("padding-right");
+            @include transition-duration(500ms);
+            border-right:none;
+            padding-right:65px;
           }
         }
 
-        &.page_loader {
-          border:1px solid #ECECEC;
-          border-right:0;
-          border-left:0;
-          background:white;
-          z-index:-1;
+        &:last-child {
+          border-bottom:1px solid #ECECEC;
+        }
 
-          th {
-            padding:70px 0;
+        &:hover {
+          background:#E8F9EC;
+          border-color:#CCCCCC;
+
+          & + tr {border-top-color:#CCCCCC;}
+
+          div.row_header:before, div.row_header:after {
+            display: block !important;
           }
+        }
+      } // tr
+    }
 
+    // Sync table
+    &.synced {
+      tbody tr td div.cell {
+        color:rgba(#666666,.5);
+      }
+      div.shadow {
+        top:244px;
+      }
+    }
+    // Visualization table
+    &.vis {
+      div.shadow {
+        top:215px;
+      } 
+    }
+
+    // tbody
+
+    // Loaders
+    tfoot {
+      padding:100px 0;
+
+      &.sql_loader {
+
+        div.float_info {
+          position:fixed;
+          @include inline-block();
+          left:50%;
+          top:50%;
+          width:240px;
+          height:36px;
+          margin:-100px 0 0 -120px;
+          padding:0;
+          vertical-align:top;
+          @include transform-style("linear");
+          @include transition-property("margin");
+          @include transition-duration(300ms);
+
+          img {margin-left:101px;}
+          h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
+        }
+      }
+
+      &.page_loader {
+        border:1px solid #ECECEC;
+        border-right:0;
+        border-left:0;
+        background:white;
+        z-index:-1;
+
+        th {
+          padding:70px 0;
+        }
+
+
+        div.float_info, div.float_action {
+          position:fixed;
+          @include inline-block();
+          left:50%;
+          width:195px;
+          height:36px;
+          margin:0 0 0 -120px;
+          padding:0 0 0 45px;
+          background: image-url('layout/loading_page_static.png') no-repeat 0 0;
+          vertical-align:top;
+          z-index:-10;
+
+          h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
+          p {display:block; font-size:13px;}
+        }
+
+        div.float_action {
+          display:none;
+          background:white;
+        }
+
+        &.up {
+          th {
+            padding:20px 0;
+          }
 
           div.float_info, div.float_action {
-            position:fixed;
-            @include inline-block();
-            left:50%;
-            width:195px;
-            height:36px;
-            margin:0 0 0 -120px;
-            padding:0 0 0 45px;
-            background: image-url('layout/loading_page_static.png') no-repeat 0 0;
-            vertical-align:top;
-            z-index:-10;
-
-            h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
-            p {display:block; font-size:13px;}
-          }
-
-          div.float_action {
-            display:none;
-            background:white;
-          }
-
-          &.up {
-            th {
-              padding:20px 0;
-            }
-
-            div.float_info, div.float_action {
-              top:285px;
-            }
-          }
-
-          &.down {
-            div.float_info, div.float_action {
-              bottom:65px;
-            }
-          }
-
-          &.active {
-            div.float_info {display:none;}
-            div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
+            top:285px;
           }
         }
 
-        .loading img {
-          margin-top:30px;
-        }
-      } // tfoot
-
-
-      &.displaced {
-        // Last column of the table
-        tbody tr td:last-child, thead tr th:last-child {
-          border-right:none;
-          padding-right:600px;
+        &.down {
+          div.float_info, div.float_action {
+            bottom:65px;
+          }
         }
 
-        // When a query is applied, the text should be moved some pixels
-        div.sqlview p {
-          text-indent:-600px;
+        &.active {
+          div.float_info {display:none;}
+          div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
         }
+      }
 
-        // When a query is applied, the loader should be moved some pixels
-        tfoot.sql_loader div.float_info {
-          margin-left:-420px;
-        }
-
-        // When there is no results, move the block
-        tfoot div.emptyTableContainer {
-          text-indent:-600px;
-          p, h4 {text-indent:0;}
-        }
-
-        &.narrow {
-          tbody tr td:last-child, thead tr th:last-child {padding-right:450px;}
-          div.sqlview p {text-indent:-450px;}
-          tfoot.sql_loader div.float_info {margin-left:-380px;}
-          tfoot div.emptyTableContainer {text-indent:-450px;}
-        }
-
-      } // table.displaced
-    } // table
+      .loading img {
+        margin-top:30px;
+      }
+    } // tfoot
 
 
-    /* PAGINATION ZONE - CAUTION */
+    &.displaced {
+      // Last column of the table
+      tbody tr td:last-child, thead tr th:last-child {
+        border-right:none;
+        padding-right:600px;
+      }
 
-    // If the user can paginate up (we are removing cells in the process)
-    // Let's add some top spacing as well to show the pagination loader ;)
+      // When a query is applied, the text should be moved some pixels
+      div.sqlview p {
+        text-indent:-600px;
+      }
 
-    // Let's add some bottom spacing to show always when it's neccessary the pagination loader
-    &.page_down {
-      padding-bottom:30px; // More space due to the thead height
+      // When a query is applied, the loader should be moved some pixels
+      tfoot.sql_loader div.float_info {
+        margin-left:-420px;
+      }
+
+      // When there is no results, move the block
+      tfoot div.emptyTableContainer {
+        text-indent:-600px;
+        p, h4 {text-indent:0;}
+      }
+
+      &.narrow {
+        tbody tr td:last-child, thead tr th:last-child {padding-right:450px;}
+        div.sqlview p {text-indent:-450px;}
+        tfoot.sql_loader div.float_info {margin-left:-380px;}
+        tfoot div.emptyTableContainer {text-indent:-450px;}
+      }
+
+    } // table.displaced
+  } // table
+
+
+  /* PAGINATION ZONE - CAUTION */
+
+  // If the user can paginate up (we are removing cells in the process)
+  // Let's add some top spacing as well to show the pagination loader ;)
+
+  // Let's add some bottom spacing to show always when it's neccessary the pagination loader
+  &.page_down {
+    padding-bottom:30px; // More space due to the thead height
+  }
+
+  &.page_up {
+    padding-bottom:0;
+    padding-top:180px; // More space due to the thead height
+    thead tr th div > div {
+      margin-top:-180px;
     }
-
-    &.page_up {
-      padding-bottom:0;
-      padding-top:180px; // More space due to the thead height
-      thead tr th div > div {
-        margin-top:-180px;
-      }
-      tbody tr:first-child {
-        border-top:1px solid #ECECEC;
-      }
-      thead div.sqlview p {
-        margin-top:-168px;
-      }
+    tbody tr:first-child {
+      border-top:1px solid #ECECEC;
     }
-
-    // public view
-    &.public {
-      th:last-child, tr td:last-child {
-        padding-right:0;
-      }
-    }
-
-  } // div.table
-
-
-
-  div.order_selector {
-    position:absolute;
-    top:-3px;
-    right:0;
-    a.asc {
-      @include border-left-radius(2px);
-      margin-right: 1px;
-    }
-    a.desc {
-      @include border-right-radius(2px);
-      margin-right: 10px;
-    }
-    a.asc, a.desc {
-      @include inline-block();
-      position:relative;
-      margin-top: 13px;
-      padding:0;
-      padding: (21px - 9px)/2 8px;
-      background-color: $button-bkg-color;
-      color: #397DB9;
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 9px;
-      &:hover {
-        background-color: #397DB9;
-        color: $button-bkg-color;
-      }
-      &.selected {
-        background-color: #397DB9;
-        color: $button-bkg-color;
-        cursor: default;
-      }
+    thead div.sqlview p {
+      margin-top:-168px;
     }
   }
 
-  .iconClock {
-    display: inline-block;
-    margin-right: 8px;
-    width: 15px;
-    height: 15px;
-    background: image-url('layout/clock.png') no-repeat 0 0 transparent;
-  }
-
-  .data_download {
-    cursor: pointer;
-
-    span.icon {
-      @include inline-block();
-      vertical-align:middle;
-      height: 9px;
-      width: 13px;
-      margin:0 0 1px;
-      padding:0;
-      @include table-sprite(download_blue);
-    }
-
-    &:hover span.icon {
-      @include table-sprite(download_dark);
+  // public view
+  &.public {
+    th:last-child, tr td:last-child {
+      padding-right:0;
     }
   }
 
+} // div.table
 
-  // Hello hacks for Firefox
-  @-moz-document url-prefix() { 
-    table { border-collapse: inherit; }
-    thead div.sqlview { z-index:1!important; }
-    thead tr th div { z-index:2!important; }
-    thead div.shadow { z-index:1!important }
-    tbody tr td { border-spacing:1px; border-bottom:1px solid #ECECEC; }
+
+
+div.order_selector {
+  position:absolute;
+  top:-3px;
+  right:0;
+  a.asc {
+    @include border-left-radius(2px);
+    margin-right: 1px;
   }
+  a.desc {
+    @include border-right-radius(2px);
+    margin-right: 10px;
+  }
+  a.asc, a.desc {
+    @include inline-block();
+    position:relative;
+    margin-top: 13px;
+    padding:0;
+    padding: (21px - 9px)/2 8px;
+    background-color: $button-bkg-color;
+    color: #397DB9;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 9px;
+    &:hover {
+      background-color: #397DB9;
+      color: $button-bkg-color;
+    }
+    &.selected {
+      background-color: #397DB9;
+      color: $button-bkg-color;
+      cursor: default;
+    }
+  }
+}
+
+.iconClock {
+  display: inline-block;
+  margin-right: 8px;
+  width: 15px;
+  height: 15px;
+  background: image-url('layout/clock.png') no-repeat 0 0 transparent;
+}
+
+.data_download {
+  cursor: pointer;
+
+  span.icon {
+    @include inline-block();
+    vertical-align:middle;
+    height: 9px;
+    width: 13px;
+    margin:0 0 1px;
+    padding:0;
+    @include table-sprite(download_blue);
+  }
+
+  &:hover span.icon {
+    @include table-sprite(download_dark);
+  }
+}
+
+
+// Hello hacks for Firefox
+@-moz-document url-prefix() { 
+  table { border-collapse: inherit; }
+  thead div.sqlview { z-index:1!important; }
+  thead tr th div { z-index:2!important; }
+  thead div.shadow { z-index:1!important }
+  tbody tr td { border-spacing:1px; border-bottom:1px solid #ECECEC; }
+}

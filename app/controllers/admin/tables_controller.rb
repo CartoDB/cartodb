@@ -41,7 +41,7 @@ class Admin::TablesController < ApplicationController
         Cartodb.config
       )
       respond_to do |format|
-        format.html { render 'public', layout: 'application_public' }
+        format.html { render 'public', layout: 'application_table_public' }
         download_formats @table, format
       end
     end

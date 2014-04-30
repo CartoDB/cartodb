@@ -1,6 +1,6 @@
 // cartodb.js version: 3.8.10
 // uncompressed version: cartodb.uncompressed.js
-// sha: ca67c4be1888a590e1ae9697a21d20d81c77dbc2
+// sha: f46e228bea09f857a46e89ba45aae3a4b22aa8ce
 (function() {
   var root = this;
 
@@ -24327,7 +24327,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
         fields.push({ name: fieldName, title: true, position: at });
       } else {
         at = at === undefined ? 0 : at;
-        this.set('fields', [{ name: fieldName, title: true, position: at }])
+        this.set('fields', [{ name: fieldName, title: true, position: at }], { silent: true});
       }
     }
     dfd.resolve();
@@ -25558,6 +25558,19 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     if(this.options.layer) {
       this.options.layer
         .on('featureOver', function(e, latlng, pos, data) {
+          // this flag is used to be compatible with previous templates
+          // where the data is not enclosed a content variable
+          if (this.options.wrapdata) {
+            data = {
+              content: data,
+              fields: _.map(data, function(v, k) {
+                return {
+                  title: k,
+                  value: v
+                };
+              })
+            };
+          }
           this.show(pos, data);
         }, this)
         .on('featureOut', function() {
@@ -31030,7 +31043,8 @@ var Vis = cdb.core.View.extend({
       var t = layerView.getTooltipData(i);
       var tooltip = new cdb.geo.ui.Tooltip({
         layer: layerView,
-        template: t.template
+        template: t.template,
+        wrapdata: true
       });
       layerView.tooltip = tooltip;
       this.mapView.addOverlay(tooltip);

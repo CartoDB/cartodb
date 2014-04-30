@@ -70,9 +70,8 @@
         </div>
 
         <div class="export_options">
-          <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %> <span class="download">&middot; download</span></div>
-          <div class="download_options">
-          </div>
+          <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %></div>
+          <div class="download_options"></div>
         </div>
 
       </div>
@@ -87,19 +86,19 @@
             <h2>Visualizations using this data</h2>
             <ul>
 
-              <% if (@dependent_visualizations.count == 0 && @nonpublic_vis_count == 0) %>
+              <% if (@total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0) %>
                 <li class="private">This dataset is not used in any map</li>
               <% end %>
 
-              <% @dependent_visualizations.each do |vis| %>
+              <% @total_visualizations.each do |vis| %>
                 <% if (vis.privacy == "public") %>
                   <li><a href="/viz/<%= vis.id %>/public_map?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a></li>
                 <% end %>
               <% end %>
 
-              <% if (@nonpublic_vis_count > 0) %>
+              <% if (@total_nonpublic_total_vis_count > 0) %>
 
-                <li class="private"><%= @nonpublic_vis_count %> private visualization<%= @nonpublic_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @nonpublic_vis_count %> map<%= @nonpublic_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
+                <li class="private"><%= @total_nonpublic_total_vis_count %> private visualization<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @total_nonpublic_total_vis_count %> map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
               <% end %>
             </ul>
 

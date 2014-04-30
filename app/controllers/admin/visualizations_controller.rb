@@ -3,7 +3,7 @@ require_relative '../../models/map/presenter'
 require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
-  ssl_allowed :embed_map, :public_map, :show_protected_embed_map
+  ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
@@ -30,7 +30,6 @@ class Admin::VisualizationsController < ApplicationController
   def public_table
 
     id = params.fetch(:id)
-    #@visualization, @table = locator.get(id, "development") # TODO: change this
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) if @visualization.nil? || @visualization.private?

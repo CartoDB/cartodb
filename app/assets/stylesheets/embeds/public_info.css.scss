@@ -234,6 +234,10 @@ and (orientation : landscape) {
   min-height: 46px;
 }
 
+.embed-left-col.details .content p.description {
+  margin: 0 0 12px 0;
+}
+
 .embed-left-col.details .content p.options a {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   color: #397DB8;

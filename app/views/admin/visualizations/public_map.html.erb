@@ -15,7 +15,7 @@
     <meta property="og:url" content="<%= request.fullpath %>" />
     <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
 
-    <%= stylesheet_link_tag 'embeds/public_map' %>
+    <%= stylesheet_link_tag 'embeds/public_map', 'embeds/public_info.css' %>
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 
     <style type="text/css">
@@ -391,6 +391,12 @@
             }
 
             setupMapDimensions(mobileDevice);
+
+            // Disables the table link temporarily for IE<10
+            if ($.browser.msie && parseInt($.browser.version) < 10) {
+              $(".map-info.embed-right-col a").removeAttr("href");
+              $(".map-info.embed-right-col a").addClass("disabled");
+            }
 
             // recalculate map position on orientation change
             if (!window.addEventListener) {

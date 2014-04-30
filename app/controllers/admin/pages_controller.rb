@@ -18,8 +18,6 @@ class Admin::PagesController < ApplicationController
 
   def datasets
 
-    #viewed_user = user = User.all.last
-
     user = CartoDB.extract_subdomain(request)
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
@@ -65,8 +63,6 @@ class Admin::PagesController < ApplicationController
 
   def public
 
-    #viewed_user = user = User.all.last
-    
     user = CartoDB.extract_subdomain(request)
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?

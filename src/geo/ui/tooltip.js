@@ -21,18 +21,17 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     if(this.options.layer) {
       this.options.layer
         .on('featureOver', function(e, latlng, pos, data) {
+
           // this flag is used to be compatible with previous templates
           // where the data is not enclosed a content variable
           if (this.options.wrapdata) {
-            data = {
-              content: data,
-              fields: _.map(data, function(v, k) {
-                return {
-                  title: k,
-                  value: v
-                };
-              })
-            };
+            data.content = data;
+            data.fields = _.map(data, function(v, k) {
+              return {
+                title: k,
+                value: v
+              };
+            });
           }
           this.show(pos, data);
         }, this)

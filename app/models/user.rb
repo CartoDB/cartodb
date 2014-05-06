@@ -376,7 +376,7 @@ $$
 
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
     digest = Digest::MD5.hexdigest(email.downcase)
-    "#{protocol}gravatar.com/avatar/#{digest}?s=#{size}&d=#{URI.encode(default_image)}"
+    "#{protocol}gravatar.com/avatar/#{digest}?s=#{size}&d=#{protocol}#{URI.encode(default_image)}"
   end #gravatar
 
   # Retrive list of user tables from database catalogue

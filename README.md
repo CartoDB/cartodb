@@ -66,13 +66,13 @@ and code.
 
 # How do I install CartoDB? #
 
-This is README is intended for Ubuntu 10.04. This doesn't mean that it can't 
+This is README is intended for Ubuntu 12.04. This doesn't mean that it can't 
 be installed in other Linux versions or OSX systems, but that it's guaranteed 
-to work only in Ubuntu 10.04.
+to work only in Ubuntu 12.04.
 If anyone wants to share with us the installation process for any other system 
 we will be more than happy to point it from this README.
 That said, there are also many successful installations on Amazon EC2, Linode,
-dedicated instances and development machines running OS X and Ubuntu 10.04+.
+dedicated instances and development machines running OS X and Ubuntu 12.04+.
 
 CartoDB is under heavy development. This means that at some point this README 
 can fail at some point. If you detect it, please let us know and we will fix 

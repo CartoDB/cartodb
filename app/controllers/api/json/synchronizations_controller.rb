@@ -7,7 +7,7 @@ require_relative '../../../../services/datasources/lib/datasources'
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_required :index, :show, :create, :update, :destroy
+  ssl_required :index, :show, :create, :update, :destroy, :sync_now, :syncing?
 
   def index
     collection = Synchronization::Collection.new.fetch(user_id: current_user.id)
@@ -71,17 +71,17 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     puts exception.backtrace
   end
 
-  def sync
-    did_run = false
+  def sync(from_sync_now=false)
+    enqueued = false
     member = Synchronization::Member.new(id: params[:id]).fetch
     return head(401) unless member.authorize?(current_user)
 
-    if member.should_auto_sync? || (params[:sync_now].present? && member.can_manually_sync?)
-      did_run = true
-      member.run
+    if member.should_auto_sync? || (from_sync_now && member.can_manually_sync?)
+      enqueued = true
+      member.enqueue
     end
 
-    render_jsonp( { run: did_run, synchronization: member.fetch})
+    render_jsonp( { enqueued: enqueued, synchronization_id: member.id})
   rescue KeyError => exception
     puts exception.message + "\n" + exception.backtrace
     head(404)
@@ -90,6 +90,20 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     puts exception.message + "\n" + exception.backtrace
     head(404)
   end #sync
+
+  def sync_now
+    return sync(true)
+  end #sync_now
+
+  def syncing?
+    member = Synchronization::Member.new(id: params[:id]).fetch
+    return head(401) unless member.authorize?(current_user)
+
+    render_jsonp( { state: member.state } )
+  rescue KeyError => exception
+    puts exception.message + "\n" + exception.backtrace
+    head(404)
+  end #syncing?
 
   def show
     member = Synchronization::Member.new(id: params[:id]).fetch

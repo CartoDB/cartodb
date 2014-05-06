@@ -5,6 +5,8 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative '../../services/importer/lib/importer/query_batcher'
+
 
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
@@ -28,13 +30,20 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
-    :id => :id, :name => :name, :privacy => :privacy_text, :schema => :schema,
-    :updated_at => :updated_at, :rows_counted => :rows_estimated,
-    :table_size => :table_size, :map_id => :map_id, :description => :description,
-    :geometry_types => :geometry_types, :table_visualization => :table_visualization,
-    :dependent_visualizations     => :serialize_dependent_visualizations,
-    :non_dependent_visualizations => :serialize_non_dependent_visualizations,
-    :synchronization => :serialize_synchronization
+      :id                           => :id,
+      :name                         => :name,
+      :privacy                      => :privacy_text,
+      :schema                       => :schema,
+      :updated_at                   => :updated_at,
+      :rows_counted                 => :rows_estimated,
+      :table_size                   => :table_size,
+      :map_id                       => :map_id,
+      :description                  => :description,
+      :geometry_types               => :geometry_types,
+      :table_visualization          => :table_visualization,
+      :dependent_visualizations     => :serialize_dependent_visualizations,
+      :non_dependent_visualizations => :serialize_non_dependent_visualizations,
+      :synchronization              => :serialize_synchronization
   }
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
@@ -1069,17 +1078,27 @@ class Table < Sequel::Model(:user_tables)
       set_the_geom_column!('point')
 
       owner.in_database do |user_database|
-        user_database.run(<<-GEOREF
-        UPDATE "#{self.name}"
-        SET the_geom =
-          ST_GeomFromText(
-            'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
-        )
-        WHERE
-        trim(CAST(#{options[:longitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-        AND
-        trim(CAST(#{options[:latitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-        GEOREF
+        CartoDB::Importer2::QueryBatcher::execute(
+            user_database,
+            %Q{
+            UPDATE #{self.name}
+            SET
+              the_geom = public.ST_GeomFromText(
+                'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')', #{CartoDB::SRID}
+              )
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE REPLACE(TRIM(CAST("#{options[:longitude_column]}" AS text)), ',', '.') ~
+              '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
+            AND REPLACE(TRIM(CAST("#{options[:latitude_column]}" AS text)), ',', '.')  ~
+              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            },
+            self.name,
+            nil,  # QueryBatcher will use a simple internal to console logger
+            'georeferencing table rows',
+            false,
+            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round,
+            'cartodb_id'
         )
       end
       schema(reload: true)

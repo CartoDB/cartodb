@@ -18,12 +18,13 @@ describe Api::Json::SynchronizationsController do
   include Rack::Test::Methods
 
   before(:all) do
+
     @user = create_user(
       username: 'test',
       email:    'client@example.com',
-      password: 'clientex'
+      password: 'clientex',
+      sync_tables_enabled: true
     )
-    @user.set_map_key
     @api_key = @user.api_key
   end
 
@@ -31,8 +32,7 @@ describe Api::Json::SynchronizationsController do
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
-    CartoDB::Synchronization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :synchronizations)
+    CartoDB::Synchronization.repository  = DataRepository::Backend::Sequel.new(@db, :synchronizations)
 
     delete_user_data @user
     @headers = {
@@ -49,8 +49,7 @@ describe Api::Json::SynchronizationsController do
         url:        'http://www.foo.com'
       }
 
-      post "/api/v1/synchronizations?api_key=#{@api_key}",
-        payload.to_json, @headers
+      post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
       last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
@@ -68,12 +67,11 @@ describe Api::Json::SynchronizationsController do
         url:        'http://www.foo.com'
       }
 
-      post "/api/v1/synchronizations?api_key=#{@api_key}",
-        payload.to_json, @headers
+      post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
       last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
-      response.fetch('links').fetch('data_import').should_not be_empty
+      response.fetch('data_import').should_not be_empty
     end
 
     it 'returns 401 unless user has an appropriate plan' do
@@ -88,12 +86,10 @@ describe Api::Json::SynchronizationsController do
         url:        'http://www.foo.com'
       }
 
-      post "/api/v1/synchronizations?api_key=#{@api_key}",
-        payload.to_json, @headers
+      post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
       id = JSON.parse(last_response.body).fetch('id')
 
-      get "/api/v1/synchronizations/#{id}?api_key=#{@api_key}",
-        nil, @headers
+      get "/api/v1/synchronizations/#{id}?api_key=#{@api_key}", nil, @headers
       last_response.status.should == 200
 
       response = JSON.parse(last_response.body)

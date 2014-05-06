@@ -8,10 +8,15 @@ module CartoDB
 
       LAYER_TYPES_TO_DECORATE = [ 'torque' ]
 
+      # @throws NamedMapsPresenterError
 			def initialize(visualization, options, configuration)
         @visualization  = visualization
         @options        = options
         @configuration	= configuration
+
+        raise NamedMapsPresenterError.new('Missing internal tiler config') unless @configuration[:tiler]['internal'].present?
+        raise NamedMapsPresenterError.new('Missing public tiler config') unless @configuration[:tiler]['private'].present?
+        raise NamedMapsPresenterError.new('Missing private tiler config') unless @configuration[:tiler]['public'].present?
 
         @named_map          = nil
         @named_map_template = nil

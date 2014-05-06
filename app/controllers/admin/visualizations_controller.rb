@@ -37,7 +37,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @vizjson = @visualization.to_vizjson
 
-    @avatar_url             = @visualization.user.gravatar(64)
+    @avatar_url             = @visualization.user.gravatar(request.protocol, 64)
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
@@ -66,7 +66,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @avatar_url             = @visualization.user.gravatar(64)
+    @avatar_url             = @visualization.user.gravatar(request.protocol, 64)
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
@@ -99,7 +99,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @protected_map_token = @visualization.get_auth_token()
 
-    @avatar_url = @visualization.user.gravatar(64)
+    @avatar_url = @visualization.user.gravatar(request.protocol, 64)
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count

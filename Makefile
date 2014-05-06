@@ -31,9 +31,9 @@ WORKING_SPECS = \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/records_spec.rb \
+  spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
-  spec/models/synchronization/synchronization_oauth_spec.rb \
-  spec/models/synchronization/collection_spec.rb \
+  spec/models/synchronization/ \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

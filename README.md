@@ -42,7 +42,7 @@ and code.
 
   - A User Interface for uploading, creating, editing, visualizing,
     and exporting geospatial data.
-  - A geospatial database built on PostgreSQL and PostGIS 2.0
+  - A geospatial database built on PostgreSQL and PostGIS 2.1
   - An SQL API for running SQL queries over HTTP with results formatted
     using GeoJSON and KML
   - A Map tiler that supports SQL and tile styling using CartoCSS
@@ -178,13 +178,13 @@ sudo apt-get install proj-bin proj-data libproj-dev
 that powers CartoDB.
 
 ```bash
-sudo apt-get install postgresql-9.1 postgresql-client-9.1 postgresql-contrib-9.1 postgresql-server-dev-9.1
+sudo apt-get install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 postgresql-server-dev-9.3
 ```
 
 plpython is required for Python support
 
 ```bash
-sudo apt-get install postgresql-plpython-9.1
+sudo apt-get install postgresql-plpython-9.3
 ```
 
 
@@ -209,9 +209,9 @@ queries. This is the heart of CartoDB!
 
 ```bash
 cd /usr/local/src
-wget http://download.osgeo.org/postgis/source/postgis-2.0.2.tar.gz
-tar xzf postgis-2.0.2.tar.gz
-cd postgis-2.0.2
+wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
+tar xzf postgis-2.1.2.tar.gz
+cd postgis-2.1.2
 ./configure --with-raster --with-topology
 make
 make install
@@ -223,7 +223,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.0
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
@@ -245,12 +245,12 @@ sudo su - postgres
 
 ## Install Ruby ##
 We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.2. You can use rvm:
+so you'll need to install Ruby 1.9.3. You can use rvm:
 
 ```bash
 \curl -L https://get.rvm.io | bash
 source /etc/profile.d/rvm.sh
-rvm install 1.9.2
+rvm install 1.9.3
 ```
 
 ## Install Node.js ##
@@ -383,7 +383,7 @@ cd cartodb20
 redis-server
 
 # If you are using rvm, create a new gemset
-rvm use 1.9.2@cartodb --create && bundle install
+rvm use 1.9.3@cartodb --create && bundle install
 
 # If it's a system wide installation
 sudo bundle install

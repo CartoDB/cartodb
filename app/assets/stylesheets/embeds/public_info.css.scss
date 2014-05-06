@@ -597,3 +597,24 @@ div.cartodb-share-dialog .block .buttons li a {
   #map { height: 100%!important; }
 
 }
+
+:-moz-full-screen {
+  .cartodb-public-header { display:none; }
+  .separator { display: none;}
+}
+ 
+:-webkit-full-screen {
+  .cartodb-public-header { display:none; }
+  .separator { display: none;}
+}
+ 
+:-ms-fullscreen {
+  .cartodb-public-header { display:none; }
+  .separator { display: none;}
+}
+ 
+:fullscreen {
+  .cartodb-public-header { display:none; }
+  .separator { display: none;}
+}
+

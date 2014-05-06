@@ -698,6 +698,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       return false;
   },
 
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
+  },
+
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
     var url = [

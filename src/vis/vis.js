@@ -710,13 +710,25 @@ var Vis = cdb.core.View.extend({
   addTooltip: function(layerView) {
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       var t = layerView.getTooltipData(i);
-      var tooltip = new cdb.geo.ui.Tooltip({
-        layer: layerView,
-        template: t.template,
-        wrapdata: true
+      if (t) {
+        if (!layerView.tooltip) {
+          var tooltip = new cdb.geo.ui.Tooltip({
+            layer: layerView,
+            template: t.template,
+            wrapdata: true
+          });
+          layerView.tooltip = tooltip;
+          this.mapView.addOverlay(tooltip);
+        }
+        layerView.setInteraction(i, true);
+      }
+    }
+
+    if (layerView.tooltip) {
+      layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
+        var t = layerView.getTooltipData(layer);
+        layerView.tooltip.setTemplate(t.template);
       });
-      layerView.tooltip = tooltip;
-      this.mapView.addOverlay(tooltip);
     }
   },
 
@@ -747,6 +759,17 @@ var Vis = cdb.core.View.extend({
     if(!infowindow) {
       return;
     }
+
+    infowindow.bind('close', function() {
+      // when infowindow is closed remove all the filters
+      // for tooltips
+      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+        var t = layerView.tooltip;
+        if (t) {
+          t.setFilter(null);
+        }
+      }
+    })
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
@@ -779,6 +802,12 @@ var Vis = cdb.core.View.extend({
           .setLatLng(latlng)
           .setLoading()
           .showInfowindow();
+
+        if (layerView.tooltip) {
+          layerView.tooltip.setFilter(function(feature) {
+            return feature.content.cartodb_id !== cartodb_id;
+          }).hide();
+        }
     });
 
     var hovers = [];

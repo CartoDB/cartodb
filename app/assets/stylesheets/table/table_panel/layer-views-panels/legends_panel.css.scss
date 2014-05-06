@@ -120,6 +120,10 @@
       }
     }
 
+    .help-tip {
+      top:90px;
+    }
+
     .menu {
       position: absolute;
       @include box-sizing(border-box);

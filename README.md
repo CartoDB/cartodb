@@ -50,15 +50,15 @@ and code.
 
 # What does CartoDB depend on? #
 
-  - Ubuntu 10.04
-  - Postgres 9.1.x
+  - Ubuntu 12.04
+  - Postgres 9.3.x
   - Redis 2.2+
-  - Ruby 1.9.2
+  - Ruby 1.9.3
   - NodeJS 0.8.x
   - CartoDB-SQL-API
   - GEOS 3.3.4
   - GDAL 1.10.x (Starting with CartoDB 2.2.0)
-  - PostGIS 2.0.x
+  - PostGIS 2.1.x
   - Mapnik 2.1.1
   - Windshaft-cartodb
   - Varnish 2.1+ (WARNING: must be < 3.0!)
@@ -460,6 +460,11 @@ running for full experience.
 Manual configuration is needed for the
 `public/javascripts/environments/development.js` file which configures
 Windshaft-cartodb tile server URLs.
+
+
+# Install problems and common solutions #
+
+Installing the full stack might not always be smooth due to other component updates, so if you run into problems installing CartoDB, please check [this list of problems and solutions](https://github.com/CartoDB/cartodb/wiki/Problems-faced-during-CartoDB-install-&-solutions-if-known) first to see if your problem already happened in the past and somebody else found a workaround, solution or fix to it.
 
 
 ### Testing ###

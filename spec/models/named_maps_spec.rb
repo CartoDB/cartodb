@@ -726,6 +726,45 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     end
   end #two_normal_layers
 
+  describe 'exception_raising_on_missing_tiler' do
+    it 'checks that if presenter has missing tiler config throws exceptions' do
+
+      expect {
+        CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
+            tiler: {}
+        })
+      }.to raise_exception(CartoDB::NamedMapsWrapper::NamedMapsPresenterError)
+
+      expect {
+        CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
+            tiler: {
+                'internal' => { a: 1 }
+            }
+        })
+      }.to raise_exception(CartoDB::NamedMapsWrapper::NamedMapsPresenterError)
+
+      expect {
+        CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
+            tiler: {
+                'internal'  => { a: 1 },
+                'private'   => { a: 1 }
+            }
+        })
+      }.to raise_exception(CartoDB::NamedMapsWrapper::NamedMapsPresenterError)
+
+      presenter = CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
+          tiler: {
+              'internal'  => { a: 1 },
+              'private'   => { a: 1 },
+              'public'    => { a: 1 }
+          }
+      })
+
+      presenter.should_not eq nil
+
+    end
+  end #exception_raising_on_missing_tiler
+
 
   private
 

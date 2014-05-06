@@ -169,7 +169,7 @@ module CartoDB
     },
     3009 => {
       title: 'SHP Normalization error', 
-      what_about: "We where unable to detect the encoding or projection of your Shapefile. Try converting the file to UTF-8 and a 4326 SRID"
+      what_about: "We were unable to detect the encoding or projection of your Shapefile. Try converting the file to UTF-8 and a 4326 SRID."
     },
     3101 => {
       title: 'Missing projection (.prj) file',

@@ -191,7 +191,7 @@ sudo apt-get install postgresql-plpython-9.3
 Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
 
 ```bash
-/etc/postgresql/9.1/main$ sudo vim pg_hba.conf
+/etc/postgresql/9.3/main$ sudo vim pg_hba.conf
 ```
 
 And change inside all local connections from peer/md5/... to trust.

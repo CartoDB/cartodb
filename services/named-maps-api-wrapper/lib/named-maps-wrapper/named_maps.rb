@@ -30,7 +30,7 @@ module CartoDB
 
 			# Retrieve a list of all named maps
 			def all
-				response = Typhoeus.get(@url + "?api_key=" + @api_key, {
+				response = Typhoeus.get(@url + '?api_key=' + @api_key, {
 					headers: @headers,
           ssl_verifypeer: @verify_cert,
           ssl_verifyhost: @verify_cert ? 0 : 2,
@@ -45,7 +45,7 @@ module CartoDB
 			def get(name)
 				raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
-				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, {
+				response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
 					headers: @headers,
           ssl_verifypeer: @verify_cert,
           ssl_verifyhost: @verify_cert ? 0 : 2,

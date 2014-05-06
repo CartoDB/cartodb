@@ -24,6 +24,7 @@ module CartoDB
 			end #initialize
 
 			# Create a new named map
+      # @throws HTTPResponseError
 			def self.create_new( visualization, parent )
 				template_data = NamedMap.get_template_data( visualization, parent )
 
@@ -37,6 +38,9 @@ module CartoDB
         raise HTTPResponseError, "#{response.code} #{response.request.url} (POST)" unless response.code == 200
 
 				body = ::JSON.parse(response.response_body)
+
+        raise HTTPResponseError, "Missing template_id: #{response.response_body}" unless body['template_id'].present?
+
 				self.new( body['template_id'], template_data, parent )
 			end #self.create_new
 
@@ -57,8 +61,8 @@ module CartoDB
 			end #update
 
 			# Delete existing named map
-			def delete()
-				response = Typhoeus.delete( url + "?api_key=" + @parent.api_key, 
+			def delete
+				response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
           { 
             headers: @parent.headers,
             ssl_verifypeer: @parent.verify_cert,
@@ -69,7 +73,7 @@ module CartoDB
 			end #delete
 
 			# Url to access a named map's tiles
-			def url()
+			def url
 				[ @parent.url, @name ].join('/')
 			end # url
 
@@ -99,36 +103,35 @@ module CartoDB
                     	  }
         }
 
-        if (auth_type == AUTH_TYPE_SIGNED)
-          auth_token = visualization.make_auth_token()
-          template_data[:auth][:valid_tokens] = [ auth_token ];
+        if auth_type == AUTH_TYPE_SIGNED
+          auth_token = visualization.make_auth_token
+          template_data[:auth][:valid_tokens] = [ auth_token ]
         end
 
-        vizjson = CartoDB::Visualization::VizJSON.new( visualization, presenter_options, parent.vizjson_config )
+        vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)
         layers_data = []
 
         layer_group = vizjson.layer_group_for( visualization )
-        if ( !layer_group.nil?() )
+        unless layer_group.nil?
         	layer_group[:options][:layer_definition][:layers].each { |layer|
-            layer_options = layer[:options].except [ :sql, :interactivity ]
+            layer_options = layer[:options].except [:sql, :interactivity]
 
             layer_placeholder = "layer#{layer_num}"
             layer_num += 1
             layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
 
-            template_data[:placeholders][layer_placeholder.to_sym()] = {
+            template_data[:placeholders][layer_placeholder.to_sym] = {
               type:     'number',
               default:  1
             }
 
-	        	if ( layer.include?( :infowindow ) && !layer[:infowindow].nil? && 
-	        			 layer[:infowindow].fetch('fields').size > 0 )
+	        	if layer.include?(:infowindow) && !layer[:infowindow].nil? && layer[:infowindow].fetch('fields').size > 0
               layer_options[:interactivity] = layer[:options][:interactivity]
 	        		layer_options[:attributes] = {
         				id:       'cartodb_id', 
 	        			columns:  layer[:infowindow]['fields'].map { |field|
-          		        			field.fetch('name')
-          		            }
+                          field.fetch('name')
+                }
 	        		}
 	        	end
 
@@ -140,7 +143,7 @@ module CartoDB
         end
         
         other_layers = vizjson.other_layers_for( visualization )
-        if ( !other_layers.nil?() )
+        unless other_layers.nil?
         	other_layers.compact.each { |layer|
         		layers_data.push( {
 	            type:     layer[:type].downcase,
@@ -153,7 +156,7 @@ module CartoDB
         	}
         end
 
-        template_data[:layergroup][:layers] = layers_data.compact().flatten()
+        template_data[:layergroup][:layers] = layers_data.compact.flatten
 
 				template_data
 			end #get_template_data
@@ -161,7 +164,6 @@ module CartoDB
       def self.css_from(options)
         options.fetch('tile_style').strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
       end #css_from
-
 
 			attr_reader	:template
 

@@ -3,10 +3,11 @@
 module CartoDB
   module NamedMapsWrapper
 
-    class NamedMapsGenericError < StandardError; end
-    class NamedMapDataError < NamedMapsGenericError; end
-    class NamedMapsDataError < NamedMapsGenericError; end
-    class HTTPResponseError < NamedMapsGenericError; end
+    class NamedMapsGenericError   < StandardError; end
+    class NamedMapDataError       < NamedMapsGenericError; end
+    class NamedMapsDataError      < NamedMapsGenericError; end
+    class HTTPResponseError       < NamedMapsGenericError; end
+    class NamedMapsPresenterError < NamedMapsGenericError; end
 
   end #NamedMapsWrapper
 end #CartoDB

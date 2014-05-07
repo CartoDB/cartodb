@@ -132,7 +132,10 @@ module CartoDB
       end #filename_from
 
       def content_length_from(headers)
-        headers.fetch('Content-Length', -1).to_i
+        content_length = headers.fetch('Content-Length', nil)
+        content_length ||= headers.fetch('Content-length', nil)
+        content_length ||= headers.fetch('content-length', -1)
+        content_length.to_i
       end #content_length_from
 
       def modified?
@@ -194,6 +197,7 @@ module CartoDB
       def name_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
         disposition ||= headers.fetch('Content-disposition', nil)
+        disposition ||= headers.fetch('content-disposition', nil)
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename

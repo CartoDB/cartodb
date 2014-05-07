@@ -1,0 +1,20 @@
+
+  /**
+   *  CartoDB tooltip dark styles
+   */
+
+  div.cartodb-tooltip-content-wrapper.dark {
+    background:rgba(0,0,0,0.75);
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark h4 {
+    color:#666666;
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark p {
+    color:#FFFFFF;
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark a {
+    color:#397DB9;
+  }

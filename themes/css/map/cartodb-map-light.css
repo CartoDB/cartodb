@@ -1675,24 +1675,6 @@ div.cartodb-dropdown div.tail span.border {
   z-index:2;
 }
 
-
-/* CartoDB tooltip control */
-
-div.cartodb-tooltip {
-  position: absolute;
-  z-index: 5;
-  display: none;
-}
-
-div.cartodb-tooltip p {
-  font-family: "robotoregular", Helvetica, Arial, Sans-serif;
-  font-size: 15px;
-  color: #333;
-  text-align:left;
-  text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
-}
-
-
 /* Gmaps attribution */
 div#cartodb-gmaps-attribution {
   position:absolute;

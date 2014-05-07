@@ -726,29 +726,51 @@ div.cartodb-edit-buttons {
   margin:0;
   border-top:1px solid rgba(0,0,0,0.15);
 
-  div.right { float:right }
+  div.right {
+    float:right;
+    margin:0;
+    padding:0;
+  }
 
   a.button {
+    position:relative;
     float:left;
     width:22px;
     height:19px;
     padding:0;
+    margin:0;
     @include text-indent();
     border:none;
-    border-left:1px solid rgba(0,0,0,0.15);
     background:none;
 
-    &.edit_data {@include edit-bottom-states(-8, -22, transparent, transparent, transparent, transparent);}
-    &.edit_geo {@include edit-bottom-states(-40, -21, transparent, transparent, transparent, transparent);}
-    &.remove {@include edit-bottom-states(-70, -21, transparent, transparent, transparent, transparent);}
+    &.edit_data {@include edit-bottom-states(-7, -45, transparent, transparent, transparent, transparent);}
+    &.edit_geo {@include edit-bottom-states(-38, -45, transparent, transparent, transparent, transparent);}
+    &.remove {@include edit-bottom-states(-69, -45, transparent, transparent, transparent, transparent);}
+
+    &:before {
+      position:absolute;
+      content:'';
+      top:0;
+      left:0px;
+      height:100%;
+      width:1px;
+      background:rgba(0,0,0,0.15);
+    }
   }
 }
+
 
 .cartodb-tooltip-content-wrapper.dark
 div.cartodb-edit-buttons {
   border-top:1px solid rgba(255,255,255,0.30);
   a.button {
-    border-left:1px solid rgba(255,255,255,0.30);
+    &.edit_data {@include edit-bottom-states(-7, -20, transparent, transparent, transparent, transparent);}
+    &.edit_geo {@include edit-bottom-states(-38, -20, transparent, transparent, transparent, transparent);}
+    &.remove {@include edit-bottom-states(-69, -20, transparent, transparent, transparent, transparent);}
+
+    &:before {
+      border-left:1px solid rgba(255,255,255,0.30);
+    }
   }
 }
 

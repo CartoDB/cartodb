@@ -652,6 +652,12 @@ section.block.noGeoRef {
 div.cartodb-edit-buttons {
   border-top:1px solid #E5E5E5;
   display:block;
+}
+
+// FOR INFOWINDOWS //
+
+.cartodb-popup-content-wrapper
+div.cartodb-edit-buttons {
   width:188px;
   padding:11px 0 6px;
   margin:10px 0 0;
@@ -694,15 +700,6 @@ div.cartodb-edit-buttons {
   }
 }
 
-// Default styles for infowindow
-div.cartodb-popup {
-  h2 { line-height:normal }
-
-  &.blue.header .cartodb-popup-header a {
-    color:white;
-  }
-}
-
 // Dark buttons
 div.cartodb-popup.dark  {
   div.cartodb-edit-buttons {
@@ -716,6 +713,44 @@ div.cartodb-popup.dark  {
   }
 }
 
+
+
+
+// FOR TOOLTIPS //
+
+.cartodb-tooltip-content-wrapper
+div.cartodb-edit-buttons {
+  display:block;
+  height:19px;
+  padding:0;
+  margin:0;
+  border-top:1px solid rgba(0,0,0,0.15);
+
+  div.right { float:right }
+
+  a.button {
+    float:left;
+    width:22px;
+    height:19px;
+    padding:0;
+    @include text-indent();
+    border:none;
+    border-left:1px solid rgba(0,0,0,0.15);
+    background:none;
+
+    &.edit_data {@include edit-bottom-states(-8, -22, transparent, transparent, transparent, transparent);}
+    &.edit_geo {@include edit-bottom-states(-40, -21, transparent, transparent, transparent, transparent);}
+    &.remove {@include edit-bottom-states(-70, -21, transparent, transparent, transparent, transparent);}
+  }
+}
+
+.cartodb-tooltip-content-wrapper.dark
+div.cartodb-edit-buttons {
+  border-top:1px solid rgba(255,255,255,0.30);
+  a.button {
+    border-left:1px solid rgba(255,255,255,0.30);
+  }
+}
 
 
 // Custom styles for Leaflet maps

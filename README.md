@@ -120,7 +120,7 @@ sudo add-apt-repository ppa:cartodb/redis
 
 Add CartoDB PostgreSQL PPA
 ```bash
-sudo add-apt-repository  ppa:cartodb/postgresql
+sudo add-apt-repository  ppa:cartodb/postgresql-9.3
 ```
 Add CartoDB Varnish PPA
 ```bash
@@ -211,7 +211,7 @@ queries. This is the heart of CartoDB!
 cd /usr/local/src
 wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
 tar xzf postgis-2.1.2.tar.gz
-cd postgis-2.1.2
+cd postgis-2.1
 ./configure --with-raster --with-topology
 make
 make install
@@ -223,7 +223,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
@@ -248,7 +248,7 @@ We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
 so you'll need to install Ruby 1.9.3. You can use rvm:
 
 ```bash
-\curl -L https://get.rvm.io | bash
+curl -L https://get.rvm.io | bash
 source /etc/profile.d/rvm.sh
 rvm install 1.9.3
 ```
@@ -297,6 +297,16 @@ easy_install pip
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
 pip install --no-use-wheel -r python_requirements.txt
+```
+
+If the previous step fails, try this alternative:
+```bash
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+sudo pip install --no-install GDAL
+cd /tmp/pip_build_root/GDAL
+sudo python setup.py build_ext --include-dirs=/usr/include/gdal
+sudo pip install --no-download GDAL
 ```
 
 ## Install Varnish

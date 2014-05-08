@@ -35,7 +35,7 @@ module CartoDB
             SELECT name, count(*) as count
             FROM tags
             GROUP BY name
-            ORDER BY count(*)
+            #{order_from(params)}
           }, map_ids_for(user), types_from(params), limit_from(params)
         ).all.map(&:values)
       end #count
@@ -47,6 +47,11 @@ module CartoDB
       def map_ids_for(user)
         user.maps.map(&:id)
       end #map_ids
+
+      def order_from(params={})
+        order = params.fetch(:order, nil)
+        (order.nil? || order.empty?) ? ' ORDER BY count(*) ' : " ORDER BY #{order} "
+      end #order_from
 
       def privacy_from(params={})
         privacy = params.fetch(:privacy, nil)

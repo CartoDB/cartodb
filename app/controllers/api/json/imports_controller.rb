@@ -215,10 +215,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     case
     when params[:filename].present? && request.body.present?
       filename = params[:filename].original_filename rescue params[:filename].to_s
-      filepath = ''
+      filepath = params[:filename].path rescue ''
     when params[:file].present?
       filename = params[:file].original_filename rescue params[:file].to_s
-      filepath = params[:file].path
+      filepath = params[:file].path rescue ''
     else
       return
     end

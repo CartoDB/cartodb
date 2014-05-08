@@ -7,6 +7,10 @@ div.cartodb-popup.header.blue div.cartodb-popup-header {
   background:url('../img/headers.png') no-repeat 0 -40px;
 }
 
+div.cartodb-popup.header.blue.header .cartodb-popup-header a {
+  color:white;
+}
+
 div.cartodb-popup.header.blue div.cartodb-popup-header h4 {
   color:#1F4C7F;
 }

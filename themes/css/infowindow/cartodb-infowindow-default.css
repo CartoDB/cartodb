@@ -231,6 +231,9 @@
 
 
   /* CartoDB light content styles */
+  div.cartodb-popup h2 {
+    line-height:normal;
+  }
 
   div.cartodb-popup h4 {
     display:block;

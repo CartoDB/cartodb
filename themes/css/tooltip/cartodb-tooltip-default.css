@@ -1,0 +1,49 @@
+
+  /**
+   *  CartoDB2.0 tooltip styles (DEFAULT)
+   */
+
+  div.cartodb-tooltip {
+    position: absolute;
+    display: none;
+    min-width:72px;
+    max-width:180px;
+    overflow-y:hidden;
+    z-index: 5;
+  }
+
+  div.cartodb-tooltip-content-wrapper {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background:rgba(255,255,255,0.75);
+  }
+
+  div.cartodb-tooltip-content {
+    display:block;
+    padding:8px;
+  }
+
+  div.cartodb-tooltip-content h4 {
+    display:block;
+    text-transform: uppercase;
+    font:bold 11px "Helvetica Neue","Helvetica",Arial;
+    color:#AAA;
+    word-wrap: break-word;
+  }
+
+  div.cartodb-tooltip-content p {
+    display:block;
+    padding:0 0 7px;
+    font:normal 13px "Helvetica Neue", "Helvetica", Arial;
+    color:#333333;
+    word-wrap: break-word;
+  }
+
+  div.cartodb-tooltip-content p:last-child {
+    padding:0;
+  }
+
+  div.cartodb-tooltip-content a {
+    color:#0078A8;
+  }

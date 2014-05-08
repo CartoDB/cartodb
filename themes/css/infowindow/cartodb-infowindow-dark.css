@@ -36,11 +36,15 @@
   }
 
   div.cartodb-popup.dark h4 {
-    color:#666666;
+    color:#999;
   }
 
   div.cartodb-popup.dark p {
     color:#FFFFFF;
+  }
+
+  div.cartodb-popup.dark a {
+    color:#397DB9;
   }
 
   div.cartodb-popup.dark p.empty {

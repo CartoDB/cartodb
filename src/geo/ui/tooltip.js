@@ -1,7 +1,7 @@
 
 cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
-  DEFAULT_OFFSET_TOP: 30,
+  DEFAULT_OFFSET_TOP: 10,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
 
@@ -35,15 +35,19 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
           // this flag is used to be compatible with previous templates
           // where the data is not enclosed a content variable
           if (this.options.wrapdata) {
-            data = {
-              content: data,
-              fields: _.map(data, function(v, k) {
-                return {
-                  title: k,
-                  value: v
-                };
-              })
-            };
+
+            var non_valid_keys = ['fields', 'content']
+            // Remove fields and content from data
+            // and make them visible for custom templates
+            data.content = _.omit(data, non_valid_keys);
+
+            // loop through content values
+            data.fields = _.map(data.content, function(v, k) {
+              return {
+                title: k,
+                value: v
+              };
+            });
           }
           this.show(pos, data);
         }, this)
@@ -67,8 +71,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     this.render(data);
     this.elder('show', pos, data);
     this.$el.css({
-      'left': (pos.x - this.$el.width()/2),
-      'top': (pos.y - (this.options.offset_top || this.DEFAULT_OFFSET_TOP))
+      'left': pos.x,
+      'top':  pos.y + (this.options.offset_top || this.DEFAULT_OFFSET_TOP)
     });
     return this;
   },

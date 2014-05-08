@@ -10,7 +10,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     this.options.position = 'none';
     this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
-    this._filter = null
+    this._filter = null;
+    this.showing = false;
   },
 
   setLayer: function(layer) {
@@ -36,7 +37,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
           // where the data is not enclosed a content variable
           if (this.options.wrapdata) {
 
-            var non_valid_keys = ['fields', 'content']
+            var non_valid_keys = ['fields', 'content'];
+
+            if (this.options.omit_columns) {
+              non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
+            }
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);
@@ -50,9 +55,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
             });
           }
           this.show(pos, data);
+          this.showing = true;
         }, this)
         .on('featureOut', function() {
           this.hide();
+          this.showing = false;
         }, this);
       this.add_related_model(this.options.layer);
     }

@@ -235,13 +235,23 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
   var curleft, cartop;
   curleft = curtop = 0;
   var obj = map.getDiv();
+
+  var x, y;
+  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+    x = o.e.changedTouches[0].clientX + window.scrollX;
+    y = o.e.changedTouches[0].clientY + window.scrollY;
+  } else {
+    x = o.e.clientX;
+    y = o.e.clientY;
+  }
+
   do {
     curleft += obj.offsetLeft;
     curtop += obj.offsetTop;
   } while (obj = obj.offsetParent);
   return new google.maps.Point(
-      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
-      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
+      x - curleft,
+      y - curtop
   );
 };
 

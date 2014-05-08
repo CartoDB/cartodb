@@ -85,6 +85,11 @@ module CartoDB
 
         self.source_file  = SourceFile.new(filepath(name), name)
         repository.store(source_file.path, data)
+
+        # Until above code streams contents, force GC pass to avoid stale memory
+        data = nil
+        response = nil
+
         self.source_file  = nil unless modified?
         self
       end

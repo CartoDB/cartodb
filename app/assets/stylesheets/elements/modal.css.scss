@@ -68,11 +68,17 @@
 
             &.exclamation { @include elements-sprite(background_loader_error, $offset-y:2px); }
             &.question    { @include elements-sprite(question, $offset-y:2px); }
-
           }
 
-          p {padding-left:30px}
-
+          p { padding-left:30px }
+          
+          .item_queue_id {
+            position:absolute;
+            bottom:50px;
+            left:40px;
+            font-size:12px;
+            color:#CCC;
+          }
         }
 
         .block p a { text-decoration: underline; }

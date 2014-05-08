@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.10
+// cartodb.js version: 3.9.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f46e228bea09f857a46e89ba45aae3a4b22aa8ce
+// sha: 369efc89500d3d3b7d9a0fd6325648eac6de5501
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.10';
+    cdb.VERSION = '3.9.00-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24923,11 +24923,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _closeInfowindow: function(ev) {
     if (ev) {
-      ev.preventDefault()
+      ev.preventDefault();
       ev.stopPropagation();
     }
-
-    this.model.set("visibility",false);
+    if (this.model.get("visibility")) {
+       this.model.set("visibility", false);
+       this.trigger('close');
+    }
   },
 
   /**
@@ -25483,7 +25485,11 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
     if(this.options.layer) {
       this.enable();
     }
-    this.template = cdb.core.Template.compile(this.options.template || this.defaultTemplate, 'mustache');
+    this.setTemplate(this.options.template || this.defaultTemplate, 'mustache');
+  },
+
+  setTemplate: function(tmpl) {
+    this.template = cdb.core.Template.compile(tmpl, 'mustache');
   },
 
   enable: function() {
@@ -25538,7 +25544,7 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
 cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
-  DEFAULT_OFFSET_TOP: 30,
+  DEFAULT_OFFSET_TOP: 10,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
 
@@ -25547,6 +25553,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     this.options.position = 'none';
     this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+    this._filter = null;
+    this.showing = false;
   },
 
   setLayer: function(layer) {
@@ -25554,14 +25562,47 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     return this;
   },
 
+  /**
+   * sets a filter to open the tooltip. If the feature being hovered
+   * pass the filter the tooltip is shown
+   * setFilter(null) removes the filter
+   */
+  setFilter: function(f) {
+    this._filter = f;
+    return this;
+  },
+
   enable: function() {
     if(this.options.layer) {
       this.options.layer
-        .on('featureOver', function(e, latlng, pos, data) {
+        .on('mouseover', function(e, latlng, pos, data) {
+          // this flag is used to be compatible with previous templates
+          // where the data is not enclosed a content variable
+          if (this.options.wrapdata) {
+
+            var non_valid_keys = ['fields', 'content'];
+
+            if (this.options.omit_columns) {
+              non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
+            }
+            // Remove fields and content from data
+            // and make them visible for custom templates
+            data.content = _.omit(data, non_valid_keys);
+
+            // loop through content values
+            data.fields = _.map(data.content, function(v, k) {
+              return {
+                title: k,
+                value: v
+              };
+            });
+          }
           this.show(pos, data);
+          this.showing = true;
         }, this)
         .on('featureOut', function() {
           this.hide();
+          this.showing = false;
         }, this);
       this.add_related_model(this.options.layer);
     }
@@ -25574,13 +25615,18 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   show: function(pos, data) {
+    if (this._filter && !this._filter(data)) {
+      return this;
+    }
     this.render(data);
     this.elder('show', pos, data);
     this.$el.css({
-      'left': (pos.x - this.$el.width()/2),
-      'top': (pos.y - (this.options.offset_top || this.DEFAULT_OFFSET_TOP))
+      'left': pos.x,
+      'top':  pos.y + (this.options.offset_top || this.DEFAULT_OFFSET_TOP)
     });
+    return this;
   },
+
 
   render: function(data) {
     this.$el.html( this.template(data) );
@@ -26388,6 +26434,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         }
       }
       return false;
+  },
+
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
   },
 
   _attributesUrl: function(layer, feature_id) {
@@ -27498,6 +27555,14 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     var curleft = 0, curtop = 0;
     var obj = map.getContainer();
 
+    var x, y;
+    if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+      x = o.e.changedTouches[0].clientX + window.scrollX;
+      y = o.e.changedTouches[0].clientY + window.scrollY;
+    } else {
+      x = o.e.clientX;
+      y = o.e.clientY;
+    }
 
     if (obj.offsetParent) {
       // Modern browsers
@@ -27505,7 +27570,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
+      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
+      return p;
     } else {
       // IE
       return map.mouseEventToLayerPoint(o.e)
@@ -27545,16 +27611,26 @@ function layerView(base) {
       _featureOut   = opts.featureOut,
       _featureClick = opts.featureClick;
 
+      var previousEvent;
+      var eventTimeout = -1;
+
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
-        if(_.any(hovers)) {
-          self.trigger('mouseover');
-        }
         _featureOver  && _featureOver.apply(this, arguments);
         self.featureOver  && self.featureOver.apply(self, arguments);
+        // if the event is the same than before just cancel the event
+        // firing because there is a layer on top of it
+        if (e.timeStamp === previousEvent) {
+          clearTimeout(eventTimeout);
+        }
+        eventTimeout = setTimeout(function() {
+          self.trigger('mouseover', e, latlon, pxPos, data, layer);
+        }, 0);
+        previousEvent = e.timeStamp;
+
       };
 
       opts.featureOut  = function(m, layer) {
@@ -28615,13 +28691,23 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
   var curleft, cartop;
   curleft = curtop = 0;
   var obj = map.getDiv();
+
+  var x, y;
+  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+    x = o.e.changedTouches[0].clientX + window.scrollX;
+    y = o.e.changedTouches[0].clientY + window.scrollY;
+  } else {
+    x = o.e.clientX;
+    y = o.e.clientY;
+  }
+
   do {
     curleft += obj.offsetLeft;
     curtop += obj.offsetTop;
   } while (obj = obj.offsetParent);
   return new google.maps.Point(
-      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
-      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
+      x - curleft,
+      y - curtop
   );
 };
 
@@ -28700,16 +28786,26 @@ function LayerGroupView(base) {
     _featureOut   = opts.featureOut,
     _featureClick = opts.featureClick;
 
+    var previousEvent;
+    var eventTimeout = -1;
+
     opts.featureOver  = function(e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
         self.trigger('layermouseover', layer);
       }
       hovers[layer] = 1;
-      if(_.any(hovers)) {
-        self.trigger('mouseover');
-      }
       _featureOver  && _featureOver.apply(this, arguments);
       self.featureOver  && self.featureOver.apply(this, arguments);
+
+      // if the event is the same than before just cancel the event
+      // firing because there is a layer on top of it
+      if (e.timeStamp === previousEvent) {
+        clearTimeout(eventTimeout);
+      }
+      eventTimeout = setTimeout(function() {
+        self.trigger('mouseover', e, latlon, pxPos, data, layer);
+      }, 0);
+      previousEvent = e.timeStamp;
     };
 
     opts.featureOut  = function(m, layer) {
@@ -31028,12 +31124,25 @@ var Vis = cdb.core.View.extend({
   addTooltip: function(layerView) {
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       var t = layerView.getTooltipData(i);
-      var tooltip = new cdb.geo.ui.Tooltip({
-        layer: layerView,
-        template: t.template
+      if (t) {
+        if (!layerView.tooltip) {
+          var tooltip = new cdb.geo.ui.Tooltip({
+            layer: layerView,
+            template: t.template,
+            wrapdata: true
+          });
+          layerView.tooltip = tooltip;
+          this.mapView.addOverlay(tooltip);
+        }
+        layerView.setInteraction(i, true);
+      }
+    }
+
+    if (layerView.tooltip) {
+      layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
+        var t = layerView.getTooltipData(layer);
+        layerView.tooltip.setTemplate(t.template);
       });
-      layerView.tooltip = tooltip;
-      this.mapView.addOverlay(tooltip);
     }
   },
 
@@ -31064,6 +31173,17 @@ var Vis = cdb.core.View.extend({
     if(!infowindow) {
       return;
     }
+
+    infowindow.bind('close', function() {
+      // when infowindow is closed remove all the filters
+      // for tooltips
+      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+        var t = layerView.tooltip;
+        if (t) {
+          t.setFilter(null);
+        }
+      }
+    })
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
@@ -31096,6 +31216,12 @@ var Vis = cdb.core.View.extend({
           .setLatLng(latlng)
           .setLoading()
           .showInfowindow();
+
+        if (layerView.tooltip) {
+          layerView.tooltip.setFilter(function(feature) {
+            return feature.content.cartodb_id !== cartodb_id;
+          }).hide();
+        }
     });
 
     var hovers = [];
@@ -31617,6 +31743,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
               <ul>\
                 <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
                 <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\
@@ -31633,6 +31760,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   url = url.replace("public_map", "embed_map");
 
+  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
+
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
@@ -31641,6 +31770,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     model: vis.map,
     code: code,
     url: data.url,
+    public_map_url: public_map_url,
     share_url: data.share_url,
     template: template,
     target: $(".cartodb-share a"),

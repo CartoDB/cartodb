@@ -1,6 +1,11 @@
 /**
  *  CartoDB map style components 
- */ 
+ */
+
+* {
+  -webkit-margin-after:0em;
+  -webkit-margin-before:0em;
+}
 
 div.cartodb-header {
   position: relative;

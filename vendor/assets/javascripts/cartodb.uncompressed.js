@@ -1,6 +1,6 @@
 // cartodb.js version: 3.9.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 369efc89500d3d3b7d9a0fd6325648eac6de5501
+// sha: 6f7d07e9c320f7688631dbe29c1931b7babbea09
 (function() {
   var root = this;
 
@@ -25572,6 +25572,24 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     return this;
   },
 
+  /**
+   * modifies the order of the fields rendered. Accepts an array or a string with 
+   * comma separated values:
+   * setColumnsOrder(['first', 'second'])
+   * setColumnsOrder('fist,second')
+   */
+  setColumnsOrder: function(columns) {
+    if (typeof(columns) === 'string') {
+      columns = columns.split(',');
+    }
+    this.options.columns_order = columns;
+    return this;
+  },
+
+  setAlternativeNames: function(n) {
+    this.options.alternative_names = n;
+  },
+
   enable: function() {
     if(this.options.layer) {
       this.options.layer
@@ -25596,6 +25614,23 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
                 value: v
               };
             });
+
+            // if the fields need to be in order
+            var order = this.options.columns_order;
+            if (order) {
+              data.fields.sort(function(a, b) {
+                return order.indexOf(a.title) - order.indexOf(b.title);
+              });
+            }
+
+            // alternamte names
+            var names = this.options.alternative_names;
+            if (names) {
+              for(var i = 0; i < data.fields.length; ++i) {
+                var f = data.fields[i];
+                f.title = names[f.title] || f.title;
+              }
+            }
           }
           this.show(pos, data);
           this.showing = true;
@@ -31129,7 +31164,8 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
-            wrapdata: true
+            wrapdata: true,
+            omit_columns: ['cartodb_id']
           });
           layerView.tooltip = tooltip;
           this.mapView.addOverlay(tooltip);
@@ -31142,6 +31178,10 @@ var Vis = cdb.core.View.extend({
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
         layerView.tooltip.setTemplate(t.template);
+        layerView.tooltip.setColumnsOrder(_(t.fields).map(function(f) {
+          return f.name;
+        }));
+        layerView.tooltip.setAlternativeNames(t.alternative_names);
       });
     }
   },
@@ -31219,7 +31259,7 @@ var Vis = cdb.core.View.extend({
 
         if (layerView.tooltip) {
           layerView.tooltip.setFilter(function(feature) {
-            return feature.content.cartodb_id !== cartodb_id;
+            return feature.cartodb_id !== cartodb_id;
           }).hide();
         }
     });

@@ -29,6 +29,24 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     return this;
   },
 
+  /**
+   * modifies the order of the fields rendered. Accepts an array or a string with 
+   * comma separated values:
+   * setColumnsOrder(['first', 'second'])
+   * setColumnsOrder('fist,second')
+   */
+  setColumnsOrder: function(columns) {
+    if (typeof(columns) === 'string') {
+      columns = columns.split(',');
+    }
+    this.options.columns_order = columns;
+    return this;
+  },
+
+  setAlternativeNames: function(n) {
+    this.options.alternative_names = n;
+  },
+
   enable: function() {
     if(this.options.layer) {
       this.options.layer
@@ -53,6 +71,23 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
                 value: v
               };
             });
+
+            // if the fields need to be in order
+            var order = this.options.columns_order;
+            if (order) {
+              data.fields.sort(function(a, b) {
+                return order.indexOf(a.title) - order.indexOf(b.title);
+              });
+            }
+
+            // alternamte names
+            var names = this.options.alternative_names;
+            if (names) {
+              for(var i = 0; i < data.fields.length; ++i) {
+                var f = data.fields[i];
+                f.title = names[f.title] || f.title;
+              }
+            }
           }
           this.show(pos, data);
           this.showing = true;

@@ -9,6 +9,7 @@ module CartoDB
         @filename       = filename
         @etag           = http_opts.fetch(:etag, nil)
         @last_modified  = http_opts.fetch(:last_modified, nil)
+        @checksum       = nil
       end #initialize
 
       def name

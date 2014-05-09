@@ -50,8 +50,7 @@ module CartoDB
       end #initialize
 
       def run(available_quota_in_bytes=nil)
-        set_local_source_file ||
-        set_downloaded_source_file(available_quota_in_bytes)
+        set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
         self
       end
 
@@ -71,23 +70,12 @@ module CartoDB
         @last_modified  = last_modified_from(headers)
         return self unless modified?
 
-        response        = download
-        headers         = response.headers
+        download_and_store
 
-        raise DownloadError unless response.code.to_s =~ /\A[23]\d+/
-        raise GDriveNotPublicError if gdrive_deny_in?(headers)
-
-        data            = StringIO.new(response.response_body)
-        name            = name_from(headers, url, @custom_filename)
-
-        @etag           = etag_from(headers)
-        @last_modified  = last_modified_from(headers)
-
-        self.source_file  = SourceFile.new(filepath(name), name)
-        repository.store(source_file.path, data)
         self.source_file  = nil unless modified?
         self
       end
+
 
       def raise_if_over_storage_quota(headers, available_quota_in_bytes=nil)
         return self unless available_quota_in_bytes
@@ -114,13 +102,40 @@ module CartoDB
         repository.fullpath_for("#{seed}_cookiejar")
       end
 
-      def download
-        response = Typhoeus.get(@translated_url, typhoeus_options)
-        while response.headers['location']
-          response = Typhoeus.get(@translated_url, typhoeus_options)
+      def download_and_store
+        name = ''
+        download_error = false
+
+        temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
+
+        downloaded_file = File.open(temp_name, 'wb')
+        request = Typhoeus::Request.new(@translated_url, typhoeus_options)
+        request.on_headers do |response|
+          unless response.success?
+            download_error = true
+          end
         end
-        response
-      end
+        request.on_body do |chunk|
+          downloaded_file.write(chunk)
+        end
+        request.on_complete do |response|
+          downloaded_file.close
+
+          headers = response.headers
+
+          name            = name_from(headers, url, @custom_filename)
+          @etag           = etag_from(headers)
+          @last_modified  = last_modified_from(headers)
+        end
+        request.run
+
+        raise DownloadError if download_error
+
+        File.rename(temp_name, filepath(name))
+
+        # Just return the source file structure
+        self.source_file  = SourceFile.new(filepath(name), name)
+      end #download_and_store
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)
@@ -132,7 +147,10 @@ module CartoDB
       end #filename_from
 
       def content_length_from(headers)
-        headers.fetch('Content-Length', -1).to_i
+        content_length = headers.fetch('Content-Length', nil)
+        content_length ||= headers.fetch('Content-length', nil)
+        content_length ||= headers.fetch('content-length', -1)
+        content_length.to_i
       end #content_length_from
 
       def modified?
@@ -194,6 +212,7 @@ module CartoDB
       def name_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
         disposition ||= headers.fetch('Content-disposition', nil)
+        disposition ||= headers.fetch('content-disposition', nil)
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename

@@ -25,7 +25,7 @@ class Admin::PagesController < ApplicationController
     @tags       = viewed_user.map_tags
 
     @username   = viewed_user.username
-    @avatar_url = viewed_user.gravatar(128)
+    @avatar_url = viewed_user.gravatar(request.protocol)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
@@ -70,7 +70,7 @@ class Admin::PagesController < ApplicationController
     @tags       = viewed_user.tags
 
     @username   = viewed_user.username
-    @avatar_url = viewed_user.gravatar(128)
+    @avatar_url = viewed_user.gravatar(request.protocol)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
@@ -98,7 +98,7 @@ class Admin::PagesController < ApplicationController
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
           mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
-          url_options:  vis.url_options
+          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
         }
       )
     end

@@ -42,7 +42,7 @@ and code.
 
   - A User Interface for uploading, creating, editing, visualizing,
     and exporting geospatial data.
-  - A geospatial database built on PostgreSQL and PostGIS 2.0
+  - A geospatial database built on PostgreSQL and PostGIS 2.1
   - An SQL API for running SQL queries over HTTP with results formatted
     using GeoJSON and KML
   - A Map tiler that supports SQL and tile styling using CartoCSS
@@ -66,13 +66,13 @@ and code.
 
 # How do I install CartoDB? #
 
-This is README is intended for Ubuntu 10.04. This doesn't mean that it can't 
+This is README is intended for Ubuntu 12.04. This doesn't mean that it can't 
 be installed in other Linux versions or OSX systems, but that it's guaranteed 
-to work only in Ubuntu 10.04.
+to work only in Ubuntu 12.04.
 If anyone wants to share with us the installation process for any other system 
 we will be more than happy to point it from this README.
 That said, there are also many successful installations on Amazon EC2, Linode,
-dedicated instances and development machines running OS X and Ubuntu 10.04+.
+dedicated instances and development machines running OS X and Ubuntu 12.04+.
 
 CartoDB is under heavy development. This means that at some point this README 
 can fail at some point. If you detect it, please let us know and we will fix 
@@ -120,7 +120,7 @@ sudo add-apt-repository ppa:cartodb/redis
 
 Add CartoDB PostgreSQL PPA
 ```bash
-sudo add-apt-repository  ppa:cartodb/postgresql
+sudo add-apt-repository  ppa:cartodb/postgresql-9.3
 ```
 Add CartoDB Varnish PPA
 ```bash
@@ -178,20 +178,20 @@ sudo apt-get install proj-bin proj-data libproj-dev
 that powers CartoDB.
 
 ```bash
-sudo apt-get install postgresql-9.1 postgresql-client-9.1 postgresql-contrib-9.1 postgresql-server-dev-9.1
+sudo apt-get install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 postgresql-server-dev-9.3
 ```
 
 plpython is required for Python support
 
 ```bash
-sudo apt-get install postgresql-plpython-9.1
+sudo apt-get install postgresql-plpython-9.3
 ```
 
 
 Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
 
 ```bash
-/etc/postgresql/9.1/main$ sudo vim pg_hba.conf
+/etc/postgresql/9.3/main$ sudo vim pg_hba.conf
 ```
 
 And change inside all local connections from peer/md5/... to trust.
@@ -209,9 +209,9 @@ queries. This is the heart of CartoDB!
 
 ```bash
 cd /usr/local/src
-wget http://download.osgeo.org/postgis/source/postgis-2.0.2.tar.gz
-tar xzf postgis-2.0.2.tar.gz
-cd postgis-2.0.2
+wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
+tar xzf postgis-2.1.2.tar.gz
+cd postgis-2.1
 ./configure --with-raster --with-topology
 make
 make install
@@ -223,7 +223,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.0
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
@@ -245,12 +245,12 @@ sudo su - postgres
 
 ## Install Ruby ##
 We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.2. You can use rvm:
+so you'll need to install Ruby 1.9.3. You can use rvm:
 
 ```bash
-\curl -L https://get.rvm.io | bash
+curl -L https://get.rvm.io | bash
 source /etc/profile.d/rvm.sh
-rvm install 1.9.2
+rvm install 1.9.3
 ```
 
 ## Install Node.js ##
@@ -297,6 +297,16 @@ easy_install pip
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
 pip install --no-use-wheel -r python_requirements.txt
+```
+
+If the previous step fails, try this alternative:
+```bash
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+sudo pip install --no-install GDAL
+cd /tmp/pip_build_root/GDAL
+sudo python setup.py build_ext --include-dirs=/usr/include/gdal
+sudo pip install --no-download GDAL
 ```
 
 ## Install Varnish
@@ -383,7 +393,7 @@ cd cartodb20
 redis-server
 
 # If you are using rvm, create a new gemset
-rvm use 1.9.2@cartodb --create && bundle install
+rvm use 1.9.3@cartodb --create && bundle install
 
 # If it's a system wide installation
 sudo bundle install

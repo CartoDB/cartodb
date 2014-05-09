@@ -101,7 +101,7 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3('which unp')
         if status != 0
           puts "Cannot find command 'unp' (required for import task) #{stderr}"
-          raise InstallError # TODO: use InstallError instead ! See #310
+          raise InstallError
         end
         unp_path = stdout.chop
         puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}"

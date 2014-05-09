@@ -13,7 +13,7 @@
   var schema     = <%=raw @table.schema.to_json %>;
   var user_name  = '<%=raw @table.owner.username %>';
   var map        = <%=raw @table.map.to_json %>;
-  var config     = <%=raw frontend_config_public.html_safe %>;
+  var config     = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
   var vizjson    = <%=raw @vizjson.to_json %>;
 </script>
 

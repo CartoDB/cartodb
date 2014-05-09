@@ -169,6 +169,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   // updates content with attributes
   updateContent: function(attributes) {
     var fields = this.get('fields');
+    this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  }
+
+}, {
+  contentForFields: function(attributes, fields) {
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
       var f = fields[j];
@@ -192,14 +197,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       });
     }
 
-    this.set({
-      content:  {
-        fields: render_fields,
-        data: attributes
-      }
-    });
+    return {
+      fields: render_fields,
+      data: attributes
+    };
   }
-
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({

@@ -12,8 +12,13 @@ describe('cdb.geo.Tooltip', function() {
 
 
   it ("should render fields in specified order", function() {
-    tooltip.options.wrapdata = true;
-    tooltip.setColumnsOrder(['test2', 'test1', 'huracan']);
+    tooltip.setFields([{
+      name:'test2'
+    }, {
+      name:'test1'
+    }, {
+      name: 'huracan'
+    }]);
     tooltip.enable();
     layer.trigger('mouseover', new Event('e'), [0,0], [0, 0], {
       test1: 'test1',
@@ -32,8 +37,17 @@ describe('cdb.geo.Tooltip', function() {
   });
 
   it ("should use alternate_names ", function() {
-    tooltip.options.wrapdata = true;
     tooltip.setTemplate('{{#fields}}{{{ title }}},{{/fields}}');
+    tooltip.setFields([{
+      name:'test2',
+      title: true
+    }, {
+      name:'test1',
+      title: true
+    }, {
+      name: 'huracan',
+      title: true
+    }]);
     tooltip.options.alternative_names = {
       'test1': 'testnamed'
     };
@@ -43,7 +57,7 @@ describe('cdb.geo.Tooltip', function() {
       test2: 'test2',
       huracan: 'huracan'
     });
-    expect(tooltip.$el.html()).toEqual('testnamed,test2,huracan,');
+    expect(tooltip.$el.html()).toEqual('test2,testnamed,huracan,');
   });
 
 });

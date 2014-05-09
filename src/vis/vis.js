@@ -715,7 +715,7 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
-            wrapdata: true,
+            fields: t.fields,
             omit_columns: ['cartodb_id']
           });
           layerView.tooltip = tooltip;
@@ -729,9 +729,7 @@ var Vis = cdb.core.View.extend({
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
         layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setColumnsOrder(_(t.fields).map(function(f) {
-          return f.name;
-        }));
+        layerView.tooltip.setFields(t.fields);
         layerView.tooltip.setAlternativeNames(t.alternative_names);
       });
     }

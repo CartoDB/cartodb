@@ -29,17 +29,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     return this;
   },
 
-  /**
-   * modifies the order of the fields rendered. Accepts an array or a string with 
-   * comma separated values:
-   * setColumnsOrder(['first', 'second'])
-   * setColumnsOrder('fist,second')
-   */
-  setColumnsOrder: function(columns) {
-    if (typeof(columns) === 'string') {
-      columns = columns.split(',');
-    }
-    this.options.columns_order = columns;
+  setFields: function(fields) {
+    this.options.fields = fields;
     return this;
   },
 
@@ -53,32 +44,21 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
         .on('mouseover', function(e, latlng, pos, data) {
           // this flag is used to be compatible with previous templates
           // where the data is not enclosed a content variable
-          if (this.options.wrapdata) {
+          if (this.options.fields) {
 
             var non_valid_keys = ['fields', 'content'];
 
             if (this.options.omit_columns) {
               non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
             }
+
+            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields);
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);
 
             // loop through content values
-            data.fields = _.map(data.content, function(v, k) {
-              return {
-                title: k,
-                value: v
-              };
-            });
-
-            // if the fields need to be in order
-            var order = this.options.columns_order;
-            if (order) {
-              data.fields.sort(function(a, b) {
-                return order.indexOf(a.title) - order.indexOf(b.title);
-              });
-            }
+            data.fields = c.fields;
 
             // alternamte names
             var names = this.options.alternative_names;

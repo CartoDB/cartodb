@@ -1,6 +1,6 @@
 // cartodb.js version: 3.9.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6f7d07e9c320f7688631dbe29c1931b7babbea09
+// sha: 3b93242324a5e69c2c99ba5bf0ca14717a9720a4
 (function() {
   var root = this;
 
@@ -24409,6 +24409,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   // updates content with attributes
   updateContent: function(attributes) {
     var fields = this.get('fields');
+    this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  }
+
+}, {
+  contentForFields: function(attributes, fields) {
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
       var f = fields[j];
@@ -24432,14 +24437,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       });
     }
 
-    this.set({
-      content:  {
-        fields: render_fields,
-        data: attributes
-      }
-    });
+    return {
+      fields: render_fields,
+      data: attributes
+    };
   }
-
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
@@ -25572,17 +25574,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     return this;
   },
 
-  /**
-   * modifies the order of the fields rendered. Accepts an array or a string with 
-   * comma separated values:
-   * setColumnsOrder(['first', 'second'])
-   * setColumnsOrder('fist,second')
-   */
-  setColumnsOrder: function(columns) {
-    if (typeof(columns) === 'string') {
-      columns = columns.split(',');
-    }
-    this.options.columns_order = columns;
+  setFields: function(fields) {
+    this.options.fields = fields;
     return this;
   },
 
@@ -25596,32 +25589,21 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
         .on('mouseover', function(e, latlng, pos, data) {
           // this flag is used to be compatible with previous templates
           // where the data is not enclosed a content variable
-          if (this.options.wrapdata) {
+          if (this.options.fields) {
 
             var non_valid_keys = ['fields', 'content'];
 
             if (this.options.omit_columns) {
               non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
             }
+
+            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields);
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);
 
             // loop through content values
-            data.fields = _.map(data.content, function(v, k) {
-              return {
-                title: k,
-                value: v
-              };
-            });
-
-            // if the fields need to be in order
-            var order = this.options.columns_order;
-            if (order) {
-              data.fields.sort(function(a, b) {
-                return order.indexOf(a.title) - order.indexOf(b.title);
-              });
-            }
+            data.fields = c.fields;
 
             // alternamte names
             var names = this.options.alternative_names;
@@ -31164,7 +31146,7 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
-            wrapdata: true,
+            fields: t.fields,
             omit_columns: ['cartodb_id']
           });
           layerView.tooltip = tooltip;
@@ -31178,9 +31160,7 @@ var Vis = cdb.core.View.extend({
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
         layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setColumnsOrder(_(t.fields).map(function(f) {
-          return f.name;
-        }));
+        layerView.tooltip.setFields(t.fields);
         layerView.tooltip.setAlternativeNames(t.alternative_names);
       });
     }

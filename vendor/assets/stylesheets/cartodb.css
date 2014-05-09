@@ -689,7 +689,12 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     color:#999999;
   }/**
  *  CartoDB map style components 
- */ 
+ */
+
+* {
+  -webkit-margin-after:0em;
+  -webkit-margin-before:0em;
+}
 
 div.cartodb-header {
   position: relative;
@@ -3290,7 +3295,7 @@ div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-max {
   div.cartodb-tooltip {
     position: absolute;
     display: none;
-    min-width:72px;
+    min-width:66px;
     max-width:180px;
     overflow-y:hidden;
     z-index: 5;

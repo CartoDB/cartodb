@@ -6,7 +6,7 @@
   div.cartodb-tooltip {
     position: absolute;
     display: none;
-    min-width:66px;
+    min-width:120px;
     max-width:180px;
     overflow-y:hidden;
     z-index: 5;
@@ -16,18 +16,18 @@
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
-    background:rgba(255,255,255,0.75);
+    background:rgba(255,255,255,0.90);
   }
 
   div.cartodb-tooltip-content {
     display:block;
-    padding:8px;
+    padding:8px 8px 8px 9px;
   }
 
   div.cartodb-tooltip-content h4 {
     display:block;
     text-transform: uppercase;
-    font:bold 11px "Helvetica Neue","Helvetica",Arial;
+    font:normal 10px "Helvetica Neue","Helvetica",Arial;
     color:#AAA;
     word-wrap: break-word;
   }
@@ -35,7 +35,7 @@
   div.cartodb-tooltip-content p {
     display:block;
     padding:0 0 7px;
-    font:normal 13px "Helvetica Neue", "Helvetica", Arial;
+    font:normal 12px "Helvetica Neue", "Helvetica", Arial;
     color:#333333;
     word-wrap: break-word;
   }

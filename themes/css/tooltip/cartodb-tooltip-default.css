@@ -6,7 +6,7 @@
   div.cartodb-tooltip {
     position: absolute;
     display: none;
-    min-width:72px;
+    min-width:66px;
     max-width:180px;
     overflow-y:hidden;
     z-index: 5;

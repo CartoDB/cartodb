@@ -69,7 +69,12 @@ class Admin::PagesController < ApplicationController
 
     @tags       = viewed_user.tags
 
-    @username   = viewed_user.username
+    @name             = viewed_user.name || viewed_user.username
+    @twitter_username = viewed_user.twitter_username 
+    @description      = viewed_user.description 
+    @website          = viewed_user.website 
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, "").gsub(/^www\./, "") : ""
+    
     @avatar_url = viewed_user.gravatar(request.protocol)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)

@@ -2,14 +2,24 @@
 
   <div class="user-info">
 
-    <a href="/" class="avatar">
-      <div class="circle">
+    <div class="avatar">
+      <a href="/" class="circle">
         <img src="<%= @avatar_url %>" />
-      </div>
-    </a>
+      </a>
+    </div>
 
     <div class="username">
-      <h2><%= @username %></h2>
+
+      <%= content_tag :h2, @name %>
+
+      <%= link_to @twitter_username, @twitter_username, :class => :twitter if @twitter_username %>
+
+      <%= content_tag :p, @description %>
+
+      <% if @website  %>
+        <div class="separator"></div>
+        <div class="website"><%= link_to @website_clean, @website %></div>
+      <% end %>
     </div>
     <ul>
       <% if action_name == 'datasets' %>

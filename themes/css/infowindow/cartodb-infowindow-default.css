@@ -18,7 +18,6 @@
   }
 
   div.cartodb-popup div.cartodb-popup-content-wrapper {
-    position:relative;
     width:190px;
     max-width: 190px;
     padding:12px 19px 12px 19px;

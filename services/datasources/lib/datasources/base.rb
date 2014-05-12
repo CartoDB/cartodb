@@ -8,6 +8,10 @@ module CartoDB
       FORMAT_CSV = 'csv'
       # .xls .xlsx
       FORMAT_EXCEL = 'xls'
+      # .GPX
+      FORMAT_GPX = 'gpx'
+      # .KML
+      FORMAT_KML = 'kml'
       # .png
       FORMAT_PNG = 'png'
       # .jpg .jpeg

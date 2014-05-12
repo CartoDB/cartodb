@@ -4,6 +4,7 @@
    */
 
   div.cartodb-tooltip-content-wrapper.dark {
+    background:#000;
     background:rgba(0,0,0,0.75);
   }
 

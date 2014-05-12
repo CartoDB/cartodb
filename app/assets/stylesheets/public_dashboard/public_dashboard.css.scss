@@ -250,7 +250,7 @@ header {
 
   } // ul
 
-  .username {
+  .details {
 
     padding: 65px 0 37px 0;
     background:#fff;
@@ -283,7 +283,7 @@ header {
     }
 
     
-  } // .username
+  } // .details
 } // .user-info
 
 .empty_placeholder {
@@ -736,13 +736,13 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info,
   .user-info .avatar,
-  .user-info .username,
+  .user-info .details,
   .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }
 
-  .user-info .username p { width: 80%; }
+  .user-info .details p { width: 80%; }
 
   .user-info ul {
     width: 100%;
@@ -860,7 +860,7 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info,
   .user-info .avatar,
-  .user-info .username,
+  .user-info .details,
   .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
@@ -872,7 +872,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .user-info .tags { margin-bottom: 10px; }
-  .user-info .username p { width: 80%; }
+  .user-info .details p { width: 80%; }
 
   .datasets > ul > li {
 
@@ -1016,13 +1016,13 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info,
   .user-info .avatar,
-  .user-info .username,
+  .user-info .details,
   .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }
 
-  .user-info .username p { width: 80%; }
+  .user-info .details p { width: 80%; }
 
   .user-info ul {
     width: 100%;

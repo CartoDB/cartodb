@@ -25,10 +25,12 @@ module CartoDB
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
+      # @throws NamedMapsPresenterError
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
         load_named_map_data unless @loaded
+        raise NamedMapsPresenterError.new("couldn't load named map template") if @named_map_template.nil?
 
         params = {}
         @named_map_template[:placeholders].each { |key, value|
@@ -47,8 +49,10 @@ module CartoDB
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
+      # @throws NamedMapsPresenterError
       def to_poro
       	load_named_map_data unless @loaded
+        raise NamedMapsPresenterError.new("couldn't load named map template") if @named_map_template.nil?
 
         params = {}
         @named_map_template[:placeholders].each { |key, value|

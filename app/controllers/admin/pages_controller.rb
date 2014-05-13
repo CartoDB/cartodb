@@ -22,9 +22,13 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags       = viewed_user.map_tags
+    @tags             = viewed_user.tags
+    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @twitter_username = viewed_user.twitter_username 
+    @description      = viewed_user.description  
+    @website          = viewed_user.website 
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
-    @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(request.protocol)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)

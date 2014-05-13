@@ -9,9 +9,9 @@
     </div>
 
     <div class="details">
-      <%= content_tag :h2, @name if @name.present? %>
+      <%= content_tag :h2, @name %>
 
-      <%= link_to "@#{@twitter_username}", "http://twitter.com/#{@twitter_username}", :class => :twitter if @twitter_username %>
+      <%= link_to "@#{@twitter_username}", "http://twitter.com/#{@twitter_username}", :class => :twitter if @twitter_username.present? %>
 
       <%= content_tag :p, @description if @description.present? %>
 

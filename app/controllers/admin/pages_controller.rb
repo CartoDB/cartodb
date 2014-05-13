@@ -68,7 +68,7 @@ class Admin::PagesController < ApplicationController
     return render_404 if viewed_user.nil?
 
     @tags             = viewed_user.tags
-    @name             = viewed_user.name || viewed_user.username
+    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
     @website          = viewed_user.website 

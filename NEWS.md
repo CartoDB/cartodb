@@ -1,3 +1,44 @@
+2.13.4 (2014-05-08)
+-------------------
+* Improvements
+  * Indent html in the legends html editor
+  * Revamp geocoreference modal window
+  * Include import ID in import error popup
+  * Add POI option in the geocoder dialog
+
+* Bugfixes
+  * Applying a custom pattern image for polygons, it triggers the change event twice
+  * Rename sequence when renaming a table
+  * In the tags selector, order them alphabetically
+  * Timeout should be lifted for Georeferencing
+  * Bubble Legend doesn't refresh the labels when the field is changed
+  * Disallow some html keywords in infowindow and legends editor
+  * Incorrect message on table syncing
+  * Make links on visualization decriptions linkable
+  * Named maps wrapper should throw an exception on missing internal tiler config
+  * Don't fetch the_geom and the_geom_webmercator when a sql query is applied
+  * When trying to change table name and have a query applied, open a dialog / tipsy
+  * Geocoding by zip fixes
+  * After applying a wizard to a layer, and then changing a numeric property in the
+    CartoCSS, it is not changed in the wizard panel.
+  * When creating a new visualization, we should add some url_options by default
+  * Can't create table from scratch
+  * Pagination in public pages doesn't work correctly
+  * No error shown in MapView UI when sql does not select "the_geom_webmercator"
+  * JS in the login view is not being initialized
+  * Maki icons with 24 pixels of height is being rendered weird
+  * EXPLAIN an EXPLAIN ANALYZE does not work from the UI
+  * Export fails on private tables
+  * Vizualization specs do not honour configuration database name
+  * Importing a big shapefile fails with no error message
+  * when a filter is applied sometimes the generated sql is wrong
+  * HTTPS problem when exporting tables in Firefox
+  * Requests to the SQL API are always done using the port 80
+  * When adding an X/Y/Z layer as basemap dont check for tile 0/0/0 as it might not
+    always be there
+  * Change error code style when an import fails
+
+
 2.13.3 (2014-04-29)
 -------------------
 * Improvements

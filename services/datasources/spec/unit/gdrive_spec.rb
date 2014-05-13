@@ -11,7 +11,8 @@ describe Url::GDrive do
     {
       'application_name' => '',
       'client_id' => '',
-      'client_secret' => ''
+      'client_secret' => '',
+      'callback_url' => ''
     }
   end #get_config
 

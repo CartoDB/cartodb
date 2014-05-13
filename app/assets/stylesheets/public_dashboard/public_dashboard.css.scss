@@ -165,7 +165,7 @@ header {
   .avatar {
     display:block;
     position: relative;
-    height: 220px;
+    height: 128px;
     border: 1px solid rgba(#1D4879, .6);
     border-bottom: none;
 
@@ -183,9 +183,9 @@ header {
       width: $width;
       height: $width;
 
-      top: 50%; left: 50%;
+      top: 46px;
+      left: 50%;
       margin-left: -$width/2;
-      margin-top: -$width/2;
 
       background:#fff;
       @include border-radius(300px);
@@ -193,6 +193,15 @@ header {
     }
 
   } // .avatar
+
+  .separator {
+    height: 1px;
+    padding: 22px 0 0 0;
+    margin: 27px auto 0 auto;
+
+    border-top: 1px solid #DBDBDB;
+    width: 122px;
+  }
 
   ul {
     clear:both;
@@ -241,20 +250,40 @@ header {
 
   } // ul
 
-  .username {
+  .details {
 
-    padding: 30px 0;
+    padding: 65px 0 37px 0;
     background:#fff;
     border-left: 1px solid #BBBBBB;
     border-right: 1px solid #BBBBBB;
 
     h2  {
+      margin: 0 0 3px 0;
       color: #333333;
       font-size: 21px;
       font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
       font-weight: 400;
+      line-height: 120%;
     }
-  } // .username
+ 
+    p {
+      width: 205px;
+      margin: auto;
+      color: #B2B2B2;
+    }
+
+    .twitter {
+      display:block;
+      margin: 0 0 15px 0;
+    }
+    
+    .website {
+      @include inline-block();
+      text-align:center;
+    }
+
+    
+  } // .details
 } // .user-info
 
 .empty_placeholder {
@@ -707,11 +736,13 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info,
   .user-info .avatar,
-  .user-info .username,
+  .user-info .details,
   .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }
+
+  .user-info .details p { width: 80%; }
 
   .user-info ul {
     width: 100%;
@@ -829,7 +860,7 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info,
   .user-info .avatar,
-  .user-info .username,
+  .user-info .details,
   .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
@@ -841,6 +872,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .user-info .tags { margin-bottom: 10px; }
+  .user-info .details p { width: 80%; }
 
   .datasets > ul > li {
 
@@ -984,11 +1016,13 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info,
   .user-info .avatar,
-  .user-info .username,
+  .user-info .details,
   .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }
+
+  .user-info .details p { width: 80%; }
 
   .user-info ul {
     width: 100%;

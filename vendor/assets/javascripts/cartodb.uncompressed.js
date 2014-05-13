@@ -24413,12 +24413,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   }
 
 }, {
-  contentForFields: function(attributes, fields) {
+  contentForFields: function(attributes, fields, options) {
+    options = options || {};
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
       var f = fields[j];
       var value = String(attributes[f.name]);
-      if(attributes[f.name] !== undefined && value != "") {
+      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
         render_fields.push({
           title: f.title ? f.name : null,
           value: attributes[f.name],
@@ -25597,7 +25598,9 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
               non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
             }
 
-            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields);
+            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
+              empty_fields: this.options.empty_fields
+            });
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);

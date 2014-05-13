@@ -35,7 +35,7 @@ feature "API 1.0 map layers management" do
   end
 
   scenario "Get layer information" do
-    layer = Layer.create kind: 'carto', order: 1, options: { opt1: 'value' }, infowindow: ['column1', 'column2']
+    layer = Layer.create kind: 'carto', order: 1, options: { opt1: 'value' }, infowindow: {:fields => ['column1', 'column2']}, tooltip: {:fields => ['column1', 'column3']}
     @map.add_layer layer
 
     get_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
@@ -43,6 +43,8 @@ feature "API 1.0 map layers management" do
       response.body[:id].should    eq layer.id
       response.body[:kind].should  eq 'carto'
       response.body[:order].should eq 1
+      response.body[:infowindow].should eq "fields" => ["column1", "column2"] 
+      response.body[:tooltip].should eq "fields" => ["column1", "column3"] 
     end
   end
 

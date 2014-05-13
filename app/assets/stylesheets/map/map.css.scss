@@ -652,6 +652,12 @@ section.block.noGeoRef {
 div.cartodb-edit-buttons {
   border-top:1px solid #E5E5E5;
   display:block;
+}
+
+// FOR INFOWINDOWS //
+
+.cartodb-popup-content-wrapper
+div.cartodb-edit-buttons {
   width:188px;
   padding:11px 0 6px;
   margin:10px 0 0;
@@ -694,15 +700,6 @@ div.cartodb-edit-buttons {
   }
 }
 
-// Default styles for infowindow
-div.cartodb-popup {
-  h2 { line-height:normal }
-
-  &.blue.header .cartodb-popup-header a {
-    color:white;
-  }
-}
-
 // Dark buttons
 div.cartodb-popup.dark  {
   div.cartodb-edit-buttons {
@@ -716,6 +713,66 @@ div.cartodb-popup.dark  {
   }
 }
 
+
+
+
+// FOR TOOLTIPS //
+
+.cartodb-tooltip-content-wrapper
+div.cartodb-edit-buttons {
+  display:block;
+  height:19px;
+  padding:0;
+  margin:0;
+  border-top:1px solid rgba(0,0,0,0.15);
+
+  div.right {
+    float:right;
+    margin:0;
+    padding:0;
+  }
+
+  a.button {
+    position:relative;
+    float:left;
+    width:22px;
+    height:19px;
+    padding:0;
+    margin:0;
+    @include text-indent();
+    border:none;
+    background:none;
+
+    &.edit_data {@include edit-bottom-states(-7, -45, transparent, transparent, transparent, transparent);}
+    &.edit_geo {@include edit-bottom-states(-38, -45, transparent, transparent, transparent, transparent);}
+    &.remove {@include edit-bottom-states(-69, -45, transparent, transparent, transparent, transparent);}
+
+    &:before {
+      position:absolute;
+      content:'';
+      top:0;
+      left:0px;
+      height:100%;
+      width:1px;
+      background:rgba(0,0,0,0.15);
+    }
+  }
+}
+
+
+.cartodb-tooltip-content-wrapper.dark
+div.cartodb-edit-buttons {
+  border-top:1px solid rgba(255,255,255,0.30);
+  a.button {
+    &.edit_data {@include edit-bottom-states(-7, -20, transparent, transparent, transparent, transparent);}
+    &.edit_geo {@include edit-bottom-states(-38, -20, transparent, transparent, transparent, transparent);}
+    &.remove {@include edit-bottom-states(-69, -20, transparent, transparent, transparent, transparent);}
+
+    &:before {
+      border-left:1px solid rgba(255,255,255,0.30);
+    }
+  }
+}
 
 
 // Custom styles for Leaflet maps

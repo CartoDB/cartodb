@@ -99,6 +99,8 @@ group :development, :test do
   gem 'foreman',               '0.46.0', require: false
   gem 'factory_girl_rails',    '~> 4.0.0'
 
+  gem 'redcarpet', '3.1.1'
+
   # Guard
   gem 'rb-inotify',            '0.9.0', require: false
   gem 'rb-fsevent',                     require: false

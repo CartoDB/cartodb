@@ -687,9 +687,9 @@ $$
   end
 
   def account_type_name
-    self.account_type.gsub(" ", "_").downcase
+    self.account_type.gsub(' ', '_').downcase
     rescue
-    ""
+    ''
   end
 
   #can be nil table quotas
@@ -757,11 +757,26 @@ $$
     update_gauge("visualizations.table", table_count)
     update_gauge("visualizations.derived", visualization_count)
   end
-  
+
+  def set_trigger_check_quota
+    self.rebuild_quota_trigger
+    tables.all.each do |table|
+      begin
+        table.set_trigger_check_quota
+      rescue Sequel::DatabaseError => e
+        next if e.message =~ /.*does not exist\s*/
+      end
+    end
+  end
+
+
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
     self.in_database(:as => :superuser).run(<<-TRIGGER
-      SELECT public.CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});
+      DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();
+      CREATE OR REPLACE FUNCTION public._CDB_UserQuotaInBytes() RETURNS int8 AS $$
+        SELECT #{self.quota_in_bytes}::int8
+      $$ LANGUAGE 'sql' IMMUTABLE;
     TRIGGER
     )
   end

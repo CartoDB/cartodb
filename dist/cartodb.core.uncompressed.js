@@ -1,5 +1,5 @@
-// version: 3.8.10
-// sha: 49909aeebad7946234256b46320a5494a0f8e98d
+// version: 3.9.00
+// sha: 2a0c667f6b501535716798bec286365ca2aab046
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.10';
+    cdb.VERSION = '3.9.00';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2491,6 +2491,10 @@ Map.prototype = {
     }
   },
 
+  getTooltipData: function(layer) {
+    return this.layers[layer].tooltip;
+  },
+
   getInfowindowData: function(layer) {
     var lyr;
     var infowindow = this.layers[layer].infowindow;
@@ -2508,6 +2512,17 @@ Map.prototype = {
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
       if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  containTooltip: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
         return true;
       }
     }
@@ -2588,6 +2603,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         }
       }
       return false;
+  },
+
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
   },
 
   _attributesUrl: function(layer, feature_id) {
@@ -2877,12 +2903,14 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-  this.infowindow.bind('change', function() {
-    var def = this._parent.getLayer(this._position);
-    def.infowindow = this.infowindow.toJSON();
-    this._parent.setLayer(this._position, def);
-  }, this);
+  if (Backbone.Model) {
+    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+    this.infowindow.bind('change', function() {
+      var def = this._parent.getLayer(this._position);
+      def.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, def);
+    }, this);
+  }
 }
 
 SubLayer.prototype = {

@@ -36,11 +36,15 @@
   }
 
   div.cartodb-popup.dark h4 {
-    color:#666666;
+    color:#999;
   }
 
   div.cartodb-popup.dark p {
     color:#FFFFFF;
+  }
+
+  div.cartodb-popup.dark a {
+    color:#397DB9;
   }
 
   div.cartodb-popup.dark p.empty {
@@ -76,7 +80,6 @@
   }
 
   div.cartodb-popup div.cartodb-popup-content-wrapper {
-    position:relative;
     width:190px;
     max-width: 190px;
     padding:12px 19px 12px 19px;
@@ -289,6 +292,9 @@
 
 
   /* CartoDB light content styles */
+  div.cartodb-popup h2 {
+    line-height:normal;
+  }
 
   div.cartodb-popup h4 {
     display:block;
@@ -363,6 +369,10 @@
 
 div.cartodb-popup.header.blue div.cartodb-popup-header {
   background:url('../img/headers.png') no-repeat 0 -40px;
+}
+
+div.cartodb-popup.header.blue.header .cartodb-popup-header a {
+  color:white;
 }
 
 div.cartodb-popup.header.blue div.cartodb-popup-header h4 {
@@ -678,7 +688,12 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     color:#999999;
   }/**
  *  CartoDB map style components 
- */ 
+ */
+
+* {
+  -webkit-margin-after:0em;
+  -webkit-margin-before:0em;
+}
 
 div.cartodb-header {
   position: relative;
@@ -920,8 +935,6 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
   font:normal 13px "Helvetica",Arial;
   text-decoration:none;
 
-  /*border:none;*/
-  /*border: 1px solid #808080\9; [>IE<]*/
   webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
   -moz-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
@@ -1075,6 +1088,11 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-share-dialog .block .buttons li a.facebook:hover { background-color: #283C65; }
 
+.cartodb-share-dialog .block .buttons li a.link { 
+  background:#f37f7b url('../img/link.png') no-repeat 10px 50%;
+}
+.cartodb-share-dialog .block .buttons li a.link:hover { background-color:#DC6161; }
+
 .cartodb-share-dialog .block h3, .cartodb-share-dialog .block p, .cartodb-share-dialog .block a, .cartodb-share-dialog .block label {letter-spacing:0;}
 
 .cartodb-share-dialog .block div.head {
@@ -1108,7 +1126,7 @@ only screen and (                min-resolution: 2dppx) {
   resize: none;
   padding: 5px;
   width: 153px;
-  height: 66px;
+  height: 104px;
   border: 1px solid #C3C3C3;
   background: #F5F5F5;
   font-size: 11px;
@@ -2353,24 +2371,6 @@ div.cartodb-dropdown div.tail span.border {
   z-index:2;
 }
 
-
-/* CartoDB tooltip control */
-
-div.cartodb-tooltip {
-  position: absolute;
-  z-index: 5;
-  display: none;
-}
-
-div.cartodb-tooltip p {
-  font-family: "robotoregular", Helvetica, Arial, Sans-serif;
-  font-size: 15px;
-  color: #333;
-  text-align:left;
-  text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
-}
-
-
 /* Gmaps attribution */
 div#cartodb-gmaps-attribution {
   position:absolute;
@@ -3267,3 +3267,94 @@ div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-max {
 	background: #fff;
 	border: 1px solid #666;
 	}
+
+  /**
+   *  CartoDB tooltip dark styles
+   */
+
+  div.cartodb-tooltip-content-wrapper.dark {
+    background: rgb(0,0,0);
+    background:rgba(0,0,0,0.75);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#bf000000, endColorstr=#bf000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bf000000, endColorstr=#bf000000)";
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark h4 {
+    color:#999;
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark p {
+    color:#FFFFFF;
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark a {
+    color:#397DB9;
+  }
+  /**
+   *  CartoDB2.0 tooltip styles (DEFAULT)
+   */
+
+  div.cartodb-tooltip {
+    position: absolute;
+    display: none;
+    min-width:120px;
+    max-width:180px;
+    overflow-y:hidden;
+    z-index: 5;
+  }
+
+  div.cartodb-tooltip-content-wrapper {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background: rgb(255,255,255);
+    background: rgba(255,255,255,0.9);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#E5FFFFFF, endColorstr=#E5FFFFFF);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#E5FFFFFF, endColorstr=#E5FFFFFF)";
+    zoom: 1;
+  }
+
+  div.cartodb-tooltip-content {
+    display:block;
+    padding:8px 8px 8px 9px;
+  }
+
+  div.cartodb-tooltip-content h4 {
+    display:block;
+    text-transform: uppercase;
+    font:normal 10px "Helvetica Neue","Helvetica",Arial;
+    color:#AAA;
+    word-wrap: break-word;
+  }
+
+  div.cartodb-tooltip-content p {
+    display:block;
+    padding:0 0 7px;
+    font:normal 12px "Helvetica Neue", "Helvetica", Arial;
+    color:#333333;
+    word-wrap: break-word;
+  }
+
+  div.cartodb-tooltip-content p:last-child {
+    padding:0;
+  }
+
+  div.cartodb-tooltip-content a {
+    color:#0078A8;
+  }
+
+
+  /* Old tooltip styles */
+  div.cartodb-tooltip > p {
+    font-family: "robotoregular", Helvetica, Arial, Sans-serif;
+    font-size: 15px;
+    color: #333;
+    text-align:center;
+    text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
+  }
+
+  /**
+   *  CartoDB ooltip light styles
+   */
+
+  

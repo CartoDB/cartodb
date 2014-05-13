@@ -1,3 +1,11 @@
+3.9.00 (13//05//2014)
+- indents HTML of legends
+- fixed getSubLayer in core library
+- added tooltip loading from viz.json
+
+3.8.11 (28//04/2014)
+- adds new link to the visualization in the share dialog.
+
 3.8.10 (21//04/2014)
 - fixed problem parsing map viz options when values are not valid
 - fixed interaction in IE8

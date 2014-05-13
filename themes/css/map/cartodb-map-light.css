@@ -1,6 +1,11 @@
 /**
  *  CartoDB map style components 
- */ 
+ */
+
+* {
+  -webkit-margin-after:0em;
+  -webkit-margin-before:0em;
+}
 
 div.cartodb-header {
   position: relative;
@@ -242,8 +247,6 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
   font:normal 13px "Helvetica",Arial;
   text-decoration:none;
 
-  /*border:none;*/
-  /*border: 1px solid #808080\9; [>IE<]*/
   webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
   -moz-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
@@ -397,6 +400,11 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-share-dialog .block .buttons li a.facebook:hover { background-color: #283C65; }
 
+.cartodb-share-dialog .block .buttons li a.link { 
+  background:#f37f7b url('../img/link.png') no-repeat 10px 50%;
+}
+.cartodb-share-dialog .block .buttons li a.link:hover { background-color:#DC6161; }
+
 .cartodb-share-dialog .block h3, .cartodb-share-dialog .block p, .cartodb-share-dialog .block a, .cartodb-share-dialog .block label {letter-spacing:0;}
 
 .cartodb-share-dialog .block div.head {
@@ -430,7 +438,7 @@ only screen and (                min-resolution: 2dppx) {
   resize: none;
   padding: 5px;
   width: 153px;
-  height: 66px;
+  height: 104px;
   border: 1px solid #C3C3C3;
   background: #F5F5F5;
   font-size: 11px;
@@ -1674,24 +1682,6 @@ div.cartodb-dropdown div.tail span.border {
   border-bottom:6px solid white;
   z-index:2;
 }
-
-
-/* CartoDB tooltip control */
-
-div.cartodb-tooltip {
-  position: absolute;
-  z-index: 5;
-  display: none;
-}
-
-div.cartodb-tooltip p {
-  font-family: "robotoregular", Helvetica, Arial, Sans-serif;
-  font-size: 15px;
-  color: #333;
-  text-align:left;
-  text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
-}
-
 
 /* Gmaps attribution */
 div#cartodb-gmaps-attribution {

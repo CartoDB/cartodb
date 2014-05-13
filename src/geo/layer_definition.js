@@ -584,6 +584,10 @@ Map.prototype = {
     }
   },
 
+  getTooltipData: function(layer) {
+    return this.layers[layer].tooltip;
+  },
+
   getInfowindowData: function(layer) {
     var lyr;
     var infowindow = this.layers[layer].infowindow;
@@ -601,6 +605,17 @@ Map.prototype = {
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
       if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  containTooltip: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
         return true;
       }
     }
@@ -681,6 +696,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         }
       }
       return false;
+  },
+
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
   },
 
   _attributesUrl: function(layer, feature_id) {
@@ -970,12 +996,14 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-  this.infowindow.bind('change', function() {
-    var def = this._parent.getLayer(this._position);
-    def.infowindow = this.infowindow.toJSON();
-    this._parent.setLayer(this._position, def);
-  }, this);
+  if (Backbone.Model) {
+    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+    this.infowindow.bind('change', function() {
+      var def = this._parent.getLayer(this._position);
+      def.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, def);
+    }, this);
+  }
 }
 
 SubLayer.prototype = {

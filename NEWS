@@ -1,4 +1,4 @@
-3.9.00 ()
+3.9.00 (13//05//2014)
 - indents HTML of legends
 - fixed getSubLayer in core library
 - added tooltip loading from viz.json

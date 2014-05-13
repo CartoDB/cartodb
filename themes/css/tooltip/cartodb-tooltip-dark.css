@@ -4,8 +4,10 @@
    */
 
   div.cartodb-tooltip-content-wrapper.dark {
-    background:#000;
+    background: rgb(0,0,0);
     background:rgba(0,0,0,0.75);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#bf000000, endColorstr=#bf000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bf000000, endColorstr=#bf000000)";
   }
 
   div.cartodb-tooltip-content-wrapper.dark h4 {

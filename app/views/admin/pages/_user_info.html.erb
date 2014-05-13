@@ -9,11 +9,11 @@
     </div>
 
     <div class="details">
-      <%= content_tag :h2, @name %>
+      <%= content_tag :h2, @name if @name.present? %>
 
       <%= link_to "@#{@twitter_username}", "http://twitter.com/#{@twitter_username}", :class => :twitter if @twitter_username %>
 
-      <%= content_tag :p, @description %>
+      <%= content_tag :p, @description if @description.present? %>
 
       <% if @website.present? %>
 

@@ -1,7 +1,7 @@
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 
-CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css)
+CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css themes/css/tooltip/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 TORQUE_FILES = vendor/mod/carto.js vendor/mod/torque.uncompressed.js src/geo/gmaps/torque.js src/geo/leaflet/torque.js src/geo/ui/time_slider.js      vendor/mod/jquery-ui/jquery.ui.core.js vendor/mod/jquery-ui/jquery.ui.widget.js vendor/mod/jquery-ui/jquery.ui.mouse.js vendor/mod/jquery-ui/jquery.ui.slider.js     scripts/mod.torque.footer.js

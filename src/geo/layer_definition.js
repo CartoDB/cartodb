@@ -584,6 +584,10 @@ Map.prototype = {
     }
   },
 
+  getTooltipData: function(layer) {
+    return this.layers[layer].tooltip;
+  },
+
   getInfowindowData: function(layer) {
     var lyr;
     var infowindow = this.layers[layer].infowindow;
@@ -601,6 +605,17 @@ Map.prototype = {
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
       if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  containTooltip: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
         return true;
       }
     }
@@ -681,6 +696,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         }
       }
       return false;
+  },
+
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
   },
 
   _attributesUrl: function(layer, feature_id) {

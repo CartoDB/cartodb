@@ -330,16 +330,26 @@ function LayerGroupView(base) {
     _featureOut   = opts.featureOut,
     _featureClick = opts.featureClick;
 
+    var previousEvent;
+    var eventTimeout = -1;
+
     opts.featureOver  = function(e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
         self.trigger('layermouseover', layer);
       }
       hovers[layer] = 1;
-      if(_.any(hovers)) {
-        self.trigger('mouseover');
-      }
       _featureOver  && _featureOver.apply(this, arguments);
       self.featureOver  && self.featureOver.apply(this, arguments);
+
+      // if the event is the same than before just cancel the event
+      // firing because there is a layer on top of it
+      if (e.timeStamp === previousEvent) {
+        clearTimeout(eventTimeout);
+      }
+      eventTimeout = setTimeout(function() {
+        self.trigger('mouseover', e, latlon, pxPos, data, layer);
+      }, 0);
+      previousEvent = e.timeStamp;
     };
 
     opts.featureOut  = function(m, layer) {

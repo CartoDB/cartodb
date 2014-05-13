@@ -9,14 +9,18 @@
     </div>
 
     <div class="details">
-      <%= content_tag :h2, @name %>
+      <%= content_tag :h2, @name if @name.present? %>
 
-      <%= link_to @twitter_username, @twitter_username, :class => :twitter if @twitter_username %>
+      <%= link_to @twitter_username, "http://twitter.com/#{@twitter_username}", :class => :twitter if @twitter_username %>
 
-      <%= content_tag :p, @description %>
+      <%= content_tag :p, @description if @description.present? %>
 
-      <% if @website  %>
+      <% if @website.present? %>
+
+        <% if @description.present? or @twitter_username.present?  %>
         <div class="separator"></div>
+        <% end %>
+
         <div class="website"><%= link_to @website_clean, @website %></div>
       <% end %>
     </div>

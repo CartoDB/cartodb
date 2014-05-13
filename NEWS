@@ -1,5 +1,7 @@
-3.8.12 ()
+3.9.00 ()
 - indents HTML of legends
+- fixed getSubLayer in core library
+- added tooltip loading from viz.json
 
 3.8.11 (28//04/2014)
 - adds new link to the visualization in the share dialog.

@@ -52,7 +52,9 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
               non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
             }
 
-            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields);
+            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
+              empty_fields: this.options.empty_fields
+            });
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);

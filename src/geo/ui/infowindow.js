@@ -173,12 +173,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   }
 
 }, {
-  contentForFields: function(attributes, fields) {
+  contentForFields: function(attributes, fields, options) {
+    options = options || {};
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
       var f = fields[j];
       var value = String(attributes[f.name]);
-      if(attributes[f.name] !== undefined && value != "") {
+      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
         render_fields.push({
           title: f.title ? f.name : null,
           value: attributes[f.name],

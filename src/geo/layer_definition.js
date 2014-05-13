@@ -996,12 +996,14 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-  this.infowindow.bind('change', function() {
-    var def = this._parent.getLayer(this._position);
-    def.infowindow = this.infowindow.toJSON();
-    this._parent.setLayer(this._position, def);
-  }, this);
+  if (Backbone.Model) {
+    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+    this.infowindow.bind('change', function() {
+      var def = this._parent.getLayer(this._position);
+      def.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, def);
+    }, this);
+  }
 }
 
 SubLayer.prototype = {

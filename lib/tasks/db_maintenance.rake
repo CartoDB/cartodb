@@ -143,7 +143,7 @@ namespace :cartodb do
       puts "Resetting check quota trigger for ##{User.count} users"
       User.all.each_with_index do |user, i|
         begin
-	  user.set_trigger_check_quota
+	        user.rebuild_quota_trigger
         rescue => exception
           error_messages << "ERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end

@@ -6,16 +6,19 @@ include CartoDB
 
 describe Importer2::Georeferencer do
   before(:all) do
-    @db           = Importer2::Factories::PGConnection.new.connection
+    @db = Importer2::Factories::PGConnection.new(
+      :create_db => 'georeferencer_spec'
+    ).connection
 
     create_schema(@db, 'cdb_importer')
 
     @db.execute('SET search_path TO cdb_importer,public')
 
-    @table_name   = create_table(@db)
+    @table_name = create_table(@db)
   end
 
   after(:all) do
+    puts "Dropping table..."
     @db.drop_table? @table_name
 
     #TODO Drop schema
@@ -28,11 +31,11 @@ describe Importer2::Georeferencer do
       expect {
         Importer2::Georeferencer.new
       }.to raise_error(ArgumentError)
-      
+
       expect {
         Importer2::Georeferencer.new(Object.new)
       }.to raise_error(ArgumentError)
-      
+
       Importer2::Georeferencer.new(Object.new, 'bogus')
     end
   end #initialize
@@ -46,11 +49,11 @@ describe Importer2::Georeferencer do
       georeferencer = Importer2::Georeferencer.new(@db, @table_name)
       georeferencer.run
 
-      dataset.first.fetch(:the_geom).wont_be_nil
-      dataset.first.fetch(:the_geom).wont_be_empty
+      dataset.first.fetch(:the_geom).should_not be_nil
+      dataset.first.fetch(:the_geom).should_not be_empty
     end
 
-    it 'returns self if no lat / lon columns in the tabl' do
+    it 'returns self if no lat / lon columns in the table' do
       table_name  = create_table(@db,
                       latitude_column: 'bogus_1',
                       longitude_column: 'bogus_2'
@@ -93,30 +96,30 @@ describe Importer2::Georeferencer do
         :"#{lon}"     => rand(180)
       )
 
-      dataset.first.fetch(:the_geom).must_be_nil
+      dataset.first.fetch(:the_geom).should be_nil
       georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
-      dataset.first.fetch(:the_geom).wont_be_nil
+      dataset.first.fetch(:the_geom).should be_nil
     end
   end #georeference
 
   describe '#create_the_geom_in' do
+    before do
+      @table_name = create_table(@db)
+    end
+
     it 'adds a the_geom column to a table' do
       georeferencer = Importer2::Georeferencer.new(@db, @table_name)
 
-      georeferencer.column_exists_in?(@table_name, 'the_geom')
-        .should eq false
+      georeferencer.column_exists_in?(@table_name, 'the_geom').should eq false
       georeferencer.create_the_geom_in(@table_name)
-      georeferencer.column_exists_in?(@table_name, 'the_geom')
-        .should eq true
+      georeferencer.column_exists_in?(@table_name, 'the_geom').should eq true
     end
 
     it 'returns false if the_geom column already exists' do
       georeferencer = Importer2::Georeferencer.new(@db, @table_name)
 
-      georeferencer.column_exists_in?(@table_name, 'the_geom')
-        .should eq false
+      georeferencer.column_exists_in?(@table_name, 'the_geom').should eq false
       georeferencer.create_the_geom_in(@table_name)
-
       georeferencer.create_the_geom_in(@table_name).should eq false
     end
   end #create_the_geom_in
@@ -145,7 +148,7 @@ describe Importer2::Georeferencer do
     it 'returns the name of a latitude column within a set of candidates, if
     existing' do
       georeferencer = Importer2::Georeferencer.new(@db, @table_name)
-      georeferencer.latitude_column_name_in(@table_name).should eq 'lat'
+      georeferencer.latitude_column_name_in.should eq 'lat'
     end
   end
 
@@ -153,7 +156,7 @@ describe Importer2::Georeferencer do
     it 'returns the name of a longitude column within a set of candidates, if
     existing' do
       georeferencer = Importer2::Georeferencer.new(@db, @table_name)
-      georeferencer.longitude_column_name_in(@table_name).should eq 'lon'
+      georeferencer.longitude_column_name_in.should eq 'lon'
     end
   end
 
@@ -187,6 +190,7 @@ describe Importer2::Georeferencer do
       String    :description
       String    latitude_column.to_sym
       String    longitude_column.to_sym
+      String    :ogc_fid
     end
 
     table_name
@@ -197,7 +201,8 @@ describe Importer2::Georeferencer do
       name:         'bogus',
       description:  'bogus',
       lat:          rand(90),
-      lon:          rand(180)
+      lon:          rand(180),
+      ogc_fid:      rand(100)
     }
   end #random_record
 end # Importer2::Georeferencer

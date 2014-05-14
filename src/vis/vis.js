@@ -719,6 +719,8 @@ var Vis = cdb.core.View.extend({
             layer: layerView,
             template: t.template,
             position: 'bottom|right',
+            vertical_offset: 10,
+            horizontal_offset: 4,
             fields: t.fields,
             omit_columns: ['cartodb_id']
           });

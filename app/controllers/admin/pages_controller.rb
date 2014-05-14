@@ -48,7 +48,7 @@ class Admin::PagesController < ApplicationController
       @datasets.push(
         {
           title:        dataset.name,
-          description:  dataset.description,
+          description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
           tags:         dataset.tags
         }
@@ -93,7 +93,7 @@ class Admin::PagesController < ApplicationController
       @visualizations.push(
         {
           title:        vis.name,
-          description:  vis.description,
+          description:  vis.description_clean,
           id:           vis.id,
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),

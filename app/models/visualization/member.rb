@@ -150,6 +150,11 @@ module CartoDB
         super(name)
       end #name=
 
+      def description_clean
+        if description.present?
+          description_md.strip_tags
+        end
+      end
       def description_md
         if description.present?
           renderer = MarkdownRenderer.new(no_images: true, no_styles: true) 

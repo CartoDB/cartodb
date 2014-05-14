@@ -5,10 +5,9 @@
 
 .floating.edit_name_dialog.markdown {
 
-  height: 65px;
+  height: 62px;
 
   .input_field {
-    max-width:500px - 22;
     width: 100%;
     position: absolute;
     width: 289px;
@@ -33,7 +32,8 @@
       text-align: right;
       color: #ccc;
 
-      em { font-style: italic; }
+      strong { margin-right: 3px; }
+      em { margin-right: 3px; font-style: italic; }
 
     }
 

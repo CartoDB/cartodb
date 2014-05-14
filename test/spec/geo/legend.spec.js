@@ -273,10 +273,10 @@ describe("common.geo.ui.Legend", function() {
       legend.render();
       var bullets = legend.$('li');
       expect(bullets.length).toEqual(4);
-      expect($(bullets[0]).text()).toEqual("true");
-      expect($(bullets[1]).text()).toEqual("false");
-      expect($(bullets[2]).text()).toEqual("#f1f1f1");
-      expect($(bullets[3]).text()).toEqual("null");
+      expect($(bullets[0]).text()).toEqual("		 true");
+      expect($(bullets[1]).text()).toEqual("		 false");
+      expect($(bullets[2]).text()).toEqual("		 #f1f1f1");
+      expect($(bullets[3]).text()).toEqual("		 null");
     });
   });
 

@@ -1,3 +1,6 @@
+3.9.00 (14//05//2014)
+- Fixed regression for mouseover event in layers
+
 3.9.00 (13//05//2014)
 - indents HTML of legends
 - fixed getSubLayer in core library

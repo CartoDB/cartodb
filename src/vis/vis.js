@@ -708,6 +708,9 @@ var Vis = cdb.core.View.extend({
   },
 
   addTooltip: function(layerView) {
+    if(!layerView || !layerView.containTooltip || !layerView.containTooltip()) {
+      return;
+    }
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       var t = layerView.getTooltipData(i);
       if (t) {

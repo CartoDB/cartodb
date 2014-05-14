@@ -5,3 +5,4 @@ themes/css/all.css
 themes/css/cartodb.ie.css
 secrets.json
 v3/*
+test/*.xml

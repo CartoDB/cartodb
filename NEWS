@@ -1,3 +1,6 @@
+3.9.03 (14//05//2014)
+- Added tooltip option in createLayer method
+
 3.9.02 (14//05//2014)
 - Fixes torque width for small screens
 

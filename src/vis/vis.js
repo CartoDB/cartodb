@@ -718,6 +718,7 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
+            position: 'bottom|right',
             fields: t.fields,
             omit_columns: ['cartodb_id']
           });

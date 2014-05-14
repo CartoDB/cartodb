@@ -16,7 +16,7 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def create
-    @layer = Layer.new(params.slice(:kind, :options, :infowindow, :order))
+    @layer = Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
     if @parent.is_a?(Map) && !@parent.admits_layer?(@layer)
       return(render  status: 400, text: "Can't add more layers of this type")
     end
@@ -38,7 +38,7 @@ class Api::Json::LayersController < Api::ApplicationController
   def update
     @layer = Layer[params[:id]]
     @layer.raise_on_save_failure = true
-    @layer.update(params.slice(:options, :kind, :infowindow, :order))
+    @layer.update(params.slice(:options, :kind, :infowindow, :tooltip, :order))
 
     render_jsonp(@layer.public_values)
   rescue Sequel::ValidationFailed, RuntimeError => e

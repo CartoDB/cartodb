@@ -137,12 +137,18 @@ namespace :cartodb do
     ##########################
     # SET TRIGGER CHECK QUOTA
     ##########################
-    desc "reset check quota trigger on all user tables"
+    desc 'reset check quota trigger on all user tables'
     task :reset_trigger_check_quota => :environment do
-      count = User.count
+      error_messages = "\n"
+      puts "Resetting check quota trigger for ##{User.count} users"
       User.all.each_with_index do |user, i|
-        user.set_trigger_check_quota
+        begin
+	  user.set_trigger_check_quota
+        rescue => exception
+          error_messages << "ERRORED #{user.id} (#{user.username}): #{exception.message}\n"
+        end
       end
+      puts error_messages
     end
 
     desc "set users quota to amount in mb"

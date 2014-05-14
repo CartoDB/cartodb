@@ -3,6 +3,60 @@
 @import "../common/vars";
 @import "../common/form-elements";
 
+.floating.edit_name_dialog.markdown {
+
+  height: 65px;
+
+  .input_field {
+    max-width:500px - 22;
+    width: 100%;
+    position: absolute;
+    width: 289px;
+    margin: 0 3px 0 0;
+    top: 5px;
+    left: 5px;
+    right: 65px;
+    bottom: 5px;
+    font-size: 15px;
+    color: #333333;
+    border: 1px solid #000;
+    line-height: normal;
+    @include border-radius(4px);
+    padding: 8px 10px;
+    background:#fff;
+
+    .hint {
+      border-top: 1px solid #ccc;
+      margin: 7px 0 0 0;
+      padding: 4px 3px 0 0;
+      font-size: 12px;
+      text-align: right;
+      color: #ccc;
+
+      em { font-style: italic; }
+
+    }
+
+    input {
+      @include box-sizing(border-box);
+      position:relative;
+      top: 0; left: 0; bottom: 0; right: 0;
+      border:none;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      background:none;
+      @include border-radius(0);
+    }
+
+  }
+
+  input, textarea {
+    height: 19px;
+  }
+
+}
+
 .edit_text_dialog {
   position:absolute!important;
   padding: 11px;
@@ -230,7 +284,6 @@
     display: none;
   }
 }
-
 .floating.edit_name_dialog {
   min-width:280px;
   height:37px;

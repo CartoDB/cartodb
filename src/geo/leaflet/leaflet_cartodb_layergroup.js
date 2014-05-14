@@ -321,7 +321,7 @@ function layerView(base) {
 
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layerenter', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
         _featureOver  && _featureOver.apply(this, arguments);
@@ -333,6 +333,7 @@ function layerView(base) {
         }
         eventTimeout = setTimeout(function() {
           self.trigger('mouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
         }, 0);
         previousEvent = e.timeStamp;
 

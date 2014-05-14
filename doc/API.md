@@ -312,6 +312,7 @@ With visualizations already created through the CartoDB console, you can simply 
     - **https**: force https
     - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
+    - **tooltip**: set to false if you want to disable the tooltip (enabled by default).
     - **legends**: if it's true legends are shown in the map.
     - **time_slider**: show time slider with torque layers (enabled by default)
     - **layerIndex**: when the visualization contains more than one layer this index allow to select

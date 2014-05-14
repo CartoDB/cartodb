@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.01
+// cartodb.js version: 3.9.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: ded64b6bbea31b3b93c8c5f56961dacb839f5dee
+// sha: 8be1c54f17f5d28b3c14b663de13e1ba6e1fda34
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.01';
+    cdb.VERSION = '3.9.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -31146,6 +31146,9 @@ var Vis = cdb.core.View.extend({
   },
 
   addTooltip: function(layerView) {
+    if(!layerView || !layerView.containTooltip || !layerView.containTooltip()) {
+      return;
+    }
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       var t = layerView.getTooltipData(i);
       if (t) {
@@ -32115,7 +32118,8 @@ Layers.register('torque', function(vis, data) {
         infowindow: true,
         https: false,
         legends: true,
-        time_slider: true
+        time_slider: true,
+        tooltip: true
       });
 
       // check map type
@@ -32154,6 +32158,9 @@ Layers.register('torque', function(vis, data) {
         }
         if(options.infowindow) {
           viz.addInfowindow(layerView);
+        }
+        if(options.tooltip) {
+          viz.addTooltip(layerView);
         }
         if(options.legends) {
           viz.addLegends([layerData]);

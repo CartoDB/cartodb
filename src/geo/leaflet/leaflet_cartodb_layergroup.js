@@ -260,6 +260,14 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     var curleft = 0, curtop = 0;
     var obj = map.getContainer();
 
+    var x, y;
+    if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+      x = o.e.changedTouches[0].clientX + window.scrollX;
+      y = o.e.changedTouches[0].clientY + window.scrollY;
+    } else {
+      x = o.e.clientX;
+      y = o.e.clientY;
+    }
 
     if (obj.offsetParent) {
       // Modern browsers
@@ -267,7 +275,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
+      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
+      return p;
     } else {
       // IE
       return map.mouseEventToLayerPoint(o.e)
@@ -307,16 +316,27 @@ function layerView(base) {
       _featureOut   = opts.featureOut,
       _featureClick = opts.featureClick;
 
+      var previousEvent;
+      var eventTimeout = -1;
+
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', layer);
+          self.trigger('layerenter', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
-        if(_.any(hovers)) {
-          self.trigger('mouseover');
-        }
         _featureOver  && _featureOver.apply(this, arguments);
         self.featureOver  && self.featureOver.apply(self, arguments);
+        // if the event is the same than before just cancel the event
+        // firing because there is a layer on top of it
+        if (e.timeStamp === previousEvent) {
+          clearTimeout(eventTimeout);
+        }
+        eventTimeout = setTimeout(function() {
+          self.trigger('mouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
+        }, 0);
+        previousEvent = e.timeStamp;
+
       };
 
       opts.featureOut  = function(m, layer) {

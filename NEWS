@@ -1,3 +1,14 @@
+3.9.02 (14//05//2014)
+- Fixes torque width for small screens
+
+3.9.01 (14//05//2014)
+- Fixed regression for mouseover event in layers
+
+3.9.00 (13//05//2014)
+- indents HTML of legends
+- fixed getSubLayer in core library
+- added tooltip loading from viz.json
+
 3.8.11 (28//04/2014)
 - adds new link to the visualization in the share dialog.
 

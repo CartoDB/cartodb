@@ -534,6 +534,7 @@ var Vis = cdb.core.View.extend({
       layer_selector: false,
       searchControl: false,
       infowindow: true,
+      tooltip: true,
       legends: true,
       time_slider: true
     });
@@ -560,6 +561,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.infowindow = opt.infowindow;
+    this.tooltip = opt.tooltip;
 
     if(opt.https) {
       this.https = true;
@@ -705,6 +707,34 @@ var Vis = cdb.core.View.extend({
     return sql;
   },
 
+  addTooltip: function(layerView) {
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      var t = layerView.getTooltipData(i);
+      if (t) {
+        if (!layerView.tooltip) {
+          var tooltip = new cdb.geo.ui.Tooltip({
+            layer: layerView,
+            template: t.template,
+            fields: t.fields,
+            omit_columns: ['cartodb_id']
+          });
+          layerView.tooltip = tooltip;
+          this.mapView.addOverlay(tooltip);
+        }
+        layerView.setInteraction(i, true);
+      }
+    }
+
+    if (layerView.tooltip) {
+      layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
+        var t = layerView.getTooltipData(layer);
+        layerView.tooltip.setTemplate(t.template);
+        layerView.tooltip.setFields(t.fields);
+        layerView.tooltip.setAlternativeNames(t.alternative_names);
+      });
+    }
+  },
+
   addInfowindow: function(layerView) {
 
     if(!layerView.containInfowindow || !layerView.containInfowindow()) {
@@ -732,6 +762,17 @@ var Vis = cdb.core.View.extend({
     if(!infowindow) {
       return;
     }
+
+    infowindow.bind('close', function() {
+      // when infowindow is closed remove all the filters
+      // for tooltips
+      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+        var t = layerView.tooltip;
+        if (t) {
+          t.setFilter(null);
+        }
+      }
+    })
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
@@ -764,6 +805,12 @@ var Vis = cdb.core.View.extend({
           .setLatLng(latlng)
           .setLoading()
           .showInfowindow();
+
+        if (layerView.tooltip) {
+          layerView.tooltip.setFilter(function(feature) {
+            return feature.cartodb_id !== cartodb_id;
+          }).hide();
+        }
     });
 
     var hovers = [];
@@ -795,6 +842,10 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
+    }
+
+    if(layerView && this.tooltip && layerView.containTooltip && layerView.containTooltip()) {
+      this.addTooltip(layerView);
     }
 
     if (layerView) {

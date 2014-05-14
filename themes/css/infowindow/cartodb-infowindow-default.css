@@ -18,7 +18,6 @@
   }
 
   div.cartodb-popup div.cartodb-popup-content-wrapper {
-    position:relative;
     width:190px;
     max-width: 190px;
     padding:12px 19px 12px 19px;
@@ -231,6 +230,9 @@
 
 
   /* CartoDB light content styles */
+  div.cartodb-popup h2 {
+    line-height:normal;
+  }
 
   div.cartodb-popup h4 {
     display:block;

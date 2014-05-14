@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.00
+// cartodb.js version: 3.9.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2a0c667f6b501535716798bec286365ca2aab046
+// sha: ded64b6bbea31b3b93c8c5f56961dacb839f5dee
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.00';
+    cdb.VERSION = '3.9.01';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -27638,7 +27638,7 @@ function layerView(base) {
 
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layerenter', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
         _featureOver  && _featureOver.apply(this, arguments);
@@ -27650,6 +27650,7 @@ function layerView(base) {
         }
         eventTimeout = setTimeout(function() {
           self.trigger('mouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
         }, 0);
         previousEvent = e.timeStamp;
 
@@ -28813,7 +28814,7 @@ function LayerGroupView(base) {
 
     opts.featureOver  = function(e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
-        self.trigger('layermouseover', layer);
+        self.trigger('layerenter', e, latlon, pxPos, data, layer);
       }
       hovers[layer] = 1;
       _featureOver  && _featureOver.apply(this, arguments);
@@ -28826,6 +28827,7 @@ function LayerGroupView(base) {
       }
       eventTimeout = setTimeout(function() {
         self.trigger('mouseover', e, latlon, pxPos, data, layer);
+        self.trigger('layermouseover', e, latlon, pxPos, data, layer);
       }, 0);
       previousEvent = e.timeStamp;
     };

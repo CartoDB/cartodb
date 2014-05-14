@@ -64,6 +64,25 @@ and (orientation : landscape) {
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
 
+  .torque div.cartodb-timeslider .slider-wrapper {
+    width:98px!important;
+  }
+
+  .torque div.cartodb-timeslider .slider {
+    width:98px!important;
+  }
+}
+
+@media only screen and (min-width: 360px) and (max-width: 490px) {
+
+  div.cartodb-timeslider .slider-wrapper {
+    width:198px!important;
+  }
+
+  div.cartodb-timeslider .slider {
+    width:198px!important;
+  }
+
 }
 
 /* iPhone 5 portrait */

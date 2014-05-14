@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.00-dev
+// cartodb.js version: 3.9.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: f4df45da836b6e65d1ccd70346909e232a53495a
+// sha: 8aa86471a405b4f5d032931572dac56ce8292675
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.00-dev';
+    cdb.VERSION = '3.9.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24413,12 +24413,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   }
 
 }, {
-  contentForFields: function(attributes, fields) {
+  contentForFields: function(attributes, fields, options) {
+    options = options || {};
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
       var f = fields[j];
       var value = String(attributes[f.name]);
-      if(attributes[f.name] !== undefined && value != "") {
+      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
         render_fields.push({
           title: f.title ? f.name : null,
           value: attributes[f.name],
@@ -25597,7 +25598,9 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
               non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
             }
 
-            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields);
+            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
+              empty_fields: this.options.empty_fields
+            });
             // Remove fields and content from data
             // and make them visible for custom templates
             data.content = _.omit(data, non_valid_keys);
@@ -26751,12 +26754,14 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-  this.infowindow.bind('change', function() {
-    var def = this._parent.getLayer(this._position);
-    def.infowindow = this.infowindow.toJSON();
-    this._parent.setLayer(this._position, def);
-  }, this);
+  if (Backbone.Model) {
+    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+    this.infowindow.bind('change', function() {
+      var def = this._parent.getLayer(this._position);
+      def.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, def);
+    }, this);
+  }
 }
 
 SubLayer.prototype = {
@@ -27633,7 +27638,7 @@ function layerView(base) {
 
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layerenter', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
         _featureOver  && _featureOver.apply(this, arguments);
@@ -27645,6 +27650,7 @@ function layerView(base) {
         }
         eventTimeout = setTimeout(function() {
           self.trigger('mouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
         }, 0);
         previousEvent = e.timeStamp;
 
@@ -28808,7 +28814,7 @@ function LayerGroupView(base) {
 
     opts.featureOver  = function(e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
-        self.trigger('layermouseover', layer);
+        self.trigger('layerenter', e, latlon, pxPos, data, layer);
       }
       hovers[layer] = 1;
       _featureOver  && _featureOver.apply(this, arguments);
@@ -28821,6 +28827,7 @@ function LayerGroupView(base) {
       }
       eventTimeout = setTimeout(function() {
         self.trigger('mouseover', e, latlon, pxPos, data, layer);
+        self.trigger('layermouseover', e, latlon, pxPos, data, layer);
       }, 0);
       previousEvent = e.timeStamp;
     };
@@ -29655,6 +29662,20 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _stripHTML: function(input, allowed) {
+
+    allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
+
+    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+
+    if (!input || (typeof input != "string")) return '';
+
+    return input.replace(tags, function ($0, $1) {
+      return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+    });
+
+  },
+
   open: function() {
 
     var self = this;
@@ -29699,23 +29720,24 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     var $el = this.$el;
 
-    var title       = this.options.title;
-    var description = this.options.description;
-    var share_url   = this.options.share_url;
+    var title             = this.options.title;
+    var description       = this.options.description;
+    var clean_description = this._stripHTML(this.options.description);
+    var share_url         = this.options.share_url;
 
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
-    var full_title    = title + ": " + description;
+    var full_title    = title + ": " + clean_description;
     var twitter_title;
 
-    if (title && description) {
-      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    if (title && clean_description) {
+      twitter_title = this._truncateTitle(title + ": " + clean_description, 112) + " %23map "
     } else if (title) {
       twitter_title = this._truncateTitle(title, 112) + " %23map"
-    } else if (description){
-      twitter_title = this._truncateTitle(description, 112) + " %23map"
+    } else if (clean_description){
+      twitter_title = this._truncateTitle(clean_description, 112) + " %23map"
     } else {
       twitter_title = "%23map"
     }
@@ -31596,7 +31618,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\

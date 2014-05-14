@@ -13,7 +13,7 @@ CartoDBLayerCommon.prototype = {
   show: function() {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
-    this.setInteraction(true);
+    this._interactionDisabled = false;
   },
 
   hide: function() {
@@ -21,7 +21,8 @@ CartoDBLayerCommon.prototype = {
       this.options.previous_opacity = this.options.opacity;
     }
     this.setOpacity(0);
-    this.setInteraction(false);
+    // disable here interaction for all the layers
+    this._interactionDisabled = true;
   },
 
   /**
@@ -56,7 +57,8 @@ CartoDBLayerCommon.prototype = {
       // layer will be created
       if(this.urls) {
         // generate the tilejson from the urls. wax needs it
-        var tilejson = this._tileJSONfromTiles(layer, this.urls);
+        var layer_index = this.getLayerIndexByNumber(+layer);
+        var tilejson = this._tileJSONfromTiles(layer_index, this.urls);
 
         // remove previous
         layerInteraction = this.interaction[layer];
@@ -70,14 +72,14 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
-            o.layer = layer || 0;
-            o.layer = self.getLayerNumberByIndex(o.layer);
+            if (self._interactionDisabled) return;
+            o.layer = +layer;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
+            if (self._interactionDisabled) return;
             o = o || {}
-            o.layer = layer || 0;
-            o.layer = self.getLayerNumberByIndex(o.layer);
+            o.layer = +layer;
             self._manageOffEvents(self.options.map, o);
           });
       }

@@ -44,7 +44,9 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   fieldCount: function() {
-    return this.get('fields').length
+    var fields = this.get('fields')
+    if (!fields) return 0;
+    return fields.length
   },
 
   restoreFields: function(whiteList, from) {
@@ -85,7 +87,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
         fields.push({ name: fieldName, title: true, position: at });
       } else {
         at = at === undefined ? 0 : at;
-        this.set('fields', [{ name: fieldName, title: true, position: at }])
+        this.set('fields', [{ name: fieldName, title: true, position: at }], { silent: true});
       }
     }
     dfd.resolve();
@@ -162,8 +164,45 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       this.trigger('remove:fields')
     }
     return this;
+  },
+
+  // updates content with attributes
+  updateContent: function(attributes) {
+    var fields = this.get('fields');
+    this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
   }
 
+}, {
+  contentForFields: function(attributes, fields, options) {
+    options = options || {};
+    var render_fields = [];
+    for(var j = 0; j < fields.length; ++j) {
+      var f = fields[j];
+      var value = String(attributes[f.name]);
+      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
+        render_fields.push({
+          title: f.title ? f.name : null,
+          value: attributes[f.name],
+          index: j ? j : null
+        });
+      }
+    }
+
+    // manage when there is no data to render
+    if (render_fields.length === 0) {
+      render_fields.push({
+        title: null,
+        value: 'No data available',
+        index: j ? j : null,
+        type: 'empty'
+      });
+    }
+
+    return {
+      fields: render_fields,
+      data: attributes
+    };
+  }
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
@@ -186,8 +225,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     "touchstart":           "_checkOrigin",
     "MSPointerDown":        "_checkOrigin",
     "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
+    "DOMMouseScroll":       "_stopBubbling",
+    'MozMousePixelScroll':  "_stopBubbling",
+    "mousewheel":           "_stopBubbling",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
   },
@@ -301,6 +341,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
+
+      if(!this.isLoadingData()) {
+        this.model.trigger('domready', this, this.$el);
+        this.trigger('domready', this, this.$el);
+      }
     }
 
     return this;
@@ -423,16 +468,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return attr;
   },
 
+  isLoadingData: function() {
+    var content = this.model.get("content");
+    return content.fields && content.fields.length == 1 && content.fields[0].type === "loading";
+  },
+
   /**
    *  Check if infowindow is loading the row content
    */
   _checkLoading: function() {
-    var content = this.model.get("content");
-
-    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
-      this._startSpinner()
+    if (this.isLoadingData()) {
+      this._startSpinner();
     } else {
-      this._stopSpinner()
+      this._stopSpinner();
     }
   },
 
@@ -573,6 +621,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
+   *  Stop event bubbling
+   */
+  _stopBubbling: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  /**
    *  Stop event propagation
    */
   _stopPropagation: function(ev) {
@@ -630,11 +686,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _closeInfowindow: function(ev) {
     if (ev) {
-      ev.preventDefault()
+      ev.preventDefault();
       ev.stopPropagation();
     }
-
-    this.model.set("visibility",false);
+    if (this.model.get("visibility")) {
+       this.model.set("visibility", false);
+       this.trigger('close');
+    }
   },
 
   /**

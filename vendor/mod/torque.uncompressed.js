@@ -158,36 +158,42 @@ var _torque_reference_latest = {
             "doc": "Extra tolerance around the Layer extent (in pixels) used to when querying and (potentially) clipping the layer data during rendering"
         },
         "-torque-frame-count": {
+            "css": "-torque-frame-count",
             "default-value": "128",
             "type":"number",
             "default-meaning": "the data is broken into 128 time frames",
             "doc": "Number of animation steps/frames used in the animation. If the data contains a fewere number of total frames, the lesser value will be used."
         },
         "-torque-resolution": {
+            "css": "-torque-resolution",
             "default-value": "2",
             "type":"number",
             "default-meaning": "",
             "doc": "Spatial resolution in pixels. A resolution of 1 means no spatial aggregation of the data. Any other resolution of N results in spatial aggregation into cells of NxN pixels. The value N must be power of 2"
         },
         "-torque-animation-duration": {
+            "css": "-torque-animation-duration",
             "default-value": "30",
             "type":"number",
             "default-meaning": "the animation lasts 30 seconds",
             "doc": "Animation duration in seconds"
         },
         "-torque-aggregation-function": {
+            "css": "-torque-aggregation-function",
             "default-value": "count(cartodb_id)",
             "type": "string",
             "default-meaning": "the value for each cell is the count of points in that cell",
             "doc": "A function used to calculate a value from the aggregate data for each cell. See -torque-resolution"
         },
         "-torque-time-attribute": {
+            "css": "-torque-time-attribute",
             "default-value": "time",
             "type": "string",
             "default-meaning": "the data column in your table that is of a time based type",
             "doc": "The table column that contains the time information used create the animation"
         },
         "-torque-data-aggregation": {
+            "css": "-torque-data-aggregation",
             "default-value": "linear",
             "type": [
               "cumulative"
@@ -620,6 +626,12 @@ exports.torque.common.TorqueLayer = TorqueLayer;
   };
 
 })(typeof exports === "undefined" ? this : exports);
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    cartocss_reference: require('./cartocss_reference').torque['torque-reference']
+  };
+}
 (function(exports) {
 
   exports.torque = exports.torque || {};
@@ -1621,6 +1633,444 @@ exports.Profiler = Profiler;
 
 })(typeof exports === "undefined" ? this : exports);
 (function(exports) {
+
+  var torque = exports.torque = exports.torque || {};
+  var providers = exports.torque.providers = exports.torque.providers || {};
+
+  var Uint8Array = torque.types.Uint8Array;
+  var Int32Array = torque.types.Int32Array;
+  var Uint32Array = torque.types.Uint32Array;
+
+  // format('hello, {0}', 'rambo') -> "hello, rambo"
+  function format(str) {
+    for(var i = 1; i < arguments.length; ++i) {
+      var attrs = arguments[i];
+      for(var attr in attrs) {
+        str = str.replace(RegExp('\\{' + attr + '\\}', 'g'), attrs[attr]);
+      }
+    }
+    return str;
+  }
+
+  var json = function (options) {
+    this._ready = false;
+    this._tileQueue = [];
+    this.options = options;
+
+    this.options.is_time = this.options.is_time === undefined ? true: this.options.is_time;
+    this.options.tiler_protocol = options.tiler_protocol || 'http';
+    this.options.tiler_domain = options.tiler_domain || 'cartodb.com';
+    this.options.tiler_port = options.tiler_port || 80;
+
+    if (this.options.data_aggregation) {
+      this.options.cumulative = this.options.data_aggregation === 'cumulative';
+    }
+    if (this.options.auth_token) {
+      var e = this.options.extra_params || (this.options.extra_params = {});
+      e.auth_token = this.options.auth_token;
+    }
+
+    this._fetchMap();
+  };
+
+  json.prototype = {
+
+    /**
+     * return the torque tile encoded in an efficient javascript
+     * structure:
+     * {
+     *   x:Uint8Array x coordinates in tile reference system, normally from 0-255
+     *   y:Uint8Array y coordinates in tile reference system
+     *   Index: Array index to the properties
+     * }
+     */
+    proccessTile: function(rows, coord, zoom) {
+      var r;
+      var x = new Uint8Array(rows.length);
+      var y = new Uint8Array(rows.length);
+
+      var prof_mem = Profiler.metric('torque.provider.windshaft.mem');
+      var prof_point_count = Profiler.metric('torque.provider.windshaft.points');
+      var prof_process_time = Profiler.metric('torque.provider.windshaft.process_time').start();
+
+      // count number of dates
+      var dates = 0;
+      var maxDateSlots = -1;
+      for (r = 0; r < rows.length; ++r) {
+        var row = rows[r];
+        dates += row.dates__uint16.length;
+        for(var d = 0; d < row.dates__uint16.length; ++d) {
+          maxDateSlots = Math.max(maxDateSlots, row.dates__uint16[d]);
+        }
+      }
+
+      if(this.options.cumulative) {
+        dates = (1 + maxDateSlots) * rows.length;
+      }
+
+      var type = this.options.cumulative ? Uint32Array: Uint8Array;
+
+      // reserve memory for all the dates
+      var timeIndex = new Int32Array(maxDateSlots + 1); //index-size
+      var timeCount = new Int32Array(maxDateSlots + 1);
+      var renderData = new (this.options.valueDataType || type)(dates);
+      var renderDataPos = new Uint32Array(dates);
+
+      prof_mem.inc(
+        4 * maxDateSlots + // timeIndex
+        4 * maxDateSlots + // timeCount
+        dates + //renderData
+        dates * 4
+      ); //renderDataPos
+
+      prof_point_count.inc(rows.length);
+
+      var rowsPerSlot = {};
+
+      // precache pixel positions
+      for (var r = 0; r < rows.length; ++r) {
+        var row = rows[r];
+        x[r] = row.x__uint8 * this.options.resolution;
+        // fix value when it's in the tile EDGE
+        // TODO: this should be fixed in SQL query
+        if (row.y__uint8 === -1) {
+          y[r] = 0;
+        } else {
+          y[r] = row.y__uint8 * this.options.resolution;
+        }
+
+        var dates = row.dates__uint16;
+        var vals = row.vals__uint8;
+        if (!this.options.cumulative) {
+          for (var j = 0, len = dates.length; j < len; ++j) {
+              var rr = rowsPerSlot[dates[j]] || (rowsPerSlot[dates[j]] = []);
+              if(this.options.cumulative) {
+                  vals[j] += prev_val;
+              }
+              prev_val = vals[j];
+              rr.push([r, vals[j]]);
+          }
+        } else {
+          var valByDate = {}
+          for (var j = 0, len = dates.length; j < len; ++j) {
+            valByDate[dates[j]] = vals[j];
+          }
+          var accum = 0;
+
+          // extend the latest to the end
+          for (var j = dates[0]; j <= maxDateSlots; ++j) {
+              var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
+              var v = valByDate[j];
+              if (v) {
+                accum += v;
+              }
+              rr.push([r, accum]);
+          }
+
+          /*var lastDateSlot = dates[dates.length - 1];
+          for (var j = lastDateSlot + 1; j <= maxDateSlots; ++j) {
+            var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
+            rr.push([r, prev_val]);
+          }
+          */
+        }
+
+      }
+
+      // for each timeslot search active buckets
+      var renderDataIndex = 0;
+      var timeSlotIndex = 0;
+      var i = 0;
+      for(var i = 0; i <= maxDateSlots; ++i) {
+        var c = 0;
+        var slotRows = rowsPerSlot[i]
+        if(slotRows) {
+          for (var r = 0; r < slotRows.length; ++r) {
+            var rr = slotRows[r];
+            ++c;
+            renderDataPos[renderDataIndex] = rr[0]
+            renderData[renderDataIndex] = rr[1];
+            ++renderDataIndex;
+          }
+        }
+        timeIndex[i] = timeSlotIndex;
+        timeCount[i] = c;
+        timeSlotIndex += c;
+      }
+
+      prof_process_time.end();
+
+      return {
+        x: x,
+        y: y,
+        z: zoom,
+        coord: {
+          x: coord.x,
+          y: coord.y,
+          z: zoom
+        },
+        timeCount: timeCount,
+        timeIndex: timeIndex,
+        renderDataPos: renderDataPos,
+        renderData: renderData,
+        maxDate: maxDateSlots
+      };
+    },
+
+    /*setCartoCSS: function(c) {
+      this.options.cartocss = c;
+    },*/
+
+    setSteps: function(steps, opt) { 
+      opt = opt || {};
+      if (this.options.steps !== steps) {
+        this.options.steps = steps;
+        this.options.step = (this.options.end - this.options.start)/this.getSteps();
+        this.options.step = this.options.step || 1;
+        if (!opt.silent) this.reload();
+      }
+    },
+
+    setOptions: function(opt) {
+      var refresh = false;
+
+      if(opt.resolution !== undefined && opt.resolution !== this.options.resolution) {
+        this.options.resolution = opt.resolution;
+        refresh = true;
+      }
+
+      if(opt.steps !== undefined && opt.steps !== this.options.steps) {
+        this.setSteps(opt.steps, { silent: true });
+        refresh = true;
+      }
+
+      if(opt.column !== undefined && opt.column !== this.options.column) {
+        this.options.column = opt.column;
+        refresh = true;
+      }
+
+      if(opt.countby !== undefined && opt.countby !== this.options.countby) {
+        this.options.countby = opt.countby;
+        refresh = true;
+      }
+
+      if(opt.data_aggregation !== undefined) {
+        var c = opt.data_aggregation === 'cumulative';
+        if (this.options.cumulative !== c) {
+          this.options.cumulative = c;
+          refresh = true;
+        }
+      }
+
+      if (refresh) this.reload();
+      return refresh;
+    },
+
+    _extraParams: function() {
+      if (this.options.extra_params) {
+        var p = [];
+        for(var k in this.options.extra_params) {
+          var v = this.options.extra_params[k];
+          if (v) {
+            p.push(k + "=" + encodeURIComponent(v));
+          }
+        }
+        return p.join('&');
+      }
+      return null;
+    },
+
+    getTileData: function(coord, zoom, callback) {
+      if(!this._ready) {
+        this._tileQueue.push([coord, zoom, callback]);
+      } else {
+        this._getTileData(coord, zoom, callback);
+      }
+    },
+
+    _setReady: function(ready) {
+      this._ready = true;
+      this._processQueue();
+      this.options.ready && this.options.ready();
+    },
+
+    _processQueue: function() {
+      var item;
+      while (item = this._tileQueue.pop()) {
+        this._getTileData.apply(this, item);
+      }
+    },
+
+    /**
+     * `coord` object like {x : tilex, y: tiley }
+     * `zoom` quadtree zoom level
+     */
+    _getTileData: function(coord, zoom, callback) {
+      var self = this;
+      var prof_fetch_time = Profiler.metric('torque.provider.windshaft.tile.fetch').start();
+      var subdomains = this.options.subdomains || '0123';
+      var index = Math.abs(coord.x + coord.y) % subdomains.length;
+      var url = this.templateUrl
+                .replace('{x}', coord.x)
+                .replace('{y}', coord.y)
+                .replace('{z}', zoom)
+                .replace('{s}', subdomains[index])
+
+      var extra = this._extraParams();
+      torque.net.get( url + (extra ? "?" + extra: ''), function (data) {
+        prof_fetch_time.end();
+        if (data && data.responseText) {
+          var rows = JSON.parse(data.responseText);
+          callback(self.proccessTile(rows, coord, zoom));
+        } else {
+          Profiler.metric('torque.provider.windshaft.tile.error').inc();
+          callback(null);
+        }
+      });
+    },
+
+    getKeySpan: function() {
+      return {
+        start: this.options.start,
+        end: this.options.end,
+        step: this.options.step,
+        steps: this.options.steps,
+        columnType: this.options.column_type
+      };
+    },
+
+    setColumn: function(column, isTime) {
+      this.options.column = column;
+      this.options.is_time = isTime === undefined ? true: false;
+      this.reload();
+    },
+
+    reload: function() {
+      this._ready = false;
+      this._fetchMap();
+    },
+
+    getSteps: function() {
+      return Math.min(this.options.steps, this.options.data_steps);
+    },
+
+    getBounds: function() {
+      return this.options.bounds;
+    },
+
+    getSQL: function() {
+      return this.options.sql || "select * from " + this.options.table;
+    },
+
+    setSQL: function(sql) {
+      if (this.options.sql != sql) {
+        this.options.sql = sql;
+        this.reload();
+      }
+    },
+
+    _tilerHost: function() {
+      var opts = this.options;
+      var user = (opts.user_name || opts.user);
+      return opts.tiler_protocol +
+           "://" + (user ? user + "." : "")  +
+           opts.tiler_domain +
+           ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    },
+
+    url: function() {
+      var opts = this.options;
+      var protocol = opts.tiler_protocol || 'http';
+      if (!this.options.cdn_url) {
+        return this._tilerHost();
+      }
+      var h = protocol + "://"
+      if (protocol === 'http') {
+        h += "{s}.";
+      }
+      var cdn_host = opts.cdn_url;
+      if(!cdn_host.http && !cdn_host.https) {
+        throw new Error("cdn_host should contain http and/or https entries");
+      }
+      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user);
+      return h;
+    },
+
+    _generateCartoCSS: function() {
+      var attr = {
+        '-torque-frame-count': this.options.steps,
+        '-torque-resolution': this.options.resolution,
+        '-torque-aggregation-function': "'" + this.options.countby + "'",
+        '-torque-time-attribute': "'" + this.options.column + "'",
+        '-torque-data-aggregation': this.options.cumulative ? 'cumulative': 'linear',
+      };
+      var st = 'Map{';
+      for (var k in attr) {
+        st += k + ":" + attr[k] + ";";
+      }
+      return st + "}";
+    },
+
+    _fetchMap: function(callback) {
+      var self = this;
+      var layergroup = {};
+      var url = this._tilerHost() + "/api/v1/map";
+      var named = this.options.named_map;
+
+      if(named) {
+        //tiles/template
+        url = this._tilerHost() + "/api/v1/map/named/" + named.name + "/jsonp"
+        //url = this._tilerHost() + "/map/" + named.name + "/jsonp"
+      } else {
+        layergroup = {
+          "version": "1.0.1",
+          "stat_tag": this.options.stat_tag || 'torque',
+          "layers": [{
+            "type": "torque",
+            "options": {
+              "cartocss_version": "1.0.0",
+              "cartocss": this._generateCartoCSS(),
+              "sql": this.getSQL()
+            }
+          }]
+        };
+      }
+      var extra = this._extraParams();
+
+      // tiler needs map_key instead of api_key
+      // so replace it
+      if (extra) {
+        extra = extra.replace('api_key=', 'map_key=');
+      }
+
+      url = url +
+        "?config=" + encodeURIComponent(JSON.stringify(layergroup)) +
+        "&callback=?" + (extra ? "&" + extra: '');
+
+      var map_instance_time = Profiler.metric('torque.provider.windshaft.layergroup.time').start();
+      torque.net.jsonp(url, function (data) {
+        map_instance_time.end();
+        if (data) {
+          var torque_key = Object.keys(data.metadata.torque)[0]
+          var opt = data.metadata.torque[torque_key];
+          for(var k in opt) {
+            self.options[k] = opt[k];
+          }
+          self.templateUrl = self.url() + "/api/v1/map/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
+          self._setReady(true);
+        } else {
+          Profiler.metric('torque.provider.windshaft.layergroup.error').inc();
+        }
+      });
+    }
+
+  };
+
+  torque.providers.windshaft = json;
+
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
   var torque = exports.torque = exports.torque || {};
   torque.net = torque.net || {};
 
@@ -1664,7 +2114,8 @@ exports.Profiler = Profiler;
   function get(url, callback, options) {
     options = options || {
       method: 'GET',
-      data: null
+      data: null,
+      responseType: 'text'
     };
     lastCall = { url: url, callback: callback };
     var request = XMLHttpRequest;
@@ -1679,7 +2130,8 @@ exports.Profiler = Profiler;
 
     function respond() {
       var status = req.status, result;
-      if (!status && req.responseText || status >= 200 && status < 300 || status === 304) {
+      var r = options.responseType === 'arraybuffer' ? req.response: req.responseText;
+      if (!status && r || status >= 200 && status < 300 || status === 304) {
         callback(req);
       } else {
         callback(null);
@@ -1692,7 +2144,7 @@ exports.Profiler = Profiler;
 
     req.onprogress = function() {};
 
-    //req.responseType = 'arraybuffer';
+    req.responseType = options.responseType; //'arraybuffer';
     if (options.data) {
       req.setRequestHeader("Content-type", "application/json");
       //req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
@@ -1858,11 +2310,15 @@ exports.Profiler = Profiler;
       this._shader = shader;
     },
 
+    clearSpriteCache: function() {
+      this._sprites = [];
+    },
+
     //
     // generate sprite based on cartocss style
     //
     generateSprite: function(shader, value, shaderVars) {
-      var prof = Profiler.metric('PointRenderer:generateSprite').start();
+      var prof = Profiler.metric('torque.renderer.point.generateSprite').start();
       var st = shader.getStyle('canvas-2d', {
         value: value
       }, shaderVars);
@@ -1877,9 +2333,9 @@ exports.Profiler = Profiler;
 
       var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
-      ctx.width = canvas.width = Math.ceil(canvasSize);
+      var w = ctx.width = canvas.width = Math.ceil(canvasSize);
       ctx.height = canvas.height = Math.ceil(canvasSize);
-      ctx.translate(canvasSize/2, canvasSize/2);
+      ctx.translate(w/2, w/2);
       if(st['point-file'] || st['marker-file']) {
         torque.cartocss.renderSprite(ctx, st);
       } else {
@@ -1890,7 +2346,7 @@ exports.Profiler = Profiler;
           torque.cartocss.renderPoint(ctx, st);
         }
       }
-      prof.end();
+      prof.end(true);
       return canvas;
     },
 
@@ -1898,6 +2354,7 @@ exports.Profiler = Profiler;
     // renders all the layers (and frames for each layer) from cartocss
     //
     renderTile: function(tile, key) {
+      var prof = Profiler.metric('torque.renderer.point.renderLayers').start();
       var layers = this._shader.getLayers();
       for(var i = 0, n = layers.length; i < n; ++i ) {
         var layer = layers[i];
@@ -1911,6 +2368,7 @@ exports.Profiler = Profiler;
           }
         }
       }
+      prof.end(true);
     },
 
     //
@@ -1920,7 +2378,7 @@ exports.Profiler = Profiler;
     _renderTile: function(tile, key, frame_offset, sprites, shader, shaderVars) {
       if(!this._canvas) return;
 
-      var prof = Profiler.metric('PointRenderer:renderTile').start();
+      var prof = Profiler.metric('torque.renderer.point.renderTile').start();
       var ctx = this._ctx;
       var blendMode = shader.eval('comp-op') || this.options.blendmode;
       if(blendMode) {
@@ -1950,7 +2408,7 @@ exports.Profiler = Profiler;
           }
         }
       }
-      prof.end();
+      prof.end(true);
     },
 
     setBlendMode: function(b) {
@@ -2744,6 +3202,7 @@ GMapsTileLoader.prototype = {
     this._map = map;
     this._projection = projection;
     this._tiles = {};
+    this._tilesLoading = {};
     this._tilesToLoad = 0;
     this._updateTiles = this._updateTiles.bind(this);
     this._listeners = [];
@@ -2832,15 +3291,23 @@ GMapsTileLoader.prototype = {
   _removeTile: function (key) {
       this.onTileRemoved && this.onTileRemoved(this._tiles[key]); 
       delete this._tiles[key];
+      delete this._tilesLoading[key];
+  },
+
+  _tileKey: function(tilePoint) {
+    return tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom;
   },
 
   _tileShouldBeLoaded: function (tilePoint) {
-      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+      var k = this._tileKey(tilePoint);
+      return !(k in this._tiles) && !(k in this._tilesLoading);
   },
 
   _tileLoaded: function(tilePoint, tileData) {
     this._tilesToLoad--;
-    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    var k = tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom
+    this._tiles[k] = tileData;
+    delete this._tilesLoading[k];
     if(this._tilesToLoad === 0) {
       this.onTilesLoaded && this.onTilesLoaded();
     }
@@ -2914,11 +3381,17 @@ GMapsTileLoader.prototype = {
 
       this._tilesToLoad += tilesToLoad;
 
-      if (this.onTileAdded) {
         for (i = 0; i < tilesToLoad; i++) {
-          this.onTileAdded(queue[i]);
+          var t = queue[i];
+          var k = this._tileKey(t);
+          this._tilesLoading[k] = t;
+          // events
+          if (this.onTileAdded) {
+            this.onTileAdded(t);
+          }
         }
-      }
+
+      this.onTilesLoading && this.onTilesLoading();
   }
 
 }
@@ -2940,7 +3413,7 @@ function GMapsTorqueLayer(options) {
   this.ready = false;
   this.options = _.extend({}, options);
   _.defaults(this.options, {
-    provider: 'sql_api',
+    provider: 'windshaft',
     renderer: 'point',
     resolution: 2,
     steps: 100,
@@ -2989,7 +3462,8 @@ GMapsTorqueLayer.prototype = _.extend({},
 
   providers: {
     'sql_api': torque.providers.json,
-    'url_template': torque.providers.jsonarray
+    'url_template': torque.providers.jsonarray,
+    'windshaft': torque.providers.windshaft
   },
 
   renderers: {
@@ -3016,6 +3490,11 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     this.provider = new this.providers[this.options.provider](this.options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), this.options);
+
+    // this listener should be before tile loader
+    this._cacheListener = google.maps.event.addListener(this.options.map, 'zoom_changed', function() {
+      self.renderer && self.renderer.clearSpriteCache();
+    });
 
     this._initTileLoader(this.options.map, this.getProjection());
 
@@ -3077,6 +3556,8 @@ GMapsTorqueLayer.prototype = _.extend({},
   onTileAdded: function(t) {
     var self = this;
     this.provider.getTileData(t, t.zoom, function(tileData) {
+      // don't load tiles that are not being shown
+      if (t.zoom !== self.options.map.getZoom()) return;
       self._tileLoaded(t, tileData);
       if (tileData) {
         self.redraw();
@@ -3172,6 +3653,7 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     // provider options
     var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    this.provider && this.provider.setCartoCSS && this.provider.setCartoCSS(cartocss);
     if(this.provider && this.provider.setOptions(options)) {
       this._reloadTiles();
     }
@@ -3194,6 +3676,7 @@ GMapsTorqueLayer.prototype = _.extend({},
     CanvasLayer.prototype.onRemove.call(this);
     this.animator.stop();
     this._removeTileLoader();
+    google.maps.event.removeListener(this._cacheListener);
   }
 
 });
@@ -3285,6 +3768,7 @@ L.Mixin.TileLoader = {
 
   _initTileLoader: function() {
     this._tiles = {}
+    this._tilesLoading = {};
     this._tilesToLoad = 0;
     this._map.on({
         'moveend': this._updateTiles
@@ -3358,15 +3842,23 @@ L.Mixin.TileLoader = {
   _removeTile: function (key) {
       this.fire('tileRemoved', this._tiles[key]);
       delete this._tiles[key];
+      delete this._tilesLoading[key];
+  },
+
+  _tileKey: function(tilePoint) {
+    return tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom;
   },
 
   _tileShouldBeLoaded: function (tilePoint) {
-      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+      var k = this._tileKey(tilePoint);
+      return !(k in this._tiles) && !(k in this._tilesLoading);
   },
 
   _tileLoaded: function(tilePoint, tileData) {
     this._tilesToLoad--;
-    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    var k = tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom
+    this._tiles[k] = tileData;
+    delete this._tilesLoading[k];
     if(this._tilesToLoad === 0) {
       this.fire("tilesLoaded");
     }
@@ -3410,8 +3902,12 @@ L.Mixin.TileLoader = {
       this._tilesToLoad += tilesToLoad;
 
       for (i = 0; i < tilesToLoad; i++) {
-        this.fire('tileAdded', queue[i]);
+        var t = queue[i];
+        var k = this._tileKey(t);
+        this._tilesLoading[k] = t;
+        this.fire('tileAdded', t);
       }
+      this.fire("tilesLoading");
 
   }
 }
@@ -3437,42 +3933,130 @@ L.CanvasLayer = L.Class.extend({
       opacity: 1,
       unloadInvisibleTiles: L.Browser.mobile,
       updateWhenIdle: L.Browser.mobile,
-      tileLoader: false // installs tile loading events
+      tileLoader: false, // installs tile loading events
+      zoomAnimation: true
   },
 
-  initialize: function (options) { 
+  initialize: function (options) {
     var self = this;
+    options = options || {};
     //this.project = this._project.bind(this);
     this.render = this.render.bind(this);
     L.Util.setOptions(this, options);
-    this._canvas = document.createElement('canvas');
+    this._canvas = this._createCanvas();
+    // backCanvas for zoom animation
+    if (this.options.zoomAnimation) {
+      this._backCanvas = this._createCanvas();
+    }
     this._ctx = this._canvas.getContext('2d');
-    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    this.currentAnimationFrame = -1;
+    this.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                                 window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
                                     return window.setTimeout(callback, 1000 / 60);
                                 };
-    this.requestAnimationFrame = requestAnimationFrame;
+    this.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame ||
+                                window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || function(id) { clearTimeout(id); };
+  },
+
+  _createCanvas: function() {
+    var canvas;
+    canvas = document.createElement('canvas');
+    canvas.style.position = 'absolute';
+    canvas.style.top = 0;
+    canvas.style.left = 0;
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = this.options.zIndex || 0;
+    var className = 'leaflet-tile-container';
+    if (this.options.zoomAnimation) {
+      className += ' leaflet-zoom-animated';
+    }
+    canvas.setAttribute('class', className);
+    return canvas;
   },
 
   onAdd: function (map) {
     this._map = map;
 
-    this._staticPane = map._createPane('leaflet-tile-pane', map._container);
-    this._staticPane.appendChild(this._canvas);
+    // add container with the canvas to the tile pane
+    // the container is moved in the oposite direction of the 
+    // map pane to keep the canvas always in (0, 0)
+    var tilePane = this._map._panes.tilePane;
+    var _container = L.DomUtil.create('div', 'leaflet-layer');
+    _container.appendChild(this._canvas);
+    if (this.options.zoomAnimation) {
+      _container.appendChild(this._backCanvas);
+      this._backCanvas.style.display = 'none';
+    }
+    tilePane.appendChild(_container);
 
-    map.on({
-      'viewreset': this._reset
-      //'move': this._render
+    this._container = _container;
+
+    // hack: listen to predrag event launched by dragging to
+    // set container in position (0, 0) in screen coordinates
+    map.dragging._draggable.on('predrag', function() {
+      var d = map.dragging._draggable;
+      L.DomUtil.setPosition(this._canvas, { x: -d._newPos.x, y: -d._newPos.y });
     }, this);
 
-    map.on('move', this._render, this);//function(){ console.log("a"); }, this);
+    map.on({ 'viewreset': this._reset }, this);
+    map.on('move', this.render, this);
     map.on('resize', this._reset, this);
+
+    if (this.options.zoomAnimation) {
+      map.on({
+        'zoomanim': this._animateZoom,
+        'zoomend': this._endZoomAnim,
+        'moveend': this._reset
+      }, this);
+    }
 
     if(this.options.tileLoader) {
       this._initTileLoader();
     }
 
     this._reset();
+  },
+
+  _animateZoom: function (e) {
+    if (!this._animating) {
+        this._animating = true;
+    }
+    var back = this._backCanvas;
+
+    back.width = this._canvas.width;
+    back.height = this._canvas.height;
+
+    // paint current canvas in back canvas with trasnformation
+    var pos = this._canvas._leaflet_pos || { x: 0, y: 0 };
+    back.getContext('2d').drawImage(this._canvas, 0, 0);
+
+    L.DomUtil.setPosition(back, L.DomUtil.getPosition(this._canvas));
+
+    // hide original
+    this._canvas.style.display = 'none';
+    back.style.display = 'block';
+    var map = this._map;
+    var scale = map.getZoomScale(e.zoom);
+    var newCenter = map._latLngToNewLayerPoint(map.getCenter(), e.zoom, e.center);
+    var oldCenter = map._latLngToNewLayerPoint(e.center, e.zoom, e.center);
+
+    var origin = {
+      x:  newCenter.x - oldCenter.x + pos.x,
+      y:  newCenter.y - oldCenter.y + pos.y,
+    };
+
+    var bg = back;
+    var transform = L.DomUtil.TRANSFORM;
+    setTimeout(function() {
+      bg.style[transform] = L.DomUtil.getTranslateString(origin) + ' scale(' + e.scale + ') ';
+    }, 0)
+  },
+
+  _endZoomAnim: function () {
+    this._animating = false;
+    this._canvas.style.display = 'block';
+    this._backCanvas.style.display = 'none';
+    this._backCanvas.style[L.DomUtil.TRANSFORM] = '';
   },
 
   getCanvas: function() {
@@ -3488,11 +4072,14 @@ L.CanvasLayer = L.Class.extend({
   },
 
   onRemove: function (map) {
-    map._container.removeChild(this._staticPane);
+    this._container.parentNode.removeChild(this._container);
     map.off({
-        'viewreset': this._reset,
-        'move': this._render,
-        'resize': this._reset
+      'viewreset': this._reset,
+      'move': this._render,
+      'moveend': this._reset,
+      'resize': this._reset,
+      'zoomanim': this._animateZoom,
+      'zoomend': this._endZoomAnim
     }, this);
   },
 
@@ -3507,6 +4094,13 @@ L.CanvasLayer = L.Class.extend({
     return this;
   },
 
+  setZIndex: function(zIndex) {
+    this._canvas.style.zIndex = zIndex;
+    if (this.options.zoomAnimation) {
+      this._backCanvas.style.zIndex = zIndex;
+    }
+  },
+
   bringToFront: function () {
     return this;
   },
@@ -3519,6 +4113,12 @@ L.CanvasLayer = L.Class.extend({
     var size = this._map.getSize();
     this._canvas.width = size.x;
     this._canvas.height = size.y;
+
+    // fix position
+    var pos = L.DomUtil.getPosition(this._map.getPanes().mapPane);
+    if (pos) {
+      L.DomUtil.setPosition(this._canvas, { x: -pos.x, y: -pos.y });
+    }
     this.onResize();
     this._render();
   },
@@ -3533,11 +4133,19 @@ L.CanvasLayer = L.Class.extend({
   _updateOpacity: function () { },
 
   _render: function() {
-    this.requestAnimationFrame.call(window, this.render);
+    if (this.currentAnimationFrame >= 0) {
+      this.cancelAnimationFrame.call(window, this.currentAnimationFrame);
+    }
+    this.currentAnimationFrame = this.requestAnimationFrame.call(window, this.render);
   },
 
-  redraw: function() {
-    this._render();
+  // use direct: true if you are inside an animation frame call
+  redraw: function(direct) {
+    if (direct) {
+      this.render();
+    } else {
+      this._render();
+    }
   },
 
   onResize: function() {
@@ -3558,7 +4166,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   providers: {
     'sql_api': torque.providers.json,
-    'url_template': torque.providers.jsonarray
+    'url_template': torque.providers.jsonarray,
+    'windshaft': torque.providers.windshaft
   },
 
   renderers: {
@@ -3585,7 +4194,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.animator = new torque.Animator(function(time) {
       var k = time | 0;
       if(self.key !== k) {
-        self.setKey(k);
+        self.setKey(k, { direct: true });
       }
     }, options);
 
@@ -3600,7 +4209,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     L.CanvasLayer.prototype.initialize.call(this, options);
 
     this.options.renderer = this.options.renderer || 'point';
-    this.options.provider = this.options.provider || 'sql_api';
+    this.options.provider = this.options.provider || 'windshaft';
 
     options.ready = function() {
       self.fire("change:bounds", {
@@ -3621,6 +4230,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
       var tileData = this.provider.getTileData(t, t.zoom, function(tileData) {
+        // don't load tiles that are not being shown
+        if (t.zoom !== self._map.getZoom()) return;
         self._tileLoaded(t, tileData);
         if (tileData) {
           self.redraw();
@@ -3631,10 +4242,45 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   },
 
+  _clearCaches: function() {
+    this.renderer && this.renderer.clearSpriteCache();
+  },
+
+  onAdd: function (map) {
+    map.on({
+      'zoomend': this._clearCaches,
+      'zoomstart': this._pauseOnZoom,
+    }, this);
+
+    map.on({
+      'zoomend': this._resumeOnZoom
+    }, this);
+    L.CanvasLayer.prototype.onAdd.call(this, map);
+  },
 
   onRemove: function(map) {
     this._removeTileLoader();
+    map.off({
+      'zoomend': this._clearCaches,
+      'zoomstart': this._pauseOnZoom,
+    }, this);
+    map.off({
+      'zoomend': this._resumeOnZoom
+    }, this);
     L.CanvasLayer.prototype.onRemove.call(this, map);
+  },
+
+  _pauseOnZoom: function() {
+    this.wasRunning = this.isRunning();
+    if (this.wasRunning) {
+      this.pause();
+    }
+  },
+
+  _resumeOnZoom: function() {
+    if (this.wasRunning) {
+      this.play();
+    }
   },
 
   hide: function() {
@@ -3713,10 +4359,10 @@ L.TorqueLayer = L.CanvasLayer.extend({
    * it renders directly, if it's an array it renders
    * accumulated
    */
-  setKey: function(key) {
+  setKey: function(key, options) {
     this.key = key;
     this.animator.step(key);
-    this.redraw();
+    this.redraw(options && options.direct);
     this.fire('change:time', { time: this.getTime(), step: this.key });
   },
 
@@ -3772,9 +4418,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     // provider options
     var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    this.provider.setCartoCSS && this.provider.setCartoCSS(cartocss);
     if(this.provider.setOptions(options)) {
       this._reloadTiles();
     }
+
     _.extend(this.options, options);
 
     // animator options
@@ -3784,88 +4432,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     this.redraw();
     return this;
-  }
-
-});
-
-
-L.TiledTorqueLayer = L.TileLayer.Canvas.extend({
-
-  providers: {
-    'sql_api': torque.providers.json,
-    'url_template': torque.providers.JsonArray
-  },
-
-  renderers: {
-    'point': torque.renderer.Point,
-    'pixel': torque.renderer.Rectangle
-  },
-
-  initialize: function(options) {
-    var self = this;
-    this.key = 0;
-
-    options.async = true;
-    L.TileLayer.Canvas.prototype.initialize.call(this, options);
-
-
-    this.options.renderer = this.options.renderer || 'pixel';
-    this.options.provider = this.options.provider || 'sql_api';
-
-    this.provider = new this.providers[this.options.provider](options);
-    this.renderer = new this.renderers[this.options.renderer](null, options);
-
-  },
-
-  _tileLoaded: function(tile, tilePoint, tileData) {
-    if(this._tiles[tilePoint.x + ':' + tilePoint.y] !== undefined) {
-      this._tiles[tilePoint.x + ':' + tilePoint.y].data = tileData;
-      this.drawTile(tile);
-    }
-    L.TileLayer.Canvas.prototype._tileLoaded.call(this);
-  },
-
-  redraw: function() {
-    for (var i in this._tiles) {
-        this._redrawTile(this._tiles[i]);
-    }
-  },
-
-  _loadTile: function(tile, tilePoint) {
-    var self = this;
-    L.TileLayer.Canvas.prototype._loadTile.apply(this, arguments);
-
-    // get the data from adjusted point but render in the right canvas
-    var adjusted = tilePoint.clone()
-    this._adjustTilePoint(adjusted);
-    this.provider.getTileData(adjusted, this._map.getZoom(), function(tileData) {
-      self._tileLoaded(tile, tilePoint, tileData);
-      L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
-    });
-  },
-
-  drawTile: function (tile) {
-    var canvas = tile;
-    if(!tile.data) return;
-    canvas.width = canvas.width;
-
-    this.renderer.setCanvas(canvas);
-
-    var accum = this.renderer.accumulate(tile.data, this.key);
-    this.renderer.renderTileAccum(accum, 0, 0);
-  },
-
-  setKey: function(key) {
-    this.key = key;
-    this.redraw();
-  },
-
-  /**
-   * set the cartocss for the current renderer
-   */
-  setCartoCSS: function(cartocss) {
-    if (!this.renderer) throw new Error('renderer is not valid');
-    return this.renderer.setCartoCSS(cartocss);
   }
 
 });

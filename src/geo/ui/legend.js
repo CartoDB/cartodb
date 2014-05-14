@@ -281,7 +281,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "choropleth-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li class="min">\t\t<%= leftLabel %></li><li class="max">\t\t<%= rightLabel %></li><li class="graph count_<%= buckets_count %>">\t<div class="colors"><%= colors %>\n\t</div></li></ul>'),
 
   initialize: function() {
 
@@ -295,13 +295,13 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
     if (this.model.get("colors")) {
       return _.map(this.model.get("colors"), function(color) {
-        return '<div class="quartile" style="background-color:' + color + '"></div>';
+        return '\n\t<div class="quartile" style="background-color:' + color + '"></div>';
       }).join("");
     } else {
 
       for (var i = 2; i < this.items.length; i++) {
         var color = this.items.at(i).get("value");
-        colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+        colors += '\n\t<div class="quartile" style="background-color:'+color+'"></div>';
       }
     }
 
@@ -367,7 +367,7 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "density-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul>\n<li class="min"><%= leftLabel %></li>\n<li class="max"><%= rightLabel %></li>\n<li class="graph count_<%= buckets_count %>">\n<div class="colors"><%= colors %></div>\n</li>\n</ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li class="min">\t<%= leftLabel %></li><li class="max">\t<%= rightLabel %></li><li class="graph count_<%= buckets_count %>">\t<div class="colors"><%= colors %>\n\t</div></li></ul>'),
 
   initialize: function() {
 
@@ -400,14 +400,14 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
     if (this.model.get("colors")) {
 
       return _.map(this.model.get("colors"), function(color) {
-        return '<div class="quartile" style="background-color:' + color + '"></div>';
+        return '\n\t\t<div class="quartile" style="background-color:' + color + '"></div>';
       }).join("");
 
     } else {
 
       for (var i = 2; i < this.items.length; i++) {
         var color = this.items.at(i).get("value");
-        colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+        colors += '\n\t\t<div class="quartile" style="background-color:'+color+'"></div>';
       }
     }
 
@@ -510,7 +510,7 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "intensity-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul>\n<li class="min"><%= leftLabel %></li>\n<li class="max"><%= rightLabel %></li>\n<li class="graph"></li>\n</ul>\n'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li class="min">\t<%= leftLabel %></li><li class="max">\t<%= rightLabel %></li><li class="graph"></li></ul>'),
 
   initialize: function() {
 
@@ -651,7 +651,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "category-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul></ul>\n'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
@@ -676,7 +676,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0 || item.get("type") && item.get("type") == 'image') ? "bkg" : "",
-      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
+      template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -753,7 +753,7 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
 
   type: "color",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
@@ -772,7 +772,7 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
+      template: '\t\t<div class="bullet" style="background: <%= value %>"></div> <%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -1063,7 +1063,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
   className: "custom-legend",
   type: "custom",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
@@ -1090,7 +1090,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
     view = new cdb.geo.ui.LegendItem({
       model: item,
       className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      template: '\t\t<div class="bullet" style="background:<%= value %>"></div>\n\t\t<%= name || "null" %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -1150,7 +1150,7 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
 
     this.model.bind("change:items change:template change:title change:show_title", this.render, this);
 
-  },
+  }
 
 });
 
@@ -1162,7 +1162,7 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "bubble-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>'),
+  template: _.template('<% if (title && show_title) { %>\n<div class="legend-title"><%= title %></div><% } %><ul><li>\t<%= min %></li><li class="graph">\t\t<div class="bubbles"></div></li><li>\t<%= max %></li></ul>'),
 
   initialize: function() {
 
@@ -1303,7 +1303,7 @@ cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
   _generateColorList: function() {
 
     return _.map(this.model.get("colors"), function(color) {
-      return '<div class="quartile" style="background-color:' + color + '"></div>';
+      return '\t\t<div class="quartile" style="background-color:' + color + '"></div>';
     }).join("");
 
   },

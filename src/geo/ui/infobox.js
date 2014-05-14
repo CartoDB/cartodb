@@ -14,7 +14,11 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
     if(this.options.layer) {
       this.enable();
     }
-    this.template = cdb.core.Template.compile(this.options.template || this.defaultTemplate, 'mustache');
+    this.setTemplate(this.options.template || this.defaultTemplate, 'mustache');
+  },
+
+  setTemplate: function(tmpl) {
+    this.template = cdb.core.Template.compile(tmpl, 'mustache');
   },
 
   enable: function() {

@@ -11,7 +11,9 @@ var Layers = cdb.vis.Layers;
 var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
-  'https://tile.stamen.com/': 'http://tile.stamen.com/'
+  'https://tile.stamen.com/': 'http://tile.stamen.com/',
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {
@@ -69,6 +71,8 @@ function normalizeOptions(vis, data) {
   if(vis.https) {
     data.tiler_protocol = 'https';
     data.tiler_port = 443;
+    data.sql_api_protocol = 'https';
+    data.sql_api_port = 443;
   }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
 }
@@ -90,6 +94,11 @@ Layers.register('carto', cartoLayer);
 Layers.register('layergroup', function(vis, data) {
   normalizeOptions(vis, data);
   return new cdb.geo.CartoDBGroupLayer(data);
+});
+
+Layers.register('namedmap', function(vis, data) {
+  normalizeOptions(vis, data);
+  return new cdb.geo.CartoDBNamedMapLayer(data);
 });
 
 Layers.register('torque', function(vis, data) {

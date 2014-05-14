@@ -12,24 +12,15 @@ quick start
     ```html
 
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
-
 
         <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
         <!-- use these cartodb.css links if you are using https -->
-
-        <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.css" /-->
-        <!--[if lte IE 8]>
-            <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.ie.css" /-->
-        <![endif]-->
-
+        <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" /-->
 
         <!-- use this cartodb.js link if you are using https -->
-        <!-- script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/cartodb.js"></script -->
+        <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script -->
     ```
 
 
@@ -77,16 +68,16 @@ quick start
 examples
 ========
 
- - [Load a layer with Google Maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
- - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
- - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
- - [A visualization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
- - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
- - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
- - [Load a vector layer with Google Maps](http://cartodb.github.com/cartodb.js/examples/gmaps_vector.html)
- - [Load a vector layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet_vector.html)
- - [Load a vector layer to Leaflet with hover effect](http://cartodb.github.com/cartodb.js/examples/leaflet_vector_hover.html)
- - [Add cursor interaction without a visualization](http://cartodb.github.com/cartodb.js/examples/cursor_interaction.html)
+ - [Load a layer with Google Maps](http://cartodb.github.io/cartodb.js/examples/gmaps.html)
+ - [Load a layer with Leaflet](http://cartodb.github.io/cartodb.js/examples/leaflet.html)
+ - [Show a complete visualization](http://cartodb.github.io/cartodb.js/examples/easy.html)
+ - [A visualization with a layer selector](http://cartodb.github.io/cartodb.js/examples/layer_selector.html)
+ - [How to create a custom infowindow](http://cartodb.github.io/cartodb.js/examples/custom_infowindow.html)
+ - [The Hobbit filming location paths](http://cartodb.github.io/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
+ - [Load a vector layer with Google Maps](http://cartodb.github.io/cartodb.js/examples/gmaps_vector.html)
+ - [Load a vector layer with Leaflet](http://cartodb.github.io/cartodb.js/examples/leaflet_vector.html)
+ - [Load a vector layer to Leaflet with hover effect](http://cartodb.github.io/cartodb.js/examples/leaflet_vector_hover.html)
+ - [Add cursor interaction without a visualization](http://cartodb.github.io/cartodb.js/examples/cursor_interaction.html)
 
 
 next steps

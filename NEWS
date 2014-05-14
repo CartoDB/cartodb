@@ -1,3 +1,131 @@
+3.9.04 (14//05//2014)
+- Added position parameter in Tooltip overlay
+
+3.9.03 (14//05//2014)
+- Added tooltip option in createLayer method
+
+3.9.02 (14//05//2014)
+- Fixes torque width for small screens
+
+3.9.01 (14//05//2014)
+- Fixed regression for mouseover event in layers
+
+3.9.00 (13//05//2014)
+- indents HTML of legends
+- fixed getSubLayer in core library
+- added tooltip loading from viz.json
+
+3.8.11 (28//04/2014)
+- adds new link to the visualization in the share dialog.
+
+3.8.10 (21//04/2014)
+- fixed problem parsing map viz options when values are not valid
+- fixed interaction in IE8
+- getCartoCSS and getSQL raise an exception for named maps
+- fixed core library
+- added url translation for https for cartodb basemaps
+
+3.8.09 (04//04/2014)
+- fixed map instanciation when named map has no layer information
+
+3.8.08 (03//04/2014)
+- fixed layer visibility
+
+3.8.07 (03//04/2014)
+- fixed attribution position for gmaps
+- fixed maps api request when all the layers are hidden
+- fixed error in gmaps when tile loading raises an error
+- fixed panBy on leaflet when torque layers are used
+
+3.8.06 (27//03//2014)
+- fixed layer interaction is not disabled when sublayer is hidden
+
+3.8.05 (25//03/2014)
+- update torque library
+- fixed interaction with naned maps when there is a hidden layer
+- added multiple metrics
+
+3.8.04 (20//03//2014)
+- prevent the scrolling of the map when the user scrolls the infowindow content.
+- enables the scrollwheel when the user enters in the fullscreen model.
+- fixes the embed_map url in the share dialog.
+- raised leaflet maxZoom from 18 to 30
+- fixed setting interactivity in private layers should raise an exception (#108)
+- added metrics for tile and layergroup loading time
+
+3.8.03 (15//03//2014)
+- fixed addCursorInteraction
+- fixed fieldCount when there are no fields in infowindow
+
+3.8.02 (14//03//2014)
+- use cdn_url from tiler requests
+- use https to fetch infowindow data when https is used
+- changes default target for the fullscreen option in embeds
+
+3.8.01 (13//03/2014)
+- fixed nokia https to http url rewrite
+
+3.8.00 (11//03//2014)
+- Added mouseover and mouseout for layers
+- Fixed error in old IE browsers for torque visualizations.
+- Changed CartoDB attribution style under google maps.
+
+3.7.07 (10//03//2014)
+- Fixes infowindow placement in fullscreen mode.
+
+3.7.06 (07//03//2014)
+- alternate_names in infowindow was not being honored
+
+3.7.05 (06//03//2014)
+- Added setParams method to layer to support named maps (#106)
+- fixed problems with infowindow when there are hidden layers
+
+3.7.04 (27//02//2014)
+- fixed layer update in gmaps 
+- when jsonp is used errors are not reported to the layer 
+- updated torque, fix problem with some cartocss options (step) 
+
+3.7.03 (25//02//2014)
+- Fixed https in torque tiles
+
+3.7.02 (25//02//2014)
+- Fixed auth_token fetching infowindow attributes
+- updated torque library
+
+3.7.01 (25//02//2014)
+- Fixed auth_token in torque layers
+- Fixed time slider in torque layers
+- Fixed auth_token fetching attributes
+
+3.7.00 (24//02/2014)
+- Added support for named maps
+- Added cartodb.noleaflet.js to build (#105)
+
+3.6.02 (18//02//2014)
+- Adds profiling support for plugable backends
+
+3.6.01 (13//02//2014)
+- Fixes a call to window.addEventListener in IE8.
+- Adds fullscreen detection.
+
+3.6.00 (31//01//2014)
+- Using Leaflet 0.7.2
+- Adjusts the map header after the device is rotated
+- Fixes map header when there's no title & description
+
+3.5.07 (28//01//2014)
+- fixed fetching twice updated_at in torque layers
+
+3.5.06 (23//01//2014)
+- Fixed IE7
+
+3.5.05 (14//01//2014)
+-----
+- Removed animation while dragging a marker under GMaps.
+- Added retina icons
+- Enable interactivity when tooltip is added fixed #92 #64
+- Fixed torque styles when zoom was used in cartocss
+
 3.5.04 (20//12//2013)
 -----
 - Added attribution for torque layers.

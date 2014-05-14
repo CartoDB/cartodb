@@ -66,7 +66,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     _.each(this.map.layers.models, function(layer) {
 
-      if (layer.get("type") == 'layergroup') {
+      if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
         var layerGroupView = self.mapView.getLayerByCid(layer.cid);
         for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
           var l = layerGroupView.getLayer(i);

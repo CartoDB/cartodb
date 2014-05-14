@@ -33,6 +33,7 @@
 var MAX_HISTORY = 1024;
 function Profiler() {}
 Profiler.metrics = {};
+Profiler._backend = null;
 
 Profiler.get = function(name) {
   return Profiler.metrics[name] || {
@@ -41,12 +42,19 @@ Profiler.get = function(name) {
     avg: 0,
     total: 0,
     count: 0,
+    last: 0,
     history: typeof(Float32Array) !== 'undefined' ? new Float32Array(MAX_HISTORY) : []
   };
 };
 
-Profiler.new_value = function (name, value) {
+Profiler.backend = function (_) {
+  Profiler._backend = _;
+}
+
+Profiler.new_value = function (name, value, type, defer) {
+  type =  type || 'i';
   var t = Profiler.metrics[name] = Profiler.get(name);
+
 
   t.max = Math.max(t.max, value);
   t.min = Math.min(t.min, value);
@@ -54,6 +62,17 @@ Profiler.new_value = function (name, value) {
   ++t.count;
   t.avg = t.total / t.count;
   t.history[t.count%MAX_HISTORY] = value;
+
+  if (!defer) {
+    Profiler._backend && Profiler._backend([type, name, value]);
+  } else {
+    var n = new Date().getTime()
+    // don't allow to send stats quick
+    if (n - t.last > 1000) {
+      Profiler._backend && Profiler._backend([type, name, t.avg]);
+      t.last = n;
+    }
+  }
 };
 
 Profiler.print_stats = function () {
@@ -94,9 +113,9 @@ Metric.prototype = {
   // ``start`` should be called first, if not this 
   // function does not take effect
   //
-  end: function() {
+  end: function(defer) {
     if (this.t0 !== null) {
-      Profiler.new_value(this.name, this._elapsed());
+      Profiler.new_value(this.name, this._elapsed(), 't', defer);
       this.t0 = null;
     }
   },
@@ -107,7 +126,7 @@ Metric.prototype = {
   //
   inc: function(qty) {
     qty = qty === undefined ? 1: qty;
-    Profiler.new_value(this.name, qty);
+    Profiler.new_value(this.name, qty, 'i');
   },
 
   //
@@ -116,7 +135,7 @@ Metric.prototype = {
   //
   dec: function(qty) {
     qty = qty === undefined ? 1: qty;
-    this.inc(-qty);
+    Profiler.new_value(this.name, qty, 'd');
   },
 
   //

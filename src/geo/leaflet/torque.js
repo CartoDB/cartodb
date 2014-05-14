@@ -37,7 +37,10 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
+      cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
@@ -45,13 +48,17 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     // match leaflet events with backbone events
     this.fire = this.trigger;
 
-    this.setCartoCSS(layerModel.get('tile_style'));
+    //this.setCartoCSS(layerModel.get('tile_style'));
     if (layerModel.get('visible')) {
       this.play();
     }
 
     this.bind('tilesLoaded', function() {
       this.trigger('load');
+    }, this);
+
+    this.bind('tilesLoading', function() {
+      this.trigger('loading');
     }, this);
 
   },

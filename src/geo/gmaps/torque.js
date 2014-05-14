@@ -34,10 +34,13 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       map: gmapsMap,
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
+      cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token')
   });
 
-  this.setCartoCSS(this.model.get('tile_style'));
+  //this.setCartoCSS(this.model.get('tile_style'));
   if (layerModel.get('visible')) {
     this.play();
   }
@@ -73,6 +76,10 @@ _.extend(
   onTilesLoaded: function() {
     //this.trigger('load');
     Backbone.Events.trigger.call(this, 'load');
+  },
+
+  onTilesLoading: function() {
+    Backbone.Events.trigger.call(this, 'loading');
   }
 
 });

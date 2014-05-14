@@ -74,19 +74,8 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       }
     }
     return false; // different type
-  },
-
-  /**
-   * Updates the style chaging the table name for a new one
-   * @param  {String} previousName
-   * @param  {String} newName
-   */
-  updateCartoCss: function(previousName, newName) {
-    var tileStyle = this.get('tile_style');
-    var replaceRegexp = new RegExp('#'+previousName, 'g');
-    tileStyle = tileStyle.replace(replaceRegexp, '#'+newName);
-    this.save({'tile_style': tileStyle});
   }
+
 
 });
 
@@ -195,6 +184,13 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   defaults: {
     visible: true,
     type: 'layergroup'
+  }
+});
+
+cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    visible: true,
+    type: 'namedmap'
   }
 });
 

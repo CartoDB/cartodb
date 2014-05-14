@@ -67,6 +67,61 @@ describe("Vis", function() {
     expect(this.vis.map.get('bounding_box_ne')).toEqual([3,5]);
   })
 
+  it("should parse center if values are correct", function() {
+    this.container = $('<div>').css('height', '200px');
+    var opts = {
+      center_lat: 43.3,
+      center_lon: "89"
+    }
+    this.vis.load(this.mapConfig, opts);
+
+    expect(this.mapConfig.center[0]).toEqual(43.3);
+    expect(this.mapConfig.center[1]).toEqual(89.0);
+  })
+
+  it("should not parse center if values are not correct", function() {
+    this.container = $('<div>').css('height', '200px');
+    var opts = {
+      center_lat: 43.3,
+      center_lon: "ham"
+    }
+    this.vis.load(this.mapConfig, opts);
+
+    expect(this.mapConfig.center[0]).not.toEqual(43.3);
+    expect(this.mapConfig.center[1]).not.toEqual("ham");
+  })
+  
+  it("should parse bounds values if they are correct", function() {
+    this.container = $('<div>').css('height', '200px');
+    var opts = {
+      sw_lat: 43.3,
+      sw_lon: 12,
+      ne_lat: 12,
+      ne_lon: "0"
+    }
+    this.vis.load(this.mapConfig, opts);
+
+    expect(this.mapConfig.bounds[0][0]).toEqual(43.3);
+    expect(this.mapConfig.bounds[0][1]).toEqual(12);
+    expect(this.mapConfig.bounds[1][0]).toEqual(12);
+    expect(this.mapConfig.bounds[1][1]).toEqual(0);
+  })
+
+  it("should not parse bounds values if they are not correct", function() {
+    this.container = $('<div>').css('height', '200px');
+    var opts = {
+      sw_lat: 43.3,
+      sw_lon: 12,
+      ne_lat: "jamon",
+      ne_lon: "0"
+    }
+    this.vis.load(this.mapConfig, opts);
+
+    expect(this.mapConfig.bounds[0][0]).not.toEqual(43.3);
+    expect(this.mapConfig.bounds[0][1]).not.toEqual(12);
+    expect(this.mapConfig.bounds[1][0]).not.toEqual(12);
+    expect(this.mapConfig.bounds[1][1]).not.toEqual(0);
+  })
 
   it("should create a google maps map when provider is google maps", function() {
     this.container = $('<div>').css('height', '200px');
@@ -166,6 +221,9 @@ describe("Vis", function() {
   });
 
   it("should add header", function() {
+
+    this.mapConfig.title = "title";
+
     this.vis.load(this.mapConfig, {
       title: true
     });
@@ -174,14 +232,17 @@ describe("Vis", function() {
 
   it("should add header without link in the title", function() {
     var mapConfig = _.clone(this.mapConfig);
+    mapConfig.title = "title"
     mapConfig.url = null;
+
     this.vis.load(mapConfig, {
       title: true
     });
+
     expect(this.vis.$('.cartodb-header').length).toEqual(1);
     expect(this.vis.$('.cartodb-header h1 > a').length).toEqual(0);
   });
-  
+
   it("should use zoom", function() {
     this.vis.load(this.mapConfig, {
       zoom: 10,
@@ -194,7 +255,10 @@ describe("Vis", function() {
   it("should add an overlay", function() {
     var v = this.vis.addOverlay({
       type: 'tooltip',
-      template: 'test'
+      template: 'test',
+      layer: new L.CartoDBGroupLayer({
+        layer_definition: {version: '1.0.0', layers: [] }
+      })
     });
     expect(this.vis.getOverlay('tooltip')).toEqual(v);
     expect(this.vis.getOverlays().length).toEqual(1);

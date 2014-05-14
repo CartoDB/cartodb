@@ -1,15 +1,16 @@
+
 cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   tagName: 'div',
   className: 'cartodb-share-dialog',
 
   events: {
-    'click .ok': '_ok',
-    'click .cancel': '_cancel',
-    'click .close': '_cancel',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+    'click .ok':       '_ok',
+    'click .cancel':   '_cancel',
+    'click .close':    '_cancel',
+    "click":           '_stopPropagation',
+    "dblclick":        '_stopPropagation',
+    "mousedown":       '_stopPropagation'
   },
 
   default_options: {
@@ -41,8 +42,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var self = this;
 
     if (this.options.target) {
-      this.options.target.on("click", function() {
+      this.options.target.on("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         self.open();
+
       })
     }
 

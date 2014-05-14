@@ -4,13 +4,14 @@
 if(typeof(L) == "undefined")
   return;
 
-L.CartoDBGroupLayer = L.TileLayer.extend({
+
+L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
   interactionClass: wax.leaf.interaction,
 
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
-    LayerDefinition.prototype,
+    //LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -26,6 +27,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     sql_api_domain:     "cartodb.com",
     sql_api_port:       "80",
     sql_api_protocol:   "http",
+    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it 
     extra_params:   {
     },
     cdn_url:        null,
@@ -54,6 +56,23 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
+    this.addProfiling();
+  },
+
+  addProfiling: function() {
+    this.bind('tileloadstart', function(e) {
+      var s = this.tileStats || (this.tileStats = {});
+      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
+    });
+    var finish = function(e) {
+      var s = this.tileStats && this.tileStats[e.tile.src];
+      s && s.end();
+    };
+    this.bind('tileload', finish);
+    this.bind('tileerror', function(e) {
+      cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
+      finish(e);
+    });
   },
 
 
@@ -132,10 +151,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
       this.options.added = false;
       L.TileLayer.prototype.onRemove.call(this, map);
     }
-  },
-
-  onLayerDefinitionUpdated: function() {
-    this.__update();
   },
 
   /**
@@ -245,6 +260,14 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     var curleft = 0, curtop = 0;
     var obj = map.getContainer();
 
+    var x, y;
+    if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+      x = o.e.changedTouches[0].clientX + window.scrollX;
+      y = o.e.changedTouches[0].clientY + window.scrollY;
+    } else {
+      x = o.e.clientX;
+      y = o.e.clientY;
+    }
 
     if (obj.offsetParent) {
       // Modern browsers
@@ -252,7 +275,8 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
+      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
+      return p;
     } else {
       // IE
       return map.mouseEventToLayerPoint(o.e)
@@ -261,74 +285,147 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
 });
 
-cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
+L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
+  includes: [
+    LayerDefinition.prototype,
+  ]
+});
 
+function layerView(base) {
+  var layerViewClass = base.extend({
+
+    includes: [
+      cdb.geo.LeafLetLayerView.prototype,
+      Backbone.Events
+    ],
+
+    initialize: function(layerModel, leafletMap) {
+      var self = this;
+      var hovers = [];
+
+      // CartoDB new attribution,
+      // also we have the logo
+      layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+
+      var opts = _.clone(layerModel.attributes);
+
+      opts.map =  leafletMap;
+
+      var // preserve the user's callbacks
+      _featureOver  = opts.featureOver,
+      _featureOut   = opts.featureOut,
+      _featureClick = opts.featureClick;
+
+      var previousEvent;
+      var eventTimeout = -1;
+
+      opts.featureOver  = function(e, latlon, pxPos, data, layer) {
+        if (!hovers[layer]) {
+          self.trigger('layerenter', e, latlon, pxPos, data, layer);
+        }
+        hovers[layer] = 1;
+        _featureOver  && _featureOver.apply(this, arguments);
+        self.featureOver  && self.featureOver.apply(self, arguments);
+        // if the event is the same than before just cancel the event
+        // firing because there is a layer on top of it
+        if (e.timeStamp === previousEvent) {
+          clearTimeout(eventTimeout);
+        }
+        eventTimeout = setTimeout(function() {
+          self.trigger('mouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
+        }, 0);
+        previousEvent = e.timeStamp;
+
+      };
+
+      opts.featureOut  = function(m, layer) {
+        if (hovers[layer]) {
+          self.trigger('layermouseout', layer);
+        }
+        hovers[layer] = 0;
+        if(!_.any(hovers)) {
+          self.trigger('mouseout');
+        }
+        _featureOut  && _featureOut.apply(this, arguments);
+        self.featureOut  && self.featureOut.apply(self, arguments);
+      };
+
+      opts.featureClick  = _.debounce(function() {
+        _featureClick  && _featureClick.apply(self, arguments);
+        self.featureClick  && self.featureClick.apply(self, arguments);
+      }, 10);
+
+      base.prototype.initialize.call(this, opts);
+      cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+
+    },
+
+    featureOver: function(e, latlon, pixelPos, data, layer) {
+      // dont pass leaflet lat/lon
+      this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+    },
+
+    featureOut: function(e, layer) {
+      this.trigger('featureOut', e, layer);
+    },
+
+    featureClick: function(e, latlon, pixelPos, data, layer) {
+      // dont pass leaflet lat/lon
+      this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+    },
+
+    error: function(e) {
+      this.trigger('error', e ? e.errors : 'unknown error');
+      this.model.trigger('error', e?e.errors:'unknown error');
+    },
+
+    ok: function(e) {
+      this.model.trigger('tileOk');
+    },
+
+    onLayerDefinitionUpdated: function() {
+      this.__update();
+    }
+
+  });
+
+  return layerViewClass;
+}
+
+L.NamedMap = L.CartoDBGroupLayerBase.extend({
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
-    Backbone.Events
+    NamedMap.prototype,
+    CartoDBLayerCommon.prototype
   ],
 
-  initialize: function(layerModel, leafletMap) {
-    var self = this;
+  initialize: function (options) {
+    options = options || {};
+    // Set options
+    L.Util.setOptions(this, options);
 
-    //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+    // Some checks
+    if (!options.named_map && !options.sublayers) {
+        throw new Error('cartodb-leaflet needs at least the named_map');
+    }
 
-    // CartoDB new attribution,
-    // also we have the logo
-    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+    /*if(!options.layer_definition) {
+      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+    }*/
 
-    var opts = _.clone(layerModel.attributes);
+    NamedMap.call(this, this.options.named_map, this.options);
 
-    opts.map =  leafletMap;
+    this.fire = this.trigger;
 
-    var // preserve the user's callbacks
-    _featureOver  = opts.featureOver,
-    _featureOut   = opts.featureOut,
-    _featureClick = opts.featureClick;
-
-    opts.featureOver  = function() {
-      _featureOver  && _featureOver.apply(self, arguments);
-      self.featureOver  && self.featureOver.apply(self, arguments);
-    };
-
-    opts.featureOut  = function() {
-      _featureOut  && _featureOut.apply(self, arguments);
-      self.featureOut  && self.featureOut.apply(self, arguments);
-    };
-
-    opts.featureClick  = function() {
-      _featureClick  && _featureClick.apply(self, arguments);
-      self.featureClick  && self.featureClick.apply(self, arguments);
-    };
-
-    L.CartoDBGroupLayer.prototype.initialize.call(this, opts);
-    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
-
-  },
-
-  featureOver: function(e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
-  },
-
-  featureOut: function(e, layer) {
-    this.trigger('featureOut', e, layer);
-  },
-
-  featureClick: function(e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
-  },
-
-  error: function(e) {
-    this.trigger('error', e ? e.errors : 'unknown error');
-    this.model.trigger('error', e?e.errors:'unknown error');
-  },
-
-  ok: function(e) {
-    this.model.trigger('tileOk');
+    CartoDBLayerCommon.call(this);
+    L.TileLayer.prototype.initialize.call(this);
+    this.interaction = [];
+    this.addProfiling();
   }
-
 });
+
+cdb.geo.LeafLetCartoDBLayerGroupView = layerView(L.CartoDBGroupLayer);
+cdb.geo.LeafLetCartoDBNamedMapView = layerView(L.NamedMap);
 
 })();

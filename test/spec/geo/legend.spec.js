@@ -92,10 +92,10 @@ describe("common.geo.ui.Legend", function() {
     it("should update the legend when the name of an item is changed", function() {
       legend.render();
       legend.model.set({ type: "custom" });
-      expect(legend.$el.find("li:first-child").text()).toEqual('Category 1');
+      expect(legend.$el.find("li:first-child").text().trim()).toEqual('Category 1');
 
       legend.items.at(0).set("name", "New Category 1")
-      expect(legend.$el.find("li:first-child").text()).toEqual('New Category 1');
+      expect(legend.$el.find("li:first-child").text().trim()).toEqual('New Category 1');
     });
 
     it("should update the legend when the value of an item is changed", function() {
@@ -273,10 +273,10 @@ describe("common.geo.ui.Legend", function() {
       legend.render();
       var bullets = legend.$('li');
       expect(bullets.length).toEqual(4);
-      expect($(bullets[0]).text()).toEqual("true");
-      expect($(bullets[1]).text()).toEqual("false");
-      expect($(bullets[2]).text()).toEqual("#f1f1f1");
-      expect($(bullets[3]).text()).toEqual("null");
+      expect($(bullets[0]).text()).toEqual("		 true");
+      expect($(bullets[1]).text()).toEqual("		 false");
+      expect($(bullets[2]).text()).toEqual("		 #f1f1f1");
+      expect($(bullets[3]).text()).toEqual("		 null");
     });
   });
 
@@ -387,7 +387,7 @@ describe("common.geo.ui.Legend", function() {
         expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
         expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
 
-        expect(legend.$el.find("li:first-child").text()).toEqual(custom_data[0].name);
+        expect(legend.$el.find("li:first-child").text().trim()).toEqual(custom_data[0].name);
         expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
       });
 
@@ -399,7 +399,7 @@ describe("common.geo.ui.Legend", function() {
       it("should allow to change the title", function() {
         legend.setTitle("New title");
         expect(legend.model.get("show_title")).toEqual(true);
-        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
       it("should allow to change the items", function() {
@@ -416,10 +416,10 @@ describe("common.geo.ui.Legend", function() {
         expect(legend.items.at(0).get("name")).toEqual(new_data[0].name);
         expect(legend.items.at(0).get("value")).toEqual(new_data[0].value);
 
-        expect(legend.$el.find("li:first-child").text()).toEqual(new_data[0].name);
+        expect(legend.$el.find("li:first-child").text().trim()).toEqual(new_data[0].name);
         expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(241, 241, 241)");
 
-        expect(legend.$el.find("li:last-child").text()).toEqual(new_data[1].name);
+        expect(legend.$el.find("li:last-child").text().trim()).toEqual(new_data[1].name);
         expect(legend.$el.find("li:last-child .bullet").css("background")).toEqual("rgb(255, 0, 255)");
       });
 
@@ -446,22 +446,22 @@ describe("common.geo.ui.Legend", function() {
         expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
         expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
 
-        expect(legend.$el.find("li:first-child").text()).toEqual(custom_data[0].name);
+        expect(legend.$el.find("li:first-child").text().trim()).toEqual(custom_data[0].name);
         expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
 
-        expect(legend.$el.find("li:nth-child(2)").text()).toEqual(custom_data[1].name);
+        expect(legend.$el.find("li:nth-child(2)").text().trim()).toEqual(custom_data[1].name);
         expect(legend.$el.find("li:nth-child(2) .bullet").css("background")).toEqual("url(http://cartodb.com/assets/logos/logos_full_cartodb_light.png)");
       });
 
       it("should show a title", function() {
         expect(legend.model.get("title")).toEqual(properties.title);
-        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual(properties.title);
       });
 
       it("should allow to change the title", function() {
         legend.setTitle("New title");
         expect(legend.model.get("show_title")).toEqual(true);
-        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
     });
@@ -494,13 +494,13 @@ describe("common.geo.ui.Legend", function() {
 
       it("should show a title", function() {
         expect(legend.model.get("title")).toEqual(properties.title);
-        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual(properties.title);
       });
 
       it("should allow to change the title", function() {
         legend.setTitle("New title");
         expect(legend.model.get("show_title")).toEqual(true);
-        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
       it("should allow to show the title", function() {
@@ -524,7 +524,7 @@ describe("common.geo.ui.Legend", function() {
 
         legend.setMinValue(value)
         expect(legend.model.get("min")).toEqual(value);
-        expect(legend.$el.find("ul li:nth-child(1)").text()).toEqual(value);
+        expect(legend.$el.find("ul li:nth-child(1)").text().trim()).toEqual(value);
       });
 
       it("should allow to change the max value", function() {
@@ -532,7 +532,7 @@ describe("common.geo.ui.Legend", function() {
 
         legend.setMaxValue(value)
         expect(legend.model.get("max")).toEqual(value);
-        expect(legend.$el.find("ul li:nth-child(3)").text()).toEqual(value);
+        expect(legend.$el.find("ul li:nth-child(3)").text().trim()).toEqual(value);
       });
 
     });
@@ -565,13 +565,13 @@ describe("common.geo.ui.Legend", function() {
 
       it("should show a title", function() {
         expect(legend.model.get("title")).toEqual(properties.title);
-        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual(properties.title);
       });
 
       it("should allow to change the title", function() {
         legend.setTitle("New title");
         expect(legend.model.get("show_title")).toEqual(true);
-        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
       it("should allow to hide the title", function() {
@@ -598,7 +598,7 @@ describe("common.geo.ui.Legend", function() {
 
         legend.setLeftLabel(label)
         expect(legend.model.get("leftLabel")).toEqual(label);
-        expect(legend.$el.find("li:nth-child(1)").text()).toEqual(label);
+        expect(legend.$el.find("li:nth-child(1)").text().trim()).toEqual(label);
       });
 
       it("should allow change the right label", function() {
@@ -606,7 +606,7 @@ describe("common.geo.ui.Legend", function() {
 
         legend.setRightLabel(label)
         expect(legend.model.get("rightLabel")).toEqual(label);
-        expect(legend.$el.find("li:nth-child(2)").text()).toEqual(label);
+        expect(legend.$el.find("li:nth-child(2)").text().trim()).toEqual(label);
       });
 
     });
@@ -639,13 +639,13 @@ describe("common.geo.ui.Legend", function() {
 
       it("should show a title", function() {
         expect(legend.model.get("title")).toEqual(properties.title);
-        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual(properties.title);
       });
 
       it("should allow to change the title", function() {
         legend.setTitle("New title");
         expect(legend.model.get("show_title")).toEqual(true);
-        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
       it("should allow to hide the title", function() {
@@ -670,13 +670,13 @@ describe("common.geo.ui.Legend", function() {
       it("should allow change the left label", function() {
         legend.setLeftLabel("Hello!")
         expect(legend.model.get("leftLabel")).toEqual("Hello!");
-        expect(legend.$el.find("li:nth-child(1)").text()).toEqual("Hello!");
+        expect(legend.$el.find("li:nth-child(1)").text().trim()).toEqual("Hello!");
       });
 
       it("should allow change the right label", function() {
         legend.setRightLabel("Hi!")
         expect(legend.model.get("rightLabel")).toEqual("Hi!");
-        expect(legend.$el.find("li:nth-child(2)").text()).toEqual("Hi!");
+        expect(legend.$el.find("li:nth-child(2)").text().trim()).toEqual("Hi!");
       });
 
     });
@@ -710,13 +710,13 @@ describe("common.geo.ui.Legend", function() {
 
       it("should show a title", function() {
         expect(legend.model.get("title")).toEqual(properties.title);
-        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual(properties.title);
       });
 
       it("should allow to change the title", function() {
         legend.setTitle("New title");
         expect(legend.model.get("show_title")).toEqual(true);
-        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+        expect(legend.$el.find(".legend-title").text().trim()).toEqual("New title");
       });
 
       it("should allow to show the title", function() {
@@ -741,7 +741,7 @@ describe("common.geo.ui.Legend", function() {
 
         legend.setLeftLabel(label)
         expect(legend.model.get("leftLabel")).toEqual(label);
-        expect(legend.$el.find("li:nth-child(1)").text()).toEqual(label);
+        expect(legend.$el.find("li:nth-child(1)").text().trim()).toEqual(label);
       });
 
       it("should allow change the right label", function() {
@@ -749,7 +749,7 @@ describe("common.geo.ui.Legend", function() {
 
         legend.setRightLabel(label)
         expect(legend.model.get("rightLabel")).toEqual(label);
-        expect(legend.$el.find("li:nth-child(2)").text()).toEqual(label);
+        expect(legend.$el.find("li:nth-child(2)").text().trim()).toEqual(label);
       });
 
     });

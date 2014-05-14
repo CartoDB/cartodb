@@ -19,7 +19,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   initialize: function() {
     _.defaults(this.options, this.default_options);
-    this.isVisible = false;
+    this.isVisible = 0;
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/tiles_loader');
   },
 
@@ -29,21 +29,28 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
   },
 
   show: function(ev) {
-    this.isVisible = true;
+    if(this.isVisible) return;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") != 0)) {
       this.$el.fadeTo(this.options.animationSpeed, 1)
     } else {
       this.$el.show();
     }
+    this.isVisible++;
   },
 
   hide: function(ev) {
-    this.isVisible = false;
+    this.isVisible--;
+    if(this.isVisible > 0) return;
+    this.isVisible = 0;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
       this.$el.hide();
     }
+  },
+
+  visible: function() {
+    return this.isVisible > 0;
   }
 
 });

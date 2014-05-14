@@ -103,6 +103,21 @@ describe("LayerDefinition", function() {
        }
       ]
     });
+    layerDefinition.getSubLayer(0).hide();
+    expect(layerDefinition.toJSON()).toEqual({
+      version: '1.0.0',
+      stat_tag: 'vis_id',
+      layers: [{
+         type: 'cartodb', 
+         options: {
+           sql: "select * from european_countries_export",
+           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+           cartocss_version: '2.0.0',
+           interactivity: ['test2', 'cartodb_id2']
+         }
+       }
+      ]
+    });
   });
 
   it("should generate url for tiles", function() {
@@ -110,9 +125,9 @@ describe("LayerDefinition", function() {
     expect(tiles.tiles.length).toEqual(1);
     expect(tiles.grids.length).toEqual(2);
     expect(tiles.grids[0].length).toEqual(1);
-    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/{z}/{x}/{y}.png');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json');
-    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/1/{z}/{x}/{y}.grid.json');
+    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/{z}/{x}/{y}.grid.json');
 
   });
 
@@ -121,25 +136,25 @@ describe("LayerDefinition", function() {
       api_key: 'api_key_test',
       updated_at: '1234'
     });
-    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
+    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
   });
 
   it("should generate url for with cdn", function() {
     layerDefinition.options.no_cdn = false;
     layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
     var tiles = layerDefinition._layerGroupTiles('test_layer');
-    expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png');
-    expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png');
-    expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json');
-    expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json');
+    expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+    expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
   });
 
   it("grid url should not include interactivity", function() {
     layerDefinition.setInteractivity(0, ['cartodb_id', 'rambo']);
     var tiles = layerDefinition._layerGroupTiles('test_layer');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json');
-    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/1/{z}/{x}/{y}.grid.json');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/1/{z}/{x}/{y}.grid.json');
   });
 
   it("should set interactivity", function() {
@@ -157,6 +172,45 @@ describe("LayerDefinition", function() {
     layerDefinition.options.tiler_protocol = "https";
     expect(layerDefinition._host()).toEqual('https://cartocdn.global.ssl.fastly.net/rambo');
     expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
+  });
+
+  it("should use cdn_url from tiler when present", function() {
+    var params;
+    delete layerDefinition.options.no_cdn;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test', cdn_url: { http: 'cdn.test.com', https:'cdn.testhttps.com' }});
+    };
+    runs(function() {
+      layerDefinition.getTiles();
+    });
+    waits(100);
+    runs(function() {
+      expect(layerDefinition._host()).toEqual('http://cdn.test.com/rambo');
+    });
+    waits(200);
+    runs(function() {
+      layerDefinition.options.tiler_protocol = 'https';
+      layerDefinition.getTiles();
+    })
+    waits(100);
+    runs(function() {
+      expect(layerDefinition._host()).toEqual('https://cdn.testhttps.com/rambo');
+    })
+  });
+
+  it("should return null token when there are no layers", function() {
+
+      layerDefinition.getSubLayer(0).hide();
+      layerDefinition.getSubLayer(1).hide();
+      var tk = 'test'
+      layerDefinition._getLayerToken(function(a) {
+        tk =  a;
+      })
+      waits(100);
+      runs(function() {
+        expect(tk).toEqual(null);
+      });
   });
 
   it("should return values for the latest query", function() {
@@ -241,7 +295,7 @@ describe("LayerDefinition", function() {
     });
     waits(300);
     runs(function() {
-      expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?map_key=test&lzma=' + encodeURIComponent(lzma));
+      expect(params.url).toEqual(layerDefinition._tilerHost() + '/api/v1/map?map_key=test&lzma=' + encodeURIComponent(lzma));
     });
   });
 
@@ -291,6 +345,22 @@ describe("LayerDefinition", function() {
     });
   });
 
+  it("getTiles should use empty gif there there is no layers", function() {
+      layerDefinition.getSubLayer(0).hide();
+      layerDefinition.getSubLayer(1).hide();
+      layerDefinition.getLayerToken = function (callback) {
+        callback(null);
+      }
+
+      layerDefinition.getTiles(function(t) {
+        urls = t;
+      })
+      waits (100);
+      runs(function() {
+        expect(urls.tiles[0]).toEqual(Map.EMPTY_GIF);
+      })
+  });
+
   it("should set refresh timer after being updated", function() {
     layerDefinition.options.refreshTime = 10;
     layerDefinition.options.ajax = function(p) { 
@@ -312,10 +382,14 @@ describe("LayerDefinition", function() {
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(1);
 
+    expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(1);
+
     layerDefinition.getSubLayer(0).hide();
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
-
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
+
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(0);
   }),
 
   describe("sublayers", function() {
@@ -365,6 +439,23 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
     });
 
+    it("hide should remove interaction", function() {
+      var interaction =  layerDefinition.interactionEnabled = {}
+      layerDefinition.setInteraction = function(layer, value) {
+        layerDefinition.interactionEnabled[layer] = value;
+      };
+      layerDefinition.getSubLayer(0).setInteraction(true);
+      expect(interaction[0]).toEqual(true);
+      layerDefinition.getSubLayer(0).hide();
+      expect(interaction[0]).toEqual(false);
+      layerDefinition.getSubLayer(0).show();
+      expect(interaction[0]).toEqual(true);
+      layerDefinition.getSubLayer(1).hide();
+      layerDefinition.getSubLayer(1).show();
+      expect(interaction[1]).toEqual(undefined);
+
+    })
+
     it("should be the same object for the same sublayer", function() {
       expect(layerDefinition.getSubLayer(0)).toBe(layerDefinition.getSubLayer(0));
     });
@@ -407,6 +498,307 @@ describe("LayerDefinition", function() {
 
     });
   });
+
+});
+
+describe("NamedMap", function() {
+  var namedMap;
+
+  beforeEach(function() {
+    var named_map = {
+      name: 'testing',
+      params: {
+        color: 'red'
+      },
+      layers: [{
+          infowindow: {
+            fields: [ { title:'test', value:true, position:0, index:0 } ]
+          }
+      }]
+    };
+    namedMap= new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+  });
+
+  it("should instance named_map with no layers", function() {
+    var named_map = {
+      name: 'testing'
+    };
+    var nm = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+    var params;
+    nm.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      nm._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.dataType).toEqual('jsonp');
+    });
+  });
+
+  it("should instance named_map", function() {
+    var params;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+
+    runs(function() {
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.dataType).toEqual('jsonp');
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing/jsonp?config=' + encodeURIComponent(JSON.stringify({ color: 'red'})));
+    });
+  });
+
+  it("should instance named_map using POST", function() {
+    var params;
+    namedMap.options.cors = true;
+    namedMap.options.force_cors =true;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+
+    runs(function() {
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.type).toEqual('POST');
+      expect(params.dataType).toEqual('json');
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing')
+      expect(params.data).toEqual(JSON.stringify({color: 'red'}));
+    });
+  });
+
+  it("shoud have infowindow", function() {
+    expect(namedMap.containInfowindow()).toEqual(true);
+  });
+
+  it("should fetch attributes", function() {
+    namedMap.layerToken = 'test';
+    namedMap._layerGroupTiles
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ test: 1 });
+    };
+    namedMap.fetchAttributes(1, 12345, null, function(data) {
+      expect(data).toEqual({test: 1});
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345')
+      expect(params.dataType).toEqual('jsonp');
+    });
+    namedMap.options.tiler_protocol = 'https';
+    namedMap.setAuthToken('test');
+    namedMap.layerToken = 'test';
+    namedMap.fetchAttributes(1, 12345, null, function(data) {
+      expect(data).toEqual({test: 1});
+      expect(params.url).toEqual('https://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345?auth_token=test')
+      expect(params.dataType).toEqual('jsonp');
+    });
+
+  })
+
+  it("should enable/disable layers", function() {
+    var params;
+    namedMap.layers.push({
+      options:  {},
+        infowindow: {
+          fields: [ { title:'test', value:true, position:0, index:0 } ]
+        }
+    });
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      namedMap.getSubLayer(0).hide();
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0}));
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+
+    var token = 'test';
+    runs(function() {
+      namedMap.getSubLayer(1).hide();
+      namedMap._getLayerToken(function(d) {
+        token = d;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(token).not.toEqual(null);
+    })
+    waits(100);
+    runs(function() {
+      namedMap.getSubLayer(0).show();
+      namedMap._getLayerToken();
+    });
+    waits(200);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer1: 0}));
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+  });
+
+  it("should raise errors when try to set sql or cartocss", function() {
+    expect(function() { namedMap.setCartoCSS('test') }).toThrow(new Error("cartocss is read-only in NamedMaps"));
+    expect(function() { namedMap.setSQL('sql') }).toThrow(new Error("SQL is read-only in NamedMaps"));
+
+    expect(function() {
+      namedMap.getSubLayer(0).set({ 'sql':'test', })
+    }).toThrow(new Error("sql is read-only in NamedMaps"));
+
+    expect(function() {
+      namedMap.getSubLayer(0).set({ interactivity: 'test1' });
+    }).toThrow(new Error("interactivity is read-only in NamedMaps"));
+
+    expect(function() {
+      namedMap.getSubLayer(0).setInteractivity('test1');
+    }).toThrow(new Error("interactivity is read-only in NamedMaps"));
+
+    expect(function() {
+      namedMap.getSubLayer(0).set({ 'hidden': 1 });
+    }).not.toThrow();
+
+    expect(function() {
+      namedMap.getSubLayer(0).remove();
+    }).toThrow(new Error("sublayers are read-only in Named Maps"));
+    expect(function() {
+      namedMap.createSubLayer();
+    }).toThrow(new Error("sublayers are read-only in Named Maps"));
+    expect(function() {
+      namedMap.addLayer();
+    }).toThrow(new Error("sublayers are read-only in Named Maps"));
+  });
+
+  it("should raise errors when try to get sql or cartocss", function() {
+    expect(function() { namedMap.getCartoCSS('test') }).toThrow(new Error("cartocss can't be accessed in NamedMaps"));
+    expect(function() { namedMap.getSQL('sql') }).toThrow(new Error("SQL can't be accessed in NamedMaps"));
+  })
+
+  it("should send auth_token when it's provided", function() {
+    var tiles;
+    var named_map = {
+      name: 'testing',
+      auth_token: 'auth_token_test',
+      params: {
+        color: 'red'
+      },
+      layers: [{}]
+    };
+    namedMap = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "https",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      namedMap._getLayerToken();
+      namedMap.getTiles(function(t) {
+        tiles = t;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url.indexOf('auth_token=auth_token_test')).not.toEqual(-1);
+      expect(tiles.tiles[0].indexOf('auth_token=auth_token_test')).not.toEqual(-1);
+      expect(tiles.grids[0][0].indexOf('auth_token=auth_token_test')).not.toEqual(-1);
+    });
+    runs(function() {
+      namedMap.setAuthToken('test2');
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url.indexOf('auth_token=test2')).not.toEqual(-1);
+    });
+  });
+
+  it("should add params", function() {
+    var params;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    namedMap.named_map.params = { color: 'red' }
+    spyOn(namedMap,'onLayerDefinitionUpdated');
+    namedMap.setParams('test', 10);
+
+    expect(namedMap.onLayerDefinitionUpdated).toHaveBeenCalled();
+
+    runs(function() { namedMap._getLayerToken(); });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', test: 10}));
+      console.log(params.url);
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+    waits(100);
+    runs(function() {
+      namedMap.setParams('color', null);
+      runs(function() { namedMap._getLayerToken(); });
+    });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({ test: 10}));
+      console.log(params.url);
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+  });
+
+  it("should use https when auth_token is provided", function() {
+    var named_map = {
+      name: 'testing',
+      auth_token: 'auth_token_test',
+    };
+    try {
+      namedMap = new NamedMap(named_map, {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "http",
+        user_name: 'rambo',
+        no_cdn: true,
+        subdomains: [null]
+      });
+      expect(0).toBe(1);
+    } catch(e) {
+      expect(e.message).toEqual("https must be used when auth_token is set");
+    }
+  });
+
+  it("should return layer by index", function() {
+    expect(namedMap.getLayerIndexByNumber(0)).toEqual(0);
+    expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
+  });
+
 
 });
 

@@ -89,9 +89,6 @@ cdb.vis.Overlay.register('header', function(data, vis) {
            target='_blank'>T</a>\
         </div>\
       {{/mobile_shareable}}\
-      {{#shareable}}\
-        <a href='#' class='share'>Share</a>\
-      {{/shareable}}\
     ",
     data.templateType || 'mustache'
   );
@@ -207,7 +204,26 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   return layerSelector.render();
 });
 
-// search content
+// fullscreen
+cdb.vis.Overlay.register('fullscreen', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '<a href="#"></a>',
+    data.templateType || 'mustache'
+  );
+
+  var fullscreen = new cdb.ui.common.FullScreen({
+    doc: "#map > div",
+    mapView: vis.mapView,
+    template: template
+  });
+
+  return fullscreen.render();
+
+});
+
+
+// share content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
   // Add the complete url for facebook and twitter
@@ -220,10 +236,10 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
       <div class="mamufas">\
-        <section class="block modal {{modal_type}}">\
+        <div class="block modal {{modal_type}}">\
           <a href="#close" class="close">x</a>\
           <div class="head">\
-            <h3>{{ title }}</h3>\
+            <h3>Share this map</h3>\
           </div>\
           <div class="content">\
             <div class="buttons">\
@@ -231,6 +247,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
               <ul>\
                 <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
                 <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\
@@ -243,7 +260,13 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
+  var url = location.href;
+
+  url = url.replace("public_map", "embed_map");
+
+  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
+
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),
@@ -251,9 +274,10 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     model: vis.map,
     code: code,
     url: data.url,
+    public_map_url: public_map_url,
     share_url: data.share_url,
     template: template,
-    target: $(".cartodb-header .share"),
+    target: $(".cartodb-share a"),
     size: $(document).width() > 400 ? "" : "small",
     width: $(document).width() > 400 ? 430 : 216
   });
@@ -287,11 +311,18 @@ cdb.vis.Overlay.register('search', function(data, vis) {
 // tooltip
 cdb.vis.Overlay.register('tooltip', function(data, vis) {
   var layer;
-  var layers = vis.getLayers();
-  if(layers.length > 1) {
-    layer = layers[1];
+  if (!data.layer) {
+    var layers = vis.getLayers();
+    if(layers.length > 1) {
+      layer = layers[1];
+    }
+    data.layer = layer;
   }
-  data.layer = layer;
+
+  if(!data.layer) {
+    throw new Error("layer is null");
+  }
+  data.layer.setInteraction(true);
   var tooltip = new cdb.geo.ui.Tooltip(data);
   return tooltip;
 
@@ -300,10 +331,16 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
 cdb.vis.Overlay.register('infobox', function(data, vis) {
   var layer;
   var layers = vis.getLayers();
-  if(layers.length > 1) {
-    layer = layers[1];
+  if (!data.layer) {
+    if(layers.length > 1) {
+      layer = layers[1];
+    }
+    data.layer = layer;
   }
-  data.layer = layer;
+  if(!data.layer) {
+    throw new Error("layer is null");
+  }
+  data.layer.setInteraction(true);
   var infobox = new cdb.geo.ui.InfoBox(data);
   return infobox;
 

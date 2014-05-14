@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.03
+// cartodb.js version: 3.9.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: dfbb8f4204e231cd83fc53f18e0a00e25ff99a53
+// sha: 91dcdff39a4350a90b3c68b253b77096ca11fc27
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.03';
+    cdb.VERSION = '3.9.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25547,14 +25547,17 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
 cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
-  DEFAULT_OFFSET_TOP: 10,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
 
+  defaults: {
+    vertical_offset: 0,
+    horizontal_offset: 0,
+    position: 'top|center'
+  },
+
   initialize: function() {
     this.options.template = this.options.template || this.defaultTemplate;
-    this.options.position = 'none';
-    this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
@@ -25640,13 +25643,45 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     }
     this.render(data);
     this.elder('show', pos, data);
-    this.$el.css({
-      'left': pos.x,
-      'top':  pos.y + (this.options.offset_top || this.DEFAULT_OFFSET_TOP)
-    });
+    this.setPosition(pos);
     return this;
   },
 
+  setPosition: function(point) {
+    var props = {
+      left: 0,
+      top:  0
+    };
+
+    var pos = this.options.position;
+    var $el = this.$el;
+    var h = $el.innerHeight();
+    var w = $el.innerWidth();
+
+    // Vertically
+    if (pos.indexOf('top') !== -1) {
+      props.top = -h;
+    } else if (pos.indexOf('middle') !== -1) {
+      props.top = -(h/2);
+    }
+
+    // Horizontally
+    if(pos.indexOf('left') !== -1) {
+      props.left = -w;
+    } else if(pos.indexOf('center') !== -1) {
+      props.left = -(w/2);
+    }
+
+    // Offsets
+    props.top += this.options.vertical_offset;
+    props.left += this.options.horizontal_offset;
+
+    $el.css({
+      top:  (point.y + props.top),
+      left: (point.x + props.left)
+    });
+
+  },
 
   render: function(data) {
     this.$el.html( this.template(data) );
@@ -31156,6 +31191,9 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
+            position: 'bottom|right',
+            vertical_offset: 10,
+            horizontal_offset: 4,
             fields: t.fields,
             omit_columns: ['cartodb_id']
           });

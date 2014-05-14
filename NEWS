@@ -1,3 +1,6 @@
+3.9.04 (14//05//2014)
+- Added position parameter in Tooltip overlay
+
 3.9.03 (14//05//2014)
 - Added tooltip option in createLayer method
 

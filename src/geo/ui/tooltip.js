@@ -7,7 +7,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   defaults: {
     vertical_offset: 0,
     horizontal_offset: 0,
-    position: 'bottom|right'
+    position: 'top|center'
   },
 
   initialize: function() {

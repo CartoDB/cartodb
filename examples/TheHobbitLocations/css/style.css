@@ -201,6 +201,14 @@ div.cartodb-popup div.cartodb-popup-tip-container::after {
 	z-index: 1;
 }
 
+div.cartodb-tooltip {
+	min-width:auto;
+	max-width:auto;
+	width:180px;
+	margin-top:-35px;
+	margin-left:-90px;
+}
+
 div.cartodb-infobox {
 	bottom:35px!important;
 	font-family: "Helvetica",Arial;

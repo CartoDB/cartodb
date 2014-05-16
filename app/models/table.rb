@@ -1230,11 +1230,45 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_trigger_the_geom_webmercator
-    self.cartodbfy
+    return true unless self.schema(reload: true).flatten.include?(THE_GEOM)
+      owner.in_database(:as => :superuser) do |user_database|
+        user_database.run(<<-TRIGGER
+       DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON "#{self.name}";
+       CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
+         BEGIN
+               NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
+               RETURN NEW;
+         END;
+       $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+
+       #{create_the_geom_if_not_exists(self.name)}
+
+       CREATE TRIGGER update_the_geom_webmercator_trigger
+       BEFORE INSERT OR UPDATE OF the_geom ON "#{self.name}"
+          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
+     TRIGGER
+       )
+   end
+    #self.cartodbfy
   end
 
   def set_trigger_update_updated_at
-    self.cartodbfy
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+       DROP TRIGGER IF EXISTS update_updated_at_trigger ON "#{self.name}";
+
+       CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
+         BEGIN
+                NEW.updated_at := now();
+                RETURN NEW;
+         END;
+       $update_updated_at_trigger$ LANGUAGE plpgsql;
+
+       CREATE TRIGGER update_updated_at_trigger
+       BEFORE UPDATE ON "#{self.name}"
+         FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+     TRIGGER
+     )
+    #self.cartodbfy
   end
 
   # Drop "cache_checkpoint", if it exists
@@ -1283,7 +1317,23 @@ TRIGGER
 
   # Set quota checking trigger for this table
   def set_trigger_check_quota
-    self.cartodbfy
+    # probability factor of running the check for each row
+    # (it'll always run before each statement)
+    check_probability_factor = 0.001 # TODO: base on database usage ?
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+ BEGIN;
+ DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
+ CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
+   EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
+ DROP TRIGGER IF EXISTS test_quota_per_row ON "#{self.name}";
+ CREATE TRIGGER test_quota_per_row BEFORE UPDATE OR INSERT ON "#{self.name}"
+   FOR EACH ROW
+   EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
+                                     #{self.owner.quota_in_bytes} );
+ COMMIT;
+    TRIGGER
+    )
+    #self.cartodbfy
   end
 
   def owner

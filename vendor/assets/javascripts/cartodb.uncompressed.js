@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.12-dev
+// cartodb.js version: 3.9.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: ba28d0751204f790bb364b6256d09bbccd107b96
+// sha: d693f13324a80f134fac017a19a0e154ea87fff7
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.12-dev';
+    cdb.VERSION = '3.9.00-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24327,7 +24327,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
         fields.push({ name: fieldName, title: true, position: at });
       } else {
         at = at === undefined ? 0 : at;
-        this.set('fields', [{ name: fieldName, title: true, position: at }])
+        this.set('fields', [{ name: fieldName, title: true, position: at }], { silent: true});
       }
     }
     dfd.resolve();
@@ -24409,11 +24409,17 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   // updates content with attributes
   updateContent: function(attributes) {
     var fields = this.get('fields');
+    this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  }
+
+}, {
+  contentForFields: function(attributes, fields, options) {
+    options = options || {};
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
       var f = fields[j];
       var value = String(attributes[f.name]);
-      if(attributes[f.name] !== undefined && value != "") {
+      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
         render_fields.push({
           title: f.title ? f.name : null,
           value: attributes[f.name],
@@ -24432,14 +24438,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       });
     }
 
-    this.set({
-      content:  {
-        fields: render_fields,
-        data: attributes
-      }
-    });
+    return {
+      fields: render_fields,
+      data: attributes
+    };
   }
-
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
@@ -24923,11 +24926,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _closeInfowindow: function(ev) {
     if (ev) {
-      ev.preventDefault()
+      ev.preventDefault();
       ev.stopPropagation();
     }
-
-    this.model.set("visibility",false);
+    if (this.model.get("visibility")) {
+       this.model.set("visibility", false);
+       this.trigger('close');
+    }
   },
 
   /**
@@ -25483,7 +25488,11 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
     if(this.options.layer) {
       this.enable();
     }
-    this.template = cdb.core.Template.compile(this.options.template || this.defaultTemplate, 'mustache');
+    this.setTemplate(this.options.template || this.defaultTemplate, 'mustache');
+  },
+
+  setTemplate: function(tmpl) {
+    this.template = cdb.core.Template.compile(tmpl, 'mustache');
   },
 
   enable: function() {
@@ -25538,37 +25547,106 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
 cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
-  DEFAULT_OFFSET_TOP: 30,
+  DEFAULT_OFFSET_TOP: 10,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
 
   initialize: function() {
-    this.options.template = this.options.template || defaultTemplate;
+    this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'none';
     this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+    this._filter = null;
+    this.showing = false;
+  },
+
+  setLayer: function(layer) {
+    this.options.layer = layer;
+    return this;
+  },
+
+  /**
+   * sets a filter to open the tooltip. If the feature being hovered
+   * pass the filter the tooltip is shown
+   * setFilter(null) removes the filter
+   */
+  setFilter: function(f) {
+    this._filter = f;
+    return this;
+  },
+
+  setFields: function(fields) {
+    this.options.fields = fields;
+    return this;
+  },
+
+  setAlternativeNames: function(n) {
+    this.options.alternative_names = n;
   },
 
   enable: function() {
     if(this.options.layer) {
       this.options.layer
-        .on('featureOver', function(e, latlng, pos, data) {
+        .on('mouseover', function(e, latlng, pos, data) {
+          // this flag is used to be compatible with previous templates
+          // where the data is not enclosed a content variable
+          if (this.options.fields) {
+
+            var non_valid_keys = ['fields', 'content'];
+
+            if (this.options.omit_columns) {
+              non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
+            }
+
+            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
+              empty_fields: this.options.empty_fields
+            });
+            // Remove fields and content from data
+            // and make them visible for custom templates
+            data.content = _.omit(data, non_valid_keys);
+
+            // loop through content values
+            data.fields = c.fields;
+
+            // alternamte names
+            var names = this.options.alternative_names;
+            if (names) {
+              for(var i = 0; i < data.fields.length; ++i) {
+                var f = data.fields[i];
+                f.title = names[f.title] || f.title;
+              }
+            }
+          }
           this.show(pos, data);
+          this.showing = true;
         }, this)
         .on('featureOut', function() {
           this.hide();
+          this.showing = false;
         }, this);
+      this.add_related_model(this.options.layer);
+    }
+  },
+
+  disable: function() {
+    if(this.options.layer) {
+      this.options.layer.unbind(null, null, this);
     }
   },
 
   show: function(pos, data) {
+    if (this._filter && !this._filter(data)) {
+      return this;
+    }
     this.render(data);
-    this.elder('show');
+    this.elder('show', pos, data);
     this.$el.css({
-      'left': (pos.x - this.$el.width()/2),
-      'top': (pos.y - (this.options.offset_top || this.DEFAULT_OFFSET_TOP))
+      'left': pos.x,
+      'top':  pos.y + (this.options.offset_top || this.DEFAULT_OFFSET_TOP)
     });
+    return this;
   },
+
 
   render: function(data) {
     this.$el.html( this.template(data) );
@@ -26264,6 +26342,10 @@ Map.prototype = {
     }
   },
 
+  getTooltipData: function(layer) {
+    return this.layers[layer].tooltip;
+  },
+
   getInfowindowData: function(layer) {
     var lyr;
     var infowindow = this.layers[layer].infowindow;
@@ -26281,6 +26363,17 @@ Map.prototype = {
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
       if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  containTooltip: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
         return true;
       }
     }
@@ -26361,6 +26454,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         }
       }
       return false;
+  },
+
+  containTooltip: function() {
+    var layers = this.layers || [];
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
+        return true;
+      }
+    }
+    return false;
   },
 
   _attributesUrl: function(layer, feature_id) {
@@ -27527,16 +27631,26 @@ function layerView(base) {
       _featureOut   = opts.featureOut,
       _featureClick = opts.featureClick;
 
+      var previousEvent;
+      var eventTimeout = -1;
+
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
-        if(_.any(hovers)) {
-          self.trigger('mouseover');
-        }
         _featureOver  && _featureOver.apply(this, arguments);
         self.featureOver  && self.featureOver.apply(self, arguments);
+        // if the event is the same than before just cancel the event
+        // firing because there is a layer on top of it
+        if (e.timeStamp === previousEvent) {
+          clearTimeout(eventTimeout);
+        }
+        eventTimeout = setTimeout(function() {
+          self.trigger('mouseover', e, latlon, pxPos, data, layer);
+        }, 0);
+        previousEvent = e.timeStamp;
+
       };
 
       opts.featureOut  = function(m, layer) {
@@ -28692,16 +28806,26 @@ function LayerGroupView(base) {
     _featureOut   = opts.featureOut,
     _featureClick = opts.featureClick;
 
+    var previousEvent;
+    var eventTimeout = -1;
+
     opts.featureOver  = function(e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
         self.trigger('layermouseover', layer);
       }
       hovers[layer] = 1;
-      if(_.any(hovers)) {
-        self.trigger('mouseover');
-      }
       _featureOver  && _featureOver.apply(this, arguments);
       self.featureOver  && self.featureOver.apply(this, arguments);
+
+      // if the event is the same than before just cancel the event
+      // firing because there is a layer on top of it
+      if (e.timeStamp === previousEvent) {
+        clearTimeout(eventTimeout);
+      }
+      eventTimeout = setTimeout(function() {
+        self.trigger('mouseover', e, latlon, pxPos, data, layer);
+      }, 0);
+      previousEvent = e.timeStamp;
     };
 
     opts.featureOut  = function(m, layer) {
@@ -30844,6 +30968,7 @@ var Vis = cdb.core.View.extend({
       layer_selector: false,
       searchControl: false,
       infowindow: true,
+      tooltip: true,
       legends: true,
       time_slider: true
     });
@@ -30870,6 +30995,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.infowindow = opt.infowindow;
+    this.tooltip = opt.tooltip;
 
     if(opt.https) {
       this.https = true;
@@ -31015,6 +31141,34 @@ var Vis = cdb.core.View.extend({
     return sql;
   },
 
+  addTooltip: function(layerView) {
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      var t = layerView.getTooltipData(i);
+      if (t) {
+        if (!layerView.tooltip) {
+          var tooltip = new cdb.geo.ui.Tooltip({
+            layer: layerView,
+            template: t.template,
+            fields: t.fields,
+            omit_columns: ['cartodb_id']
+          });
+          layerView.tooltip = tooltip;
+          this.mapView.addOverlay(tooltip);
+        }
+        layerView.setInteraction(i, true);
+      }
+    }
+
+    if (layerView.tooltip) {
+      layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
+        var t = layerView.getTooltipData(layer);
+        layerView.tooltip.setTemplate(t.template);
+        layerView.tooltip.setFields(t.fields);
+        layerView.tooltip.setAlternativeNames(t.alternative_names);
+      });
+    }
+  },
+
   addInfowindow: function(layerView) {
 
     if(!layerView.containInfowindow || !layerView.containInfowindow()) {
@@ -31042,6 +31196,17 @@ var Vis = cdb.core.View.extend({
     if(!infowindow) {
       return;
     }
+
+    infowindow.bind('close', function() {
+      // when infowindow is closed remove all the filters
+      // for tooltips
+      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+        var t = layerView.tooltip;
+        if (t) {
+          t.setFilter(null);
+        }
+      }
+    })
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
@@ -31074,6 +31239,12 @@ var Vis = cdb.core.View.extend({
           .setLatLng(latlng)
           .setLoading()
           .showInfowindow();
+
+        if (layerView.tooltip) {
+          layerView.tooltip.setFilter(function(feature) {
+            return feature.cartodb_id !== cartodb_id;
+          }).hide();
+        }
     });
 
     var hovers = [];
@@ -31105,6 +31276,10 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
+    }
+
+    if(layerView && this.tooltip && layerView.containTooltip && layerView.containTooltip()) {
+      this.addTooltip(layerView);
     }
 
     if (layerView) {

@@ -98,7 +98,7 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
-    invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email)
+    invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email) || changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || changes.include?(:twitter_username) 
     User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
   end
 
@@ -687,9 +687,9 @@ $$
   end
 
   def account_type_name
-    self.account_type.gsub(" ", "_").downcase
+    self.account_type.gsub(' ', '_').downcase
     rescue
-    ""
+    ''
   end
 
   #can be nil table quotas
@@ -757,7 +757,7 @@ $$
     update_gauge("visualizations.table", table_count)
     update_gauge("visualizations.derived", visualization_count)
   end
-  
+
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
     self.in_database(:as => :superuser).run(<<-TRIGGER

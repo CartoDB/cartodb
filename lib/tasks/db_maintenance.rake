@@ -143,7 +143,7 @@ namespace :cartodb do
       puts "Resetting check quota trigger for ##{User.count} users"
       User.all.each_with_index do |user, i|
         begin
-          user.rebuild_quota_trigger
+	        user.rebuild_quota_trigger
         rescue => exception
           error_messages << "ERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end
@@ -160,7 +160,6 @@ namespace :cartodb do
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
       
-      # rebuild quota trigger
       user.rebuild_quota_trigger
       
       puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
@@ -177,7 +176,7 @@ namespace :cartodb do
       
       user  = User.filter(:username => args[:username]).first      
       user.update(:table_quota => args[:table_quota].to_i)
-                    
+
       puts "User: #{user.username} table quota updated to: #{args[:table_quota]}"
     end
 

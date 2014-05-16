@@ -687,9 +687,9 @@ $$
   end
 
   def account_type_name
-    self.account_type.gsub(" ", "_").downcase
+    self.account_type.gsub(' ', '_').downcase
     rescue
-    ""
+    ''
   end
 
   #can be nil table quotas
@@ -757,7 +757,7 @@ $$
     update_gauge("visualizations.table", table_count)
     update_gauge("visualizations.derived", visualization_count)
   end
-  
+
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
     self.in_database(:as => :superuser).run(<<-TRIGGER

@@ -70,12 +70,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                       name:     name_candidate,
                       map_id:   map.id,
                       type:     'derived',
-                      privacy:  blender.blended_privacy
+                      privacy:  blender.blended_privacy,
+                      user_id:  current_user.id
                     )
                   )
     else
       member    = Visualization::Member.new(
-                    payload_with_default_privacy.merge(name: name_candidate)
+                    payload_with_default_privacy.merge(
+                        name: name_candidate,
+                        user_id:  current_user.id
+                    )
                   )
     end
 

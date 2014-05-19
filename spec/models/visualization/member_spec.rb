@@ -327,7 +327,7 @@ describe Visualization::Member do
 
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do
-
+      user_id = UUIDTools::UUID.timestamp_create.to_s
       Visualization::Member.any_instance.stubs(:named_maps)
 
       visualization = Visualization::Member.new(
@@ -340,6 +340,7 @@ describe Visualization::Member do
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)
+      user_mock.stubs(:id).returns(user_id)
       Visualization::Member.any_instance.stubs(:user).returns(user_mock)
 
       visualization.valid?.should eq true
@@ -379,7 +380,9 @@ describe Visualization::Member do
 
   describe '#default_privacy_values' do
     it 'Checks deault privacies for visualizations' do
+      user_id = UUIDTools::UUID.timestamp_create.to_s
       user_mock = mock
+      user_mock.stubs(:id).returns(user_id)
 
       # We don't care about values, just want an instance
       visualization = Visualization::Member.new(

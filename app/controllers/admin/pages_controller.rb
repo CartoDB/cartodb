@@ -27,7 +27,7 @@ class Admin::PagesController < ApplicationController
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
     @website          = viewed_user.website 
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, '') : ''
 
     @avatar_url = viewed_user.gravatar(request.protocol)
 
@@ -35,7 +35,7 @@ class Admin::PagesController < ApplicationController
     @vis_num    = viewed_user.public_visualization_count
 
     datasets = Visualization::Collection.new.fetch({
-      map_id:   viewed_user.maps.map(&:id),
+      user_id:  viewed_user.id,
       type:     Visualization::Member::CANONICAL_TYPE,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
@@ -84,7 +84,7 @@ class Admin::PagesController < ApplicationController
     @vis_num    = viewed_user.public_visualization_count
 
     visualizations = Visualization::Collection.new.fetch({
-      map_id:   viewed_user.maps.map(&:id),
+      user_id:  viewed_user.id,
       type:     Visualization::Member::DERIVED_TYPE,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],

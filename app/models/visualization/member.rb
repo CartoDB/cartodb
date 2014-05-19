@@ -150,6 +150,11 @@ module CartoDB
         super(name)
       end #name=
 
+      def description=(description)
+        self.description_changed = true if description != @description && !@description.nil?
+        super(description)
+      end #description=
+
       def description_clean
         if description.present?
           description_md.strip_tags

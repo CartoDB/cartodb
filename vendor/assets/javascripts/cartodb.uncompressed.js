@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.00-dev
+// cartodb.js version: 3.9.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: d693f13324a80f134fac017a19a0e154ea87fff7
+// sha: 3fb08ead2af6c976d8a2d9fbdb4708aab1e9ef00
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.00-dev';
+    cdb.VERSION = '3.9.05-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25547,14 +25547,17 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
 cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
-  DEFAULT_OFFSET_TOP: 10,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
 
+  defaults: {
+    vertical_offset: 0,
+    horizontal_offset: 0,
+    position: 'top|center'
+  },
+
   initialize: function() {
     this.options.template = this.options.template || this.defaultTemplate;
-    this.options.position = 'none';
-    this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
@@ -25640,13 +25643,45 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     }
     this.render(data);
     this.elder('show', pos, data);
-    this.$el.css({
-      'left': pos.x,
-      'top':  pos.y + (this.options.offset_top || this.DEFAULT_OFFSET_TOP)
-    });
+    this.setPosition(pos);
     return this;
   },
 
+  setPosition: function(point) {
+    var props = {
+      left: 0,
+      top:  0
+    };
+
+    var pos = this.options.position;
+    var $el = this.$el;
+    var h = $el.innerHeight();
+    var w = $el.innerWidth();
+
+    // Vertically
+    if (pos.indexOf('top') !== -1) {
+      props.top = -h;
+    } else if (pos.indexOf('middle') !== -1) {
+      props.top = -(h/2);
+    }
+
+    // Horizontally
+    if(pos.indexOf('left') !== -1) {
+      props.left = -w;
+    } else if(pos.indexOf('center') !== -1) {
+      props.left = -(w/2);
+    }
+
+    // Offsets
+    props.top += this.options.vertical_offset;
+    props.left += this.options.horizontal_offset;
+
+    $el.css({
+      top:  (point.y + props.top),
+      left: (point.x + props.left)
+    });
+
+  },
 
   render: function(data) {
     this.$el.html( this.template(data) );
@@ -26754,12 +26789,14 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
-  this.infowindow.bind('change', function() {
-    var def = this._parent.getLayer(this._position);
-    def.infowindow = this.infowindow.toJSON();
-    this._parent.setLayer(this._position, def);
-  }, this);
+  if (Backbone.Model) {
+    this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+    this.infowindow.bind('change', function() {
+      var def = this._parent.getLayer(this._position);
+      def.infowindow = this.infowindow.toJSON();
+      this._parent.setLayer(this._position, def);
+    }, this);
+  }
 }
 
 SubLayer.prototype = {
@@ -27636,7 +27673,7 @@ function layerView(base) {
 
       opts.featureOver  = function(e, latlon, pxPos, data, layer) {
         if (!hovers[layer]) {
-          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layerenter', e, latlon, pxPos, data, layer);
         }
         hovers[layer] = 1;
         _featureOver  && _featureOver.apply(this, arguments);
@@ -27648,6 +27685,7 @@ function layerView(base) {
         }
         eventTimeout = setTimeout(function() {
           self.trigger('mouseover', e, latlon, pxPos, data, layer);
+          self.trigger('layermouseover', e, latlon, pxPos, data, layer);
         }, 0);
         previousEvent = e.timeStamp;
 
@@ -28811,7 +28849,7 @@ function LayerGroupView(base) {
 
     opts.featureOver  = function(e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
-        self.trigger('layermouseover', layer);
+        self.trigger('layerenter', e, latlon, pxPos, data, layer);
       }
       hovers[layer] = 1;
       _featureOver  && _featureOver.apply(this, arguments);
@@ -28824,6 +28862,7 @@ function LayerGroupView(base) {
       }
       eventTimeout = setTimeout(function() {
         self.trigger('mouseover', e, latlon, pxPos, data, layer);
+        self.trigger('layermouseover', e, latlon, pxPos, data, layer);
       }, 0);
       previousEvent = e.timeStamp;
     };
@@ -29658,6 +29697,20 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _stripHTML: function(input, allowed) {
+
+    allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
+
+    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+
+    if (!input || (typeof input != "string")) return '';
+
+    return input.replace(tags, function ($0, $1) {
+      return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+    });
+
+  },
+
   open: function() {
 
     var self = this;
@@ -29702,23 +29755,24 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     var $el = this.$el;
 
-    var title       = this.options.title;
-    var description = this.options.description;
-    var share_url   = this.options.share_url;
+    var title             = this.options.title;
+    var description       = this.options.description;
+    var clean_description = this._stripHTML(this.options.description);
+    var share_url         = this.options.share_url;
 
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
-    var full_title    = title + ": " + description;
+    var full_title    = title + ": " + clean_description;
     var twitter_title;
 
-    if (title && description) {
-      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    if (title && clean_description) {
+      twitter_title = this._truncateTitle(title + ": " + clean_description, 112) + " %23map "
     } else if (title) {
       twitter_title = this._truncateTitle(title, 112) + " %23map"
-    } else if (description){
-      twitter_title = this._truncateTitle(description, 112) + " %23map"
+    } else if (clean_description){
+      twitter_title = this._truncateTitle(clean_description, 112) + " %23map"
     } else {
       twitter_title = "%23map"
     }
@@ -31142,6 +31196,9 @@ var Vis = cdb.core.View.extend({
   },
 
   addTooltip: function(layerView) {
+    if(!layerView || !layerView.containTooltip || !layerView.containTooltip()) {
+      return;
+    }
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       var t = layerView.getTooltipData(i);
       if (t) {
@@ -31149,6 +31206,9 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
+            position: 'bottom|right',
+            vertical_offset: 10,
+            horizontal_offset: 4,
             fields: t.fields,
             omit_columns: ['cartodb_id']
           });
@@ -31599,7 +31659,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\
@@ -32111,7 +32171,8 @@ Layers.register('torque', function(vis, data) {
         infowindow: true,
         https: false,
         legends: true,
-        time_slider: true
+        time_slider: true,
+        tooltip: true
       });
 
       // check map type
@@ -32150,6 +32211,9 @@ Layers.register('torque', function(vis, data) {
         }
         if(options.infowindow) {
           viz.addInfowindow(layerView);
+        }
+        if(options.tooltip) {
+          viz.addTooltip(layerView);
         }
         if(options.legends) {
           viz.addLegends([layerData]);

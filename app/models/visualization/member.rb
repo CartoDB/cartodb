@@ -88,7 +88,7 @@ module CartoDB
       end #store_using_table
 
       def valid?
-        validator.validate_presence_of(name: name, privacy: privacy, type: type)
+        validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
         validator.validate_uniqueness_of(:name, available_name?)
 
@@ -304,8 +304,6 @@ module CartoDB
       attr_accessor :privacy_changed, :name_changed, :description_changed
 
       def do_store(propagate_changes=true)
-          raise CartoDB::InvalidMember.new('No user id specified') if @user_id.nil?
-
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else

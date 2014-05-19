@@ -27,7 +27,17 @@ describe Visualization::Member do
   end #initialize
 
   describe '#store' do
-    it 'persists attributes to the data repository' do
+
+    it 'should fail if no user_id attribute present' do
+      attributes  = random_attributes
+      attributes.delete(:user_id)
+      member      = Visualization::Member.new(attributes)
+      expect {
+        member.store
+      }.to raise_exception CartoDB::InvalidMember
+    end
+
+      it 'persists attributes to the data repository' do
       attributes  = random_attributes
       member      = Visualization::Member.new(attributes)
       member.store
@@ -407,6 +417,7 @@ describe Visualization::Member do
       privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
+      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
       active_layer_id: random
     }
   end #random_attributes

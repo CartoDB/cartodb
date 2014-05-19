@@ -35,6 +35,10 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
+      # Upon adding new attributes modify also:
+      # app/models/visualization/migrator.rb
+      # db/schema.rb -> create_table()
+      # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -48,6 +52,7 @@ module CartoDB
       attribute :encrypted_password,  String, default: nil
       attribute :password_salt,       String, default: nil
       attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
+      attribute :user_id,             String
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE

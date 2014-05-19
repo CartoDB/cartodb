@@ -1,20 +1,26 @@
-There's no standard procedure to migrate from one version to another of
-the rails application, so version specific procedures are documented
-in the NEWS.md file.
 
-In absence of specific instructions, after upgrading the rails code to
-<version>, you must upgrade existing databases using these commands:
+NOTES:
+ - Redis server must be listening on the configured
+   port (see config/app_config.yml) for some of the
+   steps below to work
+ - Rails must be restarted after an upgrade
+
+
+Standard migration (default)
+----------------------------
+
+Unless stated otherwise, assume any new CartoDB release requires calling these commands:
 
  $ bundle exec rake db:migrate
+
+
+Mandatory migration
+-------------------
+
+Versions marked at the NEWS.md as requiring this migration must run all this commands:
+
+ $ bundle exec rake db:migrate
+ $ bundle exec rake cartodb:db:populate_new_fields
  $ bundle exec rake cartodb:db:load_functions
  $ bundle exec rake cartodb:db:load_triggers
  $ bundle exec rake cartodb:db:create_schemas
- $ bundle exec rake cartodb:db:migrate_to[<version>]
-
-NOTE: redis server must be listening on the configured 
-      port (see config/app_config.yml) for some of the
-      steps above to work
-
-Rails must be restarted after an upgrade
-
-

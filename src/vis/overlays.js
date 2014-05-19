@@ -80,7 +80,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\

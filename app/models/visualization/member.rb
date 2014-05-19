@@ -304,8 +304,10 @@ module CartoDB
       attr_accessor :privacy_changed, :name_changed, :description_changed
 
       def do_store(propagate_changes=true)
+          raise CartoDB::InvalidMember.new('No user id specified') if @user_id.nil?
+
         if password_protected?
-          raise CartoDB::InvalidMember unless has_password?
+          raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
           remove_password
         end

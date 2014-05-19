@@ -15,7 +15,7 @@ module CartoDB
         Tag.fetch(%Q{
             SELECT DISTINCT (unnest(tags)) as name
             FROM visualizations
-            WHERE user_id IN ?
+            WHERE user_id = ?
             AND type IN ?
             AND privacy IN ?
             LIMIT ?
@@ -28,7 +28,7 @@ module CartoDB
             WITH tags as (
               SELECT unnest(tags) as name
               FROM visualizations
-              WHERE user_id IN ?
+              WHERE user_id = ?
               AND type IN ?
               LIMIT ?
             )

@@ -21,6 +21,9 @@ module CartoDB
     
     class Collection
       def initialize(attributes={}, options={})
+
+        @total_entries = 0
+
         @collection = DataRepository::Collection.new(
           signature:    SIGNATURE,
           repository:   options.fetch(:repository, Visualization.repository),
@@ -42,7 +45,7 @@ module CartoDB
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = order(dataset, filters.delete(:o))
 
-        self.total_entries = dataset.count
+        @total_entries = dataset.count
         dataset = repository.paginate(dataset, filters)
 
         collection.storage = Set.new(dataset.map { |attributes|
@@ -71,7 +74,6 @@ module CartoDB
       private
 
       attr_reader :collection
-      attr_writer :total_entries
 
       def order(dataset, criteria={})
         return dataset if criteria.nil? || criteria.empty?
@@ -80,7 +82,7 @@ module CartoDB
 
       def filter_by_tags(dataset, tags=[])
         return dataset if tags.nil? || tags.empty?
-        placeholders = tags.length.times.map { "?" }.join(", ")
+        placeholders = tags.length.times.map { '?' }.join(', ')
         filter       = "tags && ARRAY[#{placeholders}]"
        
         dataset.where([filter].concat(tags))

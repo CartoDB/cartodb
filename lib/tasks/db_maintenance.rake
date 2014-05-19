@@ -151,6 +151,14 @@ namespace :cartodb do
       puts error_messages
     end
 
+    desc 'reset check quota trigger for a given user'
+    task :reset_trigger_check_quota_for_user, [:username] => :environment do |t, args|
+      raise 'usage: rake cartodb:db:reset_trigger_check_quota_for_user[username]' if args[:username].blank?
+      puts "Resetting trigger check quota for user '#{args[:username]}'"
+      user  = User.filter(:username => args[:username]).first
+      user.rebuild_quota_trigger
+    end
+
     desc "set users quota to amount in mb"
     task :set_user_quota, [:username, :quota_in_mb] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_user_quota[username,quota_in_mb]"

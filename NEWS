@@ -1,3 +1,13 @@
+3.9.05 (19//05//2014)
+- Fixed tileJSON method in cdb.Tiles
+- Adds support for Markdown in descriptions
+
+3.9.04 (14//05//2014)
+- Added position parameter in Tooltip overlay
+
+3.9.03 (14//05//2014)
+- Added tooltip option in createLayer method
+
 3.9.02 (14//05//2014)
 - Fixes torque width for small screens
 

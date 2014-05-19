@@ -125,7 +125,8 @@
         infowindow: true,
         https: false,
         legends: true,
-        time_slider: true
+        time_slider: true,
+        tooltip: true
       });
 
       // check map type
@@ -164,6 +165,9 @@
         }
         if(options.infowindow) {
           viz.addInfowindow(layerView);
+        }
+        if(options.tooltip) {
+          viz.addTooltip(layerView);
         }
         if(options.legends) {
           viz.addLegends([layerData]);

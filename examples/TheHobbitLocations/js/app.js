@@ -21,6 +21,7 @@ function main() {
       // add the tooltip show when hover on the point
       vis.addOverlay({
         type: 'tooltip',
+        position: 'top|center',
         template: '<p>{{name_to_display}}</p>'
       });
 

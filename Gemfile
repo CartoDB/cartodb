@@ -70,6 +70,9 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.3'
 gem 'sinatra',                  '1.3.4', require: 'sinatra/base'
 
+# Markdown
+gem 'redcarpet', '3.1.1'
+
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
 gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
@@ -98,8 +101,6 @@ group :development, :test do
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'foreman',               '0.46.0', require: false
   gem 'factory_girl_rails',    '~> 4.0.0'
-
-  gem 'redcarpet', '3.1.1'
 
   # Guard
   gem 'rb-inotify',            '0.9.0', require: false

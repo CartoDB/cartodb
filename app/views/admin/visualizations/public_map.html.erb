@@ -91,9 +91,9 @@
             </div>
 
             <div class="user embed-right-col">
-              <a href="/" title="Maps by <%= @visualization.user.username %>" class="content">
+              <a href="/" title="Maps by <%= @name %>" class="content">
                 <div class="user-info">
-                  <h4>by <%= @visualization.user.username.truncate(20) %></h4>
+                  <h4>by <%= @name %></h4>
                   <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
                 </div>
                 <img src="<%= @avatar_url %>" class="avatar" />

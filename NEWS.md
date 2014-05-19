@@ -1,3 +1,21 @@
+2.13.5 (2014-05-13)
+-------------------
+* New features
+  * Infowindows on Hover
+  * SQL functions moved to a Git submodule
+  * CDB_CheckQuota improved in preparations for SQL-Based table CartoDBfier
+
+* Fixed bugs
+  * Cluster wizard font sizes are scaling very cleanly
+  * Big files imports/data syncs timeout or OOMs
+  * Default avatar requests not using https
+  * A transparent line appears within infowindow in last Chrome version
+  * Add new accepted formats in Dropbox sync
+  * Change error when importing a file and there is not enough quota left
+  * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
+  * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
+  * User name is not appearing in that user profile (link in description)
+
 2.13.4 (2014-05-08)
 -------------------
 * Improvements

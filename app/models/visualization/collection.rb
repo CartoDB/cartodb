@@ -6,7 +6,7 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
-    AVAILABLE_FILTERS   = %w{ name type description map_id privacy }
+    AVAILABLE_FILTERS   = %w{ name type description map_id user_id privacy }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 

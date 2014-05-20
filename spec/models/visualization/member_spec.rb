@@ -37,7 +37,7 @@ describe Visualization::Member do
       }.to raise_exception CartoDB::InvalidMember
     end
 
-      it 'persists attributes to the data repository' do
+    it 'persists attributes to the data repository' do
       attributes  = random_attributes
       member      = Visualization::Member.new(attributes)
       member.store
@@ -293,10 +293,13 @@ describe Visualization::Member do
     end
   end #password
 
-  describe '#privachy_and_exceptions' do
+  describe '#privacy_and_exceptions' do
     it 'checks different privacy options to make sure exceptions are raised when they should' do
+      user_id = UUIDTools::UUID.timestamp_create.to_s
+
       visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
       visualization.name = 'test'
+      visualization.user_id = user_id
 
       # Private maps allowed
       visualization.user_data = { actions: { private_maps: true } }
@@ -324,6 +327,7 @@ describe Visualization::Member do
 
       visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
       visualization.name = 'test'
+      visualization.user_id = user_id
       # No private maps allowed
       visualization.user_data = { actions: { } }
 
@@ -342,8 +346,9 @@ describe Visualization::Member do
 
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
-          name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE
+          name:     'test',
+          type:     Visualization::Member::CANONICAL_TYPE,
+          user_id:  user_id
       )
       visualization.user_data = { actions: { private_maps: true } }
 
@@ -375,7 +380,8 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_LINK,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE
+          type: Visualization::Member::CANONICAL_TYPE,
+          user_id:  user_id
       )
       visualization.user_data = { actions: { private_maps: false } }
       # Unchanged visualizations could be
@@ -398,7 +404,8 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE
+          type: Visualization::Member::CANONICAL_TYPE,
+          user_id:  user_id
       )
 
       user_mock.stubs(:private_tables_enabled).returns(true)

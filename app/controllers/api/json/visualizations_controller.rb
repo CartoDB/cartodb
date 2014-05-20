@@ -83,7 +83,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   )
     end
 
-    # Make public by default
     member.privacy = member.default_privacy(current_user)
 
     member.store

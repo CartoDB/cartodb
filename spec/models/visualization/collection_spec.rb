@@ -33,8 +33,8 @@ describe Visualization::Collection do
 
   describe '#fetch' do
     it 'filters by tag if the backend supports array columns' do
-      attributes1  = random_attributes(tags: ['tag 1', 'tag 11'])
-      attributes2  = random_attributes(tags: ['tag 2', 'tag 22'])
+      attributes1  = random_attributes(tags: ['tag 1', 'tag 11'], user_id: UUIDTools::UUID.timestamp_create.to_s)
+      attributes2  = random_attributes(tags: ['tag 2', 'tag 22'], user_id: UUIDTools::UUID.timestamp_create.to_s)
       Visualization::Member.new(attributes1).store
       Visualization::Member.new(attributes2).store
 
@@ -44,9 +44,9 @@ describe Visualization::Collection do
 
     it 'filters by partial name / description match' do
       attributes1 =
-        random_attributes(name: 'viz_1', description: 'description_11')
+        random_attributes(name: 'viz_1', description: 'description_11', user_id: UUIDTools::UUID.timestamp_create.to_s)
       attributes2 =
-        random_attributes(name: 'viz_2', description: 'description_22')
+        random_attributes(name: 'viz_2', description: 'description_22', user_id: UUIDTools::UUID.timestamp_create.to_s)
       Visualization::Member.new(attributes1).store
       Visualization::Member.new(attributes2).store
 
@@ -80,7 +80,8 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'public')
+      type:         attributes.fetch(:type, 'public'),
+      user_id:      UUIDTools::UUID.timestamp_create.to_s
     }
   end #random_attributes
 end # Visualization::Collection

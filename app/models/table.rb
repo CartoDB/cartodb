@@ -301,7 +301,6 @@ class Table < Sequel::Model(:user_tables)
 
   def import_cleanup
     owner.in_database do |user_database|
-
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -317,13 +316,15 @@ class Table < Sequel::Model(:user_tables)
         end
       end
 
-      if flattened_schema.include?(:cartodb_id)
-        if flattened_schema.include?(:ogc_fid)
-          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
-        elsif flattened_schema.include?(:gid)
-          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
-        end
-      end
+      # Remove primary key
+      existing_pk = user_database[%Q{
+        SELECT c.conname AS pk_name FROM pg_class r, pg_constraint c
+        WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
+      }].first
+      existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
+      user_database.run(%Q{
+        ALTER TABLE "#{self.name}" DROP CONSTRAINT "#{existing_pk}"
+      }) unless existing_pk.nil?
 
       # All normal fields casted to text
       self.schema(reload: true, cartodb_types: false).each do |column|
@@ -335,13 +336,12 @@ class Table < Sequel::Model(:user_tables)
       # If there's an auxiliary column, copy to cartodb_id and restart the sequence to the max(cartodb_id)+1
       if aux_cartodb_id_column.present?
         begin
-          abort = false
-          user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+          already_had_cartodb_id = false
+          user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
         rescue
-          abort = true
+          already_had_cartodb_id = true
         end
-
-        unless abort
+        unless already_had_cartodb_id
           user_database.run(%Q{UPDATE "#{self.name}" SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN #{aux_cartodb_id_column}})
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
@@ -352,15 +352,13 @@ class Table < Sequel::Model(:user_tables)
             user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
           end
         end
-      else
-        if flattened_schema.include?(:cartodb_id)
-          user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})
-          user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO invalid_cartodb_id})
-        end
       end
+
+      self.cartodbfy
+
+      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
     end
 
-    self.cartodbfy
   end
 
   def before_create

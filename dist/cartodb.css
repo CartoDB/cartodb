@@ -775,6 +775,15 @@ div.cartodb-header div.social a {
   background:url('../img/other.png') no-repeat 0 0;
 }
 
+div.cartodb-header a {
+  color: #397DBA;
+  text-decoration: none;
+}
+
+div.cartodb-header a:hover {
+  text-decoration: underline;
+}
+
 div.cartodb-header div.social a.twitter {
   margin-left:3px;
   background:url('../img/other.png') no-repeat -26px 0;

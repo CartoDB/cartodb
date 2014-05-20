@@ -293,13 +293,13 @@ body.public { /* Public table CSS */
 
 div.panes {
   position:absolute;
-  top:148px;
+  top:78px;
   right:0;
   bottom:0;
   left:0;
 
   // When table/layer is synced
-  &.synced {top:177px}
+  &.synced {top:107px}
 
   .emptyTableContainer {
     position:fixed;
@@ -564,7 +564,7 @@ div.table {
       div.shadow {
         position:fixed;
         left:0;
-        top:215px;
+        top:145px;
         right:0;
         width:100%;
         height:10px;

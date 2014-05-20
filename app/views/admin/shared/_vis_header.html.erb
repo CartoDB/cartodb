@@ -12,6 +12,15 @@
         <div class="description">
           <p><a href="#/change-description"></a></p>
         </div>
+
+        <div class="vis_navigation">
+          <nav>
+            <%= link_to "Table",    "#/table", :class => "smaller strong tab selected" %>
+            <%= link_to "Map view", "#/map",   :class => "smaller strong tab" %>
+          </nav>
+          <div class="globalerror"></div>
+        </div>
+
       </div>
       <div class="right">
         <ul class="options">
@@ -24,14 +33,6 @@
     </div>
 
     <div class="sync_status"></div>
-
-    <div class="vis_navigation">
-      <nav>
-        <%= link_to "Table",    "#/table", :class => "smaller strong tab selected" %>
-        <%= link_to "Map view", "#/map",   :class => "smaller strong tab" %>
-      </nav>
-      <div class="globalerror"></div>
-    </div>
 
   </div>
 </header>

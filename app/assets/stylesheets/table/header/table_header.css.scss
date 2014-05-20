@@ -14,8 +14,8 @@
     left:0;
     top:0;
     min-width:960px;
-    height:128px;
-    padding:20px 0 0;
+    height:58px;
+    padding: 11px 0 0 0;
     overflow:visible;
     border-bottom: 1px solid rgba(#333333, 0.8);
     @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
@@ -23,7 +23,7 @@
 
     .inner {
       width:auto;
-      height: 128px;
+      height: 58px;
     }
 
 

@@ -169,6 +169,10 @@
           &.public {
             margin-left:116px;
           }
+          
+          em { font-style: italic; }
+
+          .link { text-decoration: underline; }
 
           a {
             font-style:normal;

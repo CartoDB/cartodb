@@ -12,6 +12,7 @@
 //= require ZeroClipboard
 //= require tag-it
 //= require jquery.tipsy
+//= require markdown
 //= require d3.v2
 //= require colorpicker
 //= require jquery.fileupload

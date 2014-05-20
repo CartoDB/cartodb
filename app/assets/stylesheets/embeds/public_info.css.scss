@@ -235,7 +235,19 @@ and (orientation : landscape) {
 }
 
 .embed-left-col.details .content p.description {
+
   margin: 0 0 12px 0;
+
+  strong { font-weight: bold; }
+  em { font-style: italic; }
+
+  a { 
+    color: #397DB8;
+    text-decoration:none;
+
+    &:hover { text-decoration:underline; }
+  }
+
 }
 
 .embed-left-col.details .content p.options a {

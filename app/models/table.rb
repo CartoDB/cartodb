@@ -318,8 +318,10 @@ class Table < Sequel::Model(:user_tables)
 
       # Remove primary key
       existing_pk = user_database[%Q{
-        SELECT c.conname AS pk_name FROM pg_class r, pg_constraint c
+        SELECT c.conname AS pk_name
+        FROM pg_class r, pg_constraint c, pg_namespace n
         WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
+        AND r.relnamespace = n.oid and n.nspname= 'public'
       }].first
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
       user_database.run(%Q{

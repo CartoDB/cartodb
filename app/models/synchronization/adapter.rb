@@ -75,7 +75,6 @@ module CartoDB
         table.send :set_the_geom_column!
         table.send :update_table_pg_stats
         table.send :cartodbfy
-        table.send :set_trigger_track_updates
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)

@@ -74,9 +74,7 @@ module CartoDB
         # Set default triggers
         table.send :set_the_geom_column!
         table.send :update_table_pg_stats
-        table.send :set_trigger_update_updated_at
-        table.send :set_trigger_check_quota
-        table.send :set_trigger_track_updates
+        table.send :cartodbfy
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)

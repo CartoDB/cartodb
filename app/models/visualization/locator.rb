@@ -52,7 +52,7 @@ module CartoDB
 
       def get_by_name(name, user)
         repository.collection(
-          name:   name, 
+          name:   name,
           map_id: user.maps.map(&:id)
         ).first
       end #get_by_name

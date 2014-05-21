@@ -36,6 +36,10 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
+      # Upon adding new attributes modify also:
+      # app/models/visualization/migrator.rb
+      # db/schema.rb -> create_table()
+      # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -49,6 +53,7 @@ module CartoDB
       attribute :encrypted_password,  String, default: nil
       attribute :password_salt,       String, default: nil
       attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
+      attribute :user_id,             String
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -84,7 +89,7 @@ module CartoDB
       end #store_using_table
 
       def valid?
-        validator.validate_presence_of(name: name, privacy: privacy, type: type)
+        validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
         validator.validate_uniqueness_of(:name, available_name?)
 
@@ -314,7 +319,7 @@ module CartoDB
 
       def do_store(propagate_changes=true)
         if password_protected?
-          raise CartoDB::InvalidMember unless has_password?
+          raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
           remove_password
         end

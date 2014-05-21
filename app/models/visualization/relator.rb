@@ -16,8 +16,9 @@ module CartoDB
                       single_data_layer? synchronization }
 
       def initialize(attributes={})
-        @id     = attributes.fetch(:id)
-        @map_id = attributes.fetch(:map_id)
+        @id       = attributes.fetch(:id)
+        @map_id   = attributes.fetch(:map_id)
+        @user_id  = attributes.fetch(:user_id)
       end #initialize
 
       def overlays
@@ -29,7 +30,7 @@ module CartoDB
       end #map
 
       def user
-        @user ||= map.user if map
+        @user ||= User.where(id: @user_id).first unless @user_id.nil?
       end #user
 
       def table

@@ -519,7 +519,8 @@ class Table < Sequel::Model(:user_tables)
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
       description:  self.description,
       tags:         (tags.split(',') if tags),
-      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values]
+      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
+      user_id:      self.owner.id
     ).store
   end
 

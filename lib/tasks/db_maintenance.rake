@@ -438,12 +438,12 @@ namespace :cartodb do
     # @param block Proc
     def execute_on_users_with_index(task_name, block)
       count = User.count
-      puts "Running #{task_name} for #{count} users"
+      puts "\n>Running #{task_name} for #{count} users"
       User.all.each_with_index do |user, i|
-        puts "#{user.id} #{i}"
+        puts "#{user.id} (#{user.username}) ##{i}"
         block.call(user, i)
       end
-      puts "Finished #{task_name}"
+      puts ">Finished #{task_name}\n"
     end #execute_on_users_with_index
 
   end

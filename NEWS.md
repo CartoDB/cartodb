@@ -1,8 +1,13 @@
 2.14.1 (XXXX-XX-XX)
 -------------------
 * New features
+    * Upgraded UPGRADE doc and required rakes to run
+    * Added new rake: populate_new_fields
+    * Added user_id to Visualization Model
 
 * Fixed bugs
+
+* Migration Type (see UPGRADE): Mandatory migration
 
 
 2.14.0 (2014-05-20)

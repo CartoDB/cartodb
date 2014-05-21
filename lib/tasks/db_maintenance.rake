@@ -420,8 +420,8 @@ namespace :cartodb do
     # and doesn't breaks the application
     desc 'populates db new fields after certain migrations'
     task :populate_new_fields => :environment do
-      # 2.13.5
-      execute_on_users_with_index(:populate_new_fields.to_s + ': 2.13.5', Proc.new { |user, i|
+      # 2.14.1
+      execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i|
         user.db.execute(%Q{
           UPDATE visualizations
           SET user_id = maps.user_id FROM maps

@@ -862,7 +862,7 @@ describe Table do
       check_schema(table, [
         [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-        [:kind, "character varying(10)"]
+        [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
       ])
     end
 
@@ -874,7 +874,7 @@ describe Table do
       check_schema(table, [
         [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-        [:kind, "character varying(10)"]
+        [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
       ])
     end
 

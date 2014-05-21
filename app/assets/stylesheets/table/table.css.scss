@@ -41,8 +41,8 @@
 
 body.public { /* Public table CSS */
 
-  &.table .panes { top:68px; }
-  &.map .panes   { top:0px; overflow-x: hidden; }
+  &.table .panes { top: 77px; }
+  &.map .panes   { top: 0px; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
     position:relative;
@@ -293,7 +293,7 @@ body.public { /* Public table CSS */
 
 div.panes {
   position:absolute;
-  top:78px;
+  top:77px;
   right:0;
   bottom:0;
   left:0;
@@ -564,7 +564,7 @@ div.table {
       div.shadow {
         position:fixed;
         left:0;
-        top:145px;
+        top:154px;
         right:0;
         width:100%;
         height:10px;
@@ -761,13 +761,13 @@ div.table {
         color:rgba(#666666,.5);
       }
       div.shadow {
-        top:244px;
+        top:144px;
       }
     }
     // Visualization table
     &.vis {
       div.shadow {
-        top:215px;
+        top:144px;
       } 
     }
 

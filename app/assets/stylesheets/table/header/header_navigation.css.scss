@@ -13,32 +13,34 @@
   // Navigation block
   div.vis_navigation {
     position:absolute;
-    width: 200px;
-    margin-left: -100px;
-    top: 0;
+    width: 400px;
+    margin-left: -200px;
+    top: 4px;
     left:50%;
-    height:47px;
     margin:0;
     padding:0;
-
-    /*background:#fff;*/
 
     nav {
       position:relative;
       @include inline-block();
-      width:auto;
-      height:38px;
-      padding:9px 0 0 35px;
+      padding: 1px;
       margin:0;
+
+      @include border-radius(30px);
+      border: 2px solid #fff;
+
       z-index:1;
 
       a.tab {
-        padding:8px 9px;
+        padding:7px 25px;
         @include inline-block();
-        font-size:0.938em;
+        font-size:12px;
         font-weight:500;
         color:#fff;
-        @include border-radius(3px);
+
+        text-transform: uppercase;
+
+        @include border-radius(30px);
 
         &:hover, &:focus, &:active {}
 

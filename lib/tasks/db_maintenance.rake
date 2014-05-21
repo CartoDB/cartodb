@@ -412,30 +412,11 @@ namespace :cartodb do
       end
     end
 
-    # New UPGRADE step, whose purpose is populate fields added by Rails migrations.
-    # Motivation: some field populations can be error-prone, time consuming, etc.,
-    # so better to leave each the responsability of try-catching or not.
-    # Initially it'd be nice if all populations are done via pure SQL queries,
-    # so this rake can be called in a branch that still has no Model changes
-    # and doesn't breaks the application
-    desc 'populates db new fields after certain migrations'
-    task :populate_new_fields => :environment do
-      # 2.14.1
-      execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i|
-        user.db.execute(%Q{
-          UPDATE visualizations
-          SET user_id = maps.user_id FROM maps
-          WHERE maps.user_id='#{user.id}'
-          AND visualizations.user_id IS NULL
-          AND visualizations.map_id = maps.id
-         })
-      })
-
-    end #populate_new_fields
-
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc
+    # @example:
+    # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
     def execute_on_users_with_index(task_name, block)
       count = User.count
       puts "\n>Running #{task_name} for #{count} users"

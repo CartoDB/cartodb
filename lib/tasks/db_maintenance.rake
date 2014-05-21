@@ -412,5 +412,20 @@ namespace :cartodb do
       end
     end
 
+    # Executes a ruby code proc/block on all existing users, outputting some info
+    # @param task_name string
+    # @param block Proc
+    # @example:
+    # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
+    def execute_on_users_with_index(task_name, block)
+      count = User.count
+      puts "\n>Running #{task_name} for #{count} users"
+      User.all.each_with_index do |user, i|
+        puts "#{user.id} (#{user.username}) ##{i}"
+        block.call(user, i)
+      end
+      puts ">Finished #{task_name}\n"
+    end #execute_on_users_with_index
+
   end
 end

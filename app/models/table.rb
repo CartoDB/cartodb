@@ -391,6 +391,7 @@ class Table < Sequel::Model(:user_tables)
 
       set_the_geom_column!
       import_cleanup
+
       set_table_id
       @data_import.save
     else
@@ -1236,6 +1237,7 @@ TRIGGER
 
   def cartodbfy
     owner.in_database(:as => :superuser).run("SELECT CDB_CartodbfyTable('#{self.name}')")
+    self.schema(reload:true)
   end
 
   # Set a "cache_checkpoint" trigger to invalidate varnish

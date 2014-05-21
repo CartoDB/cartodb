@@ -368,9 +368,9 @@ class Table < Sequel::Model(:user_tables)
     super
     update_updated_at
 
+
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-      #init state machine
       if self.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
         @data_import.updated_at = Time.now
@@ -389,10 +389,9 @@ class Table < Sequel::Model(:user_tables)
 
       self.schema(reload: true)
 
-      import_cleanup
       set_the_geom_column!
+      import_cleanup
       set_table_id
-      #@data_import.formatted
       @data_import.save
     else
       create_table_in_database!
@@ -1476,42 +1475,10 @@ TRIGGER
 
     raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 
-    updates = false
     type = type.to_s.upcase
-    owner.in_database do |user_database|
-      return if !force_schema.blank? && !user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-      unless user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-        updates = true
-        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
-      end
-      unless user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        updates = true
-        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',2)")
-        user_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT})
-      end
 
-      # Ensure we add triggers and indexes when required
-      if user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        unless self.has_index? 'the_geom_webmercator'
-          updates = true
-          user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom_webmercator')} ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
-        end
-      end
-
-      if user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-        unless self.has_index? 'the_geom'
-          updates = true
-          user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom')} ON "#{self.name}" USING GIST(the_geom)})
-        end
-      end
-
-    end
     self.the_geom_type = type.downcase
     save_changes unless new?
-    if updates
-      set_trigger_the_geom_webmercator
-    end
   end
 
   def create_table_in_database!

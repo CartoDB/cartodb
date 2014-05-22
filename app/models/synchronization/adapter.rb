@@ -68,11 +68,10 @@ module CartoDB
         table.send :update_updated_at
         table.import_to_cartodb(table_name)
         table.schema(reload: true)
+        table.send :set_the_geom_column!
         table.import_cleanup
         table.schema(reload: true)
         table.reload
-        # Set default triggers
-        table.send :set_the_geom_column!
         table.send :update_table_pg_stats
         table.send :cartodbfy
         table.save

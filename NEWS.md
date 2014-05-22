@@ -1,3 +1,57 @@
+2.14.1 (XXXX-XX-XX)
+-------------------
+* New features
+    * Upgraded UPGRADE doc and required rakes to run
+    * Added new aux method to do future code cleanups in rakes : execute_on_users_with_index
+    * Added user_id to Visualization Model
+
+* Fixed bugs
+    * Converting the_geom causes drop that fails due to trigger (PR477)
+
+* Migration Type (see UPGRADE): Mandatory migration
+
+
+2.14.0 (2014-05-20)
+-------------------
+* New features
+  * Adds markdown support for descriptions
+  * New WMS proxy server
+  * SQL based table CartoDBfication
+  * New rake tasks
+  * Migrate user quota on cartodb extension creation from unpackaged
+  * Complain if script is sourced in psql, rather than via CREATE EXTENSION
+
+* Fixed bugs
+  * Bug fixing and stabilization
+  * Improve error detection in viz.json action
+  * Ruby code no longer loading import files in memory, but streaming them in chunks upon: uploading to server, uploading to AS3, downloading from AS3/server
+  - lib/sql modifications:
+    * Remove CDB_SearchPath.sql from the set of scripts loaded directly (#466)
+    * Do not call CDB_Invalidate_Varnish() if not owned by a superuser
+    * Refuse to create new extension if legacy code is present on database
+    * Fix extension requires directive
+
+
+
+2.13.5 (2014-05-13)
+-------------------
+* New features
+  * Infowindows on Hover
+  * SQL functions moved to a Git submodule
+  * CDB_CheckQuota improved in preparations for SQL-Based table CartoDBfier
+
+* Fixed bugs
+  * Cluster wizard font sizes are scaling very cleanly
+  * Big files imports/data syncs timeout or OOMs
+  * Default avatar requests not using https
+  * A transparent line appears within infowindow in last Chrome version
+  * Add new accepted formats in Dropbox sync
+  * Change error when importing a file and there is not enough quota left
+  * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
+  * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
+  * User name is not appearing in that user profile (link in description)
+
+
 2.13.5 (2014-05-13)
 -------------------
 * New features

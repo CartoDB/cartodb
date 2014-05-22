@@ -16,6 +16,8 @@ describe Visualization::Member do
 
   describe '#privacy_for_vizjson' do
     it 'checks expected privacy values for the vizjson' do
+      user_id = UUIDTools::UUID.timestamp_create.to_s
+
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
@@ -25,6 +27,7 @@ describe Visualization::Member do
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)
+      user_mock.stubs(:id).returns(user_id)
       Visualization::Member.any_instance.stubs(:user).returns(user_mock)
 
       presenter = Visualization::Presenter.new(visualization)

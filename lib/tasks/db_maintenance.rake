@@ -178,6 +178,13 @@ namespace :cartodb do
       at_exit { pool.shutdown }
     end
 
+    desc 'reset check quota trigger for a given user'
+    task :reset_trigger_check_quota_for_user, [:username] => :environment do |t, args|
+      raise 'usage: rake cartodb:db:reset_trigger_check_quota_for_user[username]' if args[:username].blank?
+      puts "Resetting trigger check quota for user '#{args[:username]}'"
+      user  = User.filter(:username => args[:username]).first
+      user.rebuild_quota_trigger
+    end
 
     desc "set users quota to amount in mb"
     task :set_user_quota, [:username, :quota_in_mb] => :environment do |t, args|
@@ -431,6 +438,21 @@ namespace :cartodb do
         end
       end
     end
+
+    # Executes a ruby code proc/block on all existing users, outputting some info
+    # @param task_name string
+    # @param block Proc
+    # @example:
+    # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
+    def execute_on_users_with_index(task_name, block)
+      count = User.count
+      puts "\n>Running #{task_name} for #{count} users"
+      User.all.each_with_index do |user, i|
+        puts "#{user.id} (#{user.username}) ##{i}"
+        block.call(user, i)
+      end
+      puts ">Finished #{task_name}\n"
+    end #execute_on_users_with_index
 
   end
 end

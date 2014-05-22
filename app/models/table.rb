@@ -271,7 +271,6 @@ class Table < Sequel::Model(:user_tables)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = 'external_table'
       @data_import.data_source = migrate_existing_table || uniname
-      #@data_import.migrate
       @data_import.save
 
       # ensure unique name, also ensures self.name can override any imported table name
@@ -302,77 +301,66 @@ class Table < Sequel::Model(:user_tables)
 
   def import_cleanup
     owner.in_database do |user_database|
-      # If we already have a cartodb_id column let's rename it to an auxiliary column
-      aux_cartodb_id_column = nil
-      if schema.present? && schema.flatten.include?(:cartodb_id)
-         #@data_import.log << ('Renaming cartodb_id from import file')
-         aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
-         user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}})
-         self.schema
-      end
-
-      # When tables are created using ogr2ogr they are added a ogc_fid primary key
+      # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
-      #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
-      if schema.present? && schema.flatten.include?(:ogc_fid)
-        if aux_cartodb_id_column.nil?
+      #  - If cartodb_id does not exist, treat this field as the auxiliary column
+      aux_cartodb_id_column = nil
+      flattened_schema = schema.present? ? schema.flatten : []
+
+      if schema.present? && !flattened_schema.include?(:cartodb_id)
+        if flattened_schema.include?(:ogc_fid)
           aux_cartodb_id_column = 'ogc_fid'
-        else
-          #@data_import.log << ('Removing ogc_fid from import file')
-          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
-        end
-      end
-      if schema.present? && schema.flatten.include?(:gid)
-        if aux_cartodb_id_column.nil?
+        elsif flattened_schema.include?(:gid)
           aux_cartodb_id_column = 'gid'
-        else
-          #@data_import.log << ('Removing gid from import file')
-          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
         end
       end
+
+      # Remove primary key
+      existing_pk = user_database[%Q{
+        SELECT c.conname AS pk_name
+        FROM pg_class r, pg_constraint c, pg_namespace n
+        WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
+        AND r.relnamespace = n.oid and n.nspname= 'public'
+      }].first
+      existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
+      user_database.run(%Q{
+        ALTER TABLE "#{self.name}" DROP CONSTRAINT "#{existing_pk}"
+      }) unless existing_pk.nil?
+
+      # All normal fields casted to text
       self.schema(reload: true, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
           user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN "#{column[0]}" TYPE text})
         end
       end
-      schema = self.schema(reload: true)
 
-      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
-
-      # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
-      # Do this before adding constraints cause otherwise we can have duplicate key errors
+      # If there's an auxiliary column, copy to cartodb_id and restart the sequence to the max(cartodb_id)+1
       if aux_cartodb_id_column.present?
-        #@data_import.log << ('Cleaning supplied cartodb_id')
-        user_database.run(%Q{UPDATE "#{self.name}" SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
-        user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN #{aux_cartodb_id_column}})
-        cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-        max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM "#{self.name}"}].first[:max]
-
-        # only reset the sequence on real imports.
-        # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns
-        if max_cartodb_id
-          user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+        begin
+          already_had_cartodb_id = false
+          user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
+        rescue
+          already_had_cartodb_id = true
+        end
+        unless already_had_cartodb_id
+          user_database.run(%Q{UPDATE "#{self.name}" SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
+          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN #{aux_cartodb_id_column}})
+          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+          max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM "#{self.name}"}].first[:max]
+          # only reset the sequence on real imports.
+          # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns
+          if max_cartodb_id
+            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+          end
         end
       end
 
-      # Try to use the selected cartodb_id column as primary key,
-      # generate a new one if we can't (duplicated values for instance)
-      begin
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
-      rescue
-        #@data_import.log << ("Renaming cartodb_id to invalid_cartodb_id") if @data_import
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP DEFAULT})
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP NOT NULL})
-        user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})
-        user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO invalid_cartodb_id})
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
-      end
+      self.cartodbfy
 
-      normalize_timestamp(user_database, :created_at)
-      normalize_timestamp(user_database, :updated_at)
+      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
     end
+
   end
 
   def before_create
@@ -380,9 +368,9 @@ class Table < Sequel::Model(:user_tables)
     super
     update_updated_at
 
+
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-      #init state machine
       if self.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
         @data_import.updated_at = Time.now
@@ -401,10 +389,10 @@ class Table < Sequel::Model(:user_tables)
 
       self.schema(reload: true)
 
-      import_cleanup
       set_the_geom_column!
+      import_cleanup
+
       set_table_id
-      #@data_import.formatted
       @data_import.save
     else
       create_table_in_database!
@@ -531,7 +519,8 @@ class Table < Sequel::Model(:user_tables)
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
       description:  self.description,
       tags:         (tags.split(',') if tags),
-      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values]
+      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
+      user_id:      self.owner.id
     ).store
   end
 
@@ -1230,45 +1219,11 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_trigger_the_geom_webmercator
-    return true unless self.schema(reload: true).flatten.include?(THE_GEOM)
-      owner.in_database(:as => :superuser) do |user_database|
-        user_database.run(<<-TRIGGER
-       DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON "#{self.name}";
-       CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-         BEGIN
-               NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
-               RETURN NEW;
-         END;
-       $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
-
-       #{create_the_geom_if_not_exists(self.name)}
-
-       CREATE TRIGGER update_the_geom_webmercator_trigger
-       BEFORE INSERT OR UPDATE OF the_geom ON "#{self.name}"
-          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
-     TRIGGER
-       )
-   end
-    #self.cartodbfy
+    self.cartodbfy
   end
 
   def set_trigger_update_updated_at
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
-       DROP TRIGGER IF EXISTS update_updated_at_trigger ON "#{self.name}";
-
-       CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
-         BEGIN
-                NEW.updated_at := now();
-                RETURN NEW;
-         END;
-       $update_updated_at_trigger$ LANGUAGE plpgsql;
-
-       CREATE TRIGGER update_updated_at_trigger
-       BEFORE UPDATE ON "#{self.name}"
-         FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
-     TRIGGER
-     )
-    #self.cartodbfy
+    self.cartodbfy
   end
 
   # Drop "cache_checkpoint", if it exists
@@ -1282,6 +1237,7 @@ TRIGGER
 
   def cartodbfy
     owner.in_database(:as => :superuser).run("SELECT CDB_CartodbfyTable('#{self.name}')")
+    self.schema(reload:true)
   end
 
   # Set a "cache_checkpoint" trigger to invalidate varnish
@@ -1317,23 +1273,7 @@ TRIGGER
 
   # Set quota checking trigger for this table
   def set_trigger_check_quota
-    # probability factor of running the check for each row
-    # (it'll always run before each statement)
-    check_probability_factor = 0.001 # TODO: base on database usage ?
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
- BEGIN;
- DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
- CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
-   EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
- DROP TRIGGER IF EXISTS test_quota_per_row ON "#{self.name}";
- CREATE TRIGGER test_quota_per_row BEFORE UPDATE OR INSERT ON "#{self.name}"
-   FOR EACH ROW
-   EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
-                                     #{self.owner.quota_in_bytes} );
- COMMIT;
-    TRIGGER
-    )
-    #self.cartodbfy
+    self.cartodbfy
   end
 
   def owner
@@ -1537,42 +1477,10 @@ TRIGGER
 
     raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 
-    updates = false
     type = type.to_s.upcase
-    owner.in_database do |user_database|
-      return if !force_schema.blank? && !user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-      unless user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-        updates = true
-        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
-      end
-      unless user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        updates = true
-        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',2)")
-        user_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT})
-      end
 
-      # Ensure we add triggers and indexes when required
-      if user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        unless self.has_index? 'the_geom_webmercator'
-          updates = true
-          user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom_webmercator')} ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
-        end
-      end
-
-      if user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-        unless self.has_index? 'the_geom'
-          updates = true
-          user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom')} ON "#{self.name}" USING GIST(the_geom)})
-        end
-      end
-
-    end
     self.the_geom_type = type.downcase
     save_changes unless new?
-    if updates
-      set_trigger_the_geom_webmercator
-    end
   end
 
   def create_table_in_database!

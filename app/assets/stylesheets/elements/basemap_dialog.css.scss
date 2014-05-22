@@ -98,6 +98,7 @@
       @include inline-block();
       vertical-align:middle;
       width:355px;
+      margin-top:2px;
       border:none;
       font:italic 15px $text-fonts2;
       color: #666;
@@ -244,5 +245,25 @@
   div.column {
     @include inline-block();
     &.time_field { display:none }
+  }
+}
+
+
+// Proxy loader
+
+.wms-proxy-loader {
+  display:block;
+  padding:80px 0;
+
+  .loader {
+    display:block;
+    height:24px;
+    @include background(image-url('layout/loader.gif') no-repeat center center white);
+  }
+
+  p {
+    margin-top:15px;
+    padding:0 60px;
+    text-align:center;
   }
 }

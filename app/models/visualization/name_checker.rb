@@ -12,13 +12,13 @@ module CartoDB
         !taken_names_for(user).include?(candidate)
       end #available?
 
+      private
+
       def taken_names_for(user)
         Visualization::Collection.new
-          .fetch(map_id: user.maps.map(&:id))
-          .map(&:name)
+        .fetch(user_id: user.id)
+        .map(&:name)
       end #taken_names
-
-      private
 
       attr_reader :user
     end # NameChecker

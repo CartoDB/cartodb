@@ -50,6 +50,28 @@ namespace :cartodb do
       end
     end
 
+    desc 'test rake to see how multithreading copes with all our users'
+    task :test_multithread, [:num_threads] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      pool = ThreadPool.new(threads)
+
+      require_relative '../../app/models/table'
+
+      count = User.count
+      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+        pool.schedule do
+          begin
+            tables = Table.filter(:user_id => user.id).all
+            printf "OK %-#{20}s (%-#{4}s/%-#{4}s) has #{4} tables\n", user.username, i+1, count, tables.count
+          rescue => e
+            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+          end
+        end
+      })
+
+      at_exit { pool.shutdown }
+    end
+
 
     ########################
     # LOAD CARTODB FUNCTIONS

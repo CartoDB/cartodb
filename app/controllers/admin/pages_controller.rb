@@ -75,7 +75,7 @@ class Admin::PagesController < ApplicationController
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
-    @website          = viewed_user.website 
+    @website          = viewed_user.website && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
     @avatar_url = viewed_user.gravatar(request.protocol)

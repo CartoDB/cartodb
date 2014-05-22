@@ -71,7 +71,6 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    puts viewed_user.website.blank?
 
     @tags             = viewed_user.tags
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username

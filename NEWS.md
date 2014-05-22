@@ -4,6 +4,7 @@
     * Upgraded UPGRADE doc and required rakes to run
     * Added new aux method to do future code cleanups in rakes : execute_on_users_with_index
     * Added user_id to Visualization Model
+    * Improve merge tables log info
 
 * Fixed bugs
     * Converting the_geom causes drop that fails due to trigger (PR477)

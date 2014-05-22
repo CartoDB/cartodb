@@ -85,13 +85,14 @@ module CartoDB
       end
 
       def update_cdb_tablemetadata(name)
+        # TODO: turn into a single upsert statement
         user.in_database(as: :superuser).run(%Q{
-          INSERT INTO cdb_tablemetadata (tabname, updated_at)
+          INSERT INTO cdb_tablemetadatashadow (tabname, updated_at)
           VALUES ('#{name}'::regclass::oid, NOW())
         })
       rescue Sequel::DatabaseError
         user.in_database(as: :superuser).run(%Q{
-           UPDATE cdb_tablemetadata
+           UPDATE cdb_tablemetadatashadow
            SET updated_at = NOW()
            WHERE tabname = '#{name}'::regclass
         })

@@ -43,7 +43,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata cdb_tablemetadatashadow )
   SCHEMAS = %w( public cdb_importer )
   GEOCODING_BLOCK_SIZE = 1000
 
@@ -918,7 +918,7 @@ $$
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
             #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name)
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(cdb_tablemetadatashadow)|(table)$"' % table_name)
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))

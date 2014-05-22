@@ -15,7 +15,7 @@ describe CartoDB::SqlParser do
 
   it "should return the affected tables" do
     CartoDB::SqlParser.new(@sql, connection: @connection)
-      .affected_tables.should =~ ["cdb_tablemetadata", "spatial_ref_sys"]
+      .affected_tables.should =~ ["cdb_tablemetadatashadow", "spatial_ref_sys"]
   end
 
   it "should return the query statements" do

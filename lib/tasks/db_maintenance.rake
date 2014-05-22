@@ -60,9 +60,9 @@ namespace :cartodb do
       pool = ThreadPool.new(threads)
 
       functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
+
       count = User.count
-      printf "Starting cartodb:db:load_functions task for %d users\n", count
-      User.all.each_with_index do |user, i|
+      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
         pool.schedule do
           begin
             user.load_cartodb_functions(functions_list)
@@ -70,11 +70,8 @@ namespace :cartodb do
           rescue => e
             printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
           end
-          if i % 500 == 0
-            puts "\nProcessed ##{i} users"
-          end
         end
-      end
+      })
 
       at_exit { pool.shutdown }
     end

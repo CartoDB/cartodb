@@ -4,11 +4,15 @@
     * Upgraded UPGRADE doc and required rakes to run
     * Added new aux method to do future code cleanups in rakes : execute_on_users_with_index
     * Added user_id to Visualization Model
+    * Added specs for table model, checking the_geom conversions
 
 * Fixed bugs
     * Converting the_geom causes drop that fails due to trigger (PR477)
 
 * Migration Type (see UPGRADE): Mandatory migration
+    * Also mandatory to run (in this order as fist one sets functions used by second one):
+        * rake cartodb:db:reset_trigger_check_quota
+        * rake cartodb:db:load_functions
 
 
 2.14.0 (2014-05-20)

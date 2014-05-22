@@ -1970,6 +1970,17 @@ describe Table do
         [:invalid_the_geom, 'unknown']
     ])
 
+    # geometrycollection (concrete type) Unsupported
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'eight'
+    @user.run_pg_query('
+      CREATE TABLE eight AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0), ST_Buffer(ST_MakePoint(10,0),1)), 4326) AS the_geom
+    ')
+    expect {
+      table.save
+    }.to raise_exception
+
+
   end
 
 end

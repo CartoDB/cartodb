@@ -371,7 +371,7 @@ $$
   end #map_tags
 
   def tables
-    Table.filter(:user_id => self.id).order(:id).reverse
+    ::Table.filter(:user_id => self.id).order(:id).reverse
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")

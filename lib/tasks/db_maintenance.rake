@@ -1,10 +1,12 @@
+require_relative 'thread_pool'
+
 namespace :cartodb do
   namespace :db do
 
     #################
     # LOAD TABLE OIDS
     #################
-    desc "Load table oids"
+    desc 'Load table oids'
     task :load_oids => :environment do
       count = User.count
       User.all.each_with_index do |user, i|
@@ -18,13 +20,13 @@ namespace :cartodb do
       end
     end
 
-    desc "Copy user api_keys from redis to postgres"
+    desc 'Copy user api_keys from redis to postgres'
     task :copy_api_keys_from_redis => :environment do
       count = User.count
       User.all.each_with_index do |user, i|
         begin
           user.this.update api_key: $users_metadata.HGET(user.key, 'map_key')
-          raise "No API key!!" if user.reload.api_key.blank?
+          raise 'No API key!!' if user.reload.api_key.blank?
           puts "(#{i+1} / #{count}) OK   #{user.username}"
         rescue => e
           puts "(#{i+1} / #{count}) FAIL #{user.username} #{e.message}"
@@ -32,7 +34,7 @@ namespace :cartodb do
       end
     end # copy_api_keys_from_redis
 
-    desc "Rebuild user tables/layers join table"
+    desc 'Rebuild user tables/layers join table'
     task :register_table_dependencies => :environment do
       count = Map.count
 
@@ -48,27 +50,55 @@ namespace :cartodb do
       end
     end
 
+    desc 'test rake to see how multithreading copes with all our users'
+    task :test_multithread, [:num_threads] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      pool = ThreadPool.new(threads)
+
+      require_relative '../../app/models/table'
+
+      count = User.count
+      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+        pool.schedule do
+          begin
+            tables = Table.filter(:user_id => user.id).all
+            printf "OK %-#{20}s (%-#{4}s/%-#{4}s) has #{4} tables\n", user.username, i+1, count, tables.count
+          rescue => e
+            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+          end
+        end
+      })
+
+      at_exit { pool.shutdown }
+    end
+
 
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
-    desc "Install/upgrade CARTODB SQL functions"
-    task :load_functions => :environment do
+    desc 'Install/upgrade CARTODB SQL functions'
+    task :load_functions, [:num_threads] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      pool = ThreadPool.new(threads)
+
       functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
+
       count = User.count
-      printf "Starting cartodb:db:load_functions task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.load_cartodb_functions(functions_list)
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+        pool.schedule do
+          begin
+            user.load_cartodb_functions(functions_list)
+            printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
+          rescue => e
+            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+          end
         end
-        #sleep(1.0/5.0)
-      end
+      })
+
+      at_exit { pool.shutdown }
     end
 
-    desc "Load varnish invalidation function"
+    desc 'Load varnish invalidation function'
     task :load_varnish_invalidation_function => :environment do
       count = User.count
       printf "Starting cartodb:db:load_varnish_invalidation_function task for %d users\n", count
@@ -87,26 +117,34 @@ namespace :cartodb do
     ########################
     # LOAD CARTODB TRIGGERS
     ########################
-    desc "Install/upgrade CARTODB SQL triggers"
-    task :load_triggers => :environment do
+    desc 'Install/upgrade CARTODB SQL triggers'
+    task :load_triggers, [:num_threads] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      pool = ThreadPool.new(threads)
+
+      require_relative '../../app/models/table'
+
       count = User.count
       User.all.each_with_index do |user, i|
-        begin
-          user.tables.all.each do |table|
-            begin
-              # set triggers
-              table.set_triggers
-            rescue => e
-              puts e
-              next
+        pool.schedule do
+          begin
+            user.tables.all.each do |table|
+              begin
+                # set triggers
+                table.set_triggers
+              rescue => e
+                puts e
+                next
+              end
             end
+            printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+          rescue => e
+            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
           end
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
-        #sleep(1.0/5.0)
       end
+
+      at_exit { pool.shutdown }
     end
         
     ##############
@@ -138,17 +176,25 @@ namespace :cartodb do
     # SET TRIGGER CHECK QUOTA
     ##########################
     desc 'reset check quota trigger on all user tables'
-    task :reset_trigger_check_quota => :environment do
-      error_messages = "\n"
+    task :reset_trigger_check_quota, [:num_threads] => :environment do |t, args|
+      raise 'Usage: rake :reset_trigger_check_quota[number_of_threads]' if args[:num_threads].blank?
+      threads = args[:num_threads].to_i
+      pool = ThreadPool.new(threads)
+
       puts "Resetting check quota trigger for ##{User.count} users"
       User.all.each_with_index do |user, i|
-        begin
-	        user.rebuild_quota_trigger
-        rescue => exception
-          error_messages << "ERRORED #{user.id} (#{user.username}): #{exception.message}\n"
+        pool.schedule do
+          begin
+            user.rebuild_quota_trigger
+          rescue => exception
+            puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
+          end
+          if i % 500 == 0
+            puts "\nProcessed ##{i} users"
+          end
         end
       end
-      puts error_messages
+      at_exit { pool.shutdown }
     end
 
     desc 'reset check quota trigger for a given user'
@@ -161,9 +207,9 @@ namespace :cartodb do
 
     desc "set users quota to amount in mb"
     task :set_user_quota, [:username, :quota_in_mb] => :environment do |t, args|
-      usage = "usage: rake cartodb:db:set_user_quota[username,quota_in_mb]"
+      usage = 'usage: rake cartodb:db:set_user_quota[username,quota_in_mb]'
       raise usage if args[:username].blank? || args[:quota_in_mb].blank?
-      
+
       user  = User.filter(:username => args[:username]).first
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
@@ -351,10 +397,10 @@ namespace :cartodb do
       end
     end
 
-    desc "update the old cache trigger which was using redis to the varnish one"
+    desc 'update the old cache trigger which was using redis to the varnish one'
     task :update_cache_trigger => :environment do
       User.all.each do |user|
-        puts "Update cache trigger => " + user.username
+        puts 'Update cache trigger => ' + user.username
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database do |user_database|
           user.tables.all.each do |table|
@@ -369,39 +415,39 @@ namespace :cartodb do
       end
     end
 
-    desc "Runs the specified CartoDB migration script"
+    desc 'Runs the specified CartoDB migration script'
     task :migrate_to, [:version] => :environment do |t, args|
-      usage = "usage: rake cartodb:db:migrate_to[version]"
+      usage = 'usage: rake cartodb:db:migrate_to[version]'
       raise usage if args[:version].blank?
-      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+      require Rails.root.join 'lib/cartodb/generic_migrator.rb'
 
       CartoDB::GenericMigrator.new(args[:version]).migrate!
     end
     
-    desc "Undo migration changes USE WITH CARE"
+    desc 'Undo migration changes USE WITH CARE'
     task :rollback_migration, [:version] => :environment do |t, args|
-      usage = "usage: rake cartodb:db:rollback_migration[version]"
+      usage = 'usage: rake cartodb:db:rollback_migration[version]'
       raise usage if args[:version].blank?
-      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+      require Rails.root.join 'lib/cartodb/generic_migrator.rb'
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
     end
     
-    desc "Save users metadata in redis"
+    desc 'Save users metadata in redis'
     task :save_users_metadata => :environment do
       User.all.each do |u|
         u.save_metadata
       end
     end
 
-    desc "Drop cache_checkpoint trigger from all tables"
+    desc 'Drop cache_checkpoint trigger from all tables'
     task :drop_trigger_cache_checkpoint => :environment do
       count = User.count
       printf "Starting cartodb:db:drop_trigger_cache_checkpoint task for %d users\n", count
       User.all.each_with_index do |user, i|
         begin
           user.tables.all.each do |t|
-            if t.has_trigger? "cache_checkpoint"
+            if t.has_trigger? 'cache_checkpoint'
               t.drop_trigger_cache_checkpoint
             end
           end

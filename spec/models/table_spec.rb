@@ -1885,4 +1885,102 @@ describe Table do
     end
   end #validation_for_link_privacy
 
+
+  it 'tests the_geom conversions and expected results' do
+    # Empty table/default schema (no conversion)
+    table = new_table(:name => 'one', :user_id => @user.id)
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:description, 'text'], [:name, 'text'],
+        [:the_geom, 'geometry', 'geometry', 'geometry']
+    ])
+
+    # latlong projection
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'two'
+    @user.run_pg_query('
+      CREATE TABLE two AS SELECT CDB_LatLng(0,0) AS the_geom
+    ')
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:the_geom, 'geometry', 'geometry', 'point']
+    ])
+
+    # single multipoint, without srid
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'three'
+    @user.run_pg_query('
+      CREATE TABLE three AS SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;
+    ')
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:the_geom, 'geometry', 'geometry', 'geometry'],
+        [:invalid_the_geom, 'geometry', 'geometry', 'geometry']
+    ])
+
+    # same as above (single multipoint), but with a SRID=4326 (latlong)
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'four'
+    @user.run_pg_query('
+      CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
+    ')
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:the_geom, 'geometry', 'geometry', 'point']
+    ])
+
+    # single polygon
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'five'
+    @user.run_pg_query('
+      CREATE TABLE five AS SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom
+    ')
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:the_geom, 'geometry', 'geometry', 'multipolygon']
+    ])
+
+    # single line
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'six'
+    @user.run_pg_query('
+      CREATE TABLE six AS SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom
+    ')
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:the_geom, 'geometry', 'geometry', 'multilinestring']
+    ])
+
+    # field named "the_geom" being _not_ of type geometry
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'seven'
+    @user.run_pg_query(%Q{
+      CREATE TABLE seven AS SELECT 'wadus' AS the_geom;
+    })
+    table.save
+    check_schema(table, [
+        [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+        [:the_geom, 'geometry', 'geometry', 'geometry'],
+        [:invalid_the_geom, 'unknown']
+    ])
+
+    # geometrycollection (concrete type) Unsupported
+    table = new_table(:name => nil, :user_id => @user.id)
+    table.migrate_existing_table = 'eight'
+    @user.run_pg_query('
+      CREATE TABLE eight AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0), ST_Buffer(ST_MakePoint(10,0),1)), 4326) AS the_geom
+    ')
+    expect {
+      table.save
+    }.to raise_exception
+
+
+  end
+
 end

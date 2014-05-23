@@ -8,6 +8,7 @@
 
 * Fixed bugs
     * Converting the_geom causes drop that fails due to trigger (PR477)
+    * Excel2CSV gem messes up with atypical UTF-8 characters
 
 * Migration Type (see UPGRADE): Mandatory migration
 

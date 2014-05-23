@@ -1361,13 +1361,14 @@ TRIGGER
   private
 
   def update_cdb_tablemetadata
+    # TODO: turn into a single upsert statement
     owner.in_database(as: :superuser).run(%Q{
-      INSERT INTO cdb_tablemetadata (tabname, updated_at)
+      INSERT INTO cdb_tablemetadatashadow (tabname, updated_at)
       VALUES ('#{table_id}', NOW())
     })
   rescue Sequel::DatabaseError
     owner.in_database(as: :superuser).run(%Q{
-      UPDATE cdb_tablemetadata
+      UPDATE cdb_tablemetadatashadow
       SET updated_at = NOW()
       WHERE tabname = '#{table_id}'
     })

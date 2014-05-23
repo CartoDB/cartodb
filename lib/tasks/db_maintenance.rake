@@ -1,5 +1,3 @@
-require_relative 'thread_pool'
-
 namespace :cartodb do
   namespace :db do
 
@@ -50,52 +48,23 @@ namespace :cartodb do
       end
     end
 
-    desc 'test rake to see how multithreading copes with all our users'
-    task :test_multithread, [:num_threads] => :environment do |t, args|
-      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
-      pool = ThreadPool.new(threads)
-
-      require_relative '../../app/models/table'
-
-      count = User.count
-      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
-        pool.schedule do
-          begin
-            tables = Table.filter(:user_id => user.id).all
-            printf "OK %-#{20}s (%-#{4}s/%-#{4}s) has #{4} tables\n", user.username, i+1, count, tables.count
-          rescue => e
-            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
-          end
-        end
-      })
-
-      at_exit { pool.shutdown }
-    end
-
-
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:num_threads] => :environment do |t, args|
-      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
-      pool = ThreadPool.new(threads)
+    task :load_functions => :environment do |t, args|
 
       functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
 
       count = User.count
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
-        pool.schedule do
           begin
             user.load_cartodb_functions(functions_list)
             printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
           rescue => e
             printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
           end
-        end
       })
-
-      at_exit { pool.shutdown }
     end
 
     desc 'Load varnish invalidation function'
@@ -118,33 +87,26 @@ namespace :cartodb do
     # LOAD CARTODB TRIGGERS
     ########################
     desc 'Install/upgrade CARTODB SQL triggers'
-    task :load_triggers, [:num_threads] => :environment do |t, args|
-      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
-      pool = ThreadPool.new(threads)
-
+    task :load_triggers => :environment do |t, args|
       require_relative '../../app/models/table'
 
       count = User.count
       User.all.each_with_index do |user, i|
-        pool.schedule do
-          begin
-            user.tables.all.each do |table|
-              begin
-                # set triggers
-                table.set_triggers
-              rescue => e
-                puts e
-                next
-              end
+        begin
+          user.tables.all.each do |table|
+            begin
+              # set triggers
+              table.set_triggers
+            rescue => e
+              puts e
+              next
             end
-            printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
-          rescue => e
-            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
           end
+          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+        rescue => e
+          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
       end
-
-      at_exit { pool.shutdown }
     end
         
     ##############
@@ -176,25 +138,18 @@ namespace :cartodb do
     # SET TRIGGER CHECK QUOTA
     ##########################
     desc 'reset check quota trigger on all user tables'
-    task :reset_trigger_check_quota, [:num_threads] => :environment do |t, args|
-      raise 'Usage: rake :reset_trigger_check_quota[number_of_threads]' if args[:num_threads].blank?
-      threads = args[:num_threads].to_i
-      pool = ThreadPool.new(threads)
-
+    task :reset_trigger_check_quota => :environment do |t, args|
       puts "Resetting check quota trigger for ##{User.count} users"
       User.all.each_with_index do |user, i|
-        pool.schedule do
-          begin
-            user.rebuild_quota_trigger
-          rescue => exception
-            puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
-          end
-          if i % 500 == 0
-            puts "\nProcessed ##{i} users"
-          end
+        begin
+          user.rebuild_quota_trigger
+        rescue => exception
+          puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
+        end
+        if i % 500 == 0
+          puts "\nProcessed ##{i} users"
         end
       end
-      at_exit { pool.shutdown }
     end
 
     desc 'reset check quota trigger for a given user'

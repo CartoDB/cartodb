@@ -37,13 +37,13 @@
         });
 
         cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/255729a6-e28c-11e3-bcb7-0e10bcd91c2b/viz.json')
-        .addTo(map)
-        .on('done', function(layer) {
-          var subLayer = layer.getSubLayer(0);
-          subLayer.setInteraction(true); // Interaction for that layer must be enabled
-          cdb.vis.Vis.addCursorInteraction(map, subLayer); // undo with removeCursorInteraction
-          layer.on('featureOver', featureOver);
-        })
+          .addTo(map)
+          .on('done', function(layer) {
+            var subLayer = layer.getSubLayer(0);
+            subLayer.setInteraction(true); // Interaction for that layer must be enabled
+            cdb.vis.Vis.addCursorInteraction(map, subLayer); // undo with removeCursorInteraction
+            layer.on('featureOver', featureOver);
+          })
 
         function featureOver(e, pos, latlng, data) {
           console.log(data.cartodb_id)

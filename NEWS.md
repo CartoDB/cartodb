@@ -6,7 +6,6 @@
     * Added user_id to Visualization Model
     * Added specs for table model, checking the_geom conversions
     * Improve merge tables log info
-    * Added a preliminary thread_pool class to run rakes multithreaded
 
 * Fixed bugs
     * Converting the_geom causes drop that fails due to trigger (PR477)

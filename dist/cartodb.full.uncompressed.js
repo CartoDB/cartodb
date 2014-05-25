@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.04
+// cartodb.js version: 3.9.06
 // uncompressed version: cartodb.uncompressed.js
-// sha: 91dcdff39a4350a90b3c68b253b77096ca11fc27
+// sha: 3b5ef0f9ce9e601ca250b83b3534c4c672ef7171
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.04';
+    cdb.VERSION = '3.9.06';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26304,12 +26304,23 @@ Map.prototype = {
     this.invalidate();
   },
 
-  _tileJSONfromTiles: function(layer, urls) {
+  _tileJSONfromTiles: function(layer, urls, options) {
+    options = options || {};
+    var subdomains = options.subdomains || ['0', '1', '2', '3'];
+
+    function replaceSubdomain(t) {
+      var tiles = [];
+      for (var i = 0; i < t.length; ++i) {
+        tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+      }
+      return tiles;
+    }
+
     return {
       tilejson: '2.0.0',
       scheme: 'xyz',
-      grids: urls.grids[layer],
-      tiles: urls.tiles,
+      grids: replaceSubdomain(urls.grids[layer]),
+      tiles: replaceSubdomain(urls.tiles),
       formatter: function(options, data) { return data; }
      };
   },
@@ -26319,13 +26330,14 @@ Map.prototype = {
    */
   getTileJSON: function(layer, callback) {
     layer = layer == undefined ? 0: layer;
+    var self = this;
     this.getTiles(function(urls) {
       if(!urls) {
         callback(null);
         return;
       }
       if(callback) {
-        callback(this._tileJSONfromTiles(layer, urls));
+        callback(self._tileJSONfromTiles(layer, urls));
       }
     });
   },
@@ -27627,11 +27639,13 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
-      return p;
+      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
     } else {
-      // IE
-      return map.mouseEventToLayerPoint(o.e)
+      var rect = obj.getBoundingClientRect();
+      var p = new L.Point(
+            o.e.clientX - rect.left - obj.clientLeft - window.scrollX,
+            o.e.clientY - rect.top - obj.clientTop - window.scrollY);
+      return map.containerPointToLayerPoint(p);
     }
   }
 
@@ -29697,6 +29711,20 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _stripHTML: function(input, allowed) {
+
+    allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
+
+    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+
+    if (!input || (typeof input != "string")) return '';
+
+    return input.replace(tags, function ($0, $1) {
+      return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+    });
+
+  },
+
   open: function() {
 
     var self = this;
@@ -29741,23 +29769,24 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     var $el = this.$el;
 
-    var title       = this.options.title;
-    var description = this.options.description;
-    var share_url   = this.options.share_url;
+    var title             = this.options.title;
+    var description       = this.options.description;
+    var clean_description = this._stripHTML(this.options.description);
+    var share_url         = this.options.share_url;
 
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
-    var full_title    = title + ": " + description;
+    var full_title    = title + ": " + clean_description;
     var twitter_title;
 
-    if (title && description) {
-      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    if (title && clean_description) {
+      twitter_title = this._truncateTitle(title + ": " + clean_description, 112) + " %23map "
     } else if (title) {
       twitter_title = this._truncateTitle(title, 112) + " %23map"
-    } else if (description){
-      twitter_title = this._truncateTitle(description, 112) + " %23map"
+    } else if (clean_description){
+      twitter_title = this._truncateTitle(clean_description, 112) + " %23map"
     } else {
       twitter_title = "%23map"
     }
@@ -31644,7 +31673,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\
@@ -31830,7 +31859,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

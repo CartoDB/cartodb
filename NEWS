@@ -1,3 +1,11 @@
+3.9.06 (25//05//2014)
+- Allowfullscreen parameter added to iframe code
+  in share dialog.
+
+3.9.05 (19//05//2014)
+- Fixed tileJSON method in cdb.Tiles
+- Adds support for Markdown in descriptions
+
 3.9.04 (14//05//2014)
 - Added position parameter in Tooltip overlay
 

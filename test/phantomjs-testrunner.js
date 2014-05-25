@@ -28,6 +28,9 @@ else {
         // create a WebPage object to work with
         page = require("webpage").create();
         page.url = address;
+        page.onConsoleMessage = function(msg, lineNum, sourceId) {
+            console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+        };
 
         // When initialized, inject the reporting functions before the page is loaded
         // (and thus before it will try to utilize the functions)
@@ -164,6 +167,7 @@ function processPage(status, page, resultsKey) {
 
                 // print out a success / failure message of the results
                 var results = getResults();
+                console.log(results);
                 var specs = Number(results[1]);
                 var failures = Number(results[2]);
                 console.log("Results for url " + page.url + ":");

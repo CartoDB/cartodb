@@ -80,7 +80,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\
@@ -266,7 +266,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

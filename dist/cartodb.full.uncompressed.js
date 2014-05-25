@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.05
+// cartodb.js version: 3.9.06
 // uncompressed version: cartodb.uncompressed.js
-// sha: da8948ebf4cf97ec5091bb43b63d719ddd6112ca
+// sha: 3b5ef0f9ce9e601ca250b83b3534c4c672ef7171
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.05';
+    cdb.VERSION = '3.9.06';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -27639,11 +27639,13 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
-      return p;
+      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
     } else {
-      // IE
-      return map.mouseEventToLayerPoint(o.e)
+      var rect = obj.getBoundingClientRect();
+      var p = new L.Point(
+            o.e.clientX - rect.left - obj.clientLeft - window.scrollX,
+            o.e.clientY - rect.top - obj.clientTop - window.scrollY);
+      return map.containerPointToLayerPoint(p);
     }
   }
 
@@ -31857,7 +31859,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

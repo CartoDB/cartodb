@@ -10,6 +10,7 @@
 * Fixed bugs
     * Converting the_geom causes drop that fails due to trigger (PR477)
     * Excel2CSV gem messes up with atypical UTF-8 characters
+    * ogc_fid not being removed after import
 
 * Migration Type (see UPGRADE): Mandatory migration
     * Also mandatory to run (in this order as fist one sets functions used by second one):

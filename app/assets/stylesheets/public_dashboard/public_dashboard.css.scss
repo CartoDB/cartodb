@@ -99,7 +99,8 @@ header {
     @include clearfix();
     @include box-sizing(border-box);
 
-    h1 {
+    h1,
+    .logo {
 
       margin-top: 0;
 
@@ -216,7 +217,7 @@ header {
       float:left;
       padding: 0;
 
-      .count { 
+      .count {
         padding: 25px 0;
         display: block;
       }
@@ -265,7 +266,7 @@ header {
       font-weight: 400;
       line-height: 120%;
     }
- 
+
     p {
       width: 205px;
       margin: 15px auto 0 auto;
@@ -276,13 +277,13 @@ header {
       display:block;
       margin: 3px 0 0 0;
     }
-    
+
     .website {
       @include inline-block();
       text-align:center;
     }
 
-    
+
   } // .details
 } // .user-info
 
@@ -300,7 +301,7 @@ header {
 }
 
 .datasets,
-.visualizations { 
+.visualizations {
   float:left;
   width: 700px;
   text-align:center;
@@ -350,7 +351,7 @@ header {
     font-size: 15px;
     line-height: normal;
 
-    a { 
+    a {
       text-decoration: underline;
       font-size: 15px;
       &:hover  { color: #333; }
@@ -437,7 +438,7 @@ header {
       @include text-overflow();
       width: 100%;
 
-      a { 
+      a {
         color: #fff;
         text-decoration: underline;
 
@@ -749,7 +750,7 @@ only screen and (                min-resolution: 2dppx) {
     li { width: 50%; }
   }
 
-  .content { 
+  .content {
 
     &.empty .inner {
 
@@ -842,7 +843,7 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content { 
+  .content {
 
     padding-top: 30px;
 
@@ -969,7 +970,7 @@ only screen and (                min-resolution: 2dppx) {
 
       }
     }
- 
+
   } // .visualizations
 
 }
@@ -990,7 +991,7 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-  .content { 
+  .content {
 
     padding-top: 30px;
 
@@ -1036,9 +1037,9 @@ only screen and (                min-resolution: 2dppx) {
 
 
 /* iPad portrait */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
 and (orientation : portrait) {
 
   body:after { content: 'ipad portrait'; width: 160px; margin-left: -80px;  }
@@ -1050,9 +1051,9 @@ and (orientation : portrait) {
 }
 
 /* iPad landscape */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
 and (orientation : landscape) {
 
   body:after { content: 'ipad portrait'; width: 160px; margin-left: -80px;  }

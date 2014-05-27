@@ -108,6 +108,12 @@ header {
         display: block;
         width: 93px;
         height: 18px;
+
+        @include background(image-url('layout/cartodb.png') no-repeat);
+        text-indent: -9999px;
+        line-height: 0px;
+        font-size: 0px;
+        text-transform: uppercase;
       }
     }
 

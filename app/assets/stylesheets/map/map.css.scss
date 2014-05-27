@@ -3349,7 +3349,13 @@ div.map {
     @include inline-block();
     margin: 12px 0 0 45px;
 
-    & > li.dropdown {
+    & > li.button {
+
+      & > .thumb { background:red; }
+
+    }
+
+    & > li {
 
       &.full_screen .thumb {
         @include map-sprite(full_screen);
@@ -3358,40 +3364,76 @@ div.map {
         @include border-radius(0px);
       }
 
-      @include inline-block();
-
-      padding: 0 15px 0 0;
-      margin: 0 5px 0 0;
-
-      border-right: 1px solid rgba(#D9D9D9, .8);
-      &:last-child { border: none; }
-
-      cursor: pointer;
-
-      & > .thumb {
-        position:relative;
-        @include inline-block();
-        @include size(30px);
-        margin: 0 5px 0 0;
-        @include border-radius(2px);
-
-        // Set nokia basemap as default
-        background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        background-size: 34px;
-        background-color: rgba(0, 0, 0, 0);
-        background-position: 50% 50%;
+      &.dropdown > h5 {
 
         &:before {
-          content: ' ';
           position:absolute;
-          top:0;
-          left:0;
-          right:0;
-          bottom:0;
-          border: 1px solid rgba(0,0,0, 0.15);
-          @include border-radius(2px);
+          content:' ';
+          top:-3px;
+          right:-9px;
+          margin:8px 0 0 5px;
+          border-left:3px solid transparent;
+          border-right:3px solid transparent;
+          border-top:3px solid #7C7C7C;
+          z-index:1;
         }
+
+        &:after {
+          position:absolute;
+          content:' ';
+          top:-1px;
+          right:-9px;
+          margin:9px 0 0 5px;
+          border-left:3px solid transparent;
+          border-right:3px solid transparent;
+          border-top:3px solid transparent;
+          z-index:0;
+        }
+
       }
+
+        @include inline-block();
+
+        padding: 0 15px 0 0;
+        margin: 0 5px 0 0;
+
+        border-right: 1px solid rgba(#D9D9D9, .8);
+        &:last-child { border: none; }
+
+        cursor: pointer;
+
+        & > .thumb {
+          position:relative;
+          @include inline-block();
+          @include size(30px);
+          margin: 0 5px 0 0;
+          @include border-radius(2px);
+
+          // Set nokia basemap as default
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+          background-size: 34px;
+          background-color: rgba(0, 0, 0, 0);
+          background-position: 50% 50%;
+
+          &:before {
+            content: ' ';
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            border: 1px solid rgba(0,0,0, 0.15);
+            @include border-radius(2px);
+          }
+          h5 {
+            position:relative;
+            padding:0 12px 0 0;
+            display:block;
+            font-family: "Helvetica", Arial;
+            font-weight:normal;
+            line-height:12px;
+          }
+        }
 
       .info {
         @include inline-block();

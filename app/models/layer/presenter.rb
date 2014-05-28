@@ -101,6 +101,7 @@ module CartoDB
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
+          legend:     layer.legend,
           options:    {
             stat_tag:           options.fetch(:visualization_id),
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),

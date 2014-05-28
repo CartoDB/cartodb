@@ -3718,71 +3718,62 @@ div.map {
     min-width: 50px;
 
     &.editable {
-      .text { cursor: text!Important; }
       border: 1px solid red;
+      .text { cursor: text!Important; }
     }
 
     &.draggable {
-      .text { cursor: move!Important; }
       cursor: move!Important;
-    }
+      .edit, .close { @include opacity(0); }
 
-    &.draggable .edit { @include opacity(0); }
-    &.draggable .close { @include opacity(0); }
+      .text { cursor: move!Important; }
+    }
 
     position: absolute;
 
-    &:hover .edit { @include opacity(1); }
+    &:hover .edit,
     &:hover .close { @include opacity(1); }
 
-    .close {
+    .close, .edit {
+
+      cursor: pointer;
 
       position: absolute;
-      top: -10px;
-      left: -15px;
-      font-size: 10px;
-      text-align: center;
-      text-transform: uppercase;
       color: #fff;
       border: 1px solid #fff;
       background: #333;
+      position: absolute;
+      font-size: 10px;
       font-family: "Helvetica Neue", "Helvetica", Arial;
+      text-align: center;
+      text-transform: uppercase;
 
+      @include opacity(0);
+      @include simple-transition(opacity, .10s, ease-in-out);
+
+    }
+
+    .close {
+      top: -10px;
+      left: -15px;
       height: 16px;
       width: 17px;
       padding: 4px;
       line-height: 16px;
 
-      @include opacity(0);
-
       @include border-radius(90px);
-      @include simple-transition(opacity, .10s, ease-in-out);
 
       &:hover {
         text-decoration:none;
       }
-
     }
 
     .edit {
-
-      position: absolute;
       top: -10px;
       right: -15px;
-      font-size: 10px;
       padding: 5px 12px;
-      text-transform: uppercase;
-      color: #fff;
-      border: 1px solid #fff;
-      background: #333;
       letter-spacing: 1px;
-
-      /*display:none;*/
-      @include opacity(0);
-
       @include border-radius(20px);
-      @include simple-transition(opacity, .10s, ease-in-out);
-
     }
 
     .content {
@@ -3810,9 +3801,7 @@ div.map {
 
         font-size: 27px;
         font-weight: bold;
-
         line-height: normal;
-
         color: #fff;
       }
 
@@ -3828,7 +3817,7 @@ div.map {
       background:rgba(#333, .7);
     }
 
-  }
+  } // .widget
 
   div.rule {
     position:absolute;
@@ -3845,7 +3834,7 @@ div.map {
       height: 1px; width: 100%; 
     }
 
-  }
+  } // .rule
 
   /* CartoDB map styles */
 

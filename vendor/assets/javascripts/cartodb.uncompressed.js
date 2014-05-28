@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.07-dev
+// cartodb.js version: 3.9.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b3d27086512e286b670280a69099df912e58263c
+// sha: 8de33fc07dbef24b99714d019349701b16642eb4
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.07-dev';
+    cdb.VERSION = '3.9.06-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -27639,11 +27639,13 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
-      return p;
+      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
     } else {
-      // IE
-      return map.mouseEventToLayerPoint(o.e)
+      var rect = obj.getBoundingClientRect();
+      var p = new L.Point(
+            o.e.clientX - rect.left - obj.clientLeft - window.scrollX,
+            o.e.clientY - rect.top - obj.clientTop - window.scrollY);
+      return map.containerPointToLayerPoint(p);
     }
   }
 

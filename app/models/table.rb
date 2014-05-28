@@ -1,6 +1,7 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
 require 'forwardable'
+require 'debugger'
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
@@ -1521,16 +1522,17 @@ SQL
   def update_the_geom!(attributes, primary_key)
     return unless attributes[THE_GEOM].present? && attributes[THE_GEOM] != 'GeoJSON'
     geojson = attributes[THE_GEOM]
-    geojson = geojson.to_json if geojson.is_a? Hash
-
-    geojson = RGeo::GeoJSON.decode(geojson, :json_parser => :json)
-    raise(CartoDB::InvalidGeoJSONFormat, 'Invalid geometry') unless valid_geometry?(geojson)
 
     begin
-      owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom =
-      ST_GeomFromText('#{geojson.as_text}',#{CartoDB::SRID}) where cartodb_id =
-      #{primary_key}})
+      obj = JSON.parse(geojson)
+      unless obj[:crs].present?
+        obj[:crs] = JSON.parse('{"type":"name","properties":{"name":"EPSG:4326"}}');
+      end
+      geojson = JSON.generate(obj);
 
+      owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom =
+      ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
+      #{primary_key}})
     rescue
       raise CartoDB::InvalidGeoJSONFormat, 'Invalid geometry'
     end

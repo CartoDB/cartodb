@@ -16,9 +16,6 @@ gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'htmlentities',            '4.3.1' # Encoding and decoding of named or numerical entities
 
-gem 'rgeo',                    '0.3.2' # Geospatial data library
-gem 'rgeo-geojson',            '0.2.1', require: 'rgeo/geo_json'
-
 gem 'redis',                   '2.2.2'
 gem 'yajl-ruby',               '1.1.0', require: 'yajl'
 gem 'nokogiri',                '1.6.0'

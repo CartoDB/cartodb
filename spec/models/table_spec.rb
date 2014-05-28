@@ -1600,11 +1600,14 @@ describe Table do
         the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
         pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
-        records = table.records(:page => 0, :rows_per_page => 1)
-        RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
 
-        record = table.record(pk)
-        RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
+
+        #update
+        the_geom = %Q{{"type":"Point","coordinates":[0,0]}}
+        table.send :update_the_geom!, { :the_geom => the_geom }, 1
+
+        records = table.records(:page => 0, :rows_per_page => 1)
+        records[:rows][0][:the_geom].should == "{\"type\":\"Point\",\"coordinates\":[0,0]}"
       end
 
       it "should raise an error when the geojson provided is invalid" do
@@ -1617,6 +1620,25 @@ describe Table do
         lambda {
           table.insert_row!({:name => "First check_in", :the_geom => the_geom})
         }.should raise_error(CartoDB::InvalidGeoJSONFormat)
+      end
+
+      it "should return new geojson even if geojson provided had other projection" do
+        table = new_table :user_id => @user.id
+        table.the_geom_type = "point"
+        table.save.reload
+
+        lat = -43.941
+        lon = 3.429
+        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+        pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+
+
+        #update
+        the_geom = %Q{{"type":"Point","coordinates":[0,0], "crs":{"type":"name","properties":{"name":"EPSG:232323"}} }}
+        table.send :update_the_geom!, { :the_geom => the_geom }, 1
+
+        records = table.records(:page => 0, :rows_per_page => 1)
+        records[:rows][0][:the_geom].should == "{\"type\":\"Point\",\"coordinates\":[0,0]}"
       end
 
     end

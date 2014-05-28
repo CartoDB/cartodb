@@ -1,7 +1,7 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
 require 'forwardable'
-require 'debugger'
+
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'

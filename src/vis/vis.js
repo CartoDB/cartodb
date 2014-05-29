@@ -738,6 +738,9 @@ var Vis = cdb.core.View.extend({
           layerView.tooltip.setTemplate(t.template);
           layerView.tooltip.setFields(t.fields);
           layerView.tooltip.setAlternativeNames(t.alternative_names);
+          layerView.tooltip.enable();
+        } else {
+          layerView.tooltip.disable();
         }
       });
     }

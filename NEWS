@@ -1,3 +1,6 @@
+3.9.06 ()
+- Fixed exception on hover for layers without tooltip
+
 3.9.05 (19//05//2014)
 - Fixed tileJSON method in cdb.Tiles
 - Adds support for Markdown in descriptions

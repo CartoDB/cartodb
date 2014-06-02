@@ -1,3 +1,6 @@
+* Fixed bugs
+    * allow "rectangle" option for marker-type in torque layer
+
 2.14.1 (2014-05-28)
 -------------------
 * New features

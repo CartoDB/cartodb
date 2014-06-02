@@ -796,13 +796,23 @@ var Vis = cdb.core.View.extend({
 
         layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
+          var extra = _.defaults(
+            {
+              offset: infowindowFields.offset,
+              width: infowindowFields.width,
+              maxHeight: infowindowFields.maxHeight
+            },
+            cdb.geo.ui.InfowindowModel.prototype.defaults
+          );
+
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
             'alternative_names': infowindowFields.alternative_names,
-            'width': infowindowFields.width,
-            'height': infowindowFields.height
+            'offset': extra.offset,
+            'width': extra.width,
+            'maxHeight': extra.maxHeight
           });
 
           if (attributes) {

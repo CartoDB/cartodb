@@ -27,7 +27,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     width: 226,
-    height: 180, // height content, not the whole infowindow
+    maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",
     content: "",
@@ -260,7 +260,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template',            this._compileTemplate, this);
     this.model.bind('change:alternative_names',   this.render, this);
     this.model.bind('change:width',               this.render, this);
-    this.model.bind('change:height',              this.render, this);
+    this.model.bind('change:maxHeight',           this.render, this);
 
     this.mapView.map.bind('change',             this._updatePosition, this);
 
@@ -290,10 +290,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var $jscrollpane = this.$(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
-      }
-
-      if (arguments.length === 3) {
-        console.log(arguments[2].changes);  
       }
       
       // Clone fields and template name
@@ -327,16 +323,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
-      // Set width from infowindow model
+      // Set width and height from infowindow model
       this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
       var self = this;
       setTimeout(function() {
-        var actual_height = self.$(".cartodb-popup-content").outerHeight() + self.$(".cartodb-popup-header").outerHeight();
-        if (self.model.get('height') <= actual_height)
+        var actual_height = self.$(".cartodb-popup-content").outerHeight();
+        if (self.model.get('maxHeight') <= actual_height)
           self.$(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20

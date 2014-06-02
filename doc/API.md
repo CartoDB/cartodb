@@ -580,6 +580,8 @@ Remove temporally the sublayer from the layer. The layer is refreshed after call
 ###### Arguments
 
   + **template**: Set the custom infowindow template defined on the html. You can write simple html or use [Mustache templates](http://mustache.github.com/)
+  + **width**: Set the width of the infowindow (value must a number).
+  + **maxHeight**: Set the max height of the content (value must a number).
 
 <div class="margin20"></div>
 <div class="code_title">sublayer.infowindow.set</div>
@@ -587,7 +589,11 @@ Remove temporally the sublayer from the layer. The layer is refreshed after call
     <div id="map"></div>
 
     <script>
-      sublayer.infowindow.set('template', $('#infowindow_template').html());
+      sublayer.infowindow.set({
+        template: $('#infowindow_template').html(),
+        width: 218,
+        height: 100
+      });
     </script>
 
     <script type="infowindow/html" id="infowindow_template">
@@ -607,6 +613,8 @@ Remove temporally the sublayer from the layer. The layer is refreshed after call
     </script>
   ```
 <div class="margin20"></div>
+
+
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 

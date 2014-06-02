@@ -459,26 +459,17 @@ class Table < Sequel::Model(:user_tables)
       @data_import.save
     end
     add_table_to_stats
+
+    update_table_pg_stats
+
+    # Set default triggers
+    set_triggers
   rescue => e
     self.handle_creation_error(e)
   end
 
   def optimize
     owner.in_database(as: :superuser).run("VACUUM FULL public.#{name}")
-  end
-
-  def after_commit
-    super
-    if self.new_table
-      begin
-        update_table_pg_stats
-
-        # Set default triggers
-        set_triggers
-      rescue => e
-        self.handle_creation_error(e)
-      end
-    end
   end
 
   def handle_creation_error(e)
@@ -1616,37 +1607,5 @@ SQL
     CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
 
-  def create_the_geom_if_not_exists(table_name)
-    <<-SQL
-      CREATE OR REPLACE FUNCTION check_the_geom_exists(tablename text)
-      RETURNS VOID AS $BODY$
-      DECLARE the_geom_exists integer := 0;
-      BEGIN
-          SELECT count(attname) INTO the_geom_exists
-          FROM pg_attribute
-          INNER JOIN pg_class ON pg_class.oid = pg_attribute.attrelid
-          WHERE pg_attribute.attname = 'the_geom' AND pg_class.relname = tablename;
-
-          IF the_geom_exists = 0 THEN
-            PERFORM AddGeometryColumn(tablename,'#{THE_GEOM}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',3);
-          END IF;
-
-          SELECT count(attname) INTO the_geom_exists
-          FROM pg_attribute
-          INNER JOIN pg_class ON pg_class.oid = pg_attribute.attrelid
-          WHERE pg_attribute.attname = 'the_geom_webmercator' AND pg_class.relname = tablename;
-
-          IF the_geom_exists = 0 THEN
-            PERFORM AddGeometryColumn(tablename,'#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',3);
-          END IF;
-
-          RETURN;
-      END;
-      $BODY$
-      LANGUAGE plpgsql VOLATILE;
-
-      SELECT check_the_geom_exists('#{table_name}');
-    SQL
-  end
 end
 

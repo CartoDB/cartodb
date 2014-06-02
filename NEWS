@@ -6,6 +6,7 @@
 3.9.06 (25//05//2014)
 - Allowfullscreen parameter added to iframe code
   in share dialog.
+- Enables custom legends in Torque.
 
 3.9.05 (19//05//2014)
 - Fixed tileJSON method in cdb.Tiles

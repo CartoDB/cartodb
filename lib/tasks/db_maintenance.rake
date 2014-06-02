@@ -1,3 +1,6 @@
+
+require_relative 'thread_pool'
+
 namespace :cartodb do
   namespace :db do
 
@@ -52,19 +55,19 @@ namespace :cartodb do
     # LOAD CARTODB FUNCTIONS
     ########################
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions => :environment do |t, args|
-
-      functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
+    task :load_functions, [:num_threads, :thread_sleep] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
 
       count = User.count
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
-            user.load_cartodb_functions(functions_list)
+            user.load_cartodb_functions
             printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
           rescue => e
             printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
           end
-      })
+      }, threads, thread_sleep)
     end
 
     desc 'Load varnish invalidation function'
@@ -418,13 +421,18 @@ namespace :cartodb do
     # @param block Proc
     # @example:
     # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
-    def execute_on_users_with_index(task_name, block)
+    def execute_on_users_with_index(task_name, block, num_threads=1, sleep_time=0.1)
       count = User.count
       puts "\n>Running #{task_name} for #{count} users"
+
+      thread_pool = ThreadPool.new(num_threads, sleep_time)
       User.all.each_with_index do |user, i|
-        puts "#{user.id} (#{user.username}) ##{i}"
-        block.call(user, i)
+        thread_pool.schedule do
+          block.call(user, i)
+        end
       end
+      at_exit { thread_pool.shutdown }
+
       puts ">Finished #{task_name}\n"
     end #execute_on_users_with_index
 

@@ -1,32 +1,56 @@
+# coding: UTF-8
+
+require 'monitor'
+
 # Basic thread pool with (unlimited) queue
-# @source: http://burgestrand.se/code/ruby-thread-pool/
+# Based on http://burgestrand.se/code/ruby-thread-pool/
 class ThreadPool
 
-  def initialize(size)
+  def initialize(size, sleep_time=0.1)
     @size = size
-    @workers_queue = Queue.new
+    @sleep_time = sleep_time
+    @workers_queue = []
+    @workers_queue.extend(MonitorMixin)
+    @mutex = @workers_queue.new_cond
+
     @pool = Array.new(@size) do |i|
       Thread.new do
         Thread.current[:id] = i
         catch(:exit) do
           loop do
-            job, args = @workers_queue.pop
-            job.call(*args)
+            unless @workers_queue.empty?
+              @workers_queue.synchronize do
+                @mutex.wait_while { @workers_queue.empty? }
+              end
+              job, args = @workers_queue.pop
+              job.call(*args)
+            end
           end
         end
       end
     end
-  end #initialize
+  end
 
   def schedule(*args, &block)
-    @workers_queue << [block, args]
-  end #schedule
+    enqueued = false
+    begin
+      if @workers_queue.length < @size
+        @workers_queue.synchronize do
+          @workers_queue << [block, args]
+          enqueued = true
+          @mutex.broadcast
+        end
+      else
+        sleep(@sleep_time)
+      end
+    end while (!enqueued)
+  end
 
   def shutdown
     @size.times do
       schedule { throw :exit }
     end
     @pool.map(&:join)
-  end #shutdown
+  end
 
-end #ThreadPool
+end

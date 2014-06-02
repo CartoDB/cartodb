@@ -323,13 +323,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
-      // Set offset, width and max-height from the model
+      // Set width and max-height from the model only
       this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
       this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
-      this.$('.cartodb-popup .cartodb-popup-tip-container').css({
-        "margin-left": this.model.get('offset')[0],
-        "margin-top": this.model.get('offset')[1]
-      })
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields

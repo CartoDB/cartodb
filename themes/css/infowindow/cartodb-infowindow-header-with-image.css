@@ -1,6 +1,6 @@
 
   /**
-   *  CartoDB2.0 header with-image popup styles
+   *  CartoDB header with-image popup styles
    */
 
   div.cartodb-popup.header.with-image div.cartodb-popup-header {
@@ -107,4 +107,33 @@
 
   div.cartodb-popup.header.with-image .cartodb-popup-content-wrapper .order1 {
     display:none;
+  }
+
+
+  /* NEW CartoDB 2.0 image header popups */
+
+  div.cartodb-popup.v2.header.with-image div.cartodb-popup-header {
+    background: white;
+  }
+
+  div.cartodb-popup.v2.header.with-image a.cartodb-popup-close-button {
+    background:white;
+  }
+
+  div.cartodb-popup.v2.header.with-image div.cartodb-popup-header .cover {
+    display:block;
+    width:100%;
+    height:138px;
+    top:0;
+    left:0;
+    -moz-border-radius:2px 2px 0 0;
+    -webkit-border-radius:2px 2px 0 0;
+    border-radius:2px 2px 0 0;
+    overflow:hidden;
+  }
+
+  div.cartodb-popup.v2.header.with-image div.cartodb-popup-header .cover img {
+    -moz-border-radius:2px 2px 0 0;
+    -webkit-border-radius:2px 2px 0 0;
+    border-radius:2px 2px 0 0;
   }

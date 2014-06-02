@@ -61,6 +61,7 @@
     background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
     background: -o-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
     background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 );
   }
 
   div.cartodb-popup .jspContainer:before {
@@ -70,6 +71,7 @@
     background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
     background: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
     background: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 );
   }
 
   div.cartodb-popup div.cartodb-popup-tip-container {
@@ -349,24 +351,35 @@
     height:0;
     bottom:-14px;
     left:0;
-    border-left:0px solid transparent;
-    border-right:14px solid transparent;
-    border-top:14px solid white;
-    z-index:2;
+    margin-left:28px;
+    background:none;
   }
 
-  div.cartodb-popup.v2 div.cartodb-popup-tip-container:before {
+  div.cartodb-popup.v2 div.cartodb-popup-tip-container:before,
+  div.cartodb-popup.v2 div.cartodb-popup-tip-container:after {
     content:'';
     position:absolute;
-    left:-32px;
-    bottom:-10px;
     width:0;
     height:0;
+  }  
+
+  div.cartodb-popup.v2 div.cartodb-popup-tip-container:before {
+    left:-32px;
+    bottom:-10px;
     margin-left:28px;
     border-left:0px solid transparent;
     border-right:20px solid transparent;
     border-top:20px solid rgba(0,0,0,0.15);
     z-index:-1;
+  }
+
+  div.cartodb-popup.v2 div.cartodb-popup-tip-container:after {
+    bottom:0;
+    left:0;
+    border-left:0px solid transparent;
+    border-right:14px solid transparent;
+    border-top:14px solid white;
+    z-index:2;
   }
 
   div.cartodb-popup.v2 a.cartodb-popup-close-button {
@@ -418,6 +431,11 @@
     }
 
     div.cartodb-popup.v2 div.cartodb-popup-tip-container {
+      position:absolute;
+      width:0;
+      height:0;
+      margin-left:28px;
+      z-index:2;
       bottom:-18px;
       left:-4px;
       border-left:0px solid transparent;

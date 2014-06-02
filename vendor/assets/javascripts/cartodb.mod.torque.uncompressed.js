@@ -7466,12 +7466,13 @@ exports.Profiler = Profiler;
     ctx.fillStyle = st.fillStyle;
     ctx.strokStyle = st.strokStyle;
     var pixel_size = st['point-radius'];
+    var w = pixel_size * 2;
 
     // fill
     if (st.fillStyle && st.fillOpacity) {
       ctx.globalAlpha = st.fillOpacity;
     }
-    ctx.fillRect(0, 0, pixel_size, pixel_size)
+    ctx.fillRect(-pixel_size, -pixel_size, w, w)
 
     // stroke
     ctx.globalAlpha = 1.0;
@@ -7486,7 +7487,7 @@ exports.Profiler = Profiler;
 
       // do not render for alpha = 0
       if (ctx.globalAlpha > 0) {
-        ctx.strokeRect(0, 0, pixel_size, pixel_size);
+        ctx.strokeRect(-pixel_size, -pixel_size, w, w)
       }
     }
   }
@@ -7580,14 +7581,14 @@ exports.Profiler = Profiler;
         throw new Error("marker-width property should be set");
       }
 
+      var canvas = document.createElement('canvas');
+
       // take into account the exterior ring to calculate the size
       var canvasSize = (st.lineWidth || 0) + pointSize*2;
-
-      var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
-      var w = ctx.width = canvas.width = Math.ceil(canvasSize);
-      ctx.height = canvas.height = Math.ceil(canvasSize);
+      var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
       ctx.translate(w/2, w/2);
+
       if(st['point-file'] || st['marker-file']) {
         torque.cartocss.renderSprite(ctx, st);
       } else {

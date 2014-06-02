@@ -43,7 +43,6 @@
 
     <script src="../src/cartodb.js"></script>
     <script type="text/javascript">
-      var layer;
 
       function main() {
 
@@ -62,17 +61,11 @@
           cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
             .addTo(map)
             .on('done', function(lyr) {
-              layer = lyr;
-
-              layer.getSubLayer(0).infowindow.set({ template: $('#infowindow_template').html() });
-              
-              setTimeout(function(){
-                layer.infowindow.set({
-                  width: 300,
-                  height: 50
-                });
-              }, 5000)
-
+              lyr.getSubLayer(0).infowindow.set({
+                template: $('#infowindow_template').html(),
+                width: 226,
+                height: 30
+              });
             }).on('error', function() {
               console.log("some error occurred");
             });

@@ -800,7 +800,9 @@ var Vis = cdb.core.View.extend({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names
+            'alternative_names': infowindowFields.alternative_names,
+            'width': infowindowFields.width,
+            'height': infowindowFields.height
           });
 
           if (attributes) {

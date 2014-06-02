@@ -26,6 +26,8 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
+    width: 226,
+    height: 180, // height content, not the whole infowindow
     autoPan: true,
     template: "",
     content: "",
@@ -251,12 +253,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       this._setTemplate();
     }
 
-    this.model.bind('change:content',           this.render, this);
-    this.model.bind('change:template_name',     this._setTemplate, this);
-    this.model.bind('change:latlng',            this._update, this);
-    this.model.bind('change:visibility',        this.toggle, this);
-    this.model.bind('change:template',          this._compileTemplate, this);
-    this.model.bind('change:alternative_names', this.render, this);
+    this.model.bind('change:content',             this.render, this);
+    this.model.bind('change:template_name',       this._setTemplate, this);
+    this.model.bind('change:latlng',              this._update, this);
+    this.model.bind('change:visibility',          this.toggle, this);
+    this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:alternative_names',   this.render, this);
+    this.model.bind('change:width',               this.render, this);
+    this.model.bind('change:height',              this.render, this);
 
     this.mapView.map.bind('change',             this._updatePosition, this);
 
@@ -269,9 +273,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     });
 
     this.add_related_model(this.mapView.map);
-
-    // Set min height to show the scroll
-    this.minHeightToScroll = 180;
 
     // Hide the element
     this.$el.hide();
@@ -286,11 +287,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      var $jscrollpane = this.$(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
+      if (arguments.length === 3) {
+        console.log(arguments[2].changes);  
+      }
+      
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -322,15 +327,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
+      // Set width from infowindow model
+      this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
       var self = this;
       setTimeout(function() {
-        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
-        if (self.minHeightToScroll <= actual_height)
-          self.$el.find(".cartodb-popup-content").jScrollPane({
+        var actual_height = self.$(".cartodb-popup-content").outerHeight() + self.$(".cartodb-popup-header").outerHeight();
+        if (self.model.get('height') <= actual_height)
+          self.$(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });

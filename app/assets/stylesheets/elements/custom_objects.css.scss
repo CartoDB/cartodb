@@ -237,6 +237,70 @@
   }
 
 
+  .form_align {
+
+    clear:both;
+    overflow:hidden;
+
+    a.align {
+
+      &:first-child {
+        @include border-radius(3px 0 0 3px);
+        border-right:0;
+      }
+
+      &:last-child {
+        @include border-radius(0 3px 3px 0);
+        border-left:0;
+      }
+
+      &.align-left:after {
+        @include opacity(.5);
+        @include background(image-url("layout/align_left.png") no-repeat 0 0);
+      }
+
+      &.align-center:after {
+        @include opacity(.5);
+        @include background(image-url("layout/align_center.png") no-repeat 0 0);
+      }
+
+      &.align-right:after {
+        @include opacity(.5);
+        @include background(image-url("layout/align_right.png") no-repeat 0 0);
+      }
+
+      &:after {
+
+        content: '';
+        position:absolute;
+        left: 8px; top: 6px;
+        display:block;
+        width: 13px;
+        height: 7px;
+
+      }
+
+      &.selected {
+        @include background(linear-gradient(#F2F2F2, #FFF));
+        &:after {
+          @include opacity(1);
+        }
+      }
+
+      position:relative;
+      display:block;
+      float:left;
+      min-width:28px;
+      width:auto;
+      height:20px;
+      margin:0;
+      border:1px solid #9E9E9E;
+      @include border-radius(0);
+      @include background(linear-gradient(#FFF,#F2F2F2));
+    }
+
+  }
+
 
   // FORM SPINNER
 

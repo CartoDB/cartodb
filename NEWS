@@ -1,6 +1,7 @@
 3.9.07 ()
 - Fixed exception on hover for layers without tooltip
 - Improved tooltip interaction
+- Changed cartocss library to support marker-type "rectangle"
 
 3.9.06 (25//05//2014)
 - Allowfullscreen parameter added to iframe code

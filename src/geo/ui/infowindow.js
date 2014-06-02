@@ -26,7 +26,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
-    width: 226,
+    width: 218,
     maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",
@@ -323,9 +323,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
-      // Set width and height from infowindow model
+      // Set offset, width and max-height from the model
       this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
       this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
+      this.$('.cartodb-popup .cartodb-popup-tip-container').css({
+        "margin-left": this.model.get('offset')[0],
+        "margin-top": this.model.get('offset')[1]
+      })
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields

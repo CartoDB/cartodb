@@ -40,7 +40,7 @@
       border: 1px dashed #ccc;
       cursor: text!Important;
 
-      @include user-select(initial);
+      /*@include user-select(text);*/
 
     }
 
@@ -137,7 +137,17 @@
     line-height: normal;
     color: #fff;
 
-    @include user-select(none);
+-ms-word-break: break-all;
+     word-break: break-all;
+
+     // Non standard for webkit
+     word-break: break-word;
+
+-webkit-hyphens: auto;
+   -moz-hyphens: auto;
+        hyphens: auto;
+
+    /*@include user-select(none);*/
 
     @include simple-transition(padding, .05s, ease-in-out);
 

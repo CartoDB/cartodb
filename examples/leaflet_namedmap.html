@@ -13,14 +13,14 @@
       }
     </style>
 
-    <link rel="stylesheet" href="../themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.css" />
 
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="../dist/cartodb.uncompressed.js"></script>
+    <script src="http://libs.cartodb.com/cartodb.js/v3/cartodb.js"></script>
     <script>
 
       function main() {
@@ -40,14 +40,10 @@
         // add cartodb layer with one sublayer
         cartodb.createLayer(map, {
           type: 'namedmap',
-          tiler_domain: 'localhost.lan',
-          tiler_port: 8181,
-          user_name: 'dev',
-          no_cdn: true,
-          force_cors: true,
+          user_name: 'documentation',
           options: {
             named_map: {
-              name: 'testing'
+              name: 'tpl_b47ff8ec_e7eb_11e3_894f_0e230854a1cb'
             }
           }
         })

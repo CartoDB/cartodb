@@ -734,9 +734,14 @@ var Vis = cdb.core.View.extend({
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
-        layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setFields(t.fields);
-        layerView.tooltip.setAlternativeNames(t.alternative_names);
+        if (t) {
+          layerView.tooltip.setTemplate(t.template);
+          layerView.tooltip.setFields(t.fields);
+          layerView.tooltip.setAlternativeNames(t.alternative_names);
+          layerView.tooltip.enable();
+        } else {
+          layerView.tooltip.disable();
+        }
       });
     }
   },
@@ -791,11 +796,25 @@ var Vis = cdb.core.View.extend({
 
         layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
+          // Old viz.json doesn't contain width and maxHeight properties
+          // and we have to get the default values if there are not defined.
+          var extra = _.defaults(
+            {
+              offset: infowindowFields.offset,
+              width: infowindowFields.width,
+              maxHeight: infowindowFields.maxHeight
+            },
+            cdb.geo.ui.InfowindowModel.prototype.defaults
+          );
+
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names
+            'alternative_names': infowindowFields.alternative_names,
+            'offset': extra.offset,
+            'width': extra.width,
+            'maxHeight': extra.maxHeight
           });
 
           if (attributes) {

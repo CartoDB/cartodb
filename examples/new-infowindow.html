@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom infowindow example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    
+    <style>html, body, #map { height: 100%; padding: 0; margin: 0 }</style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script type="infowindow/html" id="infowindow_template">
+      <div class="cartodb-popup v2">
+        <a href="#/close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_dark">
+      <div class="cartodb-popup dark v2">
+        <a href="#/close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_header">
+      <div class="cartodb-popup header v2">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-header">
+          <h1>JA!</h1>
+          <h4>OH!</h4>
+        </div>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container">
+        </div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_header_blue">
+      <div class="cartodb-popup header blue v2">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-header">
+          <h1>JA!</h1>
+          <h4>OH!</h4>
+        </div>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container">
+        </div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_header_yellow">
+      <div class="cartodb-popup header yellow v2">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-header">
+          <h1>JA!</h1>
+          <h4>OH!</h4>
+        </div>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container">
+        </div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_header_green">
+      <div class="cartodb-popup header green v2">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-header">
+          <h1>JA!</h1>
+          <h4>OH!</h4>
+        </div>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container">
+        </div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_header_orange">
+      <div class="cartodb-popup header orange v2">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-header">
+          <h1>JA!</h1>
+          <h4>OH!</h4>
+        </div>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container">
+        </div>
+      </div>
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template_header_image">
+      <div class="cartodb-popup header with-image v2" data-cover="true">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-header">
+          <div class="cover">
+            <div id="spinner"></div>
+            <span class="separator"></span>
+            <h1 class="order1">test</h1>
+            <div class="shadow"></div>
+            <img src="http://upload.wikimedia.org/wikipedia/commons/3/3f/Iker_Casillas_Euro_2012_vs_France.jpg" style="height:138px;display:inline" />
+          </div>
+        </div>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    
+    <script type="text/javascript">
+      var layer;
+
+      function main() {
+
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [0, 0],
+          zoom: 3
+        });
+
+        // add a nice baselayer from Stamen 
+        L.tileLayer('http://a.tiles.mapbox.com/v3/examples.map-20v6611k/{z}/{x}/{y}.png', {
+          attribution: 'MapBox'
+        }).addTo(map);
+
+        cartodb.createLayer(map, 'http://xavijam.cartodb.com/api/v2/viz/b857fa5e-ea4e-11e3-9bbc-0edbca4b5057/viz.json')
+          .addTo(map)
+          .on('done', function(lyr) {
+            lyr.getSubLayer(0).infowindow.set({
+              template: $('#infowindow_template_header').html(),
+              width: 200,
+              maxHeight: 180
+            });
+          }).on('error', function() {
+            console.log("some error occurred");
+          });
+      }
+
+      window.onload = main;
+      
+    </script>
+  </body>
+</html>

@@ -15,6 +15,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
+    this.showhideTimeout = null;
   },
 
   setLayer: function(layer) {
@@ -43,6 +44,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   enable: function() {
     if(this.options.layer) {
+      // unbind previous events
+      this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
           // this flag is used to be compatible with previous templates
@@ -77,9 +80,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
           this.show(pos, data);
           this.showing = true;
         }, this)
-        .on('featureOut', function() {
-          this.hide();
-          this.showing = false;
+        .on('mouseout', function() {
+          if (this.showing) {
+            this.hide();
+            this.showing = false;
+          }
         }, this);
       this.add_related_model(this.options.layer);
     }
@@ -89,6 +94,25 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     if(this.options.layer) {
       this.options.layer.unbind(null, null, this);
     }
+    this.hide();
+    this.showing = false;
+  },
+
+  _visibility: function() {
+    var self = this;
+    clearTimeout(this.showhideTimeout);
+    this.showhideTimeout = setTimeout(self._showing ?
+      function() { self.$el.fadeIn(100); }
+      :
+      function() { self.$el.fadeOut(200); }
+    , 50);
+  },
+
+  hide: function() {
+    if (this._showing) {
+      this._showing = false;
+      this._visibility();
+    }
   },
 
   show: function(pos, data) {
@@ -96,8 +120,12 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       return this;
     }
     this.render(data);
-    this.elder('show', pos, data);
+    //this.elder('show', pos, data);
     this.setPosition(pos);
+    if (!this._showing) {
+      this._showing = true;
+      this._visibility();
+    }
     return this;
   },
 

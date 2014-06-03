@@ -1,7 +1,17 @@
+3.9.08 (03//06//2014)
+- New "liquid" infowindow style implemented.
+
+3.9.07 (03//06//2014)
+- Fixed exception on hover for layers without tooltip
+- Improved tooltip interaction
+- Changed cartocss library to support marker-type "rectangle"
+- Fixed setParam when there are no default params (#120)
+
 3.9.06 (25//05//2014)
 - Allowfullscreen parameter added to iframe code
   in share dialog.
 - Fixes link style in embed header
+- Enables custom legends in Torque.
 
 3.9.05 (19//05//2014)
 - Fixed tileJSON method in cdb.Tiles

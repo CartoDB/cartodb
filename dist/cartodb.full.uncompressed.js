@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.06
+// cartodb.js version: 3.9.08
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9771e3cf329cabba6b4682bd842749f9f4a5067a
+// sha: d693bf6fc7ed94b8ba3fc7d70cf15941431cc102
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.06';
+    cdb.VERSION = '3.9.08';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21267,10 +21267,7 @@ cdb.core.Template = Backbone.Model.extend({
    */
   render: function(vars) {
     var c = this.compiled = this.compiled || this.get('compiled') || this.compile();
-    var r = cdb.core.Profiler.metric('template_render');
-    r.start();
     var rendered = c(vars);
-    r.end();
     return rendered;
   },
 
@@ -24266,6 +24263,8 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
+    width: 226,
+    maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",
     content: "",
@@ -24491,12 +24490,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       this._setTemplate();
     }
 
-    this.model.bind('change:content',           this.render, this);
-    this.model.bind('change:template_name',     this._setTemplate, this);
-    this.model.bind('change:latlng',            this._update, this);
-    this.model.bind('change:visibility',        this.toggle, this);
-    this.model.bind('change:template',          this._compileTemplate, this);
-    this.model.bind('change:alternative_names', this.render, this);
+    this.model.bind('change:content',             this.render, this);
+    this.model.bind('change:template_name',       this._setTemplate, this);
+    this.model.bind('change:latlng',              this._update, this);
+    this.model.bind('change:visibility',          this.toggle, this);
+    this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:alternative_names',   this.render, this);
+    this.model.bind('change:width',               this.render, this);
+    this.model.bind('change:maxHeight',           this.render, this);
 
     this.mapView.map.bind('change',             this._updatePosition, this);
 
@@ -24509,9 +24510,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     });
 
     this.add_related_model(this.mapView.map);
-
-    // Set min height to show the scroll
-    this.minHeightToScroll = 180;
 
     // Hide the element
     this.$el.hide();
@@ -24526,11 +24524,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      var $jscrollpane = this.$(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-
+      
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -24562,15 +24560,18 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
+      // Set width and max-height from the model only
+      this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
       var self = this;
       setTimeout(function() {
-        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
-        if (self.minHeightToScroll <= actual_height)
-          self.$el.find(".cartodb-popup-content").jScrollPane({
+        var actual_height = self.$(".cartodb-popup-content").outerHeight();
+        if (self.model.get('maxHeight') <= actual_height)
+          self.$(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
@@ -25561,6 +25562,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
+    this.showhideTimeout = null;
   },
 
   setLayer: function(layer) {
@@ -25589,6 +25591,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   enable: function() {
     if(this.options.layer) {
+      // unbind previous events
+      this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
           // this flag is used to be compatible with previous templates
@@ -25623,9 +25627,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
           this.show(pos, data);
           this.showing = true;
         }, this)
-        .on('featureOut', function() {
-          this.hide();
-          this.showing = false;
+        .on('mouseout', function() {
+          if (this.showing) {
+            this.hide();
+            this.showing = false;
+          }
         }, this);
       this.add_related_model(this.options.layer);
     }
@@ -25635,6 +25641,25 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     if(this.options.layer) {
       this.options.layer.unbind(null, null, this);
     }
+    this.hide();
+    this.showing = false;
+  },
+
+  _visibility: function() {
+    var self = this;
+    clearTimeout(this.showhideTimeout);
+    this.showhideTimeout = setTimeout(self._showing ?
+      function() { self.$el.fadeIn(100); }
+      :
+      function() { self.$el.fadeOut(200); }
+    , 50);
+  },
+
+  hide: function() {
+    if (this._showing) {
+      this._showing = false;
+      this._visibility();
+    }
   },
 
   show: function(pos, data) {
@@ -25642,8 +25667,12 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       return this;
     }
     this.render(data);
-    this.elder('show', pos, data);
+    //this.elder('show', pos, data);
     this.setPosition(pos);
+    if (!this._showing) {
+      this._showing = true;
+      this._visibility();
+    }
     return this;
   },
 
@@ -26466,6 +26495,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {
@@ -31236,9 +31268,14 @@ var Vis = cdb.core.View.extend({
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
-        layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setFields(t.fields);
-        layerView.tooltip.setAlternativeNames(t.alternative_names);
+        if (t) {
+          layerView.tooltip.setTemplate(t.template);
+          layerView.tooltip.setFields(t.fields);
+          layerView.tooltip.setAlternativeNames(t.alternative_names);
+          layerView.tooltip.enable();
+        } else {
+          layerView.tooltip.disable();
+        }
       });
     }
   },
@@ -31293,11 +31330,25 @@ var Vis = cdb.core.View.extend({
 
         layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
+          // Old viz.json doesn't contain width and maxHeight properties
+          // and we have to get the default values if there are not defined.
+          var extra = _.defaults(
+            {
+              offset: infowindowFields.offset,
+              width: infowindowFields.width,
+              maxHeight: infowindowFields.maxHeight
+            },
+            cdb.geo.ui.InfowindowModel.prototype.defaults
+          );
+
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names
+            'alternative_names': infowindowFields.alternative_names,
+            'offset': extra.offset,
+            'width': extra.width,
+            'maxHeight': extra.maxHeight
           });
 
           if (attributes) {
@@ -31776,25 +31827,35 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
-  if(vis.legends) {
+  if (vis.legends) {
+
     layerSelector.bind('change:visible', function(visible, order, layer) {
-      if (layer.get('type') === 'layergroup') {
-        var legend = vis.legends && vis.legends.getLegendByIndex(order);
-        if(legend) {
-          legend[visible ? 'show': 'hide']();
-        }
-      } else if (layer.get('type') === 'torque') {
+
+      if (layer.get('type') === 'torque') {
+
         var timeSlider = vis.getOverlay('time_slider');
+
         if (timeSlider) {
           timeSlider[visible ? 'show': 'hide']();
         }
+
       }
+
+      if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
+
+        var legend = vis.legends && vis.legends.getLegendByIndex(order);
+
+        if (legend) {
+          legend[visible ? 'show': 'hide']();
+        }
+
+      } 
 
     });
   }
 
-
   return layerSelector.render();
+
 });
 
 // fullscreen

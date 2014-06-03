@@ -7,10 +7,7 @@
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     
     <style>html, body, #map { height: 100%; padding: 0; margin: 0 }</style>
-    <link rel="stylesheet" href="../themes/css/cartodb.css" />
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
@@ -233,7 +230,9 @@
       </div>
     </script>
 
-    <script src="../dist/cartodb.js"></script>
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    
     <script type="text/javascript">
       var layer;
 
@@ -254,7 +253,7 @@
           .addTo(map)
           .on('done', function(lyr) {
             lyr.getSubLayer(0).infowindow.set({
-              template: $('#infowindow_template').html(),
+              template: $('#infowindow_template_light').html(),
               width: 200,
               maxHeight: 180
             });

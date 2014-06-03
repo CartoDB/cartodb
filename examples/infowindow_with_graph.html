@@ -22,12 +22,12 @@
     </script>
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script src="http://libs.cartodb.com/cartodb.js/v3/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/cartodb.js"></script>
 
     <script>
 
       var INFOWINDOW_TEMPLATE = [
-        '<div class="cartodb-popup">',
+        '<div class="cartodb-popup v2">',
         '  <a href="#close" class="cartodb-popup-close-button close">x</a>',
         '   <div class="cartodb-popup-content-wrapper">',
         '     <div class="cartodb-popup-content">',
@@ -53,7 +53,8 @@
 
           var options = {
             title: name + ' population',
-            legend: { position: "none" }
+            legend: { position: "none" },
+            width: 300,
           };
           var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
           chart.draw(data, options);
@@ -77,9 +78,13 @@
         cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/7eb2096a-51d9-11e3-89a7-5404a6a683d5/viz.json')
          .addTo(map)
          .on('done', function(layer) {
-           // get sublayer 0 and set the infowindow template
-           var sublayer = layer.getSubLayer(0);
-           sublayer.infowindow.set('template', INFOWINDOW_TEMPLATE);
+            // get sublayer 0 and set the infowindow template
+            var sublayer = layer.getSubLayer(0);
+            sublayer.infowindow.set({
+              template:   INFOWINDOW_TEMPLATE,
+              width:      328,
+              maxHeight:  400
+            });
           }).on('error', function() {
             console.log("some error occurred");
           });

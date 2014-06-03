@@ -3371,6 +3371,7 @@ div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-max {
 
   div.cartodb-tooltip-content p {
     display:block;
+    margin:0;
     padding:0 0 7px;
     font:normal 12px "Helvetica Neue", "Helvetica", Arial;
     color:#333333;

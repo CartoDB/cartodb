@@ -5,12 +5,16 @@
 namespace :cartodb do
   desc 'Runs the sync tables process'
   task :sync_tables, [:force_all_arg] => [:environment] do |task, args|
-    puts '> Sync tables rake started'
+    puts '> Sync tables started'
 
     require_relative '../../services/synchronizer/lib/synchronizer/collection'
 
-    CartoDB::Synchronizer::Collection.new.fetch(args[:force_all_arg].present? ? args[:force_all_arg] : false)
+    collection = CartoDB::Synchronizer::Collection.new
 
-    puts '> Sync tables rake finished'
+    collection.fetch(args[:force_all_arg].present? ? args[:force_all_arg] : false)
+
+    collection.enqueue_stalled unless (args[:force_all_arg].present? && args[:force_all_arg])
+
+    puts '> Sync tables finished'
   end
 end

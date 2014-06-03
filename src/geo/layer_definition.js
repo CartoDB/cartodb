@@ -674,6 +674,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     } else {
       params = attr;
     }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
+    }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {
         delete this.named_map.params[k];

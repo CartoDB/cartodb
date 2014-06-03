@@ -245,15 +245,15 @@
         });
 
         // add a nice baselayer from Stamen 
-        L.tileLayer('https://3.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24', {
-          attribution: 'Mapbox'
+        L.tileLayer('http://a.tiles.mapbox.com/v3/examples.map-20v6611k/{z}/{x}/{y}.png', {
+          attribution: 'MapBox'
         }).addTo(map);
 
         cartodb.createLayer(map, 'http://xavijam.cartodb.com/api/v2/viz/b857fa5e-ea4e-11e3-9bbc-0edbca4b5057/viz.json')
           .addTo(map)
           .on('done', function(lyr) {
             lyr.getSubLayer(0).infowindow.set({
-              template: $('#infowindow_template_light').html(),
+              template: $('#infowindow_template_header').html(),
               width: 200,
               maxHeight: 180
             });

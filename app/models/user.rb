@@ -833,7 +833,6 @@ $$
     create_schemas_and_set_permissions
     set_database_permissions
     load_cartodb_functions
-    rebuild_quota_trigger
   end
 
   def create_schemas_and_set_permissions
@@ -957,29 +956,66 @@ TRIGGER
 
 
   # Cartodb functions
-  def load_cartodb_functions(files = [])
-    create_function_invalidate_varnish
-    create_trigger_function_update_timestamp
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        if files.empty?
-          glob = Rails.root.join('lib/sql/scripts-enabled/*.sql')
-          sql_files = Dir.glob(glob).sort
-        else
-          sql_files = files.map {|sql| Rails.root.join('lib/sql/scripts-enabled', sql).to_s}.sort
-        end
-        sql_files.each do |f|
-          if File.exists?(f)
-            CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
-            @sql = File.new(f).read
-            @sql.gsub!(':DATABASE_USERNAME', self.database_username)
-            user_database.run(@sql)
+  def load_cartodb_functions(extensions_only=false, files = [])
+
+    # Old code. At least CDB_TableMetadata.sql is needed
+
+    unless extensions_only
+      create_function_invalidate_varnish
+      create_trigger_function_update_timestamp
+      in_database(:as => :superuser) do |user_database|
+        user_database.transaction do
+          if files.empty?
+            glob = Rails.root.join('lib/sql/scripts-enabled/*.sql')
+            sql_files = Dir.glob(glob).sort
           else
-            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
+            sql_files = files.map {|sql| Rails.root.join('lib/sql/scripts-enabled', sql).to_s}.sort
+          end
+          sql_files.each do |f|
+            if File.exists?(f)
+              CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
+              @sql = File.new(f).read
+              @sql.gsub!(':DATABASE_USERNAME', self.database_username)
+              user_database.run(@sql)
+            else
+              CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
+            end
           end
         end
       end
+      rebuild_quota_trigger
     end
+
+    # New code (includes commented code regarding DDL triggers)
+
+    postgis_present = in_database(as: :superuser).fetch(%Q{
+       SELECT COUNT(*) AS count FROM pg_extension WHERE extname='postgis'
+     }).first[:count] > 0
+    topology_present = in_database(as: :superuser).fetch(%Q{
+       SELECT COUNT(*) AS count FROM pg_extension WHERE extname='postgis_topology'
+     }).first[:count] > 0
+#    triggers_present = in_database(as: :superuser).fetch(%Q{
+#           SELECT COUNT(*) AS count FROM pg_extension WHERE extname='schema_triggers'
+#         }).first[:count] > 0
+    cartodb_present = in_database(as: :superuser).fetch(%Q{
+       SELECT COUNT(*) AS count FROM pg_extension WHERE extname='cartodb'
+     }).first[:count] > 0
+
+    in_database(as: :superuser)
+      .run(postgis_present ? 'ALTER EXTENSION postgis UPDATE;' : 'CREATE EXTENSION postgis FROM unpackaged;')
+    in_database(as: :superuser)
+      .run(topology_present ? 'ALTER EXTENSION postgis_topology UPDATE;' : 'CREATE EXTENSION postgis_topology FROM unpackaged;')
+#    in_database(as: :superuser)
+#      .run(triggers_present ? 'ALTER EXTENSION schema_triggers UPDATE;' : 'CREATE EXTENSION schema_triggers;')
+    in_database(as: :superuser)
+      .run(cartodb_present ? 'ALTER EXTENSION cartodb UPDATE;' : 'CREATE EXTENSION cartodb FROM unpackaged;')
+
+#    in_database(as: :superuser).run('SELECT cartodb.cdb_enable_ddl_hooks();')
+
+    unless Rails.env.test?
+      User.terminate_database_connections(database_name, database_host)
+    end
+
   end
 
   def set_statement_timeouts

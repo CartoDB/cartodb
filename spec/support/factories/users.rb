@@ -39,6 +39,7 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       user.save
+      load_user_functions(user)
       user
     end
 
@@ -84,5 +85,10 @@ module CartoDB
       user.data_imports_dataset.destroy
       user.geocodings_dataset.destroy
     end
+
+    def load_user_functions(user)
+      user.load_cartodb_functions
+    end
+
   end
 end

@@ -62,12 +62,10 @@ namespace :cartodb do
       count = User.count
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
-            user.load_cartodb_functions
+            user.load_cartodb_functions(extensions_only=true)
             printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
           rescue => e
             printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
-          ensure
-            User.terminate_database_connections(user.database_name, user.previous_changes)
           end
       }, threads, thread_sleep)
     end

@@ -12,9 +12,9 @@ class Api::Json::OverlaysController < Api::ApplicationController
   def index
     collection  = Overlay::Collection.new(
       visualization_id: params.fetch('visualization_id'),
-    ).fetch(params.dump)
+    ).fetch
 
-    response    = { 
+    response    = {
       overlays:       collection, 
       total_entries:  collection.count
     }
@@ -27,10 +27,17 @@ class Api::Json::OverlaysController < Api::ApplicationController
   def create
     collection  = Overlay::Collection.new(
                     visualization_id: params.fetch('visualization_id')
-                  ).fetch
-    member      = Overlay::Member.new(payload).store
+                  )
+    member_attributes = payload.merge(
+      type:       params[:type],
+      options:    params[:options],
+      order:      1
+    )
+
+    member      = Overlay::Member.new(member_attributes).store
     collection.add(member)
     collection.store
+    debugger
     render_jsonp(member.attributes)
   end #create
 

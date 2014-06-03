@@ -11,7 +11,6 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
-
 .widget {
 
   display: none;
@@ -25,7 +24,7 @@
   min-width: 50px;
   max-width: 800px;
 
-  z-index: 100;
+  z-index: 999;
 
   &:hover { 
     background:rgba(#333, .7);
@@ -162,17 +161,15 @@
     line-height: normal;
     color: #fff;
 
--ms-word-break: break-all;
-     word-break: break-all;
+    -ms-word-break: break-all;
+    word-break: break-all;
 
-     // Non standard for webkit
-     word-break: break-word;
+    // Non standard for webkit
+    word-break: break-word;
 
--webkit-hyphens: auto;
-   -moz-hyphens: auto;
-        hyphens: auto;
-
-    /*@include user-select(none);*/
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
 
     @include simple-transition(padding, .05s, ease-in-out);
 
@@ -199,6 +196,8 @@ div.rule {
 
 
 div.dropdown.properties_dropdown {
+
+  width: 200px;
 
   & > ul {
 

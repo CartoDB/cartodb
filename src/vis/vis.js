@@ -718,6 +718,9 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
+            position: 'bottom|right',
+            vertical_offset: 10,
+            horizontal_offset: 4,
             fields: t.fields,
             omit_columns: ['cartodb_id']
           });
@@ -731,9 +734,14 @@ var Vis = cdb.core.View.extend({
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
-        layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setFields(t.fields);
-        layerView.tooltip.setAlternativeNames(t.alternative_names);
+        if (t) {
+          layerView.tooltip.setTemplate(t.template);
+          layerView.tooltip.setFields(t.fields);
+          layerView.tooltip.setAlternativeNames(t.alternative_names);
+          layerView.tooltip.enable();
+        } else {
+          layerView.tooltip.disable();
+        }
       });
     }
   },

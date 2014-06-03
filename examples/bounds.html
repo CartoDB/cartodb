@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Bounds example | CartoDB.js</title>
+    <title>Set Bounds example | CartoDB.js</title>
+    <!--  
+      This example shows you how to get a bounding box for a feature from CartoDB 
+      and move your map according to that bbox.
+    -->
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
@@ -10,13 +14,11 @@
         height: 100%;
         padding: 0;
         margin: 0;
+        background-color: #E5F5F7;
       }
     </style>
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-    <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-    <![endif]-->
   </head>
   <body>
     <div id="map"></div>
@@ -25,11 +27,12 @@
     <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
     <script>
+    
       var layer;
       function main() {
         var map = L.map('map', { 
           zoomControl: false,
-          center: [43, 0],
+          center: [53, 20],
           zoom: 3
         });
 
@@ -37,27 +40,22 @@
           type: 'cartodb',
           user_name: 'examples',
           sublayers: [{
-            sql: 'select * from european_countries_e',
-            cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
+            sql: 'select * from country_boundaries',
+            cartocss: '#layer{ polygon-fill: #f7e5d1; polygon-opacity: 1; line-color: #d2c0b1; line-width: 0.8; }'
           }]
         })
         .addTo(map)
         .on('done', function(layer_) {
-          // Setting bounds to Spain country
-          setTimeout(function() {
-            var sql = new cartodb.SQL({ user: 'examples' });
-            sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
-              map.fitBounds(bounds)
-            });
-          }, 2000);
+          var sql = new cartodb.SQL({ user: 'examples' });
+          sql.getBounds("select * from country_boundaries where iso_a3='MEX'").done(function(bounds) {
+            map.fitBounds(bounds)
+          });
         }).on('error', function() {
           cartodb.log.log("some error occurred");
         });
-
       }
-
-      // you could use $(window).load(main);
       window.onload = main;
+
     </script>
   </body>
 </html>

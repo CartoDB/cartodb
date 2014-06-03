@@ -80,7 +80,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\
@@ -183,25 +183,35 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
-  if(vis.legends) {
+  if (vis.legends) {
+
     layerSelector.bind('change:visible', function(visible, order, layer) {
-      if (layer.get('type') === 'layergroup') {
-        var legend = vis.legends && vis.legends.getLegendByIndex(order);
-        if(legend) {
-          legend[visible ? 'show': 'hide']();
-        }
-      } else if (layer.get('type') === 'torque') {
+
+      if (layer.get('type') === 'torque') {
+
         var timeSlider = vis.getOverlay('time_slider');
+
         if (timeSlider) {
           timeSlider[visible ? 'show': 'hide']();
         }
+
       }
+
+      if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
+
+        var legend = vis.legends && vis.legends.getLegendByIndex(order);
+
+        if (legend) {
+          legend[visible ? 'show': 'hide']();
+        }
+
+      } 
 
     });
   }
 
-
   return layerSelector.render();
+
 });
 
 // fullscreen
@@ -266,7 +276,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

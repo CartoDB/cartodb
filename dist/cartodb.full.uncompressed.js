@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.03
+// cartodb.js version: 3.9.07
 // uncompressed version: cartodb.uncompressed.js
-// sha: dfbb8f4204e231cd83fc53f18e0a00e25ff99a53
+// sha: 5472b924db5374c519a5de4f73f8681e7861c4f5
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.03';
+    cdb.VERSION = '3.9.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21267,10 +21267,7 @@ cdb.core.Template = Backbone.Model.extend({
    */
   render: function(vars) {
     var c = this.compiled = this.compiled || this.get('compiled') || this.compile();
-    var r = cdb.core.Profiler.metric('template_render');
-    r.start();
     var rendered = c(vars);
-    r.end();
     return rendered;
   },
 
@@ -25547,17 +25544,21 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
 cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
-  DEFAULT_OFFSET_TOP: 10,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
 
+  defaults: {
+    vertical_offset: 0,
+    horizontal_offset: 0,
+    position: 'top|center'
+  },
+
   initialize: function() {
     this.options.template = this.options.template || this.defaultTemplate;
-    this.options.position = 'none';
-    this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
+    this.showhideTimeout = null;
   },
 
   setLayer: function(layer) {
@@ -25586,6 +25587,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   enable: function() {
     if(this.options.layer) {
+      // unbind previous events
+      this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
           // this flag is used to be compatible with previous templates
@@ -25620,9 +25623,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
           this.show(pos, data);
           this.showing = true;
         }, this)
-        .on('featureOut', function() {
-          this.hide();
-          this.showing = false;
+        .on('mouseout', function() {
+          if (this.showing) {
+            this.hide();
+            this.showing = false;
+          }
         }, this);
       this.add_related_model(this.options.layer);
     }
@@ -25632,6 +25637,25 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     if(this.options.layer) {
       this.options.layer.unbind(null, null, this);
     }
+    this.hide();
+    this.showing = false;
+  },
+
+  _visibility: function() {
+    var self = this;
+    clearTimeout(this.showhideTimeout);
+    this.showhideTimeout = setTimeout(self._showing ?
+      function() { self.$el.fadeIn(100); }
+      :
+      function() { self.$el.fadeOut(200); }
+    , 50);
+  },
+
+  hide: function() {
+    if (this._showing) {
+      this._showing = false;
+      this._visibility();
+    }
   },
 
   show: function(pos, data) {
@@ -25639,14 +25663,50 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       return this;
     }
     this.render(data);
-    this.elder('show', pos, data);
-    this.$el.css({
-      'left': pos.x,
-      'top':  pos.y + (this.options.offset_top || this.DEFAULT_OFFSET_TOP)
-    });
+    //this.elder('show', pos, data);
+    this.setPosition(pos);
+    if (!this._showing) {
+      this._showing = true;
+      this._visibility();
+    }
     return this;
   },
 
+  setPosition: function(point) {
+    var props = {
+      left: 0,
+      top:  0
+    };
+
+    var pos = this.options.position;
+    var $el = this.$el;
+    var h = $el.innerHeight();
+    var w = $el.innerWidth();
+
+    // Vertically
+    if (pos.indexOf('top') !== -1) {
+      props.top = -h;
+    } else if (pos.indexOf('middle') !== -1) {
+      props.top = -(h/2);
+    }
+
+    // Horizontally
+    if(pos.indexOf('left') !== -1) {
+      props.left = -w;
+    } else if(pos.indexOf('center') !== -1) {
+      props.left = -(w/2);
+    }
+
+    // Offsets
+    props.top += this.options.vertical_offset;
+    props.left += this.options.horizontal_offset;
+
+    $el.css({
+      top:  (point.y + props.top),
+      left: (point.x + props.left)
+    });
+
+  },
 
   render: function(data) {
     this.$el.html( this.template(data) );
@@ -26269,12 +26329,23 @@ Map.prototype = {
     this.invalidate();
   },
 
-  _tileJSONfromTiles: function(layer, urls) {
+  _tileJSONfromTiles: function(layer, urls, options) {
+    options = options || {};
+    var subdomains = options.subdomains || ['0', '1', '2', '3'];
+
+    function replaceSubdomain(t) {
+      var tiles = [];
+      for (var i = 0; i < t.length; ++i) {
+        tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+      }
+      return tiles;
+    }
+
     return {
       tilejson: '2.0.0',
       scheme: 'xyz',
-      grids: urls.grids[layer],
-      tiles: urls.tiles,
+      grids: replaceSubdomain(urls.grids[layer]),
+      tiles: replaceSubdomain(urls.tiles),
       formatter: function(options, data) { return data; }
      };
   },
@@ -26284,13 +26355,14 @@ Map.prototype = {
    */
   getTileJSON: function(layer, callback) {
     layer = layer == undefined ? 0: layer;
+    var self = this;
     this.getTiles(function(urls) {
       if(!urls) {
         callback(null);
         return;
       }
       if(callback) {
-        callback(this._tileJSONfromTiles(layer, urls));
+        callback(self._tileJSONfromTiles(layer, urls));
       }
     });
   },
@@ -26419,6 +26491,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {
@@ -27592,11 +27667,13 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      var p = map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop))
-      return p;
+      return map.containerPointToLayerPoint(new L.Point(x - curleft, y - curtop));
     } else {
-      // IE
-      return map.mouseEventToLayerPoint(o.e)
+      var rect = obj.getBoundingClientRect();
+      var p = new L.Point(
+            o.e.clientX - rect.left - obj.clientLeft - window.scrollX,
+            o.e.clientY - rect.top - obj.clientTop - window.scrollY);
+      return map.containerPointToLayerPoint(p);
     }
   }
 
@@ -29662,6 +29739,20 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _stripHTML: function(input, allowed) {
+
+    allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
+
+    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+
+    if (!input || (typeof input != "string")) return '';
+
+    return input.replace(tags, function ($0, $1) {
+      return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+    });
+
+  },
+
   open: function() {
 
     var self = this;
@@ -29706,23 +29797,24 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     var $el = this.$el;
 
-    var title       = this.options.title;
-    var description = this.options.description;
-    var share_url   = this.options.share_url;
+    var title             = this.options.title;
+    var description       = this.options.description;
+    var clean_description = this._stripHTML(this.options.description);
+    var share_url         = this.options.share_url;
 
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
-    var full_title    = title + ": " + description;
+    var full_title    = title + ": " + clean_description;
     var twitter_title;
 
-    if (title && description) {
-      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    if (title && clean_description) {
+      twitter_title = this._truncateTitle(title + ": " + clean_description, 112) + " %23map "
     } else if (title) {
       twitter_title = this._truncateTitle(title, 112) + " %23map"
-    } else if (description){
-      twitter_title = this._truncateTitle(description, 112) + " %23map"
+    } else if (clean_description){
+      twitter_title = this._truncateTitle(clean_description, 112) + " %23map"
     } else {
       twitter_title = "%23map"
     }
@@ -31156,6 +31248,9 @@ var Vis = cdb.core.View.extend({
           var tooltip = new cdb.geo.ui.Tooltip({
             layer: layerView,
             template: t.template,
+            position: 'bottom|right',
+            vertical_offset: 10,
+            horizontal_offset: 4,
             fields: t.fields,
             omit_columns: ['cartodb_id']
           });
@@ -31169,9 +31264,14 @@ var Vis = cdb.core.View.extend({
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
-        layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setFields(t.fields);
-        layerView.tooltip.setAlternativeNames(t.alternative_names);
+        if (t) {
+          layerView.tooltip.setTemplate(t.template);
+          layerView.tooltip.setFields(t.fields);
+          layerView.tooltip.setAlternativeNames(t.alternative_names);
+          layerView.tooltip.enable();
+        } else {
+          layerView.tooltip.disable();
+        }
       });
     }
   },
@@ -31606,7 +31706,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
           {{/url}}\
         </h1>\
       {{/title}}\
-      {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
         <div class='social'>\
           <a class='facebook' target='_blank'\
@@ -31709,25 +31809,35 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
-  if(vis.legends) {
+  if (vis.legends) {
+
     layerSelector.bind('change:visible', function(visible, order, layer) {
-      if (layer.get('type') === 'layergroup') {
-        var legend = vis.legends && vis.legends.getLegendByIndex(order);
-        if(legend) {
-          legend[visible ? 'show': 'hide']();
-        }
-      } else if (layer.get('type') === 'torque') {
+
+      if (layer.get('type') === 'torque') {
+
         var timeSlider = vis.getOverlay('time_slider');
+
         if (timeSlider) {
           timeSlider[visible ? 'show': 'hide']();
         }
+
       }
+
+      if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
+
+        var legend = vis.legends && vis.legends.getLegendByIndex(order);
+
+        if (legend) {
+          legend[visible ? 'show': 'hide']();
+        }
+
+      } 
 
     });
   }
 
-
   return layerSelector.render();
+
 });
 
 // fullscreen
@@ -31792,7 +31902,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

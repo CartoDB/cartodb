@@ -60,4 +60,35 @@ describe('cdb.geo.Tooltip', function() {
     expect(tooltip.$el.html()).toEqual('test2,testnamed,huracan,');
   });
 
+  it ("should positionate the element correctly", function() {
+    tooltip.$el.css('width', '200px');
+    tooltip.$el.css('height', '20px');
+    var data = { cartodb_id: 2, description: 'test' };
+
+    tooltip.options.position = 'bottom|right';
+    tooltip.show({ x:0, y:0 }, data);
+    expect(tooltip.$el.css('top')).toBe('0px');
+    expect(tooltip.$el.css('left')).toBe('0px');
+
+    tooltip.options.position = 'top|left';
+    tooltip.show({ x:10, y:10 }, data);
+    expect(tooltip.$el.css('top')).toBe('-10px');
+    expect(tooltip.$el.css('left')).toBe('-190px');
+
+    tooltip.options.position = 'middle|center';
+    tooltip.show({ x:10, y:10 }, data);
+    expect(tooltip.$el.css('top')).toBe('0px');
+    expect(tooltip.$el.css('left')).toBe('-90px');
+
+    // With offsets
+
+    tooltip.options.position = 'middle|center';
+    tooltip.options.vertical_offset = -10;
+    tooltip.options.horizontal_offset = -10;
+    tooltip.show({ x:10, y:10 }, data);
+    expect(tooltip.$el.css('top')).toBe('-10px');
+    expect(tooltip.$el.css('left')).toBe('-100px');
+
+  });
+
 });

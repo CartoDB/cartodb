@@ -742,6 +742,33 @@ describe("NamedMap", function() {
     });
   });
 
+  it("set param without default param", function() {
+    var named_map = {
+      name: 'testing',
+      auth_token: 'auth_token_test',
+      layers: [{}]
+    };
+    namedMap = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "https",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    namedMap.setParams('color', 'red');
+    runs(function() { namedMap._getLayerToken(); });
+    waits(100);
+    runs(function() {
+      var config = "config=" + encodeURIComponent(JSON.stringify({color: 'red'}));
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+  });
+
   it("should add params", function() {
     var params;
     namedMap.options.ajax = function(p) { 

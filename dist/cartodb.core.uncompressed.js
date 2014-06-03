@@ -1,5 +1,5 @@
-// version: 3.9.03
-// sha: dfbb8f4204e231cd83fc53f18e0a00e25ff99a53
+// version: 3.9.07
+// sha: 5472b924db5374c519a5de4f73f8681e7861c4f5
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.03';
+    cdb.VERSION = '3.9.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2418,12 +2418,23 @@ Map.prototype = {
     this.invalidate();
   },
 
-  _tileJSONfromTiles: function(layer, urls) {
+  _tileJSONfromTiles: function(layer, urls, options) {
+    options = options || {};
+    var subdomains = options.subdomains || ['0', '1', '2', '3'];
+
+    function replaceSubdomain(t) {
+      var tiles = [];
+      for (var i = 0; i < t.length; ++i) {
+        tiles.push(t[i].replace('{s}', subdomains[i % subdomains.length]));
+      }
+      return tiles;
+    }
+
     return {
       tilejson: '2.0.0',
       scheme: 'xyz',
-      grids: urls.grids[layer],
-      tiles: urls.tiles,
+      grids: replaceSubdomain(urls.grids[layer]),
+      tiles: replaceSubdomain(urls.tiles),
       formatter: function(options, data) { return data; }
      };
   },
@@ -2433,13 +2444,14 @@ Map.prototype = {
    */
   getTileJSON: function(layer, callback) {
     layer = layer == undefined ? 0: layer;
+    var self = this;
     this.getTiles(function(urls) {
       if(!urls) {
         callback(null);
         return;
       }
       if(callback) {
-        callback(this._tileJSONfromTiles(layer, urls));
+        callback(self._tileJSONfromTiles(layer, urls));
       }
     });
   },
@@ -2568,6 +2580,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {

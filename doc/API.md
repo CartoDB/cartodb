@@ -1090,12 +1090,12 @@ Or, by running the following in your code:
   ```
 <div class="margin20"></div>
 
-Now, that you have your CartoDB.js version, you can point your site at that release. If the current version of CartoDB.js is 2.0.11, the URL would be:
+Now, that you have your CartoDB.js version, you can point your site at that release. If the current version of CartoDB.js is 3.9.06, the URL would be:
 
 <div class="margin20"></div>
 <div class="code_title">Persistent version hosting</div>
   ``` html
-    http://libs.cartocdn.com/cartodb.js/v3/3.0.01/cartodb.js
+    http://libs.cartocdn.com/cartodb.js/v3/3.9.06/cartodb.js
   ```
 <div class="margin20"></div>
 

@@ -70,6 +70,10 @@
     background:#000000;
   }
 
+  div.cartodb-popup.v2.dark:before {
+    border-top-color:black;
+  }
+
   div.cartodb-popup.v2.dark div.cartodb-popup-tip-container:after {
     border-top-color:#000;
   }

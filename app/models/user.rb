@@ -988,12 +988,6 @@ TRIGGER
 
     # New code (includes commented code regarding DDL triggers)
 
-    postgis_present = in_database(as: :superuser).fetch(%Q{
-       SELECT COUNT(*) AS count FROM pg_extension WHERE extname='postgis'
-     }).first[:count] > 0
-    topology_present = in_database(as: :superuser).fetch(%Q{
-       SELECT COUNT(*) AS count FROM pg_extension WHERE extname='postgis_topology'
-     }).first[:count] > 0
 #    triggers_present = in_database(as: :superuser).fetch(%Q{
 #           SELECT COUNT(*) AS count FROM pg_extension WHERE extname='schema_triggers'
 #         }).first[:count] > 0
@@ -1001,10 +995,6 @@ TRIGGER
        SELECT COUNT(*) AS count FROM pg_extension WHERE extname='cartodb'
      }).first[:count] > 0
 
-    in_database(as: :superuser)
-      .run(postgis_present ? 'ALTER EXTENSION postgis UPDATE;' : 'CREATE EXTENSION postgis FROM unpackaged;')
-    in_database(as: :superuser)
-      .run(topology_present ? 'ALTER EXTENSION postgis_topology UPDATE;' : 'CREATE EXTENSION postgis_topology FROM unpackaged;')
 #    in_database(as: :superuser)
 #      .run(triggers_present ? 'ALTER EXTENSION schema_triggers UPDATE;' : 'CREATE EXTENSION schema_triggers;')
     in_database(as: :superuser)

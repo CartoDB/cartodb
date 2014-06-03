@@ -796,6 +796,8 @@ var Vis = cdb.core.View.extend({
 
         layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
+          // Old viz.json doesn't contain width and maxHeight properties
+          // and we have to get the default values if there are not defined.
           var extra = _.defaults(
             {
               offset: infowindowFields.offset,

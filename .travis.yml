@@ -18,8 +18,7 @@ before_install:
   - sudo service postgresql restart
   - sudo su postgres -c "createdb template_postgis"
   - echo "SELECT VERSION();" | sudo su postgres -c "psql template_postgis"
-  - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql template_postgis"
-  - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql template_postgis"
+  - sudo su postgres -c "echo 'CREATE EXTENSION postgis;' | psql template_postgis"
   - sudo su postgres -c "echo 'SELECT POSTGIS_FULL_VERSION();' | psql template_postgis"
   # Needed to build PostgreSQL extensions 
   - sudo apt-get install postgresql-server-dev-9.3

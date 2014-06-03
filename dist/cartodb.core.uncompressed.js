@@ -1,5 +1,5 @@
-// version: 3.9.07
-// sha: 5472b924db5374c519a5de4f73f8681e7861c4f5
+// version: 3.9.08
+// sha: d693bf6fc7ed94b8ba3fc7d70cf15941431cc102
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.07';
+    cdb.VERSION = '3.9.08';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {

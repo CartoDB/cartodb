@@ -1,4 +1,4 @@
-3.9.07 ()
+3.9.07 (03//06//2014)
 - Fixed exception on hover for layers without tooltip
 - Improved tooltip interaction
 - Changed cartocss library to support marker-type "rectangle"

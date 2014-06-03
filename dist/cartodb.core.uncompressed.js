@@ -1,5 +1,5 @@
-// version: 3.9.06
-// sha: 3b5ef0f9ce9e601ca250b83b3534c4c672ef7171
+// version: 3.9.07
+// sha: 5472b924db5374c519a5de4f73f8681e7861c4f5
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.06';
+    cdb.VERSION = '3.9.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2580,6 +2580,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {

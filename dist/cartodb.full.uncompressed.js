@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.06
+// cartodb.js version: 3.9.07
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3b5ef0f9ce9e601ca250b83b3534c4c672ef7171
+// sha: 5472b924db5374c519a5de4f73f8681e7861c4f5
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.06';
+    cdb.VERSION = '3.9.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21267,10 +21267,7 @@ cdb.core.Template = Backbone.Model.extend({
    */
   render: function(vars) {
     var c = this.compiled = this.compiled || this.get('compiled') || this.compile();
-    var r = cdb.core.Profiler.metric('template_render');
-    r.start();
     var rendered = c(vars);
-    r.end();
     return rendered;
   },
 
@@ -25561,6 +25558,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
+    this.showhideTimeout = null;
   },
 
   setLayer: function(layer) {
@@ -25589,6 +25587,8 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   enable: function() {
     if(this.options.layer) {
+      // unbind previous events
+      this.options.layer.unbind(null, null, this);
       this.options.layer
         .on('mouseover', function(e, latlng, pos, data) {
           // this flag is used to be compatible with previous templates
@@ -25623,9 +25623,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
           this.show(pos, data);
           this.showing = true;
         }, this)
-        .on('featureOut', function() {
-          this.hide();
-          this.showing = false;
+        .on('mouseout', function() {
+          if (this.showing) {
+            this.hide();
+            this.showing = false;
+          }
         }, this);
       this.add_related_model(this.options.layer);
     }
@@ -25635,6 +25637,25 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
     if(this.options.layer) {
       this.options.layer.unbind(null, null, this);
     }
+    this.hide();
+    this.showing = false;
+  },
+
+  _visibility: function() {
+    var self = this;
+    clearTimeout(this.showhideTimeout);
+    this.showhideTimeout = setTimeout(self._showing ?
+      function() { self.$el.fadeIn(100); }
+      :
+      function() { self.$el.fadeOut(200); }
+    , 50);
+  },
+
+  hide: function() {
+    if (this._showing) {
+      this._showing = false;
+      this._visibility();
+    }
   },
 
   show: function(pos, data) {
@@ -25642,8 +25663,12 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       return this;
     }
     this.render(data);
-    this.elder('show', pos, data);
+    //this.elder('show', pos, data);
     this.setPosition(pos);
+    if (!this._showing) {
+      this._showing = true;
+      this._visibility();
+    }
     return this;
   },
 
@@ -26466,6 +26491,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {
@@ -31236,9 +31264,14 @@ var Vis = cdb.core.View.extend({
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
         var t = layerView.getTooltipData(layer);
-        layerView.tooltip.setTemplate(t.template);
-        layerView.tooltip.setFields(t.fields);
-        layerView.tooltip.setAlternativeNames(t.alternative_names);
+        if (t) {
+          layerView.tooltip.setTemplate(t.template);
+          layerView.tooltip.setFields(t.fields);
+          layerView.tooltip.setAlternativeNames(t.alternative_names);
+          layerView.tooltip.enable();
+        } else {
+          layerView.tooltip.disable();
+        }
       });
     }
   },
@@ -31776,25 +31809,35 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
-  if(vis.legends) {
+  if (vis.legends) {
+
     layerSelector.bind('change:visible', function(visible, order, layer) {
-      if (layer.get('type') === 'layergroup') {
-        var legend = vis.legends && vis.legends.getLegendByIndex(order);
-        if(legend) {
-          legend[visible ? 'show': 'hide']();
-        }
-      } else if (layer.get('type') === 'torque') {
+
+      if (layer.get('type') === 'torque') {
+
         var timeSlider = vis.getOverlay('time_slider');
+
         if (timeSlider) {
           timeSlider[visible ? 'show': 'hide']();
         }
+
       }
+
+      if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
+
+        var legend = vis.legends && vis.legends.getLegendByIndex(order);
+
+        if (legend) {
+          legend[visible ? 'show': 'hide']();
+        }
+
+      } 
 
     });
   }
 
-
   return layerSelector.render();
+
 });
 
 // fullscreen

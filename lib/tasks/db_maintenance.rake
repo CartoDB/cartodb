@@ -66,6 +66,8 @@ namespace :cartodb do
             printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
           rescue => e
             printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+          ensure
+            User.terminate_database_connections(user.database_name, user.previous_changes)
           end
       }, threads, thread_sleep)
     end

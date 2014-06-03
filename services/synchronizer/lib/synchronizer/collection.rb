@@ -36,10 +36,9 @@ module CartoDB
         puts 'Pass finished'
       end #run
 
+      # Fetches and enqueues all syncs that should run
       # @param force_all_syncs bool
       def fetch(force_all_syncs=false)
-        puts 'fetching...'
-
         begin
           if force_all_syncs
             query = db.query(%Q(
@@ -71,6 +70,32 @@ module CartoDB
 
         self
       end #fetch
+
+      # Enqueues all syncs that got stalled (state syncing since too long).
+      # This happens when we push code while a sync is being performed.
+      def enqueue_stalled
+        stalled_threshold = Time.now + (3600 * 2)
+
+        begin
+          query = db.query(%Q(
+              SELECT * FROM #{relation}
+              WHERE EXTRACT(EPOCH FROM ran_at) < #{stalled_threshold.utc.to_f}
+              AND state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
+            ))
+          success = true
+        rescue Exception => e
+          success = false
+          puts "ERROR fetching stalled sync tables: #{e.message}, #{e.backtrace}"
+        end
+
+        if success
+          puts "Populating #{query.count} records after stalled fetch"
+          hydrate(query).each { |record|
+            puts "Enqueueing #{record.name} (#{record.id})"
+            record.enqueue
+          }
+        end
+      end
 
       # This is probably for testing purposes only, as fetch also does the processing
       def process(members=@members)

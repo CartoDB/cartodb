@@ -46,6 +46,10 @@ div.map {
 
     & > li.button {
 
+      &.add_widget {
+        position:relative;
+      }
+
       &.add_widget > .thumb { 
         @include map-sprite(add_element);
         width: 26px;
@@ -179,6 +183,10 @@ div.map {
       }
     } // .basemap_dropdown
   } // .dropdowns
+
+  div.dropdown.widgets_dropdown {
+    width: 200px;
+  }
 
   div.dropdown.basemap {
 

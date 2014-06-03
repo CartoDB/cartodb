@@ -255,17 +255,17 @@
       }
 
       &.align-left:after {
-        @include opacity(.5);
+        @include opacity(.8);
         @include background(image-url("layout/align_left.png") no-repeat 0 0);
       }
 
       &.align-center:after {
-        @include opacity(.5);
+        @include opacity(.8);
         @include background(image-url("layout/align_center.png") no-repeat 0 0);
       }
 
       &.align-right:after {
-        @include opacity(.5);
+        @include opacity(.8);
         @include background(image-url("layout/align_right.png") no-repeat 0 0);
       }
 
@@ -281,7 +281,7 @@
       }
 
       &.selected {
-        @include background(linear-gradient(#F2F2F2, #FFF));
+        @include background(linear-gradient(#F3F3F3, #FFF));
         &:after {
           @include opacity(1);
         }

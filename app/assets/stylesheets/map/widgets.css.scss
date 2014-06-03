@@ -31,6 +31,19 @@
     background:rgba(#333, .7);
   }
 
+  &.open {
+
+    .edit {
+      background: #fff;
+      color: #333;
+
+      &:after {
+        border-top: 4px solid #373F46;
+      }
+    }
+
+  }
+
   &.editable {
 
     .text {
@@ -38,7 +51,7 @@
       padding: 3px 5px;
 
       border: 1px dashed #ccc;
-      cursor: text!Important;
+      cursor: text!important;
 
       /*@include user-select(text);*/
 
@@ -48,10 +61,10 @@
 
   &.draggable {
 
-    cursor: move!Important;
+    cursor: move!important;
 
     .edit, .close { @include opacity(0); }
-    .text { cursor: move!Important; }
+    .text { cursor: move!important; }
 
   }
 
@@ -76,7 +89,7 @@
     background: #333;
     position: absolute;
     font-size: 10px;
-    font-family: "Helvetica Neue", "Helvetica", Arial;
+    font-family: "helvetica neue", "helvetica", arial;
     text-align: center;
     text-transform: uppercase;
 
@@ -86,7 +99,7 @@
   }
 
   .close {
-    top: -10px;
+    top: -12px;
     left: -15px;
     height: 16px;
     width: 17px;
@@ -100,12 +113,24 @@
   }
 
   .edit {
-    top: -10px;
+    top: -12px;
     right: -15px;
-    padding: 5px 12px;
+    padding: 3px 18px 3px 11px;
     letter-spacing: 1px;
     font-weight: 500;
     @include border-radius(20px);
+
+    &:after {
+      content: '';
+      position:absolute;
+      top: 8px;
+      right: 8px;
+      width: 0; 
+      height: 0; 
+      border-left: 3px solid transparent;
+      border-right: 3px solid transparent;
+      border-top: 4px solid #fff;
+    }
   }
 
 } // .widget

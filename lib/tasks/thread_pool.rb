@@ -24,6 +24,8 @@ class ThreadPool
               end
               job, args = @workers_queue.pop
               job.call(*args)
+              job = nil
+              args = nil
             end
           end
         end

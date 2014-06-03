@@ -125,6 +125,12 @@
     width:85%;
   }
 
+  div.cartodb-popup.v2.header.with-image div.cartodb-popup-header span.separator {
+    left:0;
+    right:0;
+    background:#CCC;
+  }
+
   div.cartodb-popup.v2.header.with-image a.cartodb-popup-close-button {
     background:white;
   }

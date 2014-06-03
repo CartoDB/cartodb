@@ -55,17 +55,14 @@ namespace :cartodb do
     # LOAD CARTODB FUNCTIONS
     ########################
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:num_threads, :thread_sleep, :cdb_version_1, :cdb_version_2] => :environment do |t, args|
+    task :load_functions, [:num_threads, :thread_sleep] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
       thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
-      cartodb_version = []
-      cartodb_version[0] = args[:cdb_version_1] unless args[:cdb_version_1].nil?
-      cartodb_version[1] = args[:cdb_version_2] unless args[:cdb_version_2].nil?
 
       count = User.count
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
-            user.load_cartodb_functions(extensions_only=true, cartodb_version)
+            user.load_cartodb_functions
             printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
           rescue => e
             printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count

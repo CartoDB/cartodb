@@ -957,74 +957,51 @@ TRIGGER
 
   # Cartodb functions
 
-  # @param extensions_only boolean
-  # @param cartodb_ext_versions string[] 0 to 2 parameters containing versions
-  #  - If none specified, treat as "clean install/update"
-  #  - If one specified, treat as update from specific version
-  #  - If both specified, treat as update between two specific version
-  # @param files string[]
-  def load_cartodb_functions(extensions_only=false, cartodb_ext_versions = [], files = [])
+  def load_cartodb_functions()
 
-    # Old code. At least CDB_TableMetadata.sql is needed
+    tgt_ver = '0.2.0dev' # TODO: optionally take as parameter? 
 
-    unless extensions_only
-      create_function_invalidate_varnish
-      create_trigger_function_update_timestamp
-      in_database(:as => :superuser) do |user_database|
-        user_database.transaction do
-          if files.empty?
-            glob = Rails.root.join('lib/sql/scripts-enabled/*.sql')
-            sql_files = Dir.glob(glob).sort
-          else
-            sql_files = files.map {|sql| Rails.root.join('lib/sql/scripts-enabled', sql).to_s}.sort
-          end
-          sql_files.each do |f|
-            if File.exists?(f)
-              CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
-              @sql = File.new(f).read
-              @sql.gsub!(':DATABASE_USERNAME', self.database_username)
-              user_database.run(@sql)
-            else
-              CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
-            end
-          end
-        end
-      end
-      rebuild_quota_trigger
-    end
+    sql = "
+DO LANGUAGE 'plpgsql' $$
+DECLARE
+  ver TEXT;
+BEGIN
+  BEGIN
+    SELECT cartodb.cdb_version() INTO ver;
+  EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
+    RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+    BEGIN
+      CREATE EXTENSION schema_triggers;
+    EXCEPTION WHEN duplicate_object THEN
+      -- already exists
+      RAISE NOTICE 'schema_triggers extension already exists';
+    END;
+    BEGIN
+      CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
+    EXCEPTION WHEN undefined_table THEN
+      RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+      CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
+      RETURN;
+    END;
+    RETURN;
+  END;
+  ver := '#{tgt_ver}';
+  IF position('dev' in ver) > 0 THEN
+    EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+    EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+  ELSE
+    EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+  END IF;
+END;
+$$;
+  "
+#   sql += 'SELECT cartodb.cdb_enable_ddl_hooks();'
 
-    # New code (includes commented code regarding DDL triggers)
+    in_database(as: :superuser).run(sql)
 
-#    triggers_present = in_database(as: :superuser).fetch(%Q{
-#           SELECT COUNT(*) AS count FROM pg_extension WHERE extname='schema_triggers'
-#         }).first[:count] > 0
-    cartodb_present = in_database(as: :superuser).fetch(%Q{
-       SELECT COUNT(*) AS count FROM pg_extension WHERE extname='cartodb'
-     }).first[:count] > 0
-
-#    in_database(as: :superuser)
-#      .run(triggers_present ? 'ALTER EXTENSION schema_triggers UPDATE;' : 'CREATE EXTENSION schema_triggers;')
-
-    if cartodb_ext_versions.empty?
-      in_database(as: :superuser)
-        .run(cartodb_present ? 'ALTER EXTENSION cartodb UPDATE;' : 'CREATE EXTENSION cartodb FROM unpackaged;')
-    elsif cartodb_ext_versions.size == 1
-      in_database(as: :superuser)
-      .run(cartodb_present ? "ALTER EXTENSION cartodb UPDATE FROM '#{cartodb_ext_versions[0]}';"
-           : "CREATE EXTENSION cartodb FROM '#{cartodb_ext_versions[0]}';")
-    elsif cartodb_ext_versions.size == 2
-      in_database(as: :superuser)
-      .run("ALTER EXTENSION cartodb UPDATE TO '#{cartodb_ext_versions[0]}';
-            ALTER EXTENSION cartodb UPDATE TO '#{cartodb_ext_versions[1]}';")
-    else
-      raise 'Invalid number of specified cartodb extension versions. Must be between 0 and 2 versions'
-    end
-
-#    in_database(as: :superuser).run('SELECT cartodb.cdb_enable_ddl_hooks();')
-
-    unless Rails.env.test?
-      User.terminate_database_connections(database_name, database_host)
-    end
+#    unless Rails.env.test?
+#      User.terminate_database_connections(database_name, database_host)
+#    end
 
   end
 

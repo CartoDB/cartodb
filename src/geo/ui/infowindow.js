@@ -26,7 +26,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
-    width: 218,
+    width: 226,
     maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",

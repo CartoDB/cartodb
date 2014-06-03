@@ -21,6 +21,8 @@ before_install:
   - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql template_postgis"
   - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql template_postgis"
   - sudo su postgres -c "echo 'SELECT POSTGIS_FULL_VERSION();' | psql template_postgis"
+  - sudo apt-get install postgresql-server-dev-9.3 # needed to build cartodb-postgresql
+  - git clone https://github.com/CartoDB/cartodb-postgresql.git && cd cartodb-postgresql && sudo make all install installcheck
 
 before_script:
   - npm install -g grunt-cli

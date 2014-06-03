@@ -342,6 +342,7 @@
   div.cartodb-popup.v2 div.cartodb-popup-content p,
   div.cartodb-popup.v2 div.cartodb-popup-content h4 {
     width:auto;
+    max-width:95%;
     display:block;
   }
 

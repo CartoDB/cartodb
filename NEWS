@@ -1,3 +1,6 @@
+3.9.08 (XX//XX//2014)
+- New "liquid" infowindow style implemented.
+
 3.9.07 (03//06//2014)
 - Fixed exception on hover for layers without tooltip
 - Improved tooltip interaction

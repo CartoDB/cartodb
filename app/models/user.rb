@@ -956,7 +956,14 @@ TRIGGER
 
 
   # Cartodb functions
-  def load_cartodb_functions(extensions_only=false, files = [])
+
+  # @param extensions_only boolean
+  # @param cartodb_ext_versions string[] 0 to 2 parameters containing versions
+  #  - If none specified, treat as "clean install/update"
+  #  - If one specified, treat as update from specific version
+  #  - If both specified, treat as update between two specific version
+  # @param files string[]
+  def load_cartodb_functions(extensions_only=false, cartodb_ext_versions = [], files = [])
 
     # Old code. At least CDB_TableMetadata.sql is needed
 
@@ -997,8 +1004,21 @@ TRIGGER
 
 #    in_database(as: :superuser)
 #      .run(triggers_present ? 'ALTER EXTENSION schema_triggers UPDATE;' : 'CREATE EXTENSION schema_triggers;')
-    in_database(as: :superuser)
-      .run(cartodb_present ? 'ALTER EXTENSION cartodb UPDATE;' : 'CREATE EXTENSION cartodb FROM unpackaged;')
+
+    if cartodb_ext_versions.empty?
+      in_database(as: :superuser)
+        .run(cartodb_present ? 'ALTER EXTENSION cartodb UPDATE;' : 'CREATE EXTENSION cartodb FROM unpackaged;')
+    elsif cartodb_ext_versions.size == 1
+      in_database(as: :superuser)
+      .run(cartodb_present ? "ALTER EXTENSION cartodb UPDATE FROM '#{cartodb_ext_versions[0]}';"
+           : "CREATE EXTENSION cartodb FROM '#{cartodb_ext_versions[0]}';")
+    elsif cartodb_ext_versions.size == 2
+      in_database(as: :superuser)
+      .run("ALTER EXTENSION cartodb UPDATE TO '#{cartodb_ext_versions[0]}';
+            ALTER EXTENSION cartodb UPDATE TO '#{cartodb_ext_versions[1]}';")
+    else
+      raise 'Invalid number of specified cartodb extension versions. Must be between 0 and 2 versions'
+    end
 
 #    in_database(as: :superuser).run('SELECT cartodb.cdb_enable_ddl_hooks();')
 

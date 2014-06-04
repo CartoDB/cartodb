@@ -1,3 +1,6 @@
+* New features
+    * Added a log method for db_maintenance rakes (logs to log/rake_db_maintenance.log). For now used on load_functions.
+
 * Fixed bugs
     * allow "rectangle" option for marker-type in torque layer
     * now enqueing sync tables who are in state syncing for more than 2 hours (caused by pushing code while syncing a table)

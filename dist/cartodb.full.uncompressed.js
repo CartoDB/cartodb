@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.08
+// cartodb.js version: 3.10.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: d693bf6fc7ed94b8ba3fc7d70cf15941431cc102
+// sha: e2dc9694d3c47ad42586ea30605ad98573211801
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.08';
+    cdb.VERSION = '3.10.0';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24263,7 +24263,6 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
-    width: 226,
     maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",
@@ -24561,7 +24560,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       this.$el.html(this.template(obj));
 
       // Set width and max-height from the model only
-      this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      // If there is no width set, we don't force our infowindow
+      if (this.model.get('width')) {
+        this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      }
       this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // Hello jscrollpane hacks!

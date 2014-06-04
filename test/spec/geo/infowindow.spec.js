@@ -113,6 +113,15 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view.$('.cartodb-popup').css('width')).toBe('100px');
     });
 
+    it("shouldn't change width of the popup when width attribute is undefined", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup v2"></div>'
+      })
+      view.model.unset('width');
+      expect(view.$('.cartodb-popup').css('width')).toBe(undefined);
+    });
+
     it("should change maxHeight of the popup when maxHeight attribute changes", function() {
       spyOn(view, 'render');
       view.model.set({

@@ -14,9 +14,9 @@ this document contains some notes on how to work with backbone models related to
 
 ## changes 
 
-- ``User`` model has a organization attribute. Each user is **always** inside a organization, so
-  this be always filled. When the organization contains only an user the application behavior is the
-  same than we have currently (CartoDB 2.0)
+- ``User`` model has an organization attribute. Each user is **always** inside an organization, so
+  this will be always filled. When the organization contains only a user, the application behavior is the
+  same than we currently have (CartoDB 2.0)
 
 - ``Visualization`` object contains a ``permission`` attribute (instance of ``cdb.admin.Permission``)
 

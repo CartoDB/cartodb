@@ -30,9 +30,8 @@ before_install:
   - echo "shared_preload_libraries = 'schema_triggers.so'" |
     sudo tee -a /etc/postgresql/9.3/main/postgresql.conf &&
     sudo service postgresql restart
-  # Install cartodb-postgresql
-  - git clone https://github.com/CartoDB/cartodb-postgresql.git
-  - cd cartodb-postgresql 
+  # Install cartodb-postgresql from the submodule dir
+  - cd lib/sql
   - make all && sudo make install 
   - PGUSER=postgres make installcheck || cat regression.diffs
   - cd -

@@ -307,7 +307,7 @@
   /* NEW CartoDB 2.0 popups */
 
   div.cartodb-popup.v2 {
-    width:auto;
+    width:226px;
     padding:0;
     margin:0 0 14px 0;
     background:none;

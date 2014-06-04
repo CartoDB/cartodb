@@ -1,5 +1,6 @@
 * New features
     * Added a log method for db_maintenance rakes (logs to log/rake_db_maintenance.log). For now used on load_functions.
+    * Added avatar_url to User model
 
 * Fixed bugs
     * allow "rectangle" option for marker-type in torque layer

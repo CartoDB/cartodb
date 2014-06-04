@@ -10,8 +10,10 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   self.strict_param_setting = false
 
+  # @param name String
+  # @param avatar_url String
+
   one_to_one :client_application
-  # @param synchronization_oauths
   one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
@@ -98,7 +100,11 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
-    invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email) || changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || changes.include?(:twitter_username) 
+    if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
+       changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
+       changes.include?(:twitter_username)
+      invalidate_varnish_cache(regex: '.*:vizjson')
+    end
     User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
   end
 

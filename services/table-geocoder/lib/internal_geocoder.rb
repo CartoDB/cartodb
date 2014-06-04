@@ -6,7 +6,7 @@ module CartoDB
     class NotImplementedError < StandardError; end
 
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
-                  :working_dir, :remote_id, :state, :processed_rows
+                  :working_dir, :remote_id, :state, :processed_rows, :column_datatype
 
     attr_accessor :table_name, :column_name
 
@@ -14,12 +14,12 @@ module CartoDB
       point: {
         namedplace: 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{search_terms}], null, {country_list})).*) SELECT q, null, geom, success FROM geo_function',
         ipaddress:  'WITH geo_function AS (SELECT (geocode_ip(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
-        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_points(Array[{search_terms}], {country_list})).*) SELECT q, null, geom, success FROM geo_function'
+        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
       },
       polygon: {
         admin0:     'WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
         admin1:     'WITH geo_function AS (SELECT (geocode_admin1_polygons(Array[{search_terms}], {country_list})).*) SELECT q, null, geom, success FROM geo_function',
-        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_polygons(Array[{search_terms}], {country_list})).*) SELECT q, null, geom, success FROM geo_function'
+        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
       }
     }
 
@@ -37,6 +37,11 @@ module CartoDB
       @batch_size        = (@geometry_type == :point ? 5000 : 10)
       @state             = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+      @column_datatype   = @connection.fetch(%Q{
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name='#{@table_name}' AND column_name='#{@column_name}'
+      }).first[:data_type]
     end # initialize
 
     def run
@@ -75,12 +80,24 @@ module CartoDB
     end # generate_sql
 
     def get_search_terms(page)
-      connection.fetch(%Q{
-          SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
-          FROM #{table_name}
-          WHERE cartodb_georef_status IS NULL
-          LIMIT #{@batch_size} OFFSET #{page * @batch_size}
-      }).all.map { |r| r[:searchtext] }
+      case column_datatype
+      when 'double precision'
+        connection.fetch(%Q{
+            SELECT DISTINCT(#{column_name}) AS searchtext
+            FROM #{table_name}
+            WHERE cartodb_georef_status IS NULL
+            LIMIT #{@batch_size} OFFSET #{page * @batch_size}
+        }).all.map { |r| r[:searchtext].to_i }
+      when 'text'
+        connection.fetch(%Q{
+            SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
+            FROM #{table_name}
+            WHERE cartodb_georef_status IS NULL
+            LIMIT #{@batch_size} OFFSET #{page * @batch_size}
+        }).all.map { |r| r[:searchtext] }
+      else
+        raise NotImplementedError.new("Source column #{ column_name } has an unsupported data type (#{ column_datatype })")
+      end
     end # get_search_terms
 
     def create_temp_table
@@ -107,7 +124,7 @@ module CartoDB
         UPDATE #{table_name} AS dest
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM #{temp_table_name} AS orig
-        WHERE #{column_name} = orig.geocode_string AND dest.cartodb_georef_status IS NULL
+        WHERE #{column_name}::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
       })
     end # copy_results_to_table
 
@@ -121,7 +138,7 @@ module CartoDB
 
     def add_georef_status_column
       connection.run(%Q{
-        ALTER TABLE #{table_name} 
+        ALTER TABLE #{table_name}
         ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
       })
     rescue Sequel::DatabaseError => e
@@ -131,7 +148,7 @@ module CartoDB
 
     def cast_georef_status_column
       connection.run(%Q{
-        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
+        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status
         TYPE boolean USING cast(cartodb_georef_status as boolean)
       })
     rescue => e

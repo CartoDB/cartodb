@@ -760,10 +760,16 @@ $$
 
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
-    self.in_database(:as => :superuser).run(<<-TRIGGER
-      SELECT public.CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});
-    TRIGGER
-    )
+    in_database(:as => :superuser) do |user_database|
+      # NOTE: this has been written to work for both
+      #       databases that switched to "cartodb" extension
+      #       and those before the switch.
+      # TODO: use SHOW search_path and SET search_path at the end
+      #       to avoid DISCARD ALL
+      user_database.run("SET search_path TO cartodb,public;")
+      user_database.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
+      user_database.run("DISCARD ALL;")
+    end
   end
 
   def importing_jobs
@@ -832,8 +838,8 @@ $$
 
     create_schemas_and_set_permissions
     set_database_permissions
-    rebuild_quota_trigger
     load_cartodb_functions
+    rebuild_quota_trigger
   end
 
   def create_schemas_and_set_permissions

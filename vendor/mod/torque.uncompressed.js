@@ -583,6 +583,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
       var cb = this._evt_callbacks = this._evt_callbacks || {};
       var l = cb[evt] || (cb[evt] = []);
       l.push(callback);
+      return this;
   };
 
   Event.trigger = function(evt) {
@@ -590,6 +591,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
       for(var i = 0; c && i < c.length; ++i) {
           c[i].apply(this, Array.prototype.slice.call(arguments, 1));
       }
+      return this;
   };
 
   Event.fire = Event.trigger;
@@ -605,6 +607,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
        if(c[i] === callback) remove.push(i);
      }
      while((i = remove.pop()) !== undefined) c.splice(i, 1);
+    return this;
   };
 
   Event.callbacks = function(evt) {

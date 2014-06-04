@@ -88,6 +88,7 @@ module CartoDB
 
     def load_user_functions(user)
       user.load_cartodb_functions
+      user.rebuild_quota_trigger
     end
 
   end

@@ -1,7 +1,7 @@
 
 # organizations
 
-this document contains some notes on how to work with backbone models realted to organization
+this document contains some notes on how to work with backbone models related to organization
 
 ## models related to organization
 

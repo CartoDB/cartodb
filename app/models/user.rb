@@ -832,6 +832,7 @@ $$
 
     create_schemas_and_set_permissions
     set_database_permissions
+    rebuild_quota_trigger
     load_cartodb_functions
   end
 

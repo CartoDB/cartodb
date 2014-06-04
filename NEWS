@@ -1,3 +1,5 @@
+- Updated torque library
+
 3.10.0 (04//06//2014)
 - Fixed problem for already customized infowindows setting width property.
 

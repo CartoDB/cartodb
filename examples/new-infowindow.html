@@ -45,7 +45,7 @@
 
         var map = L.map('map', { 
           zoomControl: false,
-          center: [0, 0],
+          center: [43, -3],
           zoom: 3
         });
 
@@ -54,7 +54,7 @@
           attribution: 'MapBox'
         }).addTo(map);
 
-        cartodb.createLayer(map, 'http://xavijam.cartodb.com/api/v2/viz/b857fa5e-ea4e-11e3-9bbc-0edbca4b5057/viz.json')
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
           .addTo(map)
           .on('done', function(lyr) {
             lyr.getSubLayer(0).infowindow.set({

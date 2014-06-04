@@ -10,6 +10,7 @@ module CartoDB
       attribute :id,                String
       attribute :order,             Integer
       attribute :type,              String
+      attribute :template,          String
       attribute :options,           Hash
       attribute :visualization_id,  String
 

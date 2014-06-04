@@ -13,13 +13,7 @@ class Api::Json::OverlaysController < Api::ApplicationController
     collection  = Overlay::Collection.new(
       visualization_id: params.fetch('visualization_id'),
     ).fetch
-
-    response    = {
-      overlays:       collection, 
-      total_entries:  collection.count
-    }
-
-    render_jsonp(response)
+    render_jsonp(collection)
   rescue KeyError => exception
     head :not_found
   end #index
@@ -31,6 +25,7 @@ class Api::Json::OverlaysController < Api::ApplicationController
     member_attributes = payload.merge(
       type:       params[:type],
       options:    params[:options],
+      template:   params[:template],
       order:      1
     )
 

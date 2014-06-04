@@ -255,6 +255,11 @@ $$
     self.database_host
   end
 
+  def reset_pooled_connections()
+    # Only close connections to this users' database
+    $pool.close_connections!(self.database_name)
+  end
+
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
@@ -566,7 +571,7 @@ $$
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -1006,9 +1011,10 @@ $$;
 
     in_database(as: :superuser).run(sql)
 
-#    unless Rails.env.test?
-#      User.terminate_database_connections(database_name, database_host)
-#    end
+    # We reset the connections to this database to be sure
+    # the change in default search_path is effective
+    # TODO: only reset IFF migrating from pre-extension times
+    self.reset_pooled_connections
 
   end
 

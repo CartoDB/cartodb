@@ -20,13 +20,16 @@ module CartoDB
       end #initialize
 
       def store
-        repository.store(id, attributes.to_hash)
+        attrs = attributes.to_hash
+        attrs[:options] = ::JSON.dump(attrs[:options])
+        repository.store(id, attrs)
         self
       end #store
 
       def fetch
         result = repository.fetch(id)
         raise KeyError if result.nil?
+        result[:options] = result[:options].nil? ? [] : ::JSON.parse(result[:options])
         self.attributes = result
         self
       end #fetch

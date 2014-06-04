@@ -37,7 +37,6 @@ class Api::Json::OverlaysController < Api::ApplicationController
     member      = Overlay::Member.new(member_attributes).store
     collection.add(member)
     collection.store
-    debugger
     render_jsonp(member.attributes)
   end #create
 

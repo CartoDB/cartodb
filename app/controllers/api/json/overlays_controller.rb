@@ -59,7 +59,7 @@ class Api::Json::OverlaysController < Api::ApplicationController
   def destroy
     collection  = Overlay::Collection.new(
                     visualization_id: params.fetch('visualization_id')
-                  ).fetch
+                  )
     member      = Overlay::Member.new(id: params.fetch('id'))
     collection.delete(member)
     member.delete

@@ -1,6 +1,6 @@
 
 /**
- *  CartoDB2.0 header popup styles (DEFAULT)
+ *  CartoDB header popup styles (DEFAULT)
  */
 
 div.cartodb-popup.header {
@@ -94,4 +94,107 @@ div.cartodb-popup.header a.cartodb-popup-close-button {
 
 div.cartodb-popup.header a.cartodb-popup-close-button:hover {
   background-position:-226px -66px;
+}
+
+
+
+/* NEW CartoDB 2.0 header popups */
+
+div.cartodb-popup.header.v2.header {
+  -moz-box-shadow: 0 0 0 4px rgba(0,0,0,0.15);
+  -webkit-box-shadow: 0 0 0 4px rgba(0,0,0,0.15);
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.15);
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+  background:white;
+}
+
+div.cartodb-popup.v2.header div.cartodb-popup-header {
+  position:relative;
+  width:auto;
+  height:auto;
+  max-height:62px;
+  overflow:hidden;
+  padding:17px 19px 17px 19px;
+  background: none;
+  background: -ms-linear-gradient(top, #4F9CD7, #2B68A8); 
+  background: -o-linear-gradient(right, #4F9CD7, #2B68A8);
+  background: -webkit-linear-gradient(top, #4F9CD7, #2B68A8); 
+  background: -moz-linear-gradient(right, #4F9CD7, #2B68A8);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#4F9CD7',endColorStr='#2B68A8',GradientType=0)";
+
+  -webkit-border-top-left-radius: 2px;
+  -webkit-border-top-right-radius: 2px;
+  -moz-border-radius-topleft: 2px;
+  -moz-border-radius-topright: 2px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+div.cartodb-popup.v2.header div.cartodb-popup-header:before {
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  width:100%;
+  height:1px;
+  background:rgba(0,0,0,0.1);
+}
+
+div.cartodb-popup.v2.header a.cartodb-popup-close-button {
+  right:-12px;
+  top:-12px;
+  width:20px;
+  height:20px;
+  background:white;
+  -webkit-border-radius:18px;
+  -moz-border-radius:18px;
+  border-radius:18px;
+  box-shadow:0 0 0 3px rgba(0,0,0,0.15);
+}
+
+div.cartodb-popup.v2.header a.cartodb-popup-close-button:before,
+div.cartodb-popup.v2.header a.cartodb-popup-close-button:after {
+  content:'';
+  position:absolute;
+  top:9px;
+  left:6px;
+  width:8px;
+  height:2px;
+  background:#397DBA;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+}
+
+div.cartodb-popup.v2.header a.cartodb-popup-close-button:before {
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+div.cartodb-popup.v2.header a.cartodb-popup-close-button:after {
+  -ms-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+div.cartodb-popup.v2.header a.cartodb-popup-close-button:hover {
+  box-shadow:0 0 0 3px rgba(0,0,0,0.25);
+}
+
+/* Hello IE */
+@media \0screen\,screen\9 {
+
+  div.cartodb-popup.header.v2 {
+    border-bottom:4px solid #CCC;
+  }
+  
+  div.cartodb-popup.v2.header div.cartodb-popup-header {
+    background:#3B7FBD;
+    -ms-filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr='#4F9CD7',endColorStr='#2B68A8',GradientType=0);
+  }
+
 }

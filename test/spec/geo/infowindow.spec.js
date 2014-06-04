@@ -104,6 +104,33 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view.render).toHaveBeenCalled()
     });
 
+    it("should change width of the popup when width attribute changes", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup"></div>',
+        'width': 100
+      });
+      expect(view.$('.cartodb-popup').css('width')).toBe('100px');
+    });
+
+    it("shouldn't change width of the popup when width attribute is undefined", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup v2"></div>'
+      })
+      view.model.unset('width');
+      expect(view.$('.cartodb-popup').css('width')).toBe(undefined);
+    });
+
+    it("should change maxHeight of the popup when maxHeight attribute changes", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup"><div class="cartodb-popup-content"></div></div>',
+        'maxHeight': 100
+      });
+      expect(view.$('.cartodb-popup-content').css('max-height')).toBe('100px');
+    });
+
     it("should render without alternative_name set", function() {
       var template = '<div class="cartodb-popup">\
         <a href="#close" class="cartodb-popup-close-button close">x</a>\
@@ -124,8 +151,6 @@ describe("cdb.geo.ui.infowindow", function() {
         template: template
       });
 
-      console.log(model.toJSON());
-      console.log(view.render().el);
       expect(view.render().$el.html().length).not.toBe(0);
     });
 

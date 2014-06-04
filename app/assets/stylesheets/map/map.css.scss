@@ -184,6 +184,74 @@ div.map {
     } // .basemap_dropdown
   } // .dropdowns
 
+  .show-table-options {
+    box-sizing: border-box;
+    display:block;
+    position:absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 7px 14px 0 37px;
+    height: 34px;
+    background:red;
+    z-index: 10000000;
+    background: rgba(#000, .7);
+    color: #fff;
+    font-size: 13px;
+    @include border-radius(3px);
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 4px; top: 5px;
+      display:block;
+      background: #fff;
+      width: 22px; height: 22px;
+      border: 1px solid rgba(#000000, .9);
+      @include border-radius(3px);
+    }
+  }
+
+  div.dropdown.map_options_dropdown {
+
+    ul {
+      
+      box-sizing: border-box;
+      margin: 0;
+      width: 204px;
+      padding: 12px 15px;
+
+      li {
+        display: block;
+        margin: 0;
+        padding: 10px 0;
+        border:none;
+        color: #999999;
+        font-size: 13px;
+        border-bottom: 1px solid rgba(204,204,204,0.35);
+        cursor: default;
+
+        &:hover { background: #fff; }
+
+        &:first-child { 
+          padding-top: 0;
+        }
+
+        &:last-child { 
+          border:none;
+          padding-bottom: 0;
+        }
+
+        a {
+          @include inline-block();
+          float:right;
+          margin: 0 ;
+          padding: 0;
+        }
+
+      }
+    }
+  }
+
   div.dropdown.widgets_dropdown {
     width: 200px;
   }

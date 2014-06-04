@@ -31,7 +31,11 @@ before_install:
     sudo tee -a /etc/postgresql/9.3/main/postgresql.conf &&
     sudo service postgresql restart
   # Install cartodb-postgresql
-  - git clone https://github.com/CartoDB/cartodb-postgresql.git && cd cartodb-postgresql && make all && sudo make install && PGUSER=postgres make installcheck && cd -
+  - git clone https://github.com/CartoDB/cartodb-postgresql.git
+  - cd cartodb-postgresql 
+  - make all && sudo make install 
+  - PGUSER=postgres make installcheck || cat regression.diffs
+  - cd -
 
 before_script:
   - npm install -g grunt-cli

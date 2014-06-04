@@ -23,7 +23,7 @@ module CartoDB
       )
 
       INFOWINDOW_KEYS = %w(
-        fields template_name template alternative_names
+        fields template_name template alternative_names width maxHeight
       )
 
       def initialize(layer, options={}, configuration={}, decoration_data={})

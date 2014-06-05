@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class Organization < Sequel::Model
 
   # @param id String
@@ -15,7 +17,12 @@ class Organization < Sequel::Model
     validates_presence [:name, :quota_in_bytes]
     validates_unique   :name
     validates_format   /^[a-z0-9\-]+$/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
-  end # validate
+  end
+
+  def before_save
+    super
+    self.updated_at = Time.now
+  end
 
   def db_size_in_bytes
     users.map(&:db_size_in_bytes).sum.to_i

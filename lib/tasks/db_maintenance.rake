@@ -399,24 +399,6 @@ namespace :cartodb do
       end
     end
 
-    desc 'Drop cache_checkpoint trigger from all tables'
-    task :drop_trigger_cache_checkpoint => :environment do
-      count = User.count
-      printf "Starting cartodb:db:drop_trigger_cache_checkpoint task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.tables.all.each do |t|
-            if t.has_trigger? 'cache_checkpoint'
-              t.drop_trigger_cache_checkpoint
-            end
-          end
-          printf "OK %-#{20}s (%-#{5}s/%-#{5}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{5}s/%-#{5}s) #{e.message}\n", user.username, i+1, count
-        end
-      end
-    end
-
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc

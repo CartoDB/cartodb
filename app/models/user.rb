@@ -974,49 +974,52 @@ TRIGGER
 
     tgt_ver = '0.2.0dev' # TODO: optionally take as parameter? 
 
-    sql = "
-DO LANGUAGE 'plpgsql' $$
-DECLARE
-  ver TEXT;
-BEGIN
-  BEGIN
-    SELECT cartodb.cdb_version() INTO ver;
-  EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
-    RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-    BEGIN
-      CREATE EXTENSION schema_triggers;
-    EXCEPTION WHEN duplicate_object THEN
-      -- already exists
-      RAISE NOTICE 'schema_triggers extension already exists';
-    END;
-    BEGIN
-      CREATE EXTENSION postgis FROM unpackaged;
-    EXCEPTION WHEN duplicate_object THEN
-      -- already exists
-      RAISE NOTICE 'postgis extension already exists';
-    END;
-    BEGIN
-      CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
-    EXCEPTION WHEN undefined_table THEN
-      RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-      CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
-      RETURN;
-    END;
-    RETURN;
-  END;
-  ver := '#{tgt_ver}';
-  IF position('dev' in ver) > 0 THEN
-    EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-    EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-  ELSE
-    EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-  END IF;
-END;
-$$;
-  "
-#   sql += 'SELECT cartodb.cdb_enable_ddl_hooks();'
+    add_python;
 
-    in_database(as: :superuser).run(sql)
+    in_database(:as => :superuser) do |db|
+      db.transaction do
+        db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%Q{
+            SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
+          }).first[:count] > 0
+        db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%Q{
+            SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
+          }).first[:count] > 0
+        db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%Q{
+            SELECT count(*) FROM pg_extension WHERE extname='postgis'
+          }).first[:count] > 0
+
+        db.run(%Q{
+    DO LANGUAGE 'plpgsql' $$
+    DECLARE
+      ver TEXT;
+    BEGIN
+      BEGIN
+        SELECT cartodb.cdb_version() INTO ver;
+      EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
+        RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+        BEGIN
+          CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
+        EXCEPTION WHEN undefined_table THEN
+          RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+          CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
+          RETURN;
+        END;
+        RETURN;
+      END;
+      ver := '#{tgt_ver}';
+      IF position('dev' in ver) > 0 THEN
+        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+      ELSE
+        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+      END IF;
+    END;
+    $$;
+        })
+
+#       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
+      end
+    end
 
     # We reset the connections to this database to be sure
     # the change in default search_path is effective

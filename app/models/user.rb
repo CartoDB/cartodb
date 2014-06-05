@@ -845,6 +845,7 @@ $$
     set_database_permissions
     load_cartodb_functions
     rebuild_quota_trigger
+    create_function_invalidate_varnish
   end
 
   def create_schemas_and_set_permissions

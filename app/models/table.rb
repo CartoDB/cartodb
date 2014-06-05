@@ -1229,12 +1229,12 @@ TRIGGER
   end
 
   def cartodbfy
-    owner.in_database(:as => :superuser).run("SELECT CDB_CartodbfyTable('#{self.name}')")
+    owner.in_database(:as => :superuser).run("SELECT cartodb.CDB_CartodbfyTable('#{self.name}')")
     self.schema(reload:true)
   end
 
   # Set a "cache_checkpoint" trigger to invalidate varnish
-  # TODO: drop this trigger, delegate to a trigger on CDB_TableMetadata
+  # TODO: drop, it's taken care of by cartodbfy !
   def set_trigger_cache_checkpoint
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -1246,6 +1246,7 @@ TRIGGER
   end
 
   # Set a "track_updates" trigger to keep CDB_TableMetadata updated
+  # TODO: drop, it's taken care of by cartodbfy !
   def set_trigger_track_updates
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -1283,7 +1284,7 @@ TRIGGER
 
   def data_last_modified
     owner.in_database.select(:updated_at)
-      .from(:cdb_tablemetadata)
+      .from(:cdb_tablemetadata.qualify(:cartodb))
       .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
   rescue
     nil
@@ -1354,13 +1355,14 @@ TRIGGER
   private
 
   def update_cdb_tablemetadata
+    # TODO: use upsert
     owner.in_database(as: :superuser).run(%Q{
-      INSERT INTO cdb_tablemetadata (tabname, updated_at)
+      INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
       VALUES ('#{table_id}', NOW())
     })
   rescue Sequel::DatabaseError
     owner.in_database(as: :superuser).run(%Q{
-      UPDATE cdb_tablemetadata
+      UPDATE cartodb.cdb_tablemetadata
       SET updated_at = NOW()
       WHERE tabname = '#{table_id}'
     })

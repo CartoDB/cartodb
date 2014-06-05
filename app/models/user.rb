@@ -571,7 +571,7 @@ $$
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize()").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -872,7 +872,7 @@ $$
     )
   end
 
-  # Create a "cdb_invalidate_varnish()" function to invalidate Varnish
+  # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
   #
   # The function can only be used by the superuser, we expect
   # security-definer triggers OR triggers on superuser-owned tables
@@ -897,7 +897,7 @@ $$
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
-    CREATE OR REPLACE FUNCTION cdb_invalidate_varnish(table_name text) RETURNS void AS
+    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
     $$
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
@@ -941,7 +941,7 @@ $$
             retry -= 1 # try reconnecting
     $$
     LANGUAGE 'plpythonu' VOLATILE;
-    REVOKE ALL ON FUNCTION cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
     COMMIT;
 TRIGGER
     )
@@ -958,7 +958,7 @@ TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
     $$
         table_name = TD["table_name"]
-        plan = plpy.prepare("SELECT cdb_invalidate_varnish($1)", ["text"])
+        plan = plpy.prepare("SELECT public.cdb_invalidate_varnish($1)", ["text"])
         plpy.execute(plan, [table_name])
     $$
     LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;

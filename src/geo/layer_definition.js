@@ -627,7 +627,7 @@ Map.prototype = {
     var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
-      if (tooltip) {
+      if (tooltip && tooltip.fields && tooltip.fields.length) {
         return true;
       }
     }

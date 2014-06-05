@@ -6,6 +6,7 @@
     * allow "rectangle" option for marker-type in torque layer
     * now enqueing sync tables who are in state syncing for more than 2 hours (caused by pushing code while syncing a table)
     * fixed torque wizard for google maps
+    * fixed infinite loop in CDB_QueryStatements (again)
 
 2.14.1 (2014-05-28)
 -------------------

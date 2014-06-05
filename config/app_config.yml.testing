@@ -173,10 +173,11 @@ defaults: &defaults
       application_name: ''
       client_id: ''
       client_secret: ''
+      callback_url: ''
     dropbox:
       app_key:  ''
       app_secret: ''
-
+      callback_url: ''
 
 development:
   <<: *defaults

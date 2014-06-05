@@ -22,17 +22,21 @@ describe Visualization::Locator do
     Sequel.extension(:pagination)
 
     Visualization::Migrator.new(@db).migrate
-    Visualization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+
+    @user_id = UUIDTools::UUID.timestamp_create.to_s
 
     @map_id         = UUIDTools::UUID.timestamp_create.to_s
     @visualization  = Visualization::Member.new(
+      {
       name:         'Visualization 1',
       description:  'A sample visualization',
       privacy:      'public',
       type:         'derived',
       map_id:       UUID,
-      id:           @map_id
+      id:           @map_id,
+      user_id:      @user_id
+      }
     ).store
 
     table_fake    = model_fake

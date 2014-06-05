@@ -10,8 +10,10 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   self.strict_param_setting = false
 
+  # @param name String
+  # @param avatar_url String
+
   one_to_one :client_application
-  # @param synchronization_oauths
   one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
@@ -98,7 +100,11 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
-    invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname)
+    if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
+       changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
+       changes.include?(:twitter_username)
+      invalidate_varnish_cache(regex: '.*:vizjson')
+    end
     User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
   end
 
@@ -371,7 +377,7 @@ $$
   end #map_tags
 
   def tables
-    Table.filter(:user_id => self.id).order(:id).reverse
+    ::Table.filter(:user_id => self.id).order(:id).reverse
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
@@ -687,9 +693,9 @@ $$
   end
 
   def account_type_name
-    self.account_type.gsub(" ", "_").downcase
+    self.account_type.gsub(' ', '_').downcase
     rescue
-    ""
+    ''
   end
 
   #can be nil table quotas
@@ -757,16 +763,13 @@ $$
     update_gauge("visualizations.table", table_count)
     update_gauge("visualizations.derived", visualization_count)
   end
-  
+
   def rebuild_quota_trigger
-    load_cartodb_functions
-    tables.all.each do |table|
-      begin
-        table.set_trigger_check_quota
-      rescue Sequel::DatabaseError => e
-        next if e.message =~ /.*does not exist\s*/
-      end
-    end
+    puts "Setting user quota in db '#{database_name}' (#{username})"
+    self.in_database(:as => :superuser).run(<<-TRIGGER
+      SELECT public.CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});
+    TRIGGER
+    )
   end
 
   def importing_jobs
@@ -836,6 +839,7 @@ $$
     create_schemas_and_set_permissions
     set_database_permissions
     load_cartodb_functions
+    rebuild_quota_trigger
   end
 
   def create_schemas_and_set_permissions

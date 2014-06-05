@@ -1,1 +1,0 @@
-../scripts-available/CDB_TableMetadata.sql

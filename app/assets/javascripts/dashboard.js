@@ -2,6 +2,7 @@
 //= require select2.min
 //= require_tree ../../../vendor/assets/javascripts/jquery-ui
 //= require jquery.fileupload
+//= require markdown
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui
 //= require models

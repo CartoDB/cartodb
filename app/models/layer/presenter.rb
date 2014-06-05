@@ -23,7 +23,7 @@ module CartoDB
       )
 
       INFOWINDOW_KEYS = %w(
-        fields template_name template alternative_names
+        fields template_name template alternative_names width maxHeight
       )
 
       def initialize(layer, options={}, configuration={}, decoration_data={})
@@ -43,6 +43,7 @@ module CartoDB
             id:         layer.id,
             type:       'CartoDB',
             infowindow: infowindow_data_v2,
+            tooltip:    tooltip_data_v2,
             legend:     layer.legend,
             order:      layer.order,
             options:    options_data_v2
@@ -100,6 +101,7 @@ module CartoDB
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
+          legend:     layer.legend,
           options:    {
             stat_tag:           options.fetch(:visualization_id),
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
@@ -117,20 +119,26 @@ module CartoDB
       end #as_torque
 
       def infowindow_data_v1
-        with_template(layer.infowindow)
+        with_template(layer.infowindow, layer.infowindow_template_path)
       rescue => exception
       end
 
       def infowindow_data_v2
-        whitelisted_infowindow(with_template(layer.infowindow)) 
+        whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
       rescue => exception
       end
 
-      def with_template(infowindow)
+      def tooltip_data_v2 
+        whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
+      rescue => exception
+      puts exception
+      end
+
+      def with_template(infowindow, path)
         template = infowindow['template']
         return infowindow unless template.nil? || template.empty?
 
-        infowindow.merge!(template: File.read(layer.template_path))
+        infowindow.merge!(template: File.read(path))
         infowindow
       end
 

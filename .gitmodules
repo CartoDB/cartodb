@@ -4,3 +4,6 @@
 [submodule "app/assets/stylesheets/common"]
 	path = app/assets/stylesheets/common
 	url = git://github.com/CartoDB/cartodb.css.git
+[submodule "lib/sql"]
+	path = lib/sql
+	url = git://github.com/CartoDB/cartodb-postgresql.git

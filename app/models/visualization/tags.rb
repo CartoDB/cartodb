@@ -15,11 +15,11 @@ module CartoDB
         Tag.fetch(%Q{
             SELECT DISTINCT (unnest(tags)) as name
             FROM visualizations
-            WHERE map_id IN ?
+            WHERE user_id = ?
             AND type IN ?
             AND privacy IN ?
             LIMIT ?
-          }, map_ids_for(user), types_from(params), privacy_from(params), limit_from(params)
+          }, user.id, types_from(params), privacy_from(params), limit_from(params)
         ).map{ |tag| tag.name}
       end #names
 
@@ -28,7 +28,7 @@ module CartoDB
             WITH tags as (
               SELECT unnest(tags) as name
               FROM visualizations
-              WHERE map_id IN ?
+              WHERE user_id = ?
               AND type IN ?
               LIMIT ?
             )
@@ -36,17 +36,13 @@ module CartoDB
             FROM tags
             GROUP BY name
             ORDER BY count(*)
-          }, map_ids_for(user), types_from(params), limit_from(params)
+          }, user.id, types_from(params), limit_from(params)
         ).all.map(&:values)
       end #count
 
       private
       
       attr_reader :user
-
-      def map_ids_for(user)
-        user.maps.map(&:id)
-      end #map_ids
 
       def privacy_from(params={})
         privacy = params.fetch(:privacy, nil)
@@ -64,4 +60,3 @@ module CartoDB
     end # Tags
   end # Visualization   
 end # CartoDB
-

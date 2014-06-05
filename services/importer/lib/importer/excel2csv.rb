@@ -26,7 +26,10 @@ module CartoDB
         # Can be check locally using wc -l ... (converted_filepath)
         job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"        
         spreadsheet.to_csv(converted_filepath)
-        CsvNormalizer.new(converted_filepath, job).run
+        normalizer = CsvNormalizer.new(converted_filepath, job)
+        # Roo gem is not exporting always correctly when source Excel has atypical UTF-8 characters
+        normalizer.force_normalize
+        normalizer.run
         self
       end #run
 

@@ -9,7 +9,7 @@ WORKING_SPECS = \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/map_spec.rb \
-  spec/models/visualization/ \
+  spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/lib/sql_parser_spec.rb \

@@ -3,11 +3,11 @@
 require_relative 'layer/presenter'
 
 class Layer < Sequel::Model
-  plugin :serialization, :json, :options, :infowindow
+  plugin :serialization, :json, :options, :infowindow, :tooltip
   
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
-  PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
+  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
     'table/views/infowindow_dark' =>                'infowindow_dark',
@@ -63,7 +63,8 @@ class Layer < Sequel::Model
   def to_json(*args)
     public_values.merge(
       infowindow: JSON.parse(self.values[:infowindow]),
-      options:    JSON.parse(self.values[:options])
+      tooltip: JSON.parse(self.values[:tooltip]),
+      options: JSON.parse(self.values[:options])
     ).to_json(*args)
   end
 
@@ -92,14 +93,23 @@ class Layer < Sequel::Model
     "rails:layer_styles:#{self.id}"
   end
 
-  def template_path
+  def infowindow_template_path 
     if self.infowindow.present? && self.infowindow['template_name'].present?
       template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
       Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
     else
       nil
     end
-  end
+  end #infowindow_template_path
+
+  def tooltip_template_path 
+    if self.tooltip.present? && self.tooltip['template_name'].present?
+      template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
+    else
+      nil
+    end
+  end #tooltip_template_path
 
   def copy
     attributes = public_values.select { |k, v| k != 'id' }

@@ -20,7 +20,61 @@
 
   .infowindow_panel {
 
-    .panel_content div.wrapper { top: 43px; }
+    // TYPES MENU
+    ul.types {
+      position:relative;
+      padding:10px 0 0 8px;
+      @include border-top-left-radius(3px);
+      background: image-url('layout/linen.png') repeat 0 0;
+      z-index:2;
+      
+      &:after {
+        content: '';
+        position:absolute;
+        left:0;
+        bottom:0;
+        width:100%;
+        height:1px;
+        background:rgba(black,.10);
+        z-index:1;
+      }
+
+      li {
+        @include inline-block();
+
+        a {
+          @include inline-block();
+          width:99px;
+          line-height:41px;
+          text-align:center;
+          @include border-top-radius(3px);
+          background:white;
+
+          &.selected {
+            position:relative;
+            color:#666666;
+            text-decoration:none;
+            cursor:default;
+
+            &:before {
+              content: '';
+              position:absolute;
+              left:0;
+              bottom:0;
+              width:100%;
+              height:1px;
+              background:white;
+              z-index:2;
+            }
+          }
+        }
+      }
+    }
+
+    .panel_content {
+      top:120px!important;
+      div.wrapper { top: 31px; }
+    }
 
     .doc_info { right:26px!important; }
 
@@ -32,11 +86,20 @@
 
       h3  {
         float:left;
-        padding: 0!important;
+        padding: 0;
         border:0;
       }
 
-      .form_combo  { position:absolute; right:18px; }
+      .controls {
+
+        span.label {
+          float:left;
+          margin:2px 7px 0px 0px;
+          color:#ccc;
+          line-height:18px;
+        }
+        &.margin { margin-right:20px }
+      }
     }
 
     // No content block
@@ -55,14 +118,13 @@
       }
     }
 
-    .help-tip {
-      top:90px;
-    }
+    .help-tip { top:143px }
 
+    // Tab menus => on click submenu, on hover submenu, etc...
     .menu {
       position: absolute;
       @include box-sizing(border-box);
-      top: 59px;
+      top: 112px;
       width: 100%;
       padding: 9px 23px 3px 30px;
       background:#F6F6F6;
@@ -79,7 +141,6 @@
       }
 
       ul {
-
         clear:both;
         overflow:hidden;
 
@@ -94,15 +155,15 @@
 
           a { display: block; }
 
-          &.editor       { float: left; }
+          &.editor { float: left }
 
           &.title_editor,
-          &.html_editor  { float: right; }
+          &.html_editor { float: right }
 
-          &.html_editor  { margin-right: 2px; }
-
-          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
-          &.html_editor { position:relative; }
+          &.html_editor {
+            position:relative;
+            margin-right: 2px;
+          }
 
           &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
           &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }

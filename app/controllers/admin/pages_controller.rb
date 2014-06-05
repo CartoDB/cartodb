@@ -22,16 +22,20 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags       = viewed_user.map_tags
+    @tags             = viewed_user.tags
+    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @twitter_username = viewed_user.twitter_username 
+    @description      = viewed_user.description  
+    @website          = viewed_user.website 
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, '') : ''
 
-    @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(request.protocol)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
 
     datasets = Visualization::Collection.new.fetch({
-      map_id:   viewed_user.maps.map(&:id),
+      user_id:  viewed_user.id,
       type:     Visualization::Member::CANONICAL_TYPE,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
@@ -48,7 +52,7 @@ class Admin::PagesController < ApplicationController
       @datasets.push(
         {
           title:        dataset.name,
-          description:  dataset.description,
+          description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
           tags:         dataset.tags
         }
@@ -67,16 +71,20 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags       = viewed_user.tags
+    @tags             = viewed_user.tags
+    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @twitter_username = viewed_user.twitter_username 
+    @description      = viewed_user.description
+    @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
-    @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(request.protocol)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
 
     visualizations = Visualization::Collection.new.fetch({
-      map_id:   viewed_user.maps.map(&:id),
+      user_id:  viewed_user.id,
       type:     Visualization::Member::DERIVED_TYPE,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
@@ -93,7 +101,7 @@ class Admin::PagesController < ApplicationController
       @visualizations.push(
         {
           title:        vis.name,
-          description:  vis.description,
+          description:  vis.description_clean,
           id:           vis.id,
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),

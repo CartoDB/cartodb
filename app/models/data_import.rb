@@ -239,9 +239,9 @@ class DataImport < Sequel::Model
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
   rescue Sequel::DatabaseError => exception
     if exception.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
-      set_merge_error(8004)
+      set_merge_error(8004, exception.to_s)
     else
-      set_merge_error(8003)
+      set_merge_error(8003, exception.to_s)
     end
     false
   end
@@ -278,6 +278,7 @@ class DataImport < Sequel::Model
     table.user_id = user_id
     table.name    = new_name
     table.migrate_existing_table = imported_name
+    table.data_import_id = self.id
 
     if table.valid?
       log.append 'Table valid'
@@ -435,8 +436,9 @@ class DataImport < Sequel::Model
     datasource
   end #get_datasource
 
-  def set_merge_error(error_code)
-    log.append("going to set merge error with code #{error_code}")
+  def set_merge_error(error_code, log_info='')
+    log.append("Going to set merge error with code #{error_code}")
+    log.append("Additional error info: #{log_info}") unless log_info.empty?
     self.results = [CartoDB::Importer2::Result.new(
       success: false, error_code: error_code
     )]

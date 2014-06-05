@@ -28,7 +28,7 @@ module CartoDB
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          visualization.name,
-          description:    visualization.description,
+          description:    visualization.description_md,
           url:            options.delete(:url),
           map_provider:   map.provider,
           bounds:         bounds_from(map),

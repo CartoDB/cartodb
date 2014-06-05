@@ -1,3 +1,136 @@
+* New features
+    * Added a log method for db_maintenance rakes (logs to log/rake_db_maintenance.log). For now used on load_functions.
+    * Added avatar_url to User model
+
+* Fixed bugs
+    * allow "rectangle" option for marker-type in torque layer
+    * now enqueing sync tables who are in state syncing for more than 2 hours (caused by pushing code while syncing a table)
+    * fixed torque wizard for google maps
+
+2.14.1 (2014-05-28)
+-------------------
+* New features
+    * Upgraded UPGRADE doc and required rakes to run
+    * Added new aux method to do future code cleanups in rakes : execute_on_users_with_index
+    * Added user_id to Visualization Model
+    * Added specs for table model, checking the_geom conversions
+    * Improve merge tables log info
+    * Allows adding custom legends in Torque maps
+    * SEO in public pages
+
+* Fixed bugs
+    * Converting the_geom causes drop that fails due to trigger (PR477)
+    * Excel2CSV gem messes up with atypical UTF-8 characters
+    * ogc_fid not being removed after import
+    * Creating table from sql query actually creates two tables
+    * Fixes a bug with the default values for the choropleth legends
+
+* Migration Type (see UPGRADE): Mandatory migration
+    * Also mandatory to run (in this order as fist one sets functions used by second one):
+        * rake cartodb:db:reset_trigger_check_quota
+        * rake cartodb:db:load_functions
+
+
+2.14.0 (2014-05-20)
+-------------------
+* New features
+  * Adds markdown support for descriptions
+  * New WMS proxy server
+  * SQL based table CartoDBfication
+  * New rake tasks
+  * Migrate user quota on cartodb extension creation from unpackaged
+  * Complain if script is sourced in psql, rather than via CREATE EXTENSION
+
+* Fixed bugs
+  * Bug fixing and stabilization
+  * Improve error detection in viz.json action
+  * Ruby code no longer loading import files in memory, but streaming them in chunks upon: uploading to server, uploading to AS3, downloading from AS3/server
+  - lib/sql modifications:
+    * Remove CDB_SearchPath.sql from the set of scripts loaded directly (#466)
+    * Do not call CDB_Invalidate_Varnish() if not owned by a superuser
+    * Refuse to create new extension if legacy code is present on database
+    * Fix extension requires directive
+
+
+
+2.13.5 (2014-05-13)
+-------------------
+* New features
+  * Infowindows on Hover
+  * SQL functions moved to a Git submodule
+  * CDB_CheckQuota improved in preparations for SQL-Based table CartoDBfier
+
+* Fixed bugs
+  * Cluster wizard font sizes are scaling very cleanly
+  * Big files imports/data syncs timeout or OOMs
+  * Default avatar requests not using https
+  * A transparent line appears within infowindow in last Chrome version
+  * Add new accepted formats in Dropbox sync
+  * Change error when importing a file and there is not enough quota left
+  * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
+  * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
+  * User name is not appearing in that user profile (link in description)
+
+
+2.13.5 (2014-05-13)
+-------------------
+* New features
+  * Infowindows on Hover
+  * SQL functions moved to a Git submodule
+  * CDB_CheckQuota improved in preparations for SQL-Based table CartoDBfier
+
+* Fixed bugs
+  * Cluster wizard font sizes are scaling very cleanly
+  * Big files imports/data syncs timeout or OOMs
+  * Default avatar requests not using https
+  * A transparent line appears within infowindow in last Chrome version
+  * Add new accepted formats in Dropbox sync
+  * Change error when importing a file and there is not enough quota left
+  * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
+  * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
+  * User name is not appearing in that user profile (link in description)
+
+2.13.4 (2014-05-08)
+-------------------
+* Improvements
+  * Indent html in the legends html editor
+  * Revamp geocoreference modal window
+  * Include import ID in import error popup
+  * Add POI option in the geocoder dialog
+
+* Bugfixes
+  * Applying a custom pattern image for polygons, it triggers the change event twice
+  * Rename sequence when renaming a table
+  * In the tags selector, order them alphabetically
+  * Timeout should be lifted for Georeferencing
+  * Bubble Legend doesn't refresh the labels when the field is changed
+  * Disallow some html keywords in infowindow and legends editor
+  * Incorrect message on table syncing
+  * Make links on visualization decriptions linkable
+  * Named maps wrapper should throw an exception on missing internal tiler config
+  * Don't fetch the_geom and the_geom_webmercator when a sql query is applied
+  * When trying to change table name and have a query applied, open a dialog / tipsy
+  * Geocoding by zip fixes
+  * After applying a wizard to a layer, and then changing a numeric property in the
+    CartoCSS, it is not changed in the wizard panel.
+  * When creating a new visualization, we should add some url_options by default
+  * Can't create table from scratch
+  * Pagination in public pages doesn't work correctly
+  * No error shown in MapView UI when sql does not select "the_geom_webmercator"
+  * JS in the login view is not being initialized
+  * Maki icons with 24 pixels of height is being rendered weird
+  * EXPLAIN an EXPLAIN ANALYZE does not work from the UI
+  * Export fails on private tables
+  * Vizualization specs do not honour configuration database name
+  * Importing a big shapefile fails with no error message
+  * when a filter is applied sometimes the generated sql is wrong
+  * HTTPS problem when exporting tables in Firefox
+  * Requests to the SQL API are always done using the port 80
+  * When adding an X/Y/Z layer as basemap dont check for tile 0/0/0 as it might not
+    always be there
+  * Change error code style when an import fails
+
+
 2.13.3 (2014-04-29)
 -------------------
 * Improvements

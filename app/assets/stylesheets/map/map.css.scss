@@ -192,21 +192,46 @@ div.map {
     left: 10px;
     padding: 7px 14px 0 37px;
     height: 34px;
-    background:red;
     z-index: 10000000;
     background: rgba(#000, .7);
     color: #fff;
     font-size: 13px;
     @include border-radius(3px);
 
-    &:before {
+    &.open:before {
+
+      -webkit-transform: rotate(180deg);
+      -moz-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      -o-transform: rotate(180deg);
+      transform: rotate(180deg);
+
+    }
+
+    &:before, &:after {
       content: '';
       position: absolute;
-      left: 4px; top: 5px;
-      display:block;
-      background: #fff;
-      width: 22px; height: 22px;
-      border: 1px solid rgba(#000000, .9);
+      left: 5px; top: 6px;
+      display: block;
+      width: 22px;
+      height: 22px;
+    }
+
+    &:before {
+      @include map-sprite(cog, $offset-x:3px, $offset-y:3px);
+
+      -moz-transition: all 750ms ease;
+      -webkit-transition: all 750ms ease;
+      -o-transition: all 750ms ease;
+      transition: all 750ms ease;
+
+      z-index: 10;
+
+    }
+
+    &:after {
+      background-color: #fff;
+      @include box-shadow(0 0 1px rgba(#000, .9));
       @include border-radius(3px);
     }
   }

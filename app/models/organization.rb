@@ -2,12 +2,15 @@
 
 class Organization < Sequel::Model
 
-  # @param id String
-  # @param seats Integer
-  # @param quota_in_bytes Integer
-  # @param created_at Time
-  # @param updated_at Time
-  # @param name String
+  Organization.raise_on_save_failure = true
+
+  #Attributes
+  @id = nil
+  @seats = nil
+  @quota_in_bytes = nil
+  @created_at = nil
+  @updated_at = nil
+  @name = nil
 
   one_to_many :users
   plugin :validation_helpers
@@ -22,6 +25,7 @@ class Organization < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
+    raise errors unless valid?
   end
 
   def db_size_in_bytes

@@ -112,8 +112,6 @@ div.map {
           margin: 0 5px 0 0;
           @include border-radius(2px);
 
-          // Set nokia basemap as default
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
           background-size: 34px;
           background-color: rgba(0, 0, 0, 0);
           background-position: 50% 50%;
@@ -128,6 +126,7 @@ div.map {
             border: 1px solid rgba(0,0,0, 0.15);
             @include border-radius(2px);
           }
+
           h5 {
             position:relative;
             padding:0 12px 0 0;
@@ -184,19 +183,81 @@ div.map {
     } // .basemap_dropdown
   } // .dropdowns
 
-  .show-table-options {
-    box-sizing: border-box;
-    display:block;
+
+  .map-options {
     position:absolute;
-    bottom: 10px;
-    left: 10px;
-    padding: 7px 14px 0 37px;
+
+    bottom: 20px;
+    left: 18px;
+
+    z-index: 10;
+
+  }
+
+  .option-button {
+    position:relative;
+    box-sizing: border-box;
+    @include inline-block();
+    padding: 11px 14px 0 37px;
+    margin: 0 3px 0 0;
     height: 34px;
-    z-index: 10000000;
+    min-width: 70px;
     background: rgba(#000, .7);
     color: #fff;
     font-size: 13px;
     @include border-radius(3px);
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+  }
+
+  .option-button.basemap_dropdown {
+
+    @include inline-block();
+
+    cursor: pointer;
+
+    strong {
+      color: #fff;
+      font-weight:normal;
+    }
+
+    & > .thumb {
+      position:absolute;
+      top: 6px; left: 6px;
+      @include inline-block();
+      @include size(22px);
+      margin: 0 5px 0 0;
+      @include border-radius(2px);
+
+      // Set nokia basemap as default
+      background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+      background-size: 34px;
+      background-color: rgba(0, 0, 0, 0);
+      background-position: 50% 50%;
+      @include box-shadow(0 0 1px rgba(#000, .9));
+
+      &:before {
+        content: ' ';
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        border: 1px solid rgba(0,0,0, 0.15);
+        @include border-radius(2px);
+      }
+    }
+
+    .info {
+      @include inline-block();
+    } // .basemap_dropdown
+
+  }
+
+  .option-button.show-table-options {
 
     &.open:before {
 
@@ -239,7 +300,7 @@ div.map {
   div.dropdown.map_options_dropdown {
 
     ul {
-      
+
       box-sizing: border-box;
       margin: 0;
       width: 204px;
@@ -332,7 +393,7 @@ div.map {
       }
 
       &.map_background > a .name {
-          margin: 5px 0 0 5px;
+        margin: 5px 0 0 5px;
       }
 
       & > a {
@@ -706,7 +767,7 @@ div.map {
       @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
 
       &.warn {
-       background-color: rgba(#FFFFBF, 0.90);
+        background-color: rgba(#FFFFBF, 0.90);
       }
     }
   } //div.sqlview

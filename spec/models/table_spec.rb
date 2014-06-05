@@ -1177,6 +1177,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
 
@@ -1194,6 +1195,8 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
+
       pk = nil
       insert_data = {:upo___nombre_partido=>"PSOEE"}
 
@@ -1264,6 +1267,7 @@ describe Table do
       # Renaming starts at 1
       1.upto(25) do |n|
         table = create_table :name => 'Wadus The Table', :user_id => @user.id
+        table.should_not be_nil
         table.name.should == "wadus_the_table_#{n}"
       end
     end
@@ -1288,6 +1292,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
 
@@ -1297,6 +1302,7 @@ describe Table do
     it "should not drop a table that exists when upload fails" do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
+      table.should_not be_nil
       table.save.reload
       table.name.should == 'empty_file'
 
@@ -1319,6 +1325,7 @@ describe Table do
       data_import.run_import!
 
       table2 = Table[data_import.table_id]
+      table2.should_not be_nil, "Import failure: #{data_import.log}"
       table2.name.should == 'csv_no_quotes'
 
       @user.in_database do |user_database|
@@ -1346,6 +1353,7 @@ describe Table do
       fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
       data_import   = create_import(@user, fixture)
       table         = data_import.table
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       table_schema  = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
@@ -1362,6 +1370,7 @@ describe Table do
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table_schema = @user.in_database.schema(table.name)
 
@@ -1382,6 +1391,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table.geometry_types.should == ['ST_Point']
     end
@@ -1402,6 +1412,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       schema = table.schema(:cartodb_types => true)
       schema.include?([:updated_at, "date"]).should == true
@@ -1681,6 +1692,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should == 'exttable'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
@@ -1801,6 +1813,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       new_table = Table.find_by_id_subdomain(@user.username, table.id)
 
       new_table.id.should == table.id
@@ -1813,6 +1826,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       new_table = Table.find_by_id_subdomain(nil, table.id)
 

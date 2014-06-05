@@ -51,7 +51,8 @@ and code.
 # What does CartoDB depend on? #
 
   - Ubuntu 12.04
-  - Postgres 9.3.x
+  - Postgres 9.3.x (with plpythonu extension)
+  - cartodb-postgresql 0.2.0+
   - Redis 2.2+
   - Ruby 1.9.3
   - NodeJS 0.8.x
@@ -203,7 +204,7 @@ sudo /etc/init.d/postgresql restart
 
 
 ## Install PostGIS ##
-[PostGIS](http://postgis.refractions.net) is
+[PostGIS](http://postgis.net) is
 the geospatial extension that allows PostgreSQL to support geospatial
 queries. This is the heart of CartoDB!
 
@@ -228,11 +229,8 @@ createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
  "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
-psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/rtpostgis.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/topology.sql
+psql -d template_postgis -c "CREATE EXTENSION postgis"
+psql -d template_postgis -c "CREATE EXTENSION postgis_topology"
 psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ```
@@ -242,6 +240,11 @@ Before executing the script, change to the postgres user:
 sudo su - postgres
 ./template_postgis.sh
 ```
+
+## Install cartodb-postgresql ##
+
+Download from https://github.com/cartodb/cartodb-postgresql/,
+read install instructions there
 
 ## Install Ruby ##
 We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,

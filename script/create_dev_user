@@ -11,7 +11,7 @@ echo -n "Enter an admin password (cleartext!): "; read ADMIN_PASSWORD
 echo -n "Enter an email: "; read EMAIL
 
 echo "--- Creating databases"
-bundle exec rake cartodb:db:setup SUBDOMAIN="${SUBDOMAIN}" \
+bundle exec rake cartodb:db:setup --trace SUBDOMAIN="${SUBDOMAIN}" \
 	PASSWORD="${PASSWORD}" ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 	EMAIL="${EMAIL}"
 if test $? -ne 0; then exit 1; fi

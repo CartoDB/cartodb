@@ -990,6 +990,12 @@ BEGIN
       RAISE NOTICE 'schema_triggers extension already exists';
     END;
     BEGIN
+      CREATE EXTENSION postgis FROM unpackaged;
+    EXCEPTION WHEN duplicate_object THEN
+      -- already exists
+      RAISE NOTICE 'postgis extension already exists';
+    END;
+    BEGIN
       CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
     EXCEPTION WHEN undefined_table THEN
       RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;

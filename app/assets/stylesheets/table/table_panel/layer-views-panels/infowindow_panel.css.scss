@@ -90,7 +90,16 @@
         border:0;
       }
 
-      .form_combo  { position:absolute; right:18px; }
+      .controls {
+
+        span.label {
+          float:left;
+          margin:2px 7px 0px 0px;
+          color:#ccc;
+          line-height:18px;
+        }
+        &.margin { margin-right:20px }
+      }
     }
 
     // No content block

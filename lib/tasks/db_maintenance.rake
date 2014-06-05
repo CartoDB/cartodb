@@ -66,9 +66,10 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions(extensions_only=true, cartodb_version)
-            printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
+            log(sprintf("OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count))
           rescue => e
-            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count))
+            puts "FAIL:#{i}"
           end
       }, threads, thread_sleep)
     end
@@ -426,18 +427,32 @@ namespace :cartodb do
     # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
     def execute_on_users_with_index(task_name, block, num_threads=1, sleep_time=0.1)
       count = User.count
-      puts "\n>Running #{task_name} for #{count} users"
+      start_message = "\n>Running #{task_name} for #{count} users"
+      puts start_message
+      log(start_message)
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
       User.all.each_with_index do |user, i|
         thread_pool.schedule do
+          if i % 100 == 0
+            puts "PROGRESS: #{i}/count"
+          end
           block.call(user, i)
         end
       end
       at_exit { thread_pool.shutdown }
 
-      puts ">Finished #{task_name}\n"
+      end_message = "\n>Finished #{task_name}\n"
+      puts end_message
+      log(end_message)
     end #execute_on_users_with_index
+
+    def log(entry)
+      log_path = Rails.root.join('log', 'rake_db_maintenance.log')
+      File.open(log_path, 'a') do |file_handle|
+        file_handle.puts "#{entry}\n"
+      end
+    end
 
   end
 end

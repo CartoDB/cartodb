@@ -1,4 +1,12 @@
 class Organization < Sequel::Model
+
+  # @param id String
+  # @param seats Integer
+  # @param quota_in_bytes Integer
+  # @param created_at Time
+  # @param updated_at Time
+  # @param name String
+
   one_to_many :users
   plugin :validation_helpers
 
@@ -6,7 +14,7 @@ class Organization < Sequel::Model
     super
     validates_presence [:name, :quota_in_bytes]
     validates_unique   :name
-    validates_format   /^[a-z0-9\-]+$/, :name, message: "must only contain lowercase letters, numbers & hyphens"
+    validates_format   /^[a-z0-9\-]+$/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
   end # validate
 
   def db_size_in_bytes

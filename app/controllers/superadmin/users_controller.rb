@@ -69,5 +69,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     organization.set_only(attributes[:organization_attributes], [:name, :seats, :quota_in_bytes])
     organization.save
     @user.organization = organization
+    @user.organization_owner = attributes[:organization_attributes][:owner] if attributes[:organization_attributes][:owner].present?
   end
 end # Superadmin::UsersController

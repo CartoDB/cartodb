@@ -48,19 +48,20 @@ module CartoDB
       }
 
       data[:organization] = {
+        id:    self.organization_id,
         name:  self.organization.name,
         owner: self.organization_owner,
         email: self.organization.users_dataset.where('organization_owner = true').first.try(:email)
       } if self.organization.present?
 
-      if !options[:extended]
-        data
-      else
+      if options[:extended]
         data.merge({
           :real_table_count => self.real_tables.size,
           :last_active_time => self.get_last_active_time,
           :db_size_in_bytes => self.db_size_in_bytes
         })
+      else
+        data
       end
     end
   end

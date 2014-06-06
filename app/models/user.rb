@@ -980,6 +980,7 @@ TRIGGER
   def load_cartodb_functions()
 
     tgt_ver = '0.2.0dev' # TODO: optionally take as parameter? 
+    tgt_rev = '0.1.0-28-gedc56e6'
 
     add_python;
 
@@ -1023,6 +1024,12 @@ TRIGGER
     END;
     $$;
         })
+
+        exp = tgt_ver + ' ' + tgt_rev
+        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
+      
+        raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
+          unless exp == obt
 
 #       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end

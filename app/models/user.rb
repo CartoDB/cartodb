@@ -771,16 +771,15 @@ $$
 
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
+    in_database(:as => :superuser) do |db|
+      db.transaction do
         # NOTE: this has been written to work for both
         #       databases that switched to "cartodb" extension
         #       and those before the switch.
-        # TODO: use SHOW search_path and SET search_path at the end
-        #       to avoid DISCARD ALL
-        user_database.run("SET search_path TO cartodb,public;")
-        user_database.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
-        user_database.run("DISCARD ALL;")
+        search_path = db.fetch("SHOW search_path;").first[:search_path]
+        db.run("SET search_path TO cartodb,public;")
+        db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
+        db.run("SET search_path TO #{search_path};")
       end
     end
   end

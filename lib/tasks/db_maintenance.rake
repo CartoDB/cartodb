@@ -63,7 +63,7 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions
-            log(sprintf("OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count))
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count))
           rescue => e
             log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count))
             puts "FAIL:#{i}"
@@ -433,14 +433,14 @@ namespace :cartodb do
       User.all.each_with_index do |user, i|
         thread_pool.schedule do
           if i % 100 == 0
-            puts "PROGRESS: #{i}/#{count} users"
+            puts "\nPROGRESS: #{i}/#{count} users queued"
           end
           block.call(user, i)
         end
       end
       at_exit { thread_pool.shutdown }
 
-      puts "\nPROGRESS: #{count}/#{count} users"
+      puts "\nPROGRESS: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
       log(end_message)

@@ -427,18 +427,20 @@ namespace :cartodb do
       start_message = "\n>Running #{task_name} for #{count} users"
       puts start_message
       log(start_message)
+      puts 'Detailed log stored at log/rake_db_maintenance.log'
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
       User.all.each_with_index do |user, i|
         thread_pool.schedule do
           if i % 100 == 0
-            puts "PROGRESS: #{i}/count"
+            puts "PROGRESS: #{i}/#{count} users"
           end
           block.call(user, i)
         end
       end
       at_exit { thread_pool.shutdown }
 
+      puts "\nPROGRESS: #{count}/#{count} users"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
       log(end_message)

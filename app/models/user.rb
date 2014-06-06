@@ -980,7 +980,7 @@ TRIGGER
   def load_cartodb_functions()
 
     tgt_ver = '0.2.0dev' # TODO: optionally take as parameter? 
-    tgt_rev = '0.1.0-31-g1692e79'
+    tgt_rev = '0.1.0-32-g85afef4'
 
     add_python;
 

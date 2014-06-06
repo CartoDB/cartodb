@@ -66,7 +66,7 @@ namespace :cartodb do
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count))
           rescue => e
             log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count))
-            puts "FAIL:#{i}"
+            puts "FAIL:#{i} #{e.message}"
           end
       }, threads, thread_sleep)
     end

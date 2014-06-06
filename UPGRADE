@@ -20,6 +20,7 @@ Mandatory migration
 Versions marked at the NEWS.md as requiring this migration must run all this commands:
 
  $ bundle exec rake db:migrate
+ $ bundle exec rake cartodb:db:reset_trigger_check_quota
  $ bundle exec rake cartodb:db:load_functions
  $ bundle exec rake cartodb:db:load_triggers
  $ bundle exec rake cartodb:db:create_schemas

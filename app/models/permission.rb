@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative './permission/presenter'
+
 module CartoDB
   class Permission < Sequel::Model
 
@@ -75,6 +77,10 @@ module CartoDB
 
     def is_owner(subject)
       self.owner_id == subject.id
+    end
+
+    def to_poro
+      CartoDB::PermissionPresenter.new(self).to_poro
     end
 
   end

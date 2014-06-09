@@ -175,7 +175,7 @@ CartoDB::Application.routes.draw do
       put     'synchronizations/:id/sync_now' => 'synchronizations#sync_now'
 
       # Permissions
-      get     'perm/:id' => 'permissions#index'
+      get     'perm/:id' => 'permissions#show'
       put     'perm/:id' => 'permissions#update'
 
     end

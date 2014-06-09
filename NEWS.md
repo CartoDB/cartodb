@@ -14,6 +14,7 @@
     * fixed infinite loop in CDB_QueryStatements (again)
     * fixed problem executing long queries from the editor
     * By default, now not verifying SSL certificates for data imports (allow customer dev. environments with https)
+    * Import CSV with invalid UTF-8 characters by replacing them (instead of skipping the whole row)
 
 2.14.1 (2014-05-28)
 -------------------

@@ -12,6 +12,7 @@
       (caused by pushing code while syncing a table)
     * fixed torque wizard for google maps
     * fixed infinite loop in CDB_QueryStatements (again)
+    * fixed problem executing long queries from the editor
 
 2.14.1 (2014-05-28)
 -------------------

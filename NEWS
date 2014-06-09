@@ -1,3 +1,13 @@
+3.10.1 (09//06//2014)
+- Updated torque library
+- Fixed showing "no data" on empty tooltips (#122)
+
+3.10.0 (04//06//2014)
+- Fixed problem for already customized infowindows setting width property.
+
+3.9.08 (03//06//2014)
+- New "liquid" infowindow style implemented.
+
 3.9.07 (03//06//2014)
 - Fixed exception on hover for layers without tooltip
 - Improved tooltip interaction
@@ -7,6 +17,7 @@
 3.9.06 (25//05//2014)
 - Allowfullscreen parameter added to iframe code
   in share dialog.
+- Fixes link style in embed header
 - Enables custom legends in Torque.
 
 3.9.05 (19//05//2014)

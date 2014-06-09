@@ -1,6 +1,6 @@
 
 /**
- *  CartoDB2.0 yellow header popup styles
+ *  CartoDB yellow header popup styles
  */
 
 div.cartodb-popup.header.yellow div.cartodb-popup-header {
@@ -21,4 +21,31 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button {
 
 div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   background-position:-730px -66px;
+}
+
+/* NEW CartoDB 2.0 yellow header popups */
+
+div.cartodb-popup.v2.header.yellow div.cartodb-popup-header {
+  background: none;
+  background: -ms-linear-gradient(top, #FFBF0D, #FF9933); 
+  background: -o-linear-gradient(right, #FFBF0D, #FF9933);
+  background: -webkit-linear-gradient(top, #FFBF0D, #FF9933); 
+  background: -moz-linear-gradient(right, #FFBF0D, #FF9933);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#FFBF0D',endColorStr='#FF9933',GradientType=0)";
+}
+
+div.cartodb-popup.v2.header.yellow a.cartodb-popup-close-button {
+  background:white;
+}
+
+div.cartodb-popup.v2.header.yellow a.cartodb-popup-close-button:before,
+div.cartodb-popup.v2.header.yellow a.cartodb-popup-close-button:after {
+  background:#CC7A29;
+}
+
+/* Hello IE */
+@media \0screen\,screen\9 {
+  div.cartodb-popup.v2.header.yellow a.cartodb-popup-close-button {
+    color:#CC7A29;
+  }
 }

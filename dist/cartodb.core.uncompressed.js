@@ -1,5 +1,5 @@
-// version: 3.9.07
-// sha: 5472b924db5374c519a5de4f73f8681e7861c4f5
+// version: 3.10.1
+// sha: 270a2bc86c4cbf9e8b6256fa6e79371cc58bce4d
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.07';
+    cdb.VERSION = '3.10.1';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2534,7 +2534,7 @@ Map.prototype = {
     var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
-      if (tooltip) {
+      if (tooltip && tooltip.fields && tooltip.fields.length) {
         return true;
       }
     }

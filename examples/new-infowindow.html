@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom infowindow example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    
+    <style>html, body, #map { height: 100%; padding: 0; margin: 0 }</style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script type="infowindow/html" id="infowindow_template">
+      <div class="cartodb-popup v2">
+        <a href="#/close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+            <h4>OH!</h4>
+            <p>Yes, this is a new infowindow</p>
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    
+    <script type="text/javascript">
+      var layer;
+
+      function main() {
+
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [43, -3],
+          zoom: 3
+        });
+
+        // add a nice baselayer from Stamen 
+        L.tileLayer('http://a.tiles.mapbox.com/v3/examples.map-20v6611k/{z}/{x}/{y}.png', {
+          attribution: 'MapBox'
+        }).addTo(map);
+
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+          .addTo(map)
+          .on('done', function(lyr) {
+            lyr.getSubLayer(0).infowindow.set({
+              template: $('#infowindow_template').html(),
+              width: 350,
+              maxHeight: 400
+            });
+          }).on('error', function() {
+            console.log("some error occurred");
+          });
+      }
+
+      window.onload = main;
+      
+    </script>
+  </body>
+</html>

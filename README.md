@@ -246,7 +246,16 @@ sudo su - postgres
 Download from https://github.com/cartodb/cartodb-postgresql/,
 read install instructions there
 
+## Configure PostgreSQL ##
+
+There are two tweaks required in PostgreSQL configuration for
+cartodb to work as expected. In postgresql.conf:
+
+ 1) Add `cartodb` schema in the `search_path` variable.
+ 2) Add `schema_triggers.so` in the `shared_preload_libraries` variable.
+
 ## Install Ruby ##
+
 We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
 so you'll need to install Ruby 1.9.3. You can use rvm:
 

@@ -126,7 +126,6 @@ module CartoDB
 
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
-
           row = parsed_line(line)
           next unless row
           temporary_csv << multiple_column(row)
@@ -140,7 +139,7 @@ module CartoDB
       end
 
       def parsed_line(line)
-        ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
+        ::CSV.parse_line(line.chomp.encode('utf-8', 'binary', :invalid => :replace, :undef => :replace), csv_options)
       rescue
         nil
       end

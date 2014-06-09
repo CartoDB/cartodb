@@ -50,17 +50,67 @@ describe CartoDB::Permission do
       }.to raise_exception
 
       # Owner helper methods
-
       permission2.owner = @user
       permission2.save
       permission2.owner.should eq @user
       permission2.owner_id.should eq @user.id
       permission2.owner_username.should eq @user.username
+
+      # invalid ACL formats
+      expect {
+        permission2.acl = 'not an array!'
+      }.to raise_exception CartoDB::PermissionError
+
+      expect {
+        permission2.acl = [
+            'aaa'
+        ]
+      }.to raise_exception CartoDB::PermissionError
+
+      expect {
+        permission2.acl = [
+            {}
+        ]
+      }.to raise_exception CartoDB::PermissionError
+
+      expect {
+        permission2.acl = [
+            {
+                # missing fields
+                wadus: 'aaa'
+            }
+        ]
+      }.to raise_exception CartoDB::PermissionError
+
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      expect {
+        permission2.acl = [
+            {
+                id: user2.id,
+                name: user2.username,
+                type: Permission::TYPE_READONLY,
+                # Extra undesired field
+                wadus: 'aaa'
+            }
+        ]
+      }.to raise_exception CartoDB::PermissionError
+
+      # Wrong permission type
+      expect {
+        permission2.acl = [
+            {
+                id: user2.id,
+                name: user2.username,
+                type: '123'
+            }
+        ]
+      }.to raise_exception CartoDB::PermissionError
+
     end
   end
 
   describe '#permissions_methods' do
-    it '' do
+    it 'checks permission_for_user and is_owner methods' do
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 

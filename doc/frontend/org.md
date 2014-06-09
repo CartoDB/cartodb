@@ -1,20 +1,22 @@
 
 # organizations
 
-this document contains some notes on how to work with backbone models realted to organization
+this document contains some notes on how to work with backbone models related to organization
 
 ## models related to organization
 
-- cdb.admin.User: it already existed, but it takes more importance
-- cdb.admin.Organization: this represents an organization
-- cdb.admin.Permission: permission object, contains the information to know about the ownership and
+- [cdb.admin.User](https://github.com/CartoDB/cartodb/blob/CDB-2891/lib/assets/javascripts/cartodb/models/user.js): it already existed, but it takes more importance
+- [cdb.admin.Organization](https://github.com/CartoDB/cartodb/blob/CDB-2891/lib/assets/javascripts/cartodb/models/organization.js): this represents an organization
+- [cdb.admin.Permission](https://github.com/CartoDB/cartodb/blob/CDB-2891/lib/assets/javascripts/cartodb/models/permissions.js): permission object, contains the information to know about the ownership and
   permission list (called ``acl``) of an object. See https://github.com/Vizzuality/cartodb-management/wiki/multiuser-REST-API#permissions-object
+
+
 
 ## changes 
 
-- ``User`` model has a organization attribute. Each user is **always** inside a organization, so
-  this be always filled. When the organization contains only an user the application behavior is the
-  same than we have currently (CartoDB 2.0)
+- ``User`` model has an organization attribute. Each user is **always** inside an organization, so
+  this will be always filled. When the organization contains only a user, the application behavior is the
+  same than we currently have (CartoDB 2.0)
 
 - ``Visualization`` object contains a ``permission`` attribute (instance of ``cdb.admin.Permission``)
 
@@ -35,6 +37,7 @@ canonical_visualization.permission.setPermission(user_model, 'rw').save();
 - how to know if the organization for the current user is single or multiuser
 ```
 user.isInsideOrg()
+user.isAdminOrg() *pending stuff
 ```
 
 - know what users have access to a visualization

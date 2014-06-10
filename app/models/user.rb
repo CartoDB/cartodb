@@ -577,7 +577,7 @@ $$
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue

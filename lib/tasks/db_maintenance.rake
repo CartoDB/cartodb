@@ -68,9 +68,9 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions
-            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count))
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
           rescue => e
-            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count))
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
             puts "FAIL:#{i} #{e.message}"
           end
       }, threads, thread_sleep, database_host)
@@ -418,8 +418,13 @@ namespace :cartodb do
 
       start_message = "\n>Running #{task_name} for #{count} users"
       puts start_message
-      log(start_message)
-      puts 'Detailed log stored at log/rake_db_maintenance.log'
+      log(start_message, database_host)
+      if database_host.nil?
+        puts 'Detailed log stored at log/rake_db_maintenance.log'
+      else
+        puts "Detailed log stored at log/rake_db_maintenance_#{database_host}.log"
+      end
+
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
 
@@ -448,11 +453,15 @@ namespace :cartodb do
       puts "\nPROGRESS: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
-      log(end_message)
+      log(end_message, database_host)
     end
 
-    def log(entry)
-      log_path = Rails.root.join('log', 'rake_db_maintenance.log')
+    def log(entry, filename_suffix='')
+      if filename_suffix.empty? || filename_suffix.nil?
+        log_path = Rails.root.join('log', 'rake_db_maintenance.log')
+      else
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{filename_suffix}.log")
+      end
       File.open(log_path, 'a') do |file_handle|
         file_handle.puts "#{entry}\n"
       end

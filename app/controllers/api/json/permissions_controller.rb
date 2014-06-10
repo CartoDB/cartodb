@@ -5,18 +5,25 @@ class Api::Json::PermissionsController < Api::ApplicationController
   end
 
   def update
-    permission = CartoDB::Permission.where(id:params[:id]).first
+    permission = CartoDB::Permission.where(id: params[:id]).first
 
     return head(404) if permission.nil?
     return head(401) unless permission.is_owner(current_user)
 
-    # TODO: update perm
+    begin
+      permission.acl = params[:acl].map { |entry| entry.deep_symbolize_keys }
+    rescue PermissionError => e
+      # LOG internally the error
+      return head(400)
+    end
 
-    render json: permission
+    permission.save
+
+    render json: permission.to_poro
   end
 
   def show
-    permission = CartoDB::Permission.where(id:params[:id]).first
+    permission = CartoDB::Permission.where(id: params[:id]).first
 
     return head(404) if permission.nil?
     return head(401) unless permission.is_owner(current_user)

@@ -16,8 +16,10 @@ describe CartoDB::Permission do
       acl_initial = []
       acl_with_data = [
         {
-          id: UUIDTools::UUID.timestamp_create.to_s,
-          name: 'another_username',
+          user: {
+            id: UUIDTools::UUID.timestamp_create.to_s,
+            username: 'another_username'
+          },
           type: Permission::TYPE_READONLY
         }
       ]
@@ -69,40 +71,44 @@ describe CartoDB::Permission do
 
       expect {
         permission2.acl = [
-            {}
+          {}
         ]
       }.to raise_exception CartoDB::PermissionError
 
       expect {
         permission2.acl = [
-            {
-                # missing fields
-                wadus: 'aaa'
-            }
+          {
+            # missing fields
+            wadus: 'aaa'
+          }
         ]
       }.to raise_exception CartoDB::PermissionError
 
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       expect {
         permission2.acl = [
-            {
-                id: user2.id,
-                name: user2.username,
-                type: Permission::TYPE_READONLY,
-                # Extra undesired field
-                wadus: 'aaa'
-            }
+          {
+            user: {
+              id: user2.id,
+              username: user2.username
+            },
+            type: Permission::TYPE_READONLY,
+            # Extra undesired field
+            wadus: 'aaa'
+          }
         ]
       }.to raise_exception CartoDB::PermissionError
 
       # Wrong permission type
       expect {
         permission2.acl = [
-            {
-                id: user2.id,
-                name: user2.username,
-                type: '123'
-            }
+          {
+            user: {
+              id: user2.id,
+              username: user2.username
+            },
+            type: '123'
+          }
         ]
       }.to raise_exception CartoDB::PermissionError
 
@@ -115,15 +121,17 @@ describe CartoDB::Permission do
       user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
       permission = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username
+        owner_id:       @user.id,
+        owner_username: @user.username
       )
       permission.acl = [
-          {
-              id: user2.id,
-              name: user2.username,
-              type: Permission::TYPE_READONLY
-          }
+        {
+          user: {
+            id: user2.id,
+            username: user2.username
+          },
+          type: Permission::TYPE_READONLY
+        }
       ]
 
       permission.save

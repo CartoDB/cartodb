@@ -13,15 +13,7 @@ module CartoDB
             id:         @permission.owner_id,
             username:   @permission.owner_username,
         },
-        acl:            @permission.acl.map { |entry|
-          {
-            user: {
-              id:       entry[:id],
-              username: entry[:name],
-              type:     entry[:type]
-            }
-          }
-        },
+        acl:            @permission.acl,
         created_at:     @permission.created_at,
         updated_at:     @permission.updated_at
       }

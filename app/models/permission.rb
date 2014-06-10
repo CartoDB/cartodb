@@ -24,8 +24,8 @@ module CartoDB
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
     end
 
-    # Populate it with items in format: [ { id :uuid, name :string, type :string} ]
-    # id is user id, name is username (to avoid additional lookups), type is "r" or "rw"
+    # Populate it with items in format: [ { :user { id :uuid, username :string}, type :string} ]
+    # id is user id, username is to avoid additional lookups, type is "r" or "rw"
     # @param value Object
     # @throws PermissionError
     def acl=(value)
@@ -33,7 +33,8 @@ module CartoDB
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
         raise PermissionError.new('Wrong ACL entry format') unless item.kind_of? Hash
-        raise PermissionError.new('Wrong ACL entry format') unless item.keys == [:id, :name, :type]
+        raise PermissionError.new('Wrong ACL entry format') unless item.keys == [:user, :type]
+        raise PermissionError.new('Wrong ACL entry format') unless item[:user].keys == [:id, :username]
         raise PermissionError.new('Wrong ACL entry format') unless [TYPE_READONLY, TYPE_READWRITE].include? item[:type]
       }
 
@@ -70,7 +71,7 @@ module CartoDB
     def permission_for_user(subject)
       return TYPE_READWRITE if is_owner(subject)
       acl.map { |entry|
-        return entry[:type] if entry[:id] == subject.id
+        return entry[:type] if entry[:user][:id] == subject.id
       }
       nil
     end

@@ -63,12 +63,10 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions
-            log(sprintf("OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count))
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count))
           rescue => e
             log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count))
-            puts "FAIL:#{i}"
-          ensure
-            User.terminate_database_connections(user.database_name, user.previous_changes)
+            puts "FAIL:#{i} #{e.message}"
           end
       }, threads, thread_sleep)
     end
@@ -401,24 +399,6 @@ namespace :cartodb do
       end
     end
 
-    desc 'Drop cache_checkpoint trigger from all tables'
-    task :drop_trigger_cache_checkpoint => :environment do
-      count = User.count
-      printf "Starting cartodb:db:drop_trigger_cache_checkpoint task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.tables.all.each do |t|
-            if t.has_trigger? 'cache_checkpoint'
-              t.drop_trigger_cache_checkpoint
-            end
-          end
-          printf "OK %-#{20}s (%-#{5}s/%-#{5}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{5}s/%-#{5}s) #{e.message}\n", user.username, i+1, count
-        end
-      end
-    end
-
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc
@@ -429,18 +409,20 @@ namespace :cartodb do
       start_message = "\n>Running #{task_name} for #{count} users"
       puts start_message
       log(start_message)
+      puts 'Detailed log stored at log/rake_db_maintenance.log'
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
       User.all.each_with_index do |user, i|
         thread_pool.schedule do
           if i % 100 == 0
-            puts "PROGRESS: #{i}/count"
+            puts "\nPROGRESS: #{i}/#{count} users queued"
           end
           block.call(user, i)
         end
       end
       at_exit { thread_pool.shutdown }
 
+      puts "\nPROGRESS: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
       log(end_message)

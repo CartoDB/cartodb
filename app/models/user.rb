@@ -261,6 +261,11 @@ $$
     self.database_host
   end
 
+  def reset_pooled_connections()
+    # Only close connections to this users' database
+    $pool.close_connections!(self.database_name)
+  end
+
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
@@ -572,7 +577,7 @@ $$
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize()").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -766,10 +771,17 @@ $$
 
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
-    self.in_database(:as => :superuser).run(<<-TRIGGER
-      SELECT public.CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});
-    TRIGGER
-    )
+    in_database(:as => :superuser) do |db|
+      db.transaction do
+        # NOTE: this has been written to work for both
+        #       databases that switched to "cartodb" extension
+        #       and those before the switch.
+        search_path = db.fetch("SHOW search_path;").first[:search_path]
+        db.run("SET search_path TO cartodb,public;")
+        db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
+        db.run("SET search_path TO #{search_path};")
+      end
+    end
   end
 
   def importing_jobs
@@ -840,6 +852,7 @@ $$
     set_database_permissions
     load_cartodb_functions
     rebuild_quota_trigger
+    create_function_invalidate_varnish
   end
 
   def create_schemas_and_set_permissions
@@ -867,7 +880,7 @@ $$
     )
   end
 
-  # Create a "cdb_invalidate_varnish()" function to invalidate Varnish
+  # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
   #
   # The function can only be used by the superuser, we expect
   # security-definer triggers OR triggers on superuser-owned tables
@@ -892,7 +905,7 @@ $$
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
-    CREATE OR REPLACE FUNCTION cdb_invalidate_varnish(table_name text) RETURNS void AS
+    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
     $$
         critical = #{varnish_critical}
         timeout = #{varnish_timeout}
@@ -936,7 +949,7 @@ $$
             retry -= 1 # try reconnecting
     $$
     LANGUAGE 'plpythonu' VOLATILE;
-    REVOKE ALL ON FUNCTION cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
     COMMIT;
 TRIGGER
     )
@@ -953,7 +966,7 @@ TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
     $$
         table_name = TD["table_name"]
-        plan = plpy.prepare("SELECT cdb_invalidate_varnish($1)", ["text"])
+        plan = plpy.prepare("SELECT public.cdb_invalidate_varnish($1)", ["text"])
         plpy.execute(plan, [table_name])
     $$
     LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;
@@ -963,29 +976,70 @@ TRIGGER
 
 
   # Cartodb functions
-  def load_cartodb_functions(files = [])
-    create_function_invalidate_varnish
-    create_trigger_function_update_timestamp
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-        if files.empty?
-          glob = Rails.root.join('lib/sql/scripts-enabled/*.sql')
-          sql_files = Dir.glob(glob).sort
-        else
-          sql_files = files.map {|sql| Rails.root.join('lib/sql/scripts-enabled', sql).to_s}.sort
-        end
-        sql_files.each do |f|
-          if File.exists?(f)
-            CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
-            @sql = File.new(f).read
-            @sql.gsub!(':DATABASE_USERNAME', self.database_username)
-            user_database.run(@sql)
-          else
-            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
-          end
-        end
+
+  def load_cartodb_functions()
+
+    tgt_ver = '0.2.0' # TODO: optionally take as parameter? 
+    tgt_rev = 'v0.2.0'
+
+    add_python;
+
+    in_database(:as => :superuser) do |db|
+      db.transaction do
+        db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%Q{
+            SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
+          }).first[:count] > 0
+        db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%Q{
+            SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
+          }).first[:count] > 0
+        db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%Q{
+            SELECT count(*) FROM pg_extension WHERE extname='postgis'
+          }).first[:count] > 0
+
+        db.run(%Q{
+    DO LANGUAGE 'plpgsql' $$
+    DECLARE
+      ver TEXT;
+    BEGIN
+      BEGIN
+        SELECT cartodb.cdb_version() INTO ver;
+      EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
+        RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+        BEGIN
+          CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
+        EXCEPTION WHEN undefined_table THEN
+          RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+          CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
+          RETURN;
+        END;
+        RETURN;
+      END;
+      ver := '#{tgt_ver}';
+      IF position('dev' in ver) > 0 THEN
+        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+      ELSE
+        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+      END IF;
+    END;
+    $$;
+        })
+
+        exp = tgt_ver + ' ' + tgt_rev
+        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
+      
+        raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
+          unless exp == obt
+
+#       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end
     end
+
+    # We reset the connections to this database to be sure
+    # the change in default search_path is effective
+    # TODO: only reset IFF migrating from pre-extension times
+    self.reset_pooled_connections
+
   end
 
   def set_statement_timeouts

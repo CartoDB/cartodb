@@ -55,9 +55,10 @@ namespace :cartodb do
     # LOAD CARTODB FUNCTIONS
     ########################
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:num_threads, :thread_sleep] => :environment do |t, args|
+    task :load_functions, [:num_threads, :thread_sleep, :database_host] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
       thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
 
       count = User.count
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
@@ -68,7 +69,7 @@ namespace :cartodb do
             log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count))
             puts "FAIL:#{i} #{e.message}"
           end
-      }, threads, thread_sleep)
+      }, threads, thread_sleep, database_host)
     end
 
     desc 'Load varnish invalidation function'
@@ -404,29 +405,47 @@ namespace :cartodb do
     # @param block Proc
     # @example:
     # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
-    def execute_on_users_with_index(task_name, block, num_threads=1, sleep_time=0.1)
-      count = User.count
+    def execute_on_users_with_index(task_name, block, num_threads=1, sleep_time=0.1, database_host=nil)
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
+
       start_message = "\n>Running #{task_name} for #{count} users"
       puts start_message
       log(start_message)
       puts 'Detailed log stored at log/rake_db_maintenance.log'
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
-      User.all.each_with_index do |user, i|
-        thread_pool.schedule do
-          if i % 100 == 0
-            puts "\nPROGRESS: #{i}/#{count} users queued"
+
+      if database_host.nil?
+        User.all.each_with_index do |user, i|
+          thread_pool.schedule do
+            if i % 100 == 0
+              puts "\nPROGRESS: #{i}/#{count} users queued"
+            end
+            block.call(user, i)
           end
-          block.call(user, i)
+        end
+      else
+        User.where(database_host: database_host).each_with_index do |user, i|
+          thread_pool.schedule do
+            if i % 100 == 0
+              puts "\nPROGRESS: #{i}/#{count} users queued"
+            end
+            block.call(user, i)
+          end
         end
       end
+
       at_exit { thread_pool.shutdown }
 
       puts "\nPROGRESS: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
       log(end_message)
-    end #execute_on_users_with_index
+    end
 
     def log(entry)
       log_path = Rails.root.join('log', 'rake_db_maintenance.log')

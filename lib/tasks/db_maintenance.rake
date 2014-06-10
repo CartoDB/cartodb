@@ -59,7 +59,7 @@ namespace :cartodb do
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
       thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
       database_host = args[:database_host].blank? ? nil : args[:database_host]
-      sleep = args[:sleep].blank? ? 5000 : args[:sleep].to_i
+      sleep = args[:sleep].blank? ? 5 : args[:sleep].to_i
       statement_timeout = args[:statement_timeout].blank? ? nil : args[:statement_timeout]
 
       if database_host.nil?

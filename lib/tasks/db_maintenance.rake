@@ -457,7 +457,7 @@ namespace :cartodb do
     end
 
     def log(entry, filename_suffix='')
-      if filename_suffix.empty? || filename_suffix.nil?
+      if filename_suffix.nil? || filename_suffix.empty?
         log_path = Rails.root.join('log', 'rake_db_maintenance.log')
       else
         log_path = Rails.root.join('log', "rake_db_maintenance_#{filename_suffix}.log")

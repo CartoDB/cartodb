@@ -60,7 +60,11 @@ namespace :cartodb do
       thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
       database_host = args[:database_host].blank? ? nil : args[:database_host]
 
-      count = User.count
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions

@@ -1218,7 +1218,7 @@ class Table < Sequel::Model(:user_tables)
 
   def data_last_modified
     owner.in_database.select(:updated_at)
-      .from(:cdb_tablemetadata.qualify(:cartodb))
+      .from(:cdb_tablemetadata)
       .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
   rescue
     nil

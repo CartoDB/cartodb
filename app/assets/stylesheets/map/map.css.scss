@@ -674,7 +674,8 @@ div.map {
     top: 55px;
     border-top:1px solid #999999;
 
-    div.cartodb-zoom { position:absolute;  top: 0px; }
+    div.cartodb-zoom { position:absolute; top: 0px; }
+
     div.cartodb-tiles-loader {
       position:absolute;
       top:80px;
@@ -692,7 +693,7 @@ div.map {
 
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
-    position: relative;
+    position: absolute;
     @include inline-block;
     top: 20px;
     left: 50%;
@@ -703,7 +704,7 @@ div.map {
     @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
     background:white;
     @include border-radius(3px);
-    z-index: 2;
+    z-index: 1000;
 
     a {
       position:relative;

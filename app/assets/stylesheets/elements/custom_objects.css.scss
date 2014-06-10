@@ -282,6 +282,8 @@
 
       &.selected {
         @include background(linear-gradient(#F3F3F3, #FFF));
+        @include box-shadow(inset 0px 2px 2px #ccc);
+
         &:after {
           @include opacity(1);
         }

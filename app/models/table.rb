@@ -1195,7 +1195,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def cartodbfy
-    owner.in_database(:as => :superuser).run("SELECT cartodb.CDB_CartodbfyTable('#{self.name}')")
+    owner.in_database(:as => :superuser).run("SELECT CDB_CartodbfyTable('#{self.name}')")
     self.schema(reload:true)
   end
 
@@ -1218,7 +1218,7 @@ class Table < Sequel::Model(:user_tables)
 
   def data_last_modified
     owner.in_database.select(:updated_at)
-      .from(:cdb_tablemetadata.qualify(:cartodb))
+      .from(:cdb_tablemetadata)
       .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
   rescue
     nil
@@ -1291,12 +1291,12 @@ class Table < Sequel::Model(:user_tables)
   def update_cdb_tablemetadata
     # TODO: use upsert
     owner.in_database(as: :superuser).run(%Q{
-      INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
+      INSERT INTO cdb_tablemetadata (tabname, updated_at)
       VALUES ('#{table_id}', NOW())
     })
   rescue Sequel::DatabaseError
     owner.in_database(as: :superuser).run(%Q{
-      UPDATE cartodb.cdb_tablemetadata
+      UPDATE cdb_tablemetadata
       SET updated_at = NOW()
       WHERE tabname = '#{table_id}'
     })

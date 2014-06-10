@@ -37,7 +37,7 @@ canonical_visualization.permission.setPermission(user_model, 'rw').save();
 - how to know if the organization for the current user is single or multiuser
 ```
 user.isInsideOrg()
-user.isAdminOrg() *pending stuff
+user.isAdminOrg()
 ```
 
 - know what users have access to a visualization

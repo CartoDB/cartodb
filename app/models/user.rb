@@ -977,7 +977,7 @@ TRIGGER
 
   # Cartodb functions
 
-  def load_cartodb_functions()
+  def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.2.0' # TODO: optionally take as parameter? 
     tgt_rev = 'v0.2.0'
@@ -986,6 +986,12 @@ TRIGGER
 
     in_database(:as => :superuser) do |db|
       db.transaction do
+
+        unless statement_timeout.nil?
+          old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
+          db.run("SET statement_timeout TO '#{statement_timeout}';")
+        end
+
         db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%Q{
             SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
           }).first[:count] > 0
@@ -1024,6 +1030,10 @@ TRIGGER
     END;
     $$;
         })
+
+        unless statement_timeout.nil?
+          db.run("SET statement_timeout TO '#{old_timeout}';")
+        end
 
         exp = tgt_ver + ' ' + tgt_rev
         obt = db.fetch('SELECT cdb_version() as v').first[:v]

@@ -55,10 +55,12 @@ namespace :cartodb do
     # LOAD CARTODB FUNCTIONS
     ########################
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:num_threads, :thread_sleep, :database_host] => :environment do |t, args|
+    task :load_functions, [:num_threads, :thread_sleep, :database_host, :sleep, :statement_timeout] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
       thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
       database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 5000 : args[:sleep].to_i
+      statement_timeout = args[:statement_timeout].blank? ? nil : args[:statement_timeout]
 
       if database_host.nil?
         count = User.count
@@ -67,8 +69,9 @@ namespace :cartodb do
       end
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
-            user.load_cartodb_functions
+            user.load_cartodb_functions(statement_timeout)
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
+            sleep(sleep)
           rescue => e
             log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
             puts "FAIL:#{i} #{e.message}"
@@ -424,7 +427,6 @@ namespace :cartodb do
       else
         puts "Detailed log stored at log/rake_db_maintenance_#{database_host}.log"
       end
-
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
 

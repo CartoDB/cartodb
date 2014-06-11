@@ -1,4 +1,9 @@
-2.14.3 (2014-06-XX)
+
+* Fixed bugs
+  * Security fix regarding Typhoeus library
+
+
+2.14.3 (2014-06-11)
 -------------------
 * Fixed bugs
   * Last used colors working properly in color-picker.

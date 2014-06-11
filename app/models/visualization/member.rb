@@ -32,6 +32,9 @@ module CartoDB
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
+      PERMISSION_READONLY = CartoDB::Permission::TYPE_READONLY
+      PERMISSION_READWRITE = CartoDB::Permission::TYPE_READWRITE
+
       DEFAULT_URL_OPTIONS = 'title=true&description=true&search=false&shareable=true&cartodb_logo=true&layer_selector=false&legends=false&scrollwheel=true&fullscreen=true&sublayer_options=1&sql='
 
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
@@ -222,9 +225,17 @@ module CartoDB
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
 
-      def authorize?(user)
-        user.maps.map(&:id).include?(map_id)
-      end #authorize?
+      def is_owner?(user)
+        user.id == user_id
+      end
+
+      # @param user User
+      # @param permission_type String PERMISSION_xxx
+      def has_permission?(user, permission_type)
+        # TODO: Make checks mandatory after permissions migration
+        return is_owner?(user) if permission_id.nil?
+        permission.is_permitted?(user, permission_type)
+      end
 
       def varnish_key
         sorted_table_names = related_tables.map(&:name).sort { |i, j| i <=> j }.join(',')

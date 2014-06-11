@@ -106,7 +106,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def show
     member = Visualization::Member.new(id: params.fetch('id')).fetch
-    return(head 401) unless member.authorize?(current_user)
+    return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     render_jsonp(member)
   rescue KeyError
     head(404)
@@ -114,7 +114,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   
   def update
     member = Visualization::Member.new(id: params.fetch('id')).fetch
-    return head(401) unless member.authorize?(current_user)
+    return head(403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     payload.delete(:permission) if payload[:permission].present?
     payload.delete[:permission_id] if payload[:permission_id].present?
@@ -153,7 +153,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def destroy
     member = Visualization::Member.new(id: params.fetch('id')).fetch
-    return(head 401) unless member.authorize?(current_user)
+    return(head 403) unless member.is_owner?(current_user)
     member.delete
     current_user.update_visualization_metrics
     return head 204
@@ -169,7 +169,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def stats
     member = Visualization::Member.new(id: params.fetch('id')).fetch
-    return(head 401) unless member.authorize?(current_user)
+    return(head 401) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     render_jsonp(member.stats)
   rescue KeyError
     head(404)

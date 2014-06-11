@@ -69,12 +69,13 @@ RSpec::Matchers.define :pass_sql_tests do
       # We drop the user quota because tests will try to 
       # set it themselves, and the presence of a quota set by superuser
       # prevents them from doing that.
-      user_database.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();");
+      user_database.run("DROP FUNCTION IF EXISTS cartodb._CDB_UserQuotaInBytes();");
       config = ::Rails::Sequel.configuration.environment_for(Rails.env)
-      env  = " PGUSER=#{actual.database_username}"
-      env += " PGPORT=#{config['port']}"
-      env += " PGHOST=#{config['host']}"
-      env += " PGPASSWORD=#{actual.database_password}"
+      env = ""
+      env += " PGPORT=#{config['port']}" if config.has_key?('port')
+      env += " PGHOST=#{config['host']}" if config.has_key?('host')
+      env += " PGUSER=#{config['username']}" if config.has_key?('username')
+      env += " PGPASSWORD=#{config['password']}" if config.has_key?('password')
       glob = Rails.root.join('lib/sql/test/*.sql')
       Dir.glob(glob).each do |f|
         testname = File.basename(f)

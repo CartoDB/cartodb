@@ -51,6 +51,86 @@ namespace :cartodb do
       end
     end
 
+    desc 'Removes duplicated indexes created in some accounts'
+    task :remove_duplicate_indexes, [:database_host, :sleep, :statement_timeout] => :environment do |t, args|
+      threads = 1
+      thread_sleep = 1
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 3 : args[:sleep].to_i
+      statement_timeout = args[:statement_timeout].blank? ? nil : args[:statement_timeout]
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
+      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+        begin
+          user.in_database(:as => :superuser) do |db|
+            db.transaction do
+              db.run(%Q{
+                CREATE OR REPLACE FUNCTION CDB_DropDupUnique(dryrun boolean DEFAULT true)
+                RETURNS void
+                LANGUAGE plpgsql
+                VOLATILE
+                AS $$
+                DECLARE
+                  rec RECORD;
+                  sql TEXT;
+                BEGIN
+
+                  FOR rec IN SELECT
+                      c.conname, r.oid tab
+                    FROM
+                      pg_constraint c,
+                      pg_class r
+                    WHERE c.conrelid > 0
+                    AND c.conrelid = r.oid
+                    AND c.contype = 'u'
+                    AND EXISTS (
+                      SELECT * FROM pg_constraint pc
+                      WHERE pc.conrelid = c.conrelid -- same target table
+                        AND pc.conkey = c.conkey -- samekey
+                        AND pc.contype = 'p' -- index is a primary one
+                    )
+                  LOOP
+
+                    IF NOT dryrun THEN
+                      RAISE NOTICE 'Constraint % on table % is not needed, dropping',
+                        rec.conname, rec.tab::regclass::text;
+                      sql := 'ALTER TABLE ' || rec.tab::regclass::text
+                          || ' DROP CONSTRAINT ' || quote_ident (rec.conname);
+                      RAISE DEBUG 'Running: %', sql;
+                      EXECUTE sql;
+                    ELSE
+                      RAISE NOTICE 'Constraint % on table % is not needed (dry run)',
+                        rec.conname, rec.tab::regclass::text;
+                    END IF;
+
+                  END LOOP;
+
+                END;
+              $$;
+              })
+              db.run(%Q{
+                SELECT CDB_DropDupUnique();
+              })
+              db.run(%Q{
+                DROP FUNCTION IF EXISTS CDB_DropDupUnique(boolean);
+              })
+            end
+          end
+
+
+          log(sprintf("OK remove_duplicate_indexes %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
+          sleep(sleep)
+        rescue => e
+          log(sprintf("FAIL remove_duplicate_indexes %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
+          puts "FAIL:#{i} #{e.message}"
+        end
+      }, threads, thread_sleep, database_host)
+    end
+
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
@@ -70,10 +150,10 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions(statement_timeout)
-            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
+            log(sprintf("OK load_functions %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
             sleep(sleep)
           rescue => e
-            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
+            log(sprintf("FAIL load_functions %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
             puts "FAIL:#{i} #{e.message}"
           end
       }, threads, thread_sleep, database_host)
@@ -431,19 +511,19 @@ namespace :cartodb do
       thread_pool = ThreadPool.new(num_threads, sleep_time)
 
       if database_host.nil?
-        User.all.each_with_index do |user, i|
+        User.order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
-              puts "\nPROGRESS: #{i}/#{count} users queued"
+              puts "\nPROGRESS #{task_name}: #{i}/#{count} users queued"
             end
             block.call(user, i)
           end
         end
       else
-        User.where(database_host: database_host).each_with_index do |user, i|
+        User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
-              puts "\nPROGRESS: #{i}/#{count} users queued"
+              puts "\nPROGRESS #{task_name}: #{i}/#{count} users queued"
             end
             block.call(user, i)
           end
@@ -452,7 +532,7 @@ namespace :cartodb do
 
       at_exit { thread_pool.shutdown }
 
-      puts "\nPROGRESS: #{count}/#{count} users queued"
+      puts "\nPROGRESS #{task_name}: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
       log(end_message, database_host)
@@ -465,7 +545,7 @@ namespace :cartodb do
         log_path = Rails.root.join('log', "rake_db_maintenance_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
-        file_handle.puts "#{entry}\n"
+        file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 

@@ -1,0 +1,27 @@
+    
+  /**
+   * Posts widget styles
+   */
+
+  
+  div.dropdown.posts_widget {
+    
+    ul {
+      display:block;
+      padding:0 15px;
+      width:auto;
+    }
+
+    li {
+      display:block;
+      padding:14px 0;
+
+      a {
+        display:block;
+        padding:0;
+        font-weight:bold;
+        font-size: 14px;
+        line-height:16px;
+      }
+    }
+  }

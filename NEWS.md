@@ -1,3 +1,19 @@
+2.14.3 (2014-06-XX)
+-------------------
+* Fixed bugs
+  * Last used colors working properly in color-picker.
+  * HTML template working properly for header infowindows.
+  * Make import_id visible for any kind of import error.
+  * Values from unknown column type are displaying correctly.
+  * Custom title within SQL and CartoCSS editor fixed.
+
+* New features
+  * Tumblr-widget available in dashboard where a new post is published.
+
+
+
+
+
 * Migration Type (see UPGRADE): Mandatory migration
 
 * New features

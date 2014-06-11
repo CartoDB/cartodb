@@ -25,6 +25,16 @@ describe Visualization::Collection do
 
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+    # For relator->permission
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    @user_mock = mock
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:username).returns(user_name)
+    @user_mock.stubs(:api_key).returns(user_apikey)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
 
   after(:each) do

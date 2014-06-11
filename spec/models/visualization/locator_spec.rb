@@ -27,6 +27,17 @@ describe Visualization::Locator do
     @user_id = UUIDTools::UUID.timestamp_create.to_s
 
     @map_id         = UUIDTools::UUID.timestamp_create.to_s
+
+    # For relator->permission
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    @user_mock = mock
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:username).returns(user_name)
+    @user_mock.stubs(:api_key).returns(user_apikey)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+
     @visualization  = Visualization::Member.new(
       {
       name:         'Visualization 1',

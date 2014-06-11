@@ -5,20 +5,14 @@ require_relative './permission/presenter'
 module CartoDB
   class Permission < Sequel::Model
 
+    # @param id String (uuid)
+    # @param owner_id String (uuid)
+    # @param owner_username String
+
     TYPE_READONLY   = 'r'
     TYPE_READWRITE  = 'rw'
 
     DEFAULT_ACL_VALUE = '[]'
-
-    PUBLIC_ATTRIBUTES = [
-        :id,
-        :owner_id,
-        :owner_username
-    ]
-
-    def public_values
-      Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
-    end #public_values
 
     def acl
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)

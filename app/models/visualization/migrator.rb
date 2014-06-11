@@ -25,6 +25,7 @@ module CartoDB
           String    :password_salt
           String    :url_options
           String    :user_id
+          String    :permission_id
         end
 
         @db.run(%Q{

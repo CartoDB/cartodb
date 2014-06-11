@@ -64,7 +64,6 @@ describe Visualization::Member do
       member.permission.should_not be nil
       member.permission.owner_id.should eq @user_mock.id
       member.permission.owner_username.should eq @user_mock.username
-
     end
 
     it 'persists tags as an array if the backend supports it' do
@@ -111,6 +110,7 @@ describe Visualization::Member do
 
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
+      member = Visualization::Member.new(id: member.id).fetch
       member.expects(:invalidate_varnish_cache)
       member.name = 'changed'
       member.store
@@ -123,6 +123,7 @@ describe Visualization::Member do
       member      = Visualization::Member.new(random_attributes)
       member.store
 
+      member = Visualization::Member.new(id: member.id).fetch
       member.expects(:invalidate_varnish_cache)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
@@ -132,6 +133,7 @@ describe Visualization::Member do
       member      = Visualization::Member.new(random_attributes)
       member.store
 
+      member = Visualization::Member.new(id: member.id).fetch
       member.expects(:invalidate_varnish_cache)
       member.description = 'changed description'
       member.store
@@ -434,6 +436,16 @@ describe Visualization::Member do
     end
   end #default_privacy_values
 
+  it 'should not allow to change permission from the outside' do
+    member = Visualization::Member.new(random_attributes)
+    member.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.permission.should_not be nil
+    member.permission_id = UUIDTools::UUID.timestamp_create.to_s
+    member.valid?.should eq false
+  end
+
   def random_attributes(attributes={})
     random = UUIDTools::UUID.timestamp_create.to_s
     {
@@ -442,7 +454,7 @@ describe Visualization::Member do
       privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
-      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
+      user_id:      attributes.fetch(:user_id, @user_mock.id),
       active_layer_id: random
     }
   end #random_attributes

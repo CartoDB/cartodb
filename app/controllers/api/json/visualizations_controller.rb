@@ -113,6 +113,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     member = Visualization::Member.new(id: params.fetch('id')).fetch
     return head(401) unless member.authorize?(current_user)
 
+    payload.delete(:permission) if payload[:permission].present?
+    payload.delete[:permission_id] if payload[:permission_id].present?
+
     # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
     # This is far from perfect, but works without messing with table-vis sync and their two backends
     if member.table?

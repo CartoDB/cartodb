@@ -107,6 +107,10 @@ module CartoDB
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
+        unless permission_id.nil?
+          validator.errors.store(:permission_id, 'Cannot modify permission') unless permission_change_valid
+        end
+
         validator.valid?
       end #valid?
 
@@ -174,6 +178,12 @@ module CartoDB
           markdown = Redcarpet::Markdown.new(renderer, extensions = {})
           markdown.render description 
         end
+      end
+
+      def permission_id=(permission_id)
+        self.permission_change_valid = false
+        self.permission_change_valid = true if (@permission_id.nil? || @permission_id == permission_id)
+        super(permission_id)
       end
 
       def privacy=(privacy)
@@ -318,7 +328,7 @@ module CartoDB
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed, :description_changed
+      attr_accessor :privacy_changed, :name_changed, :description_changed, :permission_change_valid
 
       def do_store(propagate_changes=true)
         if password_protected?

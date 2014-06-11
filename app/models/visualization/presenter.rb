@@ -28,7 +28,8 @@ module CartoDB
           privacy:          privacy_for_vizjson.upcase,
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
-          updated_at:       visualization.updated_at
+          updated_at:       visualization.updated_at,
+          permission:       visualization.permission.to_poro
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)

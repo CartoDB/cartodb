@@ -50,11 +50,7 @@ module MinimalValidator
       errors.map { |attribute, message| "#{attribute} #{message}" }
     end #full_errors
 
-    attr_reader :errors
-
-    private
-
-    attr_writer :errors
+    attr_accessor :errors
   end # Validator
 end # MinimalValidator
 

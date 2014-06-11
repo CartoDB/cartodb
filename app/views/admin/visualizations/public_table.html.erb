@@ -156,6 +156,12 @@
               cartodb.core.Profiler.backend(function () {
               statsc.send.apply(statsc, arguments);
             })
+            // stop sending stats after 11 seconds
+            // statsc send stats in 5 secs interval so allow to send at least twice
+            setTimeout(function() {
+                cartodb.core.Profiler.backend(null);
+            }, 11*1000);
+
           })
         }
       <% end %>

@@ -14,24 +14,51 @@
 .widget,
 .static {
 
+  &.image {
+
+    &.editable {
+      max-width: 400px;
+      .text { font-weight:normal; }
+    }
+
+    img {
+      -moz-user-select: none; /* These user-select properties are inheritable, used to prevent text selection */
+      -webkit-user-select: none;
+      -ms-user-select: none; /* From IE10 only */
+      user-select: none; /* Not valid CSS yet, as of July 2012 */
+
+      -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+      user-drag: none;
+    }
+
+  }
+
   &.header {
     width: 100%;
     @include border-radius(0);
     max-width: inherit;
 
-    @include simple-transition(height, .10s, ease-in-out);
+    @include simple-transition(all, .10s, ease-in-out);
 
     .content:hover { cursor: default; }
+
+    &:hover { 
+      background:rgba(#333, .5);
+    }
 
     .description {
       color: #fff;
       font-size:13px;
+      &.hidden { display: none; }
+      a { color: inherit; text-decoration: underline; }
+      a:hover { color: #ccc; }
     }
 
     .title {
       font-weight: bold;
       font-size:15px;
       color: #fff;
+      &.hidden { display: none; }
     }
 
     .edit {
@@ -51,7 +78,7 @@
   @include border-radius(3px);
   @include simple-transition(background, .10s, ease-in-out);
 
-  min-width: 50px;
+  /*min-width: 50px;*/
   max-width: 800px;
 
   z-index: 999;
@@ -200,17 +227,14 @@
   .text {
 
     em, i { font-style: italic; } 
-    strong { color:red; }
+    strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
 
     &.widget_text img { 
-      @include user-select(none); 
       display:block;
-      max-width: 200px!important;
     }
 
     font-size: 20px;
-    font-weight: bold;
     line-height: normal;
     color: #fff;
 

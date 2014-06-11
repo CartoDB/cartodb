@@ -18,6 +18,24 @@ div.map {
 
   @include box-sizing(border-box);
 
+  &.show_title.show_description {
+    div.cartodb-searchbox { top: 70px; }
+    div.cartodb-zoom { top: 40px; }
+    div.cartodb-zoom-info { top: 60px; }
+  }
+
+  &.show_title {
+    div.cartodb-searchbox { top: 40px; }
+    div.cartodb-zoom { top: 20px; }
+    div.cartodb-zoom-info { top: 40px; }
+  }
+
+  &.show_description {
+    div.cartodb-searchbox { top: 40px; }
+    div.cartodb-zoom { top: 20px; }
+    div.cartodb-zoom-info { top: 40px; }
+  }
+
   position:absolute;
   top:1px; // Header opacity black border needs to be present
   left:0;

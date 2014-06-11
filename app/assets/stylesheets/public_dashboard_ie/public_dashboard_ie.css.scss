@@ -22,25 +22,23 @@ header {
       vertical-align:middle;
     }
 
-    a.button.green:hover {
-      background: #749C33!important;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
     a.button.green {
       padding: 8px 10px;
       font-size: 12px;
       font-weight: bold;
-      font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
+      font-family: $title-fonts;
       line-height: normal;
       text-decoration: none;
       text-transform: uppercase;
       color: white;
       text-shadow: 0 1px 0 #3C5219;
       background: #94BE42!important;
-
       zoom: 1; *display: inline;
+      &:hover {
+        background: #749C33!important;
+        text-decoration: none;
+        cursor: pointer;
+      }
     }
   }
 }

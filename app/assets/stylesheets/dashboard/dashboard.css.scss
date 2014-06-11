@@ -167,7 +167,7 @@
                 @include dashboard-sprite(square, $offset-y: 7px);
                 margin: 0 0 6px -10px;
                 padding-left: 10px;
-                font-family:"Helvetica Neue", "Helvetica", Arial;
+                font-family: $text-fonts;
                 border:none;
                 line-height:normal;
                 letter-spacing: 0;

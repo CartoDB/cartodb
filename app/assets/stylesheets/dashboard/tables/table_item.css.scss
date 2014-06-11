@@ -158,7 +158,7 @@
 
   // Hover effect with table-item border
   .table-item {
-    &:last-child { }
+    &:last-child {}
     &:first-child .table-item-inner {
       border-color:transparent;
     }
@@ -166,6 +166,7 @@
     &:hover {
       border-color:#D7D7D7;
       cursor: pointer;
+      background:white;
 
       & + .table-item {
         .table-item-inner { border-color:transparent }

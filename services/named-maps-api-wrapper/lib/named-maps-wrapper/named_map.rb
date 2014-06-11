@@ -32,7 +32,7 @@ module CartoDB
 					headers:         parent.headers,
 					body:            ::JSON.dump( template_data ),
           ssl_verifypeer:  parent.verify_cert,
-          ssl_verifyhost:  parent.verify_cert ? 0 : 2,
+          ssl_verifyhost:  parent.verify_host,
           followlocation: true
 					} )
         raise HTTPResponseError, "#{response.code} #{response.request.url} (POST)" unless response.code == 200
@@ -52,7 +52,7 @@ module CartoDB
 					headers: @parent.headers,
 					body: ::JSON.dump( @template ),
           ssl_verifypeer: @parent.verify_cert,
-          ssl_verifyhost: @parent.verify_cert ? 0 : 2,
+          ssl_verifyhost: @parent.verify_host,
           followlocation: true
 				} )
 
@@ -66,7 +66,7 @@ module CartoDB
           { 
             headers: @parent.headers,
             ssl_verifypeer: @parent.verify_cert,
-            ssl_verifyhost: @parent.verify_cert ? 0 : 2,
+            ssl_verifyhost: @parent.verify_host,
             followlocation: true
           } )
         raise HTTPResponseError, "#{response.code} #{response.request.url} (DELETE)" unless response.code == 204

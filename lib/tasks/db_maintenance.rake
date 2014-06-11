@@ -419,6 +419,32 @@ namespace :cartodb do
       end
     end
 
+    desc 'Setup default permissions on existing visualizations'
+    task :create_default_vis_permissions => :environment do
+
+      require_relative '../../app/models/visualization/collection'
+
+      collection = CartoDB::Visualization::Collection.new.fetch(per_page:999999)
+
+      count = collection.count
+      puts "\n>Running :create_default_vis_permissions for #{count} visualizations"
+      collection.each_with_index { |vis, i|
+        puts ">Processed: #{i}/#{count}" if i % 100 == 0
+
+        if vis.permission_id.nil?
+          begin
+            # Just saving will trigger the permission creation
+            vis.send(:do_store, false)
+            puts "OK #{vis.id}"
+          rescue => e
+            puts "FAIL #{vis.id}: #{e.message}"
+          end
+        end
+      }
+
+      puts '\n>Finished :create_default_vis_permissions'
+    end
+
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc

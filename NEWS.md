@@ -1,10 +1,13 @@
 * Migration Type (see UPGRADE): Mandatory migration
+     * Also mandatory to run:
+        * rake cartodb:db:create_default_vis_permissions
 
 * New features
     * Added a log method for db_maintenance rakes
       (logs to log/rake_db_maintenance.log).
       For now used on load_functions.
     * Added avatar_url to User model
+    * Added Permission model and permission attribute for Visualizations
 
 * Fixed bugs
     * allow "rectangle" option for marker-type in torque layer

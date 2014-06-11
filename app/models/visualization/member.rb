@@ -68,6 +68,7 @@ module CartoDB
         @validator      = MinimalValidator::Validator.new
         @named_maps     = nil
         @user_data      = nil
+        self.permission_change_valid = true   # Changes upon set of different permission_id
       end #initialize
 
       def default_privacy(owner)

@@ -52,6 +52,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #index
 
   def create
+    payload.delete(:permission) if payload[:permission].present?
+    payload.delete[:permission_id] if payload[:permission_id].present?
+
     if params[:source_visualization_id]
       source    = Visualization::Member.new(
                     id: params.fetch(:source_visualization_id)

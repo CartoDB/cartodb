@@ -51,8 +51,15 @@ module CartoDB
       end #affected_visualizations
 
       def preview_for(object)
-        { id: object.id, name: object.name }
-      end #preview_for
+        data = {
+            id:   object.id,
+            name: object.name
+        }
+        if object[:permission_id].present? && !object.permission.nil?
+          data[:permission] = object.permission.to_poro.select {|key, val| [:id, :owner].include?(key) }
+        end
+        data
+      end
 
       def synchronization
         return nil unless synchronization_record && !synchronization_record.empty?

@@ -56,7 +56,9 @@ module CartoDB
             name: object.name
         }
         if object[:permission_id].present? && !object.permission.nil?
-          data[:permission] = object.permission.to_poro.select {|key, val| [:id, :owner].include?(key) }
+          data[:permission] = object.permission.to_poro.select {|key, val|
+            [:id, :owner].include?(key)
+          }
         end
         data
       end

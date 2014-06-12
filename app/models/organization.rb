@@ -31,13 +31,18 @@ class Organization < Sequel::Model
 
   def to_poro
     {
-      :id => self.id,
-      :seats => self.seats,
+      :id             => self.id,
+      :seats          => self.seats,
       :quota_in_bytes => self.quota_in_bytes,
-      :created_at => self.created_at,
-      :updated_at => self.updated_at,
-      :name => self.name,
-      :users => self.users.map { |u| { :id => u.id, :username => u.username } }
+      :created_at     => self.created_at,
+      :updated_at     => self.updated_at,
+      :name           => self.name,
+      :users          => self.users.map { |u|
+        {
+          :id       => u.id,
+          :username => u.username
+        }
+      }
     }
   end
 end

@@ -117,8 +117,12 @@ describe CartoDB::Permission do
 
   describe '#permissions_methods' do
     it 'checks permission_for_user and is_owner methods' do
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user2_mock = mock
+      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user2_mock.stubs(:username).returns('user2')
+      user3_mock = mock
+      user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user3_mock.stubs(:username).returns('user3')
 
       permission = Permission.new(
         owner_id:       @user.id,
@@ -127,8 +131,8 @@ describe CartoDB::Permission do
       permission.acl = [
         {
           user: {
-            id: user2.id,
-            username: user2.username
+            id: user2_mock.id,
+            username: user2_mock.username
           },
           type: Permission::TYPE_READONLY
         }
@@ -140,14 +144,58 @@ describe CartoDB::Permission do
 
       permission.should_not eq nil
 
-      permission.is_owner(@user).should eq true
-      permission.is_owner(user2).should eq false
-      permission.is_owner(user3).should eq false
+      permission.is_owner?(@user).should eq true
+      permission.is_owner?(user2_mock).should eq false
+      permission.is_owner?(user3_mock).should eq false
 
       permission.permission_for_user(@user).should eq Permission::TYPE_READWRITE
-      permission.permission_for_user(user2).should eq Permission::TYPE_READONLY
-      permission.permission_for_user(user3).should eq nil
+      permission.permission_for_user(user2_mock).should eq Permission::TYPE_READONLY
+      permission.permission_for_user(user3_mock).should eq nil
     end
+
+    it 'checks is_permitted' do
+      user2_mock = mock
+      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user2_mock.stubs(:username).returns('user2')
+      user3_mock = mock
+      user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user3_mock.stubs(:username).returns('user3')
+      user4_mock = mock
+      user4_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user4_mock.stubs(:username).returns('user4')
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username
+      )
+      permission.acl = [
+        {
+          user: {
+            id: user2_mock.id,
+            username: user2_mock.username
+          },
+          type: Permission::TYPE_READONLY
+        },
+        {
+          user: {
+            id: user3_mock.id,
+            username: user3_mock.username
+          },
+          type: Permission::TYPE_READWRITE
+        }
+      ]
+      permission.save
+
+      permission.is_permitted?(user2_mock, Permission::TYPE_READONLY).should eq true
+      permission.is_permitted?(user2_mock, Permission::TYPE_READWRITE).should eq false
+
+      permission.is_permitted?(user3_mock, Permission::TYPE_READONLY).should eq true
+      permission.is_permitted?(user3_mock, Permission::TYPE_READWRITE).should eq true
+
+      permission.is_permitted?(user4_mock, Permission::TYPE_READONLY).should eq false
+      permission.is_permitted?(user4_mock, Permission::TYPE_READWRITE).should eq false
+    end
+
   end
 
 end

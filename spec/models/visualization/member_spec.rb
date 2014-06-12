@@ -24,7 +24,6 @@ describe Visualization::Member do
     @user_mock = mock
     @user_mock.stubs(:id).returns(user_id)
     @user_mock.stubs(:username).returns(user_name)
-    @user_mock.stubs(:id).returns(user_id)
     @user_mock.stubs(:api_key).returns(user_apikey)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
@@ -64,7 +63,6 @@ describe Visualization::Member do
       member.permission.should_not be nil
       member.permission.owner_id.should eq @user_mock.id
       member.permission.owner_username.should eq @user_mock.username
-
     end
 
     it 'persists tags as an array if the backend supports it' do
@@ -111,6 +109,7 @@ describe Visualization::Member do
 
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
+      member = Visualization::Member.new(id: member.id).fetch
       member.expects(:invalidate_varnish_cache)
       member.name = 'changed'
       member.store
@@ -123,6 +122,7 @@ describe Visualization::Member do
       member      = Visualization::Member.new(random_attributes)
       member.store
 
+      member = Visualization::Member.new(id: member.id).fetch
       member.expects(:invalidate_varnish_cache)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
@@ -132,6 +132,7 @@ describe Visualization::Member do
       member      = Visualization::Member.new(random_attributes)
       member.store
 
+      member = Visualization::Member.new(id: member.id).fetch
       member.expects(:invalidate_varnish_cache)
       member.description = 'changed description'
       member.store
@@ -192,20 +193,70 @@ describe Visualization::Member do
     end
   end #public?
 
-  describe '#authorize?' do
-    it 'returns true if user maps include map_id' do
-      map_id  = UUIDTools::UUID.timestamp_create.to_s
-      member  = Visualization::Member.new(name: 'foo', map_id: map_id)
+  describe '#permissions' do
+    it 'checks is_owner? permissions' do
+      user_id  = UUIDTools::UUID.timestamp_create.to_s
+      member  = Visualization::Member.new(name: 'foo', user_id: user_id)
 
-      maps    = [OpenStruct.new(id: map_id)]
-      user    = OpenStruct.new(maps: maps)
-      member.authorize?(user).should == true
+      user    = OpenStruct.new(id: user_id)
+      member.is_owner?(user).should == true
 
-      maps    = [OpenStruct.new(id: 999)]
-      user    = OpenStruct.new(maps: maps)
-      member.authorize?(user).should == false
+      user    = OpenStruct.new(id: UUIDTools::UUID.timestamp_create.to_s)
+      member.is_owner?(user).should == false
     end
-  end #authorize?
+
+    it 'checks has_permission? permissions' do
+      user2_mock = mock
+      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user2_mock.stubs(:username).returns('user2')
+      user3_mock = mock
+      user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user3_mock.stubs(:username).returns('user3')
+      user4_mock = mock
+      user4_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user4_mock.stubs(:username).returns('user4')
+
+      visualization = Visualization::Member.new(
+          privacy: Visualization::Member::PRIVACY_PUBLIC,
+          name: 'test',
+          type: Visualization::Member::CANONICAL_TYPE,
+          user_id: @user_mock.id
+      )
+      visualization.store
+
+      permission = Permission.where(id: visualization.permission_id).first
+
+      acl = [
+        {
+          user: {
+            id: user2_mock.id,
+            username: user2_mock.username
+          },
+          type: Permission::TYPE_READONLY
+        },
+        {
+          user: {
+            id: user3_mock.id,
+            username: user3_mock.username
+          },
+          type: Permission::TYPE_READWRITE
+        }
+      ]
+
+      permission.acl = acl
+      permission.save
+      visualization.permission.acl.should eq acl
+
+      visualization.has_permission?(user2_mock, Visualization::Member::PERMISSION_READONLY).should eq true
+      visualization.has_permission?(user2_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
+
+      visualization.has_permission?(user3_mock, Visualization::Member::PERMISSION_READONLY).should eq true
+      visualization.has_permission?(user3_mock, Visualization::Member::PERMISSION_READWRITE).should eq true
+
+      visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
+      visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
+    end
+  end
 
   describe 'validations' do
     describe '#privacy' do
@@ -434,6 +485,16 @@ describe Visualization::Member do
     end
   end #default_privacy_values
 
+  it 'should not allow to change permission from the outside' do
+    member = Visualization::Member.new(random_attributes)
+    member.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.permission.should_not be nil
+    member.permission_id = UUIDTools::UUID.timestamp_create.to_s
+    member.valid?.should eq false
+  end
+
   def random_attributes(attributes={})
     random = UUIDTools::UUID.timestamp_create.to_s
     {
@@ -442,7 +503,7 @@ describe Visualization::Member do
       privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
-      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
+      user_id:      attributes.fetch(:user_id, @user_mock.id),
       active_layer_id: random
     }
   end #random_attributes

@@ -14,6 +14,12 @@ module CartoDB
 
     DEFAULT_ACL_VALUE = '[]'
 
+    # Format: requested_permission => [ allowed_permissions_list ]
+    PERMISSIONS_MATRIX = {
+        TYPE_READONLY    => [ TYPE_READONLY, TYPE_READWRITE ],
+        TYPE_READWRITE   => [ TYPE_READWRITE ]
+    }
+
     def acl
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
     end
@@ -63,14 +69,28 @@ module CartoDB
     # @param subject User
     # @return nil|string Either Permission::TYPE_xxx or nil if no permission
     def permission_for_user(subject)
-      return TYPE_READWRITE if is_owner(subject)
+      return TYPE_READWRITE if is_owner?(subject)
       acl.map { |entry|
         return entry[:type] if entry[:user][:id] == subject.id
       }
       nil
     end
 
-    def is_owner(subject)
+    # Note: Does not check ownership
+    # @param subject User
+    # @param permission_type String Permission::TYPE_xxx
+    def is_permitted?(subject, permission_type)
+      acl.each { |acl_user|
+        if acl_user[:user][:id] == subject.id
+          if Permission::PERMISSIONS_MATRIX[permission_type].include? acl_user[:type]
+            return true
+          end
+        end
+      }
+      false
+    end
+
+    def is_owner?(subject)
       self.owner_id == subject.id
     end
 

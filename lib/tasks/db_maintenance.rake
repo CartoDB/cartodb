@@ -433,6 +433,7 @@ namespace :cartodb do
 
         if vis.permission_id.nil?
           begin
+            raise 'No owner' if vis.user.nil?
             # Just saving will trigger the permission creation
             vis.send(:do_store, false)
             puts "OK #{vis.id}"
@@ -442,7 +443,7 @@ namespace :cartodb do
         end
       }
 
-      puts '\n>Finished :create_default_vis_permissions'
+      puts "\n>Finished :create_default_vis_permissions"
     end
 
     # Executes a ruby code proc/block on all existing users, outputting some info

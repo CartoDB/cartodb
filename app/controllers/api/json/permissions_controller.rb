@@ -8,12 +8,12 @@ class Api::Json::PermissionsController < Api::ApplicationController
     permission = CartoDB::Permission.where(id: params[:id]).first
 
     return head(404) if permission.nil?
-    return head(401) unless permission.is_owner(current_user)
+    return head(401) unless permission.is_owner?(current_user)
 
     begin
       permission.acl = params[:acl].map { |entry| entry.deep_symbolize_keys }
     rescue PermissionError => e
-      # LOG internally the error
+      CartoDB.notify_exception(e)
       return head(400)
     end
 
@@ -26,7 +26,7 @@ class Api::Json::PermissionsController < Api::ApplicationController
     permission = CartoDB::Permission.where(id: params[:id]).first
 
     return head(404) if permission.nil?
-    return head(401) unless permission.is_owner(current_user)
+    return head(401) unless permission.is_owner?(current_user)
 
     render json: permission.to_poro
   end

@@ -12,7 +12,7 @@ class Api::Json::PermissionsController < Api::ApplicationController
 
     begin
       permission.acl = params[:acl].map { |entry| entry.deep_symbolize_keys }
-    rescue PermissionError => e
+    rescue CartoDB::PermissionError => e
       CartoDB.notify_exception(e)
       return head(400)
     end

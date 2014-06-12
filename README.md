@@ -52,7 +52,7 @@ and code.
 
   - Ubuntu 12.04
   - Postgres 9.3.x (with plpythonu extension)
-  - cartodb-postgresql 0.2.0+
+  - cartodb-postgresql 0.2.1
   - Redis 2.2+
   - Ruby 1.9.3
   - NodeJS 0.8.x

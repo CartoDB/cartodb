@@ -1,4 +1,7 @@
 
+* Migration Type (see UPGRADE): Mandatory migration
+  * Cartodb postgres extension update to 0.2.1
+
 * Fixed bugs
   * Security fix regarding Typhoeus library
 
@@ -28,7 +31,6 @@
       (logs to log/rake_db_maintenance.log).
       For now used on load_functions.
   * Added avatar_url to User model
-
 
 * Migration Type (see UPGRADE): Mandatory migration
   * Check also [installtion steps](https://github.com/CartoDB/cartodb-postgresql#install) for cartodb postgres extension

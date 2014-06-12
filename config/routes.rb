@@ -178,6 +178,10 @@ CartoDB::Application.routes.draw do
       get     'perm/:id' => 'permissions#show'
       put     'perm/:id' => 'permissions#update'
 
+      # Organizations
+      get     'org/'      => 'organizations#show'
+      get     'org/users' => 'organizations#users'
+
     end
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson

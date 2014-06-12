@@ -6,7 +6,7 @@ module CartoDB
     class NotImplementedError < StandardError; end
 
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
-                  :working_dir, :remote_id, :state, :processed_rows, :column_datatype
+                  :working_dir, :remote_id, :state, :processed_rows
 
     attr_accessor :table_name, :column_name
 
@@ -37,11 +37,6 @@ module CartoDB
       @batch_size        = (@geometry_type == :point ? 5000 : 10)
       @state             = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
-      @column_datatype   = @connection.fetch(%Q{
-        SELECT column_name, data_type
-        FROM information_schema.columns
-        WHERE table_name='#{@table_name}' AND column_name='#{@column_name}'
-      }).first[:data_type]
     end # initialize
 
     def run
@@ -57,6 +52,14 @@ module CartoDB
       raise e
     ensure
       drop_temp_table
+    end
+
+    def column_datatype
+      @column_datatype ||= connection.fetch(%Q{
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name='#{table_name}' AND column_name='#{column_name}'
+      }).first[:data_type]
     end
 
     def download_results

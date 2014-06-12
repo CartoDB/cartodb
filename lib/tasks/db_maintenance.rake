@@ -121,10 +121,10 @@ namespace :cartodb do
             end
           end
 
-          log(sprintf("OK remove_duplicate_indexes %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :remove_duplicate_indexes.to_s, database_host)
           sleep(sleep)
         rescue => e
-          log(sprintf("FAIL remove_duplicate_indexes %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :remove_duplicate_indexes.to_s, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
       }, threads, thread_sleep, database_host)
@@ -149,10 +149,10 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions(statement_timeout)
-            log(sprintf("OK load_functions %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
             sleep(sleep)
           rescue => e
-            log(sprintf("FAIL load_functions %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
             puts "FAIL:#{i} #{e.message}"
           end
       }, threads, thread_sleep, database_host)
@@ -498,13 +498,13 @@ namespace :cartodb do
         count = User.where(database_host: database_host).count
       end
 
-      start_message = "\n>Running #{task_name} for #{count} users"
+      start_message = ">Running #{task_name} for #{count} users"
       puts start_message
-      log(start_message, database_host)
+      log(start_message, task_name, database_host)
       if database_host.nil?
-        puts 'Detailed log stored at log/rake_db_maintenance.log'
+        puts "Detailed log stored at log/rake_db_maintenance_#{task_name}.log"
       else
-        puts "Detailed log stored at log/rake_db_maintenance_#{database_host}.log"
+        puts "Detailed log stored at log/rake_db_maintenance_#{task_name}_#{database_host}.log"
       end
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
@@ -513,7 +513,7 @@ namespace :cartodb do
         User.order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
-              puts "\nPROGRESS #{task_name}: #{i}/#{count} users queued"
+              puts "PROGRESS: #{i}/#{count} users queued"
             end
             block.call(user, i)
           end
@@ -522,7 +522,7 @@ namespace :cartodb do
         User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
-              puts "\nPROGRESS #{task_name}: #{i}/#{count} users queued"
+              puts "PROGRESS: #{i}/#{count} users queued"
             end
             block.call(user, i)
           end
@@ -531,17 +531,17 @@ namespace :cartodb do
 
       at_exit { thread_pool.shutdown }
 
-      puts "\nPROGRESS #{task_name}: #{count}/#{count} users queued"
+      puts "PROGRESS: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
-      log(end_message, database_host)
+      log(end_message, task_name, database_host)
     end
 
-    def log(entry, filename_suffix='')
+    def log(entry, task_name, filename_suffix='')
       if filename_suffix.nil? || filename_suffix.empty?
-        log_path = Rails.root.join('log', 'rake_db_maintenance.log')
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}.log")
       else
-        log_path = Rails.root.join('log', "rake_db_maintenance_#{filename_suffix}.log")
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
         file_handle.puts "[#{Time.now}] #{entry}\n"

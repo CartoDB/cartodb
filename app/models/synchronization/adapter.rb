@@ -85,6 +85,7 @@ module CartoDB
       end
 
       def update_cdb_tablemetadata(name)
+        # TODO: use upsert (see table.update_cdb_tablemetadata)
         user.in_database(as: :superuser).run(%Q{
           INSERT INTO cdb_tablemetadata (tabname, updated_at)
           VALUES ('#{name}'::regclass::oid, NOW())

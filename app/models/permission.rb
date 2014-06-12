@@ -24,8 +24,8 @@ module CartoDB
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
     end
 
-    # Populate it with items in format: [ { :user { id :uuid, username :string}, type :string} ]
-    # id is user id, username is to avoid additional lookups, type is "r" or "rw"
+    # Populate it with items in format: [ { :user { id :uuid, username :string, avatar_url :string}, type :string} ]
+    # id is user id, type is "r" or "rw". username and avatar_url are accepted but its value discarded
     # @param value Object
     # @throws PermissionError
     def acl=(value)
@@ -34,11 +34,18 @@ module CartoDB
       incoming_acl.map { |item|
         raise PermissionError.new('Wrong ACL entry format') unless item.kind_of? Hash
         raise PermissionError.new('Wrong ACL entry format') unless item.keys == [:user, :type]
-        raise PermissionError.new('Wrong ACL entry format') unless item[:user].keys == [:id, :username]
+        raise PermissionError.new('Wrong ACL entry format') unless item[:user].keys - [:id, :username, :avatar_url] == []
         raise PermissionError.new('Wrong ACL entry format') unless [TYPE_READONLY, TYPE_READWRITE].include? item[:type]
       }
 
-      self.access_control_list = ::JSON.dump(incoming_acl)
+      cleaned_acl = incoming_acl.map { |item|
+        {
+          id:   item[:user][:id],
+          type: item[:type]
+        }
+      }
+
+      self.access_control_list = ::JSON.dump(cleaned_acl)
     end
 
     # @return User|nil
@@ -71,7 +78,7 @@ module CartoDB
     def permission_for_user(subject)
       return TYPE_READWRITE if is_owner?(subject)
       acl.map { |entry|
-        return entry[:type] if entry[:user][:id] == subject.id
+        return entry[:type] if entry[:id] == subject.id
       }
       nil
     end
@@ -81,7 +88,7 @@ module CartoDB
     # @param permission_type String Permission::TYPE_xxx
     def is_permitted?(subject, permission_type)
       acl.each { |acl_user|
-        if acl_user[:user][:id] == subject.id
+        if acl_user[:id] == subject.id
           if Permission::PERMISSIONS_MATRIX[permission_type].include? acl_user[:type]
             return true
           end

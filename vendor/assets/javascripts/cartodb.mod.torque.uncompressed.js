@@ -5867,6 +5867,16 @@ exports.torque.common.TorqueLayer = TorqueLayer;
   };
 
   exports.torque.Event = Event;
+  exports.torque.extend = function(a, b) {
+    for (var k in b) {
+      a[k] = b[k];
+    }
+    return a
+  }
+
+  exports.torque.clone = function(a) {
+    return exports.torque.extend({}, a);
+  }
 
 
   // types
@@ -8687,7 +8697,7 @@ function GMapsTorqueLayer(options) {
     if(self.key !== k) {
       self.setKey(k);
     }
-  }, this.options);
+  }, torque.clone(this.options));
 
   this.play = this.animator.start.bind(this.animator);
   this.stop = this.animator.stop.bind(this.animator);
@@ -9452,7 +9462,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
       if(self.key !== k) {
         self.setKey(k, { direct: true });
       }
-    }, options);
+    }, torque.clone(options));
 
     this.play = this.animator.start.bind(this.animator);
     this.stop = this.animator.stop.bind(this.animator);

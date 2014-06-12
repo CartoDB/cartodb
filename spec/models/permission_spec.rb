@@ -18,10 +18,17 @@ describe CartoDB::Permission do
         {
           user: {
             id: UUIDTools::UUID.timestamp_create.to_s,
-            username: 'another_username'
+            username: 'another_username',
+            avatar_url: 'whatever'
           },
           type: Permission::TYPE_READONLY
         }
+      ]
+      acl_with_data_expected = [
+          {
+              id:   acl_with_data[0][:user][:id],
+              type: acl_with_data[0][:type]
+          }
       ]
 
       permission = Permission.new(
@@ -39,7 +46,7 @@ describe CartoDB::Permission do
       permission.acl = acl_with_data
       permission.save
 
-      permission.acl.should eq acl_with_data
+      permission.acl.should eq acl_with_data_expected
 
       # Nil should reset to default value
       permission.acl = nil

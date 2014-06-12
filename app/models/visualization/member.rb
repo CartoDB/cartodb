@@ -234,7 +234,7 @@ module CartoDB
       def has_permission?(user, permission_type)
         # TODO: Make checks mandatory after permissions migration
         return is_owner?(user) if permission_id.nil?
-        permission.is_permitted?(user, permission_type)
+        is_owner?(user) || permission.is_permitted?(user, permission_type)
       end
 
       def varnish_key

@@ -18,9 +18,23 @@ before_install:
   - sudo service postgresql restart
   - sudo su postgres -c "createdb template_postgis"
   - echo "SELECT VERSION();" | sudo su postgres -c "psql template_postgis"
-  - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql template_postgis"
-  - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql template_postgis"
+  - sudo su postgres -c "echo 'CREATE EXTENSION postgis;' | psql template_postgis"
   - sudo su postgres -c "echo 'SELECT POSTGIS_FULL_VERSION();' | psql template_postgis"
+  # Needed to build PostgreSQL extensions 
+  - sudo apt-get install postgresql-server-dev-9.3
+  # Install schema_triggers
+  - hg clone https://bitbucket.org/malloclabs/pg_schema_triggers &&
+    cd pg_schema_triggers && make && sudo make install && cd -
+  # Preload schema_triggers module
+  # NOTE: might change if we make it part of the installcheck instead
+  - echo "shared_preload_libraries = 'schema_triggers.so'" |
+    sudo tee -a /etc/postgresql/9.3/main/postgresql.conf &&
+    sudo service postgresql restart
+  # Install cartodb-postgresql from the submodule dir
+  - cd lib/sql
+  - make all && sudo make install 
+  - PGUSER=postgres make installcheck || cat regression.diffs
+  - cd -
 
 before_script:
   - npm install -g grunt-cli

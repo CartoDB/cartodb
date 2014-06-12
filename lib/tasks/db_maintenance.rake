@@ -52,19 +52,19 @@ namespace :cartodb do
     end
 
     desc 'Removes duplicated indexes created in some accounts'
-    task :remove_duplicate_indexes, [:database_host, :sleep, :statement_timeout] => :environment do |t, args|
+    task :remove_duplicate_indexes, [:database_host, :sleep, :dryrun] => :environment do |t, args|
       threads = 1
       thread_sleep = 1
       database_host = args[:database_host].blank? ? nil : args[:database_host]
       sleep = args[:sleep].blank? ? 3 : args[:sleep].to_i
-      statement_timeout = args[:statement_timeout].blank? ? nil : args[:statement_timeout]
+      dryrun = args[:dryrun] == 'false' ? 'false' : 'true'
 
       if database_host.nil?
         count = User.count
       else
         count = User.where(database_host: database_host).count
       end
-      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+      execute_on_users_with_index(:remove_duplicate_indexes.to_s, Proc.new { |user, i|
         begin
           user.in_database(:as => :superuser) do |db|
             db.transaction do
@@ -113,14 +113,13 @@ namespace :cartodb do
               $$;
               })
               db.run(%Q{
-                SELECT CDB_DropDupUnique();
+                SELECT CDB_DropDupUnique(#{dryrun});
               })
               db.run(%Q{
                 DROP FUNCTION IF EXISTS CDB_DropDupUnique(boolean);
               })
             end
           end
-
 
           log(sprintf("OK remove_duplicate_indexes %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
           sleep(sleep)

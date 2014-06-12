@@ -13,15 +13,15 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   SPEC_NAME = 'named_maps_spec'
 
-  def tiler_port()
+  def tiler_port
     Cartodb.config[:tiler]['internal']['port']
   end
 
-  def public_tiler_port()
+  def public_tiler_port
     Cartodb.config[:tiler]['public']['port']
   end
 
-  def tiler_regex()
+  def tiler_regex
     if (tiler_port == '8888')
       %r{http:\/\/127\.0\.0\.1:8888\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
     else
@@ -49,14 +49,20 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end
 
   before(:each) do
-    Typhoeus::Expectation.clear()
+    Typhoeus::Expectation.clear
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
     Typhoeus.stub( tiler_regex,
       { method: :get}  )
             .and_return(
-              Typhoeus::Response.new(code: 404, body: "")
+              Typhoeus::Response.new(code: 404, body: '')
             )
+
+    # For relator->permission
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user)
   end
 
   describe '#normalize_name' do
@@ -267,7 +273,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       derived_vis.name = "renamed_visualization"
       # This should trigger the PUT call
-      derived_vis.store()
+      derived_vis.store
 
     end
   end #named_map_updated_on_visualization_updated
@@ -784,13 +790,13 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   def create_private_table_with_public_visualization(template_data, 
       visualization_privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC)
     table = create_table( user_id: @user.id )
-    derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
+    derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
     template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
 
     Typhoeus.stub( tiler_regex )
             .and_return(
-              Typhoeus::Response.new(code: 404, body: "")
+              Typhoeus::Response.new(code: 404, body: '')
             )
     # Stub all petitions, not just GET
     Typhoeus.stub( named_maps_url(@user.api_key) )
@@ -798,14 +804,14 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_id: template_id ) )
             )
 
-    derived_vis.store()
-    collection  = Visualization::Collection.new.fetch()
+    derived_vis.store
+    collection  = Visualization::Collection.new.fetch
     collection.add(derived_vis)
-    collection.store()
+    collection.store
     
     template_data[:template][:name] = template_id
 
-    Typhoeus::Expectation.clear()
+    Typhoeus::Expectation.clear
     # Retrievals
     Typhoeus.stub( named_map_url(template_id, @user.api_key), 
       { method: :get} )
@@ -826,7 +832,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
-
 
     return table, derived_vis, template_id
   end #create_map_with_public_visualization

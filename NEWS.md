@@ -1,11 +1,23 @@
+* Migration Type (see UPGRADE): Mandatory migration
+     * Also mandatory to run:
+        * rake cartodb:db:create_default_vis_permissions
+
 * New features
-    * Added a log method for db_maintenance rakes (logs to log/rake_db_maintenance.log). For now used on load_functions.
+    * Added a log method for db_maintenance rakes
+      (logs to log/rake_db_maintenance.log).
+      For now used on load_functions.
     * Added avatar_url to User model
+    * Added Permission model and permission attribute for Visualizations
 
 * Fixed bugs
     * allow "rectangle" option for marker-type in torque layer
-    * now enqueing sync tables who are in state syncing for more than 2 hours (caused by pushing code while syncing a table)
+    * now enqueing sync tables who are in state syncing for more than 2 hours
+      (caused by pushing code while syncing a table)
     * fixed torque wizard for google maps
+    * fixed infinite loop in CDB_QueryStatements (again)
+    * fixed problem executing long queries from the editor
+    * By default, now not verifying SSL certificates for data imports (allow customer dev. environments with https)
+    * Import CSV with invalid UTF-8 characters by replacing them (instead of skipping the whole row)
 
 2.14.1 (2014-05-28)
 -------------------

@@ -16,6 +16,17 @@ describe Visualization::Member do
 
   before(:each) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+    # For relator->permission
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    @user_mock = mock
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:username).returns(user_name)
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:api_key).returns(user_apikey)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
 
   describe '#initialize' do
@@ -49,6 +60,11 @@ describe Visualization::Member do
       member.name             .should == attributes.fetch(:name)
       member.active_layer_id  .should == attributes.fetch(:active_layer_id)
       member.privacy          .should == attributes.fetch(:privacy)
+
+      member.permission.should_not be nil
+      member.permission.owner_id.should eq @user_mock.id
+      member.permission.owner_username.should eq @user_mock.username
+
     end
 
     it 'persists tags as an array if the backend supports it' do
@@ -92,6 +108,8 @@ describe Visualization::Member do
     it 'invalidates vizjson cache in varnish if name changed' do
       member      = Visualization::Member.new(random_attributes)
       member.store
+
+      CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member.expects(:invalidate_varnish_cache)
       member.name = 'changed'

@@ -6,6 +6,7 @@ require 'markdown_render'
 require_relative './collection'
 require_relative './presenter'
 require_relative './name_checker'
+require_relative '../permission'
 require_relative './relator'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
@@ -54,6 +55,7 @@ module CartoDB
       attribute :password_salt,       String, default: nil
       attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
       attribute :user_id,             String
+      attribute :permission_id,       String
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -132,6 +134,7 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         map.destroy if map
         table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        permission.destroy if permission
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
@@ -327,6 +330,13 @@ module CartoDB
         # Warning: imports create by default private canonical visualizations
         if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
+        end
+
+        if permission.nil?
+          perm = CartoDB::Permission.new
+          perm.owner = user
+          perm.save
+          @permission_id = perm.id
         end
 
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed

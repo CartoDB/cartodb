@@ -48,12 +48,7 @@ module CartoDB
         avatar_url: self.avatar_url
       }
 
-      data[:organization] = {
-        id:    self.organization_id,
-        name:  self.organization.name,
-        owner: self.organization_owner,
-        email: self.organization.users_dataset.where('organization_owner = true').first.try(:email)
-      } if self.organization.present?
+      data[:organization] = self.organization.to_poro if self.organization.present?
 
       if options[:extended]
         data.merge({

@@ -44,7 +44,8 @@ module CartoDB
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled
         },
-        notification: self.notification
+        notification: self.notification,
+        avatar_url: self.avatar_url
       }
 
       data[:organization] = {

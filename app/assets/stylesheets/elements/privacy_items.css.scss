@@ -1,0 +1,52 @@
+
+ /**
+   *  Privacy types styles
+   *
+   *  - PUBLIC
+   *  - PRIVATE
+   *  - LINK aka "WITH LINK"
+   *  - LOADING
+   */
+
+
+  @import "compass/css3/border-radius";
+  @import "compass/css3/inline-block";
+  @import "../table/table-sprite";
+
+  .privacy-status {
+    @include inline-block();
+    width:20px;
+    height:20px;
+    @include border-radius(3px);
+
+    &.public {
+      background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#97C341, .5);
+      &:hover { background-color:rgba(#97C341, .7) }
+    }
+
+    &.link {
+      background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, .5);
+      &:hover { background-color:rgba(#FFA64D, .7) }
+    }
+
+    &.password {
+      background: sprite($table-sprites, lock_key, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, .5);
+      &:hover { background-color:rgba(#FFA64D, .7) }
+    }
+
+    &.organization {
+      background: sprite($table-sprites, lock_user, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, .5);
+      &:hover { background-color:rgba(#FFA64D, .7) }
+    }
+
+    &.private {
+      background: sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FF7373, .5);
+      &:hover { background-color:rgba(#FF7373, .7) }
+    }
+
+    &.loading {
+      background: rgba(#FF7373, .5) image-url('layout/private_loader.gif') no-repeat;
+      background-size: 12px;
+      background-position: 50%;
+    }
+  }

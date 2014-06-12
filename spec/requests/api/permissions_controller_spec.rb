@@ -23,10 +23,26 @@ describe Api::Json::PermissionsController do
       password: 'clientex'
     )
     @api_key = @user.api_key
+
+    @user2 = create_user(
+        username: 'test2',
+        email:    'client2@example.com',
+        password: 'clientex2',
+        avatar_url: 'whatever1'
+    )
+    @user3 = create_user(
+        username: 'test3',
+        email:    'client3@example.com',
+        password: 'clientex3',
+        avatar_url: nil
+    )
+
   end
 
   before(:each) do
     delete_user_data @user
+    delete_user_data @user2
+    delete_user_data @user3
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'
@@ -35,23 +51,16 @@ describe Api::Json::PermissionsController do
 
   describe 'GET /api/v1/perm' do
     it 'returns an existing permission' do
-      user2_id = UUIDTools::UUID.timestamp_create.to_s
-      user2_username = 'test2'
-      user3_id = UUIDTools::UUID.timestamp_create.to_s
-      user23username = 'test2'
-
       acl = [
         {
           user: {
-            id: user2_id,
-            username: user2_username
+            id: @user2.id,
           },
           type: Permission::TYPE_READONLY
         },
         {
           user: {
-            id: user3_id,
-            username: user23username
+            id: @user3.id,
           },
           type: Permission::TYPE_READWRITE
         }
@@ -59,15 +68,17 @@ describe Api::Json::PermissionsController do
       response_acl = [
         {
           user: {
-            id: user2_id,
-            username: user2_username
+            id:         @user2.id,
+            username:   @user2.username,
+            avatar_url: @user2.avatar_url
           },
           type: Permission::TYPE_READONLY
         },
         {
           user: {
-            id: user3_id,
-            username: user23username
+            id:         @user3.id,
+            username:   @user3.username,
+            avatar_url: @user3.avatar_url
           },
           type: Permission::TYPE_READWRITE
         }
@@ -94,21 +105,24 @@ describe Api::Json::PermissionsController do
 
   describe 'POST /api/v1/perm' do
     it 'modifies an existing permission' do
-      user2 = create_user(
-        username: 'test2',
-        email:    'client2@example.com',
-        password: 'clientex2'
-      )
-
       acl_initial = [ ]
       client_acl_modified = [
         {
           user: {
-            id: user2.id,
-            username: user2.username
+            id:   @user2.id,
           },
           type: Permission::TYPE_READONLY
         }
+      ]
+      client_acl_modified_expected = [
+          {
+              user: {
+                  id:         @user2.id,
+                  username:   @user2.username,
+                  avatar_url: @user2.avatar_url
+              },
+              type: Permission::TYPE_READONLY
+          }
       ]
       client_acl_final = [ ]
 
@@ -129,9 +143,7 @@ describe Api::Json::PermissionsController do
       owner_fragment[:username].should eq permission.owner_username
       Time.parse(response.fetch(:created_at)).to_i.should eq permission.created_at.to_i
       Time.parse(response.fetch(:updated_at)).to_i.should_not eq permission.updated_at.to_i
-      response.fetch(:acl).should eq client_acl_modified
-      # To force updated_at to change
-      sleep(1)
+      response.fetch(:acl).should eq client_acl_modified_expected
       put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", {acl: client_acl_final}.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body, symbolize_names: true)

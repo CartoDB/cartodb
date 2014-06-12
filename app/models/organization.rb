@@ -53,13 +53,15 @@ class Organization < Sequel::Model
       :name           => self.name,
       :owner          => {
         :id           => owner.id,
-        :username     => owner.username
+        :username     => owner.username,
+        :avatar_url   => owner.avatar_url
       },
       :users          => self.users.select { |item| item.id != self.owner.id }
                                    .map { |u|
         {
           :id       => u.id,
-          :username => u.username
+          :username => u.username,
+          :avatar_url => u.avatar_url
         }
       }
     }

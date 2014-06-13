@@ -32,10 +32,11 @@ module CartoDB
       incoming_acl = value.nil? ? ::JSON.parse(DEFAULT_ACL_VALUE) : value
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
-        raise PermissionError.new('Wrong ACL entry format') unless item.kind_of? Hash
-        raise PermissionError.new('Wrong ACL entry format') unless item.keys == [:user, :type]
-        raise PermissionError.new('Wrong ACL entry format') unless item[:user].keys - [:id, :username, :avatar_url] == []
-        raise PermissionError.new('Wrong ACL entry format') unless [TYPE_READONLY, TYPE_READWRITE].include? item[:type]
+        unless item.kind_of?(Hash) && item[:user].present? && item[:type].present? \
+          && (item[:user].keys - [:id, :username, :avatar_url] == []) \
+          && [TYPE_READONLY, TYPE_READWRITE].include?(item[:type])
+          raise PermissionError.new('Wrong ACL entry format')
+        end
       }
 
       cleaned_acl = incoming_acl.map { |item|

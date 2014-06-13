@@ -92,19 +92,17 @@ describe CartoDB::Permission do
       }.to raise_exception CartoDB::PermissionError
 
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
-      expect {
-        permission2.acl = [
-          {
-            user: {
-              id: user2.id,
-              username: user2.username
-            },
-            type: Permission::TYPE_READONLY,
-            # Extra undesired field
-            wadus: 'aaa'
-          }
-        ]
-      }.to raise_exception CartoDB::PermissionError
+      permission2.acl = [
+        {
+          user: {
+            id: user2.id,
+            username: user2.username
+          },
+          type: Permission::TYPE_READONLY,
+          # Extra undesired field
+          wadus: 'aaa'
+        }
+      ]
 
       # Wrong permission type
       expect {

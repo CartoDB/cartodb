@@ -1,10 +1,14 @@
 
-* Migration Type (see UPGRADE): Mandatory migration
-  * Cartodb postgres extension update to 0.2.1
+* New Features
+  * Added Permission model and permission attribute for Visualizations
 
 * Fixed bugs
-  * Security fix regarding Typhoeus library
+  * Security fix regarding Typhoeus library  
 
+* Migration Type (see UPGRADE): Mandatory migration 
+  * Cartodb postgres extension update to 0.2.1
+  * Also mandatory to run:
+    * rake cartodb:db:create_default_vis_permissions
 
 2.14.3 (2014-06-11)
 -------------------

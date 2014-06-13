@@ -13,12 +13,13 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats
-                      single_data_layer? synchronization }
+                      single_data_layer? synchronization permission }
 
       def initialize(attributes={})
-        @id       = attributes.fetch(:id)
-        @map_id   = attributes.fetch(:map_id)
-        @user_id  = attributes.fetch(:user_id)
+        @id             = attributes.fetch(:id)
+        @map_id         = attributes.fetch(:map_id)
+        @user_id        = attributes.fetch(:user_id)
+        @permission_id  = attributes.fetch(:permission_id)
       end #initialize
 
       def overlays
@@ -60,6 +61,10 @@ module CartoDB
       def single_data_layer?
         layers(:cartodb).to_a.length == 1 || related_tables.length == 1
       end #single_data_layer?
+
+      def permission
+        @permission ||= CartoDB::Permission.where(id: @permission_id).first unless @permission_id.nil?
+      end
 
       attr_reader :id, :map_id
     end # Relator

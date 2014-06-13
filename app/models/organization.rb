@@ -28,4 +28,21 @@ class Organization < Sequel::Model
   def unassigned_quota
     quota_in_bytes - assigned_quota
   end
+
+  def to_poro
+    {
+      :id             => self.id,
+      :seats          => self.seats,
+      :quota_in_bytes => self.quota_in_bytes,
+      :created_at     => self.created_at,
+      :updated_at     => self.updated_at,
+      :name           => self.name,
+      :users          => self.users.map { |u|
+        {
+          :id       => u.id,
+          :username => u.username
+        }
+      }
+    }
+  end
 end

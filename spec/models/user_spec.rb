@@ -94,7 +94,7 @@ describe User do
 
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
-      organization = create_org('test_org', 10.megabytes, 1)
+      organization = create_org('testorg', 10.megabytes, 1)
       FactoryGirl.create(:user, organization: organization)
       user = User.new
       user.organization = organization
@@ -104,7 +104,7 @@ describe User do
     end
 
     it 'should be valid if his organization has enough seats' do
-      organization = create_org('test_org', 10.megabytes, 1)
+      organization = create_org('testorg', 10.megabytes, 1)
       user = User.new
       user.organization = organization
       user.valid?
@@ -113,7 +113,7 @@ describe User do
     end
     
     it "should not be valid if his organization doesn't have enough disk space" do
-      organization = create_org('test_org', 10.megabytes, 1)
+      organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
       user = User.new
       user.organization = organization
@@ -124,7 +124,7 @@ describe User do
     end
 
     it 'should be valid if his organization has enough disk space' do
-      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+      organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(9.megabytes)
       user = User.new
       user.organization = organization

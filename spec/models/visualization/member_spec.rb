@@ -242,10 +242,20 @@ describe Visualization::Member do
           type: Permission::TYPE_READWRITE
         }
       ]
+      acl_expected = [
+        {
+          id: user2_mock.id,
+          type: Permission::TYPE_READONLY
+        },
+        {
+          id: user3_mock.id,
+          type: Permission::TYPE_READWRITE
+        }
+      ]
 
       permission.acl = acl
       permission.save
-      visualization.permission.acl.should eq acl
+      visualization.permission.acl.should eq acl_expected
 
       visualization.has_permission?(user2_mock, Visualization::Member::PERMISSION_READONLY).should eq true
       visualization.has_permission?(user2_mock, Visualization::Member::PERMISSION_READWRITE).should eq false

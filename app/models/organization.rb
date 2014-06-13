@@ -19,6 +19,7 @@ class Organization < Sequel::Model
     validates_presence [:name, :quota_in_bytes]
     validates_unique   :name
     validates_format   /^[a-z0-9\-]+$/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
+    errors.add(:name, 'cannot exist as user') if name_exists_in_users?
   end
 
   def before_save
@@ -66,4 +67,11 @@ class Organization < Sequel::Model
       }
     }
   end
+
+  private
+
+  def name_exists_in_users?
+    !User.where(username: self.name).first.nil?
+  end
+
 end

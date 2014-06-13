@@ -20,6 +20,7 @@ module CartoDB
         TYPE_READWRITE   => [ TYPE_READWRITE ]
     }
 
+
     def acl
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
     end

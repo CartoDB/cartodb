@@ -571,7 +571,7 @@ namespace :cartodb do
         log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
-	file_handle.puts "[#{Time.now}] #{entry}\n"
+        file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 

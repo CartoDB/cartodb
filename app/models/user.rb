@@ -10,8 +10,9 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   self.strict_param_setting = false
 
-  # @param name String
-  # @param avatar_url String
+  # @param name             String
+  # @param avatar_url       String
+  # @param database_schema  String
 
   one_to_one :client_application
   one_to_many :synchronization_oauths

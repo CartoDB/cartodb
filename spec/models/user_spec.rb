@@ -4,7 +4,6 @@ require 'spec_helper'
 describe User do
   before(:all) do
     puts "\n[rspec][user_spec] Creating test user databases..."
-    @new_user = new_user
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'
 
@@ -36,11 +35,13 @@ describe User do
   end
 
   it "should set up a user after create" do
+    @new_user = new_user
     @new_user.save
     @new_user.reload
     @new_user.should_not be_new
     @new_user.database_name.should_not be_nil
     @new_user.in_database.test_connection.should == true
+    @new_user.destroy
   end
 
   it "should have a crypted password" do
@@ -95,11 +96,12 @@ describe User do
   describe "organization checks" do
     it "should not be valid if his organization doesn't have more seats" do
       organization = FactoryGirl.create(:organization, seats: 1)
-      FactoryGirl.create(:user, organization: organization)
+      orguser = FactoryGirl.create(:user, organization: organization)
       user = User.new
       user.organization = organization
       user.valid?.should be_false
       user.errors.keys.should include(:organization)
+      orguser.destroy
     end
 
     it "should be valid if his organization has enough seats" do
@@ -163,6 +165,8 @@ describe User do
 
     user.password = nil
     user.valid?.should be_true
+
+    user.destroy
   end
 
   it "should set default statement timeout values" do
@@ -561,6 +565,7 @@ describe User do
     $users_metadata.HGET(user.key, 'database_password').should == user.database_password
     $users_metadata.HGET(user.key, 'database_host').should == user.database_host
     $users_metadata.HGET(user.key, 'map_key').should == user.api_key
+    user.destroy
   end
 
   it "should not regenerate the api_key after saving" do
@@ -644,6 +649,7 @@ describe User do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
+    user.destroy
   end
 
   it "should calculate the trial end date" do
@@ -727,6 +733,11 @@ describe User do
       @user.link_ghost_tables
       @user.tables.count.should_not == 0
     end
+  end
+
+  after(:all) do
+    @user.destroy
+    @user2.destroy
   end
 
 end

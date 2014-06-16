@@ -22,6 +22,11 @@ class Organization < Sequel::Model
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
   end
 
+  # Just to make code more uniform with user.database_schema
+  def database_schema
+    self.name
+  end
+
   def before_save
     super
     self.updated_at = Time.now

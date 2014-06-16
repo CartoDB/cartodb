@@ -95,8 +95,7 @@ module CartoDB
     end #string_to_number
 
     def string_to_datetime
-      straight_cast('timestamptz',
-                    cast: "CDB_StringToDate(#{column_name})")
+      straight_cast('timestamptz', cast: "cartodb.CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 
     def string_to_boolean
@@ -169,8 +168,7 @@ module CartoDB
     end #number_to_boolean
 
     def date_to_number
-      straight_cast('double precision',
-                    cast: "CDB_DateToNumber(#{column_name})")
+      straight_cast('double precision', cast: "cartodb.CDB_DateToNumber(#{column_name})")
     end
 
     def date_to_boolean
@@ -202,8 +200,7 @@ module CartoDB
 
     def get_digit_separators_for(column_name)
       user_database.execute(%Q{
-        SELECT t,d
-        FROM CDB_DigitSeparator('#{table_name}', '#{column_name}')
+        SELECT t,d FROM cartodb.CDB_DigitSeparator('#{table_name}', '#{column_name}')
       }, &:to_a).first.values
     end #get_digit_separators
 

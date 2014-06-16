@@ -5,6 +5,7 @@
    *  - PUBLIC
    *  - PRIVATE
    *  - LINK aka "WITH LINK"
+   *  - ORGANIZATION
    *  - LOADING
    */
 
@@ -18,6 +19,8 @@
     width:20px;
     height:20px;
     @include border-radius(3px);
+    text-decoration: none;
+    border:0px;
 
     &.public {
       background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#97C341, .5);

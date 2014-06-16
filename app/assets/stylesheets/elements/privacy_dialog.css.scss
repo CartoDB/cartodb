@@ -7,7 +7,10 @@
 
   
   .vis_privacy_dialog {
-
+    section.block div.foot {
+      padding:0 40px 35px;
+      border:none;
+    }
   }
 
 
@@ -18,6 +21,8 @@
    */
 
   @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/opacity";
 
   .org_users_list {
     margin:20px 0 0;
@@ -26,12 +31,45 @@
       display:block;
 
       li {
-        padding:12px;
+        padding:14px 0;
 
-        & > * {
+        div.info, div.switches {
           @include inline-block();
         }
       }
+
+      div.info {
+        text-align: left;
+        width:280px;
+
+        &.disabled { @include opacity(.5) }
+      }
+
+      div.switches {
+        text-align: right;
+        width:125px;
+      }
+
+      img {
+        @include inline-block();
+        width:18px;
+        height:18px;
+        @include border-radius(20px);
+        background:#CCC;
+        border:1px solid transparent;
+      }
+
+      p {
+        @include inline-block();
+        max-width:255px;
+        margin-left:6px;
+        font-size:15px
+      }
+
+      a.switch {
+        margin-left:19px;
+      }
+
     }
   }
 
@@ -76,7 +114,11 @@
       width:auto;
       background:white;
 
-      a { display:block; padding:9px; }
+      a {
+        display:block;
+        padding:9px;
+        text-decoration:none
+      }
       h5 { font-size: 15px; color:#333333 }
       p { font-size:13px; color:#666666 }
 
@@ -90,6 +132,9 @@
         width:33px;
         height:33px;
         margin-right:6px;
+        overflow:hidden;
+
+        &:after, &:before { display:none }
 
         &.public { background: sprite($table-sprites, lock_open, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#97C341, .5) }
         &.link { background: sprite($table-sprites, lock_open, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#FFA64D, .5) }
@@ -104,15 +149,16 @@
       display:block;
       width:auto;
       
-      a {
+      & > a {
         position:relative;
+        text-decoration:none;
         border:1px solid #B0B0B0;
         @include border-radius(3px);
         @include background(linear-gradient(top,#FFF,#EBEBEB));
         @include transform-style("linear");
         @include transition-property("box-shadow,border,background");
         @include transition-duration(250ms);
-
+        
         &:before,
         &:after {
           content:'';

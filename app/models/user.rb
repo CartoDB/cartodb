@@ -146,7 +146,7 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{SET search_path TO "$user", #{self.database_schema}, cartodb})
+        conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
       end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
       User.terminate_database_connections(database_name, database_host, database_schema)
@@ -163,7 +163,7 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{SET search_path TO "$user", #{database_schema}, cartodb})
+        conn.execute(%Q{ SET search_path TO "$user", #{database_schema}, cartodb })
       end)))
       conn.run("
         DO language plpgsql $$
@@ -280,7 +280,7 @@ class User < Sequel::Model
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
       ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute('SET search_path TO "$user", public, cartodb')
+        conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
       end)))
     end
 
@@ -571,13 +571,13 @@ class User < Sequel::Model
   end
 
   def database_exists?
-    return false if database_name.blank?  
+    return false if database_name.blank?
     connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
       'host' => self.database_host,
       'database' => 'postgres'
     ) {|key, o, n| n.nil? ? o : n}
     conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-      conn.execute('SET search_path TO "$user", public, cartodb')
+      conn.execute(%Q{ SET search_path TO "$user", public, #{self.database_schema} cartodb })
     end)))
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
@@ -844,7 +844,7 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute('SET search_path TO "$user", public, cartodb')
+        conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
       end)))
       begin
         conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")

@@ -254,7 +254,10 @@ class DataImport < Sequel::Model
     self.save
 
     candidates =  current_user.tables.select_map(:name)
-    table_name = Table.get_valid_table_name(name, name_candidates: candidates)
+    table_name = Table.get_valid_table_name(name, {
+        name_candidates: candidates,
+        database_schema: current_user.database_schema
+    })
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append 'Over storage quota'

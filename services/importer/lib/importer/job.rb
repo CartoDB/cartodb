@@ -23,7 +23,9 @@ module CartoDB
       end #table_name
 
       def db
-        @db = Sequel.postgres(pg_options)
+        @db = Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
+          conn.execute('SET search_path TO "$user", public, cartodb')
+        end)))
       end #db
 
       def qualified_table_name

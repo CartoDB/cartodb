@@ -15,11 +15,14 @@ class Api::Json::TablesController < Api::ApplicationController
   # All other table creation things are controlled via the imports_controller#create
   def create
     @table = Table.new
-    @table.user_id        = current_user.id
+    @table.user_id = current_user.id
     if params[:name]
       @table.name = params[:name]
     else
-      @table.name = Table.get_valid_table_name('', {  connection: current_user.in_database })
+      @table.name = Table.get_valid_table_name('', {
+          connection:       current_user.in_database,
+          database_schema:  current_user.database_schema
+      })
     end
     @table.description    = params[:description]   if params[:description]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]

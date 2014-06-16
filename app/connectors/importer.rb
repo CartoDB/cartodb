@@ -70,7 +70,7 @@ module CartoDB
       end
 
       def rename(current_name, new_name, rename_attempts=0)
-        new_name        = table_registrar.get_valid_table_name(new_name)
+        new_name = table_registrar.get_valid_table_name(new_name)
 
         if (rename_attempts > 0)
           new_name = "#{new_name}_#{rename_attempts}"

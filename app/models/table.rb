@@ -322,7 +322,7 @@ class Table < Sequel::Model(:user_tables)
         SELECT c.conname AS pk_name
         FROM pg_class r, pg_constraint c, pg_namespace n
         WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
-        AND r.relnamespace = n.oid and n.nspname= 'public'
+        AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
       }].first
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
       user_database.run(%Q{
@@ -469,7 +469,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database(as: :superuser).run("VACUUM FULL public.#{name}")
+    owner.in_database(as: :superuser).run("VACUUM FULL #{onwer.database_schema}.#{name}")
   end
 
   def handle_creation_error(e)
@@ -755,7 +755,7 @@ class Table < Sequel::Model(:user_tables)
     first_columns     = []
     middle_columns    = []
     last_columns      = []
-    owner.in_database.schema(name, options.slice(:reload).merge(schema: 'public')).each do |column|
+    owner.in_database.schema(name, options.slice(:reload).merge(schema: owner.database_schema)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
       col_db_type = column[1][:db_type].starts_with?('geometry') ? 'geometry' : column[1][:db_type]
       col = [
@@ -789,7 +789,7 @@ class Table < Sequel::Model(:user_tables)
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
-      schema = user_database.schema(name, schema: 'public', reload: true).map{|c| c.first}
+      schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
       raw_attributes.delete(:id) unless schema.include?(:id)
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
@@ -833,7 +833,7 @@ class Table < Sequel::Model(:user_tables)
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
     owner.in_database do |user_database|
-      schema = user_database.schema(name, schema: 'public', reload: true).map{|c| c.first}
+      schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
       raw_attributes.delete(:id) unless schema.include?(:id)
 
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -922,7 +922,7 @@ class Table < Sequel::Model(:user_tables)
   end #column_type_for
 
   def self.column_names_for(db, table_name)
-    db.schema(table_name, schema: 'public', reload: true).map{ |s| s[0].to_s }
+    db.schema(table_name, schema: owner.database_schema, reload: true).map{ |s| s[0].to_s }
   end #column_names
 
   def rename_column(old_name, new_name='')
@@ -1045,7 +1045,7 @@ class Table < Sequel::Model(:user_tables)
       end
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      row = user_database["SELECT #{select} FROM public.#{name} WHERE cartodb_id = #{identifier}"].first
+      row = user_database["SELECT #{select} FROM #{owner.database_schema}.#{name} WHERE cartodb_id = #{identifier}"].first
     end
     raise if row.nil?
     row
@@ -1065,7 +1065,7 @@ class Table < Sequel::Model(:user_tables)
             %Q{
             UPDATE #{self.name}
             SET
-              the_geom = public.ST_GeomFromText(
+              the_geom = #{owner.database_schema}.ST_GeomFromText(
                 'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')', #{CartoDB::SRID}
               )
             #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
@@ -1245,7 +1245,7 @@ class Table < Sequel::Model(:user_tables)
     record = owner.in_database.select(:pg_class__oid)
       .from(:pg_class)
       .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => 'public', :relname => name).first
+      .where(:relkind => 'r', :nspname => owner.database_schema, :relname => name).first
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
@@ -1315,6 +1315,8 @@ class Table < Sequel::Model(:user_tables)
     name_candidates = self.owner.tables.select_map(:name) if owner
 
     options.merge!(name_candidates: name_candidates)
+    options.merge!(database_schema: self.owner.database_schema) unless options[:database_schema].present?
+
     Table.get_valid_table_name(name, options)
   end
 
@@ -1335,8 +1337,12 @@ class Table < Sequel::Model(:user_tables)
     name = name[0..45]
 
     return name if name == options[:current_name]
+
+    database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
+
     # We don't want to use an existing table name
-    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    existing_names = options[:name_candidates] || \
+      options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname)
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0

@@ -133,7 +133,7 @@ class Layer < Sequel::Model
       delete_table_dependencies
       insert_table_dependencies
     end
-  end #register_table_dependencies
+  end
 
   def rename_table(current_table_name, new_table_name)
     return self unless data_layer?

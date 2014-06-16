@@ -10,8 +10,9 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   self.strict_param_setting = false
 
-  # @param name String
-  # @param avatar_url String
+  # @param name             String
+  # @param avatar_url       String
+  # @param database_schema  String
 
   one_to_one :client_application
   one_to_many :synchronization_oauths
@@ -105,7 +106,12 @@ class User < Sequel::Model
        changes.include?(:twitter_username)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
+    if changes.include?(:database_host) || changes.include?(:database_schema)
+      User.terminate_database_connections(
+        database_name, previous_changes[:database_host][0], previous_changes[:database_schema][0]
+      )
+    end
+
   end
 
   def before_destroy
@@ -139,9 +145,11 @@ class User < Sequel::Model
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{SET search_path TO "$user", #{self.database_schema}, cartodb})
+      end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host)
+      User.terminate_database_connections(database_name, database_host, database_schema)
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
@@ -149,37 +157,39 @@ class User < Sequel::Model
     monitor_user_notification
   end
 
-  def self.terminate_database_connections(database_name, database_host)
+  def self.terminate_database_connections(database_name, database_host, database_schema='public')
       connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{SET search_path TO "$user", #{database_schema}, cartodb})
+      end)))
       conn.run("
-DO language plpgsql $$
-DECLARE
-    ver INT[];
-    sql TEXT;
-BEGIN
-    SELECT INTO ver regexp_split_to_array(
-      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-      '\\.'
-    );
-    sql := 'SELECT pg_terminate_backend(';
-    IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
-      sql := sql || 'pid';
-    ELSE
-      sql := sql || 'procpid';
-    END IF;
+        DO language plpgsql $$
+        DECLARE
+            ver INT[];
+            sql TEXT;
+        BEGIN
+            SELECT INTO ver regexp_split_to_array(
+              regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+              '\\.'
+            );
+            sql := 'SELECT pg_terminate_backend(';
+            IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+              sql := sql || 'pid';
+            ELSE
+              sql := sql || 'procpid';
+            END IF;
 
-    sql := sql || ') FROM pg_stat_activity WHERE datname = '
-      || quote_literal('#{database_name}');
-  
-    RAISE NOTICE '%', sql;
+            sql := sql || ') FROM pg_stat_activity WHERE datname = '
+              || quote_literal('#{database_name}');
 
-    EXECUTE sql;
-END
-$$
+            RAISE NOTICE '%', sql;
+
+            EXECUTE sql;
+        END
+        $$
       ")
       conn.disconnect
   end
@@ -261,7 +271,7 @@ $$
     self.database_host
   end
 
-  def reset_pooled_connections()
+  def reset_pooled_connections
     # Only close connections to this users' database
     $pool.close_connections!(self.database_name)
   end
@@ -269,7 +279,9 @@ $$
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
-      ::Sequel.connect(configuration)
+      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute('SET search_path TO "$user", public, cartodb')
+      end)))
     end
 
     if block_given?
@@ -564,7 +576,9 @@ $$
       'host' => self.database_host,
       'database' => 'postgres'
     ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
+    conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+      conn.execute('SET search_path TO "$user", public, cartodb')
+    end)))
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
@@ -577,7 +591,7 @@ $$
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize()").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -829,7 +843,9 @@ $$
         'host' => self.database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute('SET search_path TO "$user", public, cartodb')
+      end)))
       begin
         conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
       rescue => e
@@ -1008,7 +1024,7 @@ TRIGGER
       ver TEXT;
     BEGIN
       BEGIN
-        SELECT cdb_version() INTO ver;
+        SELECT cartodb.cdb_version() INTO ver;
       EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
         RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
         BEGIN
@@ -1036,7 +1052,7 @@ TRIGGER
         end
 
         exp = tgt_ver + ' ' + tgt_rev
-        obt = db.fetch('SELECT cdb_version() as v').first[:v]
+        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
       
         raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
           unless exp == obt

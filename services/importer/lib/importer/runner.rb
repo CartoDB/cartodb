@@ -94,7 +94,9 @@ module CartoDB
       end #report
 
       def db
-        @db = Sequel.postgres(pg_options)
+        @db = Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
+          conn.execute('SET search_path TO "$user", public, cartodb')
+        end)))
       end #db
 
       def loader_for(source_file)

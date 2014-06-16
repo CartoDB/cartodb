@@ -140,7 +140,9 @@ class User < Sequel::Model
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute('SET search_path TO "$user", public, cartodb')
+      end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
       User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
@@ -155,32 +157,34 @@ class User < Sequel::Model
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute('SET search_path TO "$user", public, cartodb')
+      end)))
       conn.run("
-DO language plpgsql $$
-DECLARE
-    ver INT[];
-    sql TEXT;
-BEGIN
-    SELECT INTO ver regexp_split_to_array(
-      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-      '\\.'
-    );
-    sql := 'SELECT pg_terminate_backend(';
-    IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
-      sql := sql || 'pid';
-    ELSE
-      sql := sql || 'procpid';
-    END IF;
+        DO language plpgsql $$
+        DECLARE
+            ver INT[];
+            sql TEXT;
+        BEGIN
+            SELECT INTO ver regexp_split_to_array(
+              regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+              '\\.'
+            );
+            sql := 'SELECT pg_terminate_backend(';
+            IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+              sql := sql || 'pid';
+            ELSE
+              sql := sql || 'procpid';
+            END IF;
 
-    sql := sql || ') FROM pg_stat_activity WHERE datname = '
-      || quote_literal('#{database_name}');
-  
-    RAISE NOTICE '%', sql;
+            sql := sql || ') FROM pg_stat_activity WHERE datname = '
+              || quote_literal('#{database_name}');
 
-    EXECUTE sql;
-END
-$$
+            RAISE NOTICE '%', sql;
+
+            EXECUTE sql;
+        END
+        $$
       ")
       conn.disconnect
   end
@@ -262,7 +266,7 @@ $$
     self.database_host
   end
 
-  def reset_pooled_connections()
+  def reset_pooled_connections
     # Only close connections to this users' database
     $pool.close_connections!(self.database_name)
   end
@@ -270,7 +274,9 @@ $$
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
-      ::Sequel.connect(configuration)
+      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute('SET search_path TO "$user", public, cartodb')
+      end)))
     end
 
     if block_given?
@@ -565,7 +571,9 @@ $$
       'host' => self.database_host,
       'database' => 'postgres'
     ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
+    conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+      conn.execute('SET search_path TO "$user", public, cartodb')
+    end)))
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
@@ -830,7 +838,9 @@ $$
         'host' => self.database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute('SET search_path TO "$user", public, cartodb')
+      end)))
       begin
         conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
       rescue => e

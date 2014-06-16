@@ -15,7 +15,19 @@ class Organization < Sequel::Model
     validates_presence [:name, :quota_in_bytes]
     validates_unique   :name
     validates_format   /^[a-z0-9\-]+$/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
-  end # validate
+    errors.add(:name, 'cannot exist as user') if name_exists_in_users?
+  end
+
+  # Just to make code more uniform with user.database_schema
+  def database_schema
+    self.name
+  end
+
+  def before_save
+    super
+    self.updated_at = Time.now
+    raise errors unless valid?
+  end
 
   def db_size_in_bytes
     users.map(&:db_size_in_bytes).sum.to_i

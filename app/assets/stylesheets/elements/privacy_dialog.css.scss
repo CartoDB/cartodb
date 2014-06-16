@@ -114,7 +114,11 @@
       width:auto;
       background:white;
 
-      a { display:block; padding:9px; }
+      a {
+        display:block;
+        padding:9px;
+        text-decoration:none
+      }
       h5 { font-size: 15px; color:#333333 }
       p { font-size:13px; color:#666666 }
 
@@ -128,6 +132,9 @@
         width:33px;
         height:33px;
         margin-right:6px;
+        overflow:hidden;
+
+        &:after, &:before { display:none }
 
         &.public { background: sprite($table-sprites, lock_open, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#97C341, .5) }
         &.link { background: sprite($table-sprites, lock_open, $offset-x: 11px, $offset-y: 10px) no-repeat rgba(#FFA64D, .5) }
@@ -142,15 +149,16 @@
       display:block;
       width:auto;
       
-      a {
+      & > a {
         position:relative;
+        text-decoration:none;
         border:1px solid #B0B0B0;
         @include border-radius(3px);
         @include background(linear-gradient(top,#FFF,#EBEBEB));
         @include transform-style("linear");
         @include transition-property("box-shadow,border,background");
         @include transition-duration(250ms);
-
+        
         &:before,
         &:after {
           content:'';

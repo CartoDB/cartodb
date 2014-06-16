@@ -577,7 +577,7 @@ $$
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize()").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -1008,7 +1008,7 @@ TRIGGER
       ver TEXT;
     BEGIN
       BEGIN
-        SELECT cdb_version() INTO ver;
+        SELECT cartodb.cdb_version() INTO ver;
       EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
         RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
         BEGIN
@@ -1036,7 +1036,7 @@ TRIGGER
         end
 
         exp = tgt_ver + ' ' + tgt_rev
-        obt = db.fetch('SELECT cdb_version() as v').first[:v]
+        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
       
         raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
           unless exp == obt

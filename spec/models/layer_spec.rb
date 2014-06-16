@@ -9,9 +9,6 @@ describe Layer do
   end
 
   after(:all) do
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-
     @user.destroy
   end
 

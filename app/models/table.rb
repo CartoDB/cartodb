@@ -178,8 +178,8 @@ class Table < Sequel::Model(:user_tables)
     append_to_table       = self
     new_schema_names      = new_schema.map(&:first)
     existing_schema_hash  = Hash[append_to_table.schema(reload: true)]
-    drop_names    = %W{ cartodb_id created_at updated_at ogc_fid}
-    configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+    drop_names            = %W{ cartodb_id created_at updated_at ogc_fid}
+    configuration         = ::Rails::Sequel.configuration.environment_for(Rails.env)
 
     # fun schema check here
     new_schema_hash.keys.each do |column_name|
@@ -225,9 +225,9 @@ class Table < Sequel::Model(:user_tables)
     # if concatenate_to_table is set, it will join the table just created
     # to the table named in concatenate_to_table and then drop the created table
     #get schemas of uploaded and existing tables
-    new_schema = from_table.schema(reload: true)
-    new_schema_hash = Hash[new_schema]
-    new_schema_names = new_schema.collect {|x| x[0]}
+    new_schema        = from_table.schema(reload: true)
+    new_schema_hash   = Hash[new_schema]
+    new_schema_names  = new_schema.collect {|x| x[0]}
 
     existing_schema_hash = Hash[append_to_table.schema(reload: true)]
 

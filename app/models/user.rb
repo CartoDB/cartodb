@@ -106,7 +106,12 @@ class User < Sequel::Model
        changes.include?(:twitter_username)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
+    if changes.include?(:database_host) || changes.include?(:database_schema)
+      User.terminate_database_connections(
+        database_name, previous_changes[:database_host][0], previous_changes[:database_schema][0]
+      )
+    end
+
   end
 
   def before_destroy
@@ -141,10 +146,10 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute('SET search_path TO "$user", public, cartodb')
+        conn.execute(%Q{SET search_path TO "$user", #{self.database_schema}, cartodb})
       end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host)
+      User.terminate_database_connections(database_name, database_host, database_schema)
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
@@ -152,13 +157,13 @@ class User < Sequel::Model
     monitor_user_notification
   end
 
-  def self.terminate_database_connections(database_name, database_host)
+  def self.terminate_database_connections(database_name, database_host, database_schema='public')
       connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute('SET search_path TO "$user", public, cartodb')
+        conn.execute(%Q{SET search_path TO "$user", #{database_schema}, cartodb})
       end)))
       conn.run("
         DO language plpgsql $$

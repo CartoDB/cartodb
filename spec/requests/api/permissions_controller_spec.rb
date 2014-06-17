@@ -53,34 +53,38 @@ describe Api::Json::PermissionsController do
     it 'returns an existing permission' do
       acl = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: @user2.id,
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         },
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: @user3.id,
           },
-          type: Permission::TYPE_READWRITE
+          access: Permission::ACCESS_READWRITE
         }
       ]
       response_acl = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id:         @user2.id,
             username:   @user2.username,
             avatar_url: @user2.avatar_url
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         },
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id:         @user3.id,
             username:   @user3.username,
             avatar_url: @user3.avatar_url
           },
-          type: Permission::TYPE_READWRITE
+          access: Permission::ACCESS_READWRITE
         }
       ]
 
@@ -108,20 +112,22 @@ describe Api::Json::PermissionsController do
       acl_initial = [ ]
       client_acl_modified = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id:   @user2.id,
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         }
       ]
       client_acl_modified_expected = [
           {
-              user: {
+              type: Permission::TYPE_USER,
+              entity: {
                   id:         @user2.id,
                   username:   @user2.username,
                   avatar_url: @user2.avatar_url
               },
-              type: Permission::TYPE_READONLY
+              access: Permission::ACCESS_READONLY
           }
       ]
       client_acl_final = [ ]

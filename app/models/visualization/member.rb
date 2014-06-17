@@ -32,8 +32,8 @@ module CartoDB
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
-      PERMISSION_READONLY = CartoDB::Permission::TYPE_READONLY
-      PERMISSION_READWRITE = CartoDB::Permission::TYPE_READWRITE
+      PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
+      PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
 
       DEFAULT_URL_OPTIONS = 'title=true&description=true&search=false&shareable=true&cartodb_logo=true&layer_selector=false&legends=false&scrollwheel=true&fullscreen=true&sublayer_options=1&sql='
 

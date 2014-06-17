@@ -232,24 +232,24 @@ describe Visualization::Member do
             id: user2_mock.id,
             username: user2_mock.username
           },
-          type: Permission::TYPE_READONLY
+          type: Permission::ACCESS_READONLY
         },
         {
           user: {
             id: user3_mock.id,
             username: user3_mock.username
           },
-          type: Permission::TYPE_READWRITE
+          type: Permission::ACCESS_READWRITE
         }
       ]
       acl_expected = [
         {
           id: user2_mock.id,
-          type: Permission::TYPE_READONLY
+          type: Permission::ACCESS_READONLY
         },
         {
           id: user3_mock.id,
-          type: Permission::TYPE_READWRITE
+          type: Permission::ACCESS_READWRITE
         }
       ]
 

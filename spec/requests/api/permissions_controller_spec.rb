@@ -89,7 +89,10 @@ describe Api::Json::PermissionsController do
       ]
 
       permission = CartoDB::Permission.new(
-          owner_id: @user.id, owner_username: @user.username
+          owner_id: @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    entity_type
       )
       permission.acl = acl
       permission.save
@@ -133,7 +136,10 @@ describe Api::Json::PermissionsController do
       client_acl_final = [ ]
 
       permission = CartoDB::Permission.new(
-          owner_id: @user.id, owner_username: @user.username
+          owner_id: @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    entity_type
       )
       permission.acl = acl_initial
       permission.save
@@ -160,7 +166,10 @@ describe Api::Json::PermissionsController do
   describe 'PUT/DELETE /api/v1/perm' do
     it "makes sure we don't expose unwanted call types" do
       permission = CartoDB::Permission.new(
-          owner_id: @user.id, owner_username: @user.username
+          owner_id: @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    entity_type
       )
       permission.save
 

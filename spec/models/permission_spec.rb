@@ -13,6 +13,9 @@ describe CartoDB::Permission do
 
   describe '#create' do
     it 'tests basic creation' do
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
       acl_initial = []
       acl_with_data = [
         {
@@ -35,7 +38,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username
+        owner_username: @user.username,
+        entity_id:      entity_id,
+        entity_type:    entity_type
         #check default acl is correct
       )
       permission.save
@@ -43,6 +48,8 @@ describe CartoDB::Permission do
       permission.id.should_not eq nil
       permission.owner_id.should eq @user.id
       permission.owner_username.should eq @user.username
+      permission.entity_id.should eq entity_id
+      permission.entity_type.should eq entity_type
       permission.acl.should eq acl_initial
 
       permission.acl = acl_with_data
@@ -54,18 +61,55 @@ describe CartoDB::Permission do
       permission.acl = nil
       permission.acl.should eq acl_initial
 
+      permission.destroy
+
       # Missing owner
       permission2 = Permission.new
       expect {
         permission2.save
       }.to raise_exception
 
+      # Missing entity_type
+      permission2 = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+      )
+      expect {
+        permission2.save
+      }.to raise_exception
+
+      # Missing entity_id
+      permission2 = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username,
+          entity_type:      entity_type,
+      )
+      expect {
+        permission2.save
+      }.to raise_exception
+
       # Owner helper methods
+      permission2 = Permission.new
       permission2.owner = @user
+      permission2.entity_id = entity_id
+      permission2.entity_type = entity_type
       permission2.save
       permission2.owner.should eq @user
       permission2.owner_id.should eq @user.id
       permission2.owner_username.should eq @user.username
+      permission2.delete
+
+      # Entity helper methods
+      vis_mock = mock
+      vis_mock.stubs(:fetch).returns(vis_mock)
+      vis_mock.stubs(:id).returns(entity_id)
+      vis_mock.stubs(:kind_of?).returns(true)
+      Visualization::Member.any_instance.stubs(:new).returns vis_mock
+      permission2 = Permission.new
+      permission2.owner = @user
+      permission2.entity = vis_mock
+      permission2.save
 
       # invalid ACL formats
       expect {
@@ -121,6 +165,8 @@ describe CartoDB::Permission do
         ]
       }.to raise_exception CartoDB::PermissionError
 
+      permission2.destroy
+      user2.destroy
     end
   end
 
@@ -137,7 +183,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username
+        owner_username: @user.username,
+        entity_id: UUIDTools::UUID.timestamp_create.to_s,
+        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.acl = [
         {
@@ -181,7 +229,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username
+        owner_username: @user.username,
+        entity_id: UUIDTools::UUID.timestamp_create.to_s,
+        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.acl = [
         {
@@ -213,7 +263,6 @@ describe CartoDB::Permission do
       permission.is_permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
     end
 
-    # TODO: Add organization permissions spec
     it 'checks organizations vs users permissions precedence' do
       org_mock = mock
       org_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
@@ -225,7 +274,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
           owner_id:       @user.id,
-          owner_username: @user.username
+          owner_username: @user.username,
+          entity_id: UUIDTools::UUID.timestamp_create.to_s,
+          entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       # User has more access than org
       permission.acl = [

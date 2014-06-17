@@ -8,12 +8,17 @@ module CartoDB
     # @param id String (uuid)
     # @param owner_id String (uuid)
     # @param owner_username String
+    # @param entity_id String (uuid)
+    # @param entity_type String
 
     ACCESS_READONLY   = 'r'
     ACCESS_READWRITE  = 'rw'
     ACCESS_NONE       = 'n'
+
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
+
+    ENTITY_TYPE_VISUALIZATION = 'vis'
 
     DEFAULT_ACL_VALUE = '[]'
 
@@ -81,10 +86,31 @@ module CartoDB
       self.owner_username = value.username
     end
 
+    # @return Mixed|nil
+    def entity
+      if self.entity_type == ENTITY_TYPE_VISUALIZATION
+        CartoDB::Visualization::Member.new(id:self.entity_id).fetch
+      end
+      nil
+    end
+
+    # @param value Mixed
+    def entity=(value)
+      if value.kind_of? CartoDB::Visualization::Member
+        self.entity_type = ENTITY_TYPE_VISUALIZATION
+        self.entity_id = value.id
+      else
+        raise PermissionError.new('Unsupported entity type')
+      end
+    end
+
     def validate
       super
       errors.add(:owner_id, 'cannot be nil') if (self.owner_id.nil? || self.owner_id.empty?)
       errors.add(:owner_username, 'cannot be nil') if (self.owner_username.nil? || self.owner_username.empty?)
+      errors.add(:entity_id, 'cannot be nil') if (self.entity_id.nil? || self.entity_id.empty?)
+      errors.add(:entity_type, 'cannot be nil') if (self.entity_type.nil? || self.entity_type.empty?)
+      errors.add(:entity_type, 'invalid type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
       unless new?
         validates_presence [:id]
       end

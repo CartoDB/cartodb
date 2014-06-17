@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative 'permission_user_presenter'
+require_relative 'permission_organization_presenter'
 
 module CartoDB
   class PermissionPresenter

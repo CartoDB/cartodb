@@ -37,6 +37,7 @@ WORKING_SPECS = \
   spec/models/organization_spec.rb \
   spec/models/permission_spec.rb \
   spec/requests/api/permissions_controller_spec.rb \
+  spec/models/shared_entity_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

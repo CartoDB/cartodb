@@ -366,4 +366,56 @@ describe CartoDB::Permission do
 
   end
 
+  describe '#shared_entities' do
+    it 'tests the management of shared entities upon permission save (based on its ACL)' do
+      user2_mock = mock
+      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user2_mock.stubs(:username).returns('user2')
+      user2_mock.stubs(:organization).returns(nil)
+
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+
+      permission = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
+      )
+
+      # Before saving, create old entries
+      CartoDB::SharedEntity.new(
+          user_id:    @user.id,
+          entity_id:  entity_id,
+          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+      ).save
+      CartoDB::SharedEntity.new(
+          user_id:    user2_mock.id,
+          entity_id:  entity_id,
+          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+      ).save
+
+      CartoDB::SharedEntity.all.count.should eq 2
+
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: @user.id,
+                  username: @user.username
+              },
+              access: Permission::ACCESS_READONLY
+          }
+      ]
+
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 1
+      shared_entity = CartoDB::SharedEntity.all[0]
+      shared_entity.user_id.should eq @user.id
+      shared_entity.entity_id.should eq entity_id
+
+      permission.destroy
+    end
+  end
+
 end

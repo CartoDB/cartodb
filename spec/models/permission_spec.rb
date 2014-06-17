@@ -396,6 +396,7 @@ describe CartoDB::Permission do
 
       CartoDB::SharedEntity.all.count.should eq 2
 
+      # Leave only user 1
       permission.acl = [
           {
               type: Permission::TYPE_USER,
@@ -405,14 +406,65 @@ describe CartoDB::Permission do
               },
               access: Permission::ACCESS_READONLY
           }
+          # shared entry of user 2 should dissapear
       ]
-
       permission.save
 
       CartoDB::SharedEntity.all.count.should eq 1
       shared_entity = CartoDB::SharedEntity.all[0]
       shared_entity.user_id.should eq @user.id
       shared_entity.entity_id.should eq entity_id
+
+      # Leave only user 2 now
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 1
+      shared_entity = CartoDB::SharedEntity.all[0]
+      shared_entity.user_id.should eq user2_mock.id
+      shared_entity.entity_id.should eq entity_id
+
+      # Now just change permission, user2 should still be there
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_READONLY
+          }
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 1
+      shared_entity = CartoDB::SharedEntity.all[0]
+      shared_entity.user_id.should eq user2_mock.id
+      shared_entity.entity_id.should eq entity_id
+
+      # Now set a permission forbidding a user, so should dissapear too
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_NONE
+          }
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 0
 
       permission.destroy
     end

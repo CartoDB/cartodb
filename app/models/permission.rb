@@ -24,6 +24,8 @@ module CartoDB
         ACCESS_NONE        => []
     }
 
+    ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url]
+
     # @return Hash
     def acl
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
@@ -53,7 +55,7 @@ module CartoDB
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
         unless item.kind_of?(Hash) && item[:entity].present? && item[:type].present? && item[:access].present? \
-          && (item[:entity].keys - [:id, :username, :avatar_url] == []) \
+          && (item[:entity].keys - ALLOWED_ENTITY_KEYS == []) \
           && [ACCESS_READONLY, ACCESS_READWRITE, ACCESS_NONE].include?(item[:access])
           raise PermissionError.new('Wrong ACL entry format')
         end

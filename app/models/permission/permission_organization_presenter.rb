@@ -10,7 +10,7 @@ module CartoDB
       {
           id:         org.id,
           name:       org.name,
-          avatar_url: nil #org.avatar_url
+          avatar_url: org.avatar_url
       }
     end
 

@@ -8,8 +8,58 @@
   
   .vis_privacy_dialog {
     section.block div.foot {
+      position:relative;
       padding:0 40px 35px;
       border:none;
+    }
+  }
+
+
+  /**
+   *
+   *
+   *
+   */
+
+  @import "../common/vars";
+  @import "compass/css3/border-radius";
+
+  $br: 2px;
+
+  .privacy-password {
+    position:absolute;
+    left:40px;
+    top:10px;
+
+    form {
+      padding:4px;
+      border: 1px solid #CCCCCC;
+      @include border-radius($br);
+      line-height:20px;
+
+      &.focus { border-color:#AAA }
+    }
+
+    input.password {
+      border:none;
+      outline:none;
+      padding:0;
+    }
+
+    input.submit {
+      padding:0 8px;
+      margin:0px;
+      background:#FFD2A6;
+      border:none;
+      @include border-radius($br);
+      text-align:center;
+      font:normal 11px $text-fonts;
+      color:#AD9571;
+      outline:none;
+      line-height:20px;
+
+      &:hover { background:#FFCA94; cursor:pointer }
+      &:active { background:#FFC182 }
     }
   }
 

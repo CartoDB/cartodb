@@ -15,8 +15,9 @@ module CartoDB
         owner:  @user_presenter.decorate(@permission.owner_id),
         acl:    @permission.acl.map { |entry|
           {
-            user: @user_presenter.decorate(entry[:id]),
-            type: entry[:type]
+            type:   entry[:type],
+            entity: @user_presenter.decorate(entry[:id]),
+            access: entry[:access]
           }
         },
         created_at:     @permission.created_at,

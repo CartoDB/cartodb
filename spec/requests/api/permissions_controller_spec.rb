@@ -173,4 +173,10 @@ describe Api::Json::PermissionsController do
     end
   end
 
+  after(:all) do
+    @user.destroy
+    @user2.destroy
+    @user3.destroy
+  end
+
 end

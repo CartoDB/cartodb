@@ -2,8 +2,25 @@
   /**
    *  Privacy dialog styles
    *
-   *  - 
+   *  - It includes
+   *
+   *    · Dialog itself
+   *    · Privacy password view
+   *    · Organization users list
+   *    · Organization users item
+   *    · Privacy selector
+   *
    */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+  @import "compass/css3/opacity";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+  @import "../common/vars";
+  @import "../table/table-sprite";
 
   
   .vis_privacy_dialog {
@@ -16,13 +33,9 @@
 
 
   /**
-   *
-   *
+   *  Privacy password view styles
    *
    */
-
-  @import "../common/vars";
-  @import "compass/css3/border-radius";
 
   $br: 2px;
 
@@ -65,20 +78,19 @@
 
 
   /**
-   *
-   *
+   *  Organization users list + user item
    *
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/opacity";
-
   .org_users_list {
+    position:relative;
     margin:20px 0 0;
 
     ul {
       display:block;
+      max-height:215px;
+      overflow-x:visible;
+      overflow-y:auto;
 
       li {
         padding:14px 0;
@@ -105,8 +117,7 @@
         width:18px;
         height:18px;
         @include border-radius(20px);
-        background:#CCC;
-        border:1px solid transparent;
+        background:#EDEDED;
       }
 
       p {
@@ -119,7 +130,24 @@
       a.switch {
         margin-left:19px;
       }
+    }
 
+    // Scroll gradients
+    span.scroll {
+      position:absolute;
+      left:0;
+      right:5px;
+      width:100%;
+      height:30px;
+      background:transparent;
+      padding:0;
+      margin:0;
+      @include border-radius(0);
+      pointer-events:none;
+      z-index:10;
+
+      &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+      &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
     }
   }
 
@@ -129,16 +157,9 @@
   /**
    *  Visualization (derived or table) privacy-selector styles
    *
-   *  - 
+   *  - It could be public, link, password, organization or private
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/box-shadow";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/images";
-  @import "compass/css3/transform";
-  @import "compass/css3/transition";
-  @import "../table/table-sprite";
 
   .vis_privacy_selector {
     position:relative;

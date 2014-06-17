@@ -122,4 +122,8 @@ describe Api::Json::SynchronizationsController do
     it 'returns 401 unless user has an appropriate plan' do
     end
   end
+
+  after(:all) do
+    @user.destroy
+  end
 end

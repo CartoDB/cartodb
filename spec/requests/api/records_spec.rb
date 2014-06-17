@@ -206,4 +206,8 @@ describe Api::Json::RecordsController do
     put "#{base_url}/records/#{pk}?api_key=#{@api_key}", payload.to_json, @headers
     last_response.status.should == 200
   end
+
+  after(:all) do
+    @user.destroy
+  end
 end

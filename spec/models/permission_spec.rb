@@ -121,6 +121,8 @@ describe CartoDB::Permission do
         ]
       }.to raise_exception CartoDB::PermissionError
 
+      user2.destroy
+
     end
   end
 
@@ -313,6 +315,10 @@ describe CartoDB::Permission do
       permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
     end
 
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
 end

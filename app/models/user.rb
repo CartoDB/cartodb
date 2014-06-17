@@ -899,7 +899,10 @@ class User < Sequel::Model
 
   # Add plpythonu pl handler
   def add_python
-    in_database(:as => :superuser).run(<<-SQL
+    in_database(
+      :as => :superuser,
+      no_cartodb_in_schema: true
+    ).run(<<-SQL
       CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
     SQL
     )
@@ -1007,7 +1010,7 @@ TRIGGER
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
     tgt_rev = 'v0.2.1-10-g2743b17'
 
-    add_python;
+    add_python
 
     in_database({
                     as: :superuser,

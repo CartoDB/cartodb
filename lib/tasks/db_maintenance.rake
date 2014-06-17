@@ -487,28 +487,38 @@ namespace :cartodb do
     end
 
     desc 'Setup default permissions on existing visualizations'
-    task :create_default_vis_permissions => :environment do
+    task :create_default_vis_permissions, [:page_size, :page] => :environment do |t, args|
+      page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
+      page = args[:page].blank? ? 1 : args[:page].to_i
 
       require_relative '../../app/models/visualization/collection'
 
-      collection = CartoDB::Visualization::Collection.new.fetch(per_page:999999)
+      progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
+      collection = CartoDB::Visualization::Collection.new
 
-      count = collection.count
-      puts "\n>Running :create_default_vis_permissions for #{count} visualizations"
-      collection.each_with_index { |vis, i|
-        puts ">Processed: #{i}/#{count}" if i % 100 == 0
+      begin
+        items = collection.fetch(page: page, per_page: page_size)
 
-        if vis.permission_id.nil?
-          begin
-            raise 'No owner' if vis.user.nil?
-            # Just saving will trigger the permission creation
-            vis.send(:do_store, false)
-            puts "OK #{vis.id}"
-          rescue => e
-            puts "FAIL #{vis.id}: #{e.message}"
+        count = items.count
+        puts "\n>Running :create_default_vis_permissions for page #{page} (#{count} vis)" if count > 0
+        items.each_with_index { |vis, i|
+          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
+          if vis.permission_id.nil?
+            begin
+              raise 'No owner' if vis.user.nil?
+              # Just saving will trigger the permission creation
+              vis.send(:do_store, false)
+              puts "OK #{vis.id}"
+            rescue => e
+              owner_id = vis.user.nil? ? 'nil' : vis.user.id
+              message = "FAIL u:#{owner_id} v:#{vis.id}: #{e.message}"
+              puts message
+              log(message, :create_default_vis_permissions.to_s)
+            end
           end
-        end
-      }
+        }
+        page += 1
+      end while count > 0
 
       puts "\n>Finished :create_default_vis_permissions"
     end

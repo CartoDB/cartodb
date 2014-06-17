@@ -28,7 +28,12 @@ module CartoDB
         @filepath = filepath
         @job      = job || Job.new
         @delimiter = nil
+        @force_normalize = false
       end #initialize
+
+      def force_normalize
+        @force_normalize = true
+      end #force_normalize
 
       # @throws MalformedCSVException
       def run
@@ -37,7 +42,7 @@ module CartoDB
         detect_delimiter
 
         begin
-          return self unless needs_normalization?
+          return self unless (needs_normalization? || @force_normalize)
         rescue CSV::MalformedCSVError => ex
           raise MalformedCSVException.new(ex.message)
         end
@@ -121,7 +126,6 @@ module CartoDB
 
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
-
           row = parsed_line(line)
           next unless row
           temporary_csv << multiple_column(row)
@@ -161,7 +165,7 @@ module CartoDB
       end #windows_eol?
 
       def needs_normalization?
-        (!ACCEPTABLE_ENCODINGS.include?(encoding))  || 
+        (!ACCEPTABLE_ENCODINGS.include?(encoding))  ||
         (delimiter != DEFAULT_DELIMITER)            ||
         single_column?                              
       end #needs_normalization?

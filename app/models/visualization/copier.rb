@@ -19,7 +19,8 @@ module CartoDB
           description:  visualization.description,
           type:         'derived',
           map_id:       map_copy.id,
-          privacy:      visualization.privacy
+          privacy:      visualization.privacy,
+          user_id:      visualization.user_id
         )
       end #copy
 

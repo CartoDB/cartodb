@@ -36,7 +36,6 @@ describe Table do
     puts "\n[rspec][table_spec] Creating test user database..."
     @quota_in_bytes = 524288000
     @table_quota    = 500
-    @new_user = new_user
     @user     = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
     puts "[rspec][table_spec] Running..."
   end
@@ -862,7 +861,7 @@ describe Table do
       check_schema(table, [
         [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-        [:kind, "character varying(10)"]
+        [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
       ])
     end
 
@@ -874,7 +873,7 @@ describe Table do
       check_schema(table, [
         [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-        [:kind, "character varying(10)"]
+        [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
       ])
     end
 
@@ -1178,6 +1177,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
 
@@ -1195,6 +1195,8 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
+
       pk = nil
       insert_data = {:upo___nombre_partido=>"PSOEE"}
 
@@ -1265,6 +1267,7 @@ describe Table do
       # Renaming starts at 1
       1.upto(25) do |n|
         table = create_table :name => 'Wadus The Table', :user_id => @user.id
+        table.should_not be_nil
         table.name.should == "wadus_the_table_#{n}"
       end
     end
@@ -1289,6 +1292,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
 
@@ -1298,6 +1302,7 @@ describe Table do
     it "should not drop a table that exists when upload fails" do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
+      table.should_not be_nil
       table.save.reload
       table.name.should == 'empty_file'
 
@@ -1320,6 +1325,7 @@ describe Table do
       data_import.run_import!
 
       table2 = Table[data_import.table_id]
+      table2.should_not be_nil, "Import failure: #{data_import.log}"
       table2.name.should == 'csv_no_quotes'
 
       @user.in_database do |user_database|
@@ -1347,6 +1353,7 @@ describe Table do
       fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
       data_import   = create_import(@user, fixture)
       table         = data_import.table
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       table_schema  = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
@@ -1358,22 +1365,23 @@ describe Table do
       cartodb_id_schema[:allow_null].should == false
     end
 
-    it "should add an invalid_cartodb_id column when importing a file with invalid data on the cartodb_id column" do
+    it "should add a '_cartodb_id' column when importing a file with invalid data on the cartodb_id column" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table_schema = @user.in_database.schema(table.name)
 
-      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:db_type].should == 'integer'
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "invalid_cartodb_id"}
+      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == '_cartodb_id0'}
       invalid_cartodb_id_schema.should be_present
     end
 
@@ -1383,6 +1391,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table.geometry_types.should == ['ST_Point']
     end
@@ -1403,6 +1412,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       schema = table.schema(:cartodb_types => true)
       schema.include?([:updated_at, "date"]).should == true
@@ -1413,6 +1423,7 @@ describe Table do
       fixture     = "#{Rails.root}/db/fake_data/short_clubbing.csv"
       data_import = create_import(@user, fixture)
       table       = data_import.table
+
       table.modify_column! :name=> "club_id", :type=>"number"
 
       table.sequel.where(:cartodb_id => '1').first[:club_id].should == 709
@@ -1599,11 +1610,14 @@ describe Table do
         the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
         pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
-        records = table.records(:page => 0, :rows_per_page => 1)
-        RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
 
-        record = table.record(pk)
-        RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
+
+        #update
+        the_geom = %Q{{"type":"Point","coordinates":[0,0]}}
+        table.send :update_the_geom!, { :the_geom => the_geom }, 1
+
+        records = table.records(:page => 0, :rows_per_page => 1)
+        records[:rows][0][:the_geom].should == "{\"type\":\"Point\",\"coordinates\":[0,0]}"
       end
 
       it "should raise an error when the geojson provided is invalid" do
@@ -1616,6 +1630,25 @@ describe Table do
         lambda {
           table.insert_row!({:name => "First check_in", :the_geom => the_geom})
         }.should raise_error(CartoDB::InvalidGeoJSONFormat)
+      end
+
+      it "should return new geojson even if geojson provided had other projection" do
+        table = new_table :user_id => @user.id
+        table.the_geom_type = "point"
+        table.save.reload
+
+        lat = -43.941
+        lon = 3.429
+        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+        pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+
+
+        #update
+        the_geom = %Q{{"type":"Point","coordinates":[0,0], "crs":{"type":"name","properties":{"name":"EPSG:232323"}} }}
+        table.send :update_the_geom!, { :the_geom => the_geom }, 1
+
+        records = table.records(:page => 0, :rows_per_page => 1)
+        records[:rows][0][:the_geom].should == "{\"type\":\"Point\",\"coordinates\":[0,0]}"
       end
 
     end
@@ -1659,6 +1692,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should == 'exttable'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
@@ -1779,6 +1813,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
       new_table = Table.find_by_id_subdomain(@user.username, table.id)
 
       new_table.id.should == table.id
@@ -1791,6 +1826,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
+      table.should_not be_nil, "Import failure: #{data_import.log}"
 
       new_table = Table.find_by_id_subdomain(nil, table.id)
 
@@ -1883,5 +1919,211 @@ describe Table do
 
     end
   end #validation_for_link_privacy
+
+  describe '#validation_for_link_privacy' do
+    it 'tests the_geom conversions and expected results' do
+      # Empty table/default schema (no conversion)
+      table = new_table(:name => 'one', :user_id => @user.id)
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:description, 'text'], [:name, 'text'],
+          [:the_geom, 'geometry', 'geometry', 'geometry']
+      ])
+
+      # latlong projection
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'two'
+      @user.run_pg_query('
+        CREATE TABLE two AS SELECT CDB_LatLng(0,0) AS the_geom
+      ')
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'point']
+      ])
+
+      # single multipoint, without srid
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'three'
+      @user.run_pg_query('
+        CREATE TABLE three AS SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;
+      ')
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'geometry'],
+          [:invalid_the_geom, 'geometry', 'geometry', 'geometry']
+      ])
+
+      # same as above (single multipoint), but with a SRID=4326 (latlong)
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'four'
+      @user.run_pg_query('
+        CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
+      ')
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'point']
+      ])
+
+      # single polygon
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'five'
+      @user.run_pg_query('
+        CREATE TABLE five AS SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom
+      ')
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'multipolygon']
+      ])
+
+      # single line
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'six'
+      @user.run_pg_query('
+        CREATE TABLE six AS SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom
+      ')
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'multilinestring']
+      ])
+
+      # field named "the_geom" being _not_ of type geometry
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'seven'
+      @user.run_pg_query(%Q{
+        CREATE TABLE seven AS SELECT 'wadus' AS the_geom;
+      })
+      table.save
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'geometry'],
+          [:invalid_the_geom, 'unknown']
+      ])
+
+      # geometrycollection (concrete type) Unsupported
+      table = new_table(:name => nil, :user_id => @user.id)
+      table.migrate_existing_table = 'eight'
+      @user.run_pg_query('
+        CREATE TABLE eight AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0), ST_Buffer(ST_MakePoint(10,0),1)), 4326) AS the_geom
+      ')
+      expect {
+        table.save
+      }.to raise_exception
+    end
+  end
+
+  describe '#test_import_cleanup' do
+    it 'tests correct removal of some fields upon importing a table' do
+      ogc_fid_field = 'ogc_fid'
+      gid_field = 'gid'
+      # Assumptions: imported_id_2 > imported_id_1   and   cartodb_id_2 > cartodb_id_1
+      cartodb_id_1 = 1
+      cartodb_id_2 = 2
+      imported_id_1 = 3
+      imported_id_2 = 4
+      description_1 = 'blabla'
+      description_2 = 'blablabla'
+
+      table = new_table :name => nil, :user_id => @user.id
+      table.migrate_existing_table = 'only_ogc_fid'
+      @user.run_pg_query(%Q{
+        CREATE TABLE #{table.migrate_existing_table} (#{ogc_fid_field} INT, description VARCHAR)
+      })
+      @user.run_pg_query(%Q{
+        INSERT INTO #{table.migrate_existing_table} (#{ogc_fid_field}, description)
+        VALUES  (#{imported_id_1}, '#{description_1}'),
+                (#{imported_id_2}, '#{description_2}')
+      })
+      table.save
+
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+      ])
+
+      rows = table.records
+      rows[:rows][0][:cartodb_id].should eq imported_id_1
+      rows[:rows][1][:cartodb_id].should eq imported_id_2
+      rows[:rows][0][:description].should eq description_1
+      rows[:rows][1][:description].should eq description_2
+
+
+      table = new_table :name => nil, :user_id => @user.id
+      table.migrate_existing_table = 'only_gid'
+      @user.run_pg_query(%Q{
+        CREATE TABLE #{table.migrate_existing_table} (#{gid_field} INT, description VARCHAR)
+      })
+      @user.run_pg_query(%Q{
+        INSERT INTO #{table.migrate_existing_table} (#{gid_field}, description)
+        VALUES  (#{imported_id_1}, '#{description_1}'),
+                (#{imported_id_2}, '#{description_2}')
+      })
+      table.save
+
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+      ])
+
+      rows = table.records
+      rows[:rows][0][:cartodb_id].should eq imported_id_1
+      rows[:rows][1][:cartodb_id].should eq imported_id_2
+      rows[:rows][0][:description].should eq description_1
+      rows[:rows][1][:description].should eq description_2
+
+
+      table = new_table :name => nil, :user_id => @user.id
+      table.migrate_existing_table = 'cartodb_id_and_ogc_fid'
+      @user.run_pg_query(%Q{
+        CREATE TABLE #{table.migrate_existing_table} (cartodb_id INT, #{ogc_fid_field} INT, description VARCHAR)
+      })
+      @user.run_pg_query(%Q{
+        INSERT INTO #{table.migrate_existing_table} (cartodb_id, #{ogc_fid_field}, description)
+        VALUES  (#{cartodb_id_1}, #{imported_id_1}, '#{description_1}'),
+                (#{cartodb_id_2}, #{imported_id_2}, '#{description_2}')
+      })
+      table.save
+
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+      ])
+
+      rows = table.records
+      rows[:rows][0][:cartodb_id].should eq cartodb_id_1
+      rows[:rows][1][:cartodb_id].should eq cartodb_id_2
+      rows[:rows][0][:description].should eq description_1
+      rows[:rows][1][:description].should eq description_2
+
+
+      table = new_table :name => nil, :user_id => @user.id
+      table.migrate_existing_table = 'cartodb_id_and_gid'
+      @user.run_pg_query(%Q{
+        CREATE TABLE #{table.migrate_existing_table} (cartodb_id INT, #{gid_field} INT, description VARCHAR)
+      })
+      @user.run_pg_query(%Q{
+        INSERT INTO #{table.migrate_existing_table} (cartodb_id, #{gid_field}, description)
+        VALUES  (#{cartodb_id_1}, #{imported_id_1}, '#{description_1}'),
+                (#{cartodb_id_2}, #{imported_id_2}, '#{description_2}')
+      })
+      table.save
+
+      check_schema(table, [
+          [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],
+          [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+      ])
+
+      rows = table.records
+      rows[:rows][0][:cartodb_id].should eq cartodb_id_1
+      rows[:rows][1][:cartodb_id].should eq cartodb_id_2
+      rows[:rows][0][:description].should eq description_1
+      rows[:rows][1][:description].should eq description_2
+    end
+  end
 
 end

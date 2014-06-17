@@ -16,7 +16,7 @@ module CartoDB
           String    :name
           String    :description
           String    :map_id, index: true
-          String   :active_layer_id
+          String    :active_layer_id
           String    :type
           String    :privacy
           DateTime  :created_at, null: false
@@ -24,6 +24,8 @@ module CartoDB
           String    :encrypted_password
           String    :password_salt
           String    :url_options
+          String    :user_id
+          String    :permission_id
         end
 
         @db.run(%Q{

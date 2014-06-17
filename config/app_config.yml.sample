@@ -41,6 +41,8 @@ defaults: &defaults
     domain:           ''
   rollbar:
     token: ''
+  tumblr:
+    api_key: ''
   trackjs:
     customer: ''
   varnish_management:

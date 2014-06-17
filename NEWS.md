@@ -1,3 +1,110 @@
+
+* New Features
+  * Added Permission model and permission attribute for Visualizations
+
+* Fixed bugs
+  * Security fix regarding Typhoeus library  
+
+* Migration Type (see UPGRADE): Mandatory migration 
+  * Cartodb postgres extension update to 0.2.1
+  * Also mandatory to run:
+    * rake cartodb:db:create_default_vis_permissions
+
+2.14.3 (2014-06-11)
+-------------------
+* Fixed bugs
+  * Last used colors working properly in color-picker.
+  * HTML template working properly for header infowindows.
+  * Make import_id visible for any kind of import error.
+  * Values from unknown column type are displaying correctly.
+  * Custom title within SQL and CartoCSS editor fixed.
+  * allow "rectangle" option for marker-type in torque layer
+  * now enqueing sync tables who are in state syncing for more than 2 hours
+      (caused by pushing code while syncing a table)
+  * fixed torque wizard for google maps
+  * fixed infinite loop in CDB_QueryStatements (again)
+  * fixed problem executing long queries from the editor
+  * By default, now not verifying SSL certificates for data imports (allow customer dev. environments with https)
+  * Import CSV with invalid UTF-8 characters by replacing them (instead of skipping the whole row)
+  * stop sending stats from public views after some time
+  * Now installing and using [Cartodb-postgres extension](https://github.com/CartoDB/cartodb-postgresql) (current 0.2.0)
+
+* New features
+  * Tumblr-widget available in dashboard where a new post is published.
+  * Added a log method for db_maintenance rakes
+      (logs to log/rake_db_maintenance.log).
+      For now used on load_functions.
+  * Added avatar_url to User model
+
+* Migration Type (see UPGRADE): Mandatory migration
+  * Check also [installtion steps](https://github.com/CartoDB/cartodb-postgresql#install) for cartodb postgres extension
+
+
+2.14.1 (2014-05-28)
+-------------------
+* New features
+    * Upgraded UPGRADE doc and required rakes to run
+    * Added new aux method to do future code cleanups in rakes : execute_on_users_with_index
+    * Added user_id to Visualization Model
+    * Added specs for table model, checking the_geom conversions
+    * Improve merge tables log info
+    * Allows adding custom legends in Torque maps
+    * SEO in public pages
+
+* Fixed bugs
+    * Converting the_geom causes drop that fails due to trigger (PR477)
+    * Excel2CSV gem messes up with atypical UTF-8 characters
+    * ogc_fid not being removed after import
+    * Creating table from sql query actually creates two tables
+    * Fixes a bug with the default values for the choropleth legends
+
+* Migration Type (see UPGRADE): Mandatory migration
+    * Also mandatory to run (in this order as fist one sets functions used by second one):
+        * rake cartodb:db:reset_trigger_check_quota
+        * rake cartodb:db:load_functions
+
+
+2.14.0 (2014-05-20)
+-------------------
+* New features
+  * Adds markdown support for descriptions
+  * New WMS proxy server
+  * SQL based table CartoDBfication
+  * New rake tasks
+  * Migrate user quota on cartodb extension creation from unpackaged
+  * Complain if script is sourced in psql, rather than via CREATE EXTENSION
+
+* Fixed bugs
+  * Bug fixing and stabilization
+  * Improve error detection in viz.json action
+  * Ruby code no longer loading import files in memory, but streaming them in chunks upon: uploading to server, uploading to AS3, downloading from AS3/server
+  - lib/sql modifications:
+    * Remove CDB_SearchPath.sql from the set of scripts loaded directly (#466)
+    * Do not call CDB_Invalidate_Varnish() if not owned by a superuser
+    * Refuse to create new extension if legacy code is present on database
+    * Fix extension requires directive
+
+
+
+2.13.5 (2014-05-13)
+-------------------
+* New features
+  * Infowindows on Hover
+  * SQL functions moved to a Git submodule
+  * CDB_CheckQuota improved in preparations for SQL-Based table CartoDBfier
+
+* Fixed bugs
+  * Cluster wizard font sizes are scaling very cleanly
+  * Big files imports/data syncs timeout or OOMs
+  * Default avatar requests not using https
+  * A transparent line appears within infowindow in last Chrome version
+  * Add new accepted formats in Dropbox sync
+  * Change error when importing a file and there is not enough quota left
+  * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
+  * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
+  * User name is not appearing in that user profile (link in description)
+
+
 2.13.5 (2014-05-13)
 -------------------
 * New features

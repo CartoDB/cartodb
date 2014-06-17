@@ -23,7 +23,7 @@ module CartoDB
       )
 
       INFOWINDOW_KEYS = %w(
-        fields template_name template alternative_names
+        fields template_name template alternative_names width maxHeight
       )
 
       def initialize(layer, options={}, configuration={}, decoration_data={})
@@ -101,6 +101,7 @@ module CartoDB
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
+          legend:     layer.legend,
           options:    {
             stat_tag:           options.fetch(:visualization_id),
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),

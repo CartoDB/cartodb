@@ -18,23 +18,13 @@
     <%= stylesheet_link_tag 'embeds/public_map', 'embeds/public_info.css' %>
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 
-    <style type="text/css">
-      /* Styles showing up new cartodb text */
-    <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
-      <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
-        .cartodb-text {display:block;}
-      <% end %>
-    <% else %>
-      .cartodb-text {display:block;}
-    <% end %>
-
-    </style>
-
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'embeds.css' %>
     <% else %>
       <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
     <% end %>
+
+    <style type="text/css">div.cartodb-logo { display:none!important }</style>
 
     <%= insert_trackjs() %>
 
@@ -270,7 +260,7 @@
             'description':  bool_fn,
             'shareable':    bool_fn,
             'fullscreen':   bool_fn,
-            'cartodb_logo': logo_fn,
+            'cartodb_logo': false,
             'scrollwheel':  bool_fn,
             'sublayer_options': layer_fn,
             'layer_selector': bool_fn,
@@ -293,8 +283,8 @@
           opt.scrollwheel = false; 
 
           cartodb.config.set({
-            cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
-            cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
+            cartodb_attributions: "",
+            cartodb_logo_link: ""
           })
 
           var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
@@ -406,9 +396,14 @@
             if (location.protocol.indexOf('https') === -1) {
               jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
                 statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-                  cartodb.core.Profiler.backend(function () {
+                cartodb.core.Profiler.backend(function () {
                   statsc.send.apply(statsc, arguments);
                 })
+                // stop sending stats after 11 seconds
+                // statsc send stats in 5 secs interval so allow to send at least twice
+                setTimeout(function() {
+                    cartodb.core.Profiler.backend(null);
+                }, 11*1000);
               })
             }
           <% end %>

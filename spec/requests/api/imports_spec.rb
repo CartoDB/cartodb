@@ -283,6 +283,8 @@ describe "Imports API" do
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
     @table_from_import = Table.all.last
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'complete', "Import failure: #{last_import.log}"
 
     post v1_imports_url, params.merge(:table_name => 'wadus_copy__copy',
                                       :table_copy => @table_from_import.name)

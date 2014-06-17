@@ -95,7 +95,8 @@ module CartoDB
     end #string_to_number
 
     def string_to_datetime
-      straight_cast('timestamptz', cast: "CDB_StringToDate(#{column_name})")
+      straight_cast('timestamptz',
+                    cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 
     def string_to_boolean
@@ -168,7 +169,8 @@ module CartoDB
     end #number_to_boolean
 
     def date_to_number
-      straight_cast('double precision', cast: "CDB_DateToNumber(#{column_name})")
+      straight_cast('double precision',
+                    cast: "CDB_DateToNumber(#{column_name})")
     end
 
     def date_to_boolean

@@ -68,15 +68,12 @@ module CartoDB
         table.send :update_updated_at
         table.import_to_cartodb(table_name)
         table.schema(reload: true)
+        table.send :set_the_geom_column!
         table.import_cleanup
         table.schema(reload: true)
         table.reload
-        # Set default triggers
-        table.send :set_the_geom_column!
         table.send :update_table_pg_stats
-        table.send :set_trigger_update_updated_at
-        table.send :set_trigger_check_quota
-        table.send :set_trigger_track_updates
+        table.send :cartodbfy
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)
@@ -88,6 +85,7 @@ module CartoDB
       end
 
       def update_cdb_tablemetadata(name)
+        # TODO: use upsert (see table.update_cdb_tablemetadata)
         user.in_database(as: :superuser).run(%Q{
           INSERT INTO cdb_tablemetadata (tabname, updated_at)
           VALUES ('#{name}'::regclass::oid, NOW())

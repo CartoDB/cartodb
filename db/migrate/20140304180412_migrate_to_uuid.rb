@@ -52,6 +52,7 @@ These are the steps you need to follow in order to run the manual script:
   $ export RAILS_ENV=<rails_env>
   $ export DBNAME=<your_postgresql_database_name>
   $ export DBHOST=<your_postgresql_database_host>
+  $ export DBPORT=<your_postgresql_database_port>
   $ export DBUSER=<your_postgresql_database_user>
   $ export REDIS_HOST=<your_redis_host>
   $ bundle exec ./script/migrate_to_uuid.rb schema

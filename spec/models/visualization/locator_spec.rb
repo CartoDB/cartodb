@@ -22,17 +22,32 @@ describe Visualization::Locator do
     Sequel.extension(:pagination)
 
     Visualization::Migrator.new(@db).migrate
-    Visualization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+
+    @user_id = UUIDTools::UUID.timestamp_create.to_s
 
     @map_id         = UUIDTools::UUID.timestamp_create.to_s
+
+    # For relator->permission
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    @user_mock = mock
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:username).returns(user_name)
+    @user_mock.stubs(:api_key).returns(user_apikey)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+
     @visualization  = Visualization::Member.new(
+      {
       name:         'Visualization 1',
       description:  'A sample visualization',
       privacy:      'public',
       type:         'derived',
       map_id:       UUID,
-      id:           @map_id
+      id:           @map_id,
+      user_id:      @user_id
+      }
     ).store
 
     table_fake    = model_fake

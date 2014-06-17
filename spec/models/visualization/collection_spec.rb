@@ -25,6 +25,16 @@ describe Visualization::Collection do
 
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+    # For relator->permission
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    @user_mock = mock
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:username).returns(user_name)
+    @user_mock.stubs(:api_key).returns(user_apikey)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
 
   after(:each) do
@@ -33,8 +43,8 @@ describe Visualization::Collection do
 
   describe '#fetch' do
     it 'filters by tag if the backend supports array columns' do
-      attributes1  = random_attributes(tags: ['tag 1', 'tag 11'])
-      attributes2  = random_attributes(tags: ['tag 2', 'tag 22'])
+      attributes1  = random_attributes(tags: ['tag 1', 'tag 11'], user_id: UUIDTools::UUID.timestamp_create.to_s)
+      attributes2  = random_attributes(tags: ['tag 2', 'tag 22'], user_id: UUIDTools::UUID.timestamp_create.to_s)
       Visualization::Member.new(attributes1).store
       Visualization::Member.new(attributes2).store
 
@@ -44,9 +54,9 @@ describe Visualization::Collection do
 
     it 'filters by partial name / description match' do
       attributes1 =
-        random_attributes(name: 'viz_1', description: 'description_11')
+        random_attributes(name: 'viz_1', description: 'description_11', user_id: UUIDTools::UUID.timestamp_create.to_s)
       attributes2 =
-        random_attributes(name: 'viz_2', description: 'description_22')
+        random_attributes(name: 'viz_2', description: 'description_22', user_id: UUIDTools::UUID.timestamp_create.to_s)
       Visualization::Member.new(attributes1).store
       Visualization::Member.new(attributes2).store
 
@@ -80,7 +90,8 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'public')
+      type:         attributes.fetch(:type, 'public'),
+      user_id:      UUIDTools::UUID.timestamp_create.to_s
     }
   end #random_attributes
 end # Visualization::Collection

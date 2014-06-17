@@ -1,10 +1,13 @@
+
+require_relative 'thread_pool'
+
 namespace :cartodb do
   namespace :db do
 
     #################
     # LOAD TABLE OIDS
     #################
-    desc "Load table oids"
+    desc 'Load table oids'
     task :load_oids => :environment do
       count = User.count
       User.all.each_with_index do |user, i|
@@ -18,13 +21,13 @@ namespace :cartodb do
       end
     end
 
-    desc "Copy user api_keys from redis to postgres"
+    desc 'Copy user api_keys from redis to postgres'
     task :copy_api_keys_from_redis => :environment do
       count = User.count
       User.all.each_with_index do |user, i|
         begin
           user.this.update api_key: $users_metadata.HGET(user.key, 'map_key')
-          raise "No API key!!" if user.reload.api_key.blank?
+          raise 'No API key!!' if user.reload.api_key.blank?
           puts "(#{i+1} / #{count}) OK   #{user.username}"
         rescue => e
           puts "(#{i+1} / #{count}) FAIL #{user.username} #{e.message}"
@@ -32,7 +35,7 @@ namespace :cartodb do
       end
     end # copy_api_keys_from_redis
 
-    desc "Rebuild user tables/layers join table"
+    desc 'Rebuild user tables/layers join table'
     task :register_table_dependencies => :environment do
       count = Map.count
 
@@ -48,27 +51,114 @@ namespace :cartodb do
       end
     end
 
+    desc 'Removes duplicated indexes created in some accounts'
+    task :remove_duplicate_indexes, [:database_host, :sleep, :dryrun] => :environment do |t, args|
+      threads = 1
+      thread_sleep = 1
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 3 : args[:sleep].to_i
+      dryrun = args[:dryrun] == 'false' ? 'false' : 'true'
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
+      execute_on_users_with_index(:remove_duplicate_indexes.to_s, Proc.new { |user, i|
+        begin
+          user.in_database(:as => :superuser) do |db|
+            db.transaction do
+              db.run(%Q{
+                CREATE OR REPLACE FUNCTION CDB_DropDupUnique(dryrun boolean DEFAULT true)
+                RETURNS void
+                LANGUAGE plpgsql
+                VOLATILE
+                AS $$
+                DECLARE
+                  rec RECORD;
+                  sql TEXT;
+                BEGIN
+
+                  FOR rec IN SELECT
+                      c.conname, r.oid tab
+                    FROM
+                      pg_constraint c,
+                      pg_class r
+                    WHERE c.conrelid > 0
+                    AND c.conrelid = r.oid
+                    AND c.contype = 'u'
+                    AND EXISTS (
+                      SELECT * FROM pg_constraint pc
+                      WHERE pc.conrelid = c.conrelid -- same target table
+                        AND pc.conkey = c.conkey -- samekey
+                        AND pc.contype = 'p' -- index is a primary one
+                    )
+                  LOOP
+
+                    IF NOT dryrun THEN
+                      RAISE NOTICE 'Constraint % on table % is not needed, dropping',
+                        rec.conname, rec.tab::regclass::text;
+                      sql := 'ALTER TABLE ' || rec.tab::regclass::text
+                          || ' DROP CONSTRAINT ' || quote_ident (rec.conname);
+                      RAISE DEBUG 'Running: %', sql;
+                      EXECUTE sql;
+                    ELSE
+                      RAISE NOTICE 'Constraint % on table % is not needed (dry run)',
+                        rec.conname, rec.tab::regclass::text;
+                    END IF;
+
+                  END LOOP;
+
+                END;
+              $$;
+              })
+              db.run(%Q{
+                SELECT CDB_DropDupUnique(#{dryrun});
+              })
+              db.run(%Q{
+                DROP FUNCTION IF EXISTS CDB_DropDupUnique(boolean);
+              })
+            end
+          end
+
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :remove_duplicate_indexes.to_s, database_host)
+          sleep(sleep)
+        rescue => e
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :remove_duplicate_indexes.to_s, database_host)
+          puts "FAIL:#{i} #{e.message}"
+        end
+      }, threads, thread_sleep, database_host)
+    end
 
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
-    desc "Install/upgrade CARTODB SQL functions"
-    task :load_functions => :environment do
-      functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
-      count = User.count
-      printf "Starting cartodb:db:load_functions task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.load_cartodb_functions(functions_list)
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
-        end
-        #sleep(1.0/5.0)
+    desc 'Install/upgrade CARTODB SQL functions'
+    task :load_functions, [:num_threads, :thread_sleep, :database_host, :sleep, :statement_timeout] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 5 : args[:sleep].to_i
+      statement_timeout = args[:statement_timeout].blank? ? nil : args[:statement_timeout]
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
       end
+      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+          begin
+            user.load_cartodb_functions(statement_timeout)
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
+            sleep(sleep)
+          rescue => e
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
+            puts "FAIL:#{i} #{e.message}"
+          end
+      }, threads, thread_sleep, database_host)
     end
 
-    desc "Load varnish invalidation function"
+    desc 'Load varnish invalidation function'
     task :load_varnish_invalidation_function => :environment do
       count = User.count
       printf "Starting cartodb:db:load_varnish_invalidation_function task for %d users\n", count
@@ -87,8 +177,10 @@ namespace :cartodb do
     ########################
     # LOAD CARTODB TRIGGERS
     ########################
-    desc "Install/upgrade CARTODB SQL triggers"
-    task :load_triggers => :environment do
+    desc 'Install/upgrade CARTODB SQL triggers'
+    task :load_triggers => :environment do |t, args|
+      require_relative '../../app/models/table'
+
       count = User.count
       User.all.each_with_index do |user, i|
         begin
@@ -105,7 +197,6 @@ namespace :cartodb do
         rescue => e
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
-        #sleep(1.0/5.0)
       end
     end
         
@@ -138,17 +229,18 @@ namespace :cartodb do
     # SET TRIGGER CHECK QUOTA
     ##########################
     desc 'reset check quota trigger on all user tables'
-    task :reset_trigger_check_quota => :environment do
-      error_messages = "\n"
+    task :reset_trigger_check_quota => :environment do |t, args|
       puts "Resetting check quota trigger for ##{User.count} users"
       User.all.each_with_index do |user, i|
         begin
-	        user.rebuild_quota_trigger
+          user.rebuild_quota_trigger
         rescue => exception
-          error_messages << "ERRORED #{user.id} (#{user.username}): #{exception.message}\n"
+          puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
+        end
+        if i % 500 == 0
+          puts "\nProcessed ##{i} users"
         end
       end
-      puts error_messages
     end
 
     desc 'reset check quota trigger for a given user'
@@ -161,9 +253,9 @@ namespace :cartodb do
 
     desc "set users quota to amount in mb"
     task :set_user_quota, [:username, :quota_in_mb] => :environment do |t, args|
-      usage = "usage: rake cartodb:db:set_user_quota[username,quota_in_mb]"
+      usage = 'usage: rake cartodb:db:set_user_quota[username,quota_in_mb]'
       raise usage if args[:username].blank? || args[:quota_in_mb].blank?
-      
+
       user  = User.filter(:username => args[:username]).first
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
@@ -351,10 +443,10 @@ namespace :cartodb do
       end
     end
 
-    desc "update the old cache trigger which was using redis to the varnish one"
+    desc 'update the old cache trigger which was using redis to the varnish one'
     task :update_cache_trigger => :environment do
       User.all.each do |user|
-        puts "Update cache trigger => " + user.username
+        puts 'Update cache trigger => ' + user.username
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database do |user_database|
           user.tables.all.each do |table|
@@ -369,46 +461,127 @@ namespace :cartodb do
       end
     end
 
-    desc "Runs the specified CartoDB migration script"
+    desc 'Runs the specified CartoDB migration script'
     task :migrate_to, [:version] => :environment do |t, args|
-      usage = "usage: rake cartodb:db:migrate_to[version]"
+      usage = 'usage: rake cartodb:db:migrate_to[version]'
       raise usage if args[:version].blank?
-      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+      require Rails.root.join 'lib/cartodb/generic_migrator.rb'
 
       CartoDB::GenericMigrator.new(args[:version]).migrate!
     end
     
-    desc "Undo migration changes USE WITH CARE"
+    desc 'Undo migration changes USE WITH CARE'
     task :rollback_migration, [:version] => :environment do |t, args|
-      usage = "usage: rake cartodb:db:rollback_migration[version]"
+      usage = 'usage: rake cartodb:db:rollback_migration[version]'
       raise usage if args[:version].blank?
-      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+      require Rails.root.join 'lib/cartodb/generic_migrator.rb'
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
     end
     
-    desc "Save users metadata in redis"
+    desc 'Save users metadata in redis'
     task :save_users_metadata => :environment do
       User.all.each do |u|
         u.save_metadata
       end
     end
 
-    desc "Drop cache_checkpoint trigger from all tables"
-    task :drop_trigger_cache_checkpoint => :environment do
-      count = User.count
-      printf "Starting cartodb:db:drop_trigger_cache_checkpoint task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.tables.all.each do |t|
-            if t.has_trigger? "cache_checkpoint"
-              t.drop_trigger_cache_checkpoint
+    desc 'Setup default permissions on existing visualizations'
+    task :create_default_vis_permissions, [:page_size, :page] => :environment do |t, args|
+      page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
+      page = args[:page].blank? ? 1 : args[:page].to_i
+
+      require_relative '../../app/models/visualization/collection'
+
+      progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
+      collection = CartoDB::Visualization::Collection.new
+
+      begin
+        items = collection.fetch(page: page, per_page: page_size)
+
+        count = items.count
+        puts "\n>Running :create_default_vis_permissions for page #{page} (#{count} vis)" if count > 0
+        items.each_with_index { |vis, i|
+          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
+          if vis.permission_id.nil?
+            begin
+              raise 'No owner' if vis.user.nil?
+              # Just saving will trigger the permission creation
+              vis.send(:do_store, false)
+              puts "OK #{vis.id}"
+            rescue => e
+              owner_id = vis.user.nil? ? 'nil' : vis.user.id
+              message = "FAIL u:#{owner_id} v:#{vis.id}: #{e.message}"
+              puts message
+              log(message, :create_default_vis_permissions.to_s)
             end
           end
-          printf "OK %-#{20}s (%-#{5}s/%-#{5}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{5}s/%-#{5}s) #{e.message}\n", user.username, i+1, count
+        }
+        page += 1
+      end while count > 0
+
+      puts "\n>Finished :create_default_vis_permissions"
+    end
+
+    # Executes a ruby code proc/block on all existing users, outputting some info
+    # @param task_name string
+    # @param block Proc
+    # @example:
+    # execute_on_users_with_index(:populate_new_fields.to_s, Proc.new { |user, i| ... })
+    def execute_on_users_with_index(task_name, block, num_threads=1, sleep_time=0.1, database_host=nil)
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
+
+      start_message = ">Running #{task_name} for #{count} users"
+      puts start_message
+      log(start_message, task_name, database_host)
+      if database_host.nil?
+        puts "Detailed log stored at log/rake_db_maintenance_#{task_name}.log"
+      else
+        puts "Detailed log stored at log/rake_db_maintenance_#{task_name}_#{database_host}.log"
+      end
+
+      thread_pool = ThreadPool.new(num_threads, sleep_time)
+
+      if database_host.nil?
+        User.order(Sequel.asc(:created_at)).each_with_index do |user, i|
+          thread_pool.schedule do
+            if i % 100 == 0
+              puts "PROGRESS: #{i}/#{count} users queued"
+            end
+            block.call(user, i)
+          end
         end
+      else
+        User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
+          thread_pool.schedule do
+            if i % 100 == 0
+              puts "PROGRESS: #{i}/#{count} users queued"
+            end
+            block.call(user, i)
+          end
+        end
+      end
+
+      at_exit { thread_pool.shutdown }
+
+      puts "PROGRESS: #{count}/#{count} users queued"
+      end_message = "\n>Finished #{task_name}\n"
+      puts end_message
+      log(end_message, task_name, database_host)
+    end
+
+    def log(entry, task_name, filename_suffix='')
+      if filename_suffix.nil? || filename_suffix.empty?
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}.log")
+      else
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
+      end
+      File.open(log_path, 'a') do |file_handle|
+        file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 

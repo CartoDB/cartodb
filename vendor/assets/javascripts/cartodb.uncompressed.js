@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.07-dev
+// cartodb.js version: 3.10.2-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 40f3b5e4909f2a06f2fa8d9d87020fd7ceaa8718
+// sha: 8dac4cbc89dd6d32c278b6a9863e0d2bd29c6060
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.07-dev';
+    cdb.VERSION = '3.10.2-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24263,6 +24263,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
+    maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",
     content: "",
@@ -24488,12 +24489,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       this._setTemplate();
     }
 
-    this.model.bind('change:content',           this.render, this);
-    this.model.bind('change:template_name',     this._setTemplate, this);
-    this.model.bind('change:latlng',            this._update, this);
-    this.model.bind('change:visibility',        this.toggle, this);
-    this.model.bind('change:template',          this._compileTemplate, this);
-    this.model.bind('change:alternative_names', this.render, this);
+    this.model.bind('change:content',             this.render, this);
+    this.model.bind('change:template_name',       this._setTemplate, this);
+    this.model.bind('change:latlng',              this._update, this);
+    this.model.bind('change:visibility',          this.toggle, this);
+    this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:alternative_names',   this.render, this);
+    this.model.bind('change:width',               this.render, this);
+    this.model.bind('change:maxHeight',           this.render, this);
 
     this.mapView.map.bind('change',             this._updatePosition, this);
 
@@ -24506,9 +24509,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     });
 
     this.add_related_model(this.mapView.map);
-
-    // Set min height to show the scroll
-    this.minHeightToScroll = 180;
 
     // Hide the element
     this.$el.hide();
@@ -24523,11 +24523,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      var $jscrollpane = this.$(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-
+      
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -24559,15 +24559,21 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
+      // Set width and max-height from the model only
+      // If there is no width set, we don't force our infowindow
+      if (this.model.get('width')) {
+        this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      }
+      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
       var self = this;
       setTimeout(function() {
-        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
-        if (self.minHeightToScroll <= actual_height)
-          self.$el.find(".cartodb-popup-content").jScrollPane({
+        var actual_height = self.$(".cartodb-popup-content").outerHeight();
+        if (self.model.get('maxHeight') <= actual_height)
+          self.$(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
@@ -26445,7 +26451,7 @@ Map.prototype = {
     var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
-      if (tooltip) {
+      if (tooltip && tooltip.fields && tooltip.fields.length) {
         return true;
       }
     }
@@ -26491,6 +26497,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {
@@ -31323,11 +31332,25 @@ var Vis = cdb.core.View.extend({
 
         layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
+          // Old viz.json doesn't contain width and maxHeight properties
+          // and we have to get the default values if there are not defined.
+          var extra = _.defaults(
+            {
+              offset: infowindowFields.offset,
+              width: infowindowFields.width,
+              maxHeight: infowindowFields.maxHeight
+            },
+            cdb.geo.ui.InfowindowModel.prototype.defaults
+          );
+
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names
+            'alternative_names': infowindowFields.alternative_names,
+            'offset': extra.offset,
+            'width': extra.width,
+            'maxHeight': extra.maxHeight
           });
 
           if (attributes) {

@@ -9,7 +9,7 @@ WORKING_SPECS = \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/map_spec.rb \
-  spec/models/visualization/ \
+  spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/lib/sql_parser_spec.rb \
@@ -34,6 +34,8 @@ WORKING_SPECS = \
   spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
   spec/models/synchronization/ \
+  spec/models/permission_spec.rb \
+  spec/requests/api/permissions_controller_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

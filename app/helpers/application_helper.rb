@@ -70,6 +70,7 @@ module ApplicationHelper
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
       oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
       oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
+      tumblr_api_key:      Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
 
@@ -101,7 +102,8 @@ module ApplicationHelper
       user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
       account_host:        Cartodb.config[:account_host],
-      max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
+      max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
+      api_key:             ''
     }
 
     # Assumption: it is safe to expose private SQL API endpoint (or it is the same just using HTTPS)

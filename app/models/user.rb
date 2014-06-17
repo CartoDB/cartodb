@@ -278,10 +278,19 @@ class User < Sequel::Model
 
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
-    connection = $pool.fetch(configuration) do
-      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
-      end)))
+
+    if options[:no_cartodb_in_schema].present?
+      connection = $pool.fetch(configuration) do
+        ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+          conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema} })
+        end)))
+      end
+    else
+      connection = $pool.fetch(configuration) do
+        ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+          conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
+        end)))
+      end
     end
 
     if block_given?
@@ -1000,7 +1009,10 @@ TRIGGER
 
     add_python;
 
-    in_database(:as => :superuser) do |db|
+    in_database({
+                    as: :superuser,
+                    no_cartodb_in_schema: true
+                }) do |db|
       db.transaction do
 
         unless statement_timeout.nil?

@@ -10,6 +10,7 @@ class Organization < Sequel::Model
   # @param created_at Timestamp
   # @param updated_at Timestamp
   # @param name String
+  # @param avatar_url String
 
   one_to_many :users
   plugin :validation_helpers

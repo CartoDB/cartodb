@@ -577,7 +577,7 @@ class User < Sequel::Model
       'database' => 'postgres'
     ) {|key, o, n| n.nil? ? o : n}
     conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-      conn.execute(%Q{ SET search_path TO "$user", public, #{self.database_schema} cartodb })
+      conn.execute(%Q{ SET search_path TO "$user", public, #{self.database_schema}, cartodb })
     end)))
     conn[:pg_database].filter(:datname => database_name).all.any?
   end

@@ -71,6 +71,7 @@ class Organization < Sequel::Model
           :username => u.username,
           :avatar_url => u.avatar_url
         }
+      }
     }
   end
 

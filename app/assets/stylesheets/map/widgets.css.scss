@@ -1,15 +1,24 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
-
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "compass/css3/images";
 @import "compass/css3/opacity";
 @import "compass/css3/transform";
+@import "../common/fonts";
 @import "../common/vars";
 @import "../common/mixins";
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
+
+.widget.text.dejavu .content > .text.widget_text {
+  font-family: 'DejaVu Sans Book', sans-serif;
+}
+.widget.text.unifont .content > .text.widget_text {
+  font-family: 'unifont Medium', sans-serif;
+}
+.widget.text.open_sans .content > .text.widget_text {
+  font-family: 'Open Sans', sans-serif;
+}
 
 .widget,
 .static {
@@ -42,16 +51,25 @@
 
     .content:hover { cursor: default; }
 
-    &:hover { 
+    &:hover {
       background:rgba(#333, .5);
     }
 
     .description {
       color: #fff;
       font-size:13px;
+
       &.hidden { display: none; }
-      a { color: inherit; text-decoration: underline; }
-      a:hover { color: #ccc; }
+
+      a {
+        color: inherit;
+        text-decoration: underline;
+        &:hover { color: #ccc; }
+      }
+
+      strong { font-weight: bold;  }
+      em     { font-style: italic; }
+
     }
 
     .title {
@@ -93,12 +111,20 @@
       background: #fff;
       color: #333;
 
+      @include opacity(1);
+
       &:after {
         border-top: 4px solid #373F46;
       }
+
+    } // .edit
+
+    .close {
+      @include opacity(1);
     }
 
-  }
+
+  } // .open
 
   &.editable {
 
@@ -135,6 +161,7 @@
     @include simple-transition(opacity, .10s, ease-in-out);
 
     ul li > span:first-child { width: 63px; }
+    ul li .select2-container .select2-choice { overflow: visible; width: 100px;  }
     ul li .select2-container.font-family { width: 90px; }
 
     input.value {
@@ -299,6 +326,10 @@ div.dropdown.properties_dropdown {
         margin-right: 20px;
 
         &.handle { margin: 0; }
+
+        &.field .form_combo {
+          width: 100px;
+        }
 
         &.field .form_combo span {
           display: block;

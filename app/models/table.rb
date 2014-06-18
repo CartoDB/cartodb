@@ -921,7 +921,7 @@ class Table < Sequel::Model(:user_tables)
     }.first[1]
   end #column_type_for
 
-  def self.column_names_for(db, table_name)
+  def self.column_names_for(db, table_name, owner)
     db.schema(table_name, schema: owner.database_schema, reload: true).map{ |s| s[0].to_s }
   end #column_names
 
@@ -933,8 +933,8 @@ class Table < Sequel::Model(:user_tables)
       raise CartoDB::InvalidColumnName, 'That column name is reserved, please choose a different one'
     end
 
-    owner.in_database do |user_database|
-      if Table.column_names_for(user_database, name).include?(new_name)
+    self.owner.in_database do |user_database|
+      if Table.column_names_for(user_database, name, self.owner).include?(new_name)
         raise 'Column already exists'
       end
       user_database.rename_column(name, old_name.to_sym, new_name.to_sym)

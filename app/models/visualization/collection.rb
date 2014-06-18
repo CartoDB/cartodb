@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'set'
 require_relative './member'
+require_relative '../shared_entity'
 require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
@@ -41,6 +42,7 @@ module CartoDB
 
       def fetch(filters={})
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
+        dataset = include_shared_entities(dataset, filters)
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = order(dataset, filters.delete(:o))
@@ -92,6 +94,22 @@ module CartoDB
         return dataset if pattern.nil? || pattern.empty?
         dataset.where(PARTIAL_MATCH_QUERY, pattern, "%#{pattern}%")
       end #filter_by_partial_match
+
+      def include_shared_entities(dataset, filters)
+        return dataset unless filters[:user_id].present?
+
+        shared_vis = CartoDB::SharedEntity.where(
+            user_id: filters[:user_id],
+            type: CartoDB::SharedEntity::TYPE_VISUALIZATION
+        ).all
+         .map { |entity|
+          entity.entity_id
+        }
+
+        return dataset if shared_vis.nil? || shared_vis.empty?
+
+        dataset.or(id: shared_vis)
+      end
 
       def tags_from(filters={})
         filters.delete(:tags).to_s.split(',')

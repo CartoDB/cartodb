@@ -128,6 +128,10 @@ module CartoDB
       update_shared_entities
     end
 
+    def before_destroy
+      destroy_shared_entities
+    end
+
     # @param subject User
     # @return String Permission::ACCESS_xxx
     def permission_for_user(subject)
@@ -167,11 +171,15 @@ module CartoDB
       CartoDB::PermissionPresenter.new(self).to_poro
     end
 
-    def update_shared_entities
-      # Destroy existing entries first
+    def destroy_shared_entities
       CartoDB::SharedEntity.where(entity_id: self.entity_id).delete
+    end
 
-      # User entries, and those without permissions skipped too
+    def update_shared_entities
+      # First clean previous sharings
+      destroy_shared_entities
+
+      # Only user entries, and those with forbids also skipped
       user_ids = acl.select { |entry|
         entry[:type] == TYPE_USER && entry[:access] != ACCESS_NONE
       }.map { |entry|

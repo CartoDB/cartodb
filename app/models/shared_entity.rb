@@ -1,6 +1,9 @@
 # encoding: utf-8
 
 module CartoDB
+  # A shared entity is just a relating model that joins entities (currently only visualizations)
+  # shared but not owned by users.
+  # Initially there's no need to include full objects and is kept as ids only on purpose
   class SharedEntity < Sequel::Model
 
     # @param user_id String (uuid)

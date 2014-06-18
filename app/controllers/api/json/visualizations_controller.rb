@@ -220,7 +220,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #locator
 
   def scope_for(current_user)
-    { map_id: current_user.maps.map(&:id) }
+    { user_id: current_user.id }
   end #scope_for
 
   def allow_vizjson_v1_for?(table)

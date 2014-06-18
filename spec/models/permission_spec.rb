@@ -11,6 +11,11 @@ describe CartoDB::Permission do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
+  after(:each) do
+    Permission.all.each { |perm| perm.destroy }
+    SharedEntity.all.each { |entity| entity.destroy }
+  end
+
   describe '#create' do
     it 'tests basic creation' do
       entity_id = UUIDTools::UUID.timestamp_create.to_s

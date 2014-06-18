@@ -209,4 +209,8 @@ describe Geocoding do
     end
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
 end

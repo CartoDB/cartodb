@@ -310,6 +310,9 @@ describe "Imports API" do
     @user.reload.tables.count.should == 1
   end
 
-
   it 'returns info for each created table'
+
+  after(:all) do
+    @user.destroy
+  end
 end

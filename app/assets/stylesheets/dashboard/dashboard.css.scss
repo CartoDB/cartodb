@@ -569,18 +569,12 @@
 
     .tables .content .paginator,
     section.visualizations .paginator {
-      @include size(100%, 20px);
-
       position:relative;
-      float:left;
       display:block;
-      margin: 0;
-      padding: 20px 0 20px 0;
-
+      margin:10px 0 0;
+      padding:0 22px;
       letter-spacing:0;
       text-align: right;
-      border-top: 1px solid #EDEDED;
-      border-bottom: 1px solid #EDEDED;
 
       .dropdown {
         display:block;
@@ -650,14 +644,13 @@
         padding: 20px 0 10px 0;
       }
 
-      &.empty {
-        border: none;
-        height: 0; padding: 0; margin: 0;
-      }
+      &.empty { display:none }
 
       & > ul {
-
-        margin: 0 30px 0 0;
+        display:block;
+        padding:12px 0;
+        border-top: 1px solid #E2E2E2;
+        border-bottom: 1px solid #E2E2E2;
 
         li {
           @include inline-block();

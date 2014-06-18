@@ -209,12 +209,15 @@ describe Visualization::Member do
       user2_mock = mock
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user2_mock.stubs(:username).returns('user2')
+      user2_mock.stubs(:organization).returns(nil)
       user3_mock = mock
       user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user3_mock.stubs(:username).returns('user3')
+      user3_mock.stubs(:organization).returns(nil)
       user4_mock = mock
       user4_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user4_mock.stubs(:username).returns('user4')
+      user4_mock.stubs(:organization).returns(nil)
 
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
@@ -228,28 +231,32 @@ describe Visualization::Member do
 
       acl = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: user2_mock.id,
             username: user2_mock.username
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         },
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: user3_mock.id,
             username: user3_mock.username
           },
-          type: Permission::TYPE_READWRITE
+          access: Permission::ACCESS_READWRITE
         }
       ]
       acl_expected = [
         {
+          type: Permission::TYPE_USER,
           id: user2_mock.id,
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         },
         {
+          type: Permission::TYPE_USER,
           id: user3_mock.id,
-          type: Permission::TYPE_READWRITE
+          access: Permission::ACCESS_READWRITE
         }
       ]
 

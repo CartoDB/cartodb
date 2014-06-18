@@ -95,41 +95,45 @@ describe User do
 
   describe "organization checks" do
     it "should not be valid if his organization doesn't have more seats" do
-      organization = FactoryGirl.create(:organization, seats: 1)
+      organization = create_org('testorg', 10.megabytes, 1)
       orguser = FactoryGirl.create(:user, organization: organization)
       user = User.new
       user.organization = organization
       user.valid?.should be_false
       user.errors.keys.should include(:organization)
+      organization.destroy
       orguser.destroy
     end
 
     it "should be valid if his organization has enough seats" do
-      organization = FactoryGirl.create(:organization, seats: 1)
+      organization = create_org('testorg', 10.megabytes, 1)
       user = User.new
       user.organization = organization
       user.valid?
       user.errors.keys.should_not include(:organization)
+      organization.destroy
     end
     
     it "should not be valid if his organization doesn't have enough disk space" do
-      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+      organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
       user = User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?.should be_false
       user.errors.keys.should include(:quota_in_bytes)
+      organization.destroy
     end
 
     it "should be valid if his organization has enough disk space" do
-      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+      organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(9.megabytes)
       user = User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?
       user.errors.keys.should_not include(:quota_in_bytes)
+      organization.destroy
     end
   end
 
@@ -733,6 +737,15 @@ describe User do
       @user.link_ghost_tables
       @user.tables.count.should_not == 0
     end
+  end
+
+  def create_org(org_name, org_quota, org_seats)
+    organization = Organization.new
+    organization.name = org_name
+    organization.quota_in_bytes = org_quota
+    organization.seats = org_seats
+    organization.save
+    organization
   end
 
   after(:all) do

@@ -1315,7 +1315,9 @@ class Table < Sequel::Model(:user_tables)
     name_candidates = self.owner.tables.select_map(:name) if owner
 
     options.merge!(name_candidates: name_candidates)
-    options.merge!(database_schema: self.owner.database_schema) unless options[:database_schema].present?
+    unless options[:database_schema].present? || self.owner.nil?
+      options.merge!(database_schema: self.owner.database_schema)
+    end
 
     Table.get_valid_table_name(name, options)
   end

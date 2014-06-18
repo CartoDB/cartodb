@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative './permission/presenter'
+require_relative 'shared_entity'
 
 module CartoDB
   class Permission < Sequel::Model
@@ -8,12 +9,17 @@ module CartoDB
     # @param id String (uuid)
     # @param owner_id String (uuid)
     # @param owner_username String
+    # @param entity_id String (uuid)
+    # @param entity_type String
 
     ACCESS_READONLY   = 'r'
     ACCESS_READWRITE  = 'rw'
     ACCESS_NONE       = 'n'
+
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
+
+    ENTITY_TYPE_VISUALIZATION = 'vis'
 
     DEFAULT_ACL_VALUE = '[]'
 
@@ -83,10 +89,31 @@ module CartoDB
       self.owner_username = value.username
     end
 
+    # @return Mixed|nil
+    def entity
+      if self.entity_type == ENTITY_TYPE_VISUALIZATION
+        CartoDB::Visualization::Member.new(id:self.entity_id).fetch
+      end
+      nil
+    end
+
+    # @param value Mixed
+    def entity=(value)
+      if value.kind_of? CartoDB::Visualization::Member
+        self.entity_type = ENTITY_TYPE_VISUALIZATION
+        self.entity_id = value.id
+      else
+        raise PermissionError.new('Unsupported entity type')
+      end
+    end
+
     def validate
       super
       errors.add(:owner_id, 'cannot be nil') if (self.owner_id.nil? || self.owner_id.empty?)
       errors.add(:owner_username, 'cannot be nil') if (self.owner_username.nil? || self.owner_username.empty?)
+      errors.add(:entity_id, 'cannot be nil') if (self.entity_id.nil? || self.entity_id.empty?)
+      errors.add(:entity_type, 'cannot be nil') if (self.entity_type.nil? || self.entity_type.empty?)
+      errors.add(:entity_type, 'invalid type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
       unless new?
         validates_presence [:id]
       end
@@ -95,6 +122,10 @@ module CartoDB
     def before_save
       super
       self.updated_at = Time.now
+    end
+
+    def after_save
+      update_shared_entities
     end
 
     # @param subject User
@@ -134,6 +165,38 @@ module CartoDB
 
     def to_poro
       CartoDB::PermissionPresenter.new(self).to_poro
+    end
+
+    def update_shared_entities
+      # Destroy existing entries first
+      CartoDB::SharedEntity.where(entity_id: self.entity_id).delete
+
+      # User entries, and those without permissions skipped too
+      user_ids = acl.select { |entry|
+        entry[:type] == TYPE_USER && entry[:access] != ACCESS_NONE
+      }.map { |entry|
+        entry[:id]
+      }
+
+      # Create entities for the ACL
+      user_ids.each { |user_id|
+        CartoDB::SharedEntity.new(
+            user_id:    user_id,
+            entity_id:  self.entity_id,
+            type:       type_for_shared_entity(self.entity_type)
+        ).save
+      }
+    end
+
+    private
+
+    # @param permission_type ENTITY_TYPE_xxxx
+    # @throws PermissionError
+    def type_for_shared_entity(permission_type)
+      if permission_type == ENTITY_TYPE_VISUALIZATION
+        return CartoDB::SharedEntity::TYPE_VISUALIZATION
+      end
+      PermissionError.new('Invalid permission type for shared entity')
     end
 
   end

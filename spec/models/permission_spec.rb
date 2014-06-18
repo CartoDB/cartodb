@@ -13,6 +13,9 @@ describe CartoDB::Permission do
 
   describe '#create' do
     it 'tests basic creation' do
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
       acl_initial = []
       acl_with_data = [
         {
@@ -35,7 +38,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username
+        owner_username: @user.username,
+        entity_id:      entity_id,
+        entity_type:    entity_type
         #check default acl is correct
       )
       permission.save
@@ -43,6 +48,8 @@ describe CartoDB::Permission do
       permission.id.should_not eq nil
       permission.owner_id.should eq @user.id
       permission.owner_username.should eq @user.username
+      permission.entity_id.should eq entity_id
+      permission.entity_type.should eq entity_type
       permission.acl.should eq acl_initial
 
       permission.acl = acl_with_data
@@ -54,18 +61,55 @@ describe CartoDB::Permission do
       permission.acl = nil
       permission.acl.should eq acl_initial
 
+      permission.destroy
+
       # Missing owner
       permission2 = Permission.new
       expect {
         permission2.save
       }.to raise_exception
 
+      # Missing entity_type
+      permission2 = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+      )
+      expect {
+        permission2.save
+      }.to raise_exception
+
+      # Missing entity_id
+      permission2 = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username,
+          entity_type:      entity_type,
+      )
+      expect {
+        permission2.save
+      }.to raise_exception
+
       # Owner helper methods
+      permission2 = Permission.new
       permission2.owner = @user
+      permission2.entity_id = entity_id
+      permission2.entity_type = entity_type
       permission2.save
       permission2.owner.should eq @user
       permission2.owner_id.should eq @user.id
       permission2.owner_username.should eq @user.username
+      permission2.delete
+
+      # Entity helper methods
+      vis_mock = mock
+      vis_mock.stubs(:fetch).returns(vis_mock)
+      vis_mock.stubs(:id).returns(entity_id)
+      vis_mock.stubs(:kind_of?).returns(true)
+      Visualization::Member.any_instance.stubs(:new).returns vis_mock
+      permission2 = Permission.new
+      permission2.owner = @user
+      permission2.entity = vis_mock
+      permission2.save
 
       # invalid ACL formats
       expect {
@@ -121,6 +165,8 @@ describe CartoDB::Permission do
         ]
       }.to raise_exception CartoDB::PermissionError
 
+      permission2.destroy
+      user2.destroy
     end
   end
 
@@ -137,7 +183,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username
+        owner_username: @user.username,
+        entity_id: UUIDTools::UUID.timestamp_create.to_s,
+        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.acl = [
         {
@@ -181,7 +229,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username
+        owner_username: @user.username,
+        entity_id: UUIDTools::UUID.timestamp_create.to_s,
+        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.acl = [
         {
@@ -213,7 +263,6 @@ describe CartoDB::Permission do
       permission.is_permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
     end
 
-    # TODO: Add organization permissions spec
     it 'checks organizations vs users permissions precedence' do
       org_mock = mock
       org_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
@@ -225,7 +274,9 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
           owner_id:       @user.id,
-          owner_username: @user.username
+          owner_username: @user.username,
+          entity_id: UUIDTools::UUID.timestamp_create.to_s,
+          entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       # User has more access than org
       permission.acl = [
@@ -313,6 +364,110 @@ describe CartoDB::Permission do
       permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
     end
 
+  end
+
+  describe '#shared_entities' do
+    it 'tests the management of shared entities upon permission save (based on its ACL)' do
+      user2_mock = mock
+      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user2_mock.stubs(:username).returns('user2')
+      user2_mock.stubs(:organization).returns(nil)
+
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+
+      permission = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
+      )
+
+      # Before saving, create old entries
+      CartoDB::SharedEntity.new(
+          user_id:    @user.id,
+          entity_id:  entity_id,
+          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+      ).save
+      CartoDB::SharedEntity.new(
+          user_id:    user2_mock.id,
+          entity_id:  entity_id,
+          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+      ).save
+
+      CartoDB::SharedEntity.all.count.should eq 2
+
+      # Leave only user 1
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: @user.id,
+                  username: @user.username
+              },
+              access: Permission::ACCESS_READONLY
+          }
+          # shared entry of user 2 should dissapear
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 1
+      shared_entity = CartoDB::SharedEntity.all[0]
+      shared_entity.user_id.should eq @user.id
+      shared_entity.entity_id.should eq entity_id
+
+      # Leave only user 2 now
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 1
+      shared_entity = CartoDB::SharedEntity.all[0]
+      shared_entity.user_id.should eq user2_mock.id
+      shared_entity.entity_id.should eq entity_id
+
+      # Now just change permission, user2 should still be there
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_READONLY
+          }
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 1
+      shared_entity = CartoDB::SharedEntity.all[0]
+      shared_entity.user_id.should eq user2_mock.id
+      shared_entity.entity_id.should eq entity_id
+
+      # Now set a permission forbidding a user, so should dissapear too
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_NONE
+          }
+      ]
+      permission.save
+
+      CartoDB::SharedEntity.all.count.should eq 0
+
+      permission.destroy
+    end
   end
 
 end

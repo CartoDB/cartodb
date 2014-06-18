@@ -13,17 +13,21 @@ module CartoDB
 
     def to_poro
       {
-        id:     @permission.id,
-        owner:  @user_presenter.decorate(@permission.owner_id),
-        acl:    @permission.acl.map { |entry|
+        id:         @permission.id,
+        owner:      @user_presenter.decorate(@permission.owner_id),
+        entity: {
+          id:       @permission.entity_id,
+          type:     @permission.entity_type
+        },
+        acl:        @permission.acl.map { |entry|
           {
             type:   entry[:type],
             entity: entity_decoration(entry),
             access: entry[:access]
           }
         },
-        created_at:     @permission.created_at,
-        updated_at:     @permission.updated_at
+        created_at: @permission.created_at,
+        updated_at: @permission.updated_at
       }
     end
 

@@ -50,7 +50,8 @@ class Organization < Sequel::Model
     @owner ||= User.where(Sequel.&(organization_id: self.id, organization_owner: true)).first
   end
 
-  def to_poro
+  def to_poro(filtered_user = nil)
+    filtered_user ||= owner
     {
       :id             => self.id,
       :seats          => self.seats,
@@ -63,7 +64,7 @@ class Organization < Sequel::Model
         :username     => owner.username,
         :avatar_url   => owner.avatar_url
       },
-      :users          => self.users.select { |item| item.id != self.owner.id }
+      :users          => self.users.select { |item| item.id != filtered_user.id }
                                    .map { |u|
         {
           :id       => u.id,

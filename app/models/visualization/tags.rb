@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative './member'
+require_relative '../shared_entity'
 
 module CartoDB
   module Visualization
@@ -18,6 +19,7 @@ module CartoDB
             WHERE user_id = ?
             AND type IN ?
             AND privacy IN ?
+            #{shared_entities_sql_filter}
             LIMIT ?
           }, user.id, types_from(params), privacy_from(params), limit_from(params)
         ).map{ |tag| tag.name}
@@ -30,6 +32,7 @@ module CartoDB
               FROM visualizations
               WHERE user_id = ?
               AND type IN ?
+              #{shared_entities_sql_filter}
               LIMIT ?
             )
             SELECT name, count(*) as count
@@ -43,6 +46,19 @@ module CartoDB
       private
       
       attr_reader :user
+
+      def shared_entities_sql_filter
+        ids = CartoDB::SharedEntity.where(
+            user_id: @user.id,
+            type: CartoDB::SharedEntity::TYPE_VISUALIZATION
+        ).all
+        .map { |entity|
+          entity.entity_id
+        }
+        return '' if ids.nil? || ids.empty?
+        ids_list = ids.join("','")
+        "OR id IN ('#{ids_list}')"
+      end
 
       def privacy_from(params={})
         privacy = params.fetch(:privacy, nil)

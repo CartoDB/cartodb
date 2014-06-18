@@ -65,13 +65,12 @@ class Organization < Sequel::Model
         :avatar_url   => owner.avatar_url
       },
       :users          => self.users.select { |item| item.id != filtered_user.id }
-                                   .map { |u|
+        .map { |u|
         {
           :id       => u.id,
           :username => u.username,
           :avatar_url => u.avatar_url
         }
-      }
     }
   end
 
@@ -82,3 +81,4 @@ class Organization < Sequel::Model
   end
 
 end
+

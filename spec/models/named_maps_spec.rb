@@ -140,7 +140,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
               )
 
-      derived_vis.store()
       template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
 
       Typhoeus::Expectation.clear()
@@ -835,5 +834,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     return table, derived_vis, template_id
   end #create_map_with_public_visualization
+
+  after(:all) do
+    @user.destroy
+  end
 
 end

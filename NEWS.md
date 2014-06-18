@@ -4,9 +4,10 @@
   * Added Permission model and permission attribute for Visualizations
 
 * Fixed bugs
-  * Security fix regarding Typhoeus library
-  
-* Migration Type (see UPGRADE): Mandatory migration 
+  * Security fix regarding Typhoeus library  
+
+* Migration Type (see UPGRADE): Mandatory migration
+  * As stated by the README, PostgreSQL now MUST be at least 9.3 to avoid search_path errors
   * Cartodb postgres extension update to 0.2.1
   * Also mandatory to run:
     * rake cartodb:db:create_default_vis_permissions

@@ -146,7 +146,7 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
       end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
       User.terminate_database_connections(database_name, database_host, database_schema)
@@ -163,7 +163,7 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "$user", #{database_schema}, cartodb })
+        conn.execute(%Q{ SET search_path TO "#{database_schema}", cartodb, public })
       end)))
       conn.run("
         DO language plpgsql $$
@@ -279,18 +279,10 @@ class User < Sequel::Model
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
 
-    if options[:no_cartodb_in_schema].present?
-      connection = $pool.fetch(configuration) do
-        ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-          conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema} })
-        end)))
-      end
-    else
-      connection = $pool.fetch(configuration) do
-        ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-          conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
-        end)))
-      end
+    connection = $pool.fetch(configuration) do
+      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+      end)))
     end
 
     if block_given?
@@ -588,7 +580,7 @@ class User < Sequel::Model
       'database' => 'postgres'
     ) {|key, o, n| n.nil? ? o : n}
     conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-      conn.execute(%Q{ SET search_path TO "$user", public, #{self.database_schema}, cartodb })
+      conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
     end)))
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
@@ -807,7 +799,7 @@ class User < Sequel::Model
         #       databases that switched to "cartodb" extension
         #       and those before the switch.
         search_path = db.fetch("SHOW search_path;").first[:search_path]
-        db.run("SET search_path TO cartodb,public;")
+        db.run("SET search_path TO cartodb, public;")
         db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
         db.run("SET search_path TO #{search_path};")
       end
@@ -860,7 +852,7 @@ class User < Sequel::Model
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "$user", #{self.database_schema}, cartodb })
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
       end)))
       begin
         conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
@@ -990,28 +982,7 @@ TRIGGER
     )
   end
 
-  # Create an "update_timestamp()" trigger function to invalidate Varnish
-  # This is currently invoked by the "cache_checkpoint" trigger attached
-  # to tables
-  #
-  # TODO: drop this and replace with a trigger on CDB_TableMetadata
-  #
-  def create_trigger_function_update_timestamp
-    in_database(:as => :superuser).run(<<-TRIGGER
-    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
-    $$
-        table_name = TD["table_name"]
-        plan = plpy.prepare("SELECT public.cdb_invalidate_varnish($1)", ["text"])
-        plpy.execute(plan, [table_name])
-    $$
-    LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;
-TRIGGER
-    )
-  end
-
-
   # Cartodb functions
-
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?

@@ -220,4 +220,8 @@ describe Admin::VisualizationsController do
   def table_factory(attrs = {})
     new_table(attrs.merge(user_id: @user.id)).save.reload
   end #table_factory
+
+  after(:all) do
+    @user.destroy
+  end
 end # Admin::VisualizationsController

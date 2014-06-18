@@ -76,5 +76,9 @@ describe Visualization::Copier do
                     )
     )
   end #factory
+
+  after do
+    @user.destroy
+  end
 end # Visualization::Copier
 

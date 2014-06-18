@@ -17,7 +17,12 @@ Unless stated otherwise, assume any new CartoDB release requires calling these c
 Mandatory migration
 -------------------
 
-Versions marked at the NEWS.md as requiring this migration must run all this commands:
+Versions marked at the NEWS.md as requiring this migration must:
+
+ - ensure the required version of cartodb-postgresql extension
+   (see README.md) is installed on the user database hosts
+
+ - run all this commands:
 
  $ bundle exec rake db:migrate
  $ bundle exec rake cartodb:db:reset_trigger_check_quota

@@ -51,6 +51,85 @@ namespace :cartodb do
       end
     end
 
+    desc 'Removes duplicated indexes created in some accounts'
+    task :remove_duplicate_indexes, [:database_host, :sleep, :dryrun] => :environment do |t, args|
+      threads = 1
+      thread_sleep = 1
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 3 : args[:sleep].to_i
+      dryrun = args[:dryrun] == 'false' ? 'false' : 'true'
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
+      execute_on_users_with_index(:remove_duplicate_indexes.to_s, Proc.new { |user, i|
+        begin
+          user.in_database(:as => :superuser) do |db|
+            db.transaction do
+              db.run(%Q{
+                CREATE OR REPLACE FUNCTION CDB_DropDupUnique(dryrun boolean DEFAULT true)
+                RETURNS void
+                LANGUAGE plpgsql
+                VOLATILE
+                AS $$
+                DECLARE
+                  rec RECORD;
+                  sql TEXT;
+                BEGIN
+
+                  FOR rec IN SELECT
+                      c.conname, r.oid tab
+                    FROM
+                      pg_constraint c,
+                      pg_class r
+                    WHERE c.conrelid > 0
+                    AND c.conrelid = r.oid
+                    AND c.contype = 'u'
+                    AND EXISTS (
+                      SELECT * FROM pg_constraint pc
+                      WHERE pc.conrelid = c.conrelid -- same target table
+                        AND pc.conkey = c.conkey -- samekey
+                        AND pc.contype = 'p' -- index is a primary one
+                    )
+                  LOOP
+
+                    IF NOT dryrun THEN
+                      RAISE NOTICE 'Constraint % on table % is not needed, dropping',
+                        rec.conname, rec.tab::regclass::text;
+                      sql := 'ALTER TABLE ' || rec.tab::regclass::text
+                          || ' DROP CONSTRAINT ' || quote_ident (rec.conname);
+                      RAISE DEBUG 'Running: %', sql;
+                      EXECUTE sql;
+                    ELSE
+                      RAISE NOTICE 'Constraint % on table % is not needed (dry run)',
+                        rec.conname, rec.tab::regclass::text;
+                    END IF;
+
+                  END LOOP;
+
+                END;
+              $$;
+              })
+              db.run(%Q{
+                SELECT CDB_DropDupUnique(#{dryrun});
+              })
+              db.run(%Q{
+                DROP FUNCTION IF EXISTS CDB_DropDupUnique(boolean);
+              })
+            end
+          end
+
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :remove_duplicate_indexes.to_s, database_host)
+          sleep(sleep)
+        rescue => e
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :remove_duplicate_indexes.to_s, database_host)
+          puts "FAIL:#{i} #{e.message}"
+        end
+      }, threads, thread_sleep, database_host)
+    end
+
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
@@ -70,10 +149,10 @@ namespace :cartodb do
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
           begin
             user.load_cartodb_functions(statement_timeout)
-            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), database_host)
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
             sleep(sleep)
           rescue => e
-            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), database_host)
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
             puts "FAIL:#{i} #{e.message}"
           end
       }, threads, thread_sleep, database_host)
@@ -407,6 +486,43 @@ namespace :cartodb do
       end
     end
 
+    desc 'Setup default permissions on existing visualizations'
+    task :create_default_vis_permissions, [:page_size, :page] => :environment do |t, args|
+      page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
+      page = args[:page].blank? ? 1 : args[:page].to_i
+
+      require_relative '../../app/models/visualization/collection'
+
+      progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
+      collection = CartoDB::Visualization::Collection.new
+
+      begin
+        items = collection.fetch(page: page, per_page: page_size)
+
+        count = items.count
+        puts "\n>Running :create_default_vis_permissions for page #{page} (#{count} vis)" if count > 0
+        items.each_with_index { |vis, i|
+          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
+          if vis.permission_id.nil?
+            begin
+              raise 'No owner' if vis.user.nil?
+              # Just saving will trigger the permission creation
+              vis.send(:do_store, false)
+              puts "OK #{vis.id}"
+            rescue => e
+              owner_id = vis.user.nil? ? 'nil' : vis.user.id
+              message = "FAIL u:#{owner_id} v:#{vis.id}: #{e.message}"
+              puts message
+              log(message, :create_default_vis_permissions.to_s)
+            end
+          end
+        }
+        page += 1
+      end while count > 0
+
+      puts "\n>Finished :create_default_vis_permissions"
+    end
+
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc
@@ -419,31 +535,31 @@ namespace :cartodb do
         count = User.where(database_host: database_host).count
       end
 
-      start_message = "\n>Running #{task_name} for #{count} users"
+      start_message = ">Running #{task_name} for #{count} users"
       puts start_message
-      log(start_message, database_host)
+      log(start_message, task_name, database_host)
       if database_host.nil?
-        puts 'Detailed log stored at log/rake_db_maintenance.log'
+        puts "Detailed log stored at log/rake_db_maintenance_#{task_name}.log"
       else
-        puts "Detailed log stored at log/rake_db_maintenance_#{database_host}.log"
+        puts "Detailed log stored at log/rake_db_maintenance_#{task_name}_#{database_host}.log"
       end
 
       thread_pool = ThreadPool.new(num_threads, sleep_time)
 
       if database_host.nil?
-        User.all.each_with_index do |user, i|
+        User.order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
-              puts "\nPROGRESS: #{i}/#{count} users queued"
+              puts "PROGRESS: #{i}/#{count} users queued"
             end
             block.call(user, i)
           end
         end
       else
-        User.where(database_host: database_host).each_with_index do |user, i|
+        User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
           thread_pool.schedule do
             if i % 100 == 0
-              puts "\nPROGRESS: #{i}/#{count} users queued"
+              puts "PROGRESS: #{i}/#{count} users queued"
             end
             block.call(user, i)
           end
@@ -452,20 +568,20 @@ namespace :cartodb do
 
       at_exit { thread_pool.shutdown }
 
-      puts "\nPROGRESS: #{count}/#{count} users queued"
+      puts "PROGRESS: #{count}/#{count} users queued"
       end_message = "\n>Finished #{task_name}\n"
       puts end_message
-      log(end_message, database_host)
+      log(end_message, task_name, database_host)
     end
 
-    def log(entry, filename_suffix='')
+    def log(entry, task_name, filename_suffix='')
       if filename_suffix.nil? || filename_suffix.empty?
-        log_path = Rails.root.join('log', 'rake_db_maintenance.log')
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}.log")
       else
-        log_path = Rails.root.join('log', "rake_db_maintenance_#{filename_suffix}.log")
+        log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
-        file_handle.puts "#{entry}\n"
+        file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 

@@ -173,6 +173,11 @@ CartoDB::Application.routes.draw do
       delete  'synchronizations/:id'          => 'synchronizations#destroy'
       get     'synchronizations/:id/sync_now' => 'synchronizations#syncing?'
       put     'synchronizations/:id/sync_now' => 'synchronizations#sync_now'
+
+      # Permissions
+      get     'perm/:id' => 'permissions#show'
+      put     'perm/:id' => 'permissions#update'
+
     end
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson

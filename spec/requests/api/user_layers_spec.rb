@@ -64,4 +64,8 @@ feature "API 1.0 user layers management" do
       expect { layer.refresh }.to raise_error
     end
   end
+
+  after(:all) do
+    @user.destroy
+  end
 end

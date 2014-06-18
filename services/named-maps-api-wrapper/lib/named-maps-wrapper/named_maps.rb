@@ -13,6 +13,7 @@ module CartoDB
 				@api_key = user_config[:api_key]
 				@vizjson_config = vizjson_config
         @verify_cert = tiler_config[:verifycert]
+        @verify_host = tiler_config[:verifycert] ? 2 : 0
 				@host = tiler_config[:host].nil? ?
           "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}" :
           "#{tiler_config[:protocol]}://#{tiler_config[:host]}:#{tiler_config[:port]}"
@@ -33,7 +34,7 @@ module CartoDB
 				response = Typhoeus.get(@url + '?api_key=' + @api_key, {
 					headers: @headers,
           ssl_verifypeer: @verify_cert,
-          ssl_verifyhost: @verify_cert ? 0 : 2,
+          ssl_verifyhost: @verify_host,
           followlocation: true
 				})
 				raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)" if response.code != 200
@@ -48,7 +49,7 @@ module CartoDB
 				response = Typhoeus.get( [@url, name ].join('/') + '?api_key=' + @api_key, {
 					headers: @headers,
           ssl_verifypeer: @verify_cert,
-          ssl_verifyhost: @verify_cert ? 0 : 2,
+          ssl_verifyhost: @verify_host,
           followlocation: true
 				})
 
@@ -66,7 +67,7 @@ module CartoDB
 				end
 			end #get
 
-			attr_reader	:url, :api_key, :username, :headers, :host, :vizjson_config, :verify_cert
+			attr_reader	:url, :api_key, :username, :headers, :host, :vizjson_config, :verify_cert, :verify_host
 
 		end #NamedMaps
 

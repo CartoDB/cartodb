@@ -54,5 +54,9 @@ describe Admin::TablesController do
   def factory
     new_table(user_id: @user.id).save.reload
   end #table_attributes
+
+  after(:all) do
+    @user.destroy
+  end
 end # Admin::TablesController
 

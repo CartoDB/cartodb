@@ -1,4 +1,16 @@
-2.14.3 (2014-06-XX)
+
+* New Features
+  * Added Permission model and permission attribute for Visualizations
+
+* Fixed bugs
+  * Security fix regarding Typhoeus library  
+
+* Migration Type (see UPGRADE): Mandatory migration 
+  * Cartodb postgres extension update to 0.2.1
+  * Also mandatory to run:
+    * rake cartodb:db:create_default_vis_permissions
+
+2.14.3 (2014-06-11)
 -------------------
 * Fixed bugs
   * Last used colors working properly in color-picker.
@@ -6,32 +18,27 @@
   * Make import_id visible for any kind of import error.
   * Values from unknown column type are displaying correctly.
   * Custom title within SQL and CartoCSS editor fixed.
+  * allow "rectangle" option for marker-type in torque layer
+  * now enqueing sync tables who are in state syncing for more than 2 hours
+      (caused by pushing code while syncing a table)
+  * fixed torque wizard for google maps
+  * fixed infinite loop in CDB_QueryStatements (again)
+  * fixed problem executing long queries from the editor
+  * By default, now not verifying SSL certificates for data imports (allow customer dev. environments with https)
+  * Import CSV with invalid UTF-8 characters by replacing them (instead of skipping the whole row)
+  * stop sending stats from public views after some time
+  * Now installing and using [Cartodb-postgres extension](https://github.com/CartoDB/cartodb-postgresql) (current 0.2.0)
 
 * New features
   * Tumblr-widget available in dashboard where a new post is published.
-
-
-
-
-
-* Migration Type (see UPGRADE): Mandatory migration
-
-* New features
-    * Added a log method for db_maintenance rakes
+  * Added a log method for db_maintenance rakes
       (logs to log/rake_db_maintenance.log).
       For now used on load_functions.
-    * Added avatar_url to User model
+  * Added avatar_url to User model
 
-* Fixed bugs
-    * allow "rectangle" option for marker-type in torque layer
-    * now enqueing sync tables who are in state syncing for more than 2 hours
-      (caused by pushing code while syncing a table)
-    * fixed torque wizard for google maps
-    * fixed infinite loop in CDB_QueryStatements (again)
-    * fixed problem executing long queries from the editor
-    * By default, now not verifying SSL certificates for data imports (allow customer dev. environments with https)
-    * Import CSV with invalid UTF-8 characters by replacing them (instead of skipping the whole row)
-    * stop sending stats from public views after some time
+* Migration Type (see UPGRADE): Mandatory migration
+  * Check also [installtion steps](https://github.com/CartoDB/cartodb-postgresql#install) for cartodb postgres extension
+
 
 2.14.1 (2014-05-28)
 -------------------

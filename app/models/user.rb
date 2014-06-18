@@ -10,8 +10,9 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   self.strict_param_setting = false
 
-  # @param name String
-  # @param avatar_url String
+  # @param name             String
+  # @param avatar_url       String
+  # @param database_schema  String
 
   one_to_one :client_application
   one_to_many :synchronization_oauths
@@ -979,8 +980,8 @@ TRIGGER
 
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.2.0' # TODO: optionally take as parameter? 
-    tgt_rev = 'v0.2.0'
+    tgt_ver = '0.2.1' # TODO: optionally take as parameter? 
+    tgt_rev = 'v0.2.1'
 
     add_python;
 

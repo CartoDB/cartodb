@@ -6,6 +6,7 @@ require 'markdown_render'
 require_relative './collection'
 require_relative './presenter'
 require_relative './name_checker'
+require_relative '../permission'
 require_relative './relator'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
@@ -31,6 +32,9 @@ module CartoDB
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
+      PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
+      PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
+
       DEFAULT_URL_OPTIONS = 'title=true&description=true&search=false&shareable=true&cartodb_logo=true&layer_selector=false&legends=false&scrollwheel=true&fullscreen=true&sublayer_options=1&sql='
 
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
@@ -54,6 +58,7 @@ module CartoDB
       attribute :password_salt,       String, default: nil
       attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
       attribute :user_id,             String
+      attribute :permission_id,       String
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -66,6 +71,7 @@ module CartoDB
         @validator      = MinimalValidator::Validator.new
         @named_maps     = nil
         @user_data      = nil
+        self.permission_change_valid = true   # Changes upon set of different permission_id
       end #initialize
 
       def default_privacy(owner)
@@ -105,6 +111,10 @@ module CartoDB
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
+        unless permission_id.nil?
+          validator.errors.store(:permission_id, 'Cannot modify permission') unless permission_change_valid
+        end
+
         validator.valid?
       end #valid?
 
@@ -132,6 +142,7 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         map.destroy if map
         table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        permission.destroy if permission
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
@@ -173,6 +184,12 @@ module CartoDB
         end
       end
 
+      def permission_id=(permission_id)
+        self.permission_change_valid = false
+        self.permission_change_valid = true if (@permission_id.nil? || @permission_id == permission_id)
+        super(permission_id)
+      end
+
       def privacy=(privacy)
         privacy = privacy.downcase if privacy
         self.privacy_changed = true if ( privacy != @privacy && !@privacy.nil? )
@@ -208,9 +225,17 @@ module CartoDB
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
 
-      def authorize?(user)
-        user.maps.map(&:id).include?(map_id)
-      end #authorize?
+      def is_owner?(user)
+        user.id == user_id
+      end
+
+      # @param user User
+      # @param permission_type String PERMISSION_xxx
+      def has_permission?(user, permission_type)
+        # TODO: Make checks mandatory after permissions migration
+        return is_owner?(user) if permission_id.nil?
+        is_owner?(user) || permission.is_permitted?(user, permission_type)
+      end
 
       def varnish_key
         sorted_table_names = related_tables.map(&:name).sort { |i, j| i <=> j }.join(',')
@@ -315,7 +340,7 @@ module CartoDB
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed, :description_changed
+      attr_accessor :privacy_changed, :name_changed, :description_changed, :permission_change_valid
 
       def do_store(propagate_changes=true)
         if password_protected?
@@ -327,6 +352,13 @@ module CartoDB
         # Warning: imports create by default private canonical visualizations
         if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
+        end
+
+        if permission.nil?
+          perm = CartoDB::Permission.new
+          perm.owner = user
+          perm.save
+          @permission_id = perm.id
         end
 
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed

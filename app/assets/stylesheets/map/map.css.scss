@@ -64,16 +64,28 @@ div.map {
 
     & > li.button {
 
-      &.add_widget {
+      &.canvas_setup {
         position:relative;
+
+        & > .thumb { 
+          @include map-sprite(add_element);
+          width: 26px;
+          height: 26px;
+        }
+
       }
 
-      &.add_widget > .thumb { 
-        @include map-sprite(add_element);
-        width: 26px;
-        height: 26px;
-      }
+      &.add_widget {
 
+        position:relative;
+
+        & > .thumb { 
+          @include map-sprite(add_element);
+          width: 26px;
+          height: 26px;
+        }
+
+      }
     }
 
     & > li {

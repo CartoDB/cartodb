@@ -22,7 +22,7 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags             = viewed_user.tags
+    @tags             = viewed_user.tags(true)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
@@ -42,7 +42,8 @@ class Admin::PagesController < ApplicationController
       per_page: DATASETS_PER_PAGE,
       order:    'updated_at',
       o:        {updated_at: :desc},
-      tags:     params[:tag]
+      tags:     params[:tag],
+      exclude_shared: true
     })
 
     @datasets = []
@@ -71,7 +72,7 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags             = viewed_user.tags
+    @tags             = viewed_user.tags(true)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description
@@ -91,7 +92,8 @@ class Admin::PagesController < ApplicationController
       per_page: VISUALIZATIONS_PER_PAGE,
       order:    'updated_at',
       o:        {updated_at: :desc},
-      tags:     params[:tag]
+      tags:     params[:tag],
+      exclude_shared: true
     })
 
     @visualizations = []

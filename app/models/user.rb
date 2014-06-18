@@ -385,9 +385,11 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags
+  def tags(exclude_shared=false)
     require_relative './visualization/tags'
-    CartoDB::Visualization::Tags.new(self).names({
+    options = {}
+    options[:exclude_shared] = true if exclude_shared
+    CartoDB::Visualization::Tags.new(self, options).names({
       type: CartoDB::Visualization::Member::DERIVED_TYPE,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
@@ -756,16 +758,21 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count(CartoDB::Visualization::Member::DERIVED_TYPE, CartoDB::Visualization::Member::PRIVACY_PUBLIC)
+    visualization_count(
+      CartoDB::Visualization::Member::DERIVED_TYPE,
+      CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      true
+    )
   end #public_visualization_count
 
   # Get a count of visualizations with optional type and privacy filters
-  def visualization_count(type_filter=nil, privacy_filter=nil)
+  def visualization_count(type_filter=nil, privacy_filter=nil, exclude_shared=false)
     parameters = {
-        map_id:   maps.map(&:id)
+      user_id: self.id
     }
     parameters[:type] = type_filter unless type_filter.nil?
     parameters[:privacy] = privacy_filter unless privacy_filter.nil?
+    parameters[:exclude_shared] = true if exclude_shared
 
     CartoDB::Visualization::Collection.new.fetch(parameters).count
   end #visualization_count
@@ -789,7 +796,7 @@ class User < Sequel::Model
   def update_visualization_metrics
     update_gauge("visualizations.total", maps.count)
     update_gauge("visualizations.table", table_count)
-    update_gauge("visualizations.derived", visualization_count)
+    update_gauge("visualizations.derived", visualization_count(nil,nil,true))
   end
 
   def rebuild_quota_trigger

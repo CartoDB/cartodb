@@ -8,8 +8,9 @@ module CartoDB
     class Tags
       DEFAULT_LIMIT = 500
 
-      def initialize(user)
+      def initialize(user, options={})
         @user = user
+        @exclude_shared = options[:exclude_shared].present?
       end #initialize
 
       def names(params={})
@@ -48,6 +49,8 @@ module CartoDB
       attr_reader :user
 
       def shared_entities_sql_filter
+        return '' if @exclude_shared
+
         ids = CartoDB::SharedEntity.where(
             user_id: @user.id,
             type: CartoDB::SharedEntity::TYPE_VISUALIZATION
@@ -55,7 +58,9 @@ module CartoDB
         .map { |entity|
           entity.entity_id
         }
+
         return '' if ids.nil? || ids.empty?
+
         ids_list = ids.join("','")
         "OR id IN ('#{ids_list}')"
       end

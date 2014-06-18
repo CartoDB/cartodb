@@ -40,9 +40,12 @@ module CartoDB
         end
       end
 
+      # NOTES:
+      # - if user_id is present as filter, will fetch visualizations shared with the user,
+      #   except if exclude_shared filter is also present
       def fetch(filters={})
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
-        dataset = include_shared_entities(dataset, filters)
+        dataset = include_shared_entities(dataset, filters) unless filters[:exclude_shared].present?
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = order(dataset, filters.delete(:o))

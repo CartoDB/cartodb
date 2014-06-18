@@ -469,7 +469,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database(as: :superuser).run("VACUUM FULL #{onwer.database_schema}.#{name}")
+    owner.in_database(as: :superuser).run("VACUUM FULL #{owner.database_schema}.#{name}")
   end
 
   def handle_creation_error(e)

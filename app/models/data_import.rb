@@ -331,7 +331,6 @@ class DataImport < Sequel::Model
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
     importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id)
-
     log.append 'Before run.'
     importer.run(tracker)
     log.append 'After run.'
@@ -340,6 +339,7 @@ class DataImport < Sequel::Model
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
+    log.append 'WARNING: No tables registered at Metadata DB'
 
     if synchronization_id
       log.append "synchronization_id: #{synchronization_id}"

@@ -13,12 +13,13 @@ module CartoDB
       # @param runner CartoDB::Importer2::Runner
       # @param table_registrar CartoDB::TableRegistrar
       # @param, quota_checker CartoDB::QuotaChecker
-      def initialize(runner, table_registrar, quota_checker, database, data_import_id)
+      def initialize(runner, table_registrar, quota_checker, database, data_import_id, destination_schema = nil)
         @runner           = runner
         @table_registrar  = table_registrar
         @quota_checker    = quota_checker
         @database         = database
         @data_import_id   = data_import_id
+        @destination_schema = destination_schema ? destination_schema : DESTINATION_SCHEMA
       end
 
       def run(tracker)
@@ -40,7 +41,7 @@ module CartoDB
         runner.log.append('Before renaming')
         name = rename(result.table_name, result.name)
         runner.log.append('Before moving schema')
-        move_to_schema(name, ORIGIN_SCHEMA, DESTINATION_SCHEMA)
+        move_to_schema(name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append('Before persisting metadata')
         persist_metadata(name, data_import_id)
         runner.log.append('Table registered')

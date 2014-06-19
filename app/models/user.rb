@@ -825,6 +825,22 @@ class User < Sequel::Model
     "account#{self.username}"
   end
 
+  def partial_db_name
+    partial_db_name = self.id
+    if has_organization?
+      partial_db_name = self.organization.owner.id
+    end
+    partial_db_name
+  end
+
+  def has_organization?
+    !!self.organization
+  end
+
+  def organization_owner?
+    has_organization? and self.organization_owner
+  end
+
   ## User's databases setup methods
   def setup_user
     return if disabled?

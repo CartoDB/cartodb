@@ -473,6 +473,7 @@ describe CartoDB::Permission do
 
       permission.destroy
     end
+  end
 
   after(:all) do
     @user.destroy

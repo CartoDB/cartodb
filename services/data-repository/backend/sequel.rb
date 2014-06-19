@@ -12,7 +12,10 @@ module DataRepository
       def initialize(db=Sequel.sqlite, relation=nil)
         @db         = db
         @relation   = relation.to_sym
-        ::Sequel.extension :pagination
+        ::Sequel.extension(:pagination)
+        @db.extension(:connection_validator)
+        # TODO: Check how to get config from here
+        @db.pool.connection_validation_timeout = 900
         @db.extension :pg_array if postgres?(@db)
       end #initialize
 

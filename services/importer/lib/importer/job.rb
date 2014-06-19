@@ -25,8 +25,10 @@ module CartoDB
       def db
         @db = Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
           conn.execute('SET search_path TO "$user", public, cartodb')
-          #conn.execute(%Q{SET search_path TO "$user", "#{schema}", cartodb})
         end)))
+        @db.extension(:connection_validator)
+        @db.pool.connection_validation_timeout = pg_options.fetch(:conn_validator_timeout, 900)
+        @db
       end #db
 
       def qualified_table_name

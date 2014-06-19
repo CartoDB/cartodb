@@ -280,9 +280,12 @@ class User < Sequel::Model
     configuration = get_db_configuration_for(options[:as])
 
     connection = $pool.fetch(configuration) do
-      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+      db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
       end)))
+      db.extension(:connection_validator)
+      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', 900)
+      db
     end
 
     if block_given?

@@ -2,6 +2,9 @@
 * New Features
   * Added avatar_url to User model
   * Added Permission model and permission attribute for Visualizations
+  * Activated Sequel extension connection_validator.
+    This requires adding to database.yml a value for 'conn_validator_timeout',
+    else code will default to 900 seconds
 
 * Fixed bugs
   * Security fix regarding Typhoeus library  

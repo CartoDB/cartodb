@@ -6,6 +6,7 @@
   @import "compass/css3/inline-block";
   @import "compass/css3/box-shadow";
   @import "compass/css3/transform";
+  @import "compass/css3/opacity";
   @import "../common/mixins";
   @import "../common/vars";
 
@@ -89,6 +90,9 @@
       position:absolute;
       bottom:27px;
       left:22px;
+      @include transform-style("linear");
+      @include transition-property("bottom");
+      @include transition-duration(250ms);
 
       svg {
         path,
@@ -113,8 +117,27 @@
       @include cross-browser(flex-wrap, wrap);
       padding:10px 0 0;
       margin:0 22px 22px;
+      overflow:hidden;
 
-      .order { text-indent:-9999px }
+      i.delete {
+        position:absolute;
+        bottom:22px;
+        right:22px;
+        display:block;
+        @include transform-style("linear");
+        @include transition-property("opacity,right");
+        @include transition-duration(250ms);
+        @include opacity(0);
+        z-index:0;
+      }
+
+      .order {
+        @include transform-style("linear");
+        @include transition-property("opacity,text-indent");
+        @include transition-duration(250ms);
+        @include opacity(0);
+        text-indent:-100px;
+      }
     }
 
 
@@ -145,7 +168,17 @@
 
         .vis-tools {
           border-top:1px solid #DDDDDD;
-          .order { text-indent:0 }
+
+          i.delete {
+            @include opacity(1);
+            right:46px;
+            z-index:0;
+          }
+
+          .order {
+            @include opacity(1);
+            text-indent:0;
+          }
         }
       }
     }

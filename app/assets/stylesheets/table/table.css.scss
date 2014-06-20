@@ -97,7 +97,7 @@ body.public { /* Public table CSS */
         margin: 0 0 5px 0;
         color: #666666;
         text-transform: uppercase;
-        font-family:"Helvetica Neue", "Helvetica", Arial;
+        font-family: $text-fonts;
         font-size:11px;
       }
 
@@ -185,7 +185,7 @@ body.public { /* Public table CSS */
             text-decoration: underline;
           }
 
-          font-family:"Helvetica Neue", "Helvetica", Arial;
+          font-family: $text-fonts;
 
           display:block;
           padding: 9px 10px 10px 10px;
@@ -332,7 +332,7 @@ div.panes {
         color: #333;
         font-weight: bold;
         font-size: 17px;
-        font-family: helvetica;
+        font-family: $title-fonts;
         text-indent:0;
       }
 

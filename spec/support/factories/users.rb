@@ -33,6 +33,8 @@ module CartoDB
       user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
+      user.organization          = attributes[:organization] || nil
+      user.organization_owner    = attributes[:organization_owner] || false
       user
     end
 

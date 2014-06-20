@@ -126,7 +126,7 @@
         .head { padding: 5px 25px; }
 
         .head h3  {
-          font: bold 15px "Helvetica", Arial;
+          font: bold 15px $title-fonts;
           letter-spacing: 0;
         }
 
@@ -198,7 +198,7 @@
 
       padding: 6px 8px;
 
-      font:normal 13px "Helvetica",Arial;
+      font:normal 13px $text-fonts2;
       color:#858585;
     }
 

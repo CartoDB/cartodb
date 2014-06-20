@@ -47,6 +47,7 @@ feature "Superadmin's users API" do
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
   scenario "user create with crypted_password and salt success" do
@@ -63,6 +64,7 @@ feature "Superadmin's users API" do
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
   scenario "user create default account settings" do
@@ -88,6 +90,7 @@ feature "Superadmin's users API" do
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
 
@@ -127,6 +130,7 @@ feature "Superadmin's users API" do
       user.geocoding_block_price.should == 2
       user.notification.should == 'Test'
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
 
@@ -263,6 +267,7 @@ feature "Superadmin's users API" do
       response.status.should == 200
       response.body['retcode'] == 0
     end
+    user.destroy
   end
   
   scenario "user dump fail" do
@@ -280,6 +285,7 @@ feature "Superadmin's users API" do
       response.status.should == 400
       response.body['retcode'] != 0
     end
+    user.destroy
   end
 
   scenario "user dump fail retcode" do
@@ -296,6 +302,7 @@ feature "Superadmin's users API" do
     get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
       response.status.should == 400
     end
+    user.destroy
   end
 
   scenario "user get info success" do

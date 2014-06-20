@@ -96,7 +96,7 @@ describe User do
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
       organization = create_org('testorg', 10.megabytes, 1)
-      orguser = FactoryGirl.create(:user, organization: organization)
+      orguser = FactoryGirl.create(:user, { organization: organization, organization_owner: true })
       user = User.new
       user.organization = organization
       user.valid?.should be_false

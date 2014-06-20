@@ -354,6 +354,12 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
+        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
+        set_timestamps
+
+        repository.store(id, attributes.to_hash)
+
+        # Careful to not call Permission.save until after persisted the vis
         if permission.nil?
           perm = CartoDB::Permission.new
           perm.owner = user
@@ -361,11 +367,6 @@ module CartoDB
           perm.save
           @permission_id = perm.id
         end
-
-        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
-        set_timestamps
-
-        repository.store(id, attributes.to_hash)
 
         if type == CANONICAL_TYPE
           propagate_privacy_and_name_to(table) if table and propagate_changes

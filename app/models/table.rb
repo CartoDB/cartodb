@@ -515,6 +515,8 @@ class Table < Sequel::Model(:user_tables)
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
       user_id:      self.owner.id
     ).store
+
+
   end
 
   ##

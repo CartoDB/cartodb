@@ -133,7 +133,7 @@ module CartoDB
     end
 
     def after_save
-      update_shared_entities
+      update_shared_entities unless new?
     end
 
     def before_destroy

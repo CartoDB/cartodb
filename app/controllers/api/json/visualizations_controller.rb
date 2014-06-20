@@ -22,11 +22,18 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection       = Visualization::Collection.new.fetch(
                          params.dup.merge(scope_for(current_user))
                        )
-    map_ids          = collection.map(&:map_id).to_a
-    tables           = tables_by_map_id(map_ids)
-    table_names      = tables.values.map { |t| t.name }
-    synchronizations = synchronizations_by_table_name(table_names)
-    rows_and_sizes   = rows_and_sizes_for(table_names)
+    table_data = collection.map { |member|
+      if member.table.nil?
+        nil
+      else
+        {
+            name:   member.table.name,
+            schema: member.user.database_schema
+        }
+      end
+    }.compact
+    synchronizations = synchronizations_by_table_name(table_data)
+    rows_and_sizes   = rows_and_sizes_for(table_data)
 
     representation  = collection.map { |member|
       begin
@@ -34,7 +41,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           related:    false,
           table_data: !(params[:table_data] =~ /false/),
           user:       current_user,
-          table:      tables[member.map_id],
+          table:      member.table,
           synchronization: synchronizations[member.name],
           rows_and_sizes: rows_and_sizes
         )
@@ -264,33 +271,38 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ]
   end
 
-  def synchronizations_by_table_name(table_names)
+  def synchronizations_by_table_name(table_data)
     Hash[
       ::Table.db.fetch(
         'SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?',
         current_user.id,
-        table_names
+        table_data.map{ |table|
+          table[:name]
+        }
       ).all.map { |s| [s[:name], s] }
     ]
   end
 
-  def rows_and_sizes_for(table_names)
-    Hash[
-      current_user.in_database.fetch(%Q{
-        SELECT 
+  def rows_and_sizes_for(table_data)
+    data = Hash.new
+    table_data.each { |table|
+      row = current_user.in_database.fetch(%Q{
+        SELECT
           relname AS table_name,
-          pg_total_relation_size(relname::regclass) AS total_relation_size,
-          reltuples::integer AS reltuples 
+          pg_total_relation_size(? || '.' || relname) AS total_relation_size,
+          reltuples::integer AS reltuples
         FROM pg_class
-        WHERE relname IN ?
-      }, table_names
-      ).all.map { |r| 
-        [r[:table_name], {
-          size: r[:total_relation_size].to_i / 2,
-          rows: r[:reltuples]
-        }]
+        WHERE relname=?
+      },
+      table[:schema],
+      table[:name]
+      ).first
+      data[row[:table_name]] = {
+        size: row[:total_relation_size].to_i / 2,
+        rows: row[:reltuples]
       }
-    ]
+    }
+    data
   end
 end # Api::Json::VisualizationsController
 

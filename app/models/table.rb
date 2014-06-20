@@ -1286,6 +1286,23 @@ class Table < Sequel::Model(:user_tables)
     @name_changed_from = nil
   end
 
+  ############################### Sharing tables ##############################
+
+  # @param [User] organization_user Gives read permission to this user
+  def add_read_permission(organization_user)
+    perform_table_permission_change('CDB_Organization_Add_Table_Read_Permission', organization_user)
+  end
+
+  # @param [User] organization_user Gives read and write permission to this user
+  def add_read_write_permission(organization_user)
+    perform_table_permission_change('CDB_Organization_Add_Table_Read_Write_Permission', organization_user)
+  end
+
+  # @param [User] organization_user Removes all permissions to this user
+  def remove_access(organization_user)
+    perform_table_permission_change('CDB_Organization_Remove_Access_Permission', organization_user)
+  end
+
   private
 
   def update_cdb_tablemetadata
@@ -1549,6 +1566,19 @@ SQL
     CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
     CartodbStats.update_tables_counter_per_host(-1)
     CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
+  end
+
+  ############################### Sharing tables ##############################
+
+  # @param [String] cartodb_pg_func
+  # @param [User] organization_user
+  def perform_table_permission_change(cartodb_pg_func, organization_user)
+    from_schema = self.owner.username
+    table_name = self.name
+    to_role_user = organization_user.database_username
+    self.owner.in_database do |user_database|
+      user_database.run("SELECT cartodb.#{cartodb_pg_func}('#{from_schema}', '#{table_name}','#{to_role_user}');")
+    end
   end
 
 end

@@ -330,7 +330,8 @@ class DataImport < Sequel::Model
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
-    importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id)
+    destination_schema = current_user.database_schema
+    importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
     log.append 'Before run.'
     importer.run(tracker)
     log.append 'After run.'

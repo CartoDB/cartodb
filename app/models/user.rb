@@ -828,6 +828,22 @@ class User < Sequel::Model
     "account#{self.username}"
   end
 
+  def partial_db_name
+    partial_db_name = self.id
+    if has_organization?
+      partial_db_name = self.organization.owner.id
+    end
+    partial_db_name
+  end
+
+  def has_organization?
+    !!self.organization
+  end
+
+  def organization_owner?
+    has_organization? and self.organization_owner
+  end
+
   ## User's databases setup methods
   def setup_user
     return if disabled?
@@ -835,16 +851,18 @@ class User < Sequel::Model
     # Assign database_name
     self.database_name = case Rails.env
       when 'development'
-        "cartodb_dev_user_#{self.id}_db"
+        "cartodb_dev_user_#{self.partial_db_name}_db"
       when 'staging'
-        "cartodb_staging_user_#{self.id}_db"
+        "cartodb_staging_user_#{self.partial_db_name}_db"
       when 'test'
-        "cartodb_test_user_#{self.id}_db"
+        "cartodb_test_user_#{self.partial_db_name}_db"
       else
-        "cartodb_user_#{self.id}_db"
+        "cartodb_user_#{self.partial_db_name}_db"
     end
-   
-    raise "Database #{database_name} already exists" if database_exists?
+
+    if database_exists? and organization_owner?
+      raise "Database #{database_name} already exists"
+    end
 
     self.this.update database_name: self.database_name
     ClientApplication.create(:user_id => self.id)
@@ -863,37 +881,52 @@ class User < Sequel::Model
         puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
         raise e
       end
-      begin
-        conn.run("CREATE DATABASE \"#{self.database_name}\"
-        WITH TEMPLATE = template_postgis
-        OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-        ENCODING = 'UTF8'
-        CONNECTION LIMIT=-1")
-      rescue => e
-        puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-        raise e
+      if not has_organization? or organization_owner
+        begin
+          conn.run("CREATE DATABASE \"#{self.database_name}\"
+          WITH TEMPLATE = template_postgis
+          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+          ENCODING = 'UTF8'
+          CONNECTION LIMIT=-1")
+        rescue => e
+          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+          raise e
+        end
       end
     end.join
 
-    create_schemas_and_set_permissions
-    set_database_permissions
     load_cartodb_functions
+    create_schemas_and_set_permissions
+    set_database_search_path
+    set_database_permissions
     rebuild_quota_trigger
     create_function_invalidate_varnish
+  end
+
+  def set_database_search_path
+    in_database(as: :superuser) do |database|
+      database.run(%Q{ ALTER USER \"#{database_username}\" SET search_path = #{database_schema}, public, cartodb })
+    end
   end
 
   def create_schemas_and_set_permissions
     create_schema('cdb')
     create_schema('cdb_importer')
+    create_schema(self.database_schema, self.database_username)
     set_database_permissions_in_schema('cdb')
     set_database_permissions_in_schema('cdb_importer')
+    set_database_permissions_in_schema(self.database_schema)
   end
 
   # Attempts to create a new database schema
   # Does not raise exception if the schema already exists
-  def create_schema(schema)
+  def create_schema(schema, role = nil)
     in_database(as: :superuser) do |database|
-      database.run(%Q{CREATE SCHEMA #{schema}})
+      if role
+        database.run(%Q{CREATE SCHEMA #{schema} AUTHORIZATION "#{role}"})
+      else
+        database.run(%Q{CREATE SCHEMA #{schema}})
+      end
     end
   rescue Sequel::DatabaseError => e
     raise unless e.message =~ /schema .* already exists/
@@ -989,7 +1022,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-10-g2743b17'
+    tgt_rev = 'v0.2.1-16-g625b01e'
 
     add_python
 
@@ -1095,46 +1128,58 @@ TRIGGER
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        schema = 'public'
+        schemas = [self.database_schema, 'public'].uniq
 
         # remove all public and tile user permissions
         user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM PUBLIC")
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
+        schemas.each do |schema|
+          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
+        end
 
         user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        schemas.each do |schema|
+          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        end
 
         user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        schemas.each do |schema|
+          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        end
 
         # grant core permissions to database user
         user_database.run("GRANT ALL ON DATABASE \"#{database_name}\" TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO \"#{database_username}\"")
+        schemas.each do |schema|
+          user_database.run("GRANT ALL ON SCHEMA #{schema} TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO \"#{database_username}\"")
+        end
 
         # grant select permissions to public user (for SQL API)
         user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        schemas.each do |schema|
+          user_database.run("GRANT USAGE ON SCHEMA #{schema} TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{CartoDB::PUBLIC_DB_USER}")
+        end
         user_database.run("GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}")
 
         # grant select permissions to tile user (for tile API + internal tiles)
         user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+        schemas.each do |schema|
+          user_database.run("GRANT USAGE ON SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
+        end
 
         yield(user_database) if block_given?
       end

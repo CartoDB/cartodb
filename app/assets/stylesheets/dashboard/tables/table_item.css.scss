@@ -1,0 +1,272 @@
+
+  /*
+   *  Table item styles within dashboard
+   */
+
+  @import "../../common/vars";
+  @import "../../common/mixins";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/transform";
+  @import "compass/css3/inline-block";
+  @import "../dashboard/dashboard-sprite";
+
+
+  .table-item {
+    display:block;
+    padding:0 22px;
+    border:1px solid transparent;
+    @include border-radius(4px);
+  }
+
+  .table-item-inner {
+    display:block;
+    overflow:hidden;
+    padding:21px 0 22px;
+    border-top:1px solid rgba(#CCCCCC, 0.5);
+  }
+
+  .table-desc,
+  .table-info {
+    @include inline-block();
+    vertical-align: top;
+  }
+
+
+
+  // Info, tags, syncing status,...  
+  .table-info {
+    float:right;
+    width:45%;
+    text-align: right;
+
+    .table-list-info {
+      display:block;
+      line-height:20px;
+
+      ul {
+        @include display-flex();
+        @include cross-browser(justify-content, flex-end);
+        @include cross-browser(align-items, center);
+      }
+
+      li {
+        position:relative;
+        @include display-flex();
+        @include cross-browser(justify-content, flex-end);
+        @include cross-browser(align-items, center);
+        width:auto;
+        padding:0 7px 0 5px;
+        font:300 11px $text-fonts2;
+        color:#878787;
+
+        // Separator :)
+        span.dot-separator {
+          position:absolute;
+          top:50%;
+          right:0;
+          width:2px;
+          height:2px;
+          margin:-1px 0 0;
+          background: #999999;
+          @include border-radius(2px);
+        }
+
+        // Table order text hidden by default
+        &.table-order { display:none }
+
+        // First item
+        &:last-child {
+          padding-right:0;
+          span.dot-separator { display:none }
+        }
+      }
+    }
+
+    // Synchronization
+    .table-sync {
+      
+      span {
+        color: #E7BF5B;
+        border-bottom:1px dotted #E7BF5B;
+
+        &.failure {
+          color: #FF7272;
+          border-bottom-color: #FF7272;
+        }
+      }
+
+      i {
+        @include inline-block();
+        vertical-align:top;
+        @include size(8px);
+        margin-right:2px;
+        line-height:14px;
+        @include dashboard-sprite(feed);
+
+        &.failure {
+          @include dashboard-sprite(feed_error);
+        }
+      }
+    }
+
+    // Table sharing
+    .table-shared {
+      @include display-flex();
+      @include cross-browser(justify-content, flex-end);
+      @include cross-browser(align-items, inherit);
+
+      .round {
+        height:auto;
+        padding:2px 6px 1px;
+        margin-right:5px;
+        line-height:normal;
+        font-weight:400;
+        font-size:10px;
+        border:1px solid black;
+        @include border-radius(15px);
+
+        @mixin round-type($color) {
+          color: $color;
+          border-color: $color;
+        }
+
+        &.grey {
+          @include round-type(#BBB);
+        }
+      }
+
+      img.avatar {
+        width:18px;
+        height:18px;
+        margin-right:5px;
+        background:#CCC;
+        @include border-radius(18px); 
+      }
+    }
+
+    // Tags
+    .table-tags {
+      display:block;
+      margin-top:4px;
+      
+      a {
+        @include inline-block();
+        @include size(auto, 13px);
+        padding:2px 7px;
+        margin-left:1px;
+        font:normal 11px $text-fonts2;
+        color:#666666;
+        line-height:14px;
+        background:#E1ECF5;
+        @include border-radius(2px);
+        border:1px solid #C7D1D9;
+
+        &:hover { color:#333333; }
+      }
+
+      span.more {
+        margin-left:3px;
+        font-size:11px;
+        color:#c3c3c3;
+      }
+    }
+  }
+
+
+  // Title and description
+  .table-desc {
+    float:left;
+    width:55%;
+
+    // Title
+    h3 {
+      @include inline-block();
+      width:auto;
+      max-width:88%;
+      margin-right:10px;
+      font-size:17px;
+      @include text-overflow();
+      color:#2483B4;
+
+      a {
+        font:bold 17px $title-fonts;
+        @include transform-style("linear");
+        @include transition-property("color");
+        @include transition-duration(250ms);
+      }
+    }
+
+    // Delete icon
+    i.delete {
+      position:relative;
+      display:none;
+      width:20px;
+      height:20px;
+      @include border-radius(3px);
+      background:#E7E7E7;
+      
+      &:before, &:after {
+        content:'';
+        position:absolute;
+        width:2px;
+        height:8px;
+        background:#888888;
+        @include border-radius(2px);
+        top:6px;
+        left:9px;
+      }
+
+      &:before { @include transform(rotate(45deg)) }
+      &:after { @include transform(rotate(-45deg)) }
+
+      &:hover { background:#DEDEDE }
+    }
+
+
+    // Description
+    p {
+      margin-top:5px;
+      display:block;
+      color:#888;
+      font-size:13px;
+      @include text-overflow();
+    }
+  }
+
+
+  // If table item is shared
+  .table-item-inner.shared {
+    .table-info { width:55% }
+    .table-desc { width:45% }
+  }
+
+  
+  // Hover effect with table-item border
+  .table-item {
+    &:last-child {}
+    &:first-child .table-item-inner {
+      border-color:transparent;
+    }
+
+    &:hover {
+      border-color:#D7D7D7;
+      cursor: pointer;
+      background:white;
+
+      & + .table-item {
+        .table-item-inner { border-color:transparent }
+      }
+
+      h3 {
+        color:black;
+        a {
+          color:black;
+          text-decoration:none;
+        }
+      }
+
+      i.delete { @include inline-block() }
+      .table-info li.table-order { display:inherit; }
+      .table-item-inner { border-color: transparent }
+    }
+  }

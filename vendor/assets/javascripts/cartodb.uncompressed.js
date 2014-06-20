@@ -1,6 +1,6 @@
-// cartodb.js version: 3.10.1-dev
+// cartodb.js version: 3.10.2-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6bf1c05915e00cc5cb93edb74bf35706e6d43eec
+// sha: 8dac4cbc89dd6d32c278b6a9863e0d2bd29c6060
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.10.1-dev';
+    cdb.VERSION = '3.10.2-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26451,7 +26451,7 @@ Map.prototype = {
     var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
-      if (tooltip) {
+      if (tooltip && tooltip.fields && tooltip.fields.length) {
         return true;
       }
     }

@@ -1,7 +1,10 @@
 @import "compass/css3/text-shadow";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
 @import "../common/mixins";
 @import "../common/fonts";
 @import "../common/vars";
+@import "../common/buttons";
 @import "common/form-elements";
 @import "../common/common-sprite";
 @import "../dashboard/dashboard-sprite";
@@ -150,7 +153,7 @@ header {
     strong {
       color: #BABABA;
       font-size:13px;
-      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-family: 'ProximaNova-Semibold', $text-fonts2;
       font-weight: 400;
       text-transform: uppercase;
     }
@@ -244,7 +247,7 @@ header {
       }
 
       &, a {
-        font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+        font-family: 'ProximaNova-Semibold', $text-fonts2;
         font-weight: 400;
         font-size:11px;
       }
@@ -268,7 +271,7 @@ header {
       margin: 0;
       color: #333333;
       font-size: 21px;
-      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-family: 'ProximaNova-Semibold', $text-fonts2;
       font-weight: 400;
       line-height: 120%;
     }
@@ -299,7 +302,7 @@ header {
   margin: 175px auto 0 auto;
   font-size: 21px;
   color: #CCCCCC;
-  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+  font-family: 'ProximaNova-Semibold', $text-fonts2;
   font-weight: 200;
   background: #F5F5F5;
   text-align:center;
@@ -334,7 +337,7 @@ header {
     position:relative;
     float:right;
     font-size:15px;
-    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    font-family: 'ProximaNova-Semibold', $text-fonts2;
     color: #CCCCCC;
     font-weight: 200;
   }
@@ -344,7 +347,7 @@ header {
     display:block;
 
     font-size: 25px;
-    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    font-family: 'ProximaNova-Semibold', $text-fonts2;
     font-weight: 200;
   }
 
@@ -429,7 +432,7 @@ header {
       margin: 0;
 
       color: #fff;
-      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-family: 'ProximaNova-Semibold', $text-fonts2;
       font-weight: 400;
       font-size: 27px;
       @include text-overflow();
@@ -476,7 +479,7 @@ header {
     position:relative;
     float:right;
     font-size: 15px;
-    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    font-family: 'ProximaNova-Semibold', $text-fonts2;
     font-weight: 400;
     color: #CCCCCC;
   }
@@ -531,7 +534,7 @@ header {
       background: rgba(#FFD24D, .50);
 
       color: #545454;
-      font-family: 'ProximaNova-Bold', Helvetica, sans-serif;
+      font-family: 'ProximaNova-Bold', $text-fonts2;
       font-size:11px;
       text-transform: uppercase;
       text-decoration: none;
@@ -612,7 +615,7 @@ header {
   padding: 11px 13px;
 
   font-size:13px;
-  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+  font-family: 'ProximaNova-Semibold', $text-fonts2;
   font-weight:400;
   text-transform: uppercase;
 
@@ -632,56 +635,21 @@ header {
 
 } // .prev, .next
 
-a.button.green:hover {
-  background: #749C33;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
-  background: -webkit-linear-gradient(#94be42,#799e33);
-  background: -moz-linear-gradient(#94be42,#799e33);
-  background: -o-linear-gradient(#94be42,#799e33);
-  background: linear-gradient(#94be42,#799e33);
-  text-decoration: none;
-  cursor: pointer;
-}
 
 a.button.green {
-  padding: 8px 10px;
-  font-size: 12px;
-  font-weight: bold;
-  font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
+  padding: 8px 10px 7px;
+  font:bold 12px $title-fonts;
   line-height: normal;
-  text-decoration: none;
   text-transform: uppercase;
-  color: white;
-  text-shadow: 0 1px 0 #3C5219;
-  background: #94BE42;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #7fa938));
-  background: -webkit-linear-gradient(#94be42,#7fa938);
-  background: -moz-linear-gradient(#94be42,#7fa938);
-  background: -o-linear-gradient(#94be42,#7fa938);
-  background: linear-gradient(#94be42,#7fa938);
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
+  @include border-radius(3px);
   border: 1px solid #1E3C54;
   letter-spacing: 0;
   word-spacing: 1px;
-  -webkit-transform-style: "linear";
-  -moz-transform-style: "linear";
-  -ms-transform-style: "linear";
-  -o-transform-style: "linear";
-  transform-style: "linear";
-  -webkit-transition-property: box-shadow,border;
-  -moz-transition-property: box-shadow,border;
-  -o-transition-property: box-shadow,border;
-  transition-property: box-shadow,border;
-  -webkit-transition-duration: 250ms;
-  -moz-transition-duration: 250ms;
-  -o-transition-duration: 250ms;
-  transition-duration: 250ms;
+  @include box-shadow(none);
 
-  zoom: 1; *display: inline;
+  &:active {
+    @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(0,0,0,0.35) 0 1px 4px 0 inset);
+  }
 }
 
 @media

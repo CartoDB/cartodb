@@ -12,6 +12,8 @@ module CartoDB
     # @param entity_id String (uuid)
     # @param entity_type String
 
+    @old_acl = nil
+
     ACCESS_READONLY   = 'r'
     ACCESS_READWRITE  = 'rw'
     ACCESS_NONE       = 'n'
@@ -75,6 +77,10 @@ module CartoDB
         }
       }
 
+      if @old_acl.nil?
+        @old_acl = acl
+      end
+
       self.access_control_list = ::JSON.dump(cleaned_acl)
     end
 
@@ -91,10 +97,12 @@ module CartoDB
 
     # @return Mixed|nil
     def entity
-      if self.entity_type == ENTITY_TYPE_VISUALIZATION
-        CartoDB::Visualization::Member.new(id:self.entity_id).fetch
+      case self.entity_type
+        when ENTITY_TYPE_VISUALIZATION
+          CartoDB::Visualization::Member.new(id:self.entity_id).fetch
+        else
+          nil
       end
-      nil
     end
 
     # @param value Mixed
@@ -178,21 +186,18 @@ module CartoDB
     def update_shared_entities
       # First clean previous sharings
       destroy_shared_entities
+      revoke_previous_permissions(entity)
 
-      # Only user entries, and those with forbids also skipped
-      user_ids = acl.select { |entry|
-        entry[:type] == TYPE_USER && entry[:access] != ACCESS_NONE
-      }.map { |entry|
-        entry[:id]
-      }
-
-      # Create entities for the ACL
-      user_ids.each { |user_id|
+      # Create entities for the new ACL
+      users = relevant_user_acl_entries(acl)
+      users.each { |user|
         CartoDB::SharedEntity.new(
-            user_id:    user_id,
+            user_id:    user[:id],
             entity_id:  self.entity_id,
             type:       type_for_shared_entity(self.entity_type)
         ).save
+
+        grant_db_permission(entity, user[:id], user[:access])
       }
     end
 
@@ -205,6 +210,43 @@ module CartoDB
         return CartoDB::SharedEntity::TYPE_VISUALIZATION
       end
       PermissionError.new('Invalid permission type for shared entity')
+    end
+
+    def revoke_previous_permissions(entity)
+      users = relevant_user_acl_entries(@old_acl.nil? ? [] : @old_acl)
+      case entity.class.name
+        when CartoDB::Visualization::Member.to_s
+          users.each { |user|
+            entity.table.remove_access(User.where(id: user[:id]).first)
+          }
+        else
+          raise PermissionError.new('Unsupported entity type trying to grant permission')
+      end
+    end
+
+    def grant_db_permission(entity, user_id, access)
+      case entity.class.name
+        when CartoDB::Visualization::Member.to_s
+          if access == ACCESS_READONLY
+            entity.table.add_read_permission(User.where(id: user_id).first)
+          elsif access == ACCESS_READWRITE
+            entity.table.add_read_write_permission(User.where(id: user_id).first)
+          end
+        else
+          raise PermissionError.new('Unsupported entity type trying to grant permission')
+      end
+    end
+
+    # Only user entries, and those with forbids also skipped
+    def relevant_user_acl_entries(acl_list)
+      acl_list.select { |entry|
+        entry[:type] == TYPE_USER && entry[:access] != ACCESS_NONE
+      }.map { |entry|
+        {
+          id:     entry[:id],
+          access: entry[:access]
+        }
+      }
     end
 
   end

@@ -502,10 +502,10 @@ describe("LayerDefinition", function() {
 });
 
 describe("NamedMap", function() {
-  var namedMap;
+  var namedMap, named_map;
 
   beforeEach(function() {
-    var named_map = {
+    named_map = {
       name: 'testing',
       params: {
         color: 'red'
@@ -525,6 +525,34 @@ describe("NamedMap", function() {
       subdomains: [null]
     });
   });
+
+  it("should include instanciation callback", function() {
+    namedMap = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "https",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null],
+      instanciateCallback: 'testing'
+
+    });
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      namedMap._getLayerToken();
+      namedMap.getTiles(function(t) {
+        tiles = t;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(params.jsonpCallback).toEqual('testing');
+      expect(params.cache).toEqual(true);
+    });
+  })
 
   it("should instance named_map with no layers", function() {
     var named_map = {
@@ -825,6 +853,7 @@ describe("NamedMap", function() {
     expect(namedMap.getLayerIndexByNumber(0)).toEqual(0);
     expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
   });
+
 
 
 });

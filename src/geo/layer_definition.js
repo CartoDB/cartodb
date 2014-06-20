@@ -305,6 +305,8 @@ Map.prototype = {
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
+        jsonpCallback: self.options.instanciateCallback,
+        cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
           if(0 === self._queue.length) {

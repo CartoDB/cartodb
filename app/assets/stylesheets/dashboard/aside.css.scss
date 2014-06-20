@@ -90,11 +90,19 @@
     // When scroll, aside has to be fixed
     &.moving {
       position:fixed;
-      margin-left:30px;
+      margin-left:27px;
     }
 
     // Too much scroll -> positionate to the bottom
     &.bottom { position:relative }
+  }
+
+  article.visualizations aside {
+    margin-top:20px; 
+
+    &.moving {
+      margin-left:53px;
+    }
   }
 
 

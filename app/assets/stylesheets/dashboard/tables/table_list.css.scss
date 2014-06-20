@@ -23,37 +23,37 @@
   }
 
 
-  div.loader {
-    position:absolute;
-    display:block!important;
-    top:0;
-    left:0;
-    width:100%;
-    right:0;
-    height:3px;
-    background:transparent;
-    overflow:hidden;
-  }
+  // div.loader {
+  //   position:absolute;
+  //   display:block!important;
+  //   top:0;
+  //   left:0;
+  //   width:100%;
+  //   right:0;
+  //   height:3px;
+  //   background:transparent;
+  //   overflow:hidden;
+  // }
 
-  div.loader:before {
-    content:'';
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    right:0;
-    height:2px;
-    background: #82ABDA;
-    @include animation(pulsate 1.5s linear infinite);      
-  }
+  // div.loader:before {
+  //   content:'';
+  //   position:absolute;
+  //   top:0;
+  //   left:0;
+  //   width:100%;
+  //   right:0;
+  //   height:2px;
+  //   background: #82ABDA;
+  //   @include animation(pulsate 1.5s linear infinite);      
+  // }
 
 
-  //     // Animation function
-  @include keyframes(pulsate) {
-    0% {@include transform(translate(-100%,0%));}
-    50% {@include transform(translate(0%,0%));}
-    100% {@include transform(translate(100%,0%));}
-  }
+  // //     // Animation function
+  // @include keyframes(pulsate) {
+  //   0% {@include transform(translate(-100%,0%));}
+  //   50% {@include transform(translate(0%,0%));}
+  //   100% {@include transform(translate(100%,0%));}
+  // }
 
 
   // // Tables loader :)

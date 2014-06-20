@@ -1,0 +1,152 @@
+
+  /*
+   *  Visualization item styles within visualizations list
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/transform";
+  @import "../common/mixins";
+  @import "../common/vars";
+
+
+  #vislist li {
+    @include size(274px, 276px);
+    @include display-flex();
+    @include cross-browser(align-items, center);
+    @include cross-browser(flex-wrap, wrap);
+    letter-spacing:0;
+    
+    // Main vis item styles
+    .vis-item {
+      @include size(274px, 242px);
+      background:white;
+      border:1px solid #CCCCCC;
+      @include border-radius(3px);
+      @include box-shadow(0 0 7px 2px rgba(black,0.09));
+      @include transform-style("linear");
+      @include transition-property("height");
+      @include transition-duration(150ms);
+      font:300 11px $text-fonts2;
+      color:#878787;
+
+      // Empty
+      &.empty {
+        @include box-shadow(none);
+        background: image-url('layout/static_loader.png') no-repeat center center transparent;
+      }
+    }
+
+    // Vis item innter
+    .vis-item-inner {
+      position:relative;
+      @include display-flex();
+      @include cross-browser(flex-direction, column);
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(flex-wrap, wrap);
+      height:100%;
+    }
+
+
+    // Thumbnail of the visualization
+    .vis-thumbnail {
+      position:relative;
+      display:block;
+      height:60px;
+      background:#EFEFEF;
+      @include border-top-radius(3px);
+
+      &:after {
+        content:'';
+        position:absolute;
+        left:0;
+        bottom:0;
+        width:100%;
+        height:1px;
+        background:rgba(black,.2);
+      }
+    }
+
+    // Info about the visualization
+    .vis-desc {
+      padding:22px 22px 10px;
+
+      h3 {
+        display:block;
+        max-width:100%;
+      }
+    }
+
+    // Tags
+    .vis-tags {
+      padding:0px 22px;
+      display:block;
+    }
+
+
+    // Graph
+    .vis-graph {
+      position:absolute;
+      bottom:27px;
+      left:22px;
+
+      svg {
+        path,
+        circle {
+          @include transform-style("linear");
+          @include transition-property("stroke,fill");
+          @include transition-duration(250ms);
+        }
+
+        path { stroke:#C3C3C3!important }
+        circle { fill:#C3C3C3!important }
+      }
+    }
+
+
+    // Vis tools
+    .vis-tools {
+      @include display-flex();
+      @include cross-browser(flex-direction, row);
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(align-items, center);
+      @include cross-browser(flex-wrap, wrap);
+      padding:10px 0 0;
+      margin:0 22px 22px;
+
+      .order { text-indent:-9999px }
+    }
+
+
+
+
+    // Vis item hover
+    .vis-item:not(.empty) {
+
+      &:hover {
+        height:262px;
+        cursor:pointer;
+
+        h3 {
+          color:black;
+          a {
+            color:black;
+            text-decoration:none;
+          }
+        }
+
+        .vis-graph {
+          bottom:52px;
+          svg {
+            path { stroke:rgb(64, 159, 206)!important }
+            circle { fill:rgb(64, 159, 206)!important }
+          }
+        }
+
+        .vis-tools {
+          border-top:1px solid #DDDDDD;
+          .order { text-indent:0 }
+        }
+      }
+    }
+  }

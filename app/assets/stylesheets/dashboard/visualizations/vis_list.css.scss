@@ -4,15 +4,24 @@
    */
 
   @import "compass/css3/inline-block";
+  @import "../common/mixins";
 
   section.visualizations {
-    margin-left:22px;
+    margin:28px 0 0 22px;
+    @include inline-block();
+    width: 928px;
 
     // Tables list
     div.content {
       padding:0;
 
-      #tablelist { margin-top:10px }
+      #vislist {
+        @include display-flex();
+        @include cross-browser(justify-content, space-between);
+        @include cross-browser(align-items, center);
+        @include cross-browser(flex-wrap, wrap);
+        width:890px;
+      }
 
       &.hidden { display: none; }
     }

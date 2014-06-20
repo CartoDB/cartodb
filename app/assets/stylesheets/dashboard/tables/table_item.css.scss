@@ -47,6 +47,7 @@
         @include display-flex();
         @include cross-browser(justify-content, flex-end);
         @include cross-browser(align-items, center);
+        height:20px;
       }
 
       li {

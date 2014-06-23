@@ -2,6 +2,7 @@
 require_relative '../../../models/layer/presenter'
 
 class Api::Json::LayersController < Api::ApplicationController
+
   ssl_required :index, :show, :create, :update, :destroy
   before_filter :load_parent
 
@@ -63,6 +64,14 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def map_from(params={})
     return unless params[:map_id]
-    Map.filter(user_id: current_user.id, id: params[:map_id]).first
+
+    # User must be owner or have permissions for the map's visualization
+    vis = CartoDB::Visualization::Collection.new.fetch(
+        user_id: current_user.id,
+        map_id: params[:map_id]
+    ).first
+    raise RecordNotFound if vis.nil?
+
+    Map.filter(id: params[:map_id]).first
   end #map_from
 end

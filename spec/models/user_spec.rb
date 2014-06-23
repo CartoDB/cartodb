@@ -739,6 +739,80 @@ describe User do
     end
   end
 
+  describe '#shared_tables' do
+    it 'Checks that shared tables include not only owned ones' do
+      require_relative '../../app/models/visualization/collection'
+      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      # No need to really touch the DB for the permissions
+      Table::any_instance.stubs(:add_read_permission).returns(nil)
+
+      # We're leaking tables from some tests, make sure there are no tables
+      @user.tables.all.each { |t| t.destroy }
+      @user2.tables.all.each { |t| t.destroy }
+
+      table = Table.new
+      table.user_id = @user.id
+      table.save.reload
+      table2 = Table.new
+      table2.user_id = @user.id
+      table2.save.reload
+
+      table3 = Table.new
+      table3.user_id = @user2.id
+      table3.name = 'sharedtable'
+      table3.save.reload
+
+      table4 = Table.new
+      table4.user_id = @user2.id
+      table4.name = 'table4'
+      table4.save.reload
+
+      # Only owned tables
+      user_tables = @user.tables_including_shared
+      user_tables.count.should eq 2
+
+      # Grant permission
+      user2_vis  = CartoDB::Visualization::Collection.new.fetch(user_id: @user2.id).first
+      permission = CartoDB::Permission.new(
+        owner_id:       @user2.id,
+        owner_username: @user2.username,
+        entity_id:      user2_vis.id,
+        entity_type:    CartoDB::Permission::ENTITY_TYPE_VISUALIZATION
+      )
+      permission.acl = [
+        {
+          type: CartoDB::Permission::TYPE_USER,
+          entity: {
+              id: @user.id,
+              username: @user.username
+          },
+          access: CartoDB::Permission::ACCESS_READONLY
+        }
+      ]
+      permission.save
+
+      # Now owned + shared...
+      user_tables = @user.tables_including_shared
+      user_tables.count.should eq 3
+
+      contains_shared_table = false
+      user_tables.each{ |item|
+        contains_shared_table ||= item.id == table3.id
+      }
+      contains_shared_table.should eq true
+
+      contains_shared_table = false
+      user_tables.each{ |item|
+        contains_shared_table ||= item.id == table4.id
+      }
+      contains_shared_table.should eq false
+
+      @user.tables.all.each { |t| t.destroy }
+      @user2.tables.all.each { |t| t.destroy }
+    end
+  end
+
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name

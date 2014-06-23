@@ -403,6 +403,15 @@ class User < Sequel::Model
     ::Table.filter(:user_id => self.id).order(:id).reverse
   end
 
+  def tables_including_shared
+    CartoDB::Visualization::Collection.new.fetch(
+        user_id: self.id,
+        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+    ).map { |item|
+      item.table
+    }
+  end
+
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
     digest = Digest::MD5.hexdigest(email.downcase)
     "#{protocol}gravatar.com/avatar/#{digest}?s=#{size}&d=#{protocol}#{URI.encode(default_image)}"

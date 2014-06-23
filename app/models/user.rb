@@ -740,6 +740,7 @@ class User < Sequel::Model
     end
   end
 
+  # Only returns owned tables (not shared ones)
   def table_count(privacy_filter=nil)
     filter = {
         user_id: self.id

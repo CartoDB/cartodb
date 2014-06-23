@@ -19,16 +19,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   before_filter :link_ghost_tables, only: [:index, :show]
 
   def index
-    collection       = Visualization::Collection.new.fetch(
-                         params.dup.merge(scope_for(current_user))
-                       )
+    collection = Visualization::Collection.new.fetch(
+                   params.dup.merge(scope_for(current_user))
+                 )
     table_data = collection.map { |member|
       if member.table.nil?
         nil
       else
         {
-            name:   member.table.name,
-            schema: member.user.database_schema
+          name:   member.table.name,
+          schema: member.user.database_schema
         }
       end
     }.compact

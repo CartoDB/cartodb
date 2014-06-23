@@ -58,7 +58,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     return render_jsonp({ oauth_valid: false, success: true }) if oauth.nil?
     datasource = oauth.get_service_datasource
     return render_jsonp({ oauth_valid: false, success: true }) if datasource.nil?
-    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+    unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+      raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+    end
 
     begin
       valid = datasource.token_valid?
@@ -118,7 +120,9 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
-    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+    unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+      raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+    end
 
     render_jsonp({
                    url: datasource.get_auth_url,
@@ -141,7 +145,9 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
-    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+    unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+      raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+    end
 
     raise "Missing oauth verification code for service #{params[:id]}" unless params[:code].present?
 
@@ -150,8 +156,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       current_user.oauths.add(params[:id],auth_token)
       success = true
     rescue CartoDB::Datasources::AuthError
-      CartoDB::Logger.info('Error: validate_service_oauth_code', "Couldn't add oauth from service #{params[:id]} for user #{current_user.username}")
-      # No need to re-raise
+      CartoDB::Logger.info('Error: validate_service_oauth_code', \
+        "Couldn't add oauth from service #{params[:id]} for user #{current_user.username}")
     end
 
     render_jsonp({ success: success })
@@ -169,7 +175,9 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     datasource = oauth.get_service_datasource
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
-    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+    unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+      raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+    end
 
     result = datasource.revoke_token
     if result
@@ -188,7 +196,9 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
-    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+    unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+      raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
+    end
 
     token = datasource.validate_callback(params)
 

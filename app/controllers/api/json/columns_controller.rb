@@ -52,12 +52,15 @@ class Api::Json::ColumnsController < Api::ApplicationController
     render_jsonp({:errors => errors}, 400) and return
   end
 
-
-
   protected
 
   def load_table
-    @table = Table.where(:name => params[:table_id], :user_id => current_user.id).first
+    @table = CartoDB::Visualization::Collection.new.fetch(
+        user_id: current_user.id,
+        name: params[:table_id],
+        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+    ).first
+    @table = @table.table unless @table.nil?
     raise RecordNotFound if @table.nil?
   end
 end

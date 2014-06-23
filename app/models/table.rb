@@ -6,8 +6,10 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './overlay/member'
+require_relative './overlay/collection'
+require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
-
 
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
@@ -506,7 +508,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
-    CartoDB::Visualization::Member.new(
+    member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
@@ -514,7 +516,48 @@ class Table < Sequel::Model(:user_tables)
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
       user_id:      self.owner.id
+    )
+
+    member.store
+
+    create_header_overlay(member)
+    create_search_overlay(member)
+
+  end
+
+  def create_search_overlay(member)
+
+    options = {
+      :display => true, 
+      :x => 40,
+      :y => 40
+    }
+
+    CartoDB::Overlay::Member.new(
+      order: 1,
+      type: "search",
+      template: "",
+      options: options,
+      visualization_id: member.id
     ).store
+
+  end
+
+  def create_header_overlay(member)
+
+    options = {
+      :display => false, 
+      :extra => { :title => member.name, :description => member.description, :show_title => false, :show_description => false }
+    }
+
+    CartoDB::Overlay::Member.new(
+      order: 1,
+      type: "title",
+      template: "",
+      options: options,
+      visualization_id: member.id
+    ).store
+
   end
 
   ##

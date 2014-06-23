@@ -44,7 +44,19 @@ div.map {
   width:100%;
   padding: 84px 84px 20px 20px;
 
+  /*background: #333 image-url('layout/mobile_bkg.png') repeat 50% 50%;*/
   background: #333 image-url('layout/noise.png') repeat 0 0;
+
+  .mobile_bkg {
+    position:absolute;
+    top:1px; // Header opacity black border needs to be present
+    left:0;
+    bottom:0;
+    right:0;
+    width:100%;
+    padding: 84px 84px 20px 20px;
+    background: #333 image-url('layout/mobile_bkg.png') repeat 50% 50%;
+  }
 
   div.map_toolbar {
     position:absolute;
@@ -68,7 +80,7 @@ div.map {
         position:relative;
 
         & > .thumb { 
-          @include map-sprite(add_element);
+          @include map-sprite(setup_canvas);
           width: 26px;
           height: 26px;
         }
@@ -688,10 +700,9 @@ div.map {
 
   // Search box in core map
   div.cartodb-searchbox {
+    display:none;
     position:relative;
     float:right;
-    top: 20px;
-    right: 20px;
     margin:0;
 
     @include transform-style("linear");

@@ -7,7 +7,8 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
-    AVAILABLE_FILTERS   = %w{ name type description map_id user_id privacy }
+    # user_id filtered by default if present upon fetch()
+    AVAILABLE_FILTERS   = %w{ name type description map_id privacy }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -44,8 +45,11 @@ module CartoDB
       # - if user_id is present as filter, will fetch visualizations shared with the user,
       #   except if exclude_shared filter is also present
       def fetch(filters={})
-        dataset = repository.collection(filters, AVAILABLE_FILTERS)
+        # 1) Get owned and shared entities
+        dataset = repository.collection(filters,  %w{ user_id } )
         dataset = include_shared_entities(dataset, filters) unless filters[:exclude_shared].present?
+        # 2) Filter
+        dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = order(dataset, filters.delete(:o))

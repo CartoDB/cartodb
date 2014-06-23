@@ -7,10 +7,9 @@ require_relative '../table'
 module CartoDB
   module Visualization
     class Locator
-      def initialize(table_model=nil, user_model=nil, repository=nil)
+      def initialize(table_model=nil, user_model=nil)
         @table_model  = table_model || ::Table
         @user_model   = user_model  || ::User
-        @repository   = repository  || Visualization.repository
       end #initialize
 
       def get(id_or_name, subdomain)
@@ -23,17 +22,16 @@ module CartoDB
 
       private
 
-      attr_reader :repository, :table_model, :user_model
+      attr_reader :table_model, :user_model
 
       def user_from(subdomain)
         @user ||= user_model.where(username: subdomain).first
       end #user_from
 
       def visualization_from(id_or_name, user)
-        attributes = get_by_id(id_or_name) || get_by_name(id_or_name, user)
-        return false if attributes.nil? || attributes.empty?
-        
-        visualization = Visualization::Member.new(attributes)
+        visualization = get_by_id(id_or_name) || get_by_name(id_or_name, user)
+        return false if visualization.nil?
+
         [visualization, visualization.table]
       end # visualization_from
 
@@ -47,14 +45,18 @@ module CartoDB
       end #table_from
         
       def get_by_id(uuid)
-        repository.fetch(uuid)
+        Visualization::Member.new(id: uuid).fetch
+      rescue KeyError
+        nil
       end #get_by_id
 
       def get_by_name(name, user)
-        repository.collection(
-          name:   name,
-          map_id: user.maps.map(&:id)
+        Visualization::Collection.new.fetch(
+            name:   name,
+            user_id: user.id
         ).first
+      rescue KeyError
+        nil
       end #get_by_name
     end # Locator
   end # Visualization

@@ -188,7 +188,7 @@ module CartoDB
       destroy_shared_entities
       revoke_previous_permissions(entity)
 
-      # Create entities for the new ACL
+      # Create user entities for the new ACL
       users = relevant_user_acl_entries(acl)
       users.each { |user|
         CartoDB::SharedEntity.new(

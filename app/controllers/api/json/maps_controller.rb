@@ -3,7 +3,6 @@
 require_relative '../../../models/visualization/collection'
 
 class Api::Json::MapsController < Api::ApplicationController
-  include CartoDB
 
   ssl_required :index, :create, :show, :update, :delete
 
@@ -58,7 +57,7 @@ class Api::Json::MapsController < Api::ApplicationController
 
   def load_map
     # User must be owner or have permissions for the map's visualization
-    vis = Visualization::Collection.new.fetch(
+    vis = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,
         map_id: params[:id]
     ).first

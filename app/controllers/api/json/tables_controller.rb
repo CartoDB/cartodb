@@ -141,7 +141,12 @@ class Api::Json::TablesController < Api::ApplicationController
     if rx.match(params[:id])
       @table = Table.where('user_id = ? AND (name = ? OR id = ?)', current_user.id, params[:id], params[:id]).first
     else
-      @table = Table.where(:name => params[:id], :user_id => current_user.id).first
+      @table = CartoDB::Visualization::Collection.new.fetch(
+          user_id: current_user.id,
+          name: params[:id],
+          type: CartoDB::Visualization::Member::CANONICAL_TYPE
+      ).first
+      @table = @table.table unless @table.nil?
     end
   end
 end

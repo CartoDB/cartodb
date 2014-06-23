@@ -194,7 +194,7 @@ module CartoDB
       private
 
       attr_reader :table_name, :runner, :database, :user
-    end # Synchronization
-  end # Connector
-end # CartoDB
+    end
+  end
+end
 

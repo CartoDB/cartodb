@@ -44,22 +44,33 @@ module CartoDB
       # NOTES:
       # - if user_id is present as filter, will fetch visualizations shared with the user,
       #   except if exclude_shared filter is also present
+      # - only_shared forces to use different flow because if there are no shared there's nothing else to do
       def fetch(filters={})
-        # 1) Get owned and shared entities
-        dataset = repository.collection(filters,  %w{ user_id } )
-        dataset = include_shared_entities(dataset, filters) unless filters[:exclude_shared].present?
-        # 2) Filter
-        dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
-        dataset = filter_by_tags(dataset, tags_from(filters))
-        dataset = filter_by_partial_match(dataset, filters.delete(:q))
-        dataset = order(dataset, filters.delete(:o))
+        if filters[:only_shared].present?
+          dataset = repository.collection
+          dataset = filter_by_only_shared(dataset, filters)
+        else
+          dataset = repository.collection(filters,  %w{ user_id } )
+          dataset = include_shared_entities(dataset, filters)
+        end
 
-        @total_entries = dataset.count
-        dataset = repository.paginate(dataset, filters)
+        if dataset.nil?
+          @total_entries = 0
+          collection.storage = Set.new
+        else
+          # 2) Filter
+          dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
+          dataset = filter_by_tags(dataset, tags_from(filters))
+          dataset = filter_by_partial_match(dataset, filters.delete(:q))
+          dataset = order(dataset, filters.delete(:o))
 
-        collection.storage = Set.new(dataset.map { |attributes|
-          Visualization::Member.new(attributes)
-        })
+          @total_entries = dataset.count
+          dataset = repository.paginate(dataset, filters)
+
+          collection.storage = Set.new(dataset.map { |attributes|
+            Visualization::Member.new(attributes)
+          })
+        end
 
         self
       end #fetch
@@ -102,8 +113,27 @@ module CartoDB
         dataset.where(PARTIAL_MATCH_QUERY, pattern, "%#{pattern}%")
       end #filter_by_partial_match
 
+      def filter_by_only_shared(dataset, filters)
+        return dataset unless (filters[:user_id].present? && filters[:only_shared].present?)
+
+        shared_vis = CartoDB::SharedEntity.where(
+            user_id: filters[:user_id],
+            type: CartoDB::SharedEntity::TYPE_VISUALIZATION
+        ).all
+        .map { |entity|
+          entity.entity_id
+        }
+
+        if shared_vis.nil? || shared_vis.empty?
+          nil
+        else
+          dataset.where(id: shared_vis)
+        end
+      end
+
       def include_shared_entities(dataset, filters)
         return dataset unless filters[:user_id].present?
+        return dataset if filters[:exclude_shared].present?
 
         shared_vis = CartoDB::SharedEntity.where(
             user_id: filters[:user_id],
@@ -114,7 +144,6 @@ module CartoDB
         }
 
         return dataset if shared_vis.nil? || shared_vis.empty?
-
         dataset.or(id: shared_vis)
       end
 

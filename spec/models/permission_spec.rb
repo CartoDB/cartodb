@@ -21,6 +21,13 @@ describe CartoDB::Permission do
       entity_id = UUIDTools::UUID.timestamp_create.to_s
       entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_entity_mock = mock
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+
       acl_initial = []
       acl_with_data = [
         {
@@ -186,6 +193,13 @@ describe CartoDB::Permission do
       user3_mock.stubs(:username).returns('user3')
       user3_mock.stubs(:organization).returns(nil)
 
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_entity_mock = mock
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+
       permission = Permission.new(
         owner_id:       @user.id,
         owner_username: @user.username,
@@ -232,6 +246,13 @@ describe CartoDB::Permission do
       user4_mock.stubs(:username).returns('user4')
       user4_mock.stubs(:organization).returns(nil)
 
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_entity_mock = mock
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+
       permission = Permission.new(
         owner_id:       @user.id,
         owner_username: @user.username,
@@ -276,6 +297,13 @@ describe CartoDB::Permission do
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user2_mock.stubs(:username).returns('user2')
       user2_mock.stubs(:organization).returns(org_mock)
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_entity_mock = mock
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       permission = Permission.new(
           owner_id:       @user.id,
@@ -379,6 +407,13 @@ describe CartoDB::Permission do
       user2_mock.stubs(:organization).returns(nil)
 
       entity_id = UUIDTools::UUID.timestamp_create.to_s
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_entity_mock = mock
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       permission = Permission.new(
           owner_id:       @user.id,

@@ -773,7 +773,7 @@ describe User do
       user_tables.count.should eq 2
 
       # Grant permission
-      user2_vis  = CartoDB::Visualization::Collection.new.fetch(user_id: @user2.id).first
+      user2_vis  = CartoDB::Visualization::Collection.new.fetch(user_id: @user2.id, name: table3.name).first
       permission = CartoDB::Permission.new(
         owner_id:       @user2.id,
         owner_username: @user2.username,

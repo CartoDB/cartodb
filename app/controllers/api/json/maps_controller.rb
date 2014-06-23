@@ -1,6 +1,9 @@
 # coding: utf-8
 
+require_relative '../../../models/visualization/collection'
+
 class Api::Json::MapsController < Api::ApplicationController
+
   ssl_required :index, :create, :show, :update, :delete
 
   before_filter :load_map, :except => :create
@@ -53,7 +56,14 @@ class Api::Json::MapsController < Api::ApplicationController
   protected
 
   def load_map
-    @map = Map.filter(user_id: current_user.id, id: params[:id]).first
+    # User must be owner or have permissions for the map's visualization
+    vis = CartoDB::Visualization::Collection.new.fetch(
+        user_id: current_user.id,
+        map_id: params[:id]
+    ).first
+    raise RecordNotFound if vis.nil?
+
+    @map = Map.filter(id: params[:id]).first
     raise RecordNotFound if @map.nil?
   end
 end

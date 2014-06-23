@@ -45,7 +45,9 @@ module CartoDB
       end #table_from
         
       def get_by_id(uuid)
-        Visualization::Member.new(id: uuid).fetch
+        Visualization::Collection.new.fetch(
+            id: uuid
+        ).first
       rescue KeyError
         nil
       end #get_by_id

@@ -8,7 +8,7 @@ module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
     # user_id filtered by default if present upon fetch()
-    AVAILABLE_FILTERS   = %w{ name type description map_id privacy }
+    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 

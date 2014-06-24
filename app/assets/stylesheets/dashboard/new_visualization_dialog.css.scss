@@ -13,7 +13,9 @@
 
 
 
-// Default table item (table name, avatar, username, permissions, etc)
+// Default table item
+// - It renders table name, avatar, username and permissions.
+
 @mixin table-item() {
   div.vis-info-item {
     @include display-flex();

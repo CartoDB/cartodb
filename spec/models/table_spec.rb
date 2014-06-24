@@ -1689,7 +1689,7 @@ describe Table do
     it "create and migrate a table containing a valid the_geom" do
       delete_user_data @user
       @user.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-      @user.run_pg_query("SELECT AddGeometryColumn ('exttable','the_geom',4326,'POINT',2);")
+      @user.run_pg_query("SELECT public.AddGeometryColumn ('#{@user.database_schema}','exttable','the_geom',4326,'POINT',2);")
       @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
 
@@ -1968,7 +1968,6 @@ describe Table do
       @user.run_pg_query('
         CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
       ')
-      
       table.save
       check_schema(table, [
           [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],

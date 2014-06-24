@@ -120,7 +120,7 @@ module CartoDB
         if matching_latitude and matching_longitude
             #@data_import.log << ("converting #{matching_latitude}, #{matching_latitude} to the_geom")
             #we know there is a latitude/longitude columns
-            @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
+            @db_connection.run("SELECT public.AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
             @db_connection.run(<<-GEOREF
             UPDATE \"#{@suggested_name}\"

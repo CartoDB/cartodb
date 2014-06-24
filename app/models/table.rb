@@ -1409,9 +1409,9 @@ class Table < Sequel::Model(:user_tables)
     #if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == 'multipoint'
       owner.in_database do |user_database|
-        user_database.run("SELECT AddGeometryColumn('#{qualified_table_name}','the_geom_simple',4326, 'POINT', 2);")
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'POINT', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
-        user_database.run("SELECT DropGeometryColumn('#{qualified_table_name}','the_geom');")
+        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
       end
       type = 'point'
@@ -1421,12 +1421,12 @@ class Table < Sequel::Model(:user_tables)
     if %w(linestring polygon).include?(type.to_s.downcase)
       owner.in_database do |user_database|
         if type.to_s.downcase == 'polygon'
-          user_database.run("SELECT AddGeometryColumn('#{qualified_table_name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
+          user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
         else
-          user_database.run("SELECT AddGeometryColumn('#{qualified_table_name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
+          user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
         end
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
-        user_database.run("SELECT DropGeometryColumn('#{qualified_table_name}','the_geom');")
+        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
         type = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
@@ -1580,12 +1580,12 @@ SQL
   end
 
   def qualified_table_name
-    return "\"#{owner.database_schema}\".\"#{self.name}\""
+    "\"#{owner.database_schema}\".\"#{self.name}\""
   end
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    return "#{owner.database_schema}__#{self.name}".to_sym
+    "#{owner.database_schema}__#{self.name}".to_sym
   end
 
   ############################### Sharing tables ##############################

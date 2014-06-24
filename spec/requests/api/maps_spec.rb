@@ -12,6 +12,10 @@ feature  "API 1.0 maps management" do
     delete_user_data @user
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   scenario "Create a new map" do
     table = create_table(:user_id => @user.id)
     post_json v1_maps_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key), { :table_id => table.id } do |response|

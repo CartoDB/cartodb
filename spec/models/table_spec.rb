@@ -45,6 +45,12 @@ describe Table do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
+
   context "table setups" do
     it "should set a default name different than the previous" do
       table = Table.new
@@ -2124,10 +2130,6 @@ describe Table do
       rows[:rows][0][:description].should eq description_1
       rows[:rows][1][:description].should eq description_2
     end
-  end
-
-  after(:all) do
-    @user.destroy
   end
 
 end

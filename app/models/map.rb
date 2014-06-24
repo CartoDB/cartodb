@@ -57,7 +57,7 @@ class Map < Sequel::Model
 
   def after_save
     super
-    update_map_id_on_associated_table
+    update_map_on_associated_entities
     invalidate_vizjson_varnish_cache
   end #after_save
 
@@ -131,29 +131,27 @@ class Map < Sequel::Model
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
   end #get_the_last_time_tiles_have_changes_to_render_it_in_vizjsons
-  
-  def update_map_id_on_associated_table
+
+  def update_map_on_associated_entities
     return unless table_id
     related_table = Table.filter(
                       id:       table_id,
                       user_id:  user_id
                     ).first
     if related_table.map_id != id
+      # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
       require_relative '../models/visualization/collection'
-      vis = CartoDB::Visualization::Collection.new.fetch(
+      CartoDB::Visualization::Collection.new.fetch(
           user_id:  user_id,
           map_id:   related_table.map_id
-      ).first
+      ).each { |entry|
+        entry.map_id = id
+        entry.store
+      }
       # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
-      related_table.this.update(map_id: id) if related_table.map_id != id
-      # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
-      unless vis.nil?
-        vis.map_id = id
-        vis.store
-      end
+      related_table.this.update(map_id: id)
     end
-
-  end #updated_map_id_on_associated_tale
+  end
 
   def get_map_bounds
     result = current_map_bounds

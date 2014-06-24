@@ -21,6 +21,7 @@ module CartoDB
       table = new_table(attributes)
       table.save
       table.reload
+
     end
   end
 end

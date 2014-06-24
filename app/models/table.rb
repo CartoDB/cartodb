@@ -419,7 +419,6 @@ class Table < Sequel::Model(:user_tables)
     update_name_changes
 
     self.map.save
-
     manager = CartoDB::Table::PrivacyManager.new(self)
     manager.set_from_table_privacy(privacy)
     manager.propagate_to(table_visualization)

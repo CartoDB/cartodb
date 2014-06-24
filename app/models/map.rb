@@ -138,7 +138,21 @@ class Map < Sequel::Model
                       id:       table_id,
                       user_id:  user_id
                     ).first
-    related_table.this.update(map_id: id) if related_table.map_id != id
+    if related_table.map_id != id
+      require_relative '../models/visualization/collection'
+      vis = CartoDB::Visualization::Collection.new.fetch(
+          user_id:  user_id,
+          map_id:   related_table.map_id
+      ).first
+      # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
+      related_table.this.update(map_id: id) if related_table.map_id != id
+      # Manually propagate to visualization (@see Table.after_save)
+      unless vis.nil?
+        vis.map_id = id
+        vis.store
+      end
+    end
+
   end #updated_map_id_on_associated_tale
 
   def get_map_bounds

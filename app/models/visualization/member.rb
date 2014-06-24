@@ -84,15 +84,16 @@ module CartoDB
         self
       end #store
 
-      def store_using_table(privacy_text)
+      def store_using_table(fields)
         if type == CANONICAL_TYPE
           # Each table has a canonical visualization which must have privacy synced
-          self.privacy = privacy_text
+          self.privacy = fields[:privacy_text]
+          self.map_id = fields[:map_id]
         end
         # But as this method also notifies of changes in a table, must save always
         do_store(false)
         self
-      end #store_using_table
+      end
 
       def valid?
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)

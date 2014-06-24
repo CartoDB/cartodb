@@ -13,6 +13,7 @@ feature "API 1.0 map layers management" do
     host! 'test.localhost.lan'
     @table = create_table(user_id: @user.id)
     @map = create_map(user_id: @user.id, table_id: @table.id)
+    @table.reload
   end
 
   let(:params) { { api_key: @user.api_key } }

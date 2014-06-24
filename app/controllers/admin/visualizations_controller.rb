@@ -28,7 +28,6 @@ class Admin::VisualizationsController < ApplicationController
   end #show
 
   def public_table
-
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
@@ -100,8 +99,8 @@ class Admin::VisualizationsController < ApplicationController
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
 
-    if not @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size()
+    unless @visualization.is_password_valid?(submitted_password)
+      flash[:placeholder] = '*' * submitted_password.size
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
@@ -109,7 +108,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @protected_map_token = @visualization.get_auth_token()
+    @protected_map_token = @visualization.get_auth_token
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url = @visualization.user.gravatar(request.protocol, 64)
@@ -134,8 +133,8 @@ class Admin::VisualizationsController < ApplicationController
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
 
-    if not @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size()
+    unless @visualization.is_password_valid?(submitted_password)
+      flash[:placeholder] = '*' * submitted_password.size
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
@@ -143,7 +142,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @protected_map_token = @visualization.get_auth_token()
+    @protected_map_token = @visualization.get_auth_token
 
     respond_to do |format|
       format.html { render 'embed_map', layout: false }
@@ -209,7 +208,7 @@ class Admin::VisualizationsController < ApplicationController
     return 'tables' if request.path_info =~ %r{/tables/}
   end #resource_base
 
-  def download_formats table, format
+  def download_formats(table, format)
     format.sql  { send_data table.to_sql, data_for(table, 'zip', 'zip') }
     format.kml  { send_data table.to_kml, data_for(table, 'zip', 'kmz') }
     format.csv  { send_data table.to_csv, data_for(table, 'zip', 'zip') }

@@ -81,6 +81,61 @@ describe Visualization::Collection do
       records       = collection.fetch(o: { name: 'desc' })
       records.first.name.should == 'viz_2'
     end
+
+    it 'checks fetching with, without and only shared entities' do
+      vis_1_name = 'viz_1'
+      vis_2_name = 'viz_2'
+      vis_3_name = 'viz_3'
+      user1_id = UUIDTools::UUID.timestamp_create.to_s
+      user2_id = UUIDTools::UUID.timestamp_create.to_s
+      Visualization::Member.new(random_attributes(name: vis_1_name, user_id: user1_id)).store
+      vis2 = Visualization::Member.new(random_attributes(name: vis_2_name, user_id: user2_id)).store
+      vis3 = Visualization::Member.new(random_attributes(name: vis_3_name)).store
+
+      CartoDB::SharedEntity.new(
+          user_id:    user1_id,
+          entity_id:  vis2.id,
+          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+      ).save
+
+      collection = Visualization::Collection.new
+
+      # Unfiltered
+      records = collection.fetch
+      records.count.should eq 3
+
+      # Filter by user_id and non-owned id (excluding shared)
+      records = collection.fetch(user_id: user1_id, id: vis3.id, exclude_shared: true)
+      records.count.should eq 0
+
+      # Filter by user_id and non-owned id (not excluding shared)
+      records = collection.fetch(user_id: user1_id, id: vis3.id)
+      records.count.should eq 0
+
+      # Filter by name (not present user_id)
+      records = collection.fetch(name: vis_1_name)
+      records.count.should eq 1
+      records.first.name.should eq vis_1_name
+
+      # Filter by user_id (includes shared)
+      records = collection.fetch(user_id: user1_id).map { |item| item }
+      records.count.should eq 2
+      ((records[0].name == vis_1_name || records[0].name == vis_2_name) && \
+       (records[1].name == vis_1_name || records[1].name == vis_2_name)).should eq true
+
+      # Filter by user_id excluding shared
+      records = collection.fetch(user_id: user1_id, exclude_shared: true)
+      records.count.should eq 1
+      records.first.name.should eq vis_1_name
+
+      # Filter by user_id and only shared
+      records = collection.fetch(user_id: user1_id, only_shared: true)
+      records.count.should eq 1
+      records.first.name.should eq vis_2_name
+
+
+    end
+
   end
 
   def random_attributes(attributes={})
@@ -91,7 +146,7 @@ describe Visualization::Collection do
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, 'public'),
-      user_id:      UUIDTools::UUID.timestamp_create.to_s
+      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
     }
   end #random_attributes
 end # Visualization::Collection

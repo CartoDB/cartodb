@@ -26,7 +26,7 @@ describe Visualization::Locator do
 
     @user_id = UUIDTools::UUID.timestamp_create.to_s
 
-    @map_id         = UUIDTools::UUID.timestamp_create.to_s
+    @map_id = UUIDTools::UUID.timestamp_create.to_s
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
@@ -51,7 +51,7 @@ describe Visualization::Locator do
     ).store
 
     table_fake    = model_fake
-    user_fake     = model_fake(@map_id)
+    user_fake     = model_fake(@map_id, @user_id)
 
     @subdomain    = 'bogus'
     @locator      = Visualization::Locator.new(table_fake, user_fake)
@@ -73,10 +73,11 @@ describe Visualization::Locator do
     end
 
     it 'fetches a Table if passed a table id' do
-      table_fake, user_fake = model_fake, model_fake(@map_id)
+      table_fake = model_fake
+      user_fake = model_fake(@map_id, @user_id)
       locator = Visualization::Locator.new(table_fake, user_fake)
       locator.get(0, @subdomain)
-      table_fake.called_filter.should == { id: 0, user_id: nil }
+      table_fake.called_filter.should == { id: 0, user_id: @user_id }
     end
 
     it 'returns nil if no visualization or table found' do
@@ -84,14 +85,25 @@ describe Visualization::Locator do
     end
   end #get
 
-  def model_fake(map_id=nil)
+  def model_fake(map_id=nil, user_id=UUID)
     model_klass = Object.new
+
+    class << model_klass
+      attr_accessor :id
+    end
+    model_klass.id = user_id
+
     def model_klass.where(filter)
       @called_filter = filter
-      [OpenStruct.new(maps: [OpenStruct.new(id: UUID)])]
+      [OpenStruct.new(
+        maps: [OpenStruct.new(id: UUID)],
+        id: id
+       )]
     end
 
-    def model_klass.called_filter; @called_filter; end
+    def model_klass.called_filter
+      @called_filter
+    end
     model_klass
   end #model_fake
 end # Visualization::Locator

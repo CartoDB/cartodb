@@ -62,29 +62,30 @@ CartoDB::Application.routes.draw do
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
     get '/tables/embed_protected'   => 'visualizations#embed_protected'
-    get '/tables/:id'               => 'visualizations#show'
-    get '/tables/:id/map'           => 'visualizations#show'
-    get '/tables/:id/table'         => 'visualizations#show'
-    get '/tables/:id/public'        => 'visualizations#public_table', :as => :public_table
-    get '/tables/:id/public/table'  => 'visualizations#public_table'
-    get '/tables/:id/public/map'    => 'visualizations#public_table'
-    get '/tables/:id/embed_map'     => 'visualizations#embed_map'
+    get '/tables/:id/'              => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/tables/:id'               => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/tables/:id/map'           => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/tables/:id/table'         => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/tables/:id/public'        => 'visualizations#public_table', :as => :public_table, constraints: { id: /[^\/]+/ }
+    get '/tables/:id/public/table'  => 'visualizations#public_table', constraints: { id: /[^\/]+/ }
+    get '/tables/:id/public/map'    => 'visualizations#public_table', constraints: { id: /[^\/]+/ }
+    get '/tables/:id/embed_map'     => 'visualizations#embed_map', constraints: { id: /[^\/]+/ }
 
     get '/viz'                      => 'visualizations#index'
     get '/viz/track_embed'          => 'visualizations#track_embed'
     get '/viz/embed_forbidden'      => 'visualizations#embed_forbidden'
-    get '/viz/:id'                  => 'visualizations#show'
-    get '/viz/:id/map'              => 'visualizations#show'
-    get '/viz/:id/table'            => 'visualizations#show'
-    get '/viz/:id/public'           => 'visualizations#public_table'
-    get '/viz/:id/embed_map'        => 'visualizations#embed_map'
-    get '/viz/:id/public_map'       => 'visualizations#public_map'
+    get '/viz/:id'                  => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/viz/:id/map'              => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/viz/:id/table'            => 'visualizations#show', constraints: { id: /[^\/]+/ }
+    get '/viz/:id/public'           => 'visualizations#public_table', constraints: { id: /[^\/]+/ }
+    get '/viz/:id/embed_map'        => 'visualizations#embed_map', constraints: { id: /[^\/]+/ }
+    get '/viz/:id/public_map'       => 'visualizations#public_map', constraints: { id: /[^\/]+/ }
 
-    get '/viz/:id/protected_embed_map'  => 'visualizations#show_protected_embed_map'
-    post '/viz/:id/protected_embed_map' => 'visualizations#show_protected_embed_map', :as => :protected_embed_map
+    get '/viz/:id/protected_embed_map'  => 'visualizations#show_protected_embed_map', constraints: { id: /[^\/]+/ }
+    post '/viz/:id/protected_embed_map' => 'visualizations#show_protected_embed_map', :as => :protected_embed_map, constraints: { id: /[^\/]+/ }
 
-    get '/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map'
-    post '/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', :as => :protected_public_map
+    get '/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map', constraints: { id: /[^\/]+/ }
+    post '/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', :as => :protected_public_map, constraints: { id: /[^\/]+/ }
 
     match '/your_apps' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key

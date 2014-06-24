@@ -61,7 +61,8 @@
       </div>
       <div class="foot">
         <% if current_user.organization.seats > @users.count %>
-          <%= link_to "Add new user", new_organization_user_path, :class => 'right button grey' %>
+          <%= link_to "Create new user", new_organization_user_path, :class => 'right button grey' %>
+          <%= link_to "Buy more seats", upgrade_url, :class => 'margin10 underline left' %>
         <% else %>
           <%= link_to "Upgrade your quota", upgrade_url, :class => "button green right" %>
         <% end %>

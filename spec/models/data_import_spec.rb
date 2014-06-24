@@ -8,6 +8,11 @@ describe DataImport do
     @table = create_table :user_id => @user.id
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
   it 'raises an 8004 error when merging tables
   through columns with different types' do
     table1 = create_table(user_id: @user.id)

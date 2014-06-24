@@ -11,6 +11,11 @@ describe Geocoding do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
   describe '#setup' do
     let(:geocoding) { FactoryGirl.create(:geocoding, user: @user, table: @table) }
 
@@ -207,10 +212,6 @@ describe Geocoding do
       geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 3)
       geocoding.price.should eq 4.5
     end
-  end
-
-  after(:all) do
-    @user.destroy
   end
 
 end

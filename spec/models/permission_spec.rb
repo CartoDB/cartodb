@@ -16,6 +16,11 @@ describe CartoDB::Permission do
     SharedEntity.all.each { |entity| entity.destroy }
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
   describe '#create' do
     it 'tests basic creation' do
       entity_id = UUIDTools::UUID.timestamp_create.to_s
@@ -508,10 +513,6 @@ describe CartoDB::Permission do
 
       permission.destroy
     end
-  end
-
-  after(:all) do
-    @user.destroy
   end
 
 end

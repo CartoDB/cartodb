@@ -6,6 +6,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
+  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map, :show_protected_embed_map, :embed_map]
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
@@ -18,9 +19,8 @@ class Admin::VisualizationsController < ApplicationController
   end #index
 
   def show
-    id = params.fetch(:id)
-    return(redirect_to public_url_for(id)) unless current_user.present?
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    return(redirect_to public_url_for(@table_id)) unless current_user.present?
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(pretty_404) unless @visualization
     respond_to { |format| format.html }
 
@@ -28,11 +28,10 @@ class Admin::VisualizationsController < ApplicationController
   end #show
 
   def public_table
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
-    return(redirect_to public_map_url_for(id)) if @visualization.derived?
+    return(redirect_to public_map_url_for(@table_id)) if @visualization.derived?
 
     @vizjson = @visualization.to_vizjson
 
@@ -65,8 +64,7 @@ class Admin::VisualizationsController < ApplicationController
   end #public_table
 
   def public_map
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
@@ -93,9 +91,8 @@ class Admin::VisualizationsController < ApplicationController
   end #public_map
 
   def show_protected_public_map
-    id = params.fetch(:id)
     submitted_password = params.fetch(:password)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
 
@@ -127,9 +124,8 @@ class Admin::VisualizationsController < ApplicationController
   end #show_protected_public_map
 
   def show_protected_embed_map
-    id = params.fetch(:id)
     submitted_password = params.fetch(:password)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
 
@@ -152,8 +148,7 @@ class Admin::VisualizationsController < ApplicationController
   end #show_protected_embed_map
 
   def embed_map
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
@@ -190,6 +185,14 @@ class Admin::VisualizationsController < ApplicationController
   end #track_embed
 
   private
+
+  def table_and_schema_from_params
+    if params.fetch('id', nil) =~ /\./
+      @table_id, @schema = params.fetch('id').split('.').reverse
+    else
+      @table_id, @schema = [params.fetch('id', nil), nil]
+    end
+  end
 
   def public_url_for(id)
     "/#{resource_base}/#{id}/public"

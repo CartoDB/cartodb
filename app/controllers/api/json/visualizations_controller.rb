@@ -17,6 +17,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
   before_filter :link_ghost_tables, only: [:index, :show]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2]
 
   def index
     collection = Visualization::Collection.new.fetch(
@@ -112,7 +113,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #create
 
   def show
-    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    member = Visualization::Member.new(id: @table_id).fetch
     return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     render_jsonp(member)
   rescue KeyError
@@ -120,7 +121,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #show
   
   def update
-    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    member = Visualization::Member.new(id: @table_id).fetch
     return head(403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     payload.delete(:permission) if payload[:permission].present?
@@ -159,7 +160,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #update
 
   def destroy
-    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    member = Visualization::Member.new(id: @table_id).fetch
     return(head 403) unless member.is_owner?(current_user)
     member.delete
     current_user.update_visualization_metrics
@@ -175,7 +176,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #destroy
 
   def stats
-    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    member = Visualization::Member.new(id: @table_id).fetch
     return(head 401) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     render_jsonp(member.stats)
   rescue KeyError
@@ -183,7 +184,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #stats
 
   def vizjson1
-    visualization,  = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
+    visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v1_for?(visualization.table)
     set_vizjson_response_headers_for(visualization)
@@ -199,7 +200,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #vizjson1
 
   def vizjson2
-    visualization,  = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
+    visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
@@ -221,6 +222,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #vizjson
 
   private
+
+  def table_and_schema_from_params
+    if params.fetch('id', nil) =~ /\./
+      @table_id, @schema = params.fetch('id').split('.').reverse
+    else
+      @table_id, @schema = [params.fetch('id', nil), nil]
+    end
+  end
 
   def locator
     CartoDB::Visualization::Locator.new

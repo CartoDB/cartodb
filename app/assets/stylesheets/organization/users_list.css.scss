@@ -21,17 +21,21 @@
     ul { padding:0; }
     
     li {
+      // Hello flex!
+      @include display-flex();
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(align-items, center);
+      @include cross-browser(flex-wrap, wrap);
+
       padding:30px 40px;
       margin:0;
       
       // Info + storage
       div.info {
-        @include inline-block();
-        width:60%;
+        width:60%;  
       }
 
       div.storage {
-        float:right;
         width:260px;
       }
 
@@ -46,8 +50,8 @@
       a {
         font-family: $title-fonts;
         font-weight:bold;
-        font-size:21px;
-        letter-spacing: -1px;
+        font-size:17px;
+        letter-spacing:0;
         text-decoration:none;
         @include text-overflow();
         @include transform-style("linear");
@@ -57,10 +61,8 @@
 
       // Status
       .status {
-        @include inline-block();
-        vertical-align:top;
         padding:2px 8px;
-        margin:5px 0 0 10px;
+        margin:0 0 0 10px;
         @include border-radius(25px);
         font-size:11px;
         color:white;
@@ -88,7 +90,6 @@
 
       // User used/available storage
       @include progress-bar(6px, 6px, false, 5px);
-      div.progress-bar { margin-top:10px }
     }
     
   }

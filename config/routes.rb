@@ -112,7 +112,7 @@ CartoDB::Application.routes.draw do
 
       get '/get_authenticated_users'                         => 'users#get_authenticated_users'
 
-      resources :tables, :only => [:create, :show, :update] do
+      resources :tables, :only => [:create, :show, :update], constraints: { id: /[^\/]+/ } do
         collection do
           get '/tags/:tag_name' => 'tables#index', :as => 'show_tag'
         end
@@ -153,16 +153,16 @@ CartoDB::Application.routes.draw do
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'
       post    'viz'                                 => 'visualizations#create'
-      get     'viz/:id/stats'                       => 'visualizations#stats'
-      get     'viz/:id'                             => 'visualizations#show'
-      put     'viz/:id'                             => 'visualizations#update'
-      delete  'viz/:id'                             => 'visualizations#destroy'
-      get     'viz/:id/viz'                         => 'visualizations#vizjson1', as: :vizjson
-      get     'viz/:visualization_id/overlays'      => 'overlays#index'
-      post    'viz/:visualization_id/overlays'      => 'overlays#create'
-      get     'viz/:visualization_id/overlays/:id'  => 'overlays#show'
-      put     'viz/:visualization_id/overlays/:id'  => 'overlays#update'
-      delete  'viz/:visualization_id/overlays/:id'  => 'overlays#destroy'
+      get     'viz/:id/stats'                       => 'visualizations#stats', constraints: { id: /[^\/]+/ }
+      get     'viz/:id'                             => 'visualizations#show', constraints: { id: /[^\/]+/ }
+      put     'viz/:id'                             => 'visualizations#update', constraints: { id: /[^\/]+/ }
+      delete  'viz/:id'                             => 'visualizations#destroy', constraints: { id: /[^\/]+/ }
+      get     'viz/:id/viz'                         => 'visualizations#vizjson1', as: :vizjson, constraints: { id: /[^\/]+/ }
+      get     'viz/:visualization_id/overlays'      => 'overlays#index', constraints: { visualization_id: /[^\/]+/ }
+      post    'viz/:visualization_id/overlays'      => 'overlays#create', constraints: { visualization_id: /[^\/]+/ }
+      get     'viz/:visualization_id/overlays/:id'  => 'overlays#show', constraints: { visualization_id: /[^\/]+/ }
+      put     'viz/:visualization_id/overlays/:id'  => 'overlays#update', constraints: { visualization_id: /[^\/]+/ }
+      delete  'viz/:visualization_id/overlays/:id'  => 'overlays#destroy', constraints: { visualization_id: /[^\/]+/ }
 
       # Tags
       resources :tags, :only                                    => [:index]
@@ -185,7 +185,7 @@ CartoDB::Application.routes.draw do
 
     end
 
-    get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson
+    get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson, constraints: { id: /[^\/]+/ }
     get '/v2/wms'            => 'api/json/wms#proxy'
     
   end

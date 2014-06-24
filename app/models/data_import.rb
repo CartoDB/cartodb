@@ -56,9 +56,9 @@ class DataImport < Sequel::Model
       success = false
       begin
         current_user.oauths.remove(ex.service_name)
-      rescue => ex
-        log.append "Exception removing OAuth: #{ex.message}"
-        log.append ex.backtrace
+      rescue => ex2
+        log.append "Exception removing OAuth: #{ex2.message}"
+        log.append ex2.backtrace
       end
     end
 

@@ -322,27 +322,6 @@ class User < Sequel::Model
   end
 
 
-  # TODO: delete - superceded by run_pg_query
-  def run_query(query)
-    rows = []
-    time = nil
-    in_database do |user_database|
-      time = Benchmark.measure {
-        rows = user_database[query].all
-      }
-    end
-    #TODO: This part of the code should be using memcache.
-    {
-      :time => time.real,
-      :total_rows => rows.size,
-      :rows => rows.map{ |row| row.delete("the_geom"); row }
-    }
-  rescue Sequel::DatabaseError => exception
-    raise CartoDB::ColumnNotExists, exception.message if exception.message =~ /column.*does not exist/
-    raise CartoDB::TableNotExists, exception.message if exception.message =~ /does not exist/
-    raise CartoDB::ErrorRunningQuery, exception.message
-  end
-
   def run_pg_query(query)
     time = nil
     res  = nil

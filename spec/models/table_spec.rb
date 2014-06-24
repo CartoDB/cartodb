@@ -1128,7 +1128,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1171,7 +1171,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1530,7 +1530,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1547,7 +1547,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1968,6 +1968,7 @@ describe Table do
       @user.run_pg_query('
         CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
       ')
+      
       table.save
       check_schema(table, [
           [:updated_at, 'timestamp with time zone'], [:created_at, 'timestamp with time zone'], [:cartodb_id, 'integer'],

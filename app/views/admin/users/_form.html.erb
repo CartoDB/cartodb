@@ -15,6 +15,7 @@
 <%= form_for @user, url: (@user.new? ? organization_users_path(@organization) : organization_user_path(@user.username)) do |form| %>
 
   <%= form.hidden_field :private_tables_enabled %>
+   <%= csrf_meta_tags %>
 
   <div class="head">
     <h2>

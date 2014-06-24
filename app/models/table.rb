@@ -1310,6 +1310,18 @@ class Table < Sequel::Model(:user_tables)
     perform_table_permission_change('CDB_Organization_Remove_Access_Permission', organization_user)
   end
 
+  def add_organization_read_permission
+    perform_organization_table_permission_change('CDB_Organization_Add_Table_Organization_Read_Permission')
+  end
+
+  def add_organization_read_write_permission
+    perform_organization_table_permission_change('CDB_Organization_Add_Table_Organization_Read_Write_Permission')
+  end
+
+  def remove_organization_access
+    perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
+  end
+
   private
 
   def update_cdb_tablemetadata
@@ -1600,8 +1612,19 @@ SQL
     from_schema = self.owner.username
     table_name = self.name
     to_role_user = organization_user.database_username
+    perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
+  end
+
+  def perform_organization_table_permission_change(cartodb_pg_func)
+    from_schema = self.owner.username
+    table_name = self.name
+    perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
+  end
+
+  def perform_cartodb_function(cartodb_pg_func, *args)
     self.owner.in_database do |user_database|
-      user_database.run("SELECT cartodb.#{cartodb_pg_func}('#{from_schema}', '#{table_name}','#{to_role_user}');")
+      query_args = args.join("','")
+      user_database.run("SELECT cartodb.#{cartodb_pg_func}('#{query_args}');")
     end
   end
 

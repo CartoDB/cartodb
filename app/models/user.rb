@@ -888,6 +888,7 @@ class User < Sequel::Model
     create_schemas_and_set_permissions
     set_database_search_path
     set_database_permissions
+    set_user_as_organization_member
     rebuild_quota_trigger
     create_function_invalidate_varnish
   end
@@ -1113,6 +1114,14 @@ TRIGGER
       end
     end
   end #set_database_permissions_in_schema
+
+  def set_user_as_organization_member
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
+      end
+    end
+  end
 
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|

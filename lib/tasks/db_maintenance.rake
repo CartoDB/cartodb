@@ -199,6 +199,17 @@ namespace :cartodb do
         end
       end
     end
+
+    ##########################################
+    # SET ORGANIZATION GROUP ROLE TO ALL USERS
+    ##########################################
+    desc 'Set organization member group role'
+    task :set_user_as_organization_member => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.set_user_as_organization_member
+      end
+    end
         
     ##############
     # SET DB PERMS

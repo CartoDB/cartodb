@@ -73,7 +73,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
-    unless viewer_user.nil? || owner.nil? || owner.id != viewer_user.id
+    if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
       attrs[:name] = "#{owner.database_schema}.#{attrs[:name]}"
     end
     attrs

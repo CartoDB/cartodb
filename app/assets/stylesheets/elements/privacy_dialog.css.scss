@@ -181,15 +181,31 @@
 
     // List item
     .privacy-item {
+      position:relative;
       display:block;
       width:auto;
       background:white;
 
-      a {
+      .privacy-link {
         display:block;
         padding:9px;
-        text-decoration:none
+        text-decoration:none;
+        
+        &:hover { background:#EDEDED }
+
+        &.disabled:hover { background:none }
       }
+
+      // Upgrade button
+      a.button {
+        position:absolute;
+        right:10px;
+        top:15px;
+        padding:4px 8px;
+        font-size:12px;
+        font-weight:normal;
+      }
+
       h5 { font-size: 15px; color:#333333 }
       p { font-size:13px; color:#666666 }
 

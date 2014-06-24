@@ -493,6 +493,29 @@ $$
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
 
+  def get_api_calls_from_ES
+    require 'date'
+    yesterday = Date.today - 1
+    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
+    to_date = DateTime.now.strftime("%Q")
+    request_body = Cartodb.config[:api_requests_es_service]['body']
+    request_url = Cartodb.config[:api_requests_es_service]['url']
+    request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
+    request_body.gsub!("\"$FROM$\"", from_date)
+    request_body.gsub!("\"$TO$\"", to_date)
+    request = Typhoeus::Request.new(
+      request_url,
+      method: :post,
+      headers: { "Content-Type" => "application/json" },
+      body: request_body
+    )
+    response = request.run
+    if response.code != 200
+      raise(response.body)
+    end
+    api_calls_raw = JSON.parse(response.body)["aggregations"]["0"]["buckets"]
+  end
+
   # Legacy stats fetching
 
     def get_old_api_calls

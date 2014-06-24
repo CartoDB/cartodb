@@ -8,7 +8,7 @@ module CartoDB
       def initialize(visualization, options={})
         @visualization   = visualization
         @options         = options
-        @user            = options.fetch(:user, nil)
+        @viewing_user    = options.fetch(:user, nil)
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         @rows_and_sizes  = options[:rows_and_sizes] || {}
@@ -19,7 +19,7 @@ module CartoDB
       def to_poro
         poro = {
           id:               visualization.id,
-          name:             qualify_vis_name,
+          name:             visualization.name,
           map_id:           visualization.map_id,
           active_layer_id:  visualization.active_layer_id,
           type:             visualization.type,
@@ -88,14 +88,6 @@ module CartoDB
       def synchronization_data_for(table=nil)
         return nil unless table
         table.synchronization
-      end
-
-      def qualify_vis_name
-        if @user.nil? || @visualization.is_owner?(@user)
-          visualization.name
-        else
-          "#{@visualization.user.database_schema}.#{visualization.name}"
-        end
       end
 
       def related_tables

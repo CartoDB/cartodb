@@ -65,14 +65,18 @@ class Table < Sequel::Model(:user_tables)
 
   def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
 
-  def public_values(options = {})
+  def public_values(options = {}, viewer_user=nil)
     selected_attrs = if options[:except].present?
       PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) }
     else
       PUBLIC_ATTRIBUTES
     end
 
-    Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+    attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+    unless viewer_user.nil? || owner.nil? || owner.id != viewer_user.id
+      attrs[:name] = "#{owner.database_schema}.#{attrs[:name]}"
+    end
+    attrs
   end
 
   def default_privacy_values

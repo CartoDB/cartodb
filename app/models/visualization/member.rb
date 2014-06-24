@@ -221,7 +221,8 @@ module CartoDB
         options = {
           full: false,
           user_name: user.username,
-          user_api_key: user.api_key
+          user_api_key: user.api_key,
+          user: user
         }
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash

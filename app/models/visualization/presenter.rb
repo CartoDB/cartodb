@@ -61,9 +61,16 @@ module CartoDB
 
       def table_data_for(table=nil)
         return {} unless table
+        table_name = table.name
+        unless @user.nil?
+          unless @visualization.is_owner?(@user)
+            table_name = "#{@visualization.user.database_schema}.#{table.name}"
+          end
+        end
+
         table_data = {
           id:           table.id,
-          name:         table.name
+          name:         table_name
         }
 
         table_data.merge!(

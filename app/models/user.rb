@@ -482,6 +482,12 @@ $$
     calls = calls.zip(old_calls).map { |pair|
       pair[0].to_i + pair[1].to_i
     } unless old_calls.blank?
+    
+    # Add ES api calls
+    es_calls = get_es_api_calls["per_day"].to_a.reverse rescue []
+    calls = calls.zip(es_calls).map { |pair|
+      pair[0].to_i + pair[1].to_i
+    } unless es_calls.blank?
 
     return calls
   end
@@ -493,27 +499,53 @@ $$
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
 
-  def get_api_calls_from_ES
-    require 'date'
-    yesterday = Date.today - 1
-    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
-    to_date = DateTime.now.strftime("%Q")
-    request_body = Cartodb.config[:api_requests_es_service]['body']
-    request_url = Cartodb.config[:api_requests_es_service]['url']
-    request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
-    request_body.gsub!("\"$FROM$\"", from_date)
-    request_body.gsub!("\"$TO$\"", to_date)
-    request = Typhoeus::Request.new(
-      request_url,
-      method: :post,
-      headers: { "Content-Type" => "application/json" },
-      body: request_body
-    )
-    response = request.run
-    if response.code != 200
-      raise(response.body)
+  def get_es_api_calls
+    JSON.parse($users_metadata.HMGET(key, 'api_calls_es').first) rescue {}
+  end
+
+  def set_api_calls_from_ES(options = {})
+    stored_api_calls = get_es_api_calls
+    if options[:force_update] || stored_api_calls.nil? || stored_api_calls.empty? || stored_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+      require 'date'
+      yesterday = Date.today - 1
+      from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
+      to_date = DateTime.now.strftime("%Q")
+      request_body = Cartodb.config[:api_requests_es_service]['body']
+      request_url = Cartodb.config[:api_requests_es_service]['url']
+      request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
+      request_body.gsub!("\"$FROM$\"", from_date)
+      request_body.gsub!("\"$TO$\"", to_date)
+      request = Typhoeus::Request.new(
+        request_url,
+        method: :post,
+        headers: { "Content-Type" => "application/json" },
+        body: request_body
+      )
+      response = request.run
+      if response.code != 200
+        raise(response.body)
+      end
+      values = {}
+      JSON.parse(response.body)["aggregations"]["0"]["buckets"].each {|i| values[i['key']] = i['doc_count']}
+      start_day = Date.today - 29
+      finish_day = Date.today
+      days_a = []
+      (DateTime.new(finish_day.year, finish_day.month, finish_day.day, 0, 0, 0))
+       .downto(DateTime.new(start_day.year, start_day.month, start_day.day, 0, 0, 0)) do |d|
+        days_a << (values.has_key?(d.strftime("%Q").to_i) ? values[d.strftime("%Q").to_i] : 0)
+      end
+      days_a.reverse!
+      puts days_a
+      if stored_api_calls.nil? || stored_api_calls.empty?
+        stored_api_calls['per_day'] = [].fill(0, 0, 30)
+        stored_api_calls['updated_at'] = Time.now.to_i
+      end
+      stored_api_calls['per_day'] = stored_api_calls['per_day'].zip(days_a).map do |pair|
+        pair.max
+      end
+      stored_api_calls["updated_at"] = Time.now.to_i
+      $users_metadata.HMSET key, 'api_calls_es', stored_api_calls.to_json
     end
-    api_calls_raw = JSON.parse(response.body)["aggregations"]["0"]["buckets"]
   end
 
   # Legacy stats fetching

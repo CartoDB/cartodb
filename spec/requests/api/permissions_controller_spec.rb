@@ -36,7 +36,6 @@ describe Api::Json::PermissionsController do
         password: 'clientex3',
         avatar_url: nil
     )
-
   end
 
   before(:each) do
@@ -47,6 +46,16 @@ describe Api::Json::PermissionsController do
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'
     }
+    Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+    Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+    vis_entity_mock = mock
+    Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+  end
+
+  after(:all) do
+    @user.destroy
+    @user2.destroy
+    @user3.destroy
   end
 
   describe 'GET /api/v1/perm' do
@@ -192,12 +201,6 @@ describe Api::Json::PermissionsController do
         delete "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", nil, @headers
       }.to raise_exception ActionController::RoutingError
     end
-  end
-
-  after(:all) do
-    @user.destroy
-    @user2.destroy
-    @user3.destroy
   end
 
 end

@@ -146,7 +146,7 @@ class Map < Sequel::Model
       ).first
       # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
       related_table.this.update(map_id: id) if related_table.map_id != id
-      # Manually propagate to visualization (@see Table.after_save)
+      # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
       unless vis.nil?
         vis.map_id = id
         vis.store

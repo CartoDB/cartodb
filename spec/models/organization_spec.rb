@@ -6,6 +6,11 @@ describe Organization do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization' do
       org_name = 'wadus'

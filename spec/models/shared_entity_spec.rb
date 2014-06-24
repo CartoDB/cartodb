@@ -11,6 +11,11 @@ describe CartoDB::SharedEntity do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
   describe '#create' do
     it 'tests basic creation and validation' do
       user_id   = UUIDTools::UUID.timestamp_create.to_s

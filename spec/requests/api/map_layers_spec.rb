@@ -16,6 +16,10 @@ feature "API 1.0 map layers management" do
     @table.reload
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   let(:params) { { api_key: @user.api_key } }
 
   scenario "Create a new layer associated to a map" do
@@ -106,7 +110,4 @@ feature "API 1.0 map layers management" do
     end
   end
 
-  after(:all) do
-    @user.destroy
-  end
 end

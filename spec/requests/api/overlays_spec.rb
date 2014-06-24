@@ -44,6 +44,10 @@ describe Api::Json::OverlaysController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe 'POST /api/v1/viz/:visualization_id/overlays' do
     it 'creates an overlay for visualization' do
       base_url = base_url_for(rand(100))

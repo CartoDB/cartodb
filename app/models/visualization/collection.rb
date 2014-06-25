@@ -117,8 +117,8 @@ module CartoDB
         return dataset unless (filters[:user_id].present? && filters[:only_shared].present?)
 
         shared_vis = CartoDB::SharedEntity.where(
-            user_id: filters[:user_id],
-            type: CartoDB::SharedEntity::TYPE_VISUALIZATION
+            recipient_id: filters[:user_id],
+            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).all
         .map { |entity|
           entity.entity_id
@@ -136,8 +136,8 @@ module CartoDB
         return dataset if filters[:exclude_shared].present?
 
         shared_vis = CartoDB::SharedEntity.where(
-            user_id: filters[:user_id],
-            type: CartoDB::SharedEntity::TYPE_VISUALIZATION
+            recipient_id: filters[:user_id],
+            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).all
          .map { |entity|
           entity.entity_id

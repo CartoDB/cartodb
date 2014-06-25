@@ -429,14 +429,16 @@ describe CartoDB::Permission do
 
       # Before saving, create old entries
       CartoDB::SharedEntity.new(
-          user_id:    @user.id,
-          entity_id:  entity_id,
-          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   @user.id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      entity_id,
+          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
       CartoDB::SharedEntity.new(
-          user_id:    user2_mock.id,
-          entity_id:  entity_id,
-          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   user2_mock.id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      entity_id,
+          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
       CartoDB::SharedEntity.all.count.should eq 2
@@ -457,7 +459,7 @@ describe CartoDB::Permission do
 
       CartoDB::SharedEntity.all.count.should eq 1
       shared_entity = CartoDB::SharedEntity.all[0]
-      shared_entity.user_id.should eq @user.id
+      shared_entity.recipient_id.should eq @user.id
       shared_entity.entity_id.should eq entity_id
 
       # Leave only user 2 now
@@ -475,7 +477,7 @@ describe CartoDB::Permission do
 
       CartoDB::SharedEntity.all.count.should eq 1
       shared_entity = CartoDB::SharedEntity.all[0]
-      shared_entity.user_id.should eq user2_mock.id
+      shared_entity.recipient_id.should eq user2_mock.id
       shared_entity.entity_id.should eq entity_id
 
       # Now just change permission, user2 should still be there
@@ -493,7 +495,7 @@ describe CartoDB::Permission do
 
       CartoDB::SharedEntity.all.count.should eq 1
       shared_entity = CartoDB::SharedEntity.all[0]
-      shared_entity.user_id.should eq user2_mock.id
+      shared_entity.recipient_id.should eq user2_mock.id
       shared_entity.entity_id.should eq entity_id
 
       # Now set a permission forbidding a user, so should dissapear too

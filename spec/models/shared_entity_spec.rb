@@ -18,15 +18,16 @@ describe CartoDB::SharedEntity do
 
   describe '#create' do
     it 'tests basic creation and validation' do
-      user_id   = UUIDTools::UUID.timestamp_create.to_s
-      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      recipient_id   = UUIDTools::UUID.timestamp_create.to_s
+      entity_id      = UUIDTools::UUID.timestamp_create.to_s
 
       SharedEntity.all.count.should eq 0
 
       shared_entity = SharedEntity.new(
-          user_id:    user_id,
-          entity_id:  entity_id,
-          type:       SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   recipient_id,
+          recipient_type: SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      entity_id,
+          entity_type:    SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.valid?.should eq true
       shared_entity.errors.should eq Hash.new
@@ -35,32 +36,36 @@ describe CartoDB::SharedEntity do
       SharedEntity.all.count.should eq 1
 
       shared_entity2 = SharedEntity.new(
-          user_id:    user_id,
-          entity_id:  entity_id,
-          type:       SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   recipient_id,
+          recipient_type: SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      entity_id,
+          entity_type:    SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity2.valid?.should eq false
-      shared_entity2.errors.should eq({[:user_id, :entity_id]=>['is already taken']})
+      shared_entity2.errors.should eq({[:recipient_id, :entity_id]=>['is already taken']})
 
       shared_entity.destroy
 
       SharedEntity.all.count.should eq 0
 
       shared_entity = SharedEntity.new(
-          entity_id:  entity_id,
-          type:       SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   entity_id,
+          recipient_type: SharedEntity::RECIPIENT_TYPE_USER,
+          entity_type:    SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.valid?.should eq false
 
       shared_entity = SharedEntity.new(
-          user_id:    user_id,
-          type:       SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   recipient_id,
+          recipient_type: SharedEntity::RECIPIENT_TYPE_USER,
+          entity_type:    SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.valid?.should eq false
 
       shared_entity = SharedEntity.new(
-          user_id:    user_id,
-          entity_id:  entity_id,
+          recipient_id:   recipient_id,
+          recipient_type: SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      entity_id,
       )
       shared_entity.valid?.should eq false
 
@@ -69,9 +74,10 @@ describe CartoDB::SharedEntity do
       shared_entity.valid?.should eq false
 
       shared_entity = SharedEntity.new(
-          user_id:    user_id,
-          entity_id:  entity_id,
-          type:       'whatever'
+          recipient_id:   recipient_id,
+          recipient_type: SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      entity_id,
+          entity_type:    'whatever'
       )
       shared_entity.valid?.should eq false
     end

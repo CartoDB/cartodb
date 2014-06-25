@@ -93,9 +93,10 @@ describe Visualization::Collection do
       vis3 = Visualization::Member.new(random_attributes(name: vis_3_name)).store
 
       CartoDB::SharedEntity.new(
-          user_id:    user1_id,
-          entity_id:  vis2.id,
-          type:       CartoDB::SharedEntity::TYPE_VISUALIZATION
+          recipient_id:   user1_id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER
+          entity_id:      vis2.id,
+          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
       collection = Visualization::Collection.new

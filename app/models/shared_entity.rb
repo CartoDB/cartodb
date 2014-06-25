@@ -6,17 +6,21 @@ module CartoDB
   # Initially there's no need to include full objects and is kept as ids only on purpose
   class SharedEntity < Sequel::Model
 
-    # @param user_id String (uuid)
+    # @param recipient_id String (uuid)
+    # @param recipient_type String From RECIPIENT_TYPE_xxxx constants
     # @param entity_id String (uuid)
-    # @param type String From TYPE_xxxx constants
+    # @param entity_type String From ENTITY_TYPE_xxxx constants
 
-    TYPE_VISUALIZATION = 'vis'
+    ENTITY_TYPE_VISUALIZATION = 'vis'
+
+    RECIPIENT_TYPE_USER         = 'user'
+    RECIPIENT_TYPE_ORGANIZATION = 'org'
 
     def validate
       super
-      validates_presence([:user_id, :entity_id, :type])
-      validates_unique([:user_id, :entity_id])
-      errors.add(:type, 'unsupported type') unless self.type == TYPE_VISUALIZATION
+      validates_presence([:recipient_id, :recipient_type, :entity_id, :entity_type])
+      validates_unique([:recipient_id, :entity_id])
+      errors.add(:entity_type, 'unsupported type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
     end #validate
 
     def before_save

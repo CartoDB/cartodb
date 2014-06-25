@@ -52,8 +52,8 @@ module CartoDB
         return '' if @exclude_shared
 
         ids = CartoDB::SharedEntity.where(
-            user_id: @user.id,
-            type: CartoDB::SharedEntity::TYPE_VISUALIZATION
+            recipient_id: @user.id,
+            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).all
         .map { |entity|
           entity.entity_id

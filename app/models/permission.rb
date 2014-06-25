@@ -192,9 +192,10 @@ module CartoDB
       users = relevant_user_acl_entries(acl)
       users.each { |user|
         CartoDB::SharedEntity.new(
-            user_id:    user[:id],
-            entity_id:  self.entity_id,
-            type:       type_for_shared_entity(self.entity_type)
+            recipient_id:   user[:id],
+            recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+            entity_id:      self.entity_id,
+            entity_type:    type_for_shared_entity(self.entity_type)
         ).save
 
         grant_db_permission(entity, user[:id], user[:access])
@@ -207,7 +208,7 @@ module CartoDB
     # @throws PermissionError
     def type_for_shared_entity(permission_type)
       if permission_type == ENTITY_TYPE_VISUALIZATION
-        return CartoDB::SharedEntity::TYPE_VISUALIZATION
+        return CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       end
       PermissionError.new('Invalid permission type for shared entity')
     end

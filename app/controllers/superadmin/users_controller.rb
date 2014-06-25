@@ -66,7 +66,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def set_organization_if_present(attributes)
     return if attributes[:organization_attributes].blank?
     organization = (@user.organization.blank? ? Organization.new : @user.organization)
-    organization.set_only(attributes[:organization_attributes], [:name, :seats, :quota_in_bytes])
+    organization.set_only(attributes[:organization_attributes], Organization::ALLOWED_API_ATTRIBUTES)
     organization.save
     @user.organization = organization
     @user.organization_owner = attributes[:organization_attributes][:owner] if attributes[:organization_attributes][:owner].present?

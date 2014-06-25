@@ -18,6 +18,10 @@ class Organization < Sequel::Model
   one_to_many :users
   plugin :validation_helpers
 
+  ALLOWED_API_ATTRIBUTES = [
+    :name, :seats, :quota_in_bytes
+  ]
+
   def validate
     super
     validates_presence [:name, :quota_in_bytes, :seats]

@@ -6,10 +6,6 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
 
   layout 'application'
 
-  ALLOWED_ATTRIBUTES = [
-    :name, :seats, :quota_in_bytes
-  ]
-
   def show
     respond_with(@organization.data(:extended => true))
   end
@@ -23,7 +19,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     @organization = Organization.new
     attributes = params[:organization]
 
-    @organization.set_only(attributes, ALLOWED_ATTRIBUTES)
+    @organization.set_only(attributes, Organization::ALLOWED_API_ATTRIBUTES)
 
     @organization.save
     respond_with(:superadmin, @organization)
@@ -31,7 +27,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
 
   def update
     attributes = params[:organization]
-    @organization.set_only(attributes, ALLOWED_ATTRIBUTES)
+    @organization.set_only(attributes, Organization::ALLOWED_API_ATTRIBUTES)
 
     @organization.save
     respond_with(:superadmin, @organization)

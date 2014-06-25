@@ -7,8 +7,7 @@ require_relative '../table'
 module CartoDB
   module Visualization
     class Locator
-      def initialize(table_model=nil, user_model=nil)
-        @table_model  = table_model || ::Table
+      def initialize(user_model=nil)
         @user_model   = user_model  || ::User
       end #initialize
 
@@ -22,7 +21,7 @@ module CartoDB
 
       private
 
-      attr_reader :table_model, :user_model
+      attr_reader :user_model
 
       def user_from(subdomain)
         @user ||= user_model.where(username: subdomain).first
@@ -36,7 +35,9 @@ module CartoDB
       end # visualization_from
 
       def table_from(id_or_name, user)
-        table = table_model.where(id: id_or_name, user_id: user.id).first
+
+
+        table = @table_model.where(id: id_or_name, user_id: user.id).first
 
         return false unless table && table.table_visualization
         [table.table_visualization, table]

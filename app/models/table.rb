@@ -1150,20 +1150,6 @@ class Table < Sequel::Model(:user_tables)
     table
   end
 
-  def self.find_by_name_subdomain(subdomain, table_name)
-    user = User.find(:username => subdomain)
-    if user
-      Table.where(:name => table_name, :user_id => user.id).first
-    end
-  end
-  
-  def self.find_by_id_subdomain(subdomain, table_id)
-    user = User.find(:username => subdomain)
-    if user
-      Table.where(:id => table_id, :user_id => user.id).first
-    end
-  end
-
   def oid
     @oid ||= owner.in_database["SELECT '#{qualified_table_name}'::regclass::oid"].first[:oid]
   end

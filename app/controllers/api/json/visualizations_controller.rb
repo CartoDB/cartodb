@@ -71,9 +71,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                     current_user, source, name_candidate
                   ).copy
     elsif params[:tables]
-      tables    = params[:tables].map do |table_name| 
-                    ::Table.find_by_name_subdomain(CartoDB.extract_subdomain(request), table_name)
-                  end
+      viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
+      tables    = params[:tables].map { |table_name|
+                    if viewed_user
+                      Visualization::Collection.new.fetch(
+                          name: table_name,
+                          user_id: viewed_user.id,
+                          type: CartoDB::Visualization::Member::CANONICAL_TYPE
+                      ).map { |vis| vis.table }
+                    end
+                  }.flatten
       blender   = Visualization::TableBlender.new(current_user, tables)
       map       = blender.blend
       member    = Visualization::Member.new(

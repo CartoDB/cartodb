@@ -28,8 +28,21 @@ class Admin::TablesController < ApplicationController
   end
 
   def public
+    @table = nil
     @subdomain = CartoDB.extract_subdomain(request)
-    @table     = Table.find_by_id_subdomain(@subdomain, params[:id])
+    viewed_user = User.find(:username => @subdomain)
+
+    if viewed_user
+      table = Table.where(id: params[:id]).first
+      unless table.nil?
+        vis = CartoDB::Visualization::Collection.new.fetch(
+            user_id: viewed_user.id,
+            map_id: table.map_id,
+            type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        ).first
+        @table = vis.table unless vis.nil?
+      end
+    end
 
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)

@@ -1811,33 +1811,6 @@ describe Table do
         Table.find_by_identifier(666, table.name)
       }.should raise_error
     end
-
-    it "should be able to be found from username and id" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
-      new_table = Table.find_by_id_subdomain(@user.username, table.id)
-
-      new_table.id.should == table.id
-    end
-
-    it "should not be able to be found from blank subdomain and id" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
-
-      new_table = Table.find_by_id_subdomain(nil, table.id)
-
-      new_table.should == nil
-    end
   end
 
   describe '#has_index?' do

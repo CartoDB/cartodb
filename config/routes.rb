@@ -21,26 +21,40 @@ CartoDB::Application.routes.draw do
     end
 
     # Tables
-    get '/dashboard/tables'                         => 'visualizations#index'
-    get '/dashboard/tables/:page'                   => 'visualizations#index'
-    get '/dashboard/tables/tag/:tag'                => 'visualizations#index'
-    get '/dashboard/tables/tag/:tag/:page'          => 'visualizations#index'
+    get '/dashboard/tables'                                 => 'visualizations#index'
+    get '/dashboard/tables/:page'                           => 'visualizations#index'
+    get '/dashboard/tables/tag/:tag'                        => 'visualizations#index'
+    get '/dashboard/tables/tag/:tag/:page'                  => 'visualizations#index'
+    get '/dashboard/tables/shared'                          => 'visualizations#index'
+    get '/dashboard/tables/shared/:page'                    => 'visualizations#index'
+    get '/dashboard/tables/shared/tag/:tag'                 => 'visualizations#index'
+    get '/dashboard/tables/shared/tag/:tag/:page'           => 'visualizations#index'
 
     # Visualizations
-    get '/dashboard/visualizations'                 => 'visualizations#index'
-    get '/dashboard/visualizations/:page'           => 'visualizations#index'
-    get '/dashboard/visualizations/tag/:tag'        => 'visualizations#index'
-    get '/dashboard/visualizations/tag/:tag/:page'  => 'visualizations#index'
+    get '/dashboard/visualizations'                         => 'visualizations#index'
+    get '/dashboard/visualizations/:page'                   => 'visualizations#index'
+    get '/dashboard/visualizations/tag/:tag'                => 'visualizations#index'
+    get '/dashboard/visualizations/tag/:tag/:page'          => 'visualizations#index'
+    get '/dashboard/visualizations/shared'                  => 'visualizations#index'
+    get '/dashboard/visualizations/shared/:page'            => 'visualizations#index'
+    get '/dashboard/visualizations/shared/tag/:tag'         => 'visualizations#index'
+    get '/dashboard/visualizations/shared/tag/:tag/:page'   => 'visualizations#index'
 
     # Search
-    get '/dashboard/search/:q'                      => 'visualizations#index'
-    get '/dashboard/search/:q/:page'                => 'visualizations#index'
+    get '/dashboard/search/:q'                              => 'visualizations#index'
+    get '/dashboard/search/:q/:page'                        => 'visualizations#index'
+    get '/dashboard/shared/search/:q'                       => 'visualizations#index'
+    get '/dashboard/shared/search/:q/:page'                 => 'visualizations#index'
 
-    get '/dashboard/visualizations/search/:q'                      => 'visualizations#index'
-    get '/dashboard/visualizations/search/:q/:page'                => 'visualizations#index'
+    get '/dashboard/visualizations/search/:q'               => 'visualizations#index'
+    get '/dashboard/visualizations/search/:q/:page'         => 'visualizations#index'
+    get '/dashboard/visualizations/shared/search/:q'        => 'visualizations#index'
+    get '/dashboard/visualizations/shared/search/:q/:page'  => 'visualizations#index'
 
-    get '/dashboard/tables/search/:q'                      => 'visualizations#index'
-    get '/dashboard/tables/search/:q/:page'                => 'visualizations#index'
+    get '/dashboard/tables/search/:q'                       => 'visualizations#index'
+    get '/dashboard/tables/search/:q/:page'                 => 'visualizations#index'
+    get '/dashboard/tables/shared/search/:q'                => 'visualizations#index'
+    get '/dashboard/tables/shared/search/:q/:page'          => 'visualizations#index'
 
     # Tags
     get '/dashboard/tag/:tag'                       => 'visualizations#index'

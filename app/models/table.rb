@@ -337,6 +337,7 @@ class Table < Sequel::Model(:user_tables)
         :logger => ::Rails.logger,
         'username' => owner.database_username,
         'password' => owner.database_password,
+        :schema => owner.database_schema,
         :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
         :debug => (Rails.env.development?),

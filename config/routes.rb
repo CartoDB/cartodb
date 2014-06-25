@@ -96,6 +96,7 @@ CartoDB::Application.routes.draw do
 
   namespace :superadmin do
     resources :users
+    resources :organizations
     resources :synchronizations
   end
 
@@ -187,7 +188,7 @@ CartoDB::Application.routes.draw do
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson
     get '/v2/wms'            => 'api/json/wms#proxy'
-    
+
   end
 end
 

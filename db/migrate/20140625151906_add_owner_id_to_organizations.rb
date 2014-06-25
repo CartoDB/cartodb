@@ -4,8 +4,10 @@ Sequel.migration do
     Organization.send(:get_db_schema, true)
     User.filter(:organization_owner => true).all.each do |user|
       org = user.organization
-      org.set(owner_id: user.id)
-      org.save(:owner_id)
+      if org
+        org.set(owner_id: user.id)
+        org.save(:owner_id)
+      end 
     end
     drop_column :users, :organization_owner
   end

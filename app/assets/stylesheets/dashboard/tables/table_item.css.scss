@@ -36,7 +36,7 @@
   // Info, tags, syncing status,...  
   .table-info {
     float:right;
-    width:35%;
+    width:40%;
     text-align: right;
 
     .table-list-info {
@@ -85,10 +85,18 @@
 
     // Synchronization
     .table-sync {
+      margin-top:1px;
       
       span {
         color: #E7BF5B;
+        text-transform: lowercase;
         border-bottom:1px dotted #E7BF5B;
+
+        &.feed {
+          @include display-flex();
+          @include cross-browser(align-items, center);
+          @include cross-browser(flex-wrap, wrap);
+        }
 
         &.failure {
           color: #FF7272;
@@ -97,10 +105,9 @@
       }
 
       i {
-        @include inline-block();
-        vertical-align:top;
+        display:inline;
         @include size(8px);
-        margin-right:2px;
+        margin-right:5px;
         line-height:14px;
         @include dashboard-sprite(feed);
 
@@ -131,7 +138,7 @@
   // Title and description
   .table-desc {
     float:left;
-    width:65%;
+    width:60%;
 
     // Title
     h3 {
@@ -143,13 +150,6 @@
 
     // Description
     p { @include text-overflow() }
-  }
-
-
-  // If table item is shared
-  .table-item-inner.shared {
-    .table-info { width:40% }
-    .table-desc { width:60% }
   }
 
   
@@ -165,11 +165,26 @@
       cursor: pointer;
       background:white;
 
+      .table-info { width:50% }
+      .table-desc { width:50% }
+
       & + .table-item {
         .table-item-inner { border-color:transparent }
       }
 
       .table-info li.table-order { display:inherit; }
       .table-item-inner { border-color: transparent }
+    }
+  }
+
+
+  // If table item is shared
+  .table-item-inner.shared {
+    .table-info { width:40% }
+    .table-desc { width:60% }
+
+    &:hover {
+      .table-info { width:55% }
+      .table-desc { width:45% }      
     }
   }

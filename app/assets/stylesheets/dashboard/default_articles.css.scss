@@ -22,9 +22,8 @@
     &.empty_search,
     &.no_results,
     &.error {
-
       display:none;
-      padding: 91px 0 45px 0;
+      padding: 91px 0 200px 0;
 
       section.empty {
         margin: 0;
@@ -193,14 +192,7 @@
 
       div.inner { width:1070px }
 
-      &.no_padding,
-      &.active.no_padding { padding-top: 0; }
-      &.active.no_margin { padding-bottom: 0; }
-      &.active.no_margin .inner section .paginator { margin-bottom: 0px; }
-
-      &.hidden {
-        display:none;
-      }
+      &.hidden { display:none }
 
       .toggle {
         display:block;

@@ -12,12 +12,14 @@
   article.more_data {
     display:none;
     position:relative;
-    padding:29px 0 31px 0;
+    padding:30px 0 30px 0;
     @include background(image-url('layout/bkg.jpg') repeat);
     border-top:1px solid rgba(black,0.05);
 
     clear:both;
     overflow:hidden;
+
+    &.active { display:block }
 
     &:before {
       @include position(0, 0, 0, 0);
@@ -31,22 +33,10 @@
       letter-spacing:-1px;
       font-size:21px;
       color: #333333;
-
-      span.type {
-        position: relative;
-        top: -2px;
-        @include inline-block();
-        vertical-align: middle;
-        @include size(23px, 17px);
-        margin: 2px 2px 0 0;
-        text-indent:-9999px;
-        @include dashboard-sprite(t_plus, $offset-y:0);
-      }
-
     }
 
     p {
-      margin: 0 0 27px 30px;
+      margin:0;
       font-size: 15px;
       color: #868686;
       letter-spacing:0px;
@@ -56,9 +46,11 @@
 
 
     ul {
-
-      display:block;
-      margin: 0 0 0 30px;
+      @include display-flex();
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(align-items, center);
+      @include cross-browser(flex-wrap, nowrap);
+      margin: 35px 0 0 0;
 
       li {
         @include inline-block();

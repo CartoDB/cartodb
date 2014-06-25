@@ -7,6 +7,10 @@ describe AccessToken do
     @user = create_user
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   it "should store tokens in redis when it is created" do    
     client_application = @user.client_application    
     

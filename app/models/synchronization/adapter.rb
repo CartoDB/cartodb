@@ -62,9 +62,7 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        sequel_name = "#{user.database_schema}__#{table_name}".to_sym
-
-        table = ::Table.where(name: sequel_name, user_id: user.id).first
+        table = ::Table.where(name: "#{user.database_schema}__#{table_name}".to_sym, user_id: user.id).first
         #table.migrate_existing_table = table_name
         table.force_schema = true
         table.send :update_updated_at

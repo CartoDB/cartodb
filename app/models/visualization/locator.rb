@@ -35,10 +35,7 @@ module CartoDB
       end # visualization_from
 
       def table_from(id_or_name, user)
-
-
-        table = @table_model.where(id: id_or_name, user_id: user.id).first
-
+        table = ::Table.get_by_id(id_or_name, user)
         return false unless table && table.table_visualization
         [table.table_visualization, table]
       rescue

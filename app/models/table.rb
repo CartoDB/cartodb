@@ -132,7 +132,7 @@ class Table < Sequel::Model(:user_tables)
     table_temp = Table.where(id: table_id).first
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
-          user_id: table_owner.table_id,
+          user_id: table_owner.id,
           map_id: table_temp.map_id,
           type: CartoDB::Visualization::Member::CANONICAL_TYPE
       ).first

@@ -1,5 +1,6 @@
 3.10.2 ()
 - Added instanciateCallback to allow to cache instanciation responses
+- fixed rendering order in cdb.vis.addInfowindow (#126)
 
 3.10.1 (09//06//2014)
 - Updated torque library

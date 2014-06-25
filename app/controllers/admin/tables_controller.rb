@@ -17,7 +17,7 @@ class Admin::TablesController < ApplicationController
   # if the user is not logged in, we redirect them to the public page
   def show
     if current_user.present?
-      @table = table_by_id_and_user(params[:id], current_user)
+      @table = Table.get_by_id(params[:id], current_user)
       respond_to do |format|
         format.html
         download_formats @table, format
@@ -30,7 +30,7 @@ class Admin::TablesController < ApplicationController
   def public
     @table = nil
     @subdomain = CartoDB.extract_subdomain(request)
-    @table = table_by_id_and_user(params[:id], User.find(:username => @subdomain))
+    @table = Table.get_by_id(params[:id], User.find(:username => @subdomain))
 
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
@@ -49,22 +49,6 @@ class Admin::TablesController < ApplicationController
   end
 
   private
-
-  def table_by_id_and_user(id, user)
-    vis_table = nil
-    if user
-      table = Table.where(id: id).first
-      unless table.nil?
-        vis = CartoDB::Visualization::Collection.new.fetch(
-            user_id: user.id,
-            map_id: table.map_id,
-            type: CartoDB::Visualization::Member::CANONICAL_TYPE
-        ).first
-        vis_table = vis.table unless vis.nil?
-      end
-    end
-    vis_table
-  end
 
   def download_formats table, format
     format.sql  { send_data table.to_sql, send_data_conf(table, 'zip', 'zip') }

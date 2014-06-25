@@ -285,12 +285,7 @@ module CartoDB
       def table
         return nil unless defined?(::Table)
         if @table.nil?
-          @table = CartoDB::Visualization::Collection.new.fetch(
-              user_id: user.id,
-              name: name,
-              type: CartoDB::Visualization::Member::CANONICAL_TYPE
-          ).first
-          @table = @table.table unless @table.nil?
+          @table = ::Table.get_by_id_or_name(name, user)
         end
         @table
       end # table

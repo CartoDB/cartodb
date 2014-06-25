@@ -55,12 +55,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
   protected
 
   def load_table
-    @table = CartoDB::Visualization::Collection.new.fetch(
-        user_id: current_user.id,
-        name: params[:table_id],
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
-    ).first
-    @table = @table.table unless @table.nil?
+    @table = Table.get_by_id_or_name(params[:table_id],current_user)
     raise RecordNotFound if @table.nil?
   end
 end

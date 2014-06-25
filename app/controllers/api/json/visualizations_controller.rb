@@ -288,6 +288,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def synchronizations_by_table_name(table_data)
+    # TODO: Check for organization visualizations
     Hash[
       ::Table.db.fetch(
         'SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?',

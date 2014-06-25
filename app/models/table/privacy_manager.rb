@@ -85,14 +85,14 @@ module CartoDB
 
       def revoke_query
         %Q{
-          REVOKE SELECT ON "#{table.name}"
+          REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
           FROM #{CartoDB::PUBLIC_DB_USER}
         }
       end #revoke_query
 
       def grant_query
         %Q{
-          GRANT SELECT ON "#{table.name}"
+          GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
           TO #{CartoDB::PUBLIC_DB_USER};
         }
       end #grant_query
@@ -102,10 +102,12 @@ module CartoDB
       end #invalidate_varnish_cache
 
       def varnish_key
+        # TODO: Check for org invalidations
         "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
       end #varnish_key
 
       def redis_key
+        # TODO: Check for org invalidations
         "rails:#{table.owner.database_name}:#{table.name}"
       end #redis_key
     end # PrivacyManager

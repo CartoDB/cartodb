@@ -1447,7 +1447,7 @@ class Table < Sequel::Model(:user_tables)
 
     owner.in_database do |user_database|
       if force_schema.blank?
-        user_database.create_table self.name do
+        user_database.create_table sequel_qualified_table_name do
           column :cartodb_id, 'SERIAL PRIMARY KEY'
           String :name
           String :description, :text => true
@@ -1467,10 +1467,10 @@ class Table < Sequel::Model(:user_tables)
                                unshift('created_at timestamp with time zone').
                                unshift('updated_at timestamp with time zone')
         user_database.run(<<-SQL
-CREATE TABLE "#{self.name}" (#{sanitized_force_schema.join(', ')});
-ALTER TABLE  #{qualified_table_name} ALTER COLUMN created_at SET DEFAULT now();
-ALTER TABLE  #{qualified_table_name} ALTER COLUMN updated_at SET DEFAULT now();
-SQL
+          CREATE TABLE #{qualified_table_name} (#{sanitized_force_schema.join(', ')});
+          ALTER TABLE  #{qualified_table_name} ALTER COLUMN created_at SET DEFAULT now();
+          ALTER TABLE  #{qualified_table_name} ALTER COLUMN updated_at SET DEFAULT now();
+        SQL
         )
       end
     end

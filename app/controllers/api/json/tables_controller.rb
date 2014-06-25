@@ -125,7 +125,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def vizzjson
-    table = Table.find_by_subdomain(CartoDB.extract_subdomain(request), @table_id)
+    table = table_by_id_and_user(@table_id, CartoDB.extract_subdomain(request))
     if table.present?
       allowed = table.public?
 
@@ -149,6 +149,22 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   protected
+
+  def table_by_id_and_user(id, user)
+    vis_table = nil
+    if user
+      table = Table.where(id: id).first
+      unless table.nil?
+        vis = CartoDB::Visualization::Collection.new.fetch(
+            user_id: user.id,
+            map_id: table.map_id,
+            type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        ).first
+        vis_table = vis.table unless vis.nil?
+      end
+    end
+    vis_table
+  end
 
   def table_and_schema_from_params
     if params.fetch('id', nil) =~ /\./

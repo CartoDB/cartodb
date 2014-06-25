@@ -445,6 +445,7 @@ module CartoDB
         self
       end #propagate_privacy_to
 
+      # @param table Table
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)

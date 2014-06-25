@@ -322,27 +322,6 @@ class User < Sequel::Model
   end
 
 
-  # TODO: delete - superceded by run_pg_query
-  def run_query(query)
-    rows = []
-    time = nil
-    in_database do |user_database|
-      time = Benchmark.measure {
-        rows = user_database[query].all
-      }
-    end
-    #TODO: This part of the code should be using memcache.
-    {
-      :time => time.real,
-      :total_rows => rows.size,
-      :rows => rows.map{ |row| row.delete("the_geom"); row }
-    }
-  rescue Sequel::DatabaseError => exception
-    raise CartoDB::ColumnNotExists, exception.message if exception.message =~ /column.*does not exist/
-    raise CartoDB::TableNotExists, exception.message if exception.message =~ /does not exist/
-    raise CartoDB::ErrorRunningQuery, exception.message
-  end
-
   def run_pg_query(query)
     time = nil
     res  = nil
@@ -909,6 +888,7 @@ class User < Sequel::Model
     create_schemas_and_set_permissions
     set_database_search_path
     set_database_permissions
+    set_user_as_organization_member
     rebuild_quota_trigger
     create_function_invalidate_varnish
   end
@@ -1032,7 +1012,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-16-g625b01e'
+    tgt_rev = 'v0.2.1-17-g12e90ef'
 
     add_python
 
@@ -1134,6 +1114,14 @@ TRIGGER
       end
     end
   end #set_database_permissions_in_schema
+
+  def set_user_as_organization_member
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
+      end
+    end
+  end
 
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|

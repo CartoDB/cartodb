@@ -68,7 +68,7 @@ module CartoDB
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
       def decorate_with_data(source_hash, decoration_data=nil)
-        if (not decoration_data.nil?)
+        if not decoration_data.nil?
           decoration_data.each { |key, value| 
             source_hash[key] = value
             source_hash.delete_if { |k, v| 
@@ -88,7 +88,7 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        attributes = decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
+        decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)
@@ -97,7 +97,7 @@ module CartoDB
 
         layer_options = decorate_with_data(layer.options, @decoration_data)
 
-        data = {
+        {
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
@@ -120,12 +120,12 @@ module CartoDB
 
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
-      rescue => exception
+      rescue
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
-      rescue => exception
+      rescue
       end
 
       def tooltip_data_v2 
@@ -155,7 +155,7 @@ module CartoDB
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
-          data = decorate_with_data(data, @decoration_data)
+          decorate_with_data(data, @decoration_data)
         end
       end #options_data_v2
 

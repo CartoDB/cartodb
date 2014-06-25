@@ -18,6 +18,7 @@ module CartoDB
         @map              = visualization.map
         @options          = default_options.merge(options)
         @configuration    = configuration
+        @user             = options.fetch(:user, nil)
         logger.info(map.inspect) if logger
       end #initialize
 
@@ -27,7 +28,7 @@ module CartoDB
         {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
-          title:          visualization.name,
+          title:          qualify_vis_name,
           description:    visualization.description_md,
           url:            options.delete(:url),
           map_provider:   map.provider,
@@ -150,6 +151,15 @@ module CartoDB
       def default_options
         { full: true, visualization_id: visualization.id }
       end #default_options
+
+      def qualify_vis_name
+        if @user.nil? || @visualization.is_owner?(@user)
+          visualization.name
+        else
+          "#{@visualization.user.database_schema}.#{visualization.name}"
+        end
+      end
+
     end # VizJSON
   end # Visualization
 end # CartoDB

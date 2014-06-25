@@ -8,7 +8,7 @@ module CartoDB
       def initialize(visualization, options={})
         @visualization   = visualization
         @options         = options
-        @user            = options.fetch(:user, nil)
+        @viewing_user    = options.fetch(:user, nil)
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         @rows_and_sizes  = options[:rows_and_sizes] || {}

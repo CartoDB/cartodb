@@ -47,3 +47,4 @@ lib/build/dist
 lib/build/node_modules
 lib/build/grunt-aws.json
 lib/build/app_config.js
+rubygems

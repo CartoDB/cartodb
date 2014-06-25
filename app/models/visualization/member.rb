@@ -221,7 +221,8 @@ module CartoDB
         options = {
           full: false,
           user_name: user.username,
-          user_api_key: user.api_key
+          user_api_key: user.api_key,
+          user: user
         }
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
@@ -444,6 +445,7 @@ module CartoDB
         self
       end #propagate_privacy_to
 
+      # @param table Table
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)

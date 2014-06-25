@@ -1128,7 +1128,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1171,7 +1171,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1530,7 +1530,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1547,7 +1547,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1689,7 +1689,7 @@ describe Table do
     it "create and migrate a table containing a valid the_geom" do
       delete_user_data @user
       @user.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-      @user.run_pg_query("SELECT AddGeometryColumn ('exttable','the_geom',4326,'POINT',2);")
+      @user.run_pg_query("SELECT public.AddGeometryColumn ('#{@user.database_schema}','exttable','the_geom',4326,'POINT',2);")
       @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
 
@@ -1810,33 +1810,6 @@ describe Table do
       lambda {
         Table.find_by_identifier(666, table.name)
       }.should raise_error
-    end
-
-    it "should be able to be found from username and id" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
-      new_table = Table.find_by_id_subdomain(@user.username, table.id)
-
-      new_table.id.should == table.id
-    end
-
-    it "should not be able to be found from blank subdomain and id" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
-
-      new_table = Table.find_by_id_subdomain(nil, table.id)
-
-      new_table.should == nil
     end
   end
 

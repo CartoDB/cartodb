@@ -199,6 +199,17 @@ namespace :cartodb do
         end
       end
     end
+
+    ##########################################
+    # SET ORGANIZATION GROUP ROLE TO ALL USERS
+    ##########################################
+    desc 'Set organization member group role'
+    task :set_user_as_organization_member => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.set_user_as_organization_member
+      end
+    end
         
     ##############
     # SET DB PERMS
@@ -373,7 +384,7 @@ namespace :cartodb do
                 col[:geometrytype]
               end
               geometry_type ||= "POINT"
-              user_database.run("SELECT AddGeometryColumn('#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
+              user_database.run("SELECT public.AddGeometryColumn('#{user.database_schema}','#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
               user_database.run("ANALYZE #{table.name}")
               table.save_changes

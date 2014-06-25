@@ -11,6 +11,7 @@
   @import "compass/css3/images";
   @import "compass/css3/inline-block";
   @import "compass/css3/opacity";
+  @import "compass/css3/transform";
   @import "../common/mixins";
   @import "../common/common-sprite";
   @import "../common/vars";
@@ -29,11 +30,14 @@
 
     div.filters {
       position:absolute;
-      top:0;
+      top:-100px;
       left:50%;
       width:1026px;
       margin-left:-513px;
       z-index:1;
+      @include transform-style("linear");
+      @include transition-property("top");
+      @include transition-duration(250ms);
 
       // Border-bottom
       &:before {
@@ -47,6 +51,8 @@
         width:100%;
         z-index:0;
       }
+
+      &.visible { top:0 }
     }
 
     ul {

@@ -36,7 +36,7 @@
   // Info, tags, syncing status,...  
   .table-info {
     float:right;
-    width:45%;
+    width:35%;
     text-align: right;
 
     .table-list-info {
@@ -131,13 +131,13 @@
   // Title and description
   .table-desc {
     float:left;
-    width:55%;
+    width:65%;
 
     // Title
     h3 {
       @include inline-block();
       width:auto;
-      max-width:88%;
+      max-width:85%;
       margin-right:10px;
     }
 
@@ -148,8 +148,8 @@
 
   // If table item is shared
   .table-item-inner.shared {
-    .table-info { width:55% }
-    .table-desc { width:45% }
+    .table-info { width:40% }
+    .table-desc { width:60% }
   }
 
   

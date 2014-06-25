@@ -7,6 +7,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   ssl_required :show, :create, :update, :destroy
 
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :vizzjson]
   before_filter :load_table, except: [:create]
   before_filter :set_start_time
   before_filter :link_ghost_tables, only: [:show]
@@ -62,7 +63,7 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
-        render_jsonp(@table.public_values.merge(schema: @table.schema(reload: true)))
+        render_jsonp(@table.public_values({}, current_user).merge(schema: @table.schema(reload: true)))
       end
     end
   end
@@ -124,14 +125,14 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def vizzjson
-    table = Table.find_by_subdomain(CartoDB.extract_subdomain(request), params[:id])
+    table = table_by_id_and_user(@table_id, CartoDB.extract_subdomain(request))
     if table.present?
       allowed = table.public?
 
       unless allowed && current_user.present?
         user_tables = current_user.tables_including_shared
         user_tables.each{ |item|
-          allowed ||= item.id == params[:id]
+          allowed ||= item.id == @table_id
         }
       end
 
@@ -149,18 +150,42 @@ class Api::Json::TablesController < Api::ApplicationController
 
   protected
 
+  def table_by_id_and_user(id, user)
+    vis_table = nil
+    if user
+      table = Table.where(id: id).first
+      unless table.nil?
+        vis = CartoDB::Visualization::Collection.new.fetch(
+            user_id: user.id,
+            map_id: table.map_id,
+            type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        ).first
+        vis_table = vis.table unless vis.nil?
+      end
+    end
+    vis_table
+  end
+
+  def table_and_schema_from_params
+    if params.fetch('id', nil) =~ /\./
+      @table_id, @schema = params.fetch('id').split('.').reverse
+    else
+      @table_id, @schema = [params.fetch('id', nil), nil]
+    end
+  end
+
   def load_table
     rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 
     @table = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,
-        name: params[:id],
+        name: @table_id,
         type: CartoDB::Visualization::Member::CANONICAL_TYPE
     ).first
     @table = @table.table unless @table.nil?
 
-    if rx.match(params[:id]) && @table.nil?
-      table = Table.where(id: params[:id]).first
+    if rx.match(@table_id) && @table.nil?
+      table = Table.where(id: @table_id).first
       # Make sure we're allowed to see this table
       vis = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,

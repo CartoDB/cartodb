@@ -222,7 +222,7 @@ div.map {
         }
 
       }
-    } // .basemap_dropdown
+    }
   } // .dropdowns
 
 
@@ -295,7 +295,7 @@ div.map {
 
     .info {
       @include inline-block();
-    } // .basemap_dropdown
+    } 
 
   }
 
@@ -386,26 +386,47 @@ div.map {
 
   div.dropdown.basemap {
 
-    width: 646px;
+    width: 400px;
     border: 1px solid #999999;
 
     .custom {
-      width:200px;
+      /*width:200px;*/
       display:inline;
       vertical-align:top;
     }
 
     ul {
-      width:200px;
+      /*width:200px;*/
       @include inline-block();
       vertical-align:top;
       padding: 0 5px 0 10px;
+      border-bottom: none;
+    }
 
-      &.special {
-        background:#F6F6F6;
-        border-left: 1px solid #E7E7E7;
-        @include border-radius(0 2px 2px 0);
+    .custom > ul {
+
+      border-bottom: 1px solid rgba(204,204,204,0.35);
+      @include box-sizing(border-box);
+      padding: 10px 10px;
+
+      & > li {
+        &:first-child {
+          width: 60px;
+          margin: 0 4px 0 0;
+          color: #CCCCCC;
+        }
+
       }
+
+      li { 
+
+        border:none;
+        @include inline-block;
+      }
+    }
+
+    ul.thumbs li {
+      @include inline-block;
     }
 
     ul li {
@@ -440,8 +461,8 @@ div.map {
 
       & > a {
         display:block;
-        padding: 11px 10px 11px 0;
-        height: 48px;
+        padding: 0 10px 0 0;
+        /*height: 48px;*/
         box-sizing: border-box;
 
         line-height: 13px;
@@ -696,6 +717,20 @@ div.map {
       left: 20px;
       margin:0;
     }
+  }
+
+  // Fullscreen 
+  div.cartodb-fullscreen {
+    display:none;
+    position:absolute;
+  }
+
+  div.cartodb-share {
+    margin: 0;
+
+    @include transform-style("linear");
+    @include transition-property("right");
+    @include transition-duration(300ms);
   }
 
   // Search box in core map

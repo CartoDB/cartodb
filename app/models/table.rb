@@ -520,21 +520,59 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
-    create_header_overlay(member)
-    create_search_overlay(member)
+    create_share_overlay(member, 1)
+    create_header_overlay(member, 2)
+    create_search_overlay(member, 3)
+    create_fullscreen_overlay(member, 4)
 
   end
 
-  def create_search_overlay(member)
+  def create_fullscreen_overlay(member, order)
+
+    options = {
+      :display => false, 
+      :x => 5,
+      :y => 152
+    }
+
+    CartoDB::Overlay::Member.new(
+      order: order,
+      type: "fullscreen",
+      template: "",
+      options: options,
+      visualization_id: member.id
+    ).store
+
+  end
+
+  def create_share_overlay(member, order)
 
     options = {
       :display => true, 
-      :x => 40,
+      :x => 20,
       :y => 40
     }
 
     CartoDB::Overlay::Member.new(
-      order: 1,
+      order: order,
+      type: "share",
+      template: "",
+      options: options,
+      visualization_id: member.id
+    ).store
+
+  end
+
+  def create_search_overlay(member, order)
+
+    options = {
+      :display => true, 
+      :x => 30,
+      :y => 40
+    }
+
+    CartoDB::Overlay::Member.new(
+      order: order,
       type: "search",
       template: "",
       options: options,
@@ -543,7 +581,7 @@ class Table < Sequel::Model(:user_tables)
 
   end
 
-  def create_header_overlay(member)
+  def create_header_overlay(member, order)
 
     options = {
       :display => false, 
@@ -551,7 +589,7 @@ class Table < Sequel::Model(:user_tables)
     }
 
     CartoDB::Overlay::Member.new(
-      order: 1,
+      order: order,
       type: "title",
       template: "",
       options: options,

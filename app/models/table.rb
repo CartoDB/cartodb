@@ -124,15 +124,15 @@ class Table < Sequel::Model(:user_tables)
 
   # Getter by table uuid or table name using canonical visualizations
   # @param table_id String
-  # @param table_owner User
-  def self.get_by_id(table_id, table_owner)
+  # @param viewer_user User
+  def self.get_by_id(table_id, viewer_user)
     table = nil
-    return table unless table_owner
+    return table unless viewer_user
 
     table_temp = Table.where(id: table_id).first
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
-          user_id: table_owner.id,
+          user_id: viewer_user.id,
           map_id: table_temp.map_id,
           type: CartoDB::Visualization::Member::CANONICAL_TYPE
       ).first
@@ -141,18 +141,31 @@ class Table < Sequel::Model(:user_tables)
     table
   end
 
+
   # Getter by table uuid or table name using canonical visualizations
-  # @param id_or_name String
-  # @param table_owner User
-  def self.get_by_id_or_name(id_or_name, table_owner)
-    return nil unless table_owner
+  # @param id_or_name String If is a name, can become qualified as "schema.tablename"
+  # @param viewer_user User
+  def self.get_by_id_or_name(id_or_name, viewer_user)
+    return nil unless viewer_user
 
     rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-    table = CartoDB::Visualization::Collection.new.fetch(
-        user_id: table_owner.id,
-        name: id_or_name,
+
+    table_name, table_schema = self.table_and_schema(id_or_name)
+
+    query_filters = {
+        user_id: viewer_user.id,
+        name: table_name,
         type: CartoDB::Visualization::Member::CANONICAL_TYPE
-    ).first
+    }
+
+    unless table_schema.nil?
+      owner = User.where(username:table_schema).first
+      unless owner.nil?
+        query_filters[:user_id] = owner.id
+      end
+    end
+
+    table = CartoDB::Visualization::Collection.new.fetch(query_filters).first
     table = table.table unless table.nil?
 
     if rx.match(id_or_name) && table.nil?
@@ -160,7 +173,7 @@ class Table < Sequel::Model(:user_tables)
       unless table_temp.nil?
         # Make sure we're allowed to see the table
         vis = CartoDB::Visualization::Collection.new.fetch(
-            user_id: table_owner.id,
+            user_id: viewer_user.id,
             map_id: table_temp.map_id,
             type: CartoDB::Visualization::Member::CANONICAL_TYPE
         ).first
@@ -169,6 +182,14 @@ class Table < Sequel::Model(:user_tables)
     end
 
     table
+  end
+
+  def self.table_and_schema(table_name)
+    if table_name =~ /\./
+      table_name.split('.').reverse
+    else
+      [table_name, nil]
+    end
   end
 
   ## Callbacks

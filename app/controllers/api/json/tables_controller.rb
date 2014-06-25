@@ -7,7 +7,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   ssl_required :show, :create, :update, :destroy
 
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :vizzjson]
   before_filter :load_table, except: [:create]
   before_filter :set_start_time
   before_filter :link_ghost_tables, only: [:show]
@@ -125,14 +124,14 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def vizzjson
-    table = Table.table_by_id_and_user(@table_id, CartoDB.extract_subdomain(request))
+    table = Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
     if table.present?
       allowed = table.public?
 
       unless allowed && current_user.present?
         user_tables = current_user.tables_including_shared
         user_tables.each{ |item|
-          allowed ||= item.id == @table_id
+          allowed ||= item.id == params.fetch('id')
         }
       end
 
@@ -150,16 +149,8 @@ class Api::Json::TablesController < Api::ApplicationController
 
   protected
 
-  def table_and_schema_from_params
-    if params.fetch('id', nil) =~ /\./
-      @table_id, @schema = params.fetch('id').split('.').reverse
-    else
-      @table_id, @schema = [params.fetch('id', nil), nil]
-    end
-  end
-
   def load_table
-    @table = Table.get_by_id_or_name(@table_id, current_user)
+    @table = Table.get_by_id_or_name(params.fetch('id'), current_user)
   end
 end
 

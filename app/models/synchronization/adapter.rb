@@ -62,7 +62,7 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        table = ::Table.where(name: "#{user.database_schema}__#{table_name}".to_sym, user_id: user.id).first
+        table = ::Table.where(name: table_name, user_id: user.id).first
         #table.migrate_existing_table = table_name
         table.force_schema = true
         table.send :update_updated_at
@@ -125,7 +125,7 @@ module CartoDB
       def rename(current_name, new_name)
         database.execute(%Q{
           ALTER TABLE "#{user.database_schema}"."#{current_name}"
-          RENAME TO "#{user.database_schema}"."#{new_name}"
+          RENAME TO #{new_name}
         })
       end
 

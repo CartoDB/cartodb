@@ -1,6 +1,9 @@
 # encoding: utf-8
+require_relative './organization/organization_decorator'
 
 class Organization < Sequel::Model
+
+  include CartoDB::OrganizationDecorator
 
   Organization.raise_on_save_failure = true
 
@@ -15,9 +18,13 @@ class Organization < Sequel::Model
   one_to_many :users
   plugin :validation_helpers
 
+  ALLOWED_API_ATTRIBUTES = [
+    :name, :seats, :quota_in_bytes
+  ]
+
   def validate
     super
-    validates_presence [:name, :quota_in_bytes]
+    validates_presence [:name, :quota_in_bytes, :seats]
     validates_unique   :name
     validates_format   /^[a-z0-9\-]+$/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?

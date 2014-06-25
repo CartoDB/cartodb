@@ -3,7 +3,7 @@ require 'virtus'
 require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer' 
 require_relative '../../../services/track_record/track_record/log'
-
+require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
 include CartoDB::Datasources
@@ -284,7 +284,15 @@ module CartoDB
 
       def table
         return nil unless defined?(::Table)
-        @table ||= ::Table.where(name: name, user_id: user.id).first 
+        if @table.nil?
+          @table = CartoDB::Visualization::Collection.new.fetch(
+              user_id: user.id,
+              name: name,
+              type: CartoDB::Visualization::Member::CANONICAL_TYPE
+          ).first
+          @table = @table.table unless @table.nil?
+        end
+        @table
       end # table
 
       def authorize?(user)

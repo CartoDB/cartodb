@@ -7,6 +7,10 @@ describe AutomaticGeocoding do
     @table = FactoryGirl.create(:table, user_id: @user.id)
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe '#setup' do
     let(:geocoding) { FactoryGirl.create(:automatic_geocoding, table: @table) }
 

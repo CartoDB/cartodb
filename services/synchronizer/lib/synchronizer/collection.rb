@@ -25,8 +25,6 @@ module CartoDB
         pg_options.store(:dbname, pg_options.delete(:database))
 
         @db       = PG::EM::Client.new(pg_options)
-        @db.extension(:connection_validator)
-        @db.pool.connection_validation_timeout = pg_options.fetch(:conn_validator_timeout, 900)
         @relation = relation
         @records  = [] 
       end #initialize

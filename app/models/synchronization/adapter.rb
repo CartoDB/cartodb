@@ -62,7 +62,7 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        table = ::Table.where(name: table_name, user_id: user.id).first
+        table = ::Table.where(name: "#{user.database_schema}__#{table_name}".to_sym, user_id: user.id).first
         #table.migrate_existing_table = table_name
         table.force_schema = true
         table.send :update_updated_at
@@ -77,7 +77,7 @@ module CartoDB
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)
-        database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
+        database.run("UPDATE \"#{user.database_schema}\".\"#{table_name}\" SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from \"#{user.database_schema}\".\"#{table_name}\")")
       rescue => exception
         puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
         Rollbar.report_exception(exception)
@@ -118,19 +118,19 @@ module CartoDB
         return self if schema == result.schema
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"
-          SET SCHEMA public
+          SET SCHEMA #{user.database_schema}
         })
       end
 
       def rename(current_name, new_name)
         database.execute(%Q{
-          ALTER TABLE "public"."#{current_name}"
-          RENAME TO "#{new_name}"
+          ALTER TABLE "#{user.database_schema}"."#{current_name}"
+          RENAME TO "#{user.database_schema}"."#{new_name}"
         })
       end
 
       def drop(table_name)
-        database.execute(%Q(DROP TABLE #{table_name}))
+        database.execute(%Q(DROP TABLE "#{user.database_schema}"."#{table_name}"))
       rescue
         self
       end

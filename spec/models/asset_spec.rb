@@ -8,6 +8,10 @@ describe Asset do
     @user = create_user username: 'test'
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe '#validate' do
     it 'validates user_id' do
       asset = Asset.new

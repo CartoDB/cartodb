@@ -14,6 +14,10 @@ feature "Tables", :js => true do
     click_on "twitter_followers"
   end
 
+  after do
+    @user.destroy
+  end
+
   scenario "can access embedded map if public" do
     click_on "PRIVATE"
     click_on 'Make this table public'

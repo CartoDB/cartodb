@@ -14,6 +14,10 @@ describe "API Authentication" do
     @access_token = AccessToken.create(:user => @user, :client_application => @user.client_application)
   end
 
+  after(:each) do
+    @user.destroy
+  end
+
   it "should not authorize requests without signature" do
     get "http://vizzuality.testhost.lan/api/v1/tables"
     status.should == 401

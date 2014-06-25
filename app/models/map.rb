@@ -1,5 +1,7 @@
 # encoding: utf-8
 require_relative './map/copier'
+require_relative '../models/visualization/collection'
+
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -134,13 +136,13 @@ class Map < Sequel::Model
 
   def update_map_on_associated_entities
     return unless table_id
+
+    # Cannot filter by user_id as might be a shared table not owned by us
     related_table = Table.filter(
-                      id:       table_id,
-                      user_id:  user_id
+                      id: table_id
                     ).first
     if related_table.map_id != id
       # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
-      require_relative '../models/visualization/collection'
       CartoDB::Visualization::Collection.new.fetch(
           user_id:  user_id,
           map_id:   related_table.map_id
@@ -192,7 +194,7 @@ class Map < Sequel::Model
 
   def table_visualization
     CartoDB::Visualization::Collection.new
-      .fetch(map_id: [self.id], type: 'table')
+      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::CANONICAL_TYPE)
       .first
   end #table_visualization
 

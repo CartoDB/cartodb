@@ -122,6 +122,55 @@ class Table < Sequel::Model(:user_tables)
                 :import_from_table_copy, :importing_encoding,
                 :temporal_the_geom_type, :migrate_existing_table, :new_table, :keep_user_database_table
 
+  # Getter by table uuid or table name using canonical visualizations
+  # @param table_id String
+  # @param table_owner User
+  def self.get_by_id(table_id, table_owner)
+    table = nil
+    return table unless table_owner
+
+    table_temp = Table.where(id: table_id).first
+    unless table_temp.nil?
+      vis = CartoDB::Visualization::Collection.new.fetch(
+          user_id: table_owner.id,
+          map_id: table_temp.map_id,
+          type: CartoDB::Visualization::Member::CANONICAL_TYPE
+      ).first
+      table = vis.table unless vis.nil?
+    end
+    table
+  end
+
+  # Getter by table uuid or table name using canonical visualizations
+  # @param id_or_name String
+  # @param table_owner User
+  def self.get_by_id_or_name(id_or_name, table_owner)
+    return nil unless table_owner
+
+    rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+    table = CartoDB::Visualization::Collection.new.fetch(
+        user_id: table_owner.id,
+        name: id_or_name,
+        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+    ).first
+    table = table.table unless table.nil?
+
+    if rx.match(id_or_name) && table.nil?
+      table_temp = Table.where(id: id_or_name).first
+      unless table_temp.nil?
+        # Make sure we're allowed to see the table
+        vis = CartoDB::Visualization::Collection.new.fetch(
+            user_id: table_owner.id,
+            map_id: table_temp.map_id,
+            type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        ).first
+        table = vis.table unless vis.nil?
+      end
+    end
+
+    table
+  end
+
   ## Callbacks
 
   # Core validation method that is automatically called before create and save
@@ -288,6 +337,7 @@ class Table < Sequel::Model(:user_tables)
         :logger => ::Rails.logger,
         'username' => owner.database_username,
         'password' => owner.database_password,
+        :schema => owner.database_schema,
         :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
@@ -514,8 +564,6 @@ class Table < Sequel::Model(:user_tables)
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
       user_id:      self.owner.id
     ).store
-
-
   end
 
   ##
@@ -722,6 +770,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def self.key(db_name, table_name)
+    # TODO: Check for org invalidations
     "rails:#{db_name}:#{table_name}"
   end
 

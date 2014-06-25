@@ -40,6 +40,8 @@ feature "Sessions" do
     fill_in 'email', :with => user.email
     fill_in 'password', :with => user.email.split('@').first
     click_link_or_button 'Sign in'
+
+    user.destroy
   end
 
   scenario "Get the session information via OAuth" do
@@ -60,6 +62,8 @@ feature "Sessions" do
       response.status.should be_success
       response.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
     end
+
+    user.destroy
   end
 
   scenario "should redirect you to the user login page if unauthorized", :js => true do

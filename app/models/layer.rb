@@ -189,7 +189,13 @@ class Layer < Sequel::Model
   end #tables_from_table_name_option
 
   def tables_from(names)
-    Table.where(user_id: user.id, name: names).all
+    tables = CartoDB::Visualization::Collection.new.fetch(
+        user_id: user.id,
+        name: names,
+        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+    ).map{ |vis| vis.table}
+    tables = [] if tables.nil?
+    tables
   end #tables_from
 
   def affected_table_names

@@ -184,6 +184,9 @@ defaults: &defaults
       app_key:  ''
       app_secret: ''
       callback_url: ''
+  signups:
+    service:
+      port: 0000
 
 development:
   <<: *defaults

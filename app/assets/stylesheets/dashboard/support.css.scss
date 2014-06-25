@@ -5,14 +5,22 @@
    */
 
   @import "compass/css3/images";
+  @import "../common/mixins";
 
   article.support {
     position:relative;
     padding:16px 0 22px;
     @include background(image-url('layout/bkg.jpg') repeat);
     border-top:1px solid rgba(black,0.08);
-    clear:both;
-    overflow:hidden;
+
+    div.inner {
+      @include display-flex();
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(align-items, center);
+      @include cross-browser(flex-wrap, nowrap);
+
+      & > div { width:auto }
+    }
 
     &:before {
       position:absolute;
@@ -32,8 +40,6 @@
       letter-spacing:-1px;
       font-size:21px;
     }
-    
-    div.right { width:180px }
 
     a.button {
       margin-top:5px;

@@ -176,7 +176,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def load_table
     rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-
     @table = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,
         name: @table_id,
@@ -186,13 +185,15 @@ class Api::Json::TablesController < Api::ApplicationController
 
     if rx.match(@table_id) && @table.nil?
       table = Table.where(id: @table_id).first
-      # Make sure we're allowed to see this table
-      vis = CartoDB::Visualization::Collection.new.fetch(
-        user_id: current_user.id,
-        map_id: table.map_id,
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
-      ).first
-      @table = vis.table unless vis.nil?
+      unless table.nil?
+        # Make sure we're allowed to see this table
+        vis = CartoDB::Visualization::Collection.new.fetch(
+            user_id: current_user.id,
+            map_id: table.map_id,
+            type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        ).first
+        @table = vis.table unless vis.nil?
+      end
     end
   end
 end

@@ -152,6 +152,8 @@ class DataImport < Sequel::Model
   end #handle_failure
 
   def table
+    # We can assume the owner is always who imports the data
+    # so no need to change to a Visualization::Collection based load
     Table.where(id: table_id, user_id: user_id).first
   end #table
 

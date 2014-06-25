@@ -134,23 +134,6 @@ describe Map do
         map.admits_layer?(Layer.new(kind: 'carto')).should == false
       end
     end
-
-    describe 'when not linked to a table visualization' do
-      it 'returns true when passed a data layer' do
-        map = Map.create(user_id: @user.id, table_id: @table.id)
-
-        map.add_layer(Layer.new(kind: 'carto'))
-        map.admits_layer?(Layer.new(kind: 'carto')).should == true
-        map.save.reload
-
-        map.add_layer(Layer.new(kind: 'carto'))
-        map.admits_layer?(Layer.new(kind: 'carto')).should == true
-        map.save.reload
-
-        map.add_layer(Layer.new(kind: 'carto'))
-        map.admits_layer?(Layer.new(kind: 'carto')).should == true
-      end
-    end
   end #admits?
 
   it "should correcly set vizjson updated_at" do

@@ -95,8 +95,8 @@ describe User do
 
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
-      organization = create_org('testorg', 10.megabytes, 1)
-      orguser = FactoryGirl.create(:user, { organization: organization, organization_owner: true })
+      orguser = FactoryGirl.create(:user, { organization: organization })
+      organization = create_org('testorg', 10.megabytes, 1, orguser)
       user = User.new
       user.organization = organization
       user.valid?.should be_false
@@ -113,7 +113,7 @@ describe User do
       user.errors.keys.should_not include(:organization)
       organization.destroy
     end
-    
+
     it "should not be valid if his organization doesn't have enough disk space" do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
@@ -140,7 +140,7 @@ describe User do
   it "should have a default dashboard_viewed? false" do
     user = User.new
     user.dashboard_viewed?.should be_false
-  end 
+  end
 
   it "should reset dashboard_viewed when dashboard gets viewed" do
     user = User.new
@@ -222,13 +222,13 @@ describe User do
 
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
-      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 
-      "total"=>49, 
+      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0],
+      "total"=>49,
       "updated_at"=>1370362756
     })
     @user.get_api_calls.should == [0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
     @user.get_api_calls(
-      from: (Date.today - 6.days), 
+      from: (Date.today - 6.days),
       to: Date.today
     ).should == [0, 0, 0, 0, 0, 17, 0]
   end
@@ -250,7 +250,7 @@ describe User do
       User.overquota(0.20).size.should == User.count
       User.overquota(0.10).should be_empty
     end
-    
+
     it "should return users near their geocoding quota" do
       User.any_instance.stubs(:get_api_calls).returns([0])
       User.any_instance.stubs(:map_view_quota).returns(120)
@@ -261,7 +261,7 @@ describe User do
       User.overquota(0.20).size.should == User.count
       User.overquota(0.10).should be_empty
     end
-  
+
   end
 
   describe '#get_geocoding_calls' do
@@ -340,7 +340,7 @@ describe User do
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
-      
+
     @user.in_database[query].to_a
   end
 
@@ -352,7 +352,7 @@ describe User do
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
-      
+
     @user.in_database[query].to_a
   end
 
@@ -615,7 +615,7 @@ describe User do
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
     uuid      = Table.where(id: table_id).first.table_visualization.id
-    
+
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{doomed_user.database_name}.*")
       .returns(true)
@@ -627,7 +627,7 @@ describe User do
       .times(2)
       .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)
-    
+
     doomed_user.destroy
 
     DataImport.where(:user_id => doomed_user.id).count.should == 0
@@ -813,11 +813,12 @@ describe User do
     end
   end
 
-  def create_org(org_name, org_quota, org_seats)
+  def create_org(org_name, org_quota, org_seats, org_owner = nil)
     organization = Organization.new
     organization.name = org_name
     organization.quota_in_bytes = org_quota
     organization.seats = org_seats
+    organization.owner = org_owner
     organization.save
     organization
   end

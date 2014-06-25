@@ -5,7 +5,7 @@ class Admin::OrganizationsController < ApplicationController
 
   def show
     @organization = current_user.organization
-    raise RecordNotFound unless @organization.present? && current_user.organization_owner
+    raise RecordNotFound unless @organization.present? && current_user.organization_owner?
     @users = current_user.organization.users
   end
 end

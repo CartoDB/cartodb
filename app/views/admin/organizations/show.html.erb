@@ -16,7 +16,7 @@
           username: u.username,
           quota_in_bytes: u.quota_in_bytes,
           remaining_quota: u.remaining_quota,
-          organization_owner: u.organization_owner
+          organization_owner: u.organization_owner?
         }}.to_json -%>
       , user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
@@ -48,7 +48,7 @@
           <li>
             <div class="info">
               <%= link_to user.username, edit_organization_user_path(user.username) %>
-              <% if user.organization_owner %>
+              <% if user.organization_owner? %>
                 <span class="status owner">OWNER</span>
               <% end %>
             </div>

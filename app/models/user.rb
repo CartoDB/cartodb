@@ -314,7 +314,7 @@ class User < Sequel::Model
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name,
         :logger => logger,
-        'username' => database_username, 
+        'username' => database_username,
         'password' => database_password,
         'host' => self.database_host
       ) {|key, o, n| n.nil? ? o : n}
@@ -465,10 +465,10 @@ class User < Sequel::Model
 
   # save users basic metadata to redis for node sql api to use
   def save_metadata
-    $users_metadata.HMSET key, 
-      'id', id, 
-      'database_name', database_name, 
-      'database_password', database_password, 
+    $users_metadata.HMSET key,
+      'id', id,
+      'database_name', database_name,
+      'database_password', database_password,
       'database_host', database_host,
       'map_key', api_key
   end
@@ -503,7 +503,7 @@ class User < Sequel::Model
     def get_old_api_calls
       JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
     end
-    
+
     def set_old_api_calls(options = {})
       # Ensure we update only once every 3 hours
       if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
@@ -735,7 +735,7 @@ class User < Sequel::Model
   def success_import_count
     DataImport.where(user_id: self.id, state: 'complete').count
   end
- 
+
   def import_count
     DataImport.where(user_id: self.id).count
   end
@@ -830,7 +830,7 @@ class User < Sequel::Model
   end
 
   def organization_owner?
-    has_organization? and self.organization_owner
+    self.organization && self.organization.owner == self
   end
 
   ## User's databases setup methods
@@ -870,7 +870,7 @@ class User < Sequel::Model
         puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
         raise e
       end
-      if not has_organization? or organization_owner
+      if not has_organization? or organization_owner?
         begin
           conn.run("CREATE DATABASE \"#{self.database_name}\"
           WITH TEMPLATE = template_postgis
@@ -1072,7 +1072,7 @@ TRIGGER
 
         exp = tgt_ver + ' ' + tgt_rev
         obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
-      
+
         raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
           unless exp == obt
 

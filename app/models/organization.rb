@@ -16,6 +16,7 @@ class Organization < Sequel::Model
   # @param avatar_url String
 
   one_to_many :users
+  one_to_one :owner, class_name: 'User', foreign_key: 'owner_id'
   plugin :validation_helpers
 
   ALLOWED_API_ATTRIBUTES = [
@@ -51,10 +52,6 @@ class Organization < Sequel::Model
 
   def unassigned_quota
     quota_in_bytes - assigned_quota
-  end
-
-  def owner
-    @owner ||= User.where(Sequel.&(organization_id: self.id, organization_owner: true)).first
   end
 
   def to_poro(filtered_user = nil)

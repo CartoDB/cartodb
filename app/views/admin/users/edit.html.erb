@@ -25,7 +25,7 @@
 <article>
   <div class="inner">
     <section class="block">
-      <% if current_user.organization_owner %>
+      <% if current_user.organization_owner? %>
         <%= link_to "back", organization_url, :class => "back" %>
       <% end %>
       <%= render partial: 'form' %>

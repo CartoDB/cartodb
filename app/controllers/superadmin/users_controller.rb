@@ -10,8 +10,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     :username, :email, :admin, :quota_in_bytes, :table_quota, :account_type,
     :private_tables_enabled, :sync_tables_enabled, :map_view_quota, :map_view_block_price,
     :geocoding_quota, :geocoding_block_price, :period_end_date, :max_layers, :user_timeout,
-    :database_timeout, :database_host, :upgraded_at, :notification, :organization_owner,
-    :disqus_shortname, :twitter_username, :name, :description, :website
+    :database_timeout, :database_host, :upgraded_at, :notification,
+    :disqus_shortname, :twitter_username, :name, :description, :website,
+    :organization_id
   ]
 
   def show
@@ -38,7 +39,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     attributes = params[:user]
     @user.set_only(attributes, ALLOWED_ATTRIBUTES)
     set_password_if_present(attributes)
-    set_organization_if_present(attributes)
 
     @user.save
     respond_with(:superadmin, @user)
@@ -63,12 +63,4 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.salt             = attributes[:salt] if attributes[:salt].present?
   end # set_password_if_present
 
-  def set_organization_if_present(attributes)
-    return if attributes[:organization_attributes].blank?
-    organization = (@user.organization.blank? ? Organization.new : @user.organization)
-    organization.set_only(attributes[:organization_attributes], Organization::ALLOWED_API_ATTRIBUTES)
-    organization.save
-    @user.organization = organization
-    @user.organization_owner = attributes[:organization_attributes][:owner] if attributes[:organization_attributes][:owner].present?
-  end
 end # Superadmin::UsersController

@@ -27,7 +27,7 @@ class Admin::UsersController < ApplicationController
   def update
     attributes = params[:user]
     @user.set_fields(attributes, [:email])
-    @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner
+    @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner?
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
 
@@ -46,13 +46,13 @@ class Admin::UsersController < ApplicationController
 
   def check_permissions
     raise RecordNotFound unless current_user.organization.present?
-    raise RecordNotFound unless current_user.organization_owner || ['edit', 'update'].include?(params[:action])
+    raise RecordNotFound unless current_user.organization_owner? || ['edit', 'update'].include?(params[:action])
   end
 
   def get_user
     @user = current_user.organization.users_dataset.where(username: params[:id]).first
     raise RecordNotFound unless @user
-    raise RecordNotFound unless current_user.organization_owner || current_user == @user
+    raise RecordNotFound unless current_user.organization_owner? || current_user == @user
   end
 
   def copy_account_features(from, to)

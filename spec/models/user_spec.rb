@@ -222,11 +222,57 @@ describe User do
       "total"=>49, 
       "updated_at"=>1370362756
     })
-    @user.get_api_calls.should == [0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
+    @user.stubs(:get_es_api_calls_from_redis).returns({
+      "per_day" => [0, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21], 
+      "total"=>49, 
+      "updated_at"=>1370362756
+    })
+    @user.get_api_calls.should == [21, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 5, 0, 16, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 26, 0, 0, 0, 0]
     @user.get_api_calls(
       from: (Date.today - 6.days), 
       to: Date.today
-    ).should == [0, 0, 0, 0, 0, 17, 0]
+    ).should == [21, 0, 0, 0, 0, 17, 0]
+  end
+
+  it "should get final api calls from es" do
+    yesterday = Date.today - 1
+    today = Date.today
+    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
+    to_date = DateTime.new(today.year, today.month, today.day, 0, 0, 0).strftime("%Q")
+    api_url = %r{search}
+    api_response = {
+                    "aggregations" => {
+                      "0" => {
+                        "buckets" => [
+                          {
+                            "key" => from_date.to_i,
+                            "doc_count" => 4
+                          },
+                          {
+                            "key" => to_date.to_i,
+                            "doc_count" => 6
+                          }
+                        ]  
+                      }
+                    } 
+                   }
+    Typhoeus.stub(api_url,
+                  { method: :post }
+                 )
+                  .and_return(
+                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s) 
+                  )  
+    stored_api_calls = {
+                        "per_day" => [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], 
+                        "total" => 21,
+                        "updated_at" => Time.now.to_i 
+                       }
+    expected_api_calls = {
+                        "per_day" => [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 6], 
+                        "total" => 31,
+                        "updated_at" => Time.now.to_i 
+                         }
+    JSON.parse(@user.get_api_calls_from_es(stored_api_calls))["per_day"].should == expected_api_calls["per_day"]
   end
 
   describe '#overquota' do

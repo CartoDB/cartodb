@@ -94,7 +94,7 @@ describe Visualization::Collection do
 
       CartoDB::SharedEntity.new(
           recipient_id:   user1_id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
           entity_id:      vis2.id,
           entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save

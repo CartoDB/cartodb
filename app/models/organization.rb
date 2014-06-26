@@ -16,7 +16,7 @@ class Organization < Sequel::Model
   # @param avatar_url String
 
   one_to_many :users
-  one_to_one :owner, class_name: 'User', key: 'owner_id'
+  many_to_one :owner, class_name: 'User', key: 'owner_id'
   plugin :validation_helpers
 
   ALLOWED_API_ATTRIBUTES = [

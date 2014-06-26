@@ -63,7 +63,7 @@ class Api::Json::MapsController < Api::ApplicationController
     vis = CartoDB::Visualization::Collection.new.fetch(
         user_id: current_user.id,
         map_id: params[:id]
-    ).first
+    )
     raise RecordNotFound if vis.nil?
 
     @map = Map.filter(id: params[:id]).first

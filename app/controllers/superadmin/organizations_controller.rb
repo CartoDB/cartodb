@@ -20,6 +20,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     attributes = params[:organization]
 
     @organization.set_only(attributes, Organization::ALLOWED_API_ATTRIBUTES)
+    set_owner_if_present(attributes)
 
     @organization.save
     respond_with(:superadmin, @organization)
@@ -27,7 +28,9 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
 
   def update
     attributes = params[:organization]
+
     @organization.set_only(attributes, Organization::ALLOWED_API_ATTRIBUTES)
+    set_owner_if_present(attributes)
 
     @organization.save
     respond_with(:superadmin, @organization)
@@ -44,5 +47,9 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     @organization = Organization[params[:id]]
     raise RecordNotFound unless @organization
   end # get_organization
+
+  def set_owner_if_present(attributes)
+    @organization.owner_id = attributes[:owner_id] unless attributes[:owner_id].blank?
+  end
 
 end

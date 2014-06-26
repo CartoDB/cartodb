@@ -4,8 +4,8 @@ require_relative './organization/organization_decorator'
 class Organization < Sequel::Model
 
   include CartoDB::OrganizationDecorator
-
   Organization.raise_on_save_failure = true
+  self.strict_param_setting = false
 
   # @param id String (uuid)
   # @param seats String
@@ -20,7 +20,7 @@ class Organization < Sequel::Model
   plugin :validation_helpers
 
   ALLOWED_API_ATTRIBUTES = [
-    :name, :seats, :quota_in_bytes, :owner_id
+    :name, :seats, :quota_in_bytes
   ]
 
   def validate

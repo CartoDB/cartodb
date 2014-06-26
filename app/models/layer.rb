@@ -179,19 +179,14 @@ class Layer < Sequel::Model
 
   def tables_from_query_option
     return [] unless query.present?
-    tables_from(affected_table_names)
+    Table.get_all_by_names(affected_table_names, user)
   rescue => exception
     []
   end
 
   def tables_from_table_name_option
-    tables_from([options.symbolize_keys[:table_name]])
+    Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
   end #tables_from_table_name_option
-
-  def tables_from(names)
-    # Here user should always be the owner of the parent table, so no problem matching with layer user.id
-    Table.where(user_id: user.id, name: names).all
-  end #tables_from
 
   def affected_table_names
     CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables

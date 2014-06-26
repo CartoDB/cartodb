@@ -146,7 +146,7 @@ describe Table do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       layer = table.layers.first
 
-      table.name = 'bogus_name_1' 
+      table.name = 'bogus_name_1'
       table.save
 
       table.reload

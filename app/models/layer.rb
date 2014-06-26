@@ -189,13 +189,8 @@ class Layer < Sequel::Model
   end #tables_from_table_name_option
 
   def tables_from(names)
-    tables = CartoDB::Visualization::Collection.new.fetch(
-        user_id: user.id,
-        name: names,
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
-    ).map{ |vis| vis.table}
-    tables = [] if tables.nil?
-    tables
+    # Here user should always be the owner of the parent table, so no problem matching with layer user.id
+    Table.where(user_id: user.id, name: names).all
   end #tables_from
 
   def affected_table_names

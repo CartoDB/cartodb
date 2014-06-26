@@ -50,11 +50,10 @@ describe Visualization::Locator do
       }
     ).store
 
-    table_fake    = model_fake
     user_fake     = model_fake(@map_id, @user_id)
 
     @subdomain    = 'bogus'
-    @locator      = Visualization::Locator.new(table_fake, user_fake)
+    @locator      = Visualization::Locator.new(user_fake)
   end
 
   describe '#get' do
@@ -73,11 +72,19 @@ describe Visualization::Locator do
     end
 
     it 'fetches a Table if passed a table id' do
-      table_fake = model_fake
-      user_fake = model_fake(@map_id, @user_id)
-      locator = Visualization::Locator.new(table_fake, user_fake)
-      locator.get(0, @subdomain)
-      table_fake.called_filter.should == { id: 0, user_id: @user_id }
+      user = create_user(quota_in_bytes: 1234567890, table_quota: 10)
+      table = Table.new
+      table.user_id = user.id
+      table.save
+      table.reload
+
+      table_vis = table.table_visualization
+
+      table = Visualization::Locator.new.get(table.id, user.username)
+      table[1].nil?.should eq false
+      table[1].id.should eq table_vis.table.id
+
+      user.destroy
     end
 
     it 'returns nil if no visualization or table found' do

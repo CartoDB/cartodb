@@ -125,7 +125,7 @@ class Layer < Sequel::Model
   end #data_layer?
 
   def base_layer?
-    BASE_LAYER_KINDS.include?(kind) # TODO: ask Lorenzo
+    BASE_LAYER_KINDS.include?(kind)
   end #base_layer?
 
   def register_table_dependencies(db=Rails::Sequel.connection)

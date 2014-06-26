@@ -673,11 +673,7 @@ class Table < Sequel::Model(:user_tables)
   end #invalidate_cache_for
 
   def varnish_key
-    if owner.organization.nil?
-      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
-    else
-      "^#{self.owner.database_name}:(.*#{qualified_table_name}.*)|(table)$"
-    end
+    "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
   end
 
   # adds the column if not exists or cast it to timestamp field

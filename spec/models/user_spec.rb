@@ -95,14 +95,22 @@ describe User do
 
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
-      orguser = FactoryGirl.create(:user, { organization: organization })
-      organization = create_org('testorg', 10.megabytes, 1, orguser)
-      user = User.new
-      user.organization = organization
-      user.valid?.should be_false
-      user.errors.keys.should include(:organization)
+
+      organization = create_org('testorg', 10.megabytes, 1)
+      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user1.organization = organization
+      user1.save
+
+      # Don't remove this line or the spec will fail (magic):
+      puts "Organization users: #{organization.users.count}"
+
+      user2 = new_user
+      user2.organization = organization
+      user2.valid?.should be_false
+      user2.errors.keys.should include(:organization)
+
       organization.destroy
-      orguser.destroy
+      user1.destroy
     end
 
     it 'should be valid if his organization has enough seats' do
@@ -227,8 +235,8 @@ describe User do
       "updated_at"=>1370362756
     })
     @user.stubs(:get_es_api_calls_from_redis).returns({
-      "per_day" => [0, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21], 
-      "total"=>49, 
+      "per_day" => [0, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21],
+      "total"=>49,
       "updated_at"=>1370362756
     })
     @user.get_api_calls.should == [21, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 5, 0, 16, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 26, 0, 0, 0, 0]
@@ -256,25 +264,25 @@ describe User do
                             "key" => to_date.to_i,
                             "doc_count" => 6
                           }
-                        ]  
+                        ]
                       }
-                    } 
+                    }
                    }
     Typhoeus.stub(api_url,
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s) 
-                  )  
+                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s)
+                  )
     stored_api_calls = {
-                        "per_day" => [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], 
+                        "per_day" => [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                         "total" => 21,
-                        "updated_at" => Time.now.to_i 
+                        "updated_at" => Time.now.to_i
                        }
     expected_api_calls = {
-                        "per_day" => [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 6], 
+                        "per_day" => [20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 6],
                         "total" => 31,
-                        "updated_at" => Time.now.to_i 
+                        "updated_at" => Time.now.to_i
                          }
     JSON.parse(@user.get_api_calls_from_es(stored_api_calls))["per_day"].should == expected_api_calls["per_day"]
   end
@@ -859,13 +867,12 @@ describe User do
     end
   end
 
-  def create_org(org_name, org_quota, org_seats, org_owner = nil)
+  def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name
     organization.quota_in_bytes = org_quota
     organization.seats = org_seats
-    organization.owner = org_owner
-    organization.save
+    organization.save!
     organization
   end
 

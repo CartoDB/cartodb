@@ -487,7 +487,7 @@ class User < Sequel::Model
     calls = calls.zip(old_calls).map { |pair|
       pair[0].to_i + pair[1].to_i
     } unless old_calls.blank?
-    
+
     # Add ES api calls
     es_calls = get_es_api_calls_from_redis["per_day"].to_a.reverse rescue []
     calls = calls.zip(es_calls).map { |pair|
@@ -552,7 +552,7 @@ class User < Sequel::Model
     stored_api_calls["updated_at"] = Time.now.to_i
     return stored_api_calls.to_json
   end
- 
+
   # Get the final api calls from ES and write them to redis
   def set_api_calls_from_es(options = {})
     stored_api_calls = get_es_api_calls_from_redis
@@ -560,7 +560,7 @@ class User < Sequel::Model
       $users_metadata.HMSET key, 'api_calls_es', get_api_calls_from_es(stored_api_calls)
     end
   end
-  
+
   # Legacy stats fetching
 
     def get_old_api_calls
@@ -881,11 +881,11 @@ class User < Sequel::Model
   end
 
   def partial_db_name
-    partial_db_name = self.id
-    if has_organization?
-      partial_db_name = self.organization.owner.id
+    if self.has_organization? && self.organization.owner.present?
+      self.organization.owner.id
+    else
+      self.id
     end
-    partial_db_name
   end
 
   def has_organization?

@@ -28,6 +28,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def update
+    #TODO: security, check write permission
     unless params[:id].blank?
       begin
         resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
@@ -46,8 +47,13 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def destroy
+    #TODO: security, check write permission
     id = (params[:id] =~ /^\d+$/ ? params[:id] : params[:id].to_s.split(','))
-    current_user.in_database.select.from(@table.name).where(cartodb_id: id).delete
+    schema_name = current_user.database_schema
+    if current_user.id != @table.owner.id
+      schema_name = @table.owner.database_schema
+    end
+    current_user.in_database.select.from(@table.name.to_sym.qualify(schema_name.to_sym)).where(cartodb_id: id).delete
     head :no_content
   rescue => e
     render_jsonp({ errors: ["row identified with #{params[:id]} not found"] }, 404)

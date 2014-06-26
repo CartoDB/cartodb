@@ -141,6 +141,24 @@ class Table < Sequel::Model(:user_tables)
     table
   end
 
+  # Get a list of tables given an array with the names
+  # (can be fully qualified).
+  # it also needs the user used to search a table when the
+  # name is not qualified
+  def self.get_all_by_names(names, viewer_user)
+    names.map { |t|
+      user_id = viewer_user.id
+      table_name, table_schema = Table.table_and_schema(t)
+      unless table_schema.nil?
+        owner = User.where(username:table_schema).first
+        unless owner.nil?
+          user_id = owner.id
+        end
+      end
+      Table.where(user_id: user_id, name: table_name).first
+    }
+  end #tables_from
+
 
   # Getter by table uuid or table name using canonical visualizations
   # @param id_or_name String If is a name, can become qualified as "schema.tablename"
@@ -655,11 +673,7 @@ class Table < Sequel::Model(:user_tables)
   end #invalidate_cache_for
 
   def varnish_key
-    if owner.organization.nil?
-      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
-    else
-      "^#{self.owner.database_name}:(.*#{qualified_table_name}.*)|(table)$"
-    end
+    "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
   end
 
   # adds the column if not exists or cast it to timestamp field

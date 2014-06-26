@@ -260,8 +260,12 @@ module CartoDB
         derived? && !single_data_layer?
       end #non_dependent?
 
+      def varnish_vizzjson_key
+        ".*#{id}:vizjson"
+      end
+
       def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge(".*#{id}:vizjson")
+        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
       end #invalidate_varnish_cache
 
       def invalidate_cache_and_refresh_named_map

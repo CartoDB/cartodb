@@ -102,13 +102,11 @@ module CartoDB
       end #invalidate_varnish_cache
 
       def varnish_key
-        # TODO: Check for org invalidations
-        "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
+        "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
       end #varnish_key
 
       def redis_key
-        # TODO: Check for org invalidations
-        "rails:#{table.owner.database_name}:#{table.name}"
+        "rails:#{table.owner.database_name}:#{owner.database_schema}.#{table.name}"
       end #redis_key
     end # PrivacyManager
   end # Table

@@ -1273,7 +1273,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def cartodbfy
-    owner.in_database(:as => :superuser).run("SELECT cartodb.CDB_CartodbfyTable('#{self.name}')")
+    owner.in_database(:as => :superuser).run("SELECT cartodb.CDB_CartodbfyTable('#{owner.database_schema}.#{self.name}')")
     self.schema(reload:true)
   end
 

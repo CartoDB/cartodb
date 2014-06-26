@@ -14,7 +14,8 @@ CartoDB::Application.routes.draw do
   get   '/test' => 'test#index', :as => :test
 
   scope :module => 'admin' do
-    get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
+
+    get '(/u/:user_domain)/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
     resource :organization, only: [:show] do
       resources :users, only: [:edit, :update, :create, :destroy, :new], constraints: { id: /[0-z\.\-]+/ }

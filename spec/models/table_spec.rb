@@ -584,7 +584,7 @@ describe Table do
   context "redis syncs" do
     it "should have a unique key to be identified in Redis" do
       table = create_table(:user_id => @user.id)
-      table.key.should == "rails:#{table.owner.database_name}:#{table.name}"
+      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
     end
 
     it "should rename the entries in Redis when the table has been renamed" do
@@ -596,7 +596,7 @@ describe Table do
       table.save_changes
       table.reload
 
-      table.key.should == "rails:#{table.owner.database_name}:#{table.name}"
+      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
       $tables_metadata.exists(table.key).should be_true
       $tables_metadata.exists(original_name).should be_false
       $tables_metadata.hget(table.key, "privacy").should be_present
@@ -1846,6 +1846,7 @@ describe Table do
       user_mock.stubs(:private_tables_enabled).returns(true)
       user_mock.stubs(:database_name).returns(nil)
       user_mock.stubs(:over_table_quota?).returns(false)
+      user_mock.stubs(:database_schema).returns('public')
 
       ::Table.any_instance.stubs(:get_valid_name).returns('test')
       ::Table.any_instance.stubs(:owner).returns(user_mock)

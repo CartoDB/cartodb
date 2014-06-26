@@ -9,9 +9,9 @@ module CartoDB
         :updated_at     => self.updated_at,
         :name           => self.name,
         :owner          => {
-          :id           => owner.id,
-          :username     => owner.username,
-          :avatar_url   => owner.avatar_url
+          :id           => self.owner.id,
+          :username     => self.owner.username,
+          :avatar_url   => self.owner.avatar_url
         },
         :users          => self.users.map { |u|
           {

@@ -16,11 +16,11 @@ class Organization < Sequel::Model
   # @param avatar_url String
 
   one_to_many :users
-  one_to_one :owner, class_name: 'User', foreign_key: 'owner_id'
+  one_to_one :owner, class_name: 'User', key: 'owner_id'
   plugin :validation_helpers
 
   ALLOWED_API_ATTRIBUTES = [
-    :name, :seats, :quota_in_bytes
+    :name, :seats, :quota_in_bytes, :owner_id
   ]
 
   def validate
@@ -55,7 +55,7 @@ class Organization < Sequel::Model
   end
 
   def to_poro(filtered_user = nil)
-    filtered_user ||= owner
+    filtered_user ||= self.owner
     {
       :id             => self.id,
       :seats          => self.seats,
@@ -64,11 +64,11 @@ class Organization < Sequel::Model
       :updated_at     => self.updated_at,
       :name           => self.name,
       :owner          => {
-        :id           => owner.id,
-        :username     => owner.username,
-        :avatar_url   => owner.avatar_url
+        :id           => self.owner ? self.owner.id : nil,
+        :username     => self.owner ? self.owner.username : nil,
+        :avatar_url   => self.owner ? self.owner.avatar_url : nil
       },
-      :users          => self.users.select { |item| item.id != filtered_user.id }
+      :users          => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
         .map { |u|
         {
           :id       => u.id,

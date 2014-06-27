@@ -104,9 +104,11 @@ article.public_tables {
       @include inline-block();
       margin: 0 0 5px 0;
 
-      font-size: 21px;
-      color: #2483B2;
+      font-size: 17px;
+      font-weight:bold;
       font-family: $title-fonts;
+      color: #2483B2;
+      
       @include simple-transition(color);
 
       &:hover {

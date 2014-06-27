@@ -17,10 +17,10 @@ module CartoDB
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         'derived',
+          type:         Member::DERIVED_TYPE,
           map_id:       map_copy.id,
           privacy:      visualization.privacy,
-          user_id:      visualization.user_id
+          user_id:      @user.id
         )
       end #copy
 

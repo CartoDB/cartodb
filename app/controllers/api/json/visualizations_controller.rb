@@ -64,9 +64,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     payload.delete[:permission_id] if payload[:permission_id].present?
 
     if params[:source_visualization_id]
-      source    = Visualization::Member.new(
-                    id: params.fetch(:source_visualization_id)
-                  ).fetch
+      source = Visualization::Collection.new.fetch(
+          id: params.fetch(:source_visualization_id),
+          user_id: current_user.id
+      ).first
+      return(head 403) if source.nil?
+
       member    = Visualization::Copier.new(
                     current_user, source, name_candidate
                   ).copy

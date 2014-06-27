@@ -49,6 +49,14 @@ class User < Sequel::Model
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
   SCHEMAS = %w( public cdb_importer )
   GEOCODING_BLOCK_SIZE = 1000
+  ALLOWED_API_ATTRIBUTES = [
+    :username, :email, :admin, :quota_in_bytes, :table_quota, :account_type,
+    :private_tables_enabled, :sync_tables_enabled, :map_view_quota, :map_view_block_price,
+    :geocoding_quota, :geocoding_block_price, :period_end_date, :max_layers, :user_timeout,
+    :database_timeout, :database_host, :upgraded_at, :notification,
+    :disqus_shortname, :twitter_username, :name, :description, :website
+  ]
+
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -1075,7 +1083,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-22-gb98419a'
+    tgt_rev = 'v0.2.1-25-g1573a19'
 
     add_python
 

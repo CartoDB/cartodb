@@ -799,13 +799,14 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_changed?
 
   def key
-    Table.key(owner.database_name, name)
+    Table.key(owner.database_name, "#{owner.database_schema}.#{name}")
   rescue
     nil
   end
 
+  # @param db_name String
+  # @param table_name String Must come fully qualified
   def self.key(db_name, table_name)
-    # TODO: Check for org invalidations
     "rails:#{db_name}:#{table_name}"
   end
 
@@ -1272,7 +1273,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def cartodbfy
-    owner.in_database(:as => :superuser).run("SELECT cartodb.CDB_CartodbfyTable('#{self.name}')")
+    owner.in_database(:as => :superuser).run("SELECT cartodb.CDB_CartodbfyTable('#{owner.database_schema}.#{self.name}')")
     self.schema(reload:true)
   end
 
@@ -1287,10 +1288,6 @@ class Table < Sequel::Model(:user_tables)
 
   def table_style
     self.map.data_layers.first.options['tile_style']
-  end
-
-  def table_style_from_redis
-    $tables_metadata.get("map_style|#{owner.database_name}|#{self.name}")
   end
 
   def data_last_modified
@@ -1332,7 +1329,7 @@ class Table < Sequel::Model(:user_tables)
       # update metadata records
       reload
       begin
-        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
+        $tables_metadata.rename(Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}"), key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)

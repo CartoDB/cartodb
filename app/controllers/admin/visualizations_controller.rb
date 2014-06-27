@@ -195,21 +195,28 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def public_url_for(id)
-    "/#{resource_base}/#{id}/public"
+    if request.path_info =~ %r{/tables/}
+      public_table_path(user_domain: params[:user_domain], id: id)
+    else
+      public_visualization_path(user_domain: params[:user_domain], id: id)
+    end
   end #public_url_for
 
   def public_map_url_for(id)
-    "/#{resource_base}/#{id}/public_map"
+    if request.path_info =~ %r{/tables/}
+      public_table_map_path(user_domain: params[:user_domain], id: id)
+    else
+      public_visualizations_public_map_path(user_domain: params[:user_domain], id: id)
+    end
   end #public_url_for
 
   def embed_map_url_for(id)
-    "/#{resource_base}/#{id}/embed_map"
+    if request.path_info =~ %r{/tables/}
+      public_tables_embed_map_path(user_domain: params[:user_domain], id: id)
+    else
+      public_visualizations_embed_map_path(user_domain: params[:user_domain], id: id)
+    end
   end #public_url_for
-
-  def resource_base
-    return 'viz'    if request.path_info =~ %r{/viz/}
-    return 'tables' if request.path_info =~ %r{/tables/}
-  end #resource_base
 
   def download_formats(table, format)
     format.sql  { send_data table.to_sql, data_for(table, 'zip', 'zip') }

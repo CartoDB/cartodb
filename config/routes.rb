@@ -14,6 +14,13 @@ CartoDB::Application.routes.draw do
 
   get   '/test' => 'test#index', as: :test
 
+  # OAuth
+  #TODO: Test this matches
+  match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
+  match '(/u/:user_domain)/oauth/request_token'  => 'oauth#request_token', as: :request_token
+  match '(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
+  get   '(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
+
   scope :module => :admin do
 
     # Organization dashboard page
@@ -116,18 +123,10 @@ CartoDB::Application.routes.draw do
 
   end
 
-  # TODO: Check this urls
-  scope :module => :oauth do
-    #TODO: Test this matches
-    match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
-    match '(/u/:user_domain)/oauth/request_token'  => 'oauth#request_token', as: :request_token
-    match '(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
-    get   '(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
-  end
-
   scope :module => 'api/json', :format => :json do
 
-    #V1
+    # V1
+    # --
 
     # Meta
     get '(/u/:user_domain)/api/v1/column_types' => 'meta#column_types', as: :api_v1_meta_column_types
@@ -175,8 +174,9 @@ CartoDB::Application.routes.draw do
     get    '(/u/:user_domain)/api/v1/users/:id'                 => 'users#show',     as: :api_v1_users_show
 
     # User layers
-    post   '(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#create',  as: :api_v1_users_layers_create
     get    '(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_users_layers_index
+    get    '(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#show',    as: :api_v1_users_layers_show
+    post   '(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#create',  as: :api_v1_users_layers_create
     put    '(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#update',  as: :api_v1_users_layers_update
     delete '(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#destroy', as: :api_v1_users_layers_destroy
 
@@ -185,61 +185,71 @@ CartoDB::Application.routes.draw do
     get    '(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_users_assets_index
     delete '(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
 
+    # Maps
+    get    '(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show
+    post   '(/u/:user_domain)/api/v1/maps'     => 'maps#create',  as: :api_v1_maps_create
+    put    '(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
+    delete '(/u/:user_domain)/api/v1/maps/:id' => 'maps#destroy', as: :api_v1_maps_destroy
 
-  end
+    # Map layers
+    get    '(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_maps_layers_index
+    get    '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#show',    as: :api_v1_maps_layers_show
+    post   '(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#create',  as: :api_v1_maps_layers_create
+    put    '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#update',  as: :api_v1_maps_layers_update
+    delete '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#destroy', as: :api_v1_maps_layers_destroy
 
-  scope '/api' do
-    namespace CartoDB::API::VERSION_1, :format => :json, :module => 'api/json' do
+    # Geocodings
+    get  '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',            as: :api_v1_geocodings_index
+    get  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',             as: :api_v1_geocodings_show
+    post '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',           as: :api_v1_geocodings_create
+    put  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',           as: :api_v1_geocodings_update
+    get  '(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for', as: :api_v1_geocodings_country_data
+    get  '(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',   as: :api_v1_geocodings_estimation
+    get  '(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',    as: :api_v1_geocodings_get_countries
 
-      # Maps
-      resources :maps, :only                        => [:show, :create, :update, :destroy] do
-        resources :layers, :only                    => [:show, :index, :create, :update, :destroy]
-      end
+    # Visualizations
+    get     '(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',              as: :api_v1_visualizations_tags_index
+    get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',    as: :api_v1_visualizations_index
+    post    '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',   as: :api_v1_visualizations_create
+    get     '(/u/:user_domain)/api/v1/viz/:id/stats'                      => 'visualizations#stats',    as: :api_v1_visualizations_stats,           constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',     as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',   as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
+    delete  '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',  as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id/viz'                        => 'visualizations#vizjson1', as: :api_v1_visualizations_vizjson,         constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',          as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
+    post    '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',         as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',           as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',         as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
+    delete  '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',        as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
 
-      # Geocoder
-      resources :geocodings, :only                  => [:create, :show, :index, :update] do
-        get 'country_data_for/:country_code', to: 'geocodings#country_data_for', on: :collection, as: 'country_data'
-        get 'estimation_for/:table_name',     to: 'geocodings#estimation_for',   on: :collection, as: 'estimation_for'
-        get 'get_countries',                  to: 'geocodings#get_countries',    on: :collection, as: 'get_countries'
-      end
+    # Tags
+    get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
 
-      get     'viz/tags'                            => 'tags#index', as: 'list_tags'
-      get     'viz'                                 => 'visualizations#index'
-      post    'viz'                                 => 'visualizations#create'
-      get     'viz/:id/stats'                       => 'visualizations#stats', constraints: { id: /[^\/]+/ }
-      get     'viz/:id'                             => 'visualizations#show', constraints: { id: /[^\/]+/ }
-      put     'viz/:id'                             => 'visualizations#update', constraints: { id: /[^\/]+/ }
-      delete  'viz/:id'                             => 'visualizations#destroy', constraints: { id: /[^\/]+/ }
-      get     'viz/:id/viz'                         => 'visualizations#vizjson1', as: :vizjson, constraints: { id: /[^\/]+/ }
-      get     'viz/:visualization_id/overlays'      => 'overlays#index', constraints: { visualization_id: /[^\/]+/ }
-      post    'viz/:visualization_id/overlays'      => 'overlays#create', constraints: { visualization_id: /[^\/]+/ }
-      get     'viz/:visualization_id/overlays/:id'  => 'overlays#show', constraints: { visualization_id: /[^\/]+/ }
-      put     'viz/:visualization_id/overlays/:id'  => 'overlays#update', constraints: { visualization_id: /[^\/]+/ }
-      delete  'viz/:visualization_id/overlays/:id'  => 'overlays#destroy', constraints: { visualization_id: /[^\/]+/ }
+    # Synchronizations
+    get    '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
+    post   '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
+    get    '(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_synchronizations_show
+    put    '(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update
+    delete '(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#destroy',  as: :api_v1_synchronizations_destroy
+    get    '(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
+    put    '(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#sync_now', as: :api_v1_synchronizations_sync_now
 
-      # Tags
-      resources :tags, :only                                    => [:index]
-      # Synchronizations
-      get     'synchronizations'              => 'synchronizations#index'
-      post    'synchronizations'              => 'synchronizations#create'
-      get     'synchronizations/:id'          => 'synchronizations#show'
-      put     'synchronizations/:id'          => 'synchronizations#update'
-      delete  'synchronizations/:id'          => 'synchronizations#destroy'
-      get     'synchronizations/:id/sync_now' => 'synchronizations#syncing?'
-      put     'synchronizations/:id/sync_now' => 'synchronizations#sync_now'
+    # Permissions
+    get '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#show',   as: :api_v1_permissions_show
+    put '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_show
 
-      # Permissions
-      get     'perm/:id' => 'permissions#show'
-      put     'perm/:id' => 'permissions#update'
+    # Organizations
+    get '(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
+    get '(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
 
-      # Organizations
-      get     'org/'      => 'organizations#show'
-      get     'org/users' => 'organizations#users'
+    # V2
+    # --
 
-    end
+    # Visualizations
+    get '(/u/:user_domain)/api/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
-    get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson, constraints: { id: /[^\/]+/ }
-    get '/v2/wms'            => 'api/json/wms#proxy'
+    # WMS
+    get '(/u/:user_domain)/api/v2/wms' => 'api/json/wms#proxy', as: :api_v2_wms_proxy
 
   end
 
@@ -250,4 +260,3 @@ CartoDB::Application.routes.draw do
   end
 
 end
-

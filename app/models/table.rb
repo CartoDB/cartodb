@@ -524,60 +524,75 @@ class Table < Sequel::Model(:user_tables)
     create_header_overlay(member, 2)
     create_search_overlay(member, 3)
     create_fullscreen_overlay(member, 4)
+    create_zoom_overlay(member, 5)
+    create_zoom_info_overlay(member, 6)
+    create_loader_overlay(member, 7)
+
+  end
+
+  def generate_overlay(id, options, type, order)
+
+    return CartoDB::Overlay::Member.new(
+      order: order,
+      type: type,
+      template: "",
+      options: options,
+      visualization_id: id
+    )
+
+  end
+
+  def create_loader_overlay(member, order)
+
+    options = { :display => true, :x => 20, :y => 192 }
+
+    member = generate_overlay(member.id, options, "loader", order)
+    member.store
+
+  end
+
+  def create_zoom_overlay(member, order)
+
+    options = { :display => true, :x => 20, :y => 40 } 
+
+    member = generate_overlay(member.id, options, "zoom", order)
+    member.store
+
+  end
+
+  def create_zoom_info_overlay(member, order)
+
+    options = { :display => true, :x => 20, :y => 120 } 
+
+    member = generate_overlay(member.id, options, "zoom_info", order)
+    member.store
 
   end
 
   def create_fullscreen_overlay(member, order)
 
-    options = {
-      :display => false, 
-      :x => 5,
-      :y => 152
-    }
+    options = { :display => false, :x => 20, :y => 172 } 
 
-    CartoDB::Overlay::Member.new(
-      order: order,
-      type: "fullscreen",
-      template: "",
-      options: options,
-      visualization_id: member.id
-    ).store
+    member = generate_overlay(member.id, options, "fullscreen", order)
+    member.store
 
   end
 
   def create_share_overlay(member, order)
 
-    options = {
-      :display => true, 
-      :x => 20,
-      :y => 40
-    }
+    options = { :display => true, :x => 20, :y => 40 } 
 
-    CartoDB::Overlay::Member.new(
-      order: order,
-      type: "share",
-      template: "",
-      options: options,
-      visualization_id: member.id
-    ).store
+    member = generate_overlay(member.id, options, "share", order)
+    member.store
 
   end
 
   def create_search_overlay(member, order)
 
-    options = {
-      :display => true, 
-      :x => 30,
-      :y => 40
-    }
+    options = { :display => true, :x => 40, :y => 40 } 
 
-    CartoDB::Overlay::Member.new(
-      order: order,
-      type: "search",
-      template: "",
-      options: options,
-      visualization_id: member.id
-    ).store
+    member = generate_overlay(member.id, options, "search", order)
+    member.store
 
   end
 
@@ -588,13 +603,8 @@ class Table < Sequel::Model(:user_tables)
       :extra => { :title => member.name, :description => member.description, :show_title => false, :show_description => false }
     }
 
-    CartoDB::Overlay::Member.new(
-      order: order,
-      type: "title",
-      template: "",
-      options: options,
-      visualization_id: member.id
-    ).store
+    member = generate_overlay(member.id, options, "title", order)
+    member.store
 
   end
 

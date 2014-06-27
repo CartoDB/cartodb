@@ -13,28 +13,27 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
-
 div.map {
 
   @include box-sizing(border-box);
 
-  &.show_title.show_description {
-    div.cartodb-searchbox { top: 70px; }
-    div.cartodb-zoom { top: 40px; }
-    div.cartodb-zoom-info { top: 60px; }
-  }
+  /*&.show_title.show_description {*/
+    /*div.cartodb-searchbox { top: 70px; }*/
+    /*div.cartodb-zoom { top: 40px; }*/
+    /*div.cartodb-zoom-info { top: 60px; }*/
+  /*}*/
 
-  &.show_title {
-    div.cartodb-searchbox { top: 40px; }
-    div.cartodb-zoom { top: 20px; }
-    div.cartodb-zoom-info { top: 40px; }
-  }
+  /*&.show_title {*/
+    /*div.cartodb-searchbox { top: 40px; }*/
+    /*div.cartodb-zoom { top: 20px; }*/
+    /*div.cartodb-zoom-info { top: 40px; }*/
+  /*}*/
 
-  &.show_description {
-    div.cartodb-searchbox { top: 40px; }
-    div.cartodb-zoom { top: 20px; }
-    div.cartodb-zoom-info { top: 40px; }
-  }
+  /*&.show_description {*/
+    /*div.cartodb-searchbox { top: 40px; }*/
+    /*div.cartodb-zoom { top: 20px; }*/
+    /*div.cartodb-zoom-info { top: 40px; }*/
+  /*}*/
 
   position:absolute;
   top:1px; // Header opacity black border needs to be present
@@ -696,25 +695,30 @@ div.map {
     z-index: 10001;
   }
 
+  div.cartodb-zoom {
+    position:absolute;
+    margin: 0;
+  }
+
   // Zoom info
   div.cartodb-zoom-info {
-    position:relative;
-    float:left;
-    top: 20px;
-    left: 20px;
+    position:absolute;
     margin: 0;
-    clear:both;
+    /*top: 20px;*/
+    /*left: 20px;*/
+    /*margin: 0;*/
+    /*clear:both;*/
   }
 
   // Tiler in core map
   div.cartodb-tiles-loader {
-    float:left;
     clear:both;
+    position:absolute;
 
     div.loader {
       position:relative;
-      top: 40px;
-      left: 20px;
+      top: 0;
+      left: 0;
       margin:0;
     }
   }
@@ -727,6 +731,7 @@ div.map {
 
   div.cartodb-share {
     margin: 0;
+    position:absolute;
 
     @include transform-style("linear");
     @include transition-property("right");
@@ -736,8 +741,8 @@ div.map {
   // Search box in core map
   div.cartodb-searchbox {
     display:none;
-    position:relative;
-    float:right;
+    position:absolute;
+    /*float:right;*/
     margin:0;
 
     @include transform-style("linear");

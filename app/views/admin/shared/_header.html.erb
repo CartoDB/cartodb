@@ -1,10 +1,10 @@
 <header>
   <div class="inner">
-    <h1 class="left"><%= link_to "CartoDB", dashboard_path %></h1>
+    <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain]) %></h1>
     <ul class="right">      
-      <li><%= link_to 'tables', "/dashboard/tables", :class => :tables %></a></li>
-      <li><%= link_to 'visualizations', "/dashboard/visualizations", :class => :visualizations %></a></li>
-      <li><%= link_to 'common data', dashboard_common_data_path, :class => selected_if(current_path == dashboard_common_data_path) %></a></li>
+      <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
+      <li><%= link_to 'visualizations', visualizations_index_path(user_domain: params[:user_domain]), :class => :visualizations %></a></li>
+      <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path == dashboard_common_data_path) %></a></li>
       <li><%= link_to 'documentation', Cartodb.config[:developers_host] %></a></li>
       <li>
         <a class="dropdown account separator" href="<%= account_url %>"><%= current_user.username %><span>|</span></a>

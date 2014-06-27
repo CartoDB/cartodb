@@ -12,7 +12,7 @@
   </script>
 
 
-<%= form_for @user, url: (@user.new? ? organization_users_path(@organization) : organization_user_path(@user.username)) do |form| %>
+<%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)) do |form| %>
 
   <%= form.hidden_field :private_tables_enabled %>
    <%= csrf_meta_tags %>
@@ -164,7 +164,7 @@
 
   <div class="foot">
     <% if !@user.new? -%>
-      <%= link_to("delete this user", organization_user_path(@user.username), :class => "left delete red margin15") if current_user.organization_owner? %>
+      <%= link_to("delete this user", delete_organization_user_path(user_domain: params[:user_domain], id: @user.username), :class => "left delete red margin15") if current_user.organization_owner? %>
       <%= form.submit 'Save changes', :class => "right grey button new" %>
     <% else %>
       <%= form.submit 'Create user', :class => "right grey button new" %>

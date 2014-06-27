@@ -17,10 +17,13 @@ class Organization < Sequel::Model
 
   one_to_many :users
   many_to_one :owner, class_name: 'User', key: 'owner_id'
+
   plugin :validation_helpers
 
   ALLOWED_API_ATTRIBUTES = [
-    :name, :seats, :quota_in_bytes
+    :name, :seats, :quota_in_bytes,
+    :display_name, :description,
+    :website, :discus_shortname, :twitter_username
   ]
 
   def validate
@@ -57,25 +60,30 @@ class Organization < Sequel::Model
   def to_poro(filtered_user = nil)
     filtered_user ||= self.owner
     {
-      :id             => self.id,
-      :seats          => self.seats,
-      :quota_in_bytes => self.quota_in_bytes,
-      :created_at     => self.created_at,
-      :updated_at     => self.updated_at,
-      :name           => self.name,
-      :owner          => {
-        :id           => self.owner ? self.owner.id : nil,
-        :username     => self.owner ? self.owner.username : nil,
-        :avatar_url   => self.owner ? self.owner.avatar_url : nil
+      :created_at       => self.created_at,
+      :description      => self.description,
+      :discus_shortname => self.discus_shortname,
+      :display_name     => self.display_name,
+      :id               => self.id,
+      :name             => self.name,
+      :owner            => {
+        :id         => self.owner ? self.owner.id : nil,
+        :username   => self.owner ? self.owner.username : nil,
+        :avatar_url => self.owner ? self.owner.avatar_url : nil
       },
-      :users          => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
+      :quota_in_bytes   => self.quota_in_bytes,
+      :seats            => self.seats,
+      :twitter_username => self.twitter_username,
+      :updated_at       => self.updated_at,
+      :users            => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
         .map { |u|
         {
-          :id       => u.id,
-          :username => u.username,
+          :id         => u.id,
+          :username   => u.username,
           :avatar_url => u.avatar_url
         }
-      }
+      },
+      :website          => self.website
     }
   end
 

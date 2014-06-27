@@ -170,10 +170,10 @@ namespace :cartodb do
                   LOOP
 
                     IF NOT dryrun THEN
-                      RAISE NOTICE 'Running: %', rec.q;
+                      RAISE NOTICE 'Running on %: %', current_database(), rec.q;
                       EXECUTE rec.q;
                     ELSE
-                      RAISE NOTICE 'Would run: %', rec.q;
+                      RAISE NOTICE 'Would run on %: %', current_database(), rec.q;
                     END IF;
 
                   END LOOP; 

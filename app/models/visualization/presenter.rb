@@ -70,7 +70,8 @@ module CartoDB
 
         table_data = {
           id:           table.id,
-          name:         table_name
+          name:         table_name,
+          permission:   table.table_visualization.permission.to_poro
         }
 
         table_data.merge!(

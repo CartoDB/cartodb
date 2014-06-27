@@ -78,6 +78,40 @@
       }
     }
 
+    .vis-shared {
+      @include display-flex();
+      @include cross-browser(flex-direction, row);
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(align-items, center);
+      @include cross-browser(flex-wrap, wrap);
+      padding:0 22px;
+
+
+      img { margin-left:5px }
+      span.username { color:#999999 }
+      span.permission { margin-left:5px }
+
+      .vis-shared-tags {
+        text-align:right;
+
+        span {
+          @include size(auto, 13px);
+          padding:2px 7px;
+          font:normal 10px $text-fonts2;
+          color:#666666;
+          line-height:14px;
+          background:#E1ECF5;
+          @include border-radius(2px);
+          border:1px solid #C7D1D9;
+        }
+      }
+
+      .vis-shared-info {
+        @include display-flex();
+        @include cross-browser(align-items, center);
+      }
+    }
+
     // Tags
     .vis-tags {
       padding:0px 22px;

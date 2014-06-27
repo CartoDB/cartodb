@@ -8,14 +8,14 @@ class SessionsController < ApplicationController
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to dashboard_path(trailing_slash: true) and return
+      redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
     end
   end
 
   def create
     authenticate!(:password, :scope => CartoDB.extract_subdomain(request))
     CartodbStats.increment_login_counter(params[:email])
-    redirect_to(session[:return_to] || dashboard_path(trailing_slash: true))
+    redirect_to(session[:return_to] || dashboard_path(user_domain: params[:user_domain], trailing_slash: true))
   end
 
   def destroy

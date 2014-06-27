@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
 
   helper :all
 
+  before_filter :ensure_user_domain_param
   before_filter :browser_is_html5_compliant?
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
@@ -28,7 +29,8 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_asset_debugging
-    CartoDB::Application.config.assets.debug = (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
+    CartoDB::Application.config.assets.debug = \
+      (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
   end
 
   def allow_cross_domain_access
@@ -140,6 +142,11 @@ class ApplicationController < ActionController::Base
     if banned_regex.map { |re| user_agent.match(re) }.compact.first
       raise NoHTML5Compliant
     end
+  end
+
+  # Views using MVC routes assume this param is always present
+  def ensure_user_domain_param
+    request.params[:user_domain] = nil unless request.params[:user_domain].present?
   end
 
   def current_user

@@ -1,7 +1,12 @@
 module CartoDB
 
+  # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
-    request.host.to_s.gsub(self.session_domain, '')
+    if request.params[:user_domain].nil?
+      request.host.to_s.gsub(self.session_domain, '')
+    else
+      request.params[:user_domain]
+    end
   end
 
   def self.session_domain

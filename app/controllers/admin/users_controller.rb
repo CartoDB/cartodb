@@ -19,7 +19,7 @@ class Admin::UsersController < ApplicationController
     @user.username = "#{@user.username}"
     copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
-    redirect_to organization_path, flash: { success: "New user created successfully" }
+    redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
   rescue Sequel::ValidationFailed => e
     render action: :new
   end
@@ -32,7 +32,7 @@ class Admin::UsersController < ApplicationController
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
 
     @user.save(raise_on_failure: true)
-    redirect_to edit_organization_user_path(@user.username), flash: { success: "Updated successfully" }
+    redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
   rescue Sequel::ValidationFailed => e
     render action: :edit
   end

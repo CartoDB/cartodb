@@ -1027,7 +1027,13 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    layer.setInteractivity(fields);
+    // try to change interactivity, it the layer is a named map 
+    // it's inmutable so it'a assumed the interactivity already has
+    // the fields it needs
+    try {
+      layer.setInteractivity(fields);
+    } catch(e) {
+    }
     layer.setInteraction(true);
 
     layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {

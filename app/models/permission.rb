@@ -217,9 +217,11 @@ module CartoDB
       users = relevant_user_acl_entries(@old_acl.nil? ? [] : @old_acl)
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
-          users.each { |user|
-            entity.table.remove_access(User.where(id: user[:id]).first)
-          }
+          if entity.table 
+            users.each { |user|
+              entity.table.remove_access(User.where(id: user[:id]).first)
+            }
+          end
         else
           raise PermissionError.new('Unsupported entity type trying to grant permission')
       end
@@ -228,10 +230,25 @@ module CartoDB
     def grant_db_permission(entity, user_id, access)
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
+          tables = []
+          if (entity.table)
+            tables << entity.table
+          else
+            tables = entity.related_tables
+          end
+          u = User.where(id: user_id).first
+          # if it's not a canonical visualization give permission to the associated tables if the user is the owner
+          # check ownership 
+          tables.each { |t| 
+            if not self.owner_id == t.table_visualization.permission.owner_id
+              raise PermissionError.new('Trying to change permissions to a table wihtout ownership')
+            end
+          }
+          # give permission
           if access == ACCESS_READONLY
-            entity.table.add_read_permission(User.where(id: user_id).first)
+            tables.each { |t| t.add_read_permission(u) }
           elsif access == ACCESS_READWRITE
-            entity.table.add_read_write_permission(User.where(id: user_id).first)
+            tables.each { |t| t.add_read_write_permission(u) }
           end
         else
           raise PermissionError.new('Unsupported entity type trying to grant permission')

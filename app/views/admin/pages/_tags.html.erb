@@ -16,7 +16,7 @@
         <% else %>
 
           <% if action_name == 'datasets' %>
-          <%= link_to tag.capitalize.truncate(40), dataset_public_tag_url(tag) %>
+          <%= link_to tag.capitalize.truncate(40), public_dataset_tag_url(tag) %>
           <% else %>
           <%= link_to tag.capitalize.truncate(40), public_tag_url(tag) %>
           <% end %>

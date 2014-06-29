@@ -182,6 +182,8 @@ CartoDB::Application.routes.draw do
     get    '(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_users_assets_index
     delete '(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
 
+    # /api/v1/users/5002ad84-6b3e-4372-996e-b52269ec1cac/assets/b93f1b1e-484c-491b-a22b-c61a76968b63
+
     # Maps
     get    '(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show
     post   '(/u/:user_domain)/api/v1/maps'     => 'maps#create',  as: :api_v1_maps_create

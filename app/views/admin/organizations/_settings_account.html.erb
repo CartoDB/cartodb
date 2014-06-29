@@ -2,7 +2,7 @@
 <% if current_user.organization_owner? %>
   <nav class="account-settings">
     <div class="inner">
-      <a href="<%= organization_url %>" class="<%= 'selected' if active %>">
+      <a href="<%= organization_url(user_domain: params[:user_domain]) %>" class="<%= 'selected' if active %>">
         <span class="icon organization"></span>
         <span class="info">
           <h2>Manage your seats</h2>

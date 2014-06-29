@@ -7,7 +7,6 @@ CartoDB::Application.routes.draw do
 
   get   '/login' => 'sessions#new', as: :login
   get   '/logout' => 'sessions#destroy', as: :logout
-  #TODO: Test this matches
   match '/sessions/create' => 'sessions#create', as: :create_session
   match '/limits' => 'home#limits', as: :limits
   match '/status' => 'home#app_status'
@@ -15,7 +14,6 @@ CartoDB::Application.routes.draw do
   get   '/test' => 'test#index', as: :test
 
   # OAuth
-  #TODO: Test this matches
   match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
   match '(/u/:user_domain)/oauth/request_token'  => 'oauth#request_token', as: :request_token
   match '(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
@@ -116,7 +114,6 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map', constraints: { id: /[^\/]+/ }
     post '(/u/:user_domain)/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', as: :protected_public_map, constraints: { id: /[^\/]+/ }
 
-    #TODO: Test this matches
     match  '(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
     post   '(/u/:user_domain)/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', as: :regenerate_api_key
     delete '(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
@@ -246,10 +243,10 @@ CartoDB::Application.routes.draw do
     # --
 
     # Visualizations
-    get '(/u/:user_domain)/api/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/api/v2/viz/:id/viz'    => 'visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
 
     # WMS
-    get '(/u/:user_domain)/api/v2/wms' => 'api/json/wms#proxy', as: :api_v2_wms_proxy
+    get '(/u/:user_domain)/api/v2/wms' => 'wms#proxy', as: :api_v2_wms_proxy
 
   end
 

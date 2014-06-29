@@ -82,9 +82,10 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag
     get '(/u/:user_domain)/tag/:tag/:page'           => 'pages#public', as: :public_tag_page
     # Public dataset
+    get '(/u/:user_domain)/datasets'                 => 'pages#datasets', as: :public_datasets_home
     get '(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
-    get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_dataset_tag
-    get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_dataset_tag_page
+    get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_datasets_tag
+    get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_datasets_tag_page
     # Public tables
     get '(/u/:user_domain)/tables/track_embed'       => 'visualizations#track_embed',     as: :public_tables_track_embed
     get '(/u/:user_domain)/tables/embed_forbidden'   => 'visualizations#embed_forbidden', as: :public_tables_embed_forbidden
@@ -98,6 +99,7 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/tables/:id/public/map'    => 'visualizations#public_table',    as: :public_table_map,        constraints: { id: /[^\/]+/ }
     get '(/u/:user_domain)/tables/:id/embed_map'     => 'visualizations#embed_map',       as: :public_tables_embed_map, constraints: { id: /[^\/]+/ }
     # Public visualizations
+    get '(/u/:user_domain)/'                         => 'pages#public',                   as: :public_visualizations_home
     get '(/u/:user_domain)/viz'                      => 'visualizations#index',           as: :public_visualizations
     get '(/u/:user_domain)/viz/track_embed'          => 'visualizations#track_embed',     as: :public_visualizations_track_embed
     get '(/u/:user_domain)/viz/embed_forbidden'      => 'visualizations#embed_forbidden', as: :public_visualizations_embed_forbidden

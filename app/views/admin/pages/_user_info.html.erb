@@ -3,7 +3,7 @@
   <div class="user-info">
 
     <div class="avatar">
-      <a href="/" class="circle">
+      <a href="<%= root_url %>" class="circle">
         <img src="<%= @avatar_url %>" />
       </a>
     </div>
@@ -27,9 +27,9 @@
     <ul>
       <% if action_name == 'datasets' %>
         <li><div class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></div></li>
-        <li><a href="/" class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></li>
+        <li><a href="<%= public_visualizations_home_url %>" class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></li>
       <% else %>
-        <li><a href="/datasets" class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></a></li>
+        <li><a href="<%= public_datasets_home_url %>" class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></a></li>
         <li><div class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></div></li>
       <% end %>
     </ul>

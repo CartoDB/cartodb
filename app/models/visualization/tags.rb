@@ -14,26 +14,64 @@ module CartoDB
       end #initialize
 
       def names(params={})
-        Tag.fetch(%Q{
+        if only_shared?(params)
+          filter = shared_entities_sql_filter(only_shared?(params))
+          if filter.empty?
+            return []
+          else
+            Tag.fetch(%Q{
+              SELECT DISTINCT (unnest(tags)) as name
+              FROM visualizations
+              WHERE #{shared_entities_sql_filter(only_shared?(params))}
+              AND type IN ?
+              AND privacy IN ?
+              LIMIT ?
+            }, types_from(params), privacy_from(params), limit_from(params)
+            ).map{ |tag| tag.name}
+          end
+        else
+            Tag.fetch(%Q{
             SELECT DISTINCT (unnest(tags)) as name
             FROM visualizations
             WHERE user_id = ?
             AND type IN ?
             AND privacy IN ?
-            #{shared_entities_sql_filter}
+            #{shared_entities_sql_filter(only_shared?(params))}
             LIMIT ?
           }, user.id, types_from(params), privacy_from(params), limit_from(params)
-        ).map{ |tag| tag.name}
+            ).map{ |tag| tag.name}
+        end
       end #names
 
       def count(params={})
-        Tag.fetch(%Q{
+        if only_shared?(params)
+          filter = shared_entities_sql_filter(only_shared?(params))
+          if filter.empty?
+            return []
+          else
+            Tag.fetch(%Q{
+            WITH tags as (
+              SELECT unnest(tags) as name
+              FROM visualizations
+              WHERE #{shared_entities_sql_filter(only_shared?(params))}
+              AND type IN ?
+              LIMIT ?
+            )
+            SELECT name, count(*) as count
+            FROM tags
+            GROUP BY name
+            ORDER BY count(*)
+          }, types_from(params), limit_from(params)
+            ).all.map(&:values)
+          end
+        else
+          Tag.fetch(%Q{
             WITH tags as (
               SELECT unnest(tags) as name
               FROM visualizations
               WHERE user_id = ?
               AND type IN ?
-              #{shared_entities_sql_filter}
+              #{shared_entities_sql_filter(only_shared?(params))}
               LIMIT ?
             )
             SELECT name, count(*) as count
@@ -41,14 +79,15 @@ module CartoDB
             GROUP BY name
             ORDER BY count(*)
           }, user.id, types_from(params), limit_from(params)
-        ).all.map(&:values)
+          ).all.map(&:values)
+        end
       end #count
 
       private
       
       attr_reader :user
 
-      def shared_entities_sql_filter
+      def shared_entities_sql_filter(only_shared = false)
         return '' if @exclude_shared
 
         ids = CartoDB::SharedEntity.where(
@@ -58,11 +97,17 @@ module CartoDB
         .map { |entity|
           entity.entity_id
         }
-
         return '' if ids.nil? || ids.empty?
 
-        ids_list = ids.join("','")
-        "OR id IN ('#{ids_list}')"
+        if only_shared
+          "id IN ('#{ids.join("','")}')"
+        else
+          "OR id IN ('#{ids.join("','")}')"
+        end
+      end
+
+      def only_shared?(params)
+        params[:only_shared].present?
       end
 
       def privacy_from(params={})

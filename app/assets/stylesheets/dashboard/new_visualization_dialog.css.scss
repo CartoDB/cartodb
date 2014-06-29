@@ -12,66 +12,6 @@
 @import "../common/mixins";
 
 
-
-// Default table item
-// - It renders table name, avatar, username and permissions.
-
-@mixin table-item() {
-  div.vis-info-item {
-    @include display-flex();
-    @include cross-browser(justify-content, space-between);
-    @include cross-browser(align-items, center);
-
-    img {
-      width:18px;
-      height:18px;
-      margin-left:6px;
-      background:#EDEDED;
-      @include border-radius(18px);
-    }
-
-    .value {
-      color:#666666;
-      @include text-overflow();
-    }
-
-    .by {
-      @include display-flex();
-      @include cross-browser(justify-content, flex-end);
-      @include cross-browser(align-items, center);
-      color:#999999;
-
-      span.permission {
-        width:40px;
-        line-height:15px;
-        margin-right:5px;
-        font-size:10px;
-        text-align:center;
-        border:1px solid #BBBBBB;
-        @include border-radius(20px);
-      }
-
-      span.username {
-        font-size:11px;
-      }
-
-      .remove {
-        margin-left:5px;
-        @include common-sprite(close_grey);
-        @include size(13px);
-
-        &:hover { @include common-sprite(close_grey, $offset_y:-13px); }
-      }
-    }
-
-    &.shared {
-      .value { max-width:200px }
-    }
-  }
-}
-
-
-
 .new_visualization_dialog {
 
   p { margin: 0 0 20px 0; }
@@ -94,13 +34,60 @@
       background:#F2F2F2;
       @include border-radius(6px);
 
-      @include table-item();
-      .value {
-        color: #333333;
-        font-weight:bold;
-        line-height:17px;
+      
+      div.vis-info-item {
+        @include display-flex();
+        @include cross-browser(justify-content, space-between);
+        @include cross-browser(align-items, center);
+
+        img {
+          width:18px;
+          height:18px;
+          margin-left:6px;
+          background:#EDEDED;
+          @include border-radius(18px);
+        }
+
+        .value {
+          color: #333333;
+          font-weight:bold;
+          @include text-overflow();
+          line-height:17px;
+        }
+
+        .by {
+          @include display-flex();
+          @include cross-browser(justify-content, flex-end);
+          @include cross-browser(align-items, center);
+          color:#999999;
+
+          span.permission {
+            width:40px;
+            line-height:15px;
+            margin-right:5px;
+            font-size:10px;
+            text-align:center;
+            border:1px solid #BBBBBB;
+            @include border-radius(20px);
+          }
+
+          span.username {
+            font-size:11px;
+          }
+
+          .remove {
+            margin-left:5px;
+            @include common-sprite(close_grey);
+            @include size(13px);
+
+            &:hover { @include common-sprite(close_grey, $offset_y:-13px); }
+          }
+        }
+
+        &.shared {
+          .value { max-width:230px }
+        }
       }
-      div.vis-info-item.shared .value { max-width:230px }
     }
   }
 
@@ -178,28 +165,5 @@
       
     }
   }
-}
-
-
-
-// Visualizations combo
-
-.visualizations-combo {
-
-  .select2-results li {
-    padding:8px 0;
-  }
-
-  .select2-results .select2-result-label {
-    display:block;
-    width:auto;
-  }
-
-  .select2-highlighted {
-    background:#EEEEEE;
-    border-bottom:1px solid rgba(0,0,0,0);
-  }
-  
-  @include table-item();
 }
 

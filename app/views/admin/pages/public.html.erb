@@ -49,7 +49,7 @@
           <li>
             <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">
 
-              <a href="/viz/<%= vis[:id] %>/public_map?<%= vis[:url_options].presence %>" class="backdrop"></a>
+              <a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]) %>?<%= vis[:url_options].presence %>" class="backdrop"></a>
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
@@ -83,18 +83,22 @@
           <% if @pages > 1 && params[:page].to_i > 1 %>
             <% p = params[:page] || 1 %>
             <% if params[:tag] %>
-              <a class="prev" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i - 1 %>">Prev</a>
+              <a class="prev" href="<%= public_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i-1)) %>">Prev</a>
             <% else %>
-              <a class="prev" href="/page/<%= p.to_i - 1 %>">Prev</a>
+              <a class="prev" href="<%= public_page_url(user_domain: params[:user_domain], page: (p.to_i-1)) %>">Prev</a>
             <% end %>
           <% end %>
 
           <ul>
             <% @pages.times do |i| %>
               <% if params[:tag] %>
-                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/tag/<%= params[:tag] %>/<%= i + 1 %>"></a></li>
+                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
+                  <a href="<%= public_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (i+1)) %>"></a>
+                </li>
               <% else %>
-                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/page/<%= i + 1 %>"></a></li>
+                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
+                  <a href="<%= public_page_url(user_domain: params[:user_domain], page: (i+1)) %>"></a>
+                </li>
               <% end %>
             <% end %>
           </ul>
@@ -102,9 +106,9 @@
           <% if @pages > 1 && (params[:page].to_i < @pages) %>
             <% p = params[:page] || 1 %>
             <% if params[:tag] %>
-              <a class="next" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i + 1 %>">Next</a>
+              <a class="next" href="<%= public_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i+1)) %>">Next</a>
             <% else %>
-              <a class="next" href="/page/<%= p.to_i + 1 %>">Next</a>
+              <a class="next" href="<%= public_page_url(user_domain: params[:user_domain], page: (p.to_i+1)) %>">Next</a>
             <% end %>
           <% end %>
 

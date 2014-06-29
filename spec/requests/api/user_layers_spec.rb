@@ -20,7 +20,7 @@ feature "API 1.0 user layers management" do
   scenario "Create a new layer associated to the current user" do
     opts = { kind: 'carto' }
 
-    post_json v1_user_layers_url(params.merge(user_id: @user.id)), opts do |response|
+    post_json api_v1_users_layers_create_url(params.merge(user_id: @user.id)), opts do |response|
       response.status.should    be_success
       @user.layers.size.should  eq 1
       response.body[:id].should eq @user.layers.first.id
@@ -33,7 +33,7 @@ feature "API 1.0 user layers management" do
     @user.add_layer layer
     @user.add_layer layer2
 
-    get_json v1_user_layers_url(params.merge(user_id: @user.id)) do |response|
+    get_json api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
       response.status.should be_success
       response.body[:total_entries].should   eq 2
       response.body[:layers].size.should     eq 2
@@ -46,7 +46,7 @@ feature "API 1.0 user layers management" do
     @user.add_layer layer
     opts = { options: { opt1: 'value' }, infowindow: ['column1', 'column2'], kind: 'carto' }
 
-    put_json v1_user_layer_url(params.merge(id: layer.id, user_id: @user.id)), opts do |response|
+    put_json api_v1_users_layers_update_url(params.merge(id: layer.id, user_id: @user.id)), opts do |response|
       response.status.should be_success
       response.body[:id].should         eq layer.id
       response.body[:options].should    == { 'opt1' => 'value' }
@@ -59,7 +59,7 @@ feature "API 1.0 user layers management" do
     layer = Layer.create :kind => 'carto'
     @user.add_layer layer
     
-    delete_json v1_user_layer_url(params.merge(id: layer.id, user_id: @user.id)) do |response|
+    delete_json api_v1_users_layers_destroy_url(params.merge(id: layer.id, user_id: @user.id)) do |response|
       response.status.should eq 204
       expect { layer.refresh }.to raise_error
     end

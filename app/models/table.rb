@@ -885,7 +885,7 @@ class Table < Sequel::Model(:user_tables)
       raw_attributes.delete(:id) unless schema.include?(:id)
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
-        raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
+        raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
       begin
         primary_key = user_database.from(name).insert(make_sequel_compatible(attributes))

@@ -198,13 +198,13 @@ CartoDB::Application.routes.draw do
     delete '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#destroy', as: :api_v1_maps_layers_destroy
 
     # Geocodings
+    get  '(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for', as: :api_v1_geocodings_country_data
+    get  '(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',   as: :api_v1_geocodings_estimation
+    get  '(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',    as: :api_v1_geocodings_get_countries
     get  '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',            as: :api_v1_geocodings_index
     get  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',             as: :api_v1_geocodings_show
     post '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',           as: :api_v1_geocodings_create
     put  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',           as: :api_v1_geocodings_update
-    get  '(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for', as: :api_v1_geocodings_country_data
-    get  '(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',   as: :api_v1_geocodings_estimation
-    get  '(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',    as: :api_v1_geocodings_get_countries
 
     # Visualizations
     get     '(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',              as: :api_v1_visualizations_tags_index

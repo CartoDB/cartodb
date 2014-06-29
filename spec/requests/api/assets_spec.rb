@@ -23,7 +23,7 @@ describe "Assets API" do
     if File.exist?(file_path) && File.file?(file_path)
       uploaded_file = Rack::Test::UploadedFile.new(file_path, 'image/png')
 
-      post_json v1_user_assets_url(@user, params.merge(
+      post_json(api_v1_users_assets_create_url(user_id: @user), params.merge(
         kind: 'wadus',
         filename: uploaded_file.path)
       ) do |response|
@@ -43,7 +43,7 @@ describe "Assets API" do
 
   it "returns some error message when the asset creation fails" do
     Asset.any_instance.stubs(:s3_bucket).raises("OMG AWS exception")
-    post_json v1_user_assets_url(@user, params.merge(
+    post_json(api_v1_users_assets_create_url(user_id: @user), params.merge(
       :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should == 400
@@ -54,7 +54,7 @@ describe "Assets API" do
   it "gets all assets" do
     3.times { FactoryGirl.create(:asset, user_id: @user.id) }
 
-    get_json v1_user_assets_url(@user, params) do |response|
+    get_json(api_v1_users_assets_index_url(user_id: @user), params) do |response|
       response.status.should be_success
       response.body[:assets].size.should == 3
     end
@@ -63,7 +63,7 @@ describe "Assets API" do
   it "deletes an asset" do
     FactoryGirl.create(:asset, user_id: @user.id)
     @user.reload
-    delete_json v1_user_asset_url(@user, @user.assets.first, params) do |response|
+    delete_json(api_v1_users_assets_destroy_url(user_id: @user.id, id: @user.assets.first.id), params) do |response|
       response.status.should be_success
       @user.reload
       @user.assets.count.should == 0

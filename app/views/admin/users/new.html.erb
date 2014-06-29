@@ -26,7 +26,7 @@
 
   <div class="inner">
     <section class="block">
-      <%= link_to "back", organization_url, :class => "back" %>
+      <%= link_to "back", organization_url(user_domain: params[:user_domain]), :class => "back" %>
       <%= render partial: 'form' %>
     </section>
   </div>

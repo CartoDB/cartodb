@@ -72,8 +72,8 @@ module HelperMethods
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
 
-  def delete_json(path, headers ={}, &block)
-    delete path, {}, headers
+  def delete_json(path, params = {}, headers ={}, &block)
+    delete path, params, headers
     response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end

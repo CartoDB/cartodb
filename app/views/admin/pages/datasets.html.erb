@@ -59,7 +59,7 @@
               <% if dataset[:tags].size > 0 %>
                 <ul class="tags">
                   <% dataset[:tags].each do |tag| %>
-                    <li><%= link_to tag, dataset_public_tag_url(tag) %></li>
+                    <li><%= link_to tag, dataset_public_tag_url(user_domain: params[:user_domain], id: tag) %></li>
                   <% end %>
                 </ul>
               <% end %>

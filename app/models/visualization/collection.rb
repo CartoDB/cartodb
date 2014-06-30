@@ -116,18 +116,12 @@ module CartoDB
       def filter_by_only_shared(dataset, filters)
         return dataset unless (filters[:user_id].present? && filters[:only_shared].present?)
 
-        shared_vis = CartoDB::SharedEntity.where(
-            recipient_id: filters[:user_id],
-            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-        ).all
-        .map { |entity|
-          entity.entity_id
-        }
+        shared_vis = user_shared_vis(filters[:user_id])
 
         if shared_vis.nil? || shared_vis.empty?
           nil
         else
-          dataset.where(id: shared_vis)
+          dataset.where(id: shared_vis).exclude(user_id: filters[:user_id])
         end
       end
 
@@ -135,16 +129,26 @@ module CartoDB
         return dataset unless filters[:user_id].present?
         return dataset if filters[:exclude_shared].present?
 
-        shared_vis = CartoDB::SharedEntity.where(
-            recipient_id: filters[:user_id],
-            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-        ).all
-         .map { |entity|
-          entity.entity_id
-        }
+        shared_vis = user_shared_vis(filters[:user_id])
 
         return dataset if shared_vis.nil? || shared_vis.empty?
         dataset.or(id: shared_vis)
+      end
+
+      def user_shared_vis(user_id)
+        recipient_ids = [user_id]
+        user = User.where(id: user_id).first
+        if user.has_organization?
+          recipient_ids << user.organization.id
+        end
+
+        CartoDB::SharedEntity.where(
+            recipient_id: recipient_ids,
+            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        ).all
+        .map { |entity|
+          entity.entity_id
+        }
       end
 
       def tags_from(filters={})

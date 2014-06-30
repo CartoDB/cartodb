@@ -867,6 +867,52 @@ describe User do
     end
   end
 
+  describe '#destroy_restrictions' do
+    it 'Checks some scenarios upon user destruction regarding organizations' do
+      u1 = create_user(email: 'u1@example.com', username: 'u1', password: 'admin123')
+      u2 = create_user(email: 'u2@example.com', username: 'u2', password: 'admin123')
+
+      org = create_org('cartodb', 1234567890, 5)
+
+      u1.organization = org
+      u1.save
+      u1.reload
+      u1.organization.nil?.should eq false
+      org = u1.organization
+      org.owner_id = u1.id
+      org.save
+      u1.reload
+      u1.organization.owner.id.should eq u1.id
+
+      u2.organization = org
+      u2.save
+      u2.reload
+      u2.organization.nil?.should eq false
+      u2.reload
+
+      # Cannot remove as more users depend on the org
+      expect {
+        u1.destroy
+      }.to raise_exception CartoDB::BaseCartoDBError
+
+
+      pending "Until User organization is stabilized, cannot properly delete stuff"
+
+      # Remove non-admin first
+      u2.destroy
+
+      u1.reload
+      org.reload
+      org.users.count.should eq 1
+
+      # And now we can destroy the owner
+      u1.destroy
+
+      org.reload
+      org.users.count.should eq 0
+    end
+  end
+
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name

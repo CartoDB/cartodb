@@ -124,7 +124,20 @@ class User < Sequel::Model
 
   def before_destroy
     error_happened = false
+    has_organization = false
+
+    unless self.organization_id.nil?
+      if self.organization.owner.id == self.id && self.organization.users.count > 1
+        msg = 'Attempted to delete owner from organization with other users'
+        CartoDB::Logger.info msg
+        raise CartoDB::BaseCartoDBError.new(msg)
+      end
+      has_organization = true
+    end
+
     begin
+      self.organization_id = nil
+
       # Remove user tables
       self.tables.all.each { |t| t.destroy }
 
@@ -144,7 +157,31 @@ class User < Sequel::Model
 
     # Invalidate user cache
     self.invalidate_varnish_cache
-    self.drop_database_and_user unless error_happened
+
+    # Delete the DB or the schema
+    if has_organization
+      self.drop_organization_user unless error_happened
+    else
+      self.drop_database_and_user unless error_happened
+    end
+  end
+
+  # Org users share the same db, so must only delete the schema
+  def drop_organization_user
+    Thread.new do
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          'host' => database_host,
+          'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+      end)))
+      User.terminate_database_connections(database_name, database_host, database_schema)
+      conn.run("DROP SCHEMA \"#{database_schema}\"")
+      conn.run("DROP USER \"#{database_username}\"")
+      conn.disconnect
+    end.join
+    monitor_user_notification
   end
 
   def drop_database_and_user

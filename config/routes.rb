@@ -209,19 +209,21 @@ CartoDB::Application.routes.draw do
     put  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',           as: :api_v1_geocodings_update
 
     # Visualizations
-    get     '(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',              as: :api_v1_visualizations_tags_index
-    get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',    as: :api_v1_visualizations_index
-    post    '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',   as: :api_v1_visualizations_create
-    get     '(/u/:user_domain)/api/v1/viz/:id/stats'                      => 'visualizations#stats',    as: :api_v1_visualizations_stats,           constraints: { id: /[^\/]+/ }
-    get     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',     as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
-    put     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',   as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
-    delete  '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',  as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
-    get     '(/u/:user_domain)/api/v1/viz/:id/viz'                        => 'visualizations#vizjson1', as: :api_v1_visualizations_vizjson,         constraints: { id: /[^\/]+/ }
-    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',          as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
-    post    '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',         as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
-    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',           as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
-    put     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',         as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
-    delete  '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',        as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
+    get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
+    post    '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
+    get     '(/u/:user_domain)/api/v1/viz/:id/stats'                      => 'visualizations#stats',           as: :api_v1_visualizations_stats,           constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
+    delete  '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id/viz'                        => 'visualizations#vizjson1',        as: :api_v1_visualizations_vizjson,         constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',                 as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
+    post    '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',                as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',                  as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',                as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
+    delete  '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',               as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+    post    '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
 
     # Tags
     get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index

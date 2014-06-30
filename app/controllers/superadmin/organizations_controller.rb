@@ -19,7 +19,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     @organization = Organization.new
     attributes = params[:organization]
 
-    @organization.set_only(attributes, Organization::ALLOWED_API_ATTRIBUTES)
+    @organization.set_only(attributes, @organization.api_attributes)
     set_owner_if_present(attributes)
 
     @organization.save
@@ -29,7 +29,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   def update
     attributes = params[:organization]
 
-    @organization.set_only(attributes, Organization::ALLOWED_API_ATTRIBUTES)
+    @organization.set_only(attributes, @organization.api_attributes)
     set_owner_if_present(attributes)
 
     @organization.save

@@ -20,11 +20,18 @@ class Organization < Sequel::Model
 
   plugin :validation_helpers
 
-  ALLOWED_API_ATTRIBUTES = [
-    :name, :seats, :quota_in_bytes,
-    :display_name, :description,
-    :website, :discus_shortname, :twitter_username
-  ]
+  # Attributes synched with CartoDB Central
+  def api_attributes
+    [
+      :name, :seats, :quota_in_bytes,
+      :display_name, :description,
+      :website, :discus_shortname, :twitter_username
+    ]
+  end # api_attributes
+
+  def api_attributes_with_values
+    Hash[*self.api_attributes.map{ |x| [x, self[x]] }.flatten]
+  end
 
   def validate
     super

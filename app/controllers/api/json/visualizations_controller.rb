@@ -7,6 +7,7 @@ require_relative '../../../models/visualization/locator'
 require_relative '../../../models/visualization/copier'
 require_relative '../../../models/visualization/name_generator'
 require_relative '../../../models/visualization/table_blender'
+require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 
@@ -17,7 +18,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
   before_filter :link_ghost_tables, only: [:index, :show]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2, :notify_watching, :list_watching]
 
   def index
     collection = Visualization::Collection.new.fetch(
@@ -230,6 +231,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     CartoDB.notify_exception(exception)
     raise exception
   end #vizjson
+
+  def notify_watching
+    member = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    watcher = CartoDB::Visualization::Watcher.new(current_user, member)
+    watcher.notify
+    render_jsonp('ok')
+  end
+
+  def list_watching
+    member = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    watcher = CartoDB::Visualization::Watcher.new(current_user, member)
+    render_jsonp(watcher.list)
+  end
 
   private
 

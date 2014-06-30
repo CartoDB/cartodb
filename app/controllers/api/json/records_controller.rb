@@ -1,4 +1,7 @@
-# coding: UTF-8
+# encoding: UTF-8
+
+require_relative '../../../models/visualization/member'
+
 class Api::Json::RecordsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy
 
@@ -28,7 +31,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def update
-    #TODO: security, check write permission
+    return(head 401) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
     unless params[:id].blank?
       begin
         resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
@@ -47,7 +50,8 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def destroy
-    #TODO: security, check write permission
+    return(head 401) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+
     id = (params[:id] =~ /^\d+$/ ? params[:id] : params[:id].to_s.split(','))
     schema_name = current_user.database_schema
     if current_user.id != @table.owner.id

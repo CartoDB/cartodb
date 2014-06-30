@@ -24,27 +24,27 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection = Visualization::Collection.new.fetch(
                    params.dup.merge(scope_for(current_user))
                  )
-    table_data = collection.map { |member|
-      if member.table.nil?
+    table_data = collection.map { |vis|
+      if vis.table.nil?
         nil
       else
         {
-          name:   member.table.name,
-          schema: member.user.database_schema
+          name:   vis.table.name,
+          schema: vis.user.database_schema
         }
       end
     }.compact
     synchronizations = synchronizations_by_table_name(table_data)
     rows_and_sizes   = rows_and_sizes_for(table_data)
 
-    representation  = collection.map { |member|
+    representation  = collection.map { |vis|
       begin
-        member.to_hash(
+        vis.to_hash(
           related:    false,
           table_data: !(params[:table_data] =~ /false/),
           user:       current_user,
-          table:      member.table,
-          synchronization: synchronizations[member.name],
+          table:      vis.table,
+          synchronization: synchronizations[vis.name],
           rows_and_sizes: rows_and_sizes
         )
       rescue => exception
@@ -71,7 +71,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       ).first
       return(head 403) if source.nil?
 
-      member    = Visualization::Copier.new(
+      vis    = Visualization::Copier.new(
                     current_user, source, name_candidate
                   ).copy
     elsif params[:tables]
@@ -87,7 +87,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   }.flatten
       blender   = Visualization::TableBlender.new(current_user, tables)
       map       = blender.blend
-      member    = Visualization::Member.new(
+      vis    = Visualization::Member.new(
                     payload.merge(
                       name:     name_candidate,
                       map_id:   map.id,
@@ -97,7 +97,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                     )
                   )
     else
-      member    = Visualization::Member.new(
+      vis    = Visualization::Member.new(
                     payload_with_default_privacy.merge(
                         name: name_candidate,
                         user_id:  current_user.id
@@ -105,16 +105,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   )
     end
 
-    member.privacy = member.default_privacy(current_user)
+    vis.privacy = vis.default_privacy(current_user)
 
-    member.store
+    vis.store
     collection  = Visualization::Collection.new.fetch
-    collection.add(member)
+    collection.add(vis)
     collection.store
     current_user.update_visualization_metrics
-    render_jsonp(member)
+    render_jsonp(vis)
   rescue CartoDB::InvalidMember
-    render_jsonp({ errors: member.full_errors }, 400)
+    render_jsonp({ errors: vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
@@ -124,44 +124,44 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #create
 
   def show
-    member = Visualization::Member.new(id: @table_id).fetch
-    return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    render_jsonp(member)
+    vis = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    render_jsonp(vis)
   rescue KeyError
     head(404)
   end #show
   
   def update
-    member = Visualization::Member.new(id: @table_id).fetch
-    return head(403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+    vis = Visualization::Member.new(id: @table_id).fetch
+    return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     payload.delete(:permission) if payload[:permission].present?
     payload.delete[:permission_id] if payload[:permission_id].present?
 
     # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
     # This is far from perfect, but works without messing with table-vis sync and their two backends
-    if member.table?
-      old_vis_name = member.name
+    if vis.table?
+      old_vis_name = vis.name
 
       payload.delete(:url_options) if payload[:url_options].present?
-      member.attributes = payload
-      new_vis_name = member.name
-      old_table_name = member.table.name
-      member.store.fetch
-      if new_vis_name != old_vis_name && member.table.name == old_table_name
-        member.name = old_vis_name
-        member.store.fetch
+      vis.attributes = payload
+      new_vis_name = vis.name
+      old_table_name = vis.table.name
+      vis.store.fetch
+      if new_vis_name != old_vis_name && vis.table.name == old_table_name
+        vis.name = old_vis_name
+        vis.store.fetch
       end
     else
-      member.attributes = payload  
-      member.store.fetch
+      vis.attributes = payload  
+      vis.store.fetch
     end
 
-    render_jsonp(member)
+    render_jsonp(vis)
   rescue KeyError
     head(404)
   rescue CartoDB::InvalidMember
-    render_jsonp({ errors: member.full_errors }, 400)
+    render_jsonp({ errors: vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
@@ -171,9 +171,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #update
 
   def destroy
-    member = Visualization::Member.new(id: @table_id).fetch
-    return(head 403) unless member.is_owner?(current_user)
-    member.delete
+    vis = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless vis.is_owner?(current_user)
+    vis.delete
     current_user.update_visualization_metrics
     return head 204
   rescue KeyError
@@ -187,9 +187,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #destroy
 
   def stats
-    member = Visualization::Member.new(id: @table_id).fetch
-    return(head 401) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    render_jsonp(member.stats)
+    vis = Visualization::Member.new(id: @table_id).fetch
+    return(head 401) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    render_jsonp(vis.stats)
   rescue KeyError
     head(404)
   end #stats
@@ -233,17 +233,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #vizjson
 
   def notify_watching
-    member = Visualization::Member.new(id: @table_id).fetch
-    return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    watcher = CartoDB::Visualization::Watcher.new(current_user, member)
+    vis = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    watcher = CartoDB::Visualization::Watcher.new(current_user, vis)
     watcher.notify
     render_jsonp('ok')
   end
 
   def list_watching
-    member = Visualization::Member.new(id: @table_id).fetch
-    return(head 403) unless member.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-    watcher = CartoDB::Visualization::Watcher.new(current_user, member)
+    vis = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    watcher = CartoDB::Visualization::Watcher.new(current_user, vis)
     render_jsonp(watcher.list)
   end
 
@@ -297,13 +297,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def name_candidate
     Visualization::NameGenerator.new(current_user)
-                      .name(params[:name])
+                                .name(params[:name])
   end #name_candidate
 
   def tables_by_map_id(map_ids)
-    Hash[
-      ::Table.where(map_id: map_ids).map { |table| [table.map_id, table] }
-    ]
+    Hash[ ::Table.where(map_id: map_ids).map { |table| [table.map_id, table] } ]
   end
 
   def synchronizations_by_table_name(table_data)

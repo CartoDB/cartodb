@@ -1,6 +1,6 @@
 <header>
   <div class="inner">
-    <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain]) %></h1>
+    <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>
     <ul class="right">      
       <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
       <li><%= link_to 'visualizations', visualizations_index_path(user_domain: params[:user_domain]), :class => :visualizations %></a></li>

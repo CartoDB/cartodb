@@ -69,7 +69,8 @@ class Organization < Sequel::Model
       :owner            => {
         :id         => self.owner ? self.owner.id : nil,
         :username   => self.owner ? self.owner.username : nil,
-        :avatar_url => self.owner ? self.owner.avatar_url : nil
+        :avatar_url => self.owner ? self.owner.avatar_url : nil,
+        :email      => self.owner ? self.owner.email : nil
       },
       :quota_in_bytes   => self.quota_in_bytes,
       :seats            => self.seats,

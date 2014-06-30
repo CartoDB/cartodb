@@ -890,7 +890,7 @@ class User < Sequel::Model
 
   def partial_db_name
     if self.has_organization? && self.organization.owner.present?
-      self.organization.owner.id
+      self.organization.owner_id
     else
       self.id
     end
@@ -941,7 +941,7 @@ class User < Sequel::Model
         puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
         raise e
       end
-      if not has_organization? or organization_owner?
+      if not has_organization? or organization_owner? or organization.users.count == 0
         begin
           conn.run("CREATE DATABASE \"#{self.database_name}\"
           WITH TEMPLATE = template_postgis
@@ -960,6 +960,7 @@ class User < Sequel::Model
     set_database_search_path
     set_database_permissions
     set_user_as_organization_member
+    set_user_as_organization_owner_if_needed
     rebuild_quota_trigger
     create_function_invalidate_varnish
   end
@@ -1191,6 +1192,12 @@ TRIGGER
       user_database.transaction do
         user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
       end
+    end
+  end
+
+  def set_user_as_organization_owner_if_needed
+    if self.organization && self.organization.owner.nil? && self.organization.users.count == 0
+      self.organization.update(owner_id: self.id)
     end
   end
 

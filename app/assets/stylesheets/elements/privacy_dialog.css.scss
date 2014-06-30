@@ -194,6 +194,11 @@
         &:hover { background:#EDEDED }
 
         &.disabled:hover { background:none }
+
+        &.selected {
+          background:#EDEDED;
+          cursor:default;
+        }
       }
 
       // Upgrade button

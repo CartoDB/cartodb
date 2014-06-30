@@ -22,6 +22,10 @@ class Admin::VisualizationsController < ApplicationController
     return(redirect_to public_url_for(@table_id)) unless current_user.present?
     @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(pretty_404) unless @visualization
+
+    return(redirect_to public_url_for(@table_id)) unless \
+      @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+
     respond_to { |format| format.html }
 
     update_user_last_activity

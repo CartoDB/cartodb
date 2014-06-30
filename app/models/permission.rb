@@ -191,15 +191,27 @@ module CartoDB
       # Create user entities for the new ACL
       users = relevant_user_acl_entries(acl)
       users.each { |user|
-        CartoDB::SharedEntity.new(
+        shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
             entity_id:      self.entity_id,
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
 
-        grant_db_permission(entity, user[:id], user[:access])
+        grant_db_permission(entity, user[:access], shared_entity)
       }
+
+      org = relevant_org_acl_entry(acl)
+      if org
+        shared_entity = CartoDB::SharedEntity.new(
+            recipient_id:   org[:id],
+            recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
+            entity_id:      self.entity_id,
+            entity_type:    type_for_shared_entity(self.entity_type)
+        ).save
+
+        grant_db_permission(entity, org[:access], shared_entity)
+      end
     end
 
     private
@@ -215,9 +227,13 @@ module CartoDB
 
     def revoke_previous_permissions(entity)
       users = relevant_user_acl_entries(@old_acl.nil? ? [] : @old_acl)
+      org = relevant_org_acl_entry(@old_acl.nil? ? [] : @old_acl)
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
-          if entity.table 
+          if entity.table
+            if org
+              entity.table.remove_organization_access
+            end
             users.each { |user|
               entity.table.remove_access(User.where(id: user[:id]).first)
             }
@@ -227,7 +243,14 @@ module CartoDB
       end
     end
 
-    def grant_db_permission(entity, user_id, access)
+    def grant_db_permission(entity, access, shared_entity)
+      if shared_entity.recipient_type == CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
+        permission_strategy = OrganizationPermission.new
+      else
+        u = User.where(id: shared_entity[:recipient_id]).first
+        permission_strategy = UserPermission.new(u)
+      end
+
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
           tables = []
@@ -236,19 +259,18 @@ module CartoDB
           else
             tables = entity.related_tables
           end
-          u = User.where(id: user_id).first
           # if it's not a canonical visualization give permission to the associated tables if the user is the owner
           # check ownership 
           tables.each { |t| 
             if not self.owner_id == t.table_visualization.permission.owner_id
-              raise PermissionError.new('Trying to change permissions to a table wihtout ownership')
+              raise PermissionError.new('Trying to change permissions to a table without ownership')
             end
           }
           # give permission
           if access == ACCESS_READONLY
-            tables.each { |t| t.add_read_permission(u) }
+            tables.each { |t| permission_strategy.add_read_permission(t) }
           elsif access == ACCESS_READWRITE
-            tables.each { |t| t.add_read_write_permission(u) }
+            tables.each { |t| permission_strategy.add_read_write_permission(t) }
           end
         else
           raise PermissionError.new('Unsupported entity type trying to grant permission')
@@ -257,12 +279,20 @@ module CartoDB
 
     # Only user entries, and those with forbids also skipped
     def relevant_user_acl_entries(acl_list)
+      relevant_acl_entries(acl_list, TYPE_USER)
+    end
+
+    def relevant_org_acl_entry(acl_list)
+      relevant_acl_entries(acl_list, TYPE_ORGANIZATION).first
+    end
+
+    def relevant_acl_entries(acl_list, type)
       acl_list.select { |entry|
-        entry[:type] == TYPE_USER && entry[:access] != ACCESS_NONE
+        entry[:type] == type && entry[:access] != ACCESS_NONE
       }.map { |entry|
         {
-          id:     entry[:id],
-          access: entry[:access]
+            id:     entry[:id],
+            access: entry[:access]
         }
       }
     end
@@ -270,5 +300,32 @@ module CartoDB
   end
 
   class PermissionError < StandardError; end
+
+
+  class OrganizationPermission
+    def add_read_permission(table)
+      table.add_organization_read_permission
+    end
+
+    def add_read_write_permission(table)
+      table.add_organization_read_write_permission
+    end
+  end
+
+
+  class UserPermission
+
+    def initialize(user)
+      @user = user
+    end
+
+    def add_read_permission(table)
+      table.add_read_permission(@user)
+    end
+
+    def add_read_write_permission(table)
+      table.add_read_write_permission(@user)
+    end
+  end
 
 end

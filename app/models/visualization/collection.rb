@@ -121,7 +121,7 @@ module CartoDB
         if shared_vis.nil? || shared_vis.empty?
           nil
         else
-          dataset.where(id: shared_vis)
+          dataset.where(id: shared_vis).exclude(user_id: filters[:user_id])
         end
       end
 

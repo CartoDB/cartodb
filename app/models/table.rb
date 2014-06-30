@@ -520,13 +520,14 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
-    create_share_overlay(member, 1)
-    create_header_overlay(member, 2)
-    create_search_overlay(member, 3)
-    create_fullscreen_overlay(member, 4)
-    create_zoom_overlay(member, 5)
-    create_zoom_info_overlay(member, 6)
-    create_loader_overlay(member, 7)
+    create_layer_selector_overlay(member, 1)
+    create_share_overlay(member, 2)
+    create_header_overlay(member, 3)
+    create_search_overlay(member, 4)
+    create_zoom_overlay(member, 6)
+    create_fullscreen_overlay(member, 7)
+    create_zoom_info_overlay(member, 8)
+    create_loader_overlay(member, 9)
 
   end
 
@@ -546,7 +547,14 @@ class Table < Sequel::Model(:user_tables)
 
     options = { :display => true, :x => 20, :y => 192 }
 
-    member = generate_overlay(member.id, options, "loader", order)
+    member = CartoDB::Overlay::Member.new(
+      order: order,
+      type: "loader",
+      template: '<div class="loader" original-title=""></div>',
+      options: options,
+      visualization_id: member.id
+    )
+
     member.store
 
   end
@@ -555,7 +563,14 @@ class Table < Sequel::Model(:user_tables)
 
     options = { :display => true, :x => 20, :y => 40 } 
 
-    member = generate_overlay(member.id, options, "zoom", order)
+    member = CartoDB::Overlay::Member.new(
+      order: order,
+      type: "zoom",
+      template: '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>',
+      options: options,
+      visualization_id: member.id
+    )
+
     member.store
 
   end
@@ -592,6 +607,15 @@ class Table < Sequel::Model(:user_tables)
     options = { :display => true, :x => 40, :y => 40 } 
 
     member = generate_overlay(member.id, options, "search", order)
+    member.store
+
+  end
+
+  def create_layer_selector_overlay(member, order)
+
+    options = { :display => true, :x => 212, :y => 40 }
+
+    member = generate_overlay(member.id, options, "layer_selector", order)
     member.store
 
   end

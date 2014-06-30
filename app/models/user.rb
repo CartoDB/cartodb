@@ -49,17 +49,25 @@ class User < Sequel::Model
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
   SCHEMAS = %w( public cdb_importer )
   GEOCODING_BLOCK_SIZE = 1000
-  ALLOWED_API_ATTRIBUTES = [
-    :username, :email, :admin, :quota_in_bytes, :table_quota, :account_type,
-    :private_tables_enabled, :sync_tables_enabled, :map_view_quota, :map_view_block_price,
-    :geocoding_quota, :geocoding_block_price, :period_end_date, :max_layers, :user_timeout,
-    :database_timeout, :database_host, :upgraded_at, :notification,
-    :disqus_shortname, :twitter_username, :name, :description, :website
-  ]
-
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
+
+  # Attributes synched with CartoDB Central
+  def api_attributes
+    [
+      :account_type, :crypted_password, :admin, :database_timeout, :description,
+      :disqus_shortname, :email, :geocoding_block_price, :geocoding_quota,
+      :map_view_block_price, :map_view_quota, :max_layers, :notification,
+      :organization_id, :period_end_date, :private_tables_enabled,
+      :quota_in_bytes, :salt, :sync_tables_enabled, :table_quota,
+      :twitter_username, :upgraded_at, :user_timeout, :username, :website
+    ]
+  end # api_attributes
+
+  def api_attributes_with_values
+    Hash[*self.api_attributes.map{ |x| [x, self[x]] }.flatten]
+  end
 
   ## Validations
   def validate
@@ -1196,8 +1204,9 @@ TRIGGER
   end
 
   def set_user_as_organization_owner_if_needed
-    if self.organization && self.organization.owner.nil? && self.organization.users.count == 0
-      self.organization.update(owner_id: self.id)
+    if self.organization.reload && self.organization && self.organization.owner.nil? && self.organization.users.count == 1
+      self.organization.owner = self
+      self.organization.save
     end
   end
 

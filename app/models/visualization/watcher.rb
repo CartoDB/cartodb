@@ -2,7 +2,7 @@
 
 require_relative './member'
 
-# TODO: Migrate to new redis gem
+# TODO: Migrate to new redis gem?
 module CartoDB
   module Visualization
     class Watcher

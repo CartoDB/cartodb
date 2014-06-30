@@ -210,6 +210,10 @@ module CartoDB
         privacy == PRIVACY_PRIVATE
       end #private?
 
+      def organization?
+        privacy == PRIVACY_ORGANIZATION
+      end
+
       def password_protected?
         privacy == PRIVACY_PROTECTED
       end #password_protected?

@@ -1,10 +1,12 @@
 # coding: UTF-8
 require_relative '../../../models/layer/presenter'
+require_relative '../../../models/visualization/member'
 
 class Api::Json::LayersController < Api::ApplicationController
 
   ssl_required :index, :show, :create, :update, :destroy
   before_filter :load_parent
+  before_filter :validate_read_write_permission, only: [:create, :update, :destroy]
 
   def index
     @layers = @parent.layers
@@ -74,4 +76,16 @@ class Api::Json::LayersController < Api::ApplicationController
 
     Map.filter(id: params[:map_id]).first
   end #map_from
+
+  def validate_read_write_permission
+    layer = Layer[params[:id]]
+    layer.maps.each { |map|
+      map.visualizations.each { |vis|
+        return head(403) unless vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+      }
+    }
+    true
+  rescue => e
+    render_jsonp({ description: e.message }, 400)
+  end
 end

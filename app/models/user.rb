@@ -49,17 +49,25 @@ class User < Sequel::Model
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
   SCHEMAS = %w( public cdb_importer )
   GEOCODING_BLOCK_SIZE = 1000
-  ALLOWED_API_ATTRIBUTES = [
-    :username, :email, :admin, :quota_in_bytes, :table_quota, :account_type,
-    :private_tables_enabled, :sync_tables_enabled, :map_view_quota, :map_view_block_price,
-    :geocoding_quota, :geocoding_block_price, :period_end_date, :max_layers, :user_timeout,
-    :database_timeout, :database_host, :upgraded_at, :notification,
-    :disqus_shortname, :twitter_username, :name, :description, :website
-  ]
-
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
+
+  # Attributes synched with CartoDB Central
+  def api_attributes
+    [
+      :account_type, :crypted_password, :admin, :database_timeout, :description,
+      :disqus_shortname, :email, :geocoding_block_price, :geocoding_quota,
+      :map_view_block_price, :map_view_quota, :max_layers, :notification,
+      :organization_id, :period_end_date, :private_tables_enabled,
+      :quota_in_bytes, :salt, :sync_tables_enabled, :table_quota,
+      :twitter_username, :upgraded_at, :user_timeout, :username, :website
+    ]
+  end # api_attributes
+
+  def api_attributes_with_values
+    Hash[*self.api_attributes.map{ |x| [x, self[x]] }.flatten]
+  end
 
   ## Validations
   def validate
@@ -124,7 +132,20 @@ class User < Sequel::Model
 
   def before_destroy
     error_happened = false
+    has_organization = false
+
+    unless self.organization_id.nil?
+      if self.organization.owner.id == self.id && self.organization.users.count > 1
+        msg = 'Attempted to delete owner from organization with other users'
+        CartoDB::Logger.info msg
+        raise CartoDB::BaseCartoDBError.new(msg)
+      end
+      has_organization = true
+    end
+
     begin
+      self.organization_id = nil
+
       # Remove user tables
       self.tables.all.each { |t| t.destroy }
 
@@ -144,7 +165,31 @@ class User < Sequel::Model
 
     # Invalidate user cache
     self.invalidate_varnish_cache
-    self.drop_database_and_user unless error_happened
+
+    # Delete the DB or the schema
+    if has_organization
+      self.drop_organization_user unless error_happened
+    else
+      self.drop_database_and_user unless error_happened
+    end
+  end
+
+  # Org users share the same db, so must only delete the schema
+  def drop_organization_user
+    Thread.new do
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          'host' => database_host,
+          'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+      end)))
+      User.terminate_database_connections(database_name, database_host, database_schema)
+      conn.run("DROP SCHEMA \"#{database_schema}\"")
+      conn.run("DROP USER \"#{database_username}\"")
+      conn.disconnect
+    end.join
+    monitor_user_notification
   end
 
   def drop_database_and_user
@@ -890,7 +935,7 @@ class User < Sequel::Model
 
   def partial_db_name
     if self.has_organization? && self.organization.owner.present?
-      self.organization.owner.id
+      self.organization.owner_id
     else
       self.id
     end
@@ -941,7 +986,7 @@ class User < Sequel::Model
         puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
         raise e
       end
-      if not has_organization? or organization_owner?
+      if not has_organization? or organization_owner? or organization.users.count == 0
         begin
           conn.run("CREATE DATABASE \"#{self.database_name}\"
           WITH TEMPLATE = template_postgis
@@ -960,6 +1005,7 @@ class User < Sequel::Model
     set_database_search_path
     set_database_permissions
     set_user_as_organization_member
+    set_user_as_organization_owner_if_needed
     rebuild_quota_trigger
     create_function_invalidate_varnish
   end
@@ -1191,6 +1237,13 @@ TRIGGER
       user_database.transaction do
         user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
       end
+    end
+  end
+
+  def set_user_as_organization_owner_if_needed
+    if self.organization && self.organization.reload && self.organization.owner.nil? && self.organization.users.count == 1
+      self.organization.owner = self
+      self.organization.save
     end
   end
 

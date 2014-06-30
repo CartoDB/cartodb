@@ -41,15 +41,15 @@ module CartoDB
           []
         else
           # Cannot use MGET directly
-          $tables_metadata.multi do
+          $tables_metadata.multi {
             keys.each { |k| $tables_metadata.get(k) }
-          end
+          }.flatten.compact
         end
       end
 
     end
 
-    class WatcherError < StandardError; end
+    class WatcherError < BaseCartoDBError; end
 
   end
 end

@@ -1241,7 +1241,7 @@ TRIGGER
   end
 
   def set_user_as_organization_owner_if_needed
-    if self.organization.reload && self.organization && self.organization.owner.nil? && self.organization.users.count == 1
+    if self.organization && self.organization.reload && self.organization.owner.nil? && self.organization.users.count == 1
       self.organization.owner = self
       self.organization.save
     end

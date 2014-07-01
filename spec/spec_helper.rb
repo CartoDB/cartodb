@@ -27,6 +27,18 @@ RSpec.configure do |config|
     $users_metadata.flushdb
 
     Rails::Sequel.connection.tables.each{ |t| next if [:schema_migrations].include?(t); Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE") }
+
+    # To avoid Travis and connection leaks
+    $pool.close_connections!
+    Rails::Sequel.connection[
+        "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
+    ].map(:datname).each { |user_database_name|
+      puts "Dropping leaked test database #{user_database_name}"
+      User::terminate_database_connections(
+          user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      )
+      Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
+    }
   end
 
   config.after(:all) do

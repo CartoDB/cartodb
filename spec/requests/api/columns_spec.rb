@@ -15,6 +15,10 @@ describe "Columns API" do
     host! 'test.localhost.lan'
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   let(:params) { { :api_key => @user.api_key } }
 
   it "gets the columns from a table" do    

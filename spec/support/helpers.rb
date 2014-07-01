@@ -40,7 +40,7 @@ module HelperMethods
     trap("INT"){ server.shutdown }
 
     a = Thread.new { server.start }
-    
+
     begin
       yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
     rescue => e
@@ -86,7 +86,7 @@ module HelperMethods
   def default_schema
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-      ["the_geom", "geometry", "geometry", "geometry"], 
+      ["the_geom", "geometry", "geometry", "geometry"],
       ["created_at", "timestamp with time zone"],
       ["updated_at", "timestamp with time zone"]
     ]

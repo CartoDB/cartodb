@@ -62,8 +62,8 @@ module CartoDB
       def table_data_for(table=nil)
         return {} unless table
         table_name = table.name
-        unless @user.nil?
-          unless @visualization.is_owner?(@user)
+        unless @viewing_user.nil?
+          unless @visualization.is_owner?(@viewing_user)
             table_name = "#{@visualization.user.database_schema}.#{table.name}"
           end
         end

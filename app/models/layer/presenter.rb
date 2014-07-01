@@ -41,6 +41,7 @@ module CartoDB
         else
           {
             id:         layer.id,
+            kind:       layer.kind,
             type:       'CartoDB',
             infowindow: infowindow_data_v2,
             tooltip:    tooltip_data_v2,
@@ -67,13 +68,15 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
-      def decorate_with_data(source_hash, decoration_data=nil)
+      def decorate_with_data(source_hash, decoration_data=nil, skip_remove_nils=false)
         if not decoration_data.nil?
           decoration_data.each { |key, value| 
             source_hash[key] = value
-            source_hash.delete_if { |k, v| 
-              v.nil? 
-            }
+            unless skip_remove_nils
+              source_hash.delete_if { |k, v|
+                v.nil?
+              }
+            end
           }
         end
         source_hash
@@ -88,7 +91,7 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
+        decorate_with_data(attributes.merge(type: attributes['kind']), @decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)
@@ -155,7 +158,14 @@ module CartoDB
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
-          decorate_with_data(data, @decoration_data)
+          data = decorate_with_data(data, @decoration_data, options[:skip_remove_nils])
+
+          if options[:current_user]
+            unless data['user_name'] == options[:current_user].username
+              data['table_name'] = "#{data['user_name']}.#{data['table_name']}"
+            end
+          end
+          data
         end
       end #options_data_v2
 

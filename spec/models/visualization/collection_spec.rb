@@ -92,14 +92,17 @@ describe Visualization::Collection do
       vis2 = Visualization::Member.new(random_attributes(name: vis_2_name, user_id: user2_id)).store
       vis3 = Visualization::Member.new(random_attributes(name: vis_3_name)).store
 
-      CartoDB::SharedEntity.new(
+      shared_entity = CartoDB::SharedEntity.new(
           recipient_id:   user1_id,
           recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
           entity_id:      vis2.id,
           entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
+      )
+      shared_entity.save
+      shared_entity.reload
 
       collection = Visualization::Collection.new
+      collection.stubs(:user_shared_vis).with(user1_id).returns([vis2.id])
 
       # Unfiltered
       records = collection.fetch
@@ -133,7 +136,6 @@ describe Visualization::Collection do
       records = collection.fetch(user_id: user1_id, only_shared: true)
       records.count.should eq 1
       records.first.name.should eq vis_2_name
-
 
     end
 

@@ -662,9 +662,9 @@ namespace :cartodb do
     task :load_api_calls_from_es => :environment do
       raise "You should provide a valid username" if ENV['USERNAME'].blank?
       u = User.where(:username => ENV['USERNAME']).first
-      puts "Old API Calls from ES: #{u.get_es_api_calls_from_redis['per_day']}"
+      puts "Old API Calls from ES: #{u.get_es_api_calls_from_redis}"
       u.set_api_calls_from_es({:force_update => true})
-      puts "New API Calls from ES: #{u.get_es_api_calls_from_redis['per_day']}"
+      puts "New API Calls from ES: #{u.get_es_api_calls_from_redis}"
     end
 
   end

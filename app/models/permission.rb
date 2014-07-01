@@ -8,12 +8,17 @@ module CartoDB
     # @param id String (uuid)
     # @param owner_id String (uuid)
     # @param owner_username String
+    # @param entity_id String (uuid)
+    # @param entity_type String
 
     ACCESS_READONLY   = 'r'
     ACCESS_READWRITE  = 'rw'
     ACCESS_NONE       = 'n'
+
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
+
+    ENTITY_TYPE_VISUALIZATION = 'vis'
 
     DEFAULT_ACL_VALUE = '[]'
 
@@ -79,6 +84,16 @@ module CartoDB
     def owner=(value)
       self.owner_id = value.id
       self.owner_username = value.username
+    end
+
+    # @param value Mixed
+    def entity=(value)
+      if value.kind_of? CartoDB::Visualization::Member
+        self.entity_type = ENTITY_TYPE_VISUALIZATION
+        self.entity_id = value.id
+      else
+        raise PermissionError.new('Unsupported entity type')
+      end
     end
 
     def validate

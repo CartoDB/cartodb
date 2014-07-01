@@ -6,11 +6,15 @@ class Api::Json::LayersController < Api::ApplicationController
 
   ssl_required :index, :show, :create, :update, :destroy
   before_filter :load_parent
-  before_filter :validate_read_write_permission, only: [:create, :update, :destroy]
+  before_filter :validate_read_write_permission, only: [:update, :destroy]
 
   def index
     @layers = @parent.layers
-    render_jsonp total_entries: @layers.size, layers: @layers.map(&:public_values)
+    layers = @layers.map { |layer|
+      CartoDB::Layer::Presenter.new(layer, {:skip_remove_nils => true, :current_user => current_user}, {},
+                                    layer.public_values['options']).to_vizjson_v2
+    }
+    render_jsonp layers: layers, total_entries: @layers.size
   end
 
   def show
@@ -81,7 +85,7 @@ class Api::Json::LayersController < Api::ApplicationController
     layer = Layer[params[:id]]
     layer.maps.each { |map|
       map.visualizations.each { |vis|
-        return head(403) unless vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+        return head(403) unless vis.is_owner?(current_user) || vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
       }
     }
     true

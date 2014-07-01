@@ -231,11 +231,13 @@
             &.public             i { background: rgba(#97C341, .5) sprite($table-sprites,  lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
             &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
             &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 12px, $offset-y: 4px) no-repeat; }
+            &.organization       i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_user,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
             &.private            i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 12px, $offset-y: 4px) no-repeat; }
 
             &.public             i:hover { background-color: rgba(#97C341, .65); }
             &.link_protected     i:hover { background-color: rgba(#FFA64D, .65); }
             &.password_protected i:hover { background-color: rgba(#FFA64D, .65); }
+            &.organization       i:hover { background-color: rgba(#FFA64D, .65); }
             &.private            i:hover { background-color: rgba(#FF7373, .65); }
 
             span { vertical-align: middle; }

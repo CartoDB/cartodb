@@ -18,7 +18,7 @@ Sequel.migration do
     Organization.all.each do |org|
       user = User[org.owner_id]
       if user
-        user.set(:organization_owner, true)
+        user.set(organization_owner: true)
         user.save(:organization_owner)
       end
     end

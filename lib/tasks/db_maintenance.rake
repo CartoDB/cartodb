@@ -130,6 +130,79 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
+    desc 'Unregisters extraneous members from the "cartodb" extension'
+    task :unregister_extraneous_cartodb_members, [:database_host, :sleep, :dryrun] => :environment do |t, args|
+      threads = 1
+      thread_sleep = 1
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 3 : args[:sleep].to_i
+      dryrun = args[:dryrun] == 'false' ? 'false' : 'true'
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
+      end
+      execute_on_users_with_index(:unregister_extraneous_cartodb_members.to_s, Proc.new { |user, i|
+        begin
+          user.in_database(:as => :superuser) do |db|
+            db.transaction do
+              db.run(%Q{
+                CREATE OR REPLACE FUNCTION CDB_DropExtraneousExtMembers(dryrun boolean DEFAULT true)
+                RETURNS void
+                LANGUAGE plpgsql
+                VOLATILE
+                AS $$
+                DECLARE
+                  rec RECORD;
+                  sql TEXT;
+                BEGIN
+
+                  FOR rec IN SELECT 'ALTER EXTENSION cartodb DROP '
+                              || pg_describe_object(d.classid, d.objid, 0) || ';' as q
+                      FROM pg_extension e LEFT OUTER JOIN pg_depend d
+                      ON ( d.refobjid = e.oid )
+                      WHERE d.refclassid = 'pg_catalog.pg_extension'::pg_catalog.regclass
+                      AND e.extname = 'cartodb'
+                      AND d.classid = 'pg_catalog.pg_class'::pg_catalog.regclass -- relations
+                      AND d.objid != 'cartodb.cdb_tablemetadata'::pg_catalog.regclass
+                      AND d.deptype = 'e' -- members
+                  LOOP
+
+                    IF NOT dryrun THEN
+                      RAISE NOTICE 'Running on %: %', current_database(), rec.q;
+                      EXECUTE rec.q;
+                    ELSE
+                      RAISE NOTICE 'Would run on %: %', current_database(), rec.q;
+                    END IF;
+
+                  END LOOP; 
+
+                END;
+                $$;
+              })
+              db.run(%Q{
+                SET client_min_messages TO notice;
+              })
+              db.run(%Q{
+                SELECT CDB_DropExtraneousExtMembers(#{dryrun});
+              })
+              db.run(%Q{
+                DROP FUNCTION IF EXISTS CDB_DropExtraneousExtMembers(boolean);
+              })
+            end
+          end
+
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :unregister_extraneous_cartodb_members.to_s, database_host)
+          sleep(sleep)
+        rescue => e
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :unregister_extraneous_cartodb_members.to_s, database_host)
+          puts "FAIL:#{i} #{e.message}"
+        end
+      }, threads, thread_sleep, database_host)
+    end
+
+
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
@@ -600,9 +673,9 @@ namespace :cartodb do
     task :load_api_calls_from_es => :environment do
       raise "You should provide a valid username" if ENV['USERNAME'].blank?
       u = User.where(:username => ENV['USERNAME']).first
-      puts "Old API Calls from ES: #{u.get_es_api_calls_from_redis['per_day']}"
+      puts "Old API Calls from ES: #{u.get_es_api_calls_from_redis}"
       u.set_api_calls_from_es({:force_update => true})
-      puts "New API Calls from ES: #{u.get_es_api_calls_from_redis['per_day']}"
+      puts "New API Calls from ES: #{u.get_es_api_calls_from_redis}"
     end
 
   end

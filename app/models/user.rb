@@ -56,12 +56,13 @@ class User < Sequel::Model
   # Attributes synched with CartoDB Central
   def api_attributes
     [
-      :account_type, :crypted_password, :admin, :database_timeout, :description,
-      :disqus_shortname, :email, :geocoding_block_price, :geocoding_quota,
-      :map_view_block_price, :map_view_quota, :max_layers, :notification,
-      :organization_id, :period_end_date, :private_tables_enabled,
-      :quota_in_bytes, :salt, :sync_tables_enabled, :table_quota,
-      :twitter_username, :upgraded_at, :user_timeout, :username, :website
+      :account_type, :admin, :crypted_password, :database_host, :database_timeout,
+      :description, :disqus_shortname, :email, :geocoding_block_price,
+      :geocoding_quota, :map_view_block_price, :map_view_quota, :max_layers,
+      :name, :notification, :organization_id, :period_end_date,
+      :private_tables_enabled, :quota_in_bytes, :salt, :sync_tables_enabled,
+      :table_quota, :twitter_username, :upgraded_at, :user_timeout, :username,
+      :website
     ]
   end # api_attributes
 

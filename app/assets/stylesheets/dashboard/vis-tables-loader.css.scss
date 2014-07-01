@@ -7,31 +7,24 @@
   @import "../common/mixins";
   @import "../common/vars";
 
-  article.tables ,
-  article.visualizations {
+  div.bar_loader {
+    position:relative;
+    display:block;
+    width:100%;
+    height:2px;
+    background:transparent;
+    overflow:hidden;
 
-    div.loader {
+    &:before {
+      content:'';
       position:absolute;
       top:0;
-      left:0;
-      width:100%;
-      right:0;
-      height:3px;
-      background:transparent;
-      overflow:hidden;
-
-      &:before {
-        content:'';
-        position:absolute;
-        top:0;
-        width:600px;
-        right:100%;
-        height:2px;
-        background: #82ABDA;
-        @include animation(pulsate 1.5s linear infinite);      
-      }
+      width:600px;
+      right:100%;
+      height:2px;
+      background: #82ABDA;
+      @include animation(pulsate 1.5s linear infinite);      
     }
-    
   }
 
   // Animation function

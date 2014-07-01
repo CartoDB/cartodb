@@ -14,6 +14,10 @@ describe "Geocodings API" do
     host! 'test.localhost.lan'
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   let(:params) { { :api_key => @user.api_key } }
 
   describe 'POST /api/v1/geocodings' do
@@ -174,7 +178,4 @@ describe "Geocodings API" do
 
   end
 
-  after(:all) do
-    @user.destroy
-  end
 end

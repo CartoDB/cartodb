@@ -45,6 +45,10 @@ describe Api::Json::VisualizationsController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe 'POST /api/v1/viz' do
     it 'creates a visualization' do
       payload = factory.merge(type: 'table')

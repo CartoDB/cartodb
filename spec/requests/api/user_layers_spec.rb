@@ -15,6 +15,10 @@ feature "API 1.0 user layers management" do
     @table = create_table(:user_id => @user.id)
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   let(:params) { { api_key: @user.api_key } }
 
   scenario "Create a new layer associated to the current user" do
@@ -65,7 +69,4 @@ feature "API 1.0 user layers management" do
     end
   end
 
-  after(:all) do
-    @user.destroy
-  end
 end

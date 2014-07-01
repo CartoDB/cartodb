@@ -177,6 +177,8 @@ feature "Superadmin's users API" do
     user.geocoding_quota.should == 230
     user.geocoding_block_price.should == 5
     user.notification.should == 'Test'
+
+    user.destroy
   end
 
   scenario "user update fail" do
@@ -185,6 +187,8 @@ feature "Superadmin's users API" do
     put_json superadmin_user_path(user), { :user => { :email => "" } }, default_headers do |response|
       response.status.should == 422
     end
+
+    user.destroy
   end
 
   scenario "user update success" do
@@ -195,6 +199,8 @@ feature "Superadmin's users API" do
     user = User[user.id]
     user.email.should == "newmail@test.com"
     user.map_view_quota.should == 80
+
+    user.destroy
   end
 
   scenario "update success with new organization" do
@@ -225,6 +231,8 @@ feature "Superadmin's users API" do
     user.organization.name.should eq 'wadus'
     user.organization.seats.should eq 26
     user.organization.quota_in_bytes.should eq 40000
+
+    user.destroy
   end
 
   scenario "user delete success" do
@@ -233,6 +241,8 @@ feature "Superadmin's users API" do
       response.status.should == 204
     end
     User[user.id].should be_nil
+
+    user.destroy
   end
 
   scenario "user get info success" do
@@ -241,12 +251,19 @@ feature "Superadmin's users API" do
       response.status.should == 200
       response.body[:id].should == user.id
     end
+
+    user.destroy
   end
 
   describe "GET /superadmin/users" do
     before do
       @user  = create_user
       @user2 = create_user
+    end
+
+    after do
+      @user.destroy
+      @user2.destroy
     end
 
     it "gets all users" do

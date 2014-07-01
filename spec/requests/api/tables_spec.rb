@@ -20,6 +20,11 @@ describe "Tables API" do
     }
   end
 
+  after(:all) do
+    @user.destroy
+    @another_user.destroy
+  end
+
   let(:params) { { :api_key => @user.api_key } }
 
   describe 'GET /api/v1/tables' do

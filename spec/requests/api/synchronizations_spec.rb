@@ -41,6 +41,10 @@ describe Api::Json::SynchronizationsController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe 'POST /api/v1/synchronizations' do
     it 'creates a synchronization' do
       payload = {
@@ -123,7 +127,4 @@ describe Api::Json::SynchronizationsController do
     end
   end
 
-  after(:all) do
-    @user.destroy
-  end
 end

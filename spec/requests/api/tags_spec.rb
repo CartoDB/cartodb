@@ -18,8 +18,14 @@ describe "API 1.0 tags management" do
     }
   end
 
+  after do
+    @user.destroy
+  end
+
   describe 'GET /api/v1/tags' do
     it 'returns a collection of tags with their counters' do
+      another_user = create_user('lalala')
+
       table1 = create_table(
         user_id:  @user.id,
         name:     'My table #1',
@@ -27,13 +33,13 @@ describe "API 1.0 tags management" do
         tags:     "tag 1,tag 2,tag 3,tag 3"
       )
       table2 = create_table(
-        user_id:  @user.id,
+        user_id:  another_user,
         name:     'My table #2',
         privacy:  Table::PRIVACY_PRIVATE,
         tags:     "tag 3"
       )
       table3 = create_table(
-        user_id:  create_user.id,
+        user_id:  another_user.id,
         name:     'Another table #3',
         privacy:  Table::PRIVACY_PRIVATE
       )
@@ -59,6 +65,8 @@ describe "API 1.0 tags management" do
 
       response = JSON.parse(last_response.body)
       response.should be_empty
+
+      another_user.destroy
     end
   end # GET /api/v1/tags
 end

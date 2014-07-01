@@ -12,6 +12,10 @@ feature "API 1.0 queries management" do
     @table = create_table :user_id => @user.id
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   scenario "Get the results of a SELECT query" do
     50.times do |i|
       @table.insert_row!({:name => "Row number #{i}", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[40.392949,-3.69084]\}}})

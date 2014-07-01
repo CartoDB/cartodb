@@ -8,6 +8,10 @@ feature "API 1.0 users management" do
     @user  = create_user({:username => 'test'})
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   scenario "Get standard information for the user by id" do
     layer = Layer.create :kind => 'carto', :order => 2
     layer2 = Layer.create :kind => 'tiled', :order => 1

@@ -484,7 +484,7 @@ $$
     } unless old_calls.blank?
     
     # Add ES api calls
-    es_calls = get_es_api_calls_from_redis["per_day"].to_a.reverse rescue []
+    es_calls = get_es_api_calls_from_redis(options) rescue []
     calls = calls.zip(es_calls).map { |pair|
       pair[0].to_i + pair[1].to_i
     } unless es_calls.blank?
@@ -500,13 +500,20 @@ $$
   end # get_geocoding_calls
 
   # Get ES api calls from redis
-  def get_es_api_calls_from_redis
-    JSON.parse($users_metadata.HMGET(key, 'api_calls_es').first) rescue {}
+  def get_es_api_calls_from_redis(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
+    es_calls = $users_metadata.pipelined do
+      date_to.downto(date_from) do |date|
+        $users_metadata.ZSCORE "user:#{self.username}:mapviews_es:global", date.strftime("%Y%m%d")
+      end
+    end.map &:to_i
+    return es_calls
   end
 
   # Get the api calls from ES and sum them to the stored ones in redis
   # Returns the final sum of them
-  def get_api_calls_from_es(stored_api_calls)
+  def get_api_calls_from_es
     require 'date'
     yesterday = Date.today - 1
     from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
@@ -528,31 +535,16 @@ $$
     end
     values = {}
     JSON.parse(response.body)["aggregations"]["0"]["buckets"].each {|i| values[i['key']] = i['doc_count']}
-    start_day = Date.today - 29
-    finish_day = Date.today
-    days_a = []
-    (DateTime.new(finish_day.year, finish_day.month, finish_day.day, 0, 0, 0))
-     .downto(DateTime.new(start_day.year, start_day.month, start_day.day, 0, 0, 0)) do |d|
-      days_a << (values.has_key?(d.strftime("%Q").to_i) ? values[d.strftime("%Q").to_i] : 0)
-    end
-    days_a.reverse!
-    if stored_api_calls.nil? || stored_api_calls.empty?
-      stored_api_calls['per_day'] = [].fill(0, 0, 30)
-      stored_api_calls['updated_at'] = Time.now.to_i
-    end
-    new_api_calls = stored_api_calls['per_day'].zip(days_a).map do |pair|
-      pair.max
-    end
-    stored_api_calls['per_day'] = new_api_calls
-    stored_api_calls["updated_at"] = Time.now.to_i
-    return stored_api_calls.to_json
+    return values
   end
  
   # Get the final api calls from ES and write them to redis
   def set_api_calls_from_es(options = {})
-    stored_api_calls = get_es_api_calls_from_redis
-    if options[:force_update] || stored_api_calls.nil? || stored_api_calls.empty? || stored_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-      $users_metadata.HMSET key, 'api_calls_es', get_api_calls_from_es(stored_api_calls)
+    if options[:force_update]
+      es_api_calls = get_api_calls_from_es
+      es_api_calls.each do |d,v|
+        $users_metadata.ZADD "user:#{self.username}:mapviews_es:global", v, DateTime.strptime(d.to_s, "%Q").strftime("%Y%m%d")
+      end
     end
   end
   

@@ -3,15 +3,12 @@
 CartoDB::Application.routes.draw do
   root :to => 'admin/pages#public'
 
-  get   '/datasets' => 'admin/pages#datasets'
+  get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login
+  get   '(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
+  match '(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
-  get   '/login' => 'sessions#new', as: :login
-  get   '/logout' => 'sessions#destroy', as: :logout
-  match '/sessions/create' => 'sessions#create', as: :create_session
   match '/limits' => 'home#limits', as: :limits
   match '/status' => 'home#app_status'
-
-  get   '/test' => 'test#index', as: :test
 
   # OAuth
   match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize

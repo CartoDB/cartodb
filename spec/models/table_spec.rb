@@ -578,6 +578,8 @@ describe Table do
       expect { 
         create_table(name: "table 6", user_id: user.id) 
       }.to raise_error(CartoDB::QuotaExceeded)
+
+      user.destroy
     end
   end
 

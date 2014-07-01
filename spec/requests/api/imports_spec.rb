@@ -18,7 +18,6 @@ describe "Imports API" do
     @user.destroy
   end
 
-
   let(:params) { { :api_key => @user.api_key } }
 
   it 'performs asynchronous imports' do

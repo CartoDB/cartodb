@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   helper :all
 
   before_filter :ensure_user_domain_param
+  before_filter :ensure_user_organization_valid
   before_filter :browser_is_html5_compliant?
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
@@ -147,6 +148,15 @@ class ApplicationController < ActionController::Base
   # Views using MVC routes assume this param is always present
   def ensure_user_domain_param
     request.params[:user_domain] = nil unless request.params[:user_domain].present?
+  end
+
+  def ensure_user_organization_valid
+    org_subdomain = CartoDB.extract_host_subdomain(request)
+    unless org_subdomain.nil?
+      if current_user.organization.nil? || current_user.organization.name != org_subdomain
+        render_404
+      end
+    end
   end
 
   def current_user

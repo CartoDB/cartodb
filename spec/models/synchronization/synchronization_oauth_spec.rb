@@ -11,9 +11,6 @@ describe SynchronizationOauth do
     @user.destroy
   end
 
-  before(:each) do
-  end
-
   after(:each) do
     @user.synchronization_oauths.map &:destroy
     @user.reload

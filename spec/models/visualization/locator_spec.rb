@@ -65,6 +65,7 @@ describe Visualization::Locator do
     end
 
     it 'fetches a Visualization::Member if passed a visualization name' do
+      Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
       rehydrated  = @locator.get(@visualization.name, @subdomain).first
 
       rehydrated.id.should == @visualization.id
@@ -88,6 +89,7 @@ describe Visualization::Locator do
     end
 
     it 'returns nil if no visualization or table found' do
+      Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
       @locator.get('bogus', @subdomain).should == [nil, nil]
     end
   end #get

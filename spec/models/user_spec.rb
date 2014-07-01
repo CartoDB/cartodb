@@ -18,6 +18,11 @@ describe User do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
+  after(:all) do
+    @user.destroy
+    @user2.destroy
+  end
+
   it "should set a default database_host" do
     @user.database_host.should eq 'localhost'
   end
@@ -100,6 +105,10 @@ describe User do
       user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
       user1.organization = organization
       user1.save
+      organization.owner_id = user1.id
+      organization.save
+      organization.reload
+      user1.reload
 
       # Don't remove this line or the spec will fail (magic):
       puts "Organization users: #{organization.users.count}"
@@ -920,11 +929,6 @@ describe User do
     organization.seats = org_seats
     organization.save!
     organization
-  end
-
-  after(:all) do
-    @user.destroy
-    @user2.destroy
   end
 
 end

@@ -26,10 +26,10 @@ module CartoDB
       move_user_tables_to_schema(@owner.id)
       @owner.organization_id = @organization.id
       @owner.database_schema = @owner.username
-      @owner.save
-      @owner.set_database_search_path
       @organization.owner_id = @owner.id
       @organization.save
+      @owner.set_database_search_path
+      @owner.save
       @active = true
     end
 

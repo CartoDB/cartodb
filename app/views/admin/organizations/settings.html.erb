@@ -38,7 +38,7 @@
         <section class="block">
           <div class="head">
             <h2>Your organization public dashboard</h2>
-            <%= link_to 'Go to your public page', "#", :class => "right-link" %>
+            <%= link_to 'Go to your public page', CartoDB.base_url(@organization.name), :class => "right-link" %>
           </div>
 
           <div class="content">

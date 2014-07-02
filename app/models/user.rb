@@ -187,7 +187,8 @@ class User < Sequel::Model
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
       end)))
       User.terminate_database_connections(database_name, database_host, database_schema)
-      conn.run("DROP SCHEMA \"#{database_schema}\"")
+      # If user is in an organization should never have public schema, so to be safe check
+      conn.run("DROP SCHEMA \"#{database_schema}\"") unless database_schema == 'public'
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
     end.join

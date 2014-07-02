@@ -165,7 +165,7 @@ module CartoDB
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
-          data = decorate_with_data(data, @decoration_data, options[:skip_remove_nils])
+          data = decorate_with_data(data, @decoration_data)
 
           if options[:viewer_user]
             unless data['user_name'] == options[:viewer_user].username

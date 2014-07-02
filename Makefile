@@ -4,7 +4,7 @@ PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
 
-WORKING_SPECS = \
+WORKING_SPECS_1 = \
   spec/models/table_spec.rb \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
@@ -22,6 +22,9 @@ WORKING_SPECS = \
   services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/admin/tables_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_2 = \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/geocodings_spec.rb \
@@ -40,6 +43,7 @@ WORKING_SPECS = \
   spec/models/shared_entity_spec.rb \
   $(NULL)
 
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 all:
@@ -50,7 +54,8 @@ prepare-test-db:
 	bundle exec rake cartodb:test:prepare
 
 check-prepared:
-	bundle exec rspec $(WORKING_SPECS)
+	bundle exec rspec $(WORKING_SPECS_1)
+	bundle exec rspec $(WORKING_SPECS_2)
 
 check: prepare-test-db check-prepared
 check-frontend:

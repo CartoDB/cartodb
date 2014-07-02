@@ -20,9 +20,11 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     attributes = params[:organization]
 
     @organization.set_only(attributes, @organization.api_attributes)
-    set_owner_if_present(attributes)
-
     @organization.save
+    if attributes[:owner_id].present? && @organization.owner.nil?
+      uo = CartoDB::UserOrganization.new(@organization.id, attributes[:owner_id])
+      uo.promote_user_to_admin
+    end
     respond_with(:superadmin, @organization)
   end
 
@@ -30,7 +32,6 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     attributes = params[:organization]
 
     @organization.set_only(attributes, @organization.api_attributes)
-    set_owner_if_present(attributes)
 
     @organization.save
     respond_with(:superadmin, @organization)
@@ -47,9 +48,5 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     @organization = Organization[params[:id]]
     raise RecordNotFound unless @organization
   end # get_organization
-
-  def set_owner_if_present(attributes)
-    @organization.owner_id = attributes[:owner_id] unless attributes[:owner_id].blank?
-  end
 
 end

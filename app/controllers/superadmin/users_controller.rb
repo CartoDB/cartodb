@@ -21,6 +21,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
     @user.set_only(attributes, @user.api_attributes)
     @user.enabled = true
+    set_password_if_present(attributes)
 
     @user.save
     respond_with(:superadmin, @user)
@@ -30,6 +31,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     attributes = params[:user]
 
     @user.set_only(attributes, @user.api_attributes)
+    set_password_if_present(attributes)
 
     @user.save
     respond_with(:superadmin, @user)
@@ -46,5 +48,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user = User[params[:id]]
     raise RecordNotFound unless @user
   end # get_user
+
+  def set_password_if_present(attributes)
+    @user.password         = attributes[:password] if attributes[:password].present?
+    @user.password_confirmation = attributes[:password] if attributes[:password].present?
+    @user.crypted_password = attributes[:crypted_password] if attributes[:crypted_password].present?
+    @user.salt             = attributes[:salt] if attributes[:salt].present?
+  end # set_password_if_present
 
 end # Superadmin::UsersController

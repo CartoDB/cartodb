@@ -125,9 +125,9 @@ class User < Sequel::Model
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
     if changes.include?(:database_host)
-      User.terminate_database_connections(database_name, previous_changes[:database_host][0], database_schema)
+      User.terminate_database_connections(database_name, previous_changes[:database_host][0])
     elsif changes.include?(:database_schema)
-      User.terminate_database_connections(database_name, database_host, previous_changes[:database_schema][0])
+      User.terminate_database_connections(database_name, database_host)
     end
 
   end
@@ -142,6 +142,16 @@ class User < Sequel::Model
         CartoDB::Logger.info msg
         raise CartoDB::BaseCartoDBError.new(msg)
       end
+
+      # Right now, cannot delete users with entities shared with other users or the org.
+      can_delete = true
+      CartoDB::Permission.where(owner_id: self.id).each { |permission|
+        can_delete = can_delete && permission.acl.empty?
+      }
+      unless can_delete
+        raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
+      end
+
       has_organization = true
     end
 
@@ -179,16 +189,17 @@ class User < Sequel::Model
   # Org users share the same db, so must only delete the schema
   def drop_organization_user
     Thread.new do
+      in_database(as: :superuser) do |database|
+        # If user is in an organization should never have public schema, so to be safe check
+        database.run(%Q{ DROP SCHEMA \"#{database_schema}\" }) unless database_schema == 'public'
+      end
+
       connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           'host' => database_host,
           'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
-      end)))
-      User.terminate_database_connections(database_name, database_host, database_schema)
-      # If user is in an organization should never have public schema, so to be safe check
-      conn.run("DROP SCHEMA \"#{database_schema}\"") unless database_schema == 'public'
+      conn = ::Sequel.connect(connection_params)
+      User.terminate_database_connections(database_name, database_host)
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
     end.join
@@ -205,7 +216,7 @@ class User < Sequel::Model
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
       end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host, database_schema)
+      User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
@@ -213,14 +224,12 @@ class User < Sequel::Model
     monitor_user_notification
   end
 
-  def self.terminate_database_connections(database_name, database_host, database_schema='public')
+  def self.terminate_database_connections(database_name, database_host)
       connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{database_schema}", cartodb, public })
-      end)))
+      conn = ::Sequel.connect(connection_params)
       conn.run("
         DO language plpgsql $$
         DECLARE

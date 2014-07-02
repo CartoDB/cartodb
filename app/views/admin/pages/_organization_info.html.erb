@@ -9,7 +9,7 @@
     </div>
 
     <div class="details">
-      <%= content_tag :h2, @organization.name || @organization.display_name %>
+      <%= content_tag :h2, ( !@organization.display_name.empty? ? @organization.display_name : @organization.name ) %>
 
       <%= link_to "@#{@twitter_username}", "http://twitter.com/#{@twitter_username}", :class => :twitter if @twitter_username.present? %>
 

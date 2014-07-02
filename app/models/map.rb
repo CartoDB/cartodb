@@ -107,6 +107,22 @@ class Map < Sequel::Model
     return admits_more_base_layers? if layer.base_layer?
   end #admits?
 
+  def can_add_layer(user)
+    current_vis = visualizations.first
+    current_vis.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+  end
+
+  def all_members_have_permissions?(table_visualization)
+    if table_visualization.public?
+      true
+    else
+      current_vis = visualizations.first
+      current_vis_users = current_vis.all_users_with_read_permission
+
+      table_visualization.have_permission?(current_vis_users, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    end
+  end
+
   def visualizations
     CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
   end #visualizations

@@ -244,6 +244,24 @@ module CartoDB
         is_owner?(user) || permission.is_permitted?(user, permission_type)
       end
 
+      def have_permission?(users, permission_type)
+        users.select { |user|
+          has_permission?(user, permission_type)
+        }.size == users.size
+      end
+
+      def users_with_permission(permission_type)
+        users_with_permissions([permission_type])
+      end
+
+      def users_with_permissions(permission_types)
+        permission.users_with_permissions(permission_types)
+      end
+
+      def all_users_with_read_permission
+        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
+      end
+
       def varnish_key
         sorted_table_names = related_tables.map(&:name).sort { |i, j| i <=> j }.join(',')
         "#{user.database_name}:#{sorted_table_names},#{id}"

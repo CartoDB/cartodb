@@ -52,7 +52,7 @@ describe TableBlender do
       u1_watcher.notify
       u1_watcher.list.should eq [user1_mock.username]
 
-      sleep(watcher_ttl)
+      sleep(watcher_ttl+1)
       u1_watcher.list.should eq []
 
       u1_watcher.notify
@@ -68,7 +68,7 @@ describe TableBlender do
       (u2_watcher.list - [user1_mock.username, user2_mock.username]).should eq []
       (u1_watcher.list - [user1_mock.username, user2_mock.username]).should eq []
 
-      sleep(watcher_ttl)
+      sleep(watcher_ttl+1)
       # And empty
       u1_watcher.list.should eq []
       u2_watcher.list.should eq []

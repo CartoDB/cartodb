@@ -41,7 +41,6 @@ module CartoDB
         else
           {
             id:         layer.id,
-            kind:       layer.kind,
             type:       'CartoDB',
             infowindow: infowindow_data_v2,
             tooltip:    tooltip_data_v2,
@@ -65,7 +64,7 @@ module CartoDB
 
       def to_poro
         poro = layer.public_values
-        if options[:viewer_user]
+        if options[:viewer_user] and poro['options']
           unless poro['options']['user_name'] == options[:viewer_user].username
             poro['options']['table_name'] = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
           end
@@ -78,15 +77,13 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
-      def decorate_with_data(source_hash, decoration_data=nil, skip_remove_nils=false)
+      def decorate_with_data(source_hash, decoration_data=nil)
         if not decoration_data.nil?
           decoration_data.each { |key, value| 
             source_hash[key] = value
-            unless skip_remove_nils
-              source_hash.delete_if { |k, v|
-                v.nil?
-              }
-            end
+            source_hash.delete_if { |k, v| 
+              v.nil? 
+            }
           }
         end
         source_hash
@@ -101,7 +98,7 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        decorate_with_data(attributes.merge(type: attributes['kind']), @decoration_data)
+        decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)
@@ -168,7 +165,7 @@ module CartoDB
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
-          data = decorate_with_data(data, @decoration_data, options[:skip_remove_nils])
+          data = decorate_with_data(data, @decoration_data)
 
           if options[:viewer_user]
             unless data['user_name'] == options[:viewer_user].username

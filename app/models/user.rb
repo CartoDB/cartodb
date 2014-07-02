@@ -123,10 +123,10 @@ class User < Sequel::Model
        changes.include?(:twitter_username)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    if changes.include?(:database_host) || changes.include?(:database_schema)
-      User.terminate_database_connections(
-        database_name, previous_changes[:database_host][0], previous_changes[:database_schema][0]
-      )
+    if changes.include?(:database_host)
+      User.terminate_database_connections(database_name, previous_changes[:database_host][0], database_schema)
+    elsif changes.include?(:database_schema)
+      User.terminate_database_connections(database_name, database_host, previous_changes[:database_schema][0])
     end
 
   end

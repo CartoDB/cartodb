@@ -2,7 +2,6 @@
 
 require_relative './member'
 
-# TODO: Migrate to new redis gem?
 module CartoDB
   module Visualization
     class Watcher
@@ -10,17 +9,14 @@ module CartoDB
       # watcher:_orgid_:_vis_id_:_user_id_
       KEY_FORMAT = "watcher:%s:%s:%s"
 
-      # TTL in secs that
-      DEFAULT_NOTIFICATION_TTL = 60
-
       # @params user User
       # @params visualization CartoDB::Visualization::Member
       # @throws CartoDB::Visualization::WatcherError
-      def initialize(user, visualization, notification_ttl = DEFAULT_NOTIFICATION_TTL)
+      def initialize(user, visualization, notification_ttl = nil)
         raise WatcherError.new('User must belong to an organization') if user.organization.nil?
         @user = user
         @visualization = visualization
-        @notification_ttl = notification_ttl
+        @notification_ttl = notification_ttl.nil? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : notification_ttl
       end #initialize
 
       # Notifies that is editing the visualization

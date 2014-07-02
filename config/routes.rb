@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 CartoDB::Application.routes.draw do
+  # Double use: for user public dashboard AND org dashboard
   root :to => 'admin/pages#public'
 
   get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login

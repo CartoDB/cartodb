@@ -64,7 +64,7 @@ module CartoDB
 
       def to_poro
         poro = layer.public_values
-        if options[:viewer_user]
+        if options[:viewer_user] and poro['options']
           unless poro['options']['user_name'] == options[:viewer_user].username
             poro['options']['table_name'] = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
           end

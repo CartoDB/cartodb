@@ -7,6 +7,7 @@ class Layer < Sequel::Model
   
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
+  DATA_LAYER_KINDS = ALLOWED_KINDS - BASE_LAYER_KINDS
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',

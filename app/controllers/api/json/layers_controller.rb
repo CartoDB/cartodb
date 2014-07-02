@@ -30,9 +30,11 @@ class Api::Json::LayersController < Api::ApplicationController
       unless @parent.can_add_layer(current_user)
         return(render_jsonp({:description => 'You cannot add a layer in this visualization'}, 403))
       end
-      table_visualization = Table.get_by_id_or_name(@layer.options['table_name'], current_user).table_visualization
-      unless @parent.all_members_have_permissions?(table_visualization)
-        return(render_jsonp({:description => 'Every user in the visualization should have permission in the layer'}, 400))
+      if Layer::DATA_LAYER_KINDS.include?(@layer.kind)
+        table_visualization = Table.get_by_id_or_name(@layer.options['table_name'], current_user).table_visualization
+        unless @parent.all_members_have_permissions?(table_visualization)
+          return(render_jsonp({:description => 'Every user in the visualization should have permission in the layer'}, 400))
+        end
       end
     end
 

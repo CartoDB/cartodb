@@ -717,6 +717,26 @@ namespace :cartodb do
       u.set_api_calls_from_es({:force_update => true})
       puts "New API Calls from ES: #{u.get_es_api_calls_from_redis}"
     end
+    
+    desc "Create new organization with owner"
+    task :create_new_organization_with_owner => :environment do
+      raise "You should provide a ORGANIZATION_NAME" if ENV['ORGANIZATION_NAME'].blank?
+      raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
+      raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
+      raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
+      user = User.where(:username => ENV['USERNAME']).first
+      raise "User #{ENV['USERNAME']} does not exist" if user.nil?
+      organization = Organization.where(:name => ENV['ORGANIZATION_NAME']).first
+      if organization.nil?
+        organization = Organization.new
+        organization.name = ENV['ORGANIZATION_NAME']
+        organization.seats = ENV['ORGANIZATION_SEATS']
+        organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        organization.save
+      end
+      uo = CartoDB::UserOrganization.new(organization.id, user.id)
+      uo.promote_user_to_admin
+    end
 
   end
 end

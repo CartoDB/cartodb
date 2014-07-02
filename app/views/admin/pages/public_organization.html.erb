@@ -29,16 +29,18 @@
   <![endif]-->
 <% end %>
 
-<div class="content">
+<div class="content empty">
 
   <div class="inner">
-    <%= @organization.display_name %>
+    <%= render(:partial => 'organization_info') %>
+    <%#= render(:partial => 'tags', :locals => {:collection => @tags }) %>
   </div>
 
-  <div>
-
+  <div class="visualizations">
+    <div class="empty_placeholder">
+      <%= @organization.name %> doesn't have any public maps
+    </div>
   </div>
 
-</div>
 </div>
 

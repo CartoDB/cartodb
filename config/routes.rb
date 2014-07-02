@@ -19,7 +19,9 @@ CartoDB::Application.routes.draw do
   scope :module => :admin do
 
     # Organization dashboard page
-    get    '(/u/:user_domain)/organization'                 => 'organizations#show', as: :organization
+    get    '(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
+    get    '(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
+    put    '(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
     # Organization users management
     get    '(/u/:user_domain)/organization/users/:id/edit'  => 'users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
     put    '(/u/:user_domain)/organization/users/:id'       => 'users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }

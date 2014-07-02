@@ -1,15 +1,16 @@
-<% active = ['admin/organizations', 'admin/users'].include?(params[:controller]) -%>
 <% if current_user.organization_owner? %>
   <nav class="account-settings">
     <div class="inner">
-      <a href="<%= organization_url(user_domain: params[:user_domain]) %>" class="<%= 'selected' if active %>">
+      <a href="<%= organization_url(user_domain: params[:user_domain]) %>"
+         class="<%= 'selected' if ['admin/organizations', 'admin/users'].include?(params[:controller]) && !['settings'].include?(params[:action]) %>">
         <span class="icon organization"></span>
         <span class="info">
           <h2>Manage your seats</h2>
           <p><%= current_user.organization.users.count %> of <%= current_user.organization.seats %> in use</p>
         </span>
       </a>
-      <a class="disabled">
+      <a href="<%= organization_settings_url(user_domain: params[:user_domain]) %>"
+         class="<%= 'selected' if ['settings'].include?(params[:action]) %>">
         <span class="icon stats"></span>
         <span class="info">
           <h2>Public dashboard</h2>

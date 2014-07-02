@@ -4,6 +4,7 @@ require_relative './user/oauths'
 require_relative '../models/synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative './visualization/collection'
+require_relative './user/user_organization'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel

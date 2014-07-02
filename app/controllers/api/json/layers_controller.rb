@@ -23,8 +23,17 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def create
     @layer = Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
-    if @parent.is_a?(Map) && !@parent.admits_layer?(@layer)
-      return(render  status: 400, text: "Can't add more layers of this type")
+    if @parent.is_a?(Map)
+      unless @parent.admits_layer?(@layer)
+        return(render status: 400, text: "Can't add more layers of this type")
+      end
+      unless @parent.can_add_layer(current_user)
+        return(render_jsonp({:description => 'You cannot add a layer in this visualization'}, 403))
+      end
+      table_visualization = Table.get_by_id_or_name(@layer.options['table_name'], current_user).table_visualization
+      unless @parent.all_members_have_permissions?(table_visualization)
+        return(render_jsonp({:description => 'Every user in the visualization should have permission in the layer'}, 400))
+      end
     end
 
     if @layer.save

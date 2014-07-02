@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset='utf-8' />
-    <title>Maps by <%= @name %> on CartoDB</title>
+    <title>Maps by <%= ( !@organization.display_name.empty? ? @organization.display_name : @organization.name ) %> on CartoDB</title>
     <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
 
     <meta name="description" content="<%= @name %> is creating maps and visualizations using CartoDB">

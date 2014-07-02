@@ -128,7 +128,7 @@ class Admin::PagesController < ApplicationController
   def public_organization(organization)
     @organization = organization
     respond_to do |format|
-      format.html { render 'public_organization', layout: 'application_public_dashboard' }
+      format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
     end
   end
 

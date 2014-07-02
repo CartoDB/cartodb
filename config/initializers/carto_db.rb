@@ -9,6 +9,14 @@ module CartoDB
     end
   end
 
+  def self.extract_host_subdomain(request)
+    if request.params[:user_domain].nil?
+      nil
+    else
+      request.host.to_s.gsub(self.session_domain, '')
+    end
+  end
+
   def self.session_domain
     Cartodb.config[:session_domain]
   end

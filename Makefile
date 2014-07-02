@@ -13,6 +13,9 @@ WORKING_SPECS_1 = \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/lib/sql_parser_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_2 = \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
@@ -24,7 +27,7 @@ WORKING_SPECS_1 = \
   spec/requests/admin/tables_spec.rb \
   $(NULL)
 
-WORKING_SPECS_2 = \
+WORKING_SPECS_3 = \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/geocodings_spec.rb \
@@ -34,6 +37,8 @@ WORKING_SPECS_2 = \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/records_spec.rb \
+
+WORKING_SPECS_4 = \
   spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
   spec/models/synchronization/ \
@@ -56,6 +61,8 @@ prepare-test-db:
 check-prepared:
 	bundle exec rspec $(WORKING_SPECS_1)
 	bundle exec rspec $(WORKING_SPECS_2)
+	bundle exec rspec $(WORKING_SPECS_3)
+	bundle exec rspec $(WORKING_SPECS_4)
 
 check: prepare-test-db check-prepared
 check-frontend:

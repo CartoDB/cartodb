@@ -1,6 +1,7 @@
 <% content_for(:page_title) do %>
   Your organization | Public Dashboard Settings
 <% end %>
+
 <%= content_for(:js) do %>
   <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'organization.js', 'templates.js' %>
   <script type="text/javascript">
@@ -21,6 +22,7 @@
       , user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
 <% end %>
+
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'common.css', 'organization.css', :media => 'all' %>
 <% end %>
@@ -34,42 +36,68 @@
     <article>
       <div class="inner">
         <section class="block">
+          <div class="head">
+            <h2>Your organization public dashboard</h2>
+            <%= link_to 'Go to your public page', "#", :class => "right-link" %>
+          </div>
+
           <div class="content">
 
-            <div class="row">
-                <%= form.label :avatar_url %>
-                <%= form.text_field :avatar_url, :class => @organization.errors[:avatar_url].present? ? 'error' : nil %>
-                <%= form_error_for :avatar_url, @organization.errors %>
+            <div class="left-column">
+
+              <div class="row">
+                <div class="field field-1">
+                  <%= form.label :display_name %>
+                  <%= form.text_field :display_name, :class => @organization.errors[:display_name].present? ? 'error' : nil %>
+                  <%= form_error_for :display_name, @organization.errors %>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field field-2">
+                  <%= form.label :website %>
+                  <%= form.text_field :website, :class => @organization.errors[:website].present? ? 'error' : nil %>
+                  <%= form_error_for :website, @organization.errors %>
+                </div>
+                <div class="field field-2">
+                  <%= form.label :avatar_url %>
+                  <%= form.text_field :avatar_url, :class => @organization.errors[:avatar_url].present? ? 'error' : nil %>
+                  <%= form_error_for :avatar_url, @organization.errors %>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field field-1">
+                  <%= form.label :description %>
+                  <%= form.text_area :description, :class => @organization.errors[:description].present? ? 'error' : nil %>
+                  <%= form_error_for :description, @organization.errors %>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field field-2">
+                  <%= form.label :twitter_username %>
+                  <%= form.text_field :twitter_username, :class => @organization.errors[:twitter_username].present? ? 'error' : nil %>
+                  <%= form_error_for :twitter_username, @organization.errors %>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field field-3">
+                  <%= form.label :discus_shortname %>
+                  <%= form.text_field :discus_shortname, :class => @organization.errors[:discus_shortname].present? ? 'error' : nil %>
+                  <%= form_error_for :discus_shortname, @organization.errors %>
+                </div>
+              </div>
             </div>
 
-            <div class="row">
-              <%= form.label :website %>
-              <%= form.text_field :website, :class => @organization.errors[:website].present? ? 'error' : nil %>
-              <%= form_error_for :website, @organization.errors %>
-            </div>
-
-            <div class="row">
-              <%= form.label :description %>
-              <%= form.text_field :description, :class => @organization.errors[:description].present? ? 'error' : nil %>
-              <%= form_error_for :description, @organization.errors %>
-            </div>
-
-            <div class="row">
-              <%= form.label :display_name %>
-              <%= form.text_field :display_name, :class => @organization.errors[:display_name].present? ? 'error' : nil %>
-              <%= form_error_for :display_name, @organization.errors %>
-            </div>
-
-            <div class="row">
-              <%= form.label :discus_shortname %>
-              <%= form.text_field :discus_shortname, :class => @organization.errors[:discus_shortname].present? ? 'error' : nil %>
-              <%= form_error_for :discus_shortname, @organization.errors %>
-            </div>
-
-            <div class="row">
-              <%= form.label :twitter_username %>
-              <%= form.text_field :twitter_username, :class => @organization.errors[:twitter_username].present? ? 'error' : nil %>
-              <%= form_error_for :twitter_username, @organization.errors %>
+            <div class="right-column">
+              <div class="row">
+                <p>These data will be present in the organization public profile.</p>
+              </div>
+              <div class="row"></div>
+              <div class="row"></div>
+              <div class="row"></div>
             </div>
 
           </div>

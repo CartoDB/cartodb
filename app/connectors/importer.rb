@@ -38,13 +38,13 @@ module CartoDB
       end
 
       def register(result)
-        runner.log.append('Before renaming')
+        runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result.table_name, result.name)
-        runner.log.append('Before moving schema')
+        runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(name, ORIGIN_SCHEMA, @destination_schema)
-        runner.log.append('Before persisting metadata')
+        runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(name, data_import_id)
-        runner.log.append('Table registered')
+        runner.log.append("Table '#{name}' registered")
       rescue
       end
 

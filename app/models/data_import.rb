@@ -132,7 +132,7 @@ class DataImport < Sequel::Model
     CartodbStats.increment_imports
     self.success  = true
     self.state    = 'complete'
-    log.append "SUCCESS!\n"
+    log.append "Import finished\n"
     save
     notify(results)
     self

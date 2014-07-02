@@ -152,7 +152,7 @@ class ApplicationController < ActionController::Base
 
   def ensure_user_organization_valid
     org_subdomain = CartoDB.extract_host_subdomain(request)
-    unless org_subdomain.nil?
+    unless org_subdomain.nil? || current_user.nil?
       if current_user.organization.nil? || current_user.organization.name != org_subdomain
         render_404
       end

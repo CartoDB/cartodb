@@ -938,10 +938,18 @@ class User < Sequel::Model
   end
 
   def partial_db_name
-    if self.has_organization? && self.organization.owner.present?
+    if self.has_organization_enabled?
       self.organization.owner_id
     else
       self.id
+    end
+  end
+
+  def has_organization_enabled?
+    if self.has_organization? && self.organization.owner.present?
+      true
+    else
+      false
     end
   end
 
@@ -953,10 +961,43 @@ class User < Sequel::Model
     self.organization && self.organization.owner == self
   end
 
-  ## User's databases setup methods
-  def setup_user
-    return if disabled?
+  def create_client_application
+    ClientApplication.create(:user_id => self.id)
+  end
 
+  def create_db_user
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    begin
+      conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+    rescue => e
+      puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+      raise e
+    end
+  end
+
+  def create_user_db 
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    begin
+      conn.run("CREATE DATABASE \"#{self.database_name}\"
+      WITH TEMPLATE = template_postgis
+      OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+      ENCODING = 'UTF8'
+      CONNECTION LIMIT=-1")
+    rescue => e
+      puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+      raise e
+    end
+  end
+
+  def set_database_name
     # Assign database_name
     self.database_name = case Rails.env
       when 'development'
@@ -968,50 +1009,65 @@ class User < Sequel::Model
       else
         "cartodb_user_#{self.partial_db_name}_db"
     end
-
-    if database_exists? and organization_owner?
-      raise "Database #{database_name} already exists"
+    if self.has_organization_enabled?
+      if !database_exists?
+        raise "Organization database #{database_name} doesn't exist"
+      end
+    else
+      if database_exists?
+        raise "Database #{database_name} already exists"
+      end
     end
-
     self.this.update database_name: self.database_name
-    ClientApplication.create(:user_id => self.id)
-
+  end
+  
+  def setup_new_user
+    self.create_client_application
     Thread.new do
-      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'host' => self.database_host,
-        'database' => 'postgres'
-      ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
-      end)))
-      begin
-        conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-      rescue => e
-        puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-        raise e
-      end
-      if not has_organization? or organization_owner? or organization.users.count == 0
-        begin
-          conn.run("CREATE DATABASE \"#{self.database_name}\"
-          WITH TEMPLATE = template_postgis
-          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-          ENCODING = 'UTF8'
-          CONNECTION LIMIT=-1")
-        rescue => e
-          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-          raise e
-        end
-      end
+      self.create_db_user
+      self.create_user_db
     end.join
+    self.load_cartodb_functions
+    self.create_schemas_and_set_permissions
+    self.set_database_search_path
+    self.set_database_permissions
+    self.set_user_as_organization_member
+    self.rebuild_quota_trigger
+    self.create_function_invalidate_varnish
+  end
 
-    load_cartodb_functions
-    create_schemas_and_set_permissions
-    set_database_search_path
-    set_database_permissions
-    set_user_as_organization_member
-    set_user_as_organization_owner_if_needed
-    rebuild_quota_trigger
-    create_function_invalidate_varnish
+  def setup_organization_user
+    self.create_client_application
+    Thread.new do
+      self.create_db_user
+    end.join
+    self.load_cartodb_functions
+    self.database_schema = self.username
+    self.this.update database_schema: self.database_schema
+    self.create_user_schema
+    self.set_user_schema_permissions
+    self.grant_permissions_in_importer_schema
+    self.set_database_search_path
+    self.set_database_permissions
+    self.set_user_as_organization_member
+    self.rebuild_quota_trigger
+  end
+
+  ## User's databases setup methods
+  def setup_user
+    return if disabled?
+    self.set_database_name
+    
+    if self.has_organization_enabled?
+      self.setup_organization_user
+    else
+      if self.has_organization?
+        raise "It's not possible to create a user within a inactive organization"
+      else
+        self.setup_new_user
+      end
+    end
+    #set_user_as_organization_owner_if_needed
   end
 
   def set_database_search_path
@@ -1021,12 +1077,32 @@ class User < Sequel::Model
   end
 
   def create_schemas_and_set_permissions
+    self.create_db_schemas
+    self.set_db_schemas_permissions
+    self.create_user_schema
+    self.set_user_schema_permissions
+  end
+
+  def create_db_schemas
     create_schema('cdb')
     create_schema('cdb_importer')
+  end
+
+  def create_user_schema
     create_schema(self.database_schema, self.database_username)
-    set_database_permissions_in_schema('cdb')
-    set_database_permissions_in_schema('cdb_importer')
+  end
+
+  def set_db_schemas_permissions
+    set_database_permissions_in_schema('cdb') # Not sure if this schema is needed
+    self.grant_permissions_in_importer_schema
+  end
+
+  def set_user_schema_permissions
     set_database_permissions_in_schema(self.database_schema)
+  end
+
+  def grant_permissions_in_importer_schema
+    self.set_database_permissions_in_schema('cdb_importer')
   end
 
   # Attempts to create a new database schema

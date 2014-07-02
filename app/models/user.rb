@@ -484,7 +484,7 @@ class User < Sequel::Model
   end
 
   def dedicated_support?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? true : false
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
   def remove_logo?

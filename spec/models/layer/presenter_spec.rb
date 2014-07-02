@@ -20,7 +20,7 @@ describe CartoDB::Layer::Presenter do
         }
       )
 
-      poro = Layer::Presenter.new(layer).to_poro
+      poro = Layer::Presenter.new(layer).to_vizjson_v1
       poro.fetch(:options).fetch(:query)
         .should == 'bogus template select * from bogus_table'
 
@@ -36,7 +36,7 @@ describe CartoDB::Layer::Presenter do
         }
       )
 
-      poro = Layer::Presenter.new(layer).to_poro
+      poro = Layer::Presenter.new(layer).to_vizjson_v1
       poro.fetch(:options).fetch(:query)
         .should == 'bogus template select the_geom from bogus_table'
     end

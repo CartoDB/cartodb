@@ -11,8 +11,8 @@ class Api::Json::LayersController < Api::ApplicationController
   def index
     @layers = @parent.layers
     layers = @layers.map { |layer|
-      CartoDB::Layer::Presenter.new(layer, {:skip_remove_nils => true, :current_user => current_user}, {},
-                                    layer.public_values['options']).to_vizjson_v2
+      CartoDB::Layer::Presenter.new(layer, {:skip_remove_nils => true, :viewer_user => current_user}, {},
+                                    layer.public_values['options']).to_poro
     }
     render_jsonp layers: layers, total_entries: @layers.size
   end

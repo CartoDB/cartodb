@@ -62,6 +62,16 @@ module CartoDB
           options:    options_data_v1
         }
       end #to_vizjson_v1
+
+      def to_poro
+        poro = layer.public_values
+        if options[:viewer_user]
+          unless poro['options']['user_name'] == options[:viewer_user].username
+            poro['options']['table_name'] = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
+          end
+        end
+        poro
+      end
   
       private
 
@@ -160,16 +170,14 @@ module CartoDB
           }
           data = decorate_with_data(data, @decoration_data, options[:skip_remove_nils])
 
-          if options[:current_user]
-            unless data['user_name'] == options[:current_user].username
+          if options[:viewer_user]
+            unless data['user_name'] == options[:viewer_user].username
               data['table_name'] = "#{data['user_name']}.#{data['table_name']}"
             end
           end
           data
         end
       end #options_data_v2
-
-      alias_method :to_poro, :to_vizjson_v1
 
       def name_for(layer)
         layer_alias = layer.options.fetch('table_name_alias', nil)

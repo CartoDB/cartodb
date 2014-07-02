@@ -1006,7 +1006,7 @@ class User < Sequel::Model
 
   def set_database_search_path
     in_database(as: :superuser) do |database|
-      database.run(%Q{ ALTER USER \"#{database_username}\" SET search_path = #{database_schema}, public, cartodb })
+      database.run(%Q{ ALTER USER \"#{database_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
     end
   end
 
@@ -1024,9 +1024,9 @@ class User < Sequel::Model
   def create_schema(schema, role = nil)
     in_database(as: :superuser) do |database|
       if role
-        database.run(%Q{CREATE SCHEMA #{schema} AUTHORIZATION "#{role}"})
+        database.run(%Q{CREATE SCHEMA \"#{schema}\" AUTHORIZATION "#{role}"})
       else
-        database.run(%Q{CREATE SCHEMA #{schema}})
+        database.run(%Q{CREATE SCHEMA \"#{schema}\"})
       end
     end
   rescue Sequel::DatabaseError => e

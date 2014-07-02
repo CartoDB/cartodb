@@ -57,7 +57,7 @@ module CartoDB
       user.real_tables.each do |t|
         puts "TABLE: #{t}"
         user.in_database(as: :superuser) do |database|
-          database.run(%Q{ALTER TABLE public.#{t[:relname]} SET SCHEMA #{user.username}})
+          database.run(%Q{ALTER TABLE public.#{t[:relname]} SET SCHEMA \"#{user.username}\"})
         end
       end
     end

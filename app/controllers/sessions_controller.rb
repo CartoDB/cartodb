@@ -13,9 +13,17 @@ class SessionsController < ApplicationController
   end
 
   def create
-    authenticate!(:password, :scope => CartoDB.extract_subdomain(request))
+    # TODO: Fix field name at form
+    user_id = (params[:email].present? ? params[:email] : CartoDB.extract_subdomain(request)).strip.downcase
+    user = authenticate!(:password, scope: user_id)
     CartodbStats.increment_login_counter(params[:email])
-    redirect_to(session[:return_to] || dashboard_path(user_domain: params[:user_domain], trailing_slash: true))
+
+    destination_url = dashboard_path(user_domain: params[:user_domain], trailing_slash: true)
+    unless user.organization.nil?
+      destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
+    end
+    # Removed ATM for multiuser: session[:return_to] || ...
+    redirect_to(destination_url)
   end
 
   def destroy

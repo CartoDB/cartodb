@@ -17,6 +17,20 @@ module CartoDB
     end
   end
 
+  def self.base_url(subdomain, org_username=nil)
+    if Rails.env.production? || Rails.env.staging?
+      base_url ="https://#{subdomain}#{self.session_domain}"
+    elsif Rails.env.development?
+      base_url ="http://#{subdomain}#{self.session_domain}:3000"
+    else
+      base_url = "http://#{subdomain}#{self.session_domain}:53716"
+    end
+    unless org_username.nil?
+      base_url << "/u/#{org_username}"
+    end
+    base_url
+  end
+
   def self.session_domain
     Cartodb.config[:session_domain]
   end

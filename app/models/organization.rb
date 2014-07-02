@@ -14,6 +14,11 @@ class Organization < Sequel::Model
   # @param updated_at Timestamp
   # @param name String
   # @param avatar_url String
+  # @param website String
+  # @param description String
+  # @param display_name String
+  # @param discus_shortname String
+  # @param twitter_username String
 
   one_to_many :users
   many_to_one :owner, class_name: 'User', key: 'owner_id'

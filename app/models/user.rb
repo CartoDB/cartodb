@@ -4,6 +4,7 @@ require_relative './user/oauths'
 require_relative '../models/synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative './visualization/collection'
+require_relative './user/user_organization'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -123,10 +124,10 @@ class User < Sequel::Model
        changes.include?(:twitter_username)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    if changes.include?(:database_host) || changes.include?(:database_schema)
-      User.terminate_database_connections(
-        database_name, previous_changes[:database_host][0], previous_changes[:database_schema][0]
-      )
+    if changes.include?(:database_host)
+      User.terminate_database_connections(database_name, previous_changes[:database_host][0], database_schema)
+    elsif changes.include?(:database_schema)
+      User.terminate_database_connections(database_name, database_host, previous_changes[:database_schema][0])
     end
 
   end
@@ -186,7 +187,8 @@ class User < Sequel::Model
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
       end)))
       User.terminate_database_connections(database_name, database_host, database_schema)
-      conn.run("DROP SCHEMA \"#{database_schema}\"")
+      # If user is in an organization should never have public schema, so to be safe check
+      conn.run("DROP SCHEMA \"#{database_schema}\"") unless database_schema == 'public'
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
     end.join
@@ -483,7 +485,7 @@ class User < Sequel::Model
   end
 
   def dedicated_support?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? true : false
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
   def remove_logo?
@@ -1005,7 +1007,7 @@ class User < Sequel::Model
 
   def set_database_search_path
     in_database(as: :superuser) do |database|
-      database.run(%Q{ ALTER USER \"#{database_username}\" SET search_path = #{database_schema}, public, cartodb })
+      database.run(%Q{ ALTER USER \"#{database_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
     end
   end
 
@@ -1023,9 +1025,9 @@ class User < Sequel::Model
   def create_schema(schema, role = nil)
     in_database(as: :superuser) do |database|
       if role
-        database.run(%Q{CREATE SCHEMA #{schema} AUTHORIZATION "#{role}"})
+        database.run(%Q{CREATE SCHEMA \"#{schema}\" AUTHORIZATION "#{role}"})
       else
-        database.run(%Q{CREATE SCHEMA #{schema}})
+        database.run(%Q{CREATE SCHEMA \"#{schema}\"})
       end
     end
   rescue Sequel::DatabaseError => e
@@ -1215,10 +1217,10 @@ TRIGGER
       user_database.transaction do
 
         # grant core permissions to database user
-        user_database.run("GRANT ALL ON SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO \"#{database_username}\"")
+        user_database.run("GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\"")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
+        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
 
         yield(user_database) if block_given?
       end
@@ -1248,52 +1250,52 @@ TRIGGER
         # remove all public and tile user permissions
         user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM PUBLIC")
         schemas.each do |schema|
-          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM PUBLIC")
         end
 
         user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
         schemas.each do |schema|
-          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
         end
 
         user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::TILE_DB_USER}")
         schemas.each do |schema|
-          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
         end
 
         # grant core permissions to database user
         user_database.run("GRANT ALL ON DATABASE \"#{database_name}\" TO \"#{database_username}\"")
         schemas.each do |schema|
-          user_database.run("GRANT ALL ON SCHEMA #{schema} TO \"#{database_username}\"")
-          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO \"#{database_username}\"")
-          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO \"#{database_username}\"")
-          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
+          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
         end
 
         # grant select permissions to public user (for SQL API)
         user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::PUBLIC_DB_USER}")
         schemas.each do |schema|
-          user_database.run("GRANT USAGE ON SCHEMA #{schema} TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT USAGE ON SCHEMA \"#{schema}\" TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO #{CartoDB::PUBLIC_DB_USER}")
         end
         user_database.run("GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}")
 
         # grant select permissions to tile user (for tile API + internal tiles)
         user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::TILE_DB_USER}")
         schemas.each do |schema|
-          user_database.run("GRANT USAGE ON SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT USAGE ON SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
         end
 
         yield(user_database) if block_given?

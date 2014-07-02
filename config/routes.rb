@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 CartoDB::Application.routes.draw do
+  # Double use: for user public dashboard AND org dashboard
   root :to => 'admin/pages#public'
 
   get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login
@@ -19,7 +20,9 @@ CartoDB::Application.routes.draw do
   scope :module => :admin do
 
     # Organization dashboard page
-    get    '(/u/:user_domain)/organization'                 => 'organizations#show', as: :organization
+    get    '(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
+    get    '(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
+    put    '(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
     # Organization users management
     get    '(/u/:user_domain)/organization/users/:id/edit'  => 'users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
     put    '(/u/:user_domain)/organization/users/:id'       => 'users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
@@ -220,7 +223,7 @@ CartoDB::Application.routes.draw do
     put     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',                as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
     delete  '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',               as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
     get     '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
-    post    '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
+    put    '(/u/:user_domain)/api/v1/viz/:id/watching'                    => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
 
     # Tags
     get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index

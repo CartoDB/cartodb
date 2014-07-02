@@ -214,6 +214,16 @@ module CartoDB
       end
     end
 
+    def users_with_permissions(permission_type)
+      user_ids = relevant_user_acl_entries(acl).select { |entry|
+        permission_type.include?(entry[:access])
+      }.map { |entry|
+          entry[:id]
+      }
+
+      User.where(id: user_ids).all
+    end
+
     private
 
     # @param permission_type ENTITY_TYPE_xxxx

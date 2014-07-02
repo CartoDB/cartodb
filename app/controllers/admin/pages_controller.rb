@@ -15,6 +15,7 @@ class Admin::PagesController < ApplicationController
 
   before_filter :login_required, :except => [:public, :datasets]
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
+  skip_before_filter :ensure_user_organization_valid, only: [:public]
 
   def datasets
 
@@ -67,9 +68,14 @@ class Admin::PagesController < ApplicationController
   end #datasets
 
   def public
+    username = CartoDB.extract_subdomain(request)
+    viewed_user = User.where(username: username.strip.downcase).first
 
-    user = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: user.strip.downcase).first
+    if viewed_user.nil?
+      org = get_organization_if_exists(username)
+      return public_organization(org) unless org.nil?
+    end
+
     return render_404 if viewed_user.nil?
 
     @tags             = viewed_user.tags(true)
@@ -118,5 +124,18 @@ class Admin::PagesController < ApplicationController
     end
 
   end #public
+
+  def public_organization(organization)
+    @organization = organization
+    respond_to do |format|
+      format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
+    end
+  end
+
+  private
+
+  def get_organization_if_exists(name)
+    Organization.where(name: name).first
+  end
 
 end

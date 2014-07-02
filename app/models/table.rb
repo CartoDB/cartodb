@@ -572,7 +572,7 @@ class Table < Sequel::Model(:user_tables)
 
       self.remove_table_from_user_database
     end
-    @data_import.log << ("Import Error: #{e.try(:message)}") if @data_import
+    @data_import.log << ("Import Error: #{e.message} Trace: #{e.backtrace}") if @data_import
     raise e
   end
 

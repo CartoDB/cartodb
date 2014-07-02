@@ -73,7 +73,8 @@ module ApplicationHelper
       oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
       oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
       tumblr_api_key:      Cartodb.config[:tumblr]['api_key'],
-      max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
+      max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
+      watcher_ttl:         Cartodb.config[:watcher].try("fetch", 'ttl', 60),
     }
 
     if Cartodb.config[:graphite_public].present?

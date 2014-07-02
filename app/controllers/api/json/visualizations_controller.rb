@@ -237,7 +237,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     watcher = CartoDB::Visualization::Watcher.new(current_user, vis)
     watcher.notify
-    render_jsonp('ok')
+    render_jsonp(watcher.list)
   end
 
   def list_watching

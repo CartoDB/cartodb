@@ -14,7 +14,7 @@ module Concerns
     def update_in_central
       return true unless sync_data_with_cartodb_central?
       if self.is_a?(User) && self.organization
-        cartodb_central_client.update_organization_user(self.organization, @user)
+        cartodb_central_client.update_organization_user(self.organization, self)
       elsif self.is_a?(Organization)
         cartodb_central_client.update_organization(self)
       end

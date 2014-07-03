@@ -195,7 +195,7 @@ class User < Sequel::Model
     Thread.new do
       in_database(as: :superuser) do |database|
         # If user is in an organization should never have public schema, so to be safe check
-        database.run(%Q{ DROP SCHEMA \"#{database_schema}\" }) unless database_schema == 'public'
+        database.run(%Q{ DROP SCHEMA "#{database_schema}" }) unless database_schema == 'public'
       end
 
       connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -1076,7 +1076,7 @@ class User < Sequel::Model
 
   def set_database_search_path
     in_database(as: :superuser) do |database|
-      database.run(%Q{ ALTER USER \"#{database_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
+      database.run(%Q{ ALTER USER "#{database_username}" SET search_path = "#{database_schema}", public, cartodb })
     end
   end
 

@@ -118,7 +118,7 @@ module CartoDB
         return self if schema == result.schema
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"
-          SET SCHEMA \"#{user.database_schema}\"
+          SET SCHEMA "#{user.database_schema}"
         })
       end
 

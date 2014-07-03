@@ -32,7 +32,7 @@ module Concerns
     end
 
     def sync_data_with_cartodb_central?
-      Cartodb.config[:cartodb_central_api]['username'].present? && Cartodb.config[:cartodb_central_api]['password'].present?
+      Cartodb.config[:cartodb_central_api] && Cartodb.config[:cartodb_central_api]['username'].present? && Cartodb.config[:cartodb_central_api]['password'].present?
     end
 
     def cartodb_central_client

@@ -4,30 +4,40 @@
 
     <div class="avatar">
       <a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="circle">
-        <img src="<%= @avatar_url %>" />
+      <img src="<%= @avatar_url || 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>" />
       </a>
     </div>
 
     <div class="details">
       <%= content_tag :h2, ( !@organization.display_name.empty? ? @organization.display_name : @organization.name ) %>
 
-      <%= link_to "@#{@twitter_username}", "http://twitter.com/#{@twitter_username}", :class => :twitter if @twitter_username.present? %>
+      <%= link_to "@#{@organization.twitter_username}", "http://twitter.com/#{@organization.twitter_username}", :class => :twitter if @organization.twitter_username.present? %>
 
       <%= content_tag :p, @organization.description if @organization.description.present? %>
 
-      <% if @website.present? %>
+      <% if @organization.website.present? %>
 
-        <% if @description.present? || @twitter_username.present?  %>
+        <% if @organization.description.present? || @organization.twitter_username.present?  %>
         <div class="separator"></div>
         <% end %>
 
-        <div class="website"><%= link_to @website_clean, @website %></div>
+        <div class="website"><%= link_to @organization.website.gsub(/https?:\/\//, ""), @organization.website %></div>
       <% end %>
     </div>
 
     <ul>
-      <li><div class="count"><strong></strong></div></li>
-      <li><div class="count"><strong></strong></div></li>
+      <li>
+        <div class="count">
+          <strong><%= @public_org_visualizations.count %></strong>
+          visualization<%= 's' if @public_org_visualizations.count != 1 %>
+        </div>
+      </li>
+      <li>
+        <div class="count">
+          <strong><%= @organization.seats %></strong>
+          users
+        </div>
+      </li>
     </ul>
 
   </div>

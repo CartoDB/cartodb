@@ -20,6 +20,7 @@
   @import "compass/css3/transform";
   @import "compass/css3/transition";
   @import "../common/vars";
+  @import "../common/mixins";
   @import "../table/table-sprite";
 
   
@@ -94,10 +95,15 @@
 
       li {
         padding:14px 0;
+        @include display-flex();
+        @include cross-browser(justify-content, space-between);
+        @include cross-browser(align-items, center);
+      }
 
-        div.info, div.switches {
-          @include inline-block();
-        }
+      div.info ,
+      div.switches {
+        @include display-flex();
+        @include cross-browser(align-items, center);
       }
 
       div.info {
@@ -110,10 +116,10 @@
       div.switches {
         text-align: right;
         width:125px;
+        @include cross-browser(justify-content, flex-end);
       }
 
       img {
-        @include inline-block();
         width:18px;
         height:18px;
         @include border-radius(20px);
@@ -121,7 +127,6 @@
       }
 
       p {
-        @include inline-block();
         max-width:255px;
         margin-left:6px;
         font-size:15px

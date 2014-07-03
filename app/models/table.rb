@@ -74,7 +74,7 @@ class Table < Sequel::Model(:user_tables)
 
     attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
-      attrs[:name] = "#{owner.database_schema}.#{attrs[:name]}"
+      attrs[:name] = "\"#{owner.database_schema}\".#{attrs[:name]}"
     end
     attrs
   end
@@ -1157,7 +1157,7 @@ class Table < Sequel::Model(:user_tables)
             %Q{
             UPDATE #{qualified_table_name}
             SET
-              the_geom = #{owner.database_schema}.ST_GeomFromText(
+              the_geom = "#{owner.database_schema}".ST_GeomFromText(
                 'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')', #{CartoDB::SRID}
               )
             #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}

@@ -4,6 +4,9 @@ require_relative './permission'
 
 class Organization < Sequel::Model
 
+  ORG_VIS_KEY_FORMAT = "org_vis::%s"
+  ORG_VIS_KEY_REDIS_TTL = 600
+
   include CartoDB::OrganizationDecorator
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -102,40 +105,46 @@ class Organization < Sequel::Model
   end
 
   def organization_visualizations(page_num = 1, items_per_page = 5)
-    # 1) get all members
-    member_ids = self.users.map { |user|
-      user.id
-    }
-    # 2) check permissions from them containing organization in the ACL
-    entity_ids = CartoDB::Permission.where(owner_id: member_ids).map { |perm|
-      if perm.acl.empty?
-        nil
-      else
-        entity_id = nil
-        perm.acl.each { |acl_entry|
-          if perm[:entity_type] == CartoDB::Permission::ENTITY_TYPE_VISUALIZATION && \
-             acl_entry[:type] == CartoDB::Permission::TYPE_ORGANIZATION && acl_entry[:id] == self.id
-            entity_id = perm[:entity_id]
-          end
-        }
-        entity_id
-      end
-    }.compact
+    redis_key = ORG_VIS_KEY_FORMAT % [self.id]
 
-    # 3) retrieve Vis
-    visualizations = Visualization::Collection.new.fetch(
+    entity_ids = (Rails.env.production? || Rails.env.testing?) ? $tables_metadata.get(redis_key) : nil
+
+    if entity_ids.nil?
+      member_ids = self.users.map { |user|
+        user.id
+      }
+      entity_ids = CartoDB::Permission.where(owner_id: member_ids).map { |perm|
+        if perm.acl.empty?
+          nil
+        else
+          entity_id = nil
+          perm.acl.each { |acl_entry|
+            if perm[:entity_type] == CartoDB::Permission::ENTITY_TYPE_VISUALIZATION && \
+             acl_entry[:type] == CartoDB::Permission::TYPE_ORGANIZATION && acl_entry[:id] == self.id
+              entity_id = perm[:entity_id]
+            end
+          }
+          entity_id
+        end
+      }.compact
+
+      $tables_metadata.multi do
+        $tables_metadata.set(redis_key, entity_ids.join(','))
+        $tables_metadata.expire(redis_key, ORG_VIS_KEY_REDIS_TTL)
+      end if Rails.env.production? || Rails.env.testing?
+    else
+      entity_ids = entity_ids.split(',')
+    end
+
+    CartoDB::Visualization::Collection.new.fetch(
         id: entity_ids,
-        type:     Visualization::Member::DERIVED_TYPE,
-        privacy:  Visualization::Member::PRIVACY_PUBLIC,
+        type:     CartoDB::Visualization::Member::DERIVED_TYPE,
+        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         page:     page_num,
         per_page: items_per_page,
         order:    'updated_at',
         o:        {updated_at: :desc},
     )
-
-    # TODO: Store in redis final vis_id list
-
-    visualizations
   end
 
   private

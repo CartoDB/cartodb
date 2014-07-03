@@ -35,7 +35,10 @@ module Cartodb
     end # get_organization_user
 
     def create_organization_user(organization, user)
-      options = { body: { user: get_attributes_for(user) }, basic_auth: @auth }
+      attributes = get_attributes_for(user)
+      attributes[:remote_user_id] = record.id
+      attributes.delete(:organization_id)
+      options = { body: { user: attributes }, basic_auth: @auth }
 
       response = self.class.post "#{ @host }/api/organizations/#{ organization.name }/users", options
 
@@ -117,7 +120,6 @@ module Cartodb
 
     def get_attributes_for(record)
       attributes = record.api_attributes_with_values
-      attributes[:remote_id] = attributes.delete(:id)
       attributes
     end
 

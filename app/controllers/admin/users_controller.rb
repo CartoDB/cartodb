@@ -22,8 +22,8 @@ class Admin::UsersController < ApplicationController
     @user.create_in_central
     redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    @user.destroy
-    redirect_to admin_organization_path(@organization), flash:{ error: "There was a problem while creating the user. Please, try again and contact us if the problem persists." }
+    # @user.destroy # destroy is throwing right now
+    redirect_to organization_path(@organization), flash:{ error: "There was a problem while creating the user. Please, try again and contact us if the problem persists." }
   rescue Sequel::ValidationFailed => e
     render action: :new
   end

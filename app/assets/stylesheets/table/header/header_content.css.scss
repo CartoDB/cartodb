@@ -255,6 +255,11 @@
               border-right: 1px solid rgba(#000, .15);
               @include simple-transition(all, 150ms);
               @include border-radius(25px 0 0 25px);
+
+              &.disabled {
+                @include opacity(0.5);
+                &:hover { cursor:default }
+              }
             }
 
           }

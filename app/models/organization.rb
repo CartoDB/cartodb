@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './organization/organization_decorator'
+require_relative './permission'
 
 class Organization < Sequel::Model
 
@@ -106,14 +107,14 @@ class Organization < Sequel::Model
       user.id
     }
     # 2) check permissions from them containing organization in the ACL
-    entity_ids = Permission.where(owner_id: member_ids).map { |perm|
+    entity_ids = CartoDB::Permission.where(owner_id: member_ids).map { |perm|
       if perm.acl.empty?
         nil
       else
         entity_id = nil
         perm.acl.each { |acl_entry|
-          if perm[:entity_type] == Permission::ENTITY_TYPE_VISUALIZATION && \
-             acl_entry[:type] == Permission::TYPE_ORGANIZATION && acl_entry[:id] == self.id
+          if perm[:entity_type] == CartoDB::Permission::ENTITY_TYPE_VISUALIZATION && \
+             acl_entry[:type] == CartoDB::Permission::TYPE_ORGANIZATION && acl_entry[:id] == self.id
             entity_id = perm[:entity_id]
           end
         }

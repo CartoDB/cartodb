@@ -36,7 +36,7 @@ module Cartodb
 
     def create_organization_user(organization, user)
       attributes = get_attributes_for(user)
-      attributes[:remote_user_id] = record.id
+      attributes[:remote_user_id] = user.id
       attributes.delete(:organization_id)
       options = { body: { user: attributes }, basic_auth: @auth }
 

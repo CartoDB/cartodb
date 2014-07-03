@@ -129,6 +129,8 @@ class Admin::PagesController < ApplicationController
     @organization = organization
     @public_org_visualizations = organization.organization_visualizations(
         params[:page].nil? ? 1 : params[:page], VISUALIZATIONS_PER_PAGE)
+    @pages = (@public_org_visualizations.count.to_f / VISUALIZATIONS_PER_PAGE).ceil
+
     respond_to do |format|
       format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
     end

@@ -60,7 +60,11 @@
                   <%= form_error_for :website, @organization.errors %>
                 </div>
                 <div class="field field-2">
+                  <% unless @organization.avatar_url.nil? || @organization.avatar_url.empty? %>
+                    <img src="<%=@organization.avatar_url%>" alt="Company Logo" width="128" height="128" />
+                  <% end %>
                   <%= form.label :avatar_url, 'COMPANY LOGO' %>
+                  <%= form.text_field :avatar_url, :class => @organization.errors[:avatar_url].present? ? 'error' : nil %>
                   <a href="#/change-logo" class="input-link">Change logo</a>
                   <%= form_error_for :avatar_url, @organization.errors %>
                 </div>

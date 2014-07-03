@@ -4,7 +4,8 @@
 
     <div class="avatar">
       <a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="circle">
-      <img src="<%= @avatar_url || 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>" />
+      <img src="<%= @organization.avatar_url || 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>"
+        width="128" height="128" />
       </a>
     </div>
 

@@ -127,9 +127,26 @@ class Admin::PagesController < ApplicationController
 
   def public_organization(organization)
     @organization = organization
-    @public_org_visualizations = organization.organization_visualizations(
+
+    vis_list = @organization.organization_visualizations(
         params[:page].nil? ? 1 : params[:page], VISUALIZATIONS_PER_PAGE)
-    @pages = (@public_org_visualizations.count.to_f / VISUALIZATIONS_PER_PAGE).ceil
+
+    @pages = (vis_list.count.to_f / VISUALIZATIONS_PER_PAGE).ceil
+
+    @public_org_visualizations = []
+    vis_list.each do |vis|
+      @public_org_visualizations.push(
+          {
+              title:        vis.name,
+              description:  vis.description_clean,
+              id:           vis.id,
+              tags:         vis.tags,
+              layers:       vis.layers(:carto_and_torque),
+              mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
+              url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
+          }
+      )
+    end
 
     respond_to do |format|
       format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }

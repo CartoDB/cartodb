@@ -79,6 +79,8 @@ class User < Sequel::Model
     validates_presence :username
     validates_unique   :username
     validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
+    errors.add(:name, 'is taken') if name_exists_in_organizations?
+
     validates_presence :email
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
@@ -981,7 +983,7 @@ class User < Sequel::Model
     end
   end
 
-  def create_user_db 
+  def create_user_db
     connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
       'host' => self.database_host,
       'database' => 'postgres'
@@ -1022,7 +1024,7 @@ class User < Sequel::Model
     end
     self.this.update database_name: self.database_name
   end
-  
+
   def setup_new_user
     self.create_client_application
     Thread.new do
@@ -1059,7 +1061,7 @@ class User < Sequel::Model
   def setup_user
     return if disabled?
     self.set_database_name
-    
+
     if self.has_organization_enabled?
       self.setup_organization_user
     else
@@ -1421,5 +1423,11 @@ TRIGGER
         raise(response['stderr'])
       end
     end
+  end
+
+  private
+
+  def name_exists_in_organizations?
+    !Organization.where(name: self.username).first.nil?
   end
 end

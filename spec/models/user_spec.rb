@@ -98,6 +98,14 @@ describe User do
     end
   end
 
+  it "should not allow a username in use by an organization" do
+    organization = create_org('testusername', 10.megabytes, 1)
+    @user.username = 'testusername'
+    @user.valid?.should be_false
+    @user.username = 'wadus'
+    @user.valid?.should be_true
+  end
+
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
 

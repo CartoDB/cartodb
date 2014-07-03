@@ -1,0 +1,23 @@
+
+  /**
+   *  Styles for organization settings 
+   *
+   */
+
+  article.settings {
+
+    .right-column {
+      
+      // Disqus help
+      .disqus_help {
+        color: #2483B4;
+        
+        &:hover {
+          text-decoration:underline;
+          color:black;
+        }
+      }
+
+    }
+    
+  }

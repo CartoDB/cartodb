@@ -35,7 +35,7 @@
       </li>
       <li>
         <div class="count">
-          <strong><%= @organization.seats %></strong>
+          <strong><%= (@organization.seats - @organization.users.count) %></strong>
           users
         </div>
       </li>

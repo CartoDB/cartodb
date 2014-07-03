@@ -332,6 +332,10 @@ class User < Sequel::Model
     end
   end
 
+  def database_public_username
+    has_organization_enabled? ? "cartodb_publicuser_#{id}" : 'publicuser'
+  end
+
   def database_password
     crypted_password + database_username
   end
@@ -539,6 +543,7 @@ class User < Sequel::Model
       'database_name', database_name,
       'database_password', database_password,
       'database_host', database_host,
+      'database_publicuser', database_public_username,
       'map_key', api_key
   end
 
@@ -983,6 +988,14 @@ class User < Sequel::Model
     end
   end
 
+  def create_public_db_user
+    in_database(as: :superuser) do |database|
+      database.run(%Q{ CREATE USER \"#{database_public_username}\" LOGIN INHERIT })
+      database.run(%Q{ GRANT publicuser TO \"#{database_public_username}\" })
+      database.run(%Q{ ALTER USER \"#{database_public_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
+    end
+  end
+
   def create_user_db
     connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
       'host' => self.database_host,
@@ -1054,6 +1067,7 @@ class User < Sequel::Model
     self.set_database_search_path
     self.set_database_permissions
     self.set_user_as_organization_member
+    self.create_public_db_user
     self.rebuild_quota_trigger
   end
 

@@ -39,7 +39,7 @@
   <div class="visualizations">
     <% if @public_org_visualizations.count == 0 %>
       <div class="empty_placeholder">
-        <%= @name %> doesn't have any public maps
+        <%= ( @organization.display_name.present? ? @organization.name : @organization.display_name ) %> doesn't have any public maps
       </div>
     <% end %>
 

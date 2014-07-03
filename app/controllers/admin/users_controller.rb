@@ -19,7 +19,11 @@ class Admin::UsersController < ApplicationController
     @user.username = "#{@user.username}"
     copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
+    @user.create_in_central
     redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
+  rescue CartoDB::CentralCommunicationFailure => e
+    # @user.destroy # destroy is throwing right now
+    redirect_to organization_path(@organization), flash:{ error: "There was a problem while creating the user. Please, try again and contact us if the problem persists." }
   rescue Sequel::ValidationFailed => e
     render action: :new
   end
@@ -33,6 +37,9 @@ class Admin::UsersController < ApplicationController
 
     @user.save(raise_on_failure: true)
     redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
+  rescue CartoDB::CentralCommunicationFailure => e
+    flash[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists."
+    render action: :edit
   rescue Sequel::ValidationFailed => e
     render action: :edit
   end
@@ -40,6 +47,9 @@ class Admin::UsersController < ApplicationController
   def destroy
     @user.destroy
     head :no_content
+  rescue CartoDB::CentralCommunicationFailure => e
+    flash[:error] = "There was a problem while deleting this user. Please, try again and contact us if the problem persists."
+    render action: :show
   end
 
   private

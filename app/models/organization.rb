@@ -8,6 +8,8 @@ class Organization < Sequel::Model
   ORG_VIS_KEY_REDIS_TTL = 600
 
   include CartoDB::OrganizationDecorator
+  include Concerns::CartodbCentralSynchronizable
+
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
 

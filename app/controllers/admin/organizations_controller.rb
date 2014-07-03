@@ -30,9 +30,14 @@ class Admin::OrganizationsController < ApplicationController
     @organization.display_name = attributes[:display_name]
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
+
+    @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
     redirect_to organization_settings_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+  rescue CartoDB::CentralCommunicationFailure => e
+    flash[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists."
+    render action: :edit
   rescue Sequel::ValidationFailed => e
     render action: :settings
   end

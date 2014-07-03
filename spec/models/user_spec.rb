@@ -154,6 +154,21 @@ describe User do
     end
   end
 
+  describe 'central synchronization' do
+    it 'should create remote user in central if needed' do
+      organization = create_org('testorg', 10.megabytes, 1)
+      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user.organization = organization
+      user.save
+      user.sync_data_with_cartodb_central?.should be_true
+      Cartodb::Central.any_instance.expects(:create_organization_user).with(organization, user).once
+      user.create_in_central.should be_true
+    end
+    it 'should update remote user in central if needed' do
+      pending
+    end
+  end
+
   it "should have a default dashboard_viewed? false" do
     user = User.new
     user.dashboard_viewed?.should be_false
@@ -239,8 +254,8 @@ describe User do
 
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
-      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0], 
-      "total"=>49, 
+      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
+      "total"=>49,
       "updated_at"=>1370362756
     })
     @user.stubs(:get_es_api_calls_from_redis).returns([
@@ -279,8 +294,8 @@ describe User do
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s) 
-                  )  
+                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s)
+                  )
     @user.get_api_calls_from_es.should == {from_date.to_i => 4, to_date.to_i => 6}
   end
 

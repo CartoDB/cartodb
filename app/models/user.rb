@@ -9,6 +9,8 @@ require_relative './user/user_organization'
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
+  include Concerns::CartodbCentralSynchronizable
+
   self.strict_param_setting = false
 
   # @param name             String

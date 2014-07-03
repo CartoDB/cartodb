@@ -136,11 +136,12 @@ module CartoDB
       end
 
       def user_shared_vis(user_id)
-        recipient_ids = [user_id]
-        user = User.where(id: user_id).first
-        if user.has_organization?
-          recipient_ids << user.organization.id
-        end
+        recipient_ids = user_id.is_a?(Array) ? user_id : [user_id]
+        User.where(id: user_id).each { |user|
+          if user.has_organization?
+            recipient_ids << user.organization.id
+          end
+        }
 
         CartoDB::SharedEntity.where(
             recipient_id: recipient_ids,

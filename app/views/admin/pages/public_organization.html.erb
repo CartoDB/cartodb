@@ -39,6 +39,12 @@
   <div class="visualizations">
     <div class="empty_placeholder">
       <%= @organization.name %> doesn't have any public maps
+
+      <% @public_org_visualizations.each do |vis| %>
+        <%= vis.id %>
+
+      <% end %>
+
     </div>
   </div>
 

@@ -567,12 +567,12 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Logger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
-      @data_import.log << ("Dropping table #{qualified_table_name}") if @data_import
+      @data_import.log << ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
       $tables_metadata.del key
 
       self.remove_table_from_user_database
     end
-    @data_import.log << ("Import Error: #{e.message} Trace: #{e.backtrace}") if @data_import
+    @data_import.log << ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
     raise e
   end
 

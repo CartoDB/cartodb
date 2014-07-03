@@ -100,6 +100,43 @@ class Organization < Sequel::Model
     }
   end
 
+  def organization_visualizations(page_num = 1, items_per_page = 5)
+    # 1) get all members
+    member_ids = self.users.map { |user|
+      user.id
+    }
+    # 2) check permissions from them containing organization in the ACL
+    entity_ids = Permission.where(owner_id: member_ids).map { |perm|
+      if perm.acl.empty?
+        nil
+      else
+        entity_id = nil
+        perm.acl.each { |acl_entry|
+          if perm[:entity_type] == Permission::ENTITY_TYPE_VISUALIZATION && \
+             acl_entry[:type] == Permission::TYPE_ORGANIZATION && acl_entry[:id] == self.id
+            entity_id = perm[:entity_id]
+          end
+        }
+        entity_id
+      end
+    }.compact
+
+    # 3) retrieve Vis
+    visualizations = Visualization::Collection.new.fetch(
+        id: entity_ids,
+        type:     Visualization::Member::DERIVED_TYPE,
+        privacy:  Visualization::Member::PRIVACY_PUBLIC,
+        page:     page_num,
+        per_page: items_per_page,
+        order:    'updated_at',
+        o:        {updated_at: :desc},
+    )
+
+    # TODO: Store in redis final vis_id list
+
+    visualizations
+  end
+
   private
 
   def name_exists_in_users?

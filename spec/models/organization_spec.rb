@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+require_relative '../../app/models/visualization/collection'
+
+include CartoDB
+
 describe Organization do
 
   before(:all) do
@@ -7,7 +11,7 @@ describe Organization do
   end
 
   after(:all) do
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
     @user.destroy
   end
 
@@ -75,5 +79,115 @@ describe Organization do
       organization.destroy
     end
   end
+
+  describe '#org_shared_vis' do
+    it "checks fetching all shared visualizations of an organization's members " do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+
+      vis_1_name = 'viz_1'
+      vis_2_name = 'viz_2'
+      vis_3_name = 'viz_3'
+
+      user1 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
+      user2 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
+      user3 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
+
+      organization = Organization.new
+      organization.name = 'qwerty'
+      organization.seats = 5
+      organization.quota_in_bytes = 1234567890
+      organization.save.reload
+      user1.organization_id = organization.id
+      user1.save.reload
+      organization.owner_id = user1.id
+      organization.save.reload
+      user2.organization_id = organization.id
+      user2.save.reload
+      user3.organization_id = organization.id
+      user3.save.reload
+
+      vis1 = Visualization::Member.new(random_attributes(name: vis_1_name, user_id: user1.id)).store
+      vis2 = Visualization::Member.new(random_attributes(name: vis_2_name, user_id: user2.id)).store
+      vis3 = Visualization::Member.new(random_attributes(name: vis_3_name, user_id: user3.id)).store
+
+      perm = vis1.permission
+      perm.acl = [
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id:       organization.id,
+                  username: organization.name
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      perm.save
+
+      perm = vis2.permission
+      perm.acl = [
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id:       organization.id,
+                  username: organization.name
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      perm.save
+
+      perm = vis3.permission
+      perm.acl = [
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id:       organization.id,
+                  username: organization.name
+              },
+              access: Permission::ACCESS_READONLY
+          }
+      ]
+      perm.save
+
+      # Setup done, now to the proper test
+
+      org_vis_array = organization.organization_visualizations.map { |vis|
+        vis.id
+      }
+      # Order is newest to oldest
+      org_vis_array.should eq [vis3.id, vis2.id, vis1.id]
+
+      # Clear first shared entities to be able to destroy
+      vis1.permission.acl = []
+      vis1.permission.save
+      vis2.permission.acl = []
+      vis2.permission.save
+      vis3.permission.acl = []
+      vis3.permission.save
+
+      begin
+        user2.destroy
+        user3.destroy
+        user1.destroy
+      rescue
+        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
+      end
+    end
+  end
+
+  def random_attributes(attributes={})
+    random = rand(999)
+    {
+        name:         attributes.fetch(:name, "name #{random}"),
+        description:  attributes.fetch(:description, "description #{random}"),
+        privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
+        tags:         attributes.fetch(:tags, ['tag 1']),
+        type:         attributes.fetch(:type, Visualization::Member::DERIVED_TYPE),
+        user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
+    }
+  end #random_attributes
 
 end

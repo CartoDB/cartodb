@@ -127,6 +127,8 @@ class Admin::PagesController < ApplicationController
 
   def public_organization(organization)
     @organization = organization
+    @public_org_visualizations = organization.organization_visualizations(
+        params[:page].nil? ? 1 : params[:page], VISUALIZATIONS_PER_PAGE)
     respond_to do |format|
       format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
     end

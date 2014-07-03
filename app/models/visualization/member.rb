@@ -80,7 +80,7 @@ module CartoDB
       end #default_privacy
 
       def store
-        raise CartoDB::InvalidMember unless self.valid?
+        raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
         do_store
         self
       end #store

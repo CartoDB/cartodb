@@ -181,7 +181,7 @@
       @include box-shadow(0 0 3px 3px rgba(black,0.15));
       @include border-radius(3px);
       overflow:hidden;
-      z-index:10;
+      z-index:20;
     }
 
     // List item

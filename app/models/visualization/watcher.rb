@@ -16,7 +16,9 @@ module CartoDB
         raise WatcherError.new('User must belong to an organization') if user.organization.nil?
         @user = user
         @visualization = visualization
-        @notification_ttl = notification_ttl.nil? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : notification_ttl
+
+        default_ttl = Cartodb.config[:watcher].present? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : 60
+        @notification_ttl = notification_ttl.nil? ? default_ttl : notification_ttl
       end #initialize
 
       # Notifies that is editing the visualization

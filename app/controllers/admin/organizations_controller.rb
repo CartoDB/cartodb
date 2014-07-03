@@ -1,14 +1,12 @@
 # coding: utf-8
 class Admin::OrganizationsController < ApplicationController
   ssl_required :oauth, :api_key, :regenerate_api_key
-  before_filter :login_required, :load_organization
+  before_filter :login_required, :load_organization_and_members
 
   def show
-    @users = current_user.organization.users
   end
 
   def settings
-    @users = current_user.organization.users
   end
 
   def settings_update
@@ -45,8 +43,9 @@ class Admin::OrganizationsController < ApplicationController
 
   private
 
-  def load_organization
+  def load_organization_and_members
     @organization = current_user.organization
+    @users = current_user.organization.users
     raise RecordNotFound unless @organization.present? && current_user.organization_owner?
   end
 

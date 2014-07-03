@@ -66,7 +66,7 @@ module CartoDB
         poro = layer.public_values
         if options[:viewer_user] and poro['options']
           unless poro['options']['user_name'] == options[:viewer_user].username
-            poro['options']['table_name'] = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
+            poro['options']['table_name'] = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
           end
         end
         poro
@@ -169,7 +169,7 @@ module CartoDB
 
           if options[:viewer_user]
             unless data['user_name'] == options[:viewer_user].username
-              data['table_name'] = "#{data['user_name']}.#{data['table_name']}"
+              data['table_name'] = "\"#{data['user_name']}\".#{data['table_name']}"
             end
           end
           data

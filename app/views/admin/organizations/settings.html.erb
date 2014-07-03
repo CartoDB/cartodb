@@ -59,12 +59,13 @@
                   <%= form.text_field :website, :class => @organization.errors[:website].present? ? 'error' : nil %>
                   <%= form_error_for :website, @organization.errors %>
                 </div>
-                <div class="field field-2">
+                <div class="field field-2 logo">
                   <%= form.label :avatar_url, 'COMPANY LOGO' %>
-                  <img src="<%= @organization.avatar_url.present? ? @organization.avatar_url : 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>"
-                       width="128" height="128" />
                   <%= form.file_field :avatar_url, :class => @organization.errors[:avatar_url].present? ? 'error' : nil %>
                   <%= form_error_for :avatar_url, @organization.errors %>
+                  <div class="avatar">
+                    <img class="avatar" src="<%= @organization.avatar_url.present? ? @organization.avatar_url : 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>" />
+                  </div>
                 </div>
               </div>
 

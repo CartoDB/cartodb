@@ -1209,7 +1209,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-25-g1573a19'
+    tgt_rev = 'v0.2.1-26-g7a1604c'
 
     add_python
 

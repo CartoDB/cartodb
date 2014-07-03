@@ -14,7 +14,17 @@ class Admin::OrganizationsController < ApplicationController
   def settings_update
     attributes = params[:organization]
 
-    @organization.avatar_url = attributes[:avatar_url] if attributes.include?(:avatar_url)
+    if attributes.include?(:avatar_url)
+      asset = Asset.new
+      asset.raise_on_save_failure = true
+      asset.user_id = current_user.id
+      asset.asset_file = attributes[:avatar_url]
+      asset.kind = Asset::KIND_ORG_AVATAR
+      if asset.save
+        @organization.avatar_url = asset.public_url
+      end
+    end
+
     @organization.website = attributes[:website]
     @organization.description = attributes[:description]
     @organization.display_name = attributes[:display_name]

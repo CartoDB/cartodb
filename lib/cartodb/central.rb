@@ -16,7 +16,7 @@ module Cartodb
     end
 
     def get_organization_users(organization)
-      options = { basic_auth: @auth, timeout: 600 }
+      options = { basic_auth: @auth, timeout: 600, verify: Rails.env.production? }
       response = self.class.get "#{ @host }/api/organizations/#{ organization.name }/users", options
 
       unless response.code == 200
@@ -26,7 +26,8 @@ module Cartodb
     end # get_organization_users
 
     def get_organization_user(organization, user)
-      response = self.class.get "#{ @host }/api/organizations/#{ organization.name }/users/#{ user.username }", { basic_auth: @auth }
+      options = { basic_auth: @auth, verify: Rails.env.production? }
+      response = self.class.get "#{ @host }/api/organizations/#{ organization.name }/users/#{ user.username }", options
 
       unless response.code == 200
         raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
@@ -36,9 +37,9 @@ module Cartodb
 
     def create_organization_user(organization, user)
       attributes = get_attributes_for(user)
-      attributes[:remote_user_id] = record.id
+      attributes[:remote_user_id] = user.id
       attributes.delete(:organization_id)
-      options = { body: { user: attributes }, basic_auth: @auth }
+      options = { body: { user: attributes }, basic_auth: @auth, verify: Rails.env.production? }
 
       response = self.class.post "#{ @host }/api/organizations/#{ organization.name }/users", options
 
@@ -50,7 +51,7 @@ module Cartodb
     end # create_organization_user
 
     def update_organization_user(organization, user)
-      options = { body: { user: get_attributes_for(user) }, basic_auth: @auth}
+      options = { body: { user: get_attributes_for(user) }, basic_auth: @auth, verify: Rails.env.production?}
 
       response = self.class.send :put, "#{ @host }/api/organizations/#{ organization.name }/users/#{ user.username }", options
 
@@ -60,7 +61,8 @@ module Cartodb
     end # update_organization_user
 
     def delete_organization_user(organization, user)
-      response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization.name }/users/#{user_id}", { basic_auth: @auth }
+      options ={ basic_auth: @auth , verify: Rails.env.production? }
+      response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization.name }/users/#{user_id}", options
 
       unless response.code == 204
         raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
@@ -71,7 +73,7 @@ module Cartodb
     # Organizations
 
     def get_organizations
-      options = { basic_auth: @auth, timeout: 600 }
+      options = { basic_auth: @auth, timeout: 600 , verify: Rails.env.production? }
       response = self.class.get "#{ @host }/api/organizations", options
       unless response.code == 200
         raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
@@ -80,7 +82,8 @@ module Cartodb
     end # get_organizations
 
     def get_organization(organization)
-      response = self.class.get "#{ @host }/api/organizations/#{ organization.name }", { basic_auth: @auth }
+      options = { basic_auth: @auth, verify: Rails.env.production? }
+      response = self.class.get "#{ @host }/api/organizations/#{ organization.name }", options
       unless response.code == 200
         raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
       end
@@ -90,7 +93,7 @@ module Cartodb
     # Returns remote organization attributes if response code is 201
     # otherwise returns nil
     def create_organization(organization)
-      options = { body: { organization: get_attributes_for(organization) }, basic_auth: @auth }
+      options = { body: { organization: get_attributes_for(organization) }, basic_auth: @auth, verify: Rails.env.production? }
 
       response = self.class.send :post, "#{ @host }/api/organizations", options
 
@@ -101,7 +104,7 @@ module Cartodb
     end # create_organization
 
     def update_organization(organization)
-      options = { body: { organization: get_attributes_for(organization) }, basic_auth: @auth}
+      options = { body: { organization: get_attributes_for(organization) }, basic_auth: @auth, verify: Rails.env.production?}
 
       response = self.class.send :put, "#{ @host }/api/organizations/#{ organization.name }", options
       unless response.code == 204
@@ -110,7 +113,8 @@ module Cartodb
     end # update_organization
 
     def delete_organization(organization)
-      response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization.name }", { basic_auth: @auth }
+      options = { basic_auth: @auth, verify: Rails.env.production? }
+      response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization.name }", options
       unless response.code == 204
         raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
       end

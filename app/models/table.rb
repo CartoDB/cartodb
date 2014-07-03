@@ -657,7 +657,6 @@ class Table < Sequel::Model(:user_tables)
   end
   ## End of Callbacks
 
-  ##
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
   def invalidate_varnish_cache

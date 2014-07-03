@@ -95,7 +95,7 @@ class Map < Sequel::Model
     visualizations.each do |visualization|
       visualization.invalidate_cache_and_refresh_named_map
     end
-  end #invalidate_varnish_cache
+  end
 
   def copy_for(user)
     CartoDB::Map::Copier.new(self, user).copy

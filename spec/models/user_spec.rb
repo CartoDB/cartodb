@@ -164,11 +164,11 @@ describe User do
 
   describe 'central synchronization' do
     it 'should create remote user in central if needed' do
+      pending "Central API credentials not provided" unless User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 10.megabytes, 1)
       user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
       user.organization = organization
       user.save
-      user.sync_data_with_cartodb_central?.should be_true
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization, user).once
       user.create_in_central.should be_true
     end

@@ -43,10 +43,11 @@ div.map {
   width:100%;
   padding: 84px 84px 20px 20px;
 
-  /*background: #333 image-url('layout/mobile_bkg.png') repeat 50% 50%;*/
   background: #333 image-url('layout/noise.png') repeat 0 0;
 
   .mobile_bkg {
+    @include opacity(0);
+    @include box-sizing(border-box);
     position:absolute;
     top:1px; // Header opacity black border needs to be present
     left:0;
@@ -86,7 +87,7 @@ div.map {
 
       }
 
-      &.add_widget {
+      &.add_overlay {
 
         position:relative;
 
@@ -142,7 +143,6 @@ div.map {
         margin: 0 5px 0 0;
 
         border-right: 1px solid rgba(#D9D9D9, .8);
-        &:last-child { border: none; }
 
         cursor: pointer;
 
@@ -263,6 +263,12 @@ div.map {
     strong {
       color: #fff;
       font-weight:normal;
+    }
+
+    div.map div.dropdown.basemap ul li>a
+    
+    .thumbs li> a.nokia_reduced_day div.thumb {
+      background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
     }
 
     & > .thumb {
@@ -457,7 +463,7 @@ div.map {
 
     border: 1px solid #999999;
 
-    .custom {
+    div.custom {
       display:inline;
       vertical-align:top;
     }
@@ -469,7 +475,7 @@ div.map {
       border-bottom: none;
     }
 
-    .custom > ul {
+    div.custom > ul {
       border-bottom: 1px solid rgba(204,204,204,0.35);
       @include box-sizing(border-box);
       padding: 10px 10px;
@@ -483,12 +489,18 @@ div.map {
 
       }
 
-      li { border:none; }
+      li { 
+        border:none;;
+        font-size: 13px;
+      }
 
     }
 
 
     ul li {
+      margin: 0 10px 0 0;
+
+      &:last-child { margin-right: 0; }
 
       &.wms {
         .thumb {
@@ -520,8 +532,7 @@ div.map {
 
       & > a {
         display:block;
-        padding: 0 10px 0 0;
-        /*height: 48px;*/
+        padding: 0;
         box-sizing: border-box;
 
         line-height: 13px;
@@ -611,7 +622,39 @@ div.map {
         }
 
         &.nokia_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24")!Important;
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24");
+        }
+
+        &.nokia_day_grey .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24");
+        }
+
+        &.nokia_day_transit .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.transit/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24");
+        }
+
+        &.nokia_carnav_day_grey .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/carnav.day.grey/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        }
+
+        &.nokia_reduced_day .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/reduced.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        }
+
+        &.nokia_night .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.night/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        }
+
+        &.nokia_terrain_day .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/terrain.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        }
+
+        &.nokia_satellite_day .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/satellite.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        }
+
+        &.nokia_hybrid_day .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/hybrid.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
         }
 
         &.dark_roadmap .thumb {
@@ -695,6 +738,23 @@ div.map {
   }
 
   /* CartoDB map styles */
+
+  &.table div.cartodb-map {
+    position:absolute;
+    top: 55px;
+    left:0;
+    right:0;
+    bottom:0;
+
+    @include border-radius(0);
+
+    div.cartodb-searchbox{
+      margin: 20px 77px 0 0;
+      float: right;
+      position: relative;
+    }
+
+  }
 
   div.cartodb-map {
 
@@ -805,7 +865,6 @@ div.map {
   div.cartodb-searchbox {
     display:none;
     position:absolute;
-    /*float:right;*/
     margin:0;
 
     @include transform-style("linear");
@@ -815,10 +874,71 @@ div.map {
 
   // Public map
   .cartodb-map.public {
-    top: 55px;
+    top: 65px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     border-top:1px solid #999999;
 
-    div.cartodb-zoom { position:absolute; top: 0px; }
+
+    .cartodb-map-wrapper.with_header div.cartodb-zoom {
+      margin-top: 70px;
+    }
+
+    .cartodb-map-wrapper.with_header div.cartodb-share {
+      margin-top: 70px;
+    }
+
+    .cartodb-map-wrapper.with_header div.cartodb-searchbox {
+      margin-top: 70px;
+    }
+
+    .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
+      margin-top: 70px;
+    }
+
+    div.cartodb-fullscreen {
+      position:relative;
+      margin: 41px 0 0 20px;
+    }
+
+    div.cartodb-layer-selector-box { 
+      position:relative;
+      float:right;
+      margin: 20px 20px 0 0;
+    }
+
+    div.cartodb-share {
+      display:none;
+      position:relative;
+      float:right;
+      margin: 20px 20px 0 0;
+      z-index: 5;
+    }
+
+    div.cartodb-tiles-loader {
+      position:relative;
+      float:left;
+      display:block;
+      left:0;
+      top:0;
+    }
+
+    div.cartodb-tiles-loader div.loader {
+      position:absolute;
+      display:block;
+      top:70px;
+      left:-30px;
+      margin:20px 0 0 0;
+      width: 28px;
+      height:28px;
+    }
+
+    div.cartodb-zoom { 
+      position:absolute; 
+      top: 0px;
+      margin: 20px 0 0 20px;
+    }
 
     div.cartodb-tiles-loader {
       position:absolute;
@@ -887,7 +1007,7 @@ div.map {
     display: block;
     width: 100%;
     height: 37px;
-    margin:0;
+    margin: -29px 0 0 0;
     z-index:1;
 
     p {

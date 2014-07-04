@@ -56,23 +56,6 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
-  # Attributes synched with CartoDB Central
-  def api_attributes
-    [
-      :account_type, :admin, :crypted_password, :database_host, :database_timeout,
-      :description, :disqus_shortname, :email, :geocoding_block_price,
-      :geocoding_quota, :map_view_block_price, :map_view_quota, :max_layers,
-      :name, :notification, :organization_id, :period_end_date,
-      :private_tables_enabled, :quota_in_bytes, :salt, :sync_tables_enabled,
-      :table_quota, :twitter_username, :upgraded_at, :user_timeout, :username,
-      :website
-    ]
-  end # api_attributes
-
-  def api_attributes_with_values
-    Hash[*self.api_attributes.map{ |x| [x, self[x]] }.flatten]
-  end
-
   ## Validations
   def validate
     super
@@ -1170,6 +1153,8 @@ class User < Sequel::Model
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
 
+
+
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
     CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
@@ -1204,7 +1189,7 @@ class User < Sequel::Model
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
             #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name)
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))
@@ -1226,7 +1211,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-30-g1c86599'
+    tgt_rev = 'v0.2.1-31-g5806ac8'
 
     add_python
 

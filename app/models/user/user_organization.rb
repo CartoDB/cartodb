@@ -51,6 +51,12 @@ module CartoDB
     #  raise "User with id #{user_id} doesn't exist" if user.nil?
     #end
 
+    def self.from_org_id(organization_id)
+      organization = Organization.where(:id => organization_id).first
+      raise "Organization with id #{org_id} does not exist" if organization.nil?
+      return CartoDB::UserOrganization.new(organization.id, organization.owner_id)
+    end
+    
     private
     def move_user_tables_to_schema(user_id)
       user = User.where(:id => user_id).first

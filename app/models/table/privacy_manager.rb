@@ -99,7 +99,7 @@ module CartoDB
 
       def invalidate_varnish_cache
         Varnish.new.purge("#{varnish_key}")
-      end #invalidate_varnish_cache
+      end
 
       def varnish_key
         "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"

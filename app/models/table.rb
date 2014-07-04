@@ -520,10 +520,10 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
-    create_layer_selector_overlay(member, 1)
+    create_header_overlay(member, 1)
     create_share_overlay(member, 2)
-    create_header_overlay(member, 3)
-    create_search_overlay(member, 4)
+    create_search_overlay(member, 3)
+    create_layer_selector_overlay(member, 4)
     create_zoom_overlay(member, 6)
     create_fullscreen_overlay(member, 7)
     create_zoom_info_overlay(member, 8)
@@ -595,7 +595,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_share_overlay(member, order)
 
-    options = { :display => true, :x => 20, :y => 40 } 
+    options = { :display => false, :x => 20, :y => 40 } 
 
     member = generate_overlay(member.id, options, "share", order)
     member.store
@@ -613,7 +613,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_layer_selector_overlay(member, order)
 
-    options = { :display => true, :x => 212, :y => 40 }
+    options = { :display => false, :x => 212, :y => 40 }
 
     member = generate_overlay(member.id, options, "layer_selector", order)
     member.store
@@ -623,11 +623,11 @@ class Table < Sequel::Model(:user_tables)
   def create_header_overlay(member, order)
 
     options = {
-      :display => false, 
+      :display => false,
       :extra => { :title => member.name, :description => member.description, :show_title => false, :show_description => false }
     }
 
-    member = generate_overlay(member.id, options, "title", order)
+    member = generate_overlay(member.id, options, "header", order)
     member.store
 
   end

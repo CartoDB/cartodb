@@ -47,6 +47,7 @@ WORKING_SPECS_4 = \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
   spec/requests/superadmin/users_spec.rb \
+  spec/requests/superadmin/organizations_spec.rb \
   $(NULL)
 
 

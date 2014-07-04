@@ -25,6 +25,8 @@ class Organization < Sequel::Model
   # @param display_name String
   # @param discus_shortname String
   # @param twitter_username String
+  # @param geocoding_quota Integer
+  # @param map_view_quota Integer
 
   one_to_many :users
   many_to_one :owner, class_name: 'User', key: 'owner_id'

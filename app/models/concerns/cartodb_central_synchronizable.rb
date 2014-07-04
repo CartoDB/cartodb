@@ -60,7 +60,7 @@ module Concerns
       if self.is_a?(Organization)
         case action
         when :create
-          raise "Can't create organizations in editor"
+          raise "Can't create organizations from editor"
         when :update
           self.values.slice(:seats, :display_name, :description, :website,
           :discus_shortname, :twitter_username)
@@ -85,6 +85,7 @@ module Concerns
     end
 
     def set_fields_from_central(params, action)
+      return self unless params.present? && action.present?
       self.set(params.slice(*allowed_attributes_from_central(action)))
       if self.is_a?(User) && params.has_key?(:password)
         self.password = self.password_confirmation = params[:password]

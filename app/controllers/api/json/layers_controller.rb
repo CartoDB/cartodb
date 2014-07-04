@@ -42,8 +42,8 @@ class Api::Json::LayersController < Api::ApplicationController
       @parent.add_layer(@layer)
       @layer.register_table_dependencies if @parent.is_a?(Map)
       @parent.process_privacy_in(@layer) if @parent.is_a?(Map)
-        
-      render_jsonp(@layer.public_values)
+
+      render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
     else
       CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages
       render_jsonp( { :description => @layer.errors.full_messages,

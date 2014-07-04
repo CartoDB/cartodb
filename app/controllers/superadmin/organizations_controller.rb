@@ -17,22 +17,18 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
 
   def create
     @organization = Organization.new
-    attributes = params[:organization]
-
-    @organization.set_only(attributes, @organization.api_attributes)
+    @organization.set_fields_from_central(params[:organization], :create)
     @organization.save
-    if attributes[:owner_id].present? && @organization.owner.nil?
-      uo = CartoDB::UserOrganization.new(@organization.id, attributes[:owner_id])
+    # TODO: move this into a callback or a model method
+    if params[:organization][:owner_id].present? && @organization.owner.nil?
+      uo = CartoDB::UserOrganization.new(@organization.id, params[:organization][:owner_id])
       uo.promote_user_to_admin
     end
     respond_with(:superadmin, @organization)
   end
 
   def update
-    attributes = params[:organization]
-
-    @organization.set_only(attributes, @organization.api_attributes)
-
+    @organization.set_fields_from_central(params[:organization], :update)
     @organization.save
     respond_with(:superadmin, @organization)
   end

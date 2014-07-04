@@ -1204,7 +1204,7 @@ class User < Sequel::Model
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
             #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name)
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace("\"",""))
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))

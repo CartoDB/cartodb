@@ -24,7 +24,7 @@ class Api::Json::MapsController < Api::ApplicationController
   end
 
   def update
-    unless @map.update(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id, :view_bounds_sw, :view_bounds_ne)) == false
+    unless @map.update(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id, :view_bounds_sw, :view_bounds_ne, :scrollwheel)) == false
       render_jsonp(@map.public_values)
     else
       CartoDB::Logger.info "Error on maps#update", @map.errors.full_messages

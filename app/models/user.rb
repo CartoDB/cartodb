@@ -1170,6 +1170,8 @@ class User < Sequel::Model
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
 
+
+
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
     CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
@@ -1204,7 +1206,7 @@ class User < Sequel::Model
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
             #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace("\"",""))
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))

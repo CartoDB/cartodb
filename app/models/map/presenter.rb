@@ -14,12 +14,14 @@ module CartoDB
       end #initialize
     
       def to_poro
+
         {
           version:        "0.1.0",
           title:          table.name,
           description:    table.table_visualization.description,
           url:            options.delete(:url),
           map_provider:   map.provider,
+          scrollwheel:    map.scrollwheel,
           bounds:         bounds_from(map),
           center:         map.center,
           zoom:           map.zoom,
@@ -32,24 +34,13 @@ module CartoDB
             CartoDB::Layer::Presenter.new(
               map.data_layers.first, options, configuration
             ).to_vizjson_v1
-          ],
-
-          overlays: [
-            {
-              type: "zoom",
-              template: '<a class="zoom_in">+</a><a class="zoom_out">-</a>'
-            },
-            {
-              type: "loader",
-              template: '<div class="loader"></div>'
-            }
           ]
         }
       end #to_poro
 
       private
 
-      attr_reader :map, :table, :options, :configuration
+      attr_reader :map, :table, :options, :configuration, :scrollwheel
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")

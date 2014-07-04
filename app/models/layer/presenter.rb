@@ -64,8 +64,10 @@ module CartoDB
 
       def to_poro
         poro = layer.public_values
-        if options[:viewer_user] and poro['options']
-          unless poro['options']['user_name'] == options[:viewer_user].username
+        if options[:viewer_user] and poro['options'] and poro['options']['table_name']
+          # if the table_name already have a schema don't add another one
+          # this case happens when you share a layer already shared with you
+          if poro['options']['user_name'] != options[:viewer_user].username and not poro['options']['table_name'].include?('.')
             poro['options']['table_name'] = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
           end
         end

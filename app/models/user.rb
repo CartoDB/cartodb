@@ -703,13 +703,12 @@ class User < Sequel::Model
   private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
-  #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize('#{self.database_schema}')").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -916,7 +915,7 @@ class User < Sequel::Model
         #       and those before the switch.
         search_path = db.fetch("SHOW search_path;").first[:search_path]
         db.run("SET search_path TO cartodb, public;")
-        db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
+        db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
         db.run("SET search_path TO #{search_path};")
       end
     end
@@ -1213,7 +1212,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-26-g82f2e73'
+    tgt_rev = 'v0.2.1-29-g3c5251e'
 
     add_python
 

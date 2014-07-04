@@ -163,6 +163,16 @@ module CartoDB
       permission
     end
 
+    def permission_for_org
+      permission = nil
+      acl.map { |entry|
+        if entry[:type] == TYPE_ORGANIZATION
+            permission = entry[:access]
+        end
+      }
+      ACCESS_NONE if permission.nil?
+    end
+
     # Note: Does not check ownership
     # @param subject User
     # @param access String Permission::ACCESS_xxx
@@ -272,7 +282,7 @@ module CartoDB
           # if it's not a canonical visualization give permission to the associated tables if the user is the owner
           # check ownership 
           tables.each { |t| 
-            if not self.owner_id == t.table_visualization.permission.owner_id
+            if not self.owner_id == t.table_visualization.permission.owner_id and not permission_strategy.is_permitted(t.table_visualization, access)
               raise PermissionError.new('Trying to change permissions to a table without ownership')
             end
           }
@@ -320,6 +330,10 @@ module CartoDB
     def add_read_write_permission(table)
       table.add_organization_read_write_permission
     end
+
+    def is_permitted(table, access)
+      table.permission.permission_for_org == access
+    end
   end
 
 
@@ -327,6 +341,10 @@ module CartoDB
 
     def initialize(user)
       @user = user
+    end
+
+    def is_permitted(table, access)
+      table.permission.is_permitted?(@user, access)
     end
 
     def add_read_permission(table)

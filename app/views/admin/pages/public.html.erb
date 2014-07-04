@@ -135,15 +135,17 @@
   _.each(urls, function(url, i) {
 
     var options = {
-      title:        false,
-      search:       false,
-      shareable:    false,
-      header:       false,
-      zoomControl:  false,
-      cartodb_logo: false,
-      scrollwheel:  false,
-      legends:      false,
-      time_slider:  false,
+      title:          false,
+      search:         false,
+      layer_selector: false,
+      shareable:      false,
+      header:         false,
+      zoomControl:    false,
+      cartodb_logo:   false,
+      scrollwheel:    false,
+      legends:        false,
+      time_slider:    false,
+      loader:         false,
       sublayer_options: url.layer_visibility
     };
 

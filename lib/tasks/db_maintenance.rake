@@ -570,6 +570,18 @@ namespace :cartodb do
       end
     end
 
+    desc 'Create public users for users beloging to an organization'
+    task :create_organization_members_public_users => :environment do
+      User.exclude(organization_id: nil).each do |user|
+        begin
+          user.create_public_db_user
+          user.save_metadata
+        rescue
+          puts "user #{user.username} already has the public user"
+        end
+      end
+    end
+
     desc 'Setup default permissions on existing visualizations'
     task :create_default_vis_permissions, [:page_size, :page] => :environment do |t, args|
       page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i

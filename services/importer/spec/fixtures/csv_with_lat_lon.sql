@@ -118,14 +118,14 @@ CREATE INDEX csv_with_lat_lon_the_geom_webmercator_idx ON csv_with_lat_lon USING
 -- Name: test_quota; Type: TRIGGER; Schema: public; Owner: development_cartodb_user_1
 --
 
-CREATE TRIGGER test_quota BEFORE INSERT OR UPDATE ON csv_with_lat_lon FOR EACH STATEMENT EXECUTE PROCEDURE cdb_checkquota('1', '104857600');
+CREATE TRIGGER test_quota BEFORE INSERT OR UPDATE ON csv_with_lat_lon FOR EACH STATEMENT EXECUTE PROCEDURE cdb_checkquota('1', '104857600', 'public');
 
 
 --
 -- Name: test_quota_per_row; Type: TRIGGER; Schema: public; Owner: development_cartodb_user_1
 --
 
-CREATE TRIGGER test_quota_per_row BEFORE INSERT OR UPDATE ON csv_with_lat_lon FOR EACH ROW EXECUTE PROCEDURE cdb_checkquota('0.001', '104857600');
+CREATE TRIGGER test_quota_per_row BEFORE INSERT OR UPDATE ON csv_with_lat_lon FOR EACH ROW EXECUTE PROCEDURE cdb_checkquota('0.001', '104857600', 'public');
 
 
 --

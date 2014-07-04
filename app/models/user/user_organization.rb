@@ -22,13 +22,13 @@ module CartoDB
     def promote_user_to_admin
       raise "Organization is already active. You can't assign an admin" if @active
       @owner.create_schema(@owner.username, @owner.database_username)
-      @owner.create_public_db_user
       @owner.set_database_permissions_in_schema(@owner.username)
       move_user_tables_to_schema(@owner.id)
       @owner.organization_id = @organization.id
       @owner.database_schema = @owner.username
       @organization.owner_id = @owner.id
       @organization.save
+      @owner.create_public_db_user
       @owner.set_database_search_path
       @owner.save
       @active = true

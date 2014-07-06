@@ -1027,9 +1027,10 @@ class User < Sequel::Model
       self.create_user_db
     end.join
     self.load_cartodb_functions
-    self.create_schemas_and_set_permissions
+    self.create_importer_schema
     self.set_database_search_path
-    self.set_database_permissions
+    self.reset_database_permissions # Reset privileges
+    self.set_user_privileges # Set privileges    
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
     self.create_function_invalidate_varnish
@@ -1044,14 +1045,67 @@ class User < Sequel::Model
     self.database_schema = self.username
     self.this.update database_schema: self.database_schema
     self.create_user_schema
-    self.set_user_schema_permissions
-    self.grant_permissions_in_importer_schema
     self.set_database_search_path
-    self.set_database_permissions
-    self.set_user_as_organization_member
     self.create_public_db_user
+    self.reset_user_schema_permissions # Reset privileges
+    self.set_user_privileges # Set privileges
+    self.set_user_as_organization_member
     self.rebuild_quota_trigger
   end
+
+
+  def set_user_privileges_in_cartodb_schema # MU
+    # Privileges in cartodb schema
+    self.run_queries_in_transaction(
+      (
+        self.grant_read_on_schema_queries('cartodb') +
+        self.grant_write_on_cdb_tablemetadata_queries
+      ),
+      true
+    )
+  end
+
+  def set_user_privileges_in_public_schema # MU
+    # Privileges in public schema
+    self.run_queries_in_transaction(
+      self.grant_read_on_schema_queries('public'),
+      true
+    )
+  end
+
+  def set_user_privileges_in_own_schema # MU
+    # Privileges in its own schema
+    self.run_queries_in_transaction(
+      self.grant_all_on_user_schema_queries,
+      true
+    )
+  end
+
+  def set_user_privileges_in_importer_schema # MU
+    # Privileges in cdb_importer_schema
+    self.run_queries_in_transaction(
+      self.grant_all_on_schema_queries('cdb_importer'),
+      true
+    )
+  end
+
+  def set_privileges_to_publicuser_in_own_schema # MU
+    # Privileges in user schema for publicuser
+    self.run_queries_in_transaction(
+      self.grant_usage_on_user_schema_to_other(CartoDB::PUBLIC_DB_USER),
+      true
+    )
+  end
+
+  def set_user_privileges # MU
+    self.set_user_privileges_in_cartodb_schema
+    self.set_user_privileges_in_public_schema
+    self.set_user_privileges_in_own_schema
+    self.set_user_privileges_in_importer_schema
+    self.set_privileges_to_publicuser_in_own_schema    
+  end
+
+  
 
   ## User's databases setup methods
   def setup_user
@@ -1076,33 +1130,12 @@ class User < Sequel::Model
     end
   end
 
-  def create_schemas_and_set_permissions
-    self.create_db_schemas
-    self.set_db_schemas_permissions
-    self.create_user_schema
-    self.set_user_schema_permissions
-  end
-
-  def create_db_schemas
-    create_schema('cdb')
+  def create_importer_schema
     create_schema('cdb_importer')
   end
 
   def create_user_schema
     create_schema(self.database_schema, self.database_username)
-  end
-
-  def set_db_schemas_permissions
-    set_database_permissions_in_schema('cdb') # Not sure if this schema is needed
-    self.grant_permissions_in_importer_schema
-  end
-
-  def set_user_schema_permissions
-    set_database_permissions_in_schema(self.database_schema)
-  end
-
-  def grant_permissions_in_importer_schema
-    self.set_database_permissions_in_schema('cdb_importer')
   end
 
   # Attempts to create a new database schema
@@ -1298,21 +1331,20 @@ TRIGGER
   rescue Sequel::DatabaseConnectionError => e
   end
 
-  # Whitelist Permissions
-  def set_database_permissions_in_schema(schema)
-    in_database(:as => :superuser) do |user_database|
+  def run_queries_in_transaction(queries, superuser = false)
+    conn_params = {}
+    if superuser
+      conn_params[:as] = :superuser
+    end
+    in_database(conn_params) do |user_database|
       user_database.transaction do
-
-        # grant core permissions to database user
-        user_database.run("GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-
+        queries.each do |q|
+          user_database.run(q)
+        end
         yield(user_database) if block_given?
       end
     end
-  end #set_database_permissions_in_schema
+  end
 
   def set_user_as_organization_member
     in_database(:as => :superuser) do |user_database|
@@ -1329,74 +1361,92 @@ TRIGGER
     end
   end
 
-  def set_database_permissions
+  def grant_read_on_schema_queries(schema)
+    [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{self.database_username}\"",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{self.database_username}\"",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{self.database_username}\""
+    ]
+  end
+
+  def grant_write_on_cdb_tablemetadata_queries
+    [
+      "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{database_username}\""
+    ]  
+  end
+  
+  def grant_all_on_user_schema_queries
+    [
+      "GRANT ALL ON SCHEMA \"#{self.database_schema}\" TO \"#{database_username}\"",
+      "GRANT ALL ON ALL SEQUENCES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
+      "GRANT ALL ON ALL FUNCTIONS IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
+      "GRANT ALL ON ALL TABLES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\""
+    ]
+  end
+
+  def grant_usage_on_user_schema_to_other(granted_user)
+    [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\""
+    ]
+  end
+
+  def grant_all_on_schema_queries(schema)
+    [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{database_username}\""
+    ]
+  end
+
+  def reset_user_schema_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        schemas = [self.database_schema, 'public'].uniq
-
-        # remove all public and tile user permissions
-        user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM PUBLIC")
+        schemas = [self.database_schema].uniq
         schemas.each do |schema|
           user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM PUBLIC")
           user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM PUBLIC")
           user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM PUBLIC")
           user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM PUBLIC")
         end
-
-        user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-        schemas.each do |schema|
-          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-        end
-
-        user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::TILE_DB_USER}")
-        schemas.each do |schema|
-          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{CartoDB::TILE_DB_USER}")
-        end
-
-        # grant core permissions to database user
-        user_database.run("GRANT ALL ON DATABASE \"#{database_name}\" TO \"#{database_username}\"")
-        schemas.each do |schema|
-          user_database.run("GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{database_username}\"")
-        end
-
-        # grant select permissions to public user (for SQL API)
-        user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::PUBLIC_DB_USER}")
-        schemas.each do |schema|
-          user_database.run("GRANT USAGE ON SCHEMA \"#{schema}\" TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO #{CartoDB::PUBLIC_DB_USER}")
-        end
-        user_database.run("GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}")
-
-        # grant select permissions to tile user (for tile API + internal tiles)
-        user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::TILE_DB_USER}")
-        schemas.each do |schema|
-          user_database.run("GRANT USAGE ON SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO #{CartoDB::TILE_DB_USER}")
-        end
-
         yield(user_database) if block_given?
       end
     end
   end
 
-  # Utility methods
-  def fix_permissions
-    set_database_permissions do |user_database|
-      tables.each do |table|
-        user_database.run("ALTER TABLE #{table.name} OWNER TO \"#{database_username}\"")
+  def reset_database_permissions
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        schemas = ['public', 'cdb_importer', 'cartodb'].uniq
+
+        ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
+          user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{u}")
+          schemas.each do |schema|
+            user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
+            user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
+            user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
+            user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+          end
+        end
+        yield(user_database) if block_given?
       end
     end
+  end
+
+
+  # Utility methods
+  def fix_permissions
+    self.reset_database_permissions
+    self.reset_user_schema_permissions
+    self.set_user_privileges
+    tables_queries = []
+    tables.each do |table|
+      if table.public?
+        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO #{CartoDB::PUBLIC_DB_USER}"
+      end
+      tables_queries << "ALTER TABLE \"#{self.database_schema}\".#{table.name} OWNER TO \"#{database_username}\""
+    end
+    self.run_queries_in_transaction(
+      tables_queries,
+      true
+    )
   end
 
   def monitor_user_notification

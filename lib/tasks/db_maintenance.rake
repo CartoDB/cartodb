@@ -291,21 +291,7 @@ namespace :cartodb do
     task :set_permissions => :environment do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-
-        # reset perms
-        user.set_database_permissions
-
-        # rebuild public access perms from redis
-        user.tables.all.each do |table|
-          
-          # reset public
-          if table.public?
-            user.in_database(:as => :superuser).run("GRANT SELECT ON #{table.name} TO #{CartoDB::PUBLIC_DB_USER};")
-          end
-          
-          # reset triggers
-          table.set_triggers
-        end  
+        user.fix_permissions
       end
     end
 

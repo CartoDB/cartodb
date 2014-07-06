@@ -1025,11 +1025,13 @@ class User < Sequel::Model
     Thread.new do
       self.create_db_user
       self.create_user_db
+      self.grant_owner_in_database
     end.join
-    self.load_cartodb_functions
     self.create_importer_schema
+    self.load_cartodb_functions
     self.set_database_search_path
     self.reset_database_permissions # Reset privileges
+    self.grant_publicuser_in_database
     self.set_user_privileges # Set privileges    
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
@@ -1040,6 +1042,7 @@ class User < Sequel::Model
     self.create_client_application
     Thread.new do
       self.create_db_user
+      self.grant_user_in_database
     end.join
     self.load_cartodb_functions
     self.database_schema = self.username
@@ -1051,6 +1054,27 @@ class User < Sequel::Model
     self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
+  end
+
+  def grant_owner_in_database
+    self.run_queries_in_transaction(
+      self.grant_all_on_database_queries,
+      true
+    )
+  end
+  
+  def grant_user_in_database
+    self.run_queries_in_transaction(
+      self.grant_connect_on_database_queries,
+      true
+    )
+  end
+
+  def grant_publicuser_in_database
+    self.run_queries_in_transaction(
+      self.grant_connect_on_database_queries(CartoDB::PUBLIC_DB_USER),
+      true
+    )
   end
 
 
@@ -1361,6 +1385,19 @@ TRIGGER
     end
   end
 
+  def grant_connect_on_database_queries(db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
+    [
+      "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO #{granted_user}"
+    ]
+  end
+
+  def grant_all_on_database_queries
+    [
+      "GRANT ALL ON DATABASE \"#{self.database_name}\" TO \"#{self.database_username}\""
+    ]
+  end
+
   def grant_read_on_schema_queries(schema)
     [
       "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{self.database_username}\"",
@@ -1386,13 +1423,13 @@ TRIGGER
 
   def grant_usage_on_user_schema_to_other(granted_user)
     [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\""
+      "GRANT USAGE ON SCHEMA \"#{self.database_schema}\" TO \"#{granted_user}\""
     ]
   end
 
   def grant_all_on_schema_queries(schema)
     [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{database_username}\""
+      "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\""
     ]
   end
 

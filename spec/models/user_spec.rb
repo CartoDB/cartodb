@@ -752,19 +752,50 @@ describe User do
     @user.trial_ends_at.should_not be_nil
   end
 
-  describe '#hard_geocoding_limit?' do
-    it 'returns true when the plan is AMBASSADOR or FREE' do
+  describe '#hard_geocoding_limit?', focus: true do
+    it 'returns true when the plan is AMBASSADOR or FREE unless it has been manually set to false' do
+      @user[:soft_geocoding_limit].should be_nil
+
       @user.stubs(:account_type).returns('AMBASSADOR')
+      @user.soft_geocoding_limit?.should be_false
+      @user.soft_geocoding_limit.should be_false
       @user.hard_geocoding_limit?.should be_true
+      @user.hard_geocoding_limit.should be_true
+
       @user.stubs(:account_type).returns('FREE')
+      @user.soft_geocoding_limit?.should be_false
+      @user.soft_geocoding_limit.should be_false
       @user.hard_geocoding_limit?.should be_true
+      @user.hard_geocoding_limit.should be_true
+
+      @user.hard_geocoding_limit = false
+      @user[:soft_geocoding_limit].should_not be_nil
+
+      @user.stubs(:account_type).returns('AMBASSADOR')
+      @user.soft_geocoding_limit?.should be_true
+      @user.soft_geocoding_limit.should be_true
+      @user.hard_geocoding_limit?.should be_false
+      @user.hard_geocoding_limit.should be_false
+
+      @user.stubs(:account_type).returns('FREE')
+      @user.soft_geocoding_limit?.should be_true
+      @user.soft_geocoding_limit.should be_true
+      @user.hard_geocoding_limit?.should be_false
+      @user.hard_geocoding_limit.should be_false
     end
 
-    it 'returns false when the plan is CORONELLI or MERCATOR' do
+    it 'returns false when the plan is CORONELLI or MERCATOR unless it has been manually set to true' do
       @user.stubs(:account_type).returns('CORONELLI')
       @user.hard_geocoding_limit?.should be_false
       @user.stubs(:account_type).returns('MERCATOR')
       @user.hard_geocoding_limit?.should be_false
+
+      @user.hard_geocoding_limit = true
+
+      @user.stubs(:account_type).returns('CORONELLI')
+      @user.hard_geocoding_limit?.should be_true
+      @user.stubs(:account_type).returns('MERCATOR')
+      @user.hard_geocoding_limit?.should be_true
     end
   end
 

@@ -501,9 +501,23 @@ class User < Sequel::Model
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
+  def soft_geocoding_limit?
+    if self[:soft_geocoding_limit].nil?
+      plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
+      (self.account_type =~ /(#{plan_list})/ ? false : true)
+    else
+      self[:soft_geocoding_limit]
+    end
+  end
+  alias_method :soft_geocoding_limit, :soft_geocoding_limit?
+
   def hard_geocoding_limit?
-    plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
-    (self.account_type =~ /(#{plan_list})/ ? true : false)
+    !self.soft_geocoding_limit?
+  end
+  alias_method :hard_geocoding_limit, :hard_geocoding_limit?
+
+  def hard_geocoding_limit=(val)
+    self[:soft_geocoding_limit] = !val
   end
 
   def private_maps_enabled
@@ -1073,7 +1087,7 @@ class User < Sequel::Model
     self.set_database_search_path
     self.reset_database_permissions # Reset privileges
     self.grant_publicuser_in_database
-    self.set_user_privileges # Set privileges    
+    self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
     self.create_function_invalidate_varnish
@@ -1103,7 +1117,7 @@ class User < Sequel::Model
       true
     )
   end
-  
+
   def grant_user_in_database
     self.run_queries_in_transaction(
       self.grant_connect_on_database_queries,
@@ -1177,10 +1191,10 @@ class User < Sequel::Model
     self.set_user_privileges_in_public_schema
     self.set_user_privileges_in_own_schema
     self.set_user_privileges_in_importer_schema
-    self.set_privileges_to_publicuser_in_own_schema    
+    self.set_privileges_to_publicuser_in_own_schema
   end
 
-  
+
 
   ## User's databases setup methods
   def setup_user
@@ -1475,9 +1489,9 @@ TRIGGER
   def grant_write_on_cdb_tablemetadata_queries
     [
       "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{database_username}\""
-    ]  
+    ]
   end
-  
+
   def grant_all_on_user_schema_queries
     [
       "GRANT ALL ON SCHEMA \"#{self.database_schema}\" TO \"#{database_username}\"",

@@ -539,6 +539,14 @@ class User < Sequel::Model
       'map_key', api_key
   end
 
+  def get_auth_tokens
+    tokens = [id]
+    if has_organization?
+      tokens << organization.id
+    end
+    tokens
+  end
+
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})

@@ -73,6 +73,9 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
+    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      return(show_organization_public_map)
+    end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -94,6 +97,45 @@ class Admin::VisualizationsController < ApplicationController
     embed_forbidden
   end #public_map
 
+  def show_organization_public_map
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
+
+    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    @protected_map_tokens = current_user.get_auth_tokens
+
+    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @avatar_url = @visualization.user.gravatar(request.protocol, 64)
+
+    @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
+    @visualization_count    = @visualization.user.public_visualization_count
+    @related_tables         = @visualization.related_tables
+    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    respond_to do |format|
+      format.html { render 'public_map', layout: false }
+    end
+  end
+
+  def show_organization_embed_map
+    @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
+
+    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    @protected_map_tokens = current_user.get_auth_tokens
+
+    respond_to do |format|
+      format.html { render 'embed_map', layout: false }
+    end
+  end
+
   def show_protected_public_map
     submitted_password = params.fetch(:password)
     @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
@@ -109,7 +151,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @protected_map_token = @visualization.get_auth_token
+    @protected_map_tokens = @visualization.get_auth_tokens
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url = @visualization.user.gravatar(request.protocol, 64)
@@ -157,6 +199,9 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
+    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      return(show_organization_embed_map)
+    end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"

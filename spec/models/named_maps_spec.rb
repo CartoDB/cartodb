@@ -160,7 +160,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.is_password_valid?(password).should eq true
       derived_vis.is_password_valid?('some invalid passsword').should eq false
 
-      derived_vis.get_auth_token().should eq auth_token
+      derived_vis.get_auth_tokens().should eq [auth_token]
     end
   end
 

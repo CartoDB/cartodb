@@ -169,7 +169,11 @@ class User < Sequel::Model
     if has_organization
       self.drop_organization_user unless error_happened
     else
-      self.drop_database_and_user unless error_happened
+      if User.where(:database_name => self.database_name).count > 1
+        raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
+      else
+        self.drop_database_and_user unless error_happened
+      end
     end
   end
 
@@ -177,6 +181,8 @@ class User < Sequel::Model
   def drop_organization_user
     Thread.new do
       in_database(as: :superuser) do |database|
+        # Drop user quota function
+        database.run(%Q{ DROP FUNCTION IF EXISTS \"#{self.database_schema}\"._cdb_userquotainbytes()})
         # If user is in an organization should never have public schema, so to be safe check
         database.run(%Q{ DROP SCHEMA "#{database_schema}" }) unless database_schema == 'public'
       end
@@ -187,6 +193,9 @@ class User < Sequel::Model
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params)
       User.terminate_database_connections(database_name, database_host)
+      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_username}\"")
+      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_public_username}\"")
+      conn.run("DROP USER \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
     end.join

@@ -901,6 +901,9 @@ class User < Sequel::Model
         # NOTE: this has been written to work for both
         #       databases that switched to "cartodb" extension
         #       and those before the switch.
+        #       In the future we should guarantee that exntension
+        #       lives in cartodb schema so we don't need to set
+        #       a search_path before
         search_path = db.fetch("SHOW search_path;").first[:search_path]
         db.run("SET search_path TO cartodb, public;")
         db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
@@ -1278,7 +1281,7 @@ TRIGGER
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-31-g5806ac8'
+    tgt_rev = 'v0.2.1-32-g2bd0b22'
 
     add_python
 

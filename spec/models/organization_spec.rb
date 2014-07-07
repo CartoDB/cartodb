@@ -178,6 +178,70 @@ describe Organization do
     end
   end
 
+  describe "#get_api_calls and #get_geocodings" do
+    before(:each) do
+      @organization = FactoryGirl.create(:organization_with_users, name: 'overquota-org')
+    end
+    after(:each) do
+      @organization.destroy
+    end
+    it "should return the sum of the api_calls for all organization users" do
+      User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      @organization.get_api_calls.should == (0..30).to_a.sum
+    end
+    it "should return the sum of the geocodings for all organization users" do
+      User.any_instance.stubs(:get_geocodings).returns(30)
+      @organization.get_geocoding_calls.should == 30 * @organization.users
+    end
+  end
+
+  describe '.overquota', focus: true do
+    before(:all) do
+      @organization = FactoryGirl.create(:organization_with_users, name: 'overquota-org')
+    end
+    after(:all) do
+      @organization.destroy
+    end
+    it "should return organizations over their map view quota" do
+      Organization.overquota.should be_empty
+      Organization.any_instance.stubs(:get_api_calls).returns(30)
+      Organization.any_instance.stubs(:map_view_quota).returns(10)
+      Organization.overquota.map(&:id).should include(@organization.id)
+      Organization.overquota.size.should == Organization.count
+    end
+
+    it "should return organizations over their geocoding quota" do
+      Organization.overquota.should be_empty
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(10)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns 30
+      Organization.any_instance.stubs(:geocoding_quota).returns 10
+      Organization.overquota.map(&:id).should include(@organization.id)
+      Organization.overquota.size.should == Organization.count
+    end
+
+    it "should return organizations near their map view quota" do
+      Organization.any_instance.stubs(:get_api_calls).returns(81)
+      Organization.any_instance.stubs(:map_view_quota).returns(100)
+      Organization.overquota.should be_empty
+      Organization.overquota(0.20).map(&:id).should include(@organization.id)
+      Organization.overquota(0.20).size.should == Organization.count
+      Organization.overquota(0.10).should be_empty
+    end
+
+    it "should return organizations near their geocoding quota" do
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(120)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns(81)
+      Organization.any_instance.stubs(:geocoding_quota).returns(100)
+      Organization.overquota.should be_empty
+      Organization.overquota(0.20).map(&:id).should include(@organization.id)
+      Organization.overquota(0.20).size.should == Organization.count
+      Organization.overquota(0.10).should be_empty
+    end
+  end
+
+
   def random_attributes(attributes={})
     random = rand(999)
     {

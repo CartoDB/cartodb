@@ -66,6 +66,28 @@ feature "Superadmin's organization API" do
         response.body.length.should >= 2
       end
     end
+    it "gets overquota organizations" do
+      Organization.stubs(:overquota).returns [@organization]
+      get_json superadmin_organizations_path, { overquota: true }, default_headers do |response|
+        response.status.should == 200
+        response.body[0]["name"].should == @organization.name
+        response.body.length.should == 1
+      end
+    end
+    it "returns geocoding and mapviews quotas and uses for all organizations" do
+      Organization.stubs(:overquota).returns [@organization]
+      User.any_instance.stubs(:get_geocoding_calls).returns(100)
+      User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      get_json superadmin_organizations_path, { overquota: true }, default_headers do |response|
+        response.status.should == 200
+        response.body[0]["name"].should == @organization.name
+        response.body[0]["geocoding"]['quota'].should == @organization.geocoding_quota
+        response.body[0]["geocoding"]['monthly_use'].should == @organization.get_geocoding_calls
+        response.body[0]["api_calls_quota"].should == @organization.map_view_quota
+        response.body[0]["api_calls"].should == @organization.get_api_calls
+        response.body.length.should == 1
+      end
+    end
   end
 
   private

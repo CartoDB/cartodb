@@ -273,7 +273,7 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.where(enabled: true).all.select do |u|
+    User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
@@ -539,6 +539,8 @@ class User < Sequel::Model
       'map_key', api_key
   end
 
+  # Returns an array representing the last 30 days, populated with api_calls
+  # from three different sources
   def get_api_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
@@ -580,6 +582,15 @@ class User < Sequel::Model
       end
     end.map &:to_i
     return es_calls
+  end
+
+  def remaining_geocoding_quota
+    if organization.present?
+      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+    else
+      remaining = geocoding_quota - get_geocoding_calls
+    end
+    (remaining > 0 ? remaining : 0)
   end
 
   # Get the api calls from ES and sum them to the stored ones in redis

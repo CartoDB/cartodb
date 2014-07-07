@@ -1398,7 +1398,7 @@ TRIGGER
   def grant_connect_on_database_queries(db_user = nil)
     granted_user = db_user.nil? ? self.database_username : db_user
     [
-      "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO #{granted_user}"
+      "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO \"#{granted_user}\""
     ]
   end
 

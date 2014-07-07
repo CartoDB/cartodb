@@ -18,7 +18,7 @@ module CartoDB
 
       def restore_command(config)
         #"pg_restore --verbose --single-transaction --no-tablespaces --disable-triggers #{Utils.conn_string(config)}"
-        "psql #{Utils.conn_string(config)}"
+        "psql -v ON_ERROR_STOP=1 #{Utils.conn_string(config)}"
       end
 
 

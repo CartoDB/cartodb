@@ -362,7 +362,13 @@ Map.prototype = {
       params.push("map_key=" + api_key);
     }
     if(extra_params.auth_token) {
-      params.push("auth_token=" + extra_params.auth_token);
+      if (_.isArray(extra_params.auth_token)) {
+        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
+          params.push("auth_token[]=" + extra_params.auth_token[i]);
+        }
+      } else {
+        params.push("auth_token=" + extra_params.auth_token);
+      }
     }
     // mark as the request is being done
     this._waiting = true;
@@ -564,9 +570,15 @@ Map.prototype = {
       var k = included[i]
       var p = params[k];
       if(p) {
-        var q = encodeURIComponent(p);
-        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-        url_params.push(k + "=" + q);
+        if (_.isArray(p)) {
+          for (var j = 0, len = p.length; j < len; j++) {
+            url_params.push(k + "[]=" + encodeURIComponent(p[j]));
+          }
+        } else {
+          var q = encodeURIComponent(p);
+          q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+          url_params.push(k + "=" + q);
+        }
       }
     }
     return url_params.join('&')
@@ -741,7 +753,15 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var extra_params = this.options.extra_params || {};
     var token = extra_params.auth_token;
     if (token) {
-      url += "?auth_token=" + token
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
     }
     return url;
   },

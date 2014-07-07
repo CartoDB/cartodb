@@ -768,6 +768,20 @@ describe("NamedMap", function() {
     runs(function() {
       expect(params.url.indexOf('auth_token=test2')).not.toEqual(-1);
     });
+    waits(100);
+    runs(function() {
+      namedMap.setAuthToken(['token1', 'token2']);
+      namedMap._getLayerToken();
+      namedMap.getTiles(function(t) {
+        tiles = t;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url.indexOf('auth_token[]=token1')).not.toEqual(-1);
+      expect(tiles.tiles[0].indexOf('auth_token[]=token1')).not.toEqual(-1);
+      expect(tiles.grids[0][0].indexOf('auth_token[]=token1')).not.toEqual(-1);
+    });
   });
 
   it("set param without default param", function() {

@@ -724,7 +724,9 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize('#{self.database_schema}')").first[:cdb_userdatasize]
+      # Hack to support users without the new MU functiones loaded
+      user_data_size_function = self.organization_id.nil? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue

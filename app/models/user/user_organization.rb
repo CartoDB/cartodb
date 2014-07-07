@@ -33,6 +33,7 @@ module CartoDB
       @owner.load_cartodb_functions
       @owner.rebuild_quota_trigger
       @owner.save
+      @owner.monitor_user_notification
       @active = true
     end
 

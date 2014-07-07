@@ -184,7 +184,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @protected_map_token = @visualization.get_auth_token
+    @protected_map_tokens = @visualization.get_auth_tokens
 
     respond_to do |format|
       format.html { render 'embed_map', layout: false }

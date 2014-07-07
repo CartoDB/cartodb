@@ -38,7 +38,7 @@ module CartoDB
           user.create_user_schema
           user.set_database_search_path
           user.grant_user_in_database
-          user.set_user_privileges_in_cartodb_schema
+          user.set_user_privileges
           relocator.migrate
           relocator.finalize
           user.create_public_db_user

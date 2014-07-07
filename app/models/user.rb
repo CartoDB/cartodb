@@ -733,7 +733,7 @@ class User < Sequel::Model
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded
-      user_data_size_function = self.organization_id.nil? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
+      user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
       result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
@@ -1313,6 +1313,20 @@ class User < Sequel::Model
     COMMIT;
 TRIGGER
     )
+  end
+
+  def cartodb_extension_version
+    version, revision = self.in_database(:as => :superuser).fetch("select cartodb.cdb_version() as v").first[:v].split(" ")
+    return [version, revision]
+  end
+
+  def cartodb_extension_version_pre_mu?
+    current_version_match = /(\d\.\d\.\d).*/.match(self.cartodb_extension_version.first)
+    if current_version_match.nil?
+      raise "Current cartodb extension version does not match standard x.y.z format"
+    else
+      current_version_match[1] < '0.3.0'
+    end
   end
 
   # Cartodb functions

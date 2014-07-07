@@ -1272,8 +1272,11 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def cartodbfy
+    cartodbfy_function = owner.cartodb_extension_version_pre_mu? ? 
+      "CDB_CartodbfyTable('#{owner.database_schema}.#{self.name}')" :
+      "CDB_CartodbfyTable('#{owner.database_schema}','#{owner.database_schema}.#{self.name}')"
     owner.in_database(:as => :superuser)
-         .run("SELECT cartodb.CDB_CartodbfyTable('#{owner.database_schema}','#{owner.database_schema}.#{self.name}')")
+         .run("SELECT cartodb.#{cartodbfy_function}")
     self.schema(reload:true)
   end
 

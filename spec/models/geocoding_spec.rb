@@ -1,5 +1,6 @@
 #encoding: UTF-8
 require 'spec_helper'
+require 'ruby-debug'
 
 describe Geocoding do
   before(:all) do
@@ -152,8 +153,24 @@ describe Geocoding do
     it 'returns nil if the user has soft limit' do
       @user.stubs('hard_geocoding_limit?').returns(false)
       FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
-      geocoding.max_geocodable_rows.should eq nil      
+      geocoding.max_geocodable_rows.should eq nil
     end
+
+    it 'returns the remaining quota for the organization if the user has hard limit and belongs to an org' do
+      organization = FactoryGirl.create(:organization_with_users, geocoding_quota: 150)
+      @user.organization = organization
+      @user.quota_in_bytes = 50.megabytes
+      @user.save
+      delete_user_data @user
+      organization.geocoding_quota.should eq 150
+      geocoding.max_geocodable_rows.should eq 150
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus')
+      geocoding.max_geocodable_rows.should eq 50
+      @user.organization = nil
+      @user.save
+      organization.destroy
+    end
+
   end
 
   describe '#cancel' do

@@ -11,7 +11,8 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   end
 
   def index
-    @organizations = Organization.all
+    @organizations = (params[:overquota].present? ? Organization.overquota(0.20) : Organization.all)
+
     respond_with(:superadmin, @organizations.map(&:data))
   end
 

@@ -170,7 +170,7 @@ describe User do
       user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
       user.organization = organization
       user.save
-      Cartodb::Central.any_instance.expects(:create_organization_user).with(organization, user).once
+      Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
       user.create_in_central.should be_true
     end
     it 'should update remote user in central if needed' do
@@ -337,6 +337,11 @@ describe User do
       User.overquota(0.10).should be_empty
     end
 
+    it "should not return organization users" do
+      User.any_instance.stubs(:organization_id).returns("organization-id")
+      User.any_instance.stubs(:organization).returns(Organization.new)
+      User.overquota.should be_empty
+    end
   end
 
   describe '#get_geocoding_calls' do

@@ -30,6 +30,8 @@ module CartoDB
       @organization.save
       @owner.create_public_db_user
       @owner.set_database_search_path
+      @owner.load_cartodb_functions
+      @owner.rebuild_quota_trigger
       @owner.save
       @active = true
     end

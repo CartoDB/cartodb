@@ -169,7 +169,11 @@ class User < Sequel::Model
     if has_organization
       self.drop_organization_user unless error_happened
     else
-      self.drop_database_and_user unless error_happened
+      if User.where(:database_name => self.database_name).count > 1
+        raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
+      else
+        self.drop_database_and_user unless error_happened
+      end
     end
   end
 
@@ -177,6 +181,8 @@ class User < Sequel::Model
   def drop_organization_user
     Thread.new do
       in_database(as: :superuser) do |database|
+        # Drop user quota function
+        database.run(%Q{ DROP FUNCTION IF EXISTS \"#{self.database_schema}\"._cdb_userquotainbytes()})
         # If user is in an organization should never have public schema, so to be safe check
         database.run(%Q{ DROP SCHEMA "#{database_schema}" }) unless database_schema == 'public'
       end
@@ -187,6 +193,9 @@ class User < Sequel::Model
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params)
       User.terminate_database_connections(database_name, database_host)
+      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_username}\"")
+      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_public_username}\"")
+      conn.run("DROP USER \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
     end.join
@@ -264,7 +273,7 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.where(enabled: true).all.select do |u|
+    User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
@@ -530,6 +539,24 @@ class User < Sequel::Model
       'map_key', api_key
   end
 
+  def get_auth_tokens
+    tokens = [get_auth_token]
+    if has_organization?
+      tokens << organization.get_auth_token
+    end
+    tokens
+  end
+
+  def get_auth_token
+    if self.auth_token.nil?
+      self.auth_token = make_auth_token
+      self.save
+    end
+    self.auth_token
+  end
+
+  # Returns an array representing the last 30 days, populated with api_calls
+  # from three different sources
   def get_api_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
@@ -571,6 +598,15 @@ class User < Sequel::Model
       end
     end.map &:to_i
     return es_calls
+  end
+
+  def remaining_geocoding_quota
+    if organization.present?
+      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+    else
+      remaining = geocoding_quota - get_geocoding_calls
+    end
+    (remaining > 0 ? remaining : 0)
   end
 
   # Get the api calls from ES and sum them to the stored ones in redis
@@ -696,7 +732,9 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.CDB_UserDataSize('#{self.database_schema}')").first[:cdb_userdatasize]
+      # Hack to support users without the new MU functiones loaded
+      user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -901,6 +939,9 @@ class User < Sequel::Model
         # NOTE: this has been written to work for both
         #       databases that switched to "cartodb" extension
         #       and those before the switch.
+        #       In the future we should guarantee that exntension
+        #       lives in cartodb schema so we don't need to set
+        #       a search_path before
         search_path = db.fetch("SHOW search_path;").first[:search_path]
         db.run("SET search_path TO cartodb, public;")
         db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
@@ -1274,11 +1315,25 @@ TRIGGER
     )
   end
 
+  def cartodb_extension_version
+    version, revision = self.in_database(:as => :superuser).fetch("select cartodb.cdb_version() as v").first[:v].split(" ")
+    return [version, revision]
+  end
+
+  def cartodb_extension_version_pre_mu?
+    current_version_match = /(\d\.\d\.\d).*/.match(self.cartodb_extension_version.first)
+    if current_version_match.nil?
+      raise "Current cartodb extension version does not match standard x.y.z format"
+    else
+      current_version_match[1] < '0.3.0'
+    end
+  end
+
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
     tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-31-g5806ac8'
+    tgt_rev = 'v0.2.1-32-g2bd0b22'
 
     add_python
 
@@ -1526,4 +1581,17 @@ TRIGGER
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
   end
+
+  def make_auth_token
+    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
+    10.times do
+      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
+    end
+    digest
+  end
+
+  def secure_digest(*args)
+    Digest::SHA256.hexdigest(args.flatten.join)
+  end
+
 end

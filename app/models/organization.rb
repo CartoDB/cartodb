@@ -52,6 +52,29 @@ class Organization < Sequel::Model
     raise errors unless valid?
   end
 
+  ##
+  # SLOW! Checks map views for every user in every organization
+  # delta: get organizations who are also this percentage below their limit.
+  #        example: 0.20 will get all organizations at 80% of their map view limit
+  #
+  def self.overquota(delta = 0)
+    Organization.all.select do |o|
+        limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
+        over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
+        limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
+        over_geocodings = o.get_geocoding_calls > limit
+        over_map_views || over_geocodings
+    end
+  end
+
+  def get_api_calls(options = {})
+    users.map{ |u| u.get_api_calls(options).sum }.sum
+  end
+
+  def get_geocoding_calls
+    users.map(&:get_geocoding_calls).sum
+  end
+
   def db_size_in_bytes
     users.map(&:db_size_in_bytes).sum.to_i
   end
@@ -80,6 +103,8 @@ class Organization < Sequel::Model
         :email      => self.owner ? self.owner.email : nil
       },
       :quota_in_bytes   => self.quota_in_bytes,
+      :geocoding_quota  => self.geocoding_quota,
+      :map_view_quota   => self.map_view_quota,
       :seats            => self.seats,
       :twitter_username => self.twitter_username,
       :updated_at       => self.updated_at,
@@ -138,10 +163,30 @@ class Organization < Sequel::Model
     )
   end
 
+  def get_auth_token
+    if self.auth_token.nil?
+      self.auth_token = make_auth_token
+      self.save
+    end
+    self.auth_token
+  end
+
   private
 
   def name_exists_in_users?
     !User.where(username: self.name).first.nil?
+  end
+
+  def make_auth_token
+    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
+    10.times do
+      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
+    end
+    digest
+  end
+
+  def secure_digest(*args)
+    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
 end

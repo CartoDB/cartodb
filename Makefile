@@ -28,7 +28,6 @@ WORKING_SPECS_2 = \
   $(NULL)
 
 WORKING_SPECS_3 = \
-  spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \

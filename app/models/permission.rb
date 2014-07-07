@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative './permission/presenter'
+require_relative './visualization/member'
 require_relative 'shared_entity'
 
 module CartoDB
@@ -82,6 +83,25 @@ module CartoDB
       end
 
       self.access_control_list = ::JSON.dump(cleaned_acl)
+    end
+
+    def set_user_permission(subject, access)
+      set_subject_permission(subject.id, access, TYPE_USER)
+    end
+
+    def set_subject_permission(subject_id, access, type)
+      new_acl = self.acl
+      new_acl << {
+          type:   type,
+          entity: {
+            id: subject_id,
+            avatar_url: '',
+            username: '',
+            name: ''
+          },
+          access: access
+      }
+      self.acl = new_acl
     end
 
     # @return User|nil
@@ -193,13 +213,21 @@ module CartoDB
       CartoDB::SharedEntity.where(entity_id: self.entity_id).delete
     end
 
+    def clear
+      revoke_previous_permissions(entity)
+      self.access_control_list = DEFAULT_ACL_VALUE
+      save
+    end
+
     def update_shared_entities
+      e = entity
       # First clean previous sharings
       destroy_shared_entities
-      revoke_previous_permissions(entity)
+      revoke_previous_permissions(e)
 
       # Create user entities for the new ACL
       users = relevant_user_acl_entries(acl)
+      users_entities = User.where(id: users.map { |u| u[:id] }).all
       users.each { |user|
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
@@ -208,7 +236,32 @@ module CartoDB
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
 
-        grant_db_permission(entity, user[:access], shared_entity)
+        # if the entity is a canonical visualizations give database permissions
+        if (e.table)
+          if self.owner_id != e.permission.owner_id
+            raise PermissionError.new('Change permission without ownership')
+          end
+          e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
+          e.store
+          grant_db_permission(e, user[:access], shared_entity)
+        else
+          # update acl for related tables using canonical visualization preserving the previous permissions
+          e.related_tables.each { |t|
+            # if the user is the owner of the table just give access
+            if self.owner_id == e.permission.owner_id
+              vis = t.table_visualization
+              perm = vis.permission
+              users_entities.each { |u|
+                # check permission and give read perm
+                if not vis.has_permission?(u, CartoDB::Visualization::Member::PERMISSION_READONLY)
+                  perm.set_user_permission(u, CartoDB::Visualization::Member::PERMISSION_READONLY)
+                end
+              }
+              perm.save
+            end
+          }
+        end
+
       }
 
       org = relevant_org_acl_entry(acl)
@@ -219,8 +272,29 @@ module CartoDB
             entity_id:      self.entity_id,
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
+        # if the entity is a canonical visualizations give database permissions
+        if (e.table)
+          if self.owner_id != e.permission.owner_id
+            raise PermissionError.new('Change permission without ownership')
+          end
+          e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
+          e.store
+          grant_db_permission(e, org[:access], shared_entity)
+        else
+          # update acl for related tables using canonical visualization preserving the previous permissions
+          e.related_tables.each { |t|
+            # if the user is the owner of the table just give access
+            if self.owner_id == e.permission.owner_id
+              vis = t.table_visualization
+              perm = vis.permission
+              if vis.permission.permission_for_org == ACCESS_NONE
+                perm.set_subject_permission(org[:id], CartoDB::Visualization::Member::PERMISSION_READONLY, TYPE_ORGANIZATION)
+                perm.save
+              end
+            end
+          }
+        end
 
-        grant_db_permission(entity, org[:access], shared_entity)
       end
     end
 
@@ -245,6 +319,34 @@ module CartoDB
       PermissionError.new('Invalid permission type for shared entity')
     end
 
+    # when removing permission form a table related visualizations should
+    # be checked. The policy is the following:
+    #  - if the table is used in one layer of the visualization, it's removed
+    #  - if the table is used in the only one visualization layer, the vis is removed
+    # TODO: send a notification to the visualizations owner
+    def check_related_visualizations(table)
+      dependent_visualizations = table.dependent_visualizations.to_a
+      non_dependent_visualizations = table.non_dependent_visualizations.to_a
+      table_visualization = table.table_visualization
+      non_dependent_visualizations.each do |visualization|
+        # check permissions, if the owner does not have permissions
+        # to see the table the layers using this table are removed
+        perm = visualization.permission
+        if not table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+          visualization.unlink_from(table)
+        end
+      end
+
+      dependent_visualizations.each do |visualization| 
+        # check permissions, if the owner does not have permissions
+        # to see the table the visualization is removed
+        perm = visualization.permission
+        if not table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+          visualization.delete
+        end
+      end
+    end
+
     def revoke_previous_permissions(entity)
       users = relevant_user_acl_entries(@old_acl.nil? ? [] : @old_acl)
       org = relevant_org_acl_entry(@old_acl.nil? ? [] : @old_acl)
@@ -257,6 +359,7 @@ module CartoDB
             users.each { |user|
               entity.table.remove_access(User.where(id: user[:id]).first)
             }
+            check_related_visualizations(entity.table)
           end
         else
           raise PermissionError.new('Unsupported entity type trying to grant permission')
@@ -273,24 +376,22 @@ module CartoDB
 
       case entity.class.name
         when CartoDB::Visualization::Member.to_s
-          tables = []
-          if (entity.table)
-            tables << entity.table
-          else
-            tables = entity.related_tables
-          end
-          # if it's not a canonical visualization give permission to the associated tables if the user is the owner
-          # check ownership 
-          tables.each { |t| 
-            if not self.owner_id == t.table_visualization.permission.owner_id and not permission_strategy.is_permitted(t.table_visualization, access)
+          # assert database permissions for non canonical tables are assigned
+          # its canonical vis
+          if not entity.table
               raise PermissionError.new('Trying to change permissions to a table without ownership')
-            end
-          }
+          end
+          table = entity.table
+
+          # check ownership 
+          if not self.owner_id == entity.permission.owner_id
+            raise PermissionError.new('Trying to change permissions to a table without ownership')
+          end
           # give permission
           if access == ACCESS_READONLY
-            tables.each { |t| permission_strategy.add_read_permission(t) }
+            permission_strategy.add_read_permission(table)
           elsif access == ACCESS_READWRITE
-            tables.each { |t| permission_strategy.add_read_write_permission(t) }
+            permission_strategy.add_read_write_permission(table)
           end
         else
           raise PermissionError.new('Unsupported entity type trying to grant permission')

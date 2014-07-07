@@ -30,7 +30,17 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
+      vis_table_mock = mock
+      vis_table_mock.stubs(:add_read_permission)
       vis_entity_mock = mock
+      vis_perm_mock = mock
+      vis_perm_mock.stubs(:owner_id).returns(@user.id)
+      vis_perm_mock.stubs(:save)
+      vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
+      vis_entity_mock.stubs(:table).returns(vis_table_mock)
+      vis_entity_mock.stubs(:related_tables).returns([])
+      vis_entity_mock.stubs(:privacy=)
+      vis_entity_mock.stubs(:store)
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       acl_initial = []
@@ -71,6 +81,8 @@ describe CartoDB::Permission do
 
       permission.acl = acl_with_data
       permission.save
+      #vis_table_mock.expects(:add_read_permission)
+      #expect(vis_table_mock).to receive(:add_read_permission)
 
       permission.acl.should eq acl_with_data_expected
 
@@ -203,6 +215,8 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
       vis_entity_mock = mock
+      vis_entity_mock.stubs(:table).returns(nil)
+      vis_entity_mock.stubs(:related_tables).returns([])
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       permission = Permission.new(
@@ -256,6 +270,8 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
       vis_entity_mock = mock
+      vis_entity_mock.stubs(:table).returns(nil)
+      vis_entity_mock.stubs(:related_tables).returns([])
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       permission = Permission.new(
@@ -308,6 +324,8 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
       vis_entity_mock = mock
+      vis_entity_mock.stubs(:table).returns(nil)
+      vis_entity_mock.stubs(:related_tables).returns([])
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       permission = Permission.new(
@@ -418,6 +436,8 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
       vis_entity_mock = mock
+      vis_entity_mock.stubs(:table).returns(nil)
+      vis_entity_mock.stubs(:related_tables).returns([])
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       permission = Permission.new(

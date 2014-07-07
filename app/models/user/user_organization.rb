@@ -31,6 +31,7 @@ module CartoDB
       @owner.create_public_db_user
       @owner.set_database_search_path
       @owner.load_cartodb_functions
+      @owner.set_user_privileges
       @owner.rebuild_quota_trigger
       @owner.save
       @owner.monitor_user_notification

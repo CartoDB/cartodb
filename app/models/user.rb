@@ -1075,8 +1075,18 @@ class User < Sequel::Model
       self.grant_connect_on_database_queries(CartoDB::PUBLIC_DB_USER),
       true
     )
+    self.run_queries_in_transaction(
+      self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      true
+    )
+    self.run_queries_in_transaction(
+      [
+        "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
+        "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"
+      ],
+      true
+    )
   end
-
 
   def set_user_privileges_in_cartodb_schema # MU
     # Privileges in cartodb schema
@@ -1398,11 +1408,12 @@ TRIGGER
     ]
   end
 
-  def grant_read_on_schema_queries(schema)
+  def grant_read_on_schema_queries(schema, db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
     [
-      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{self.database_username}\"",
-      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{self.database_username}\"",
-      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{self.database_username}\""
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
     ]
   end
 

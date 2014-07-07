@@ -163,10 +163,30 @@ class Organization < Sequel::Model
     )
   end
 
+  def get_auth_token
+    if self.auth_token.nil?
+      self.auth_token = make_auth_token
+      self.save
+    end
+    self.auth_token
+  end
+
   private
 
   def name_exists_in_users?
     !User.where(username: self.name).first.nil?
+  end
+
+  def make_auth_token
+    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
+    10.times do
+      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
+    end
+    digest
+  end
+
+  def secure_digest(*args)
+    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
 end

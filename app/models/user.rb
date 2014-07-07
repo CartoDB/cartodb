@@ -540,11 +540,19 @@ class User < Sequel::Model
   end
 
   def get_auth_tokens
-    tokens = [id]
+    tokens = [get_auth_token]
     if has_organization?
-      tokens << organization.id
+      tokens << organization.get_auth_token
     end
     tokens
+  end
+
+  def get_auth_token
+    if self.auth_token.nil?
+      self.auth_token = make_auth_token
+      self.save
+    end
+    self.auth_token
   end
 
   # Returns an array representing the last 30 days, populated with api_calls
@@ -1559,4 +1567,17 @@ TRIGGER
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
   end
+
+  def make_auth_token
+    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
+    10.times do
+      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
+    end
+    digest
+  end
+
+  def secure_digest(*args)
+    Digest::SHA256.hexdigest(args.flatten.join)
+  end
+
 end

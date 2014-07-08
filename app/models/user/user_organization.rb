@@ -61,6 +61,27 @@ module CartoDB
       return CartoDB::UserOrganization.new(organization.id, organization.owner_id)
     end
     
+    def self.is_a_user?(name)
+      return User.where(:username => name).count > 0 ? true : false
+    end
+
+    def self.is_a_organization?(name)
+      return Organization.where(:username => name).count > 0 ? true : false
+    end
+
+    def self.user_belongs_to_organization?(name)
+      if CartoDB::UserOrganization.is_a_user?(name)
+        begin
+          organization_id = User.select(:organization_id).where(:username => name).first[:organization_id]
+          return Organization.select(:name).where(:id => organization_id).first[:name]
+        rescue
+          return nil
+        end
+      else
+        return nil
+      end
+    end
+
     private
     def move_user_tables_to_schema(user_id)
       user = User.where(:id => user_id).first

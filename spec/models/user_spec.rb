@@ -162,13 +162,42 @@ describe User do
       organization.destroy
     end
 
-    it 'should set account_type properly', focus: true do
+    it 'should set account_type properly' do
       organization = FactoryGirl.create(:organization_with_users)
       organization.users.reject(&:organization_owner?).each do |u|
         u.account_type.should == "ORGANIZATION USER"
       end
+      organization.destroy
     end
 
+    it 'should set default settings properly unless overriden' do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.max_layers.should == 6
+        u.private_tables_enabled.should be_true
+        u.sync_tables_enabled.should be_true
+      end
+      user = FactoryGirl.build(:user, organization: organization)
+      user.max_layers = 3
+      user.private_tables_enabled = false
+      user.sync_tables_enabled = false
+      user.save
+      user.max_layers.should == 3
+      user.private_tables_enabled.should be_false
+      user.sync_tables_enabled.should be_false
+      organization.destroy
+    end
+
+    it "should return proper values for non-persisted settings" do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.dedicated_support?.should be_true
+        u.remove_logo?.should be_true
+        u.private_maps_enabled?.should be_true
+        u.import_quota.should == 3
+      end
+      organization.destroy
+    end
   end
 
   describe 'central synchronization' do

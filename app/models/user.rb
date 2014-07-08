@@ -104,6 +104,7 @@ class User < Sequel::Model
     super
     setup_user
     save_metadata
+    self.reload_avatar
     monitor_user_notification
     sleep 3
     set_statement_timeouts
@@ -463,6 +464,10 @@ class User < Sequel::Model
     ).map { |item|
       item.table
     }
+  end
+
+  def reload_avatar
+    self.avatar_url = self.gravatar('//')
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")

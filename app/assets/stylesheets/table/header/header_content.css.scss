@@ -28,6 +28,7 @@
       z-index: 10;
 
       ul.actions {
+        @include cross-browser(justify-content, flex-start);
         margin:0;
         top: 0;
         li { margin:0; }

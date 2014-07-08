@@ -161,12 +161,49 @@ describe User do
       user.errors.keys.should_not include(:quota_in_bytes)
       organization.destroy
     end
+
+    it 'should set account_type properly' do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.account_type.should == "ORGANIZATION USER"
+      end
+      organization.destroy
+    end
+
+    it 'should set default settings properly unless overriden' do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.max_layers.should == 6
+        u.private_tables_enabled.should be_true
+        u.sync_tables_enabled.should be_true
+      end
+      user = FactoryGirl.build(:user, organization: organization)
+      user.max_layers = 3
+      user.private_tables_enabled = false
+      user.sync_tables_enabled = false
+      user.save
+      user.max_layers.should == 3
+      user.private_tables_enabled.should be_false
+      user.sync_tables_enabled.should be_false
+      organization.destroy
+    end
+
+    it "should return proper values for non-persisted settings" do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.dedicated_support?.should be_true
+        u.remove_logo?.should be_true
+        u.private_maps_enabled?.should be_true
+        u.import_quota.should == 3
+      end
+      organization.destroy
+    end
   end
 
   describe 'central synchronization' do
     it 'should create remote user in central if needed' do
       pending "Central API credentials not provided" unless User.new.sync_data_with_cartodb_central?
-      organization = create_org('testorg', 10.megabytes, 1)
+      organization = create_org('testorg', 500.megabytes, 1)
       user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
       user.organization = organization
       user.save
@@ -309,12 +346,12 @@ describe User do
   end
 
   describe '#overquota' do
-    it "should return users over their map view quota" do
+    it "should return users over their map view quota, excluding organization users" do
       User.overquota.should be_empty
       User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       User.any_instance.stubs(:map_view_quota).returns 10
       User.overquota.map(&:id).should include(@user.id)
-      User.overquota.size.should == User.count
+      User.overquota.size.should == User.reject{|u| u.organization_id.present? }.count
     end
 
     it "should return users near their map view quota" do
@@ -322,7 +359,7 @@ describe User do
       User.any_instance.stubs(:map_view_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.count
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
       User.overquota(0.10).should be_empty
     end
 
@@ -333,7 +370,7 @@ describe User do
       User.any_instance.stubs(:geocoding_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.count
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
       User.overquota(0.10).should be_empty
     end
 
@@ -752,7 +789,7 @@ describe User do
     @user.trial_ends_at.should_not be_nil
   end
 
-  describe '#hard_geocoding_limit?', focus: true do
+  describe '#hard_geocoding_limit?' do
     it 'returns true when the plan is AMBASSADOR or FREE unless it has been manually set to false' do
       @user[:soft_geocoding_limit].should be_nil
 

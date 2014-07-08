@@ -89,6 +89,15 @@ class User < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
+
+    # Set account_type and default values for organization users
+    # TODO: Abstract this
+    self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
+    if self.organization_user?
+      self.max_layers ||= 6
+      self.private_tables_enabled ||= true
+      self.sync_tables_enabled ||= true
+    end
   end #before_save
 
   def after_create
@@ -1004,7 +1013,11 @@ class User < Sequel::Model
   end
 
   def organization_owner?
-    self.organization && self.organization.owner == self
+    self.organization.present? && self.organization.owner == self
+  end
+
+  def organization_user?
+    self.organization.present?
   end
 
   def create_client_application

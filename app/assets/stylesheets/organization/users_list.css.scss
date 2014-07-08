@@ -4,6 +4,7 @@
    */
 
   @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
   @import "compass/css3/transform";
   @import "compass/css3/transition";
   @import "../common/vars";
@@ -32,6 +33,9 @@
       
       // Info + storage
       div.info {
+        @include display-flex();
+        @include cross-browser(justify-content, flex-start);
+        @include cross-browser(align-items, center);
         width:60%;  
       }
 
@@ -57,6 +61,14 @@
         @include transform-style("linear");
         @include transition-property("color");
         @include transition-duration(500ms);
+      }
+
+      // Image
+      img {
+        width:18px;
+        height:18px;
+        margin-right:5px;
+        @include border-radius(18px);
       }
 
       // Status

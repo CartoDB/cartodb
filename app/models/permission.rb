@@ -241,8 +241,11 @@ module CartoDB
           if self.owner_id != e.permission.owner_id
             raise PermissionError.new('Change permission without ownership')
           end
-          e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
-          e.store
+          priv = e.privacy
+          if priv == CartoDB::Visualization::Member::PRIVACY_PRIVATE
+            e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
+            e.store
+          end
           grant_db_permission(e, user[:access], shared_entity)
         else
           # update acl for related tables using canonical visualization preserving the previous permissions
@@ -277,8 +280,11 @@ module CartoDB
           if self.owner_id != e.permission.owner_id
             raise PermissionError.new('Change permission without ownership')
           end
-          e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
-          e.store
+          priv = e.privacy
+          if priv == CartoDB::Visualization::Member::PRIVACY_PRIVATE
+            e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
+            e.store
+          end
           grant_db_permission(e, org[:access], shared_entity)
         else
           # update acl for related tables using canonical visualization preserving the previous permissions

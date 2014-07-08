@@ -129,10 +129,13 @@ class Map < Sequel::Model
 
   def process_privacy_in(layer)
     return self unless layer.uses_private_tables?
-    
+
     visualizations.each do |visualization|
-      visualization.privacy = 'private'
-      visualization.store
+      priv = visualization.privacy
+      if priv != CartoDB::Visualization::Memeber::PRIVACY_PRIVATE or priv != CartoDB::Visualization::Memeber::PRIVACY_ORGANIZATION
+        visualization.privacy = 'private'
+        visualization.store
+      end
     end
   end #process_privacy_in
 

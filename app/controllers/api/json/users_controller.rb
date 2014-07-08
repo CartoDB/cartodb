@@ -55,7 +55,7 @@ class Api::Json::UsersController < Api::ApplicationController
                                           .from('users', 'organizations')
                                           .where("organizations.id=users.organization_id and organizations.name='#{subdomain}'")
                                           .collect(&:username)
-          users_intersection = requested_organization_users && authenticated_users
+          users_intersection = requested_organization_users & authenticated_users
           # The user is authenticated with a user of the organization
           if !users_intersection.empty?
             dashboard_base_url = CartoDB.base_url(subdomain, users_intersection.first)

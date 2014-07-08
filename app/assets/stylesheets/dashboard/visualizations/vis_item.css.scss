@@ -38,7 +38,7 @@
       }
     }
 
-    // Vis item innter
+    // Vis item inner
     .vis-item-inner {
       position:relative;
       @include display-flex();
@@ -154,12 +154,8 @@
       overflow:hidden;
 
       i.delete {
-        position:absolute;
-        bottom:22px;
-        right:22px;
-        display:block;
         @include transform-style("linear");
-        @include transition-property("opacity,right");
+        @include transition-property("opacity");
         @include transition-duration(250ms);
         @include opacity(0);
         z-index:0;
@@ -167,10 +163,9 @@
 
       .order {
         @include transform-style("linear");
-        @include transition-property("opacity,text-indent");
+        @include transition-property("opacity");
         @include transition-duration(250ms);
         @include opacity(0);
-        text-indent:-100px;
       }
     }
 
@@ -193,7 +188,7 @@
         }
 
         .vis-graph {
-          bottom:52px;
+          bottom:48px;
           svg {
             path { stroke:rgb(64, 159, 206)!important }
             circle { fill:rgb(64, 159, 206)!important }
@@ -205,13 +200,11 @@
 
           i.delete {
             @include opacity(1);
-            right:46px;
             z-index:0;
           }
 
           .order {
             @include opacity(1);
-            text-indent:0;
           }
         }
       }

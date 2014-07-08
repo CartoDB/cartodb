@@ -35,9 +35,9 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
-    if current_user and @visualization.organization?
-      unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-        return(pretty_404)
+    if @visualization.organization?
+      unless current_user and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        return(embed_forbidden)
       end
     end
     return(redirect_to public_map_url_for(@table_id)) if @visualization.derived?

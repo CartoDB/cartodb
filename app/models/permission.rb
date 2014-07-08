@@ -90,9 +90,21 @@ module CartoDB
     end
 
     def set_subject_permission(subject_id, access, type)
-      new_acl = self.acl
+      new_acl = self.acl.map { |entry|
+        {
+          type: entry[:type],
+          entity: {
+            id: entry[:id],
+            avatar_url: '',
+            username: '',
+            name: ''
+          },
+          access: entry[:access]
+        }
+      }
+
       new_acl << {
-          type:   type,
+          type: type,
           entity: {
             id: subject_id,
             avatar_url: '',
@@ -101,6 +113,7 @@ module CartoDB
           },
           access: access
       }
+
       self.acl = new_acl
     end
 

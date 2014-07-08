@@ -17,6 +17,11 @@ module CartoDB
     end
   end
 
+  # Actually the two previous methods return the requested username, not the real subdomain
+  def self.extract_real_subdomain(request)
+      request.host.to_s.gsub(self.session_domain, '')
+  end
+
   def self.base_url(subdomain, org_username=nil)
     if Rails.env.production? || Rails.env.staging?
       base_url ="https://#{subdomain}#{self.session_domain}"

@@ -104,10 +104,10 @@ class User < Sequel::Model
     super
     setup_user
     save_metadata
-    self.reload_avatar
+    self.avatar_url = self.gravatar('//')
     monitor_user_notification
     sleep 3
-    set_statement_timeouts unless Rails.env.development?
+    set_statement_timeouts
   end
 
   def after_save

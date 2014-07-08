@@ -66,39 +66,39 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     if params[:source_visualization_id]
       source = Visualization::Collection.new.fetch(
-          id: params.fetch(:source_visualization_id),
-          user_id: current_user.id
+        id: params.fetch(:source_visualization_id),
+        user_id: current_user.id
       ).first
       return(head 403) if source.nil?
 
-      vis    = Visualization::Copier.new(
-                    current_user, source, name_candidate
-                  ).copy
+      vis = Visualization::Copier.new(
+        current_user, source, name_candidate
+      ).copy
     elsif params[:tables]
       viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
-      tables    = params[:tables].map { |table_name|
-                    if viewed_user
-                      ::Table.get_by_id_or_name(table_name,  viewed_user)
-                    end
-                  }.flatten
-      blender   = Visualization::TableBlender.new(current_user, tables)
-      map       = blender.blend
-      vis    = Visualization::Member.new(
-                    payload.merge(
-                      name:     name_candidate,
-                      map_id:   map.id,
-                      type:     'derived',
-                      privacy:  blender.blended_privacy,
-                      user_id:  current_user.id
-                    )
-                  )
+      tables = params[:tables].map { |table_name|
+        if viewed_user
+          ::Table.get_by_id_or_name(table_name,  viewed_user)
+        end
+      }.flatten
+      blender = Visualization::TableBlender.new(current_user, tables)
+      map = blender.blend
+      vis = Visualization::Member.new(
+        payload.merge(
+          name:     name_candidate,
+          map_id:   map.id,
+          type:     'derived',
+          privacy:  blender.blended_privacy,
+          user_id:  current_user.id
+        )
+      )
     else
-      vis    = Visualization::Member.new(
-                    payload_with_default_privacy.merge(
-                        name: name_candidate,
-                        user_id:  current_user.id
-                    )
-                  )
+      vis = Visualization::Member.new(
+        payload_with_default_privacy.merge(
+          name: name_candidate,
+          user_id:  current_user.id
+        )
+      )
     end
 
     vis.privacy = vis.default_privacy(current_user)

@@ -21,7 +21,7 @@
     left:0;
     right:0;
     padding:0 0 0 43px;
-    height:29px;
+    height:auto;
     background:rgba(black, .2);
     z-index:1;
 
@@ -33,8 +33,11 @@
     ul {
       position:relative;
       top:0;
-      @include inline-block();
+      @include display-flex();
+      @include cross-browser(align-items, center);
+      @include cross-browser(justify-content, flex-start);
       height:29px;
+      margin-top:0;
 
       li {
         margin:0;
@@ -100,12 +103,10 @@
     }
 
     p {
-      @include inline-block();
-      vertical-align:middle;
       font-size:13px;
       font-family:$text-fonts;
       color:rgba(white,.65);
-      line-height:28px;
+      line-height:29px;
 
       &.light {color:rgba(white, .35)}
     }

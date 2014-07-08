@@ -23,7 +23,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(pretty_404) unless @visualization
 
-    return(redirect_to public_url_for(@table_id)) unless \
+    return(redirect_to public_map_url_for(@visualization.id)) unless \
       @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
 
     respond_to { |format| format.html }

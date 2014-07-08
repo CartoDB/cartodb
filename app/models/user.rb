@@ -468,6 +468,7 @@ class User < Sequel::Model
 
   def reload_avatar
     self.avatar_url = self.gravatar('//')
+    self.save
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")

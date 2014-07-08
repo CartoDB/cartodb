@@ -19,8 +19,8 @@ class Api::Json::UsersController < Api::ApplicationController
     if referer_match.nil?
       render status: 400
     else
-      real_subdomain = referer_match[1].gsub(CartoDB.session_domain, '')
-      request_username = referer_match[5]
+      subdomain = referer_match[1].gsub(CartoDB.session_domain, '')
+      organization_username = referer_match[5]
     end
 
     # This array is actually a hack. We will only return at most 1 url, but this way is compatible with the old endpoint
@@ -28,43 +28,47 @@ class Api::Json::UsersController < Api::ApplicationController
     dashboard_base_url = ''
 
     if !authenticated_users.empty?
-      # The owner is seeing his own public dashboard
-      if authenticated_users.include?(request_username)
-        # The user is in a organization
-        if request_username != real_subdomain
-          dashboard_base_url = CartoDB.base_url(real_subdomain, request_username)
+      # It doesn't have a organization username component
+      # We assume it's not a organization referer
+      if organization_username.nil?
+        # The user is seeing its own dashboard
+        if authenticated_users.include?(subdomain)
+          dashboard_base_url = CartoDB.base_url(subdomain)
+        # The user is authenticated but seeing another user dashboard
         else
-          dashboard_base_url = CartoDB.base_url(request_username)
+          user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
+          # The first user in session does not belong to any organization
+          if user_belongs_to_organization.nil?
+            dashboard_base_url = CartoDB.base_url(authenticated_users.first)
+          else
+            dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
+          end
         end
-      # The owner is not seeing his own public dashboard
       else
-        # It's a organization user dashboard
-        if request_username != real_subdomain 
-          # Check if any of the authenticated users belongs to this org
+        # The user is seeing its own organization dashboard
+        if authenticated_users.include?(organization_username)
+          dashboard_base_url = CartoDB.base_url(subdomain, organization_username)
+        # The user is seeing a organization dashboard, but not its one
+        else
+          # Get all users on the referer organization and intersect with the authenticated users list
           requested_organization_users = User.select(:username)
                                           .from('users', 'organizations')
-                                          .where("organizations.id=users.organization_id and organizations.name='#{real_subdomain}'")
+                                          .where("organizations.id=users.organization_id and organizations.name='#{subdomain}'")
                                           .collect(&:username)
           users_intersection = requested_organization_users && authenticated_users
-          # The user is authenticated with a user belonging to the same requested organization dashboard
+          # The user is authenticated with a user of the organization
           if !users_intersection.empty?
-            dashboard_base_url = CartoDB.base_url(real_subdomain, users_intersection.first)
+            dashboard_base_url = CartoDB.base_url(subdomain, users_intersection.first)
           # The user is authenticated with a user not belonging to the requested organization dashboard
+          # Let's get the first user in the session
           else
             user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
+            # The first user in session does not belong to any organization
             if user_belongs_to_organization.nil?
               dashboard_base_url = CartoDB.base_url(authenticated_users.first)
             else
               dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
             end
-          end
-        # It's not a organization dashboard
-        else
-          user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
-          if user_belongs_to_organization.nil?
-            dashboard_base_url = CartoDB.base_url(authenticated_users.first)
-          else
-            dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
           end
         end
       end

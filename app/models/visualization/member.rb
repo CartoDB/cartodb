@@ -399,12 +399,16 @@ module CartoDB
           repository.store(id, attributes.to_hash)
         end
 
+        priv = @privacy
         # when visualization turns private remove the acl
-        if @privacy == PRIVACY_PRIVATE && privacy_changed
+        if priv == PRIVACY_PRIVATE && privacy_changed
           permission.clear
         end
 
         if type == CANONICAL_TYPE
+          if priv == PRIVACY_ORGANIZATION
+            save_named_map
+          end
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map

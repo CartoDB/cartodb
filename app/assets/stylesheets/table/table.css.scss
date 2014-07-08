@@ -171,11 +171,6 @@ body.public { /* Public table CSS */
         margin: 0 1px 0 0;
         pointer-events:all;
 
-        a.selected { 
-          text-decoration: none;
-          color: rgba(#fff, .7);
-        }
-
         &:first-child a { @include border-radius(2px 0 0 2px); }
         &:last-child  a { @include border-radius(0 2px 2px 0); }
 
@@ -194,6 +189,12 @@ body.public { /* Public table CSS */
           font-weight:bold;
           color: #FFFFFF;
           text-transform: uppercase;
+        }
+
+        a.selected { 
+          text-decoration: none;
+          color: rgba(#fff, .7);
+          cursor:default;
         }
 
       }

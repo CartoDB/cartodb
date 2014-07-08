@@ -1,5 +1,12 @@
 namespace :resque do
 
+  task "setup" => :environment do
+    Resque.before_fork do |job|
+      #we disconnect the worker so it reconnects on each job
+      Rails::Sequel.connection.disconnect 
+    end
+  end
+
   desc "Quit running workers"
   task :stop_workers => :environment do
     pids = []

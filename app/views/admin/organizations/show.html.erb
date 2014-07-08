@@ -14,6 +14,7 @@
       , organization_users = <%= raw @users.map { |u| {
           id: u.id,
           username: u.username,
+          avatar_url: u.avatar_url,
           quota_in_bytes: u.quota_in_bytes,
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner?

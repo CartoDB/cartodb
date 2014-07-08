@@ -120,7 +120,10 @@ header {
       }
     }
 
-    ul { top: 0; }
+    ul {
+      top: 0;
+      margin-top: 0;
+    }
   }
 
 } // header

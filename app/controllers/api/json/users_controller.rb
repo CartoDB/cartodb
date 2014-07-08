@@ -13,8 +13,15 @@ class Api::Json::UsersController < Api::ApplicationController
 
   def get_authenticated_users
     authenticated_users = request.session.select {|k,v| k.start_with?("warden.user")}.values
-    request_username = CartoDB.extract_subdomain(request) 
-    real_subdomain = CartoDB.extract_real_subdomain(request)
+    referer = request.env["HTTP_REFERER"]
+    referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
+ 
+    if referer_match.nil?
+      render status: 400
+    else
+      real_subdomain = referer_match[1].gsub(CartoDB.session_domain, '')
+      request_username = referer_match[5]
+    end
 
     # This array is actually a hack. We will only return at most 1 url, but this way is compatible with the old endpoint
     dashboard_urls = []

@@ -132,7 +132,7 @@ class Map < Sequel::Model
 
     visualizations.each do |visualization|
       priv = visualization.privacy
-      if priv != CartoDB::Visualization::Memeber::PRIVACY_PRIVATE or priv != CartoDB::Visualization::Memeber::PRIVACY_ORGANIZATION
+      if priv != CartoDB::Visualization::Member::PRIVACY_PRIVATE or priv != CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
         visualization.privacy = 'private'
         visualization.store
       end

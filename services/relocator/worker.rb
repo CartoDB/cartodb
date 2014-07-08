@@ -43,8 +43,11 @@ module CartoDB
           relocator.finalize
           user.create_public_db_user
           user.set_user_privileges
+          user.reload_quota_trigger
           user.set_user_as_organization_member
           user.save
+          user.create_in_central
+          user.update_in_central
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"
           puts "Rolling back (changing back database_host and dropping triggers) in 5 secs"

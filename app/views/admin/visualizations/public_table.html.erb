@@ -16,6 +16,7 @@
   var map                 = <%=raw @table.map.to_json %>;
   var config              = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
   var vizjson             = <%=raw @vizjson.to_json %>;
+  var auth_token          = <%=raw @auth_tokens.to_json %>;
 </script>
 
 <script>

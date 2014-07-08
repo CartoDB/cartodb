@@ -35,9 +35,17 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = locator.get(@table_id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
+    unless current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      return(pretty_404)
+    end
     return(redirect_to public_map_url_for(@table_id)) if @visualization.derived?
+    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
 
     @vizjson = @visualization.to_vizjson
+    @auth_tokens = nil
+    if current_user && @visualization.organization? && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      @auth_tokens = current_user.get_auth_tokens
+    end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.gravatar(request.protocol, 64)

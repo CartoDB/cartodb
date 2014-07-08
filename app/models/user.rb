@@ -107,7 +107,7 @@ class User < Sequel::Model
     self.reload_avatar
     monitor_user_notification
     sleep 3
-    set_statement_timeouts
+    set_statement_timeouts unless Rails.env.development?
   end
 
   def after_save

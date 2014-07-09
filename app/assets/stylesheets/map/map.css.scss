@@ -184,7 +184,7 @@ div.map {
           position:relative;
           padding:0 12px 0 0;
           display:block;
-          font-family: $text-fonts2;
+          font-family: "Helvetica", Arial;
           font-weight:normal;
           line-height:12px;
 
@@ -219,7 +219,7 @@ div.map {
 
 
   .map-options {
-    @include position(false, false, 28px, 18px);
+    @include position(false, false, 18px, 18px);
     z-index: 10;
   }
 
@@ -314,7 +314,7 @@ div.map {
     }
 
     div.cartodb-searchbox{
-      top: 40px;
+      top: 20px;
       right: 77px;
       float: right;
       position: absolute;

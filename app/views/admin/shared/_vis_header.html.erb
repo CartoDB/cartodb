@@ -2,6 +2,15 @@
   <div class="inner">
     
     <div class="header_content">
+
+      <div class="vis_navigation">
+        <nav>
+          <%= link_to "Data view",    "#/table", :class => "smaller strong tab selected" %>
+          <%= link_to "Visualization", "#/map",   :class => "smaller strong tab" %>
+        </nav>
+        <div class="globalerror"></div>
+      </div>
+
       <div class="left">
         <ul class="actions">
           <li><%= link_to "Back", root_path, :class => "back" %></li>
@@ -11,14 +20,6 @@
         </ul>
         <div class="description">
           <p><a href="#/change-description"></a></p>
-        </div>
-
-        <div class="vis_navigation">
-          <nav>
-            <%= link_to "Visualization", "#/map",   :class => "smaller strong tab" %>
-            <%= link_to "Data view",    "#/table", :class => "smaller strong tab selected" %>
-          </nav>
-          <div class="globalerror"></div>
         </div>
 
       </div>

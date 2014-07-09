@@ -14,60 +14,67 @@
 @import "../elements/elements-sprite";
 
 div.map {
-
   @include box-sizing(border-box);
-
-  /*&.show_title.show_description {*/
-    /*div.cartodb-searchbox { top: 70px; }*/
-    /*div.cartodb-zoom { top: 40px; }*/
-    /*div.cartodb-zoom-info { top: 60px; }*/
-  /*}*/
-
-  /*&.show_title {*/
-    /*div.cartodb-searchbox { top: 40px; }*/
-    /*div.cartodb-zoom { top: 20px; }*/
-    /*div.cartodb-zoom-info { top: 40px; }*/
-  /*}*/
-
-  /*&.show_description {*/
-    /*div.cartodb-searchbox { top: 40px; }*/
-    /*div.cartodb-zoom { top: 20px; }*/
-    /*div.cartodb-zoom-info { top: 40px; }*/
-  /*}*/
-
-  position:absolute;
-  top:1px; // Header opacity black border needs to be present
-  left:0;
-  bottom:0;
-  right:0;
-  width:100%;
-  padding: 84px 84px 20px 20px;
-
+  @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
+  @include size(100%);
   background: #333 image-url('layout/noise.png') repeat 0 0;
+}
+
+div.map, .mobile_bkg {
+  padding: 84px 84px 20px 20px;
+}
+
+div.map {
+
+  &.derived {
+
+    &.mobile div.cartodb-map {
+
+      @include border-radius(0);
+
+      .cartodb-logo { margin-bottom: 0px; }
+
+      .leaflet-control-attribution.leaflet-control {
+        margin-right: 0;
+        right: 0;
+        width: 132px;
+      }
+
+      .leaflet-right .leaflet-control, #cartodb_attribution {
+        margin-right: 0px;
+      }
+
+      div.cartodb-searchbox {
+        right: 15px!important;
+      }
+
+      div.cartodb-layer-selector-box,
+      div.cartodb-share,
+      div.cartodb-fullscreen,
+      div.cartodb-zoom,
+      div.cartodb-zoom-info {
+        display:none!important;
+      }
+
+    }
+
+  } // derived
 
   .mobile_bkg {
     @include opacity(0);
     @include box-sizing(border-box);
-    position:absolute;
-    top:1px; // Header opacity black border needs to be present
-    left:0;
-    bottom:0;
-    right:0;
-    width:100%;
-    padding: 84px 84px 20px 20px;
-    background: #333 image-url('layout/mobile_bkg.png') repeat 50% 50%;
+    @include position(0,0,0,0);
+    @include size(100%);
+    background: #333 image-url('layout/mobile_bkg.png') no-repeat 50% 50%;
   }
 
   div.map_toolbar {
-    position:absolute;
-    left:0;
-    top:1px;
-    width:100%;
-    height:54px;
-    display:block;
-    z-index:6;
+    @include position(0, false, false, 0px);
+    @include size(100%, 54px);
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+
+    z-index:6;
   }
 
   .options {
@@ -76,107 +83,93 @@ div.map {
 
     & > li.button {
 
-      &.canvas_setup {
+      &.canvas_setup, &.add_overlay {
+
         position:relative;
 
-        & > .thumb { 
-          @include map-sprite(setup_canvas);
-          width: 26px;
-          height: 26px;
+        & > .thumb {
+          @include size(26px);
         }
 
       }
 
-      &.add_overlay {
+      &.canvas_setup > .thumb { @include map-sprite(setup_canvas); }
+      &.add_overlay  > .thumb { @include map-sprite(add_element);  }
 
-        position:relative;
-
-        & > .thumb { 
-          @include map-sprite(add_element);
-          width: 26px;
-          height: 26px;
-        }
-
-      }
     }
 
     & > li {
 
       &.full_screen .thumb {
-        @include map-sprite(full_screen);
-
         border: none;
+        @include map-sprite(full_screen);
         @include border-radius(0px);
       }
 
       &.dropdown > h5 {
 
         &:before {
-          position:absolute;
           content:' ';
-          top:-3px;
-          right:-9px;
+          @include position(-3px, -9px, false, false);
           margin:8px 0 0 5px;
+
           border-left:3px solid transparent;
           border-right:3px solid transparent;
           border-top:3px solid #7C7C7C;
+
           z-index:1;
         }
 
         &:after {
-          position:absolute;
           content:' ';
-          top:-1px;
-          right:-9px;
+          @include position(-1px, -9px, false, false);
           margin:9px 0 0 5px;
+
           border-left:3px solid transparent;
           border-right:3px solid transparent;
           border-top:3px solid transparent;
+
           z-index:0;
         }
 
       }
 
-        @include inline-block();
+      @include inline-block();
 
-        padding: 0 15px 0 0;
+      padding: 0 15px 0 0;
+      margin: 0 5px 0 0;
+
+      border-right: 1px solid rgba(#D9D9D9, .8);
+
+      cursor: pointer;
+
+      & > .thumb {
+        position:relative;
         margin: 0 5px 0 0;
+        @include inline-block();
+        @include size(30px);
+        @include border-radius(2px);
 
-        border-right: 1px solid rgba(#D9D9D9, .8);
+        background-size: 34px;
+        background-color: rgba(0, 0, 0, 0);
+        background-position: 50% 50%;
 
-        cursor: pointer;
-
-        & > .thumb {
-          position:relative;
-          @include inline-block();
-          @include size(30px);
-          margin: 0 5px 0 0;
+        &:before {
+          content: ' ';
+          @include position(0, 0, 0, 0);
           @include border-radius(2px);
-
-          background-size: 34px;
-          background-color: rgba(0, 0, 0, 0);
-          background-position: 50% 50%;
-
-          &:before {
-            content: ' ';
-            position:absolute;
-            top:0;
-            left:0;
-            right:0;
-            bottom:0;
-            border: 1px solid rgba(0,0,0, 0.15);
-            @include border-radius(2px);
-          }
-
-          h5 {
-            position:relative;
-            padding:0 12px 0 0;
-            display:block;
-            font-family: "Helvetica", Arial;
-            font-weight:normal;
-            line-height:12px;
-          }
+          border: 1px solid rgba(0,0,0, 0.15);
         }
+
+        h5 {
+          position:relative;
+          padding:0 12px 0 0;
+          display:block;
+          font-family: "Helvetica", Arial;
+          font-weight:normal;
+          line-height:12px;
+        }
+      }
 
       .info {
         @include inline-block();
@@ -226,13 +219,8 @@ div.map {
 
 
   .map-options {
-    position:absolute;
-
-    bottom: 20px;
-    left: 18px;
-
+    @include position(false, false, 28px, 18px);
     z-index: 10;
-
   }
 
   .option-button {
@@ -251,56 +239,6 @@ div.map {
     &:last-child {
       margin-right: 0;
     }
-
-  }
-
-  .option-button.basemap_dropdown {
-
-    @include inline-block();
-
-    cursor: pointer;
-
-    strong {
-      color: #fff;
-      font-weight:normal;
-    }
-
-    div.map div.dropdown.basemap ul li>a
-    
-    .thumbs li> a.nokia_reduced_day div.thumb {
-      background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-    }
-
-    & > .thumb {
-      position:absolute;
-      top: 6px; left: 6px;
-      @include inline-block();
-      @include size(22px);
-      margin: 0 5px 0 0;
-      @include border-radius(2px);
-
-      // Set nokia basemap as default
-      background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-      background-size: 34px;
-      background-color: rgba(0, 0, 0, 0);
-      background-position: 50% 50%;
-      @include box-shadow(0 0 1px rgba(#000, .9));
-
-      &:before {
-        content: ' ';
-        position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:0;
-        border: 1px solid rgba(0,0,0, 0.15);
-        @include border-radius(2px);
-      }
-    }
-
-    .info {
-      @include inline-block();
-    } 
 
   }
 
@@ -344,447 +282,66 @@ div.map {
     }
   }
 
-  div.dropdown.canvas_setup_dropdown {
-
-    ul {
-      clear:both;
-      width: 225px;
-      padding: 10px;
-    }
-
-    li {
-      float:left;
-      border:none;
-      background: #F2F2F2; 
-      @include border-radius(5px);
-
-      &:first-child { 
-        margin-right: 1px;
-        @include border-radius(5px 0 0 5px);
-      }
-
-      &:last-child { 
-        @include border-radius(0 5px 5px 0);
-      }
-
-      &:hover {
-        a { background: image-url('layout/computer.png') no-repeat 50% 16px; }
-        strong { @include opacity(.7); }
-      }
-
-      &.active {
-
-        background: #F2F2F2; 
-
-        strong { color: #397DB8; @include opacity(1); }
-
-        &.desktop a { background: image-url('layout/computer.png') no-repeat 50% 16px; }
-        &.mobile  a { background: image-url('layout/mobile.png') no-repeat 50% 16px; }
-      }
-
-      a { 
-        display:block;
-        width: 86px;
-        height:58px;
-        position:relative;
-      }
-
-      strong {
-        display:block;
-        position:absolute;
-        bottom: 16px;
-        left:0;
-        width: 100%;
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 10px;
-        color: #444;
-        @include opacity(.5);
-      }
-
-      &.desktop a {
-        background: image-url('layout/computer_disabled.png') no-repeat 50% 16px;
-      }
-
-      &.mobile a {
-        background: image-url('layout/mobile_disabled.png') no-repeat 50% 16px;
-      }
-    }
-
-
-  } // canvas_setup_dropdown
-
-  div.dropdown.map_options_dropdown {
-
-    ul {
-
-      box-sizing: border-box;
-      margin: 0;
-      width: 204px;
-      padding: 12px 15px;
-
-      li {
-        display: block;
-        margin: 0;
-        padding: 10px 0;
-        border:none;
-        color: #999999;
-        font-size: 13px;
-        border-bottom: 1px solid rgba(204,204,204,0.35);
-        cursor: default;
-
-        &:hover { background: #fff; }
-
-        &:first-child { 
-          padding-top: 0;
-        }
-
-        &:last-child { 
-          border:none;
-          padding-bottom: 0;
-        }
-
-        a {
-          @include inline-block();
-          float:right;
-          margin: 0 ;
-          padding: 0;
-        }
-
-      }
-    }
-  }
-
   div.dropdown.widgets_dropdown {
     width: 200px;
-  }
-
-  div.dropdown.basemap {
-
-    border: 1px solid #999999;
-
-    div.custom {
-      display:inline;
-      vertical-align:top;
-    }
-
-    ul {
-      @include display-flex();
-      vertical-align:top;
-      padding: 0 5px 0 10px;
-      border-bottom: none;
-    }
-
-    div.custom > ul {
-      border-bottom: 1px solid rgba(204,204,204,0.35);
-      @include box-sizing(border-box);
-      padding: 10px 10px;
-
-      & > li {
-        &:first-child {
-          width: 60px;
-          margin: 7px 4px 0 0;
-          color: #CCCCCC;
-        }
-
-      }
-
-      li { 
-        border:none;;
-        font-size: 13px;
-      }
-
-    }
-
-
-    ul li {
-      margin: 0 10px 0 0;
-
-      &:last-child { margin-right: 0; }
-
-      &.wms {
-        .thumb {
-          background-size:auto;
-          @include map-sprite(wms);
-        }
-
-        a {
-          line-height: 24px;
-        }
-      }
-
-      &.selected .name { color: #7B7B7B; }
-
-      &.hidden { display: none; }
-
-      &:hover { background: none; }
-
-      &.add_basemap > a {
-        small, &:hover small {
-          color: #397DB8;
-          @include opacity(.5);
-        }
-      }
-
-      &.map_background > a .name {
-        margin: 5px 0 0 5px;
-      }
-
-      & > a {
-        display:block;
-        padding: 0;
-        box-sizing: border-box;
-
-        line-height: 13px;
-        @include clearfix();
-
-        small {
-          display:block;
-          margin: 0 0 0 29px;
-          font-size: 9px;
-          line-height:11px;
-          color: #AAAAAA;
-        }
-
-        &:hover small {
-          color: #AAAAAA;
-        }
-
-        .name {
-          float:left;
-          width: 150px;
-          margin: 0 0 0 5px;
-          font-size:13px;
-          line-height:14px;
-          text-overflow:ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-        }
-
-        &.add .thumb { border-color: #397DB8; }
-        &:hover .thumb .remove_layer { opacity: 1; }
-
-        .thumb {
-          position:relative;
-          float:left;
-          @include size(24px);
-          @include border-radius(2px);
-          @include text-indent();
-          background-size: 34px 34px;
-          background-position: 50% 50%;
-          text-decoration:none;
-
-          &:before {
-            content: '';
-            position:absolute;
-            top:0;
-            left:0;
-            right:0;
-            bottom:0;
-            border: 1px solid rgba(0,0,0, 0.15);
-            @include border-radius(2px);
-          }
-
-          .remove_layer {
-
-            @include size(14px, 10px);
-            @include position(false, 0, 0, false);
-            @include simple-transition(opacity, 100ms);
-            padding: 0;
-
-            background:#333;
-            text-indent:0;
-            @include border-top-left-radius(2px);
-            @include border-bottom-right-radius(2px);
-            background:rgba(black,0.5);
-            z-index:2;
-
-            opacity: 0;
-
-            &:before {
-              position:absolute;
-              content:' ';
-              top:4px;
-              left:4px;
-              width:0;
-              height:0;
-              border-left:3px solid transparent;
-              border-right:3px solid transparent;
-              border-top:3px solid white;
-            }
-          }
-
-          &:hover {
-            cursor:pointer;
-            &:before { border: 1px solid rgba(0,0,0, 0.5); }
-          }
-
-        }
-
-        &.nokia_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24");
-        }
-
-        &.nokia_day_grey .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24");
-        }
-
-        &.nokia_day_transit .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.transit/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24");
-        }
-
-        &.nokia_carnav_day_grey .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/carnav.day.grey/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        }
-
-        &.nokia_reduced_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/reduced.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        }
-
-        &.nokia_night .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.night/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        }
-
-        &.nokia_terrain_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/terrain.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        }
-
-        &.nokia_satellite_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/satellite.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        }
-
-        &.nokia_hybrid_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/hybrid.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
-        }
-
-        &.dark_roadmap .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_dark_roadmap);
-        }
-
-        &.gray_roadmap .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_gray_roadmap);
-        }
-
-        &.roadmap .thumb{
-          background-size:auto;
-          @include map-sprite(gmaps_roadmap);
-        }
-
-        &.terrain .thumb{
-          background-size:auto;
-          @include map-sprite(gmaps_terrain);
-        }
-
-        &.satellite .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_satellite);
-        }
-
-        &.hybrid .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_hybrid);
-        }
-
-        &.add .thumb {
-          background-size:auto;
-          @include map-sprite(plus);
-        }
-
-        &.pattern .thumb {
-          @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px);
-        }
-
-        span.color {
-          position:relative;
-          display:block;
-          width:100%;
-          height:14px;
-          padding:15px 0;
-          text-indent:0;
-          font:bold 9px $text-fonts;
-          color:rgba(#999,0.8);
-          text-shadow:0 0 1px rgba(#FFF,0.5);
-          text-transform:uppercase;
-          text-align:center;
-        }
-
-        span.button {
-          position:absolute;
-          bottom:2px;
-          right:2px;
-          width:10px;
-          height:10px;
-          text-indent:0;
-          @include border-radius(10px);
-          background:white;
-          z-index:2;
-
-          &:before {
-            position:absolute;
-            content:' ';
-            top:4px;
-            left:3px;
-            width:0;
-            height:0;
-            border-left:2px solid transparent;
-            border-right:2px solid transparent;
-            border-top:3px solid #397DBA;
-          }
-        }
-      }
-    }
   }
 
   /* CartoDB map styles */
 
   &.table div.cartodb-map {
-    position:absolute;
-    top: 55px;
-    left:0;
-    right:0;
-    bottom:0;
 
+    @include position(54px, 0, 0, 0);
     @include border-radius(0);
 
-    div.cartodb-searchbox{
-      margin: 20px 77px 0 0;
-      float: right;
-      position: relative;
-    }
+  }
+
+  &.derived div.cartodb-map {
+
+    @include position(70px, 79px, 15px, 15px);
+    @include border-radius(3px);
+    @include size(auto);
 
   }
 
   div.cartodb-map {
 
-    width:auto;
-    height:auto;
-
-    position:absolute;
-    top: 70px;
-    left:15px;
-    right:79px;
-    bottom:15px;
-
     z-index:1;
-
-    @include border-radius(3px);
 
     // Move attributions in different providers
     .leaflet-right .leaflet-control, #cartodb_attribution {
-      margin-right: 62px!important;
+      @include simple-transition(width, 150ms, ease-in-out);
+      margin-right: 62px;
+    }
+
+    div.cartodb-searchbox{
+      top: 40px;
+      right: 77px;
+      float: right;
+      position: absolute;
     }
 
   }
 
+  &.map.table {
+    div.cartodb-legend-stack {
+      @include position(false, 80px, 20px, false);
+    }
+  }
+
+  &.map.derived {
+    div.cartodb-legend-stack {
+      @include position(false, 20px, 20px, false);
+    }
+  }
+
   div.cartodb-legend-stack {
-    @include position(false, 20px, 20px, false);
+    @include position(false, 80px, 20px, false);
     margin: 0;
 
     @include transform-style("linear");
     @include transition-property("margin-right");
     @include transition-duration(300ms);
+
     z-index: 10001;
 
     div.cartodb-legend {
@@ -813,6 +370,7 @@ div.map {
     }
 
     z-index: 10001;
+
   }
 
   div.cartodb-layer-selector-box { 
@@ -874,25 +432,14 @@ div.map {
 
   // Public map
   .cartodb-map.public {
-    top: 65px;
-    bottom: 0;
-    left: 0;
-    right: 0;
+
+    @include position(65px, 0, 0, 0);
+
     border-top:1px solid #999999;
 
-
-    .cartodb-map-wrapper.with_header div.cartodb-zoom {
-      margin-top: 70px;
-    }
-
-    .cartodb-map-wrapper.with_header div.cartodb-share {
-      margin-top: 70px;
-    }
-
-    .cartodb-map-wrapper.with_header div.cartodb-searchbox {
-      margin-top: 70px;
-    }
-
+    .cartodb-map-wrapper.with_header div.cartodb-zoom,
+    .cartodb-map-wrapper.with_header div.cartodb-share,
+    .cartodb-map-wrapper.with_header div.cartodb-searchbox,
     .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
       margin-top: 70px;
     }
@@ -953,7 +500,6 @@ div.map {
       margin-right: 0px!important;
     }
   }
-
 
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
@@ -1039,62 +585,62 @@ div.map {
 
   // When a panel view is openned or closed
   &.displaced {
+
     div.sqlview p {
-      text-indent:-600px;
+      text-indent: -600px;
     }
 
-    div.share {
-      right:595px;
-    }
+    &.map.table .cartodb-map {
 
-    div.cartodb-searchbox {
-      right: 550px;
-    }
-
-    div.cartodb-legend {
-      margin-right:612px;
-    }
-
-    div.cartodb-legend-stack {
-      margin-right:612px;
-
-      div.cartodb-legend {
-        margin: 0;
+      div.cartodb-legend-stack {
+        margin-right:550px;
       }
 
+    }
+
+    &.map.derived .cartodb-map {
+
+      div.cartodb-legend-stack {
+        margin-right:530px;
+      }
+
+    }
+
+    .cartodb-map {
+
+      div.share                      { right:595px; }
+      div.cartodb-searchbox          { right: 630px; }
+      div.cartodb-layer-selector-box { right:550px; }
+      div.cartodb-legend             { margin-right:550px; }
+
+      div.cartodb-legend-stack {
+        margin-right:550px;
+
+        div.cartodb-legend { margin: 0; }
+
+      }
     }
 
     &.narrow {
-      div.sqlview p {
-        text-indent:-450px;
-      }
 
-      div.share {
-        right:445px;
-      }
-
-      div.cartodb-searchbox {
-        /*margin-right:462px;*/
-        right: 400px;
-      }
-
-      div.cartodb-legend {
-        margin-right:462px;
-      }
+      div.cartodb-searchbox { right: 400px; }
+      div.cartodb-legend    { margin-right:462px; }
+      div.sqlview p         { text-indent:-450px; }
+      div.share             { right:445px; }
 
       div.cartodb-legend-stack {
+
         margin-right:462px;
 
-        div.cartodb-legend {
-          margin: 0;
-        }
+        div.cartodb-legend { margin: 0; }
+
       }
 
-    }
+    } // .narrow
+
   } //&.displaced
 
 } // div.cartodb-map
-
 
 section.block.noGeoRef {
   background-color: #FFF0C1;
@@ -1107,6 +653,7 @@ section.block.noGeoRef {
       color: #666;
       line-height:120%;
     }
+
     .foot {
       border-top: 0;
       padding-top: 0px;
@@ -1114,17 +661,16 @@ section.block.noGeoRef {
       .cancel {
         margin-top: 15px;
 
-        a {
-          text-decoration: underline;
-        }
+        a { text-decoration: underline; }
+
       }
     }
 
-    .enabled {
-      display: block;
-    }
-  }
-}
+    .enabled { display: block; }
+
+  } // .innerBlock
+
+} // section.bloc.noGeoRef
 
 /* FOOTER EDIT BUTTONS  for infowindow */
 
@@ -1202,9 +748,6 @@ div.cartodb-popup.dark  {
   }
 }
 
-
-
-
 // FOR TOOLTIPS //
 
 .cartodb-tooltip-content-wrapper
@@ -1262,7 +805,6 @@ div.cartodb-edit-buttons {
     }
   }
 }
-
 
 // Custom styles for Leaflet maps
 

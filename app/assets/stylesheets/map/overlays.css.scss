@@ -20,6 +20,14 @@
   font-family: 'Open Sans', sans-serif;
 }
 
+.cartodb-logo {
+  display:none;
+  position:absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 100000;
+}
+
 .overlay.header {
   display: none;
   width: 100%;
@@ -82,6 +90,26 @@
 
   /* Image Overlay */
   &.image {
+
+    .loader{
+      display:none;
+      background: rgba(#333, .5) image-url('layout/loader_transparent.gif') no-repeat 50% 50%;
+      @include absolute-center(38px, 16px);
+    }
+
+    .content {
+      position:relative;
+      @include border-radius(3px);
+    }
+
+    &.error .loader {
+      display:none;
+    }
+
+    &.error .content {
+      background: rgba(#333, .5) image-url('layout/image_not_found.png') no-repeat 50% 50%;
+      img { display: none!important; }
+    }
 
     &.editable {
       max-width: 400px;

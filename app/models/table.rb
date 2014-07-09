@@ -528,6 +528,7 @@ class Table < Sequel::Model(:user_tables)
     create_fullscreen_overlay(member, 7)
     create_zoom_info_overlay(member, 8)
     create_loader_overlay(member, 9)
+    create_logo_overlay(member, 10)
 
   end
 
@@ -540,6 +541,22 @@ class Table < Sequel::Model(:user_tables)
       options: options,
       visualization_id: id
     )
+
+  end
+
+  def create_logo_overlay(member, order)
+
+    options = { :display => true }
+
+    member = CartoDB::Overlay::Member.new(
+      order: order,
+      type: "logo",
+      template: '',
+      options: options,
+      visualization_id: member.id
+    )
+
+    member.store
 
   end
 
@@ -595,7 +612,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_share_overlay(member, order)
 
-    options = { :display => false, :x => 20, :y => 40 } 
+    options = { :display => true, :x => 20, :y => 40 } 
 
     member = generate_overlay(member.id, options, "share", order)
     member.store
@@ -604,7 +621,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_search_overlay(member, order)
 
-    options = { :display => true, :x => 40, :y => 40 } 
+    options = { :display => true, :x => 60, :y => 40 } 
 
     member = generate_overlay(member.id, options, "search", order)
     member.store

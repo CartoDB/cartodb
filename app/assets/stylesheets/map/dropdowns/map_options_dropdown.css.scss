@@ -1,0 +1,64 @@
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/opacity";
+@import "compass/css3/transform";
+@import "../common/vars";
+@import "../common/mixins";
+@import "../map/map-sprite";
+@import "../elements/elements-sprite";
+
+div.dropdown.map_options_dropdown {
+
+  ul {
+
+    box-sizing: border-box;
+    margin: 0;
+    width: 204px;
+    padding: 12px 15px;
+
+    li {
+      display: block;
+      margin: 0;
+      padding: 10px 0;
+      border:none;
+      color: #999999;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(204,204,204,0.35);
+      cursor: default;
+
+      &.inactive .form_switch {
+
+        @include opacity(0.3);
+
+        &:hover {
+          color:$link-color;
+          text-decoration:none;
+          cursor:default;
+        }
+
+      }
+
+      &:hover { background: #fff; }
+
+      &:first-child { 
+        padding-top: 0;
+      }
+
+      &:last-child { 
+        border:none;
+        padding-bottom: 0;
+      }
+
+      a {
+        @include inline-block();
+        float:right;
+        margin: 0 ;
+        padding: 0;
+      }
+
+    }
+  }
+}
+

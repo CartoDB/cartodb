@@ -13,12 +13,13 @@
   // Navigation block
   div.vis_navigation {
     position:absolute;
-    width: 400px;
-    margin-left: -200px;
+    $width: 263px;
+    width: $width;
     top: 4px;
     left:50%;
-    margin:0;
+    margin-left: -$width/2;
     padding:0;
+    z-index: 100;
 
     nav {
       position:relative;

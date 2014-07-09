@@ -239,37 +239,36 @@
 
       $(document).ready(function(){
 
+        var bool_fn = function(v) { return v == 'true' };
+        var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+        var logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' };
+        var layer_fn = function(v) {
+          if (!v || !v.length) {
+            return null;
+          }
 
-        var bool_fn = function(v) { return v == 'true' }
-          , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
-          , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
-          , layer_fn = function(v) {
-        if(!v || !v.length) {
-          return null;
-        }
-
-        return _.map(v.split("|"), function(v) {
-          return { visible: !!parseInt(v, 10) }
-        });
-
-          };
-
-          var opt = get_url_params({
-            'search':       bool_fn,
-            'title':        bool_fn,
-            'description':  bool_fn,
-            'shareable':    bool_fn,
-            'fullscreen':   bool_fn,
-            'cartodb_logo': false,
-            'scrollwheel':  bool_fn,
-            'sublayer_options': layer_fn,
-            'layer_selector': bool_fn,
-            'legends': bool_fn
+          return _.map(v.split("|"), function(v) {
+            return { visible: !!parseInt(v, 10) }
           });
+
+        };
+
+        var opt = get_url_params({
+          'search':       bool_fn,
+          'title':        bool_fn,
+          'description':  bool_fn,
+          'shareable':    bool_fn,
+          'fullscreen':   bool_fn,
+          'cartodb_logo': false,
+          'scrollwheel':  bool_fn,
+          'sublayer_options': layer_fn,
+          'layer_selector': bool_fn,
+          'legends': bool_fn
+        });
 
           <% if (@visualization.password_protected?) %>
               opt.auth_token = '<%= @protected_map_token %>';
-            opt.https = true; // when auth_token is used tiles should be fetch using https
+              opt.https = true; // when auth_token is used tiles should be fetch using https
           <% end %>
 
           <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
@@ -278,8 +277,8 @@
 
           var scrollwheelEnabled = opt.scrollwheel;
 
-          opt.title       = false;
-          opt.description = false;
+          // opt.title       = false;
+          // opt.description = false;
           opt.scrollwheel = false; 
 
           cartodb.config.set({
@@ -287,7 +286,7 @@
             cartodb_logo_link: ""
           })
 
-          var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
+          var loadingTime  = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
           var onResize = function() {
@@ -362,6 +361,7 @@
 
             // add here your code
             window.vis = vis;
+
 
             var fullscreen = vis.getOverlay("fullscreen");
 

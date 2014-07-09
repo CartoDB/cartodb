@@ -8,7 +8,7 @@
 <% end %>
 
 <script>
-  var table_name          = '<%= @table.name %>';
+  var table_name          = '"<%=raw @table.owner.username %>".<%= @table.name %>';
   var table_id            = '<%= @table.id %>';
   var schema              = <%=raw @table.schema.to_json %>;
   var user_name           = '<%=raw @table.owner.username %>';
@@ -17,6 +17,7 @@
   var config              = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
   var vizjson             = <%=raw @vizjson.to_json %>;
   var auth_token          = <%=raw @auth_tokens.to_json %>;
+  var api_key             = <%=raw @api_key.to_json %>;
 </script>
 
 <script>

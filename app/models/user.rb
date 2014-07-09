@@ -482,6 +482,12 @@ $$
     calls = calls.zip(old_calls).map { |pair|
       pair[0].to_i + pair[1].to_i
     } unless old_calls.blank?
+    
+    # Add ES api calls
+    es_calls = get_es_api_calls_from_redis(options) rescue []
+    calls = calls.zip(es_calls).map { |pair|
+      pair[0].to_i + pair[1].to_i
+    } unless es_calls.blank?
 
     return calls
   end
@@ -493,6 +499,55 @@ $$
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
 
+  # Get ES api calls from redis
+  def get_es_api_calls_from_redis(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
+    es_calls = $users_metadata.pipelined do
+      date_to.downto(date_from) do |date|
+        $users_metadata.ZSCORE "user:#{self.username}:mapviews_es:global", date.strftime("%Y%m%d")
+      end
+    end.map &:to_i
+    return es_calls
+  end
+
+  # Get the api calls from ES and sum them to the stored ones in redis
+  # Returns the final sum of them
+  def get_api_calls_from_es
+    require 'date'
+    yesterday = Date.today - 1
+    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
+    to_date = DateTime.now.strftime("%Q")
+    request_body = Cartodb.config[:api_requests_es_service]['body']
+    request_url = Cartodb.config[:api_requests_es_service]['url']
+    request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
+    request_body.gsub!("\"$FROM$\"", from_date)
+    request_body.gsub!("\"$TO$\"", to_date)
+    request = Typhoeus::Request.new(
+      request_url,
+      method: :post,
+      headers: { "Content-Type" => "application/json" },
+      body: request_body
+    )
+    response = request.run
+    if response.code != 200
+      raise(response.body)
+    end
+    values = {}
+    JSON.parse(response.body)["aggregations"]["0"]["buckets"].each {|i| values[i['key']] = i['doc_count']}
+    return values
+  end
+ 
+  # Get the final api calls from ES and write them to redis
+  def set_api_calls_from_es(options = {})
+    if options[:force_update]
+      es_api_calls = get_api_calls_from_es
+      es_api_calls.each do |d,v|
+        $users_metadata.ZADD "user:#{self.username}:mapviews_es:global", v, DateTime.strptime(d.to_s, "%Q").strftime("%Y%m%d")
+      end
+    end
+  end
+  
   # Legacy stats fetching
 
     def get_old_api_calls

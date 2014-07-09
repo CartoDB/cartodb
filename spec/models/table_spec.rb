@@ -2126,4 +2126,8 @@ describe Table do
     end
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
 end

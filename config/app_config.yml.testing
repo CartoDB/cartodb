@@ -199,6 +199,9 @@ test:
     host: '127.0.0.1'
     port: 6335
   enforce_non_empty_layer_css: false
+  api_requests_es_service:
+    url: "http://api-calls-service.localhost.lan/search"
+    body: ""
 
 staging:
   <<: *defaults

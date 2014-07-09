@@ -16,25 +16,27 @@ describe CartoDB::Permission do
       acl_initial = []
       acl_with_data = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: UUIDTools::UUID.timestamp_create.to_s,
             username: 'another_username',
             avatar_url: 'whatever'
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         }
       ]
       acl_with_data_expected = [
-          {
-              id:   acl_with_data[0][:user][:id],
-              type: acl_with_data[0][:type]
-          }
+        {
+          type: acl_with_data[0][:type],
+          id:   acl_with_data[0][:entity][:id],
+          access: acl_with_data[0][:access]
+        }
       ]
 
       permission = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username
-          #check default acl is correct
+        owner_id:       @user.id,
+        owner_username: @user.username
+        #check default acl is correct
       )
       permission.save
 
@@ -94,28 +96,32 @@ describe CartoDB::Permission do
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       permission2.acl = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: user2.id,
             username: user2.username
           },
-          type: Permission::TYPE_READONLY,
+          access: Permission::ACCESS_READONLY,
           # Extra undesired field
           wadus: 'aaa'
         }
       ]
 
-      # Wrong permission type
+      # Wrong permission access
       expect {
         permission2.acl = [
           {
-            user: {
+            type: Permission::TYPE_USER,
+            entity: {
               id: user2.id,
               username: user2.username
             },
-            type: '123'
+            access: '123'
           }
         ]
       }.to raise_exception CartoDB::PermissionError
+
+      user2.destroy
 
     end
   end
@@ -125,9 +131,11 @@ describe CartoDB::Permission do
       user2_mock = mock
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user2_mock.stubs(:username).returns('user2')
+      user2_mock.stubs(:organization).returns(nil)
       user3_mock = mock
       user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user3_mock.stubs(:username).returns('user3')
+      user3_mock.stubs(:organization).returns(nil)
 
       permission = Permission.new(
         owner_id:       @user.id,
@@ -135,17 +143,18 @@ describe CartoDB::Permission do
       )
       permission.acl = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: user2_mock.id,
             username: user2_mock.username
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         }
       ]
 
       permission.save
       # Here try full reload of model
-      permission = Permission.where(id:permission.id).first
+      permission = Permission.where(id: permission.id).first
 
       permission.should_not eq nil
 
@@ -153,21 +162,24 @@ describe CartoDB::Permission do
       permission.is_owner?(user2_mock).should eq false
       permission.is_owner?(user3_mock).should eq false
 
-      permission.permission_for_user(@user).should eq Permission::TYPE_READWRITE
-      permission.permission_for_user(user2_mock).should eq Permission::TYPE_READONLY
-      permission.permission_for_user(user3_mock).should eq nil
+      permission.permission_for_user(@user).should eq Permission::ACCESS_READWRITE
+      permission.permission_for_user(user2_mock).should eq Permission::ACCESS_READONLY
+      permission.permission_for_user(user3_mock).should eq Permission::ACCESS_NONE
     end
 
     it 'checks is_permitted' do
       user2_mock = mock
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user2_mock.stubs(:username).returns('user2')
+      user2_mock.stubs(:organization).returns(nil)
       user3_mock = mock
       user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user3_mock.stubs(:username).returns('user3')
+      user3_mock.stubs(:organization).returns(nil)
       user4_mock = mock
       user4_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user4_mock.stubs(:username).returns('user4')
+      user4_mock.stubs(:organization).returns(nil)
 
       permission = Permission.new(
         owner_id:       @user.id,
@@ -175,32 +187,138 @@ describe CartoDB::Permission do
       )
       permission.acl = [
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: user2_mock.id,
             username: user2_mock.username
           },
-          type: Permission::TYPE_READONLY
+          access: Permission::ACCESS_READONLY
         },
         {
-          user: {
+          type: Permission::TYPE_USER,
+          entity: {
             id: user3_mock.id,
             username: user3_mock.username
           },
-          type: Permission::TYPE_READWRITE
+          access: Permission::ACCESS_READWRITE
         }
       ]
       permission.save
 
-      permission.is_permitted?(user2_mock, Permission::TYPE_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::TYPE_READWRITE).should eq false
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
 
-      permission.is_permitted?(user3_mock, Permission::TYPE_READONLY).should eq true
-      permission.is_permitted?(user3_mock, Permission::TYPE_READWRITE).should eq true
+      permission.is_permitted?(user3_mock, Permission::ACCESS_READONLY).should eq true
+      permission.is_permitted?(user3_mock, Permission::ACCESS_READWRITE).should eq true
 
-      permission.is_permitted?(user4_mock, Permission::TYPE_READONLY).should eq false
-      permission.is_permitted?(user4_mock, Permission::TYPE_READWRITE).should eq false
+      permission.is_permitted?(user4_mock, Permission::ACCESS_READONLY).should eq false
+      permission.is_permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
     end
 
+    # TODO: Add organization permissions spec
+    it 'checks organizations vs users permissions precedence' do
+      org_mock = mock
+      org_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      org_mock.stubs(:name).returns('some_org')
+      user2_mock = mock
+      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user2_mock.stubs(:username).returns('user2')
+      user2_mock.stubs(:organization).returns(org_mock)
+
+      permission = Permission.new(
+          owner_id:       @user.id,
+          owner_username: @user.username
+      )
+      # User has more access than org
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_READWRITE
+          },
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id: org_mock.id,
+                  username: org_mock.name
+              },
+              access: Permission::ACCESS_READONLY
+          }
+      ]
+      permission.save
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
+
+      # Organization has more permissions than user. Should get overriden (user prevails)
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_READONLY
+          },
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id: org_mock.id,
+                  username: org_mock.name
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      permission.save
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+
+      # User has revoked permissions, org has permissions. User revoked should prevail
+      permission.acl = [
+          {
+              type: Permission::TYPE_USER,
+              entity: {
+                  id: user2_mock.id,
+                  username: user2_mock.username
+              },
+              access: Permission::ACCESS_NONE
+          },
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id: org_mock.id,
+                  username: org_mock.name
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      permission.save
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq false
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+
+      # Organization permission only
+      permission.acl = [
+          {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: {
+                  id: org_mock.id,
+                  username: org_mock.name
+              },
+              access: Permission::ACCESS_READWRITE
+          }
+      ]
+      permission.save
+
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
+    end
+
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
 end

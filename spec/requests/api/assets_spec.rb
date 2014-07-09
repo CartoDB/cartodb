@@ -69,4 +69,8 @@ describe "Assets API" do
       @user.assets.count.should == 0
     end
   end
+
+  after(:all) do
+    @user.destroy
+  end
 end

@@ -4,7 +4,6 @@ require 'spec_helper'
 describe User do
   before(:all) do
     puts "\n[rspec][user_spec] Creating test user databases..."
-    @new_user = new_user
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'
 
@@ -36,11 +35,13 @@ describe User do
   end
 
   it "should set up a user after create" do
+    @new_user = new_user
     @new_user.save
     @new_user.reload
     @new_user.should_not be_new
     @new_user.database_name.should_not be_nil
     @new_user.in_database.test_connection.should == true
+    @new_user.destroy
   end
 
   it "should have a crypted password" do
@@ -95,11 +96,12 @@ describe User do
   describe "organization checks" do
     it "should not be valid if his organization doesn't have more seats" do
       organization = FactoryGirl.create(:organization, seats: 1)
-      FactoryGirl.create(:user, organization: organization)
+      orguser = FactoryGirl.create(:user, organization: organization)
       user = User.new
       user.organization = organization
       user.valid?.should be_false
       user.errors.keys.should include(:organization)
+      orguser.destroy
     end
 
     it "should be valid if his organization has enough seats" do
@@ -163,6 +165,8 @@ describe User do
 
     user.password = nil
     user.valid?.should be_true
+
+    user.destroy
   end
 
   it "should set default statement timeout values" do
@@ -214,15 +218,49 @@ describe User do
 
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
-      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 
+      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0], 
       "total"=>49, 
       "updated_at"=>1370362756
     })
-    @user.get_api_calls.should == [0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
+    @user.stubs(:get_es_api_calls_from_redis).returns([
+      21, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ])
+    @user.get_api_calls.should == [21, 0, 0, 0, 6, 17, 0, 5, 0, 0, 0, 0, 0, 0, 8, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
     @user.get_api_calls(
       from: (Date.today - 6.days), 
       to: Date.today
-    ).should == [0, 0, 0, 0, 0, 17, 0]
+    ).should == [21, 0, 0, 0, 6, 17, 0]
+  end
+
+  it "should get final api calls from es" do
+    yesterday = Date.today - 1
+    today = Date.today
+    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
+    to_date = DateTime.new(today.year, today.month, today.day, 0, 0, 0).strftime("%Q")
+    api_url = %r{search}
+    api_response = {
+                    "aggregations" => {
+                      "0" => {
+                        "buckets" => [
+                          {
+                            "key" => from_date.to_i,
+                            "doc_count" => 4
+                          },
+                          {
+                            "key" => to_date.to_i,
+                            "doc_count" => 6
+                          }
+                        ]  
+                      }
+                    } 
+                   }
+    Typhoeus.stub(api_url,
+                  { method: :post }
+                 )
+                  .and_return(
+                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s) 
+                  )  
+    @user.get_api_calls_from_es.should == {from_date.to_i => 4, to_date.to_i => 6}
   end
 
   describe '#overquota' do
@@ -561,6 +599,7 @@ describe User do
     $users_metadata.HGET(user.key, 'database_password').should == user.database_password
     $users_metadata.HGET(user.key, 'database_host').should == user.database_host
     $users_metadata.HGET(user.key, 'map_key').should == user.api_key
+    user.destroy
   end
 
   it "should not regenerate the api_key after saving" do
@@ -644,6 +683,7 @@ describe User do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
+    user.destroy
   end
 
   it "should calculate the trial end date" do
@@ -727,6 +767,11 @@ describe User do
       @user.link_ghost_tables
       @user.tables.count.should_not == 0
     end
+  end
+
+  after(:all) do
+    @user.destroy
+    @user2.destroy
   end
 
 end

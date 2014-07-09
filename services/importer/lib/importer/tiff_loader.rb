@@ -25,11 +25,6 @@ module CartoDB
           ALTER TABLE #{job.qualified_table_name}
           RENAME COLUMN rid TO cartodb_id
         })
-        job.db.run(%Q{
-          SELECT public.AddGeometryColumn(
-            '#{job.schema}','#{job.table_name}','the_geom',4326,'POLYGON',2
-          );
-        })
 
         self
       end #run

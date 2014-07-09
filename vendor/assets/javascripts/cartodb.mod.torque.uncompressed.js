@@ -5835,6 +5835,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
       var cb = this._evt_callbacks = this._evt_callbacks || {};
       var l = cb[evt] || (cb[evt] = []);
       l.push(callback);
+      return this;
   };
 
   Event.trigger = function(evt) {
@@ -5842,6 +5843,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
       for(var i = 0; c && i < c.length; ++i) {
           c[i].apply(this, Array.prototype.slice.call(arguments, 1));
       }
+      return this;
   };
 
   Event.fire = Event.trigger;
@@ -5857,6 +5859,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
        if(c[i] === callback) remove.push(i);
      }
      while((i = remove.pop()) !== undefined) c.splice(i, 1);
+    return this;
   };
 
   Event.callbacks = function(evt) {
@@ -5865,9 +5868,6 @@ exports.torque.common.TorqueLayer = TorqueLayer;
 
   exports.torque.Event = Event;
 
-  exports.torque.isArray = function(value) {
-      return value && typeof value == 'object' && Object.prototype.toString.call(value) == '[object Array]';
-  };
 
   // types
   exports.torque.types = {
@@ -7127,13 +7127,7 @@ exports.Profiler = Profiler;
         for(var k in this.options.extra_params) {
           var v = this.options.extra_params[k];
           if (v) {
-            if (torque.isArray(v)) {
-              for (var i = 0, len = v.length; i < len; i++) {
-                p.push(k + "[]=" + encodeURIComponent(v[i]));
-              }
-            } else {
-              p.push(k + "=" + encodeURIComponent(v));
-            }
+            p.push(k + "=" + encodeURIComponent(v));
           }
         }
         return p.join('&');
@@ -7475,12 +7469,13 @@ exports.Profiler = Profiler;
     ctx.fillStyle = st.fillStyle;
     ctx.strokStyle = st.strokStyle;
     var pixel_size = st['point-radius'];
+    var w = pixel_size * 2;
 
     // fill
     if (st.fillStyle && st.fillOpacity) {
       ctx.globalAlpha = st.fillOpacity;
     }
-    ctx.fillRect(0, 0, pixel_size, pixel_size)
+    ctx.fillRect(-pixel_size, -pixel_size, w, w)
 
     // stroke
     ctx.globalAlpha = 1.0;
@@ -7495,7 +7490,7 @@ exports.Profiler = Profiler;
 
       // do not render for alpha = 0
       if (ctx.globalAlpha > 0) {
-        ctx.strokeRect(0, 0, pixel_size, pixel_size);
+        ctx.strokeRect(-pixel_size, -pixel_size, w, w)
       }
     }
   }
@@ -7589,14 +7584,14 @@ exports.Profiler = Profiler;
         throw new Error("marker-width property should be set");
       }
 
+      var canvas = document.createElement('canvas');
+
       // take into account the exterior ring to calculate the size
       var canvasSize = (st.lineWidth || 0) + pointSize*2;
-
-      var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
-      var w = ctx.width = canvas.width = Math.ceil(canvasSize);
-      ctx.height = canvas.height = Math.ceil(canvasSize);
+      var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
       ctx.translate(w/2, w/2);
+
       if(st['point-file'] || st['marker-file']) {
         torque.cartocss.renderSprite(ctx, st);
       } else {

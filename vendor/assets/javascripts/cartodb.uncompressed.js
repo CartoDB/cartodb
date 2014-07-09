@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.2-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0ae01ed6325e76704c59a5f3d4179b60c74c3d7d
+// sha: 8dac4cbc89dd6d32c278b6a9863e0d2bd29c6060
 (function() {
   var root = this;
 
@@ -26129,8 +26129,6 @@ Map.prototype = {
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
-        jsonpCallback: self.options.instanciateCallback,
-        cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
           if(0 === self._queue.length) {
@@ -26186,13 +26184,7 @@ Map.prototype = {
       params.push("map_key=" + api_key);
     }
     if(extra_params.auth_token) {
-      if (_.isArray(extra_params.auth_token)) {
-        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
-          params.push("auth_token[]=" + extra_params.auth_token[i]);
-        }
-      } else {
-        params.push("auth_token=" + extra_params.auth_token);
-      }
+      params.push("auth_token=" + extra_params.auth_token);
     }
     // mark as the request is being done
     this._waiting = true;
@@ -26394,15 +26386,9 @@ Map.prototype = {
       var k = included[i]
       var p = params[k];
       if(p) {
-        if (_.isArray(p)) {
-          for (var j = 0, len = p.length; j < len; j++) {
-            url_params.push(k + "[]=" + encodeURIComponent(p[j]));
-          }
-        } else {
-          var q = encodeURIComponent(p);
-          q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-          url_params.push(k + "=" + q);
-        }
+        var q = encodeURIComponent(p);
+        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+        url_params.push(k + "=" + q);
       }
     }
     return url_params.join('&')
@@ -26577,15 +26563,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var extra_params = this.options.extra_params || {};
     var token = extra_params.auth_token;
     if (token) {
-      if (_.isArray(token)) {
-        var tokenParams = [];
-        for (var i = 0, len = token.length; i < len; i++) {
-          tokenParams.push("auth_token[]=" + token[i]);
-        }
-        url += "?" + tokenParams.join('&')
-      } else {
-        url += "?auth_token=" + token
-      }
+      url += "?auth_token=" + token
     }
     return url;
   },
@@ -31585,29 +31563,18 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    // try to change interactivity, it the layer is a named map 
-    // it's inmutable so it'a assumed the interactivity already has
-    // the fields it needs
-    try {
-      layer.setInteractivity(fields);
-    } catch(e) {
-    }
+    layer.setInteractivity(fields);
     layer.setInteraction(true);
 
     layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
       var render_fields = [];
-      var d;
-      for (var f = 0; f < fields.length; ++f) {
-        var field = fields[f];
-        if (d = data[field]) {
-          render_fields.push({
-            title: field,
-            value: d,
-            index: 0
-          });
-        }
+      for(var k in data) {
+        render_fields.push({
+          title: k,
+          value: data[k],
+          index: 0
+        });
       }
-
       infowindow.model.set({
         content:  {
           fields: render_fields,

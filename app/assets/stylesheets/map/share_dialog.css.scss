@@ -28,139 +28,12 @@
 
     h3 { margin: 0 0 13px 0; }
 
-        border: 1px solid #999999;
-
-        background: #fff sprite( $table-sprites, share, $offset-x: 8px, $offset-y: 8px) no-repeat;
-
-        &:hover {
-          background: #fff sprite( $table-sprites, share, $offset-x: -27px, $offset-y: 8px) no-repeat;
-        }
-
-        &:active, &:hover:active {
-          background: #fff sprite( $table-sprites, share, $offset-x: 8px, $offset-y: 8px) no-repeat!important;
-        }
-
-      }
-
-    }
-
-    div.cartodb-searchbox { display:none; margin: 15px 10px 0 0; }
-    div.cartodb-zoom { top:0; margin: 15px 0 0 15px; }
-    div.cartodb-layer-selector-box { display:none; font-weight: normal; margin: 15px 10px 0 0; }
-    div.cartodb-legends {
-      position:absolute;
-      display:none;
-      bottom: 30px;
-      right: 15px;
-
-      @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
-      @include border-radius(4px);
-
-      border: 1px solid #999999;
-      background: white;
-      z-index: 5;
-
-      padding: 6px 8px;
-
-      font:normal 13px $text-fonts2;
-      color:#858585;
-    }
-
-    &.no-logo {
-      .cartodb-map {bottom:0}
-      .cartodb-legends {bottom:30px}
-    }
-  }
-
-  // Sharing and privacy options
-  div.options {
-
-    @include flex(1);
-    position:relative;
-    width:299px;
-    max-width:299px;
-    min-width:299px;
-    height: 100%;
-
-    h3 {
-      height: 94px; // prevents the jump in size due to the webfont loading
-      @include box-sizing(border-box);
-      padding: 31px 0 30px 0;
-
-      .inner { width: 221px; }
-    }
-
-    h4 {
-
-      height: 41px; // prevents the jump in size due to the webfont loading
-      @include box-sizing(border-box);
-
-      position:relative;
-      z-index: 11;
-
-      .inner { width: 221px; }
-
-      padding: 12px 0;
-      background: #F6F6F6;
-      border-top: 1px solid #E5E5E5;
-      border-bottom: 1px solid #E5E5E5;
-      color: #CCCCCC;
-      font-size: 11px;
-      font-weight:bold;
-      text-transform: uppercase;
-    }
-
-    h5 {
-      font-size:17px;
-      line-height:67px;
-      border-bottom:1px solid rgba(204, 204, 204, 0.75);
-      letter-spacing:-1px;
-    }
-
-    .white-gradient-shadow {
-
-      pointer-events: none;
-
-      &.top    { @include opacity(1); @include position(135px, false, false, 0); @extend .white-gradient-shadow-top; z-index: 10; }
-      &.bottom { @include opacity(1); @include position(0, false, false, 0);  @extend .white-gradient-shadow-bottom; z-index: 10; }
-
-      @include size(100%, 16px);
-
-    }
-
-    .scrollpane {
-      overflow: hidden;
-      outline:none;
-
-      &:hover .jspVerticalBar { @include opacity(1); }
-
-      .jspContainer { overflow: hidden; position: relative; }
-      .jspPane { position: absolute; }
-      .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
-      .jspVerticalBar * { margin: 0; padding: 0; }
-      .jspCap { display: none; }
-      .jspTrack { background: none; position: relative; }
-      .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
-      .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
-      .jspVerticalBar .jspArrow { height: 10px; }
-      .jspVerticalBar .jspArrow:focus { outline: none; }
-      .jspCorner { background: #eeeef4; float: left; height: 100%; }
-
-    }
-
-    ul.switches {
-      display:block;
-      width: 221px;
-      letter-spacing:-4px;
-      word-spacing:-4px;
-      padding: 7px 40px;
-
-      &.privacy, &.privacy li:last-child {
-        padding-bottom: 0;
-      }
-
-      &.privacy li.upgrade_message { padding: 18px; }
->>>>>>> CDB-2891
+    ul {
+      margin: 38px 0 0 0;
+      width: 722px;
+      @include display-flex();
+      flex-direction: row;
+      justify-content: space-between;
 
       li {
         position:relative;
@@ -277,4 +150,3 @@
   }
 
 }
-

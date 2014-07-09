@@ -45,6 +45,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def show
     return head(404) if @table == nil
+    return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
     respond_to do |format|
       format.csv do
         send_data @table.to_csv,
@@ -68,6 +69,8 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def update
+    return head(404) if @table == nil
+    return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
     warnings = []
 
     # Perform name validations
@@ -113,6 +116,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def destroy
+    return head(403) unless @table.table_visualization.is_owner?(current_user)
     @table.destroy
     head :no_content
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception

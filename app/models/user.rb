@@ -142,7 +142,10 @@ class User < Sequel::Model
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params)
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host)
+      $pool.close_connections!(database_name)
+      # If backend termination is needed after pool cleanup
+      # then there is a connection leak
+      # See https://github.com/CartoDB/cartodb/issues/267
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
       conn.disconnect
@@ -1113,10 +1116,12 @@ TRIGGER
       user_database["ALTER ROLE \"?\" SET statement_timeout to ?", database_username.lit, user_timeout].all
       user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", database_name.lit, database_timeout].all
     end
+    # TODO: should disconnect any connection to database or from user
+    #       present in the pool, to force a new session on next use
+    # The below is an optimistic attempt, which will work as long as
+    # there's a single connection for a single configuration in the pool
     in_database.disconnect
-    in_database.connect(get_db_configuration_for)
     in_database(as: :public_user).disconnect
-    in_database(as: :public_user).connect(get_db_configuration_for(:public_user))
   rescue Sequel::DatabaseConnectionError => e
   end
 

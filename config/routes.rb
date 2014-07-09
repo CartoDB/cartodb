@@ -1,188 +1,265 @@
 # encoding: utf-8
 
 CartoDB::Application.routes.draw do
+  # Double use: for user public dashboard AND org dashboard
   root :to => 'admin/pages#public'
 
-  get   '/datasets' => 'admin/pages#datasets'
+  get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login
+  get   '(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
+  match '(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
-  get   '/login' => 'sessions#new', :as => :login
-  get   '/logout' => 'sessions#destroy', :as => :logout
-  match '/sessions/create' => 'sessions#create', :as => :create_session
-  match '/limits' => 'home#limits', :as => :limits
+  match '/limits' => 'home#limits', as: :limits
   match '/status' => 'home#app_status'
 
-  get   '/test' => 'test#index', :as => :test
+  # OAuth
+  match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
+  match '(/u/:user_domain)/oauth/request_token'  => 'oauth#request_token', as: :request_token
+  match '(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
+  get   '(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
-  scope :module => 'admin' do
-    get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
+  scope :module => :admin do
 
-    resource :organization, only: [:show] do
-      resources :users, only: [:edit, :update, :create, :destroy, :new], constraints: { id: /[0-z\.\-]+/ }
-    end
+    # Organization dashboard page
+    get    '(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
+    get    '(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
+    put    '(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
+    # Organization users management
+    get    '(/u/:user_domain)/organization/users/:id/edit'  => 'users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
+    put    '(/u/:user_domain)/organization/users/:id'       => 'users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    post   '(/u/:user_domain)/organization/users'           => 'users#create',  as: :create_organization_user
+    delete '(/u/:user_domain)/organization/users/:id'       => 'users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    get    '(/u/:user_domain)/organization/users/new'       => 'users#new',     as: :new_organization_user
 
     # Tables
-    get '/dashboard/tables'                         => 'visualizations#index'
-    get '/dashboard/tables/:page'                   => 'visualizations#index'
-    get '/dashboard/tables/tag/:tag'                => 'visualizations#index'
-    get '/dashboard/tables/tag/:tag/:page'          => 'visualizations#index'
+    get '(/u/:user_domain)/dashboard/tables'                        => 'visualizations#index', as: :tables_index
+    get '(/u/:user_domain)/dashboard/tables/:page'                  => 'visualizations#index', as: :tables_page
+    get '(/u/:user_domain)/dashboard/tables/tag/:tag'               => 'visualizations#index', as: :tables_tag
+    get '(/u/:user_domain)/dashboard/tables/tag/:tag/:page'         => 'visualizations#index', as: :tables_tag_page
+    get '(/u/:user_domain)/dashboard/tables/shared'                 => 'visualizations#index', as: :tables_shared
+    get '(/u/:user_domain)/dashboard/tables/shared/:page'           => 'visualizations#index', as: :tables_shared_page
+    get '(/u/:user_domain)/dashboard/tables/shared/tag/:tag'        => 'visualizations#index', as: :tables_shared_tag
+    get '(/u/:user_domain)/dashboard/tables/shared/tag/:tag/:page'  => 'visualizations#index', as: :tables_shared_tag_page
 
     # Visualizations
-    get '/dashboard/visualizations'                 => 'visualizations#index'
-    get '/dashboard/visualizations/:page'           => 'visualizations#index'
-    get '/dashboard/visualizations/tag/:tag'        => 'visualizations#index'
-    get '/dashboard/visualizations/tag/:tag/:page'  => 'visualizations#index'
+    get '(/u/:user_domain)/dashboard/visualizations'                        => 'visualizations#index', as: :visualizations_index
+    get '(/u/:user_domain)/dashboard/visualizations/:page'                  => 'visualizations#index', as: :visualizations_page
+    get '(/u/:user_domain)/dashboard/visualizations/tag/:tag'               => 'visualizations#index', as: :visualizations_tag
+    get '(/u/:user_domain)/dashboard/visualizations/tag/:tag/:page'         => 'visualizations#index', as: :visualizations_tag_page
+    get '(/u/:user_domain)/dashboard/visualizations/shared'                 => 'visualizations#index', as: :visualizations_shared
+    get '(/u/:user_domain)/dashboard/visualizations/shared/:page'           => 'visualizations#index', as: :visualizations_shared_page
+    get '(/u/:user_domain)/dashboard/visualizations/shared/tag/:tag'        => 'visualizations#index', as: :visualizations_shared_tag
+    get '(/u/:user_domain)/dashboard/visualizations/shared/tag/:tag/:page'  => 'visualizations#index', as: :visualizations_shared_tag_page
 
-    # Search
-    get '/dashboard/search/:q'                      => 'visualizations#index'
-    get '/dashboard/search/:q/:page'                => 'visualizations#index'
+    # search
+    get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
+    get '(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
+    get '(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
+    get '(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
 
-    get '/dashboard/visualizations/search/:q'                      => 'visualizations#index'
-    get '/dashboard/visualizations/search/:q/:page'                => 'visualizations#index'
+    # Visualizations search
+    get '(/u/:user_domain)/dashboard/visualizations/search/:q'               => 'visualizations#index', as: :visualizations_search
+    get '(/u/:user_domain)/dashboard/visualizations/search/:q/:page'         => 'visualizations#index', as: :visualizations_search_page
+    get '(/u/:user_domain)/dashboard/visualizations/shared/search/:q'        => 'visualizations#index', as: :visualizations_shared_search
+    get '(/u/:user_domain)/dashboard/visualizations/shared/search/:q/:page'  => 'visualizations#index', as: :visualizations_shared_search_page
 
-    get '/dashboard/tables/search/:q'                      => 'visualizations#index'
-    get '/dashboard/tables/search/:q/:page'                => 'visualizations#index'
+    # Tables search
+    get '(/u/:user_domain)/dashboard/tables/search/:q'              => 'visualizations#index', as: :tables_search
+    get '(/u/:user_domain)/dashboard/tables/search/:q/:page'        => 'visualizations#index', as: :tables_search_page
+    get '(/u/:user_domain)/dashboard/tables/shared/search/:q'       => 'visualizations#index', as: :tables_shared_search
+    get '(/u/:user_domain)/dashboard/tables/shared/search/:q/:page' => 'visualizations#index', as: :tables_shared_search_page
 
     # Tags
-    get '/dashboard/tag/:tag'                       => 'visualizations#index'
+    get '(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
 
     # Private dashboard
-    get '/dashboard'                => 'visualizations#index'
-    get '/dashboard/common_data'    => 'pages#common_data'
+    get '(/u/:user_domain)/dashboard/'            => 'visualizations#index', as: :dashboard
+    get '(/u/:user_domain)/dashboard'             => 'visualizations#index', as: :dashboard_bis
+    get '(/u/:user_domain)/dashboard/common_data' => 'pages#common_data',    as: :dashboard_common_data
 
     # Public dashboard
     # root goes to 'pages#public'
-    get '/page/:page'               => 'pages#public'
-    get '/tag/:tag'                 => 'pages#public', :as => :public_tag
-    get '/tag/:tag/:page'           => 'pages#public'
+    get '(/u/:user_domain)/page/:page'               => 'pages#public', as: :public_page
+    get '(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag
+    get '(/u/:user_domain)/tag/:tag/:page'           => 'pages#public', as: :public_tag_page
+    # Public dataset
+    get '(/u/:user_domain)/datasets'                 => 'pages#datasets', as: :public_datasets_home
+    get '(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
+    get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_datasets_tag
+    get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_datasets_tag_page
+    # Public tables
+    get '(/u/:user_domain)/tables/track_embed'       => 'visualizations#track_embed',     as: :public_tables_track_embed
+    get '(/u/:user_domain)/tables/embed_forbidden'   => 'visualizations#embed_forbidden', as: :public_tables_embed_forbidden
+    get '(/u/:user_domain)/tables/embed_protected'   => 'visualizations#embed_protected', as: :public_tables_embed_protected
+    get '(/u/:user_domain)/tables/:id/'              => 'visualizations#show',            as: :public_tables_show,      constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id'               => 'visualizations#show',            as: :public_tables_show_bis,  constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/map'           => 'visualizations#show',            as: :public_tables_show_map,  constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/table'         => 'visualizations#show',            as: :public_tables_table,     constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/public'        => 'visualizations#public_table',    as: :public_table,            constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/public/table'  => 'visualizations#public_table',    as: :public_table_table,      constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/public/map'    => 'visualizations#public_table',    as: :public_table_map,        constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/embed_map'     => 'visualizations#embed_map',       as: :public_tables_embed_map, constraints: { id: /[^\/]+/ }
+    # Public visualizations
+    get '(/u/:user_domain)/'                         => 'pages#public',                   as: :public_visualizations_home
+    get '(/u/:user_domain)/viz'                      => 'visualizations#index',           as: :public_visualizations
+    get '(/u/:user_domain)/viz/track_embed'          => 'visualizations#track_embed',     as: :public_visualizations_track_embed
+    get '(/u/:user_domain)/viz/embed_forbidden'      => 'visualizations#embed_forbidden', as: :public_visualizations_embed_forbidden
+    get '(/u/:user_domain)/viz/:id'                  => 'visualizations#show',            as: :public_visualizations_show,       constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/viz/:id/map'              => 'visualizations#show',            as: :public_visualizations_show_map,   constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/viz/:id/table'            => 'visualizations#show',            as: :public_visualizations_table,      constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/viz/:id/public'           => 'visualizations#public_table',    as: :public_visualization,             constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/viz/:id/embed_map'        => 'visualizations#embed_map',       as: :public_visualizations_embed_map,  constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/viz/:id/public_map'       => 'visualizations#public_map',      as: :public_visualizations_public_map, constraints: { id: /[^\/]+/ }
+    # Public protected embed maps
+    get '(/u/:user_domain)/viz/:id/protected_embed_map'  => 'visualizations#show_protected_embed_map', constraints: { id: /[^\/]+/ }
+    post '(/u/:user_domain)/viz/:id/protected_embed_map' => 'visualizations#show_protected_embed_map', as: :protected_embed_map, constraints: { id: /[^\/]+/ }
+    # Public protected maps
+    get '(/u/:user_domain)/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map', constraints: { id: /[^\/]+/ }
+    post '(/u/:user_domain)/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', as: :protected_public_map, constraints: { id: /[^\/]+/ }
 
-    get '/datasets/page/:page'      => 'pages#datasets'
-    get '/datasets/tag/:tag'        => 'pages#datasets', :as => :dataset_public_tag
-    get '/datasets/tag/:tag/:page'  => 'pages#datasets'
-
-    get '/tables/track_embed'       => 'visualizations#track_embed'
-    get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
-    get '/tables/embed_protected'   => 'visualizations#embed_protected'
-    get '/tables/:id'               => 'visualizations#show'
-    get '/tables/:id/map'           => 'visualizations#show'
-    get '/tables/:id/table'         => 'visualizations#show'
-    get '/tables/:id/public'        => 'visualizations#public_table', :as => :public_table
-    get '/tables/:id/public/table'  => 'visualizations#public_table'
-    get '/tables/:id/public/map'    => 'visualizations#public_table'
-    get '/tables/:id/embed_map'     => 'visualizations#embed_map'
-
-    get '/viz'                      => 'visualizations#index'
-    get '/viz/track_embed'          => 'visualizations#track_embed'
-    get '/viz/embed_forbidden'      => 'visualizations#embed_forbidden'
-    get '/viz/:id'                  => 'visualizations#show'
-    get '/viz/:id/map'              => 'visualizations#show'
-    get '/viz/:id/table'            => 'visualizations#show'
-    get '/viz/:id/public'           => 'visualizations#public_table'
-    get '/viz/:id/embed_map'        => 'visualizations#embed_map'
-    get '/viz/:id/public_map'       => 'visualizations#public_map'
-
-    get '/viz/:id/protected_embed_map'  => 'visualizations#show_protected_embed_map'
-    post '/viz/:id/protected_embed_map' => 'visualizations#show_protected_embed_map', :as => :protected_embed_map
-
-    get '/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map'
-    post '/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', :as => :protected_public_map
-
-    match '/your_apps' => 'client_applications#api_key', :as => :api_key_credentials
-    post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
-    delete  '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
+    match  '(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
+    post   '(/u/:user_domain)/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', as: :regenerate_api_key
+    delete '(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
 
   end
 
+  scope :module => 'api/json', :format => :json do
+
+    # V1
+    # --
+
+    # Meta
+    get '(/u/:user_domain)/api/v1/column_types' => 'meta#column_types', as: :api_v1_meta_column_types
+
+    # Users
+    get '(/u/:user_domain)/api/v1/get_authenticated_users' => 'users#get_authenticated_users', as: :api_v1_users_get_authenticated_user
+
+    # Tables
+    post '(/u/:user_domain)/api/v1/tables'     => 'tables#create', as: :api_v1_tables_create
+    get '(/u/:user_domain)/api/v1/tables/:id'  => 'tables#show',   as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
+    put '(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_create, constraints: { id: /[^\/]+/ }
+
+    # Table records
+    get    '(/u/:user_domain)/api/v1/tables/:table_id/records'     => 'records#index',   as: :api_v1_tables_records_index,  constraints: { table_id: /[^\/]+/ }
+    post   '(/u/:user_domain)/api/v1/tables/:table_id/records'     => 'records#create',  as: :api_v1_tables_records_create, constraints: { table_id: /[^\/]+/ }
+    get    '(/u/:user_domain)/api/v1/tables/:table_id/records/:id' => 'records#show',    as: :api_v1_tables_records_show,   constraints: { table_id: /[^\/]+/ }
+    put    '(/u/:user_domain)/api/v1/tables/:table_id/records/:id' => 'records#update',  as: :api_v1_tables_record_update,  constraints: { table_id: /[^\/]+/ }
+    delete '(/u/:user_domain)/api/v1/tables/:table_id/records/:id' => 'records#destroy', as: :api_v1_tables_record_destroy, constraints: { table_id: /[^\/]+/ }
+
+    # Table columns
+    get    '(/u/:user_domain)/api/v1/tables/:table_id/columns'     => 'columns#index',   as: :api_v1_tables_columns_index,   constraints: { table_id: /[^\/]+/ }
+    post   '(/u/:user_domain)/api/v1/tables/:table_id/columns'     => 'columns#create',  as: :api_v1_tables_columns_create,  constraints: { table_id: /[^\/]+/ }
+    get    '(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#show',    as: :api_v1_tables_columns_show,    constraints: { table_id: /[^\/]+/ }
+    put    '(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#update',  as: :api_v1_tables_columns_update,  constraints: { table_id: /[^\/]+/ }
+    delete '(/u/:user_domain)/api/v1/tables/:table_id/columns/:id' => 'columns#destroy', as: :api_v1_tables_columns_destroy, constraints: { table_id: /[^\/]+/ }
+
+    # Uploads
+    post '(/u/:user_domain)/api/v1/uploads' => 'uploads#create', as: :api_v1_uploads_create
+
+    # Imports
+    post   '(/u/:user_domain)/api/v1/imports'                          => 'imports#create',                      as: :api_v1_imports_create
+    get    '(/u/:user_domain)/api/v1/imports/:id'                      => 'imports#show',                        as: :api_v1_imports_show
+    get    '(/u/:user_domain)/api/v1/imports'                          => 'imports#index',                       as: :api_v1_imports_index
+
+    # Import services
+    get    '(/u/:user_domain)/api/v1/imports/service/:id/token_valid'         => 'imports#service_token_valid?',        as: :api_v1_imports_service_token_valid
+    get    '(/u/:user_domain)/api/v1/imports/service/:id/list_files'          => 'imports#list_files_for_service',      as: :api_v1_imports_service_list_files
+    get    '(/u/:user_domain)/api/v1/imports/service/:id/auth_url'            => 'imports#get_service_auth_url',        as: :api_v1_imports_service_auth_url
+    get    '(/u/:user_domain)/api/v1/imports/service/:id/validate_code/:code' => 'imports#validate_service_oauth_code', as: :api_v1_imports_service_validate_code
+    delete '(/u/:user_domain)/api/v1/imports/service/:id/invalidate_token'    => 'imports#invalidate_service_token',    as: :api_v1_imports_service_invalidate_token
+    # Must be GET verb despite altering state
+    get     '(/u/:user_domain)/api/v1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_imports_service_oauth_callback
+
+    # Users
+    get    '(/u/:user_domain)/api/v1/users/:id'                 => 'users#show',     as: :api_v1_users_show
+
+    # User layers
+    get    '(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#index',   as: :api_v1_users_layers_index
+    get    '(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#show',    as: :api_v1_users_layers_show
+    post   '(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#create',  as: :api_v1_users_layers_create
+    put    '(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#update',  as: :api_v1_users_layers_update
+    delete '(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#destroy', as: :api_v1_users_layers_destroy
+
+    # User assets
+    post   '(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
+    get    '(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#index',   as: :api_v1_users_assets_index
+    delete '(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
+
+    # /api/v1/users/5002ad84-6b3e-4372-996e-b52269ec1cac/assets/b93f1b1e-484c-491b-a22b-c61a76968b63
+
+    # Maps
+    get    '(/u/:user_domain)/api/v1/maps/:id' => 'maps#show',    as: :api_v1_maps_show
+    post   '(/u/:user_domain)/api/v1/maps'     => 'maps#create',  as: :api_v1_maps_create
+    put    '(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
+    delete '(/u/:user_domain)/api/v1/maps/:id' => 'maps#destroy', as: :api_v1_maps_destroy
+
+    # Map layers
+    get    '(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#index',   as: :api_v1_maps_layers_index
+    get    '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#show',    as: :api_v1_maps_layers_show
+    post   '(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#create',  as: :api_v1_maps_layers_create
+    put    '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#update',  as: :api_v1_maps_layers_update
+    delete '(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#destroy', as: :api_v1_maps_layers_destroy
+
+    # Geocodings
+    get  '(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for', as: :api_v1_geocodings_country_data
+    get  '(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',   as: :api_v1_geocodings_estimation
+    get  '(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',    as: :api_v1_geocodings_get_countries
+    get  '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',            as: :api_v1_geocodings_index
+    get  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#show',             as: :api_v1_geocodings_show
+    post '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',           as: :api_v1_geocodings_create
+    put  '(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',           as: :api_v1_geocodings_update
+
+    # Visualizations
+    get     '(/u/:user_domain)/api/v1/viz/tags'                           => 'tags#index',                     as: :api_v1_visualizations_tags_index
+    get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
+    post    '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
+    get     '(/u/:user_domain)/api/v1/viz/:id/stats'                      => 'visualizations#stats',           as: :api_v1_visualizations_stats,           constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
+    delete  '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id/viz'                        => 'visualizations#vizjson1',        as: :api_v1_visualizations_vizjson,         constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',                 as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
+    post    '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',                as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',                  as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',                as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
+    delete  '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',               as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
+    put    '(/u/:user_domain)/api/v1/viz/:id/watching'                    => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
+
+    # Tags
+    get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
+
+    # Synchronizations
+    get    '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
+    post   '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
+    get    '(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#show',     as: :api_v1_synchronizations_show
+    put    '(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update
+    delete '(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#destroy',  as: :api_v1_synchronizations_destroy
+    get    '(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
+    put    '(/u/:user_domain)/api/v1/synchronizations/:id/sync_now' => 'synchronizations#sync_now', as: :api_v1_synchronizations_sync_now
+
+    # Permissions
+    get '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#show',   as: :api_v1_permissions_show
+    put '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_show
+
+    # Organizations
+    get '(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
+    get '(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
+
+    # V2
+    # --
+
+    # Visualizations
+    get '(/u/:user_domain)/api/v2/viz/:id/viz'    => 'visualizations#vizjson2', as: :api_v2_visualizations_vizjson, constraints: { id: /[^\/]+/ }
+
+    # WMS
+    get '(/u/:user_domain)/api/v2/wms' => 'wms#proxy', as: :api_v2_wms_proxy
+
+  end
 
   namespace :superadmin do
     resources :users
+    resources :organizations
     resources :synchronizations
   end
 
-  scope :oauth, :path => :oauth do
-    match '/authorize'      => 'oauth#authorize',     :as => :authorize
-    match '/request_token'  => 'oauth#request_token', :as => :request_token
-    match '/access_token'   => 'oauth#access_token',  :as => :access_token
-    get   '/identity'       => 'sessions#show'
-  end
-
-  scope '/api' do
-    namespace CartoDB::API::VERSION_1, :format => :json, :module => 'api/json' do
-      get    '/column_types'                                    => 'meta#column_types'
-
-      get '/get_authenticated_users'                         => 'users#get_authenticated_users'
-
-      resources :tables, :only => [:create, :show, :update] do
-        collection do
-          get '/tags/:tag_name' => 'tables#index', :as => 'show_tag'
-        end
-
-        resources :records, :only => [:index, :create, :show, :update, :destroy]
-        resources :columns, :only => [:index, :create, :show, :update, :destroy]
-      end
-
-      # imports
-      resources :uploads, :only                           => :create
-      resources :imports, :only                           => [:create, :show, :index]
-      get     '/imports/service/:id/token_valid'          => 'imports#service_token_valid?'
-      get     '/imports/service/:id/list_files'           => 'imports#list_files_for_service'
-      get     '/imports/service/:id/auth_url'             => 'imports#get_service_auth_url'
-      get     '/imports/service/:id/validate_code/:code'  => 'imports#validate_service_oauth_code'
-      delete  '/imports/service/:id/invalidate_token'     => 'imports#invalidate_service_token'
-      # Must be GET verb
-      get     '/imports/service/:id/oauth_callback/'  => 'imports#service_oauth_callback'
-
-      # Dashboard
-      resources :users, :only                       => [:show] do
-        resources :layers, :only                    => [:create, :index, :update, :destroy]
-        resources :assets, :only                    => [:create, :index, :destroy]
-      end
-
-      # Maps
-      resources :maps, :only                        => [:show, :create, :update, :destroy] do
-        resources :layers, :only                    => [:show, :index, :create, :update, :destroy]
-      end
-
-      # Geocoder
-      resources :geocodings, :only                  => [:create, :show, :index, :update] do
-        get 'country_data_for/:country_code', to: 'geocodings#country_data_for', on: :collection, as: 'country_data'
-        get 'estimation_for/:table_name',     to: 'geocodings#estimation_for',   on: :collection, as: 'estimation_for'
-        get 'get_countries',                  to: 'geocodings#get_countries',    on: :collection, as: 'get_countries'
-      end
-
-      get     'viz/tags' => 'tags#index', :as => 'list_tags'
-      get     'viz'                                 => 'visualizations#index'
-      post    'viz'                                 => 'visualizations#create'
-      get     'viz/:id/stats'                       => 'visualizations#stats'
-      get     'viz/:id'                             => 'visualizations#show'
-      put     'viz/:id'                             => 'visualizations#update'
-      delete  'viz/:id'                             => 'visualizations#destroy'
-      get     'viz/:id/viz'                         => 'visualizations#vizjson1', as: :vizjson
-      get     'viz/:visualization_id/overlays'      => 'overlays#index'
-      post    'viz/:visualization_id/overlays'      => 'overlays#create'
-      get     'viz/:visualization_id/overlays/:id'  => 'overlays#show'
-      put     'viz/:visualization_id/overlays/:id'  => 'overlays#update'
-      delete  'viz/:visualization_id/overlays/:id'  => 'overlays#destroy'
-
-      # Tags
-      resources :tags, :only                                    => [:index]
-      # Synchronizations
-      get     'synchronizations'              => 'synchronizations#index'
-      post    'synchronizations'              => 'synchronizations#create'
-      get     'synchronizations/:id'          => 'synchronizations#show'
-      put     'synchronizations/:id'          => 'synchronizations#update'
-      delete  'synchronizations/:id'          => 'synchronizations#destroy'
-      get     'synchronizations/:id/sync_now' => 'synchronizations#syncing?'
-      put     'synchronizations/:id/sync_now' => 'synchronizations#sync_now'
-
-      # Permissions
-      get     'perm/:id' => 'permissions#show'
-      put     'perm/:id' => 'permissions#update'
-
-    end
-
-    get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson
-    get '/v2/wms'            => 'api/json/wms#proxy'
-    
-  end
 end
-

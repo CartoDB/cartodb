@@ -13,10 +13,52 @@ module CartoDB
       end #work
 
 
+      def self.organize(user,org)
+        port = ::Rails::Sequel.configuration.environment_for(Rails.env)['port']
+        relocator = CartoDB::Relocator::Relocation.new(
+          source: {conn: {host: user.database_host, port: port,
+                          dbname: user.database_name,
+                          user: 'postgres'}, schema: 'public'},
+          target: {conn: {host: org.owner.database_host,  port: port,
+                          dbname: org.owner.database_name, user: user.database_username}, schema: user.username},
+          redis: {host: Cartodb.config[:redis]['host'], port: Cartodb.config[:redis]['port']},
+          dbname: user.database_name, username: user.database_username, :mode => :organize
+        )
+        begin
+          user.database_host = org.owner.database_host
+          user.database_name = org.owner.database_name
+          user.organization = org
+          user.database_schema = user.username
+          begin
+            user.create_db_user
+          rescue => e
+            puts "Error #{e} while creating user. Ignoring as it probably already existed"
+          end
+          user.monitor_user_notification
+          user.create_user_schema
+          user.set_database_search_path
+          user.grant_user_in_database
+          user.set_user_privileges
+          relocator.migrate
+          relocator.finalize
+          user.create_public_db_user
+          user.set_user_privileges
+          user.reload_quota_trigger
+          user.set_user_as_organization_member
+          user.save
+          user.create_in_central
+          user.update_in_central
+        rescue => e
+          puts "Error: #{e}, #{e.backtrace}"
+          puts "Rolling back (changing back database_host and dropping triggers) in 5 secs"
+          sleep 5
+          relocator.rollback
+        end
+      end # organize
+      
       def self.relocate(user, new_database_host, new_database_port=nil)
         port = ::Rails::Sequel.configuration.environment_for(Rails.env)['port']
         new_database_port ||= port
-        old_database_host = user.database_host
         relocator = CartoDB::Relocator::Relocation.new(
           source: {conn: {host: user.database_host, port: port,
                           dbname: user.database_name,

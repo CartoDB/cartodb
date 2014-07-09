@@ -51,6 +51,7 @@ module CartoDB
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
     ::Sequel.extension(:pagination)
+    ::Sequel.extension(:connection_validator)
 
     # Enable the asset pipeline
     config.assets.enabled = false
@@ -73,6 +74,7 @@ require 'cartodb/sql_parser'
 require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'
+require 'cartodb/central'
 #require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'

@@ -88,7 +88,7 @@ module CartoDB
         # Layers are zero-based on the client
         layer_num = 0
 
-        auth_type = visualization.password_protected? ? AUTH_TYPE_SIGNED : AUTH_TYPE_OPEN
+        auth_type = (visualization.password_protected? || visualization.organization?) ? AUTH_TYPE_SIGNED : AUTH_TYPE_OPEN
 
 				# 1) general data
 				template_data = {
@@ -104,8 +104,16 @@ module CartoDB
         }
 
         if auth_type == AUTH_TYPE_SIGNED
-          auth_token = visualization.make_auth_token
-          template_data[:auth][:valid_tokens] = [ auth_token ]
+          if visualization.password_protected?
+            auth_token = visualization.make_auth_token
+            template_data[:auth][:valid_tokens] = [ auth_token ]
+          elsif visualization.organization?
+            org_allowed_users = visualization.all_users_with_read_permission
+            org_allowed_tokens = org_allowed_users.map { |user|
+              user.get_auth_tokens
+            }.flatten.uniq
+            template_data[:auth][:valid_tokens] = org_allowed_tokens
+          end
         end
 
         vizjson = CartoDB::Visualization::VizJSON.new(visualization, presenter_options, parent.vizjson_config)

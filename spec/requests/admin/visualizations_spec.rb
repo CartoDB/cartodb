@@ -41,6 +41,10 @@ describe Admin::VisualizationsController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
       login_as(@user, scope: 'test')
@@ -221,7 +225,4 @@ describe Admin::VisualizationsController do
     new_table(attrs.merge(user_id: @user.id)).save.reload
   end #table_factory
 
-  after(:all) do
-    @user.destroy
-  end
 end # Admin::VisualizationsController

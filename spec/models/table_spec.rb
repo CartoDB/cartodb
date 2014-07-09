@@ -45,6 +45,12 @@ describe Table do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
+
   context "table setups" do
     it "should set a default name different than the previous" do
       table = Table.new
@@ -140,7 +146,7 @@ describe Table do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       layer = table.layers.first
 
-      table.name = 'bogus_name_1' 
+      table.name = 'bogus_name_1'
       table.save
 
       table.reload
@@ -572,13 +578,15 @@ describe Table do
       expect { 
         create_table(name: "table 6", user_id: user.id) 
       }.to raise_error(CartoDB::QuotaExceeded)
+
+      user.destroy
     end
   end
 
   context "redis syncs" do
     it "should have a unique key to be identified in Redis" do
       table = create_table(:user_id => @user.id)
-      table.key.should == "rails:#{table.owner.database_name}:#{table.name}"
+      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
     end
 
     it "should rename the entries in Redis when the table has been renamed" do
@@ -590,7 +598,7 @@ describe Table do
       table.save_changes
       table.reload
 
-      table.key.should == "rails:#{table.owner.database_name}:#{table.name}"
+      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
       $tables_metadata.exists(table.key).should be_true
       $tables_metadata.exists(original_name).should be_false
       $tables_metadata.hget(table.key, "privacy").should be_present
@@ -1122,7 +1130,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1165,7 +1173,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1524,7 +1532,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1541,7 +1549,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = @user.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1683,7 +1691,7 @@ describe Table do
     it "create and migrate a table containing a valid the_geom" do
       delete_user_data @user
       @user.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-      @user.run_pg_query("SELECT AddGeometryColumn ('exttable','the_geom',4326,'POINT',2);")
+      @user.run_pg_query("SELECT public.AddGeometryColumn ('#{@user.database_schema}','exttable','the_geom',4326,'POINT',2);")
       @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
 
@@ -1805,33 +1813,6 @@ describe Table do
         Table.find_by_identifier(666, table.name)
       }.should raise_error
     end
-
-    it "should be able to be found from username and id" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
-      new_table = Table.find_by_id_subdomain(@user.username, table.id)
-
-      new_table.id.should == table.id
-    end
-
-    it "should not be able to be found from blank subdomain and id" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
-
-      new_table = Table.find_by_id_subdomain(nil, table.id)
-
-      new_table.should == nil
-    end
   end
 
   describe '#has_index?' do
@@ -1867,6 +1848,7 @@ describe Table do
       user_mock.stubs(:private_tables_enabled).returns(true)
       user_mock.stubs(:database_name).returns(nil)
       user_mock.stubs(:over_table_quota?).returns(false)
+      user_mock.stubs(:database_schema).returns('public')
 
       ::Table.any_instance.stubs(:get_valid_name).returns('test')
       ::Table.any_instance.stubs(:owner).returns(user_mock)
@@ -2124,10 +2106,6 @@ describe Table do
       rows[:rows][0][:description].should eq description_1
       rows[:rows][1][:description].should eq description_2
     end
-  end
-
-  after(:all) do
-    @user.destroy
   end
 
 end

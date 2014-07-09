@@ -7,7 +7,7 @@ class Geocoding < Sequel::Model
   DEFAULT_TIMEOUT = 15.minutes
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
-  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type, 
+  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
                        :used_credits, :remaining_quota]
 
@@ -103,8 +103,9 @@ class Geocoding < Sequel::Model
   def calculate_used_credits
     return 0 unless kind == 'high-resolution'
     total_rows       = processed_rows.to_i + cache_hits.to_i
+    geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota : user.geocoding_quota
     # User#get_geocoding_calls includes this geocoding run, so we discount it
-    remaining_quota  = user.geocoding_quota + total_rows - user.get_geocoding_calls
+    remaining_quota  = geocoding_quota + total_rows - user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
     (used_credits > 0 ? used_credits : 0)
@@ -116,8 +117,7 @@ class Geocoding < Sequel::Model
   end # price
 
   def remaining_quota
-    remaining = user.geocoding_quota - user.get_geocoding_calls
-    (remaining > 0 ? remaining : 0)
+    user.remaining_geocoding_quota
   end # remaining_quota
 
   def create_automatic_geocoding
@@ -139,8 +139,8 @@ class Geocoding < Sequel::Model
   end # translate_formatter
 
   def max_geocodable_rows
-    return nil if user.blank? || !user.hard_geocoding_limit?
-    user.geocoding_quota - user.get_geocoding_calls
+    return nil if user.blank? || user.soft_geocoding_limit?
+    user.remaining_geocoding_quota
   rescue
     nil
   end # max_geocodable_rows

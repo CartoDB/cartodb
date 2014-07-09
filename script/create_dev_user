@@ -6,9 +6,23 @@ else
 	echo -n "Enter a subdomain: "; read SUBDOMAIN
 fi
 
-echo -n "Enter a password (cleartext!): "; read PASSWORD
-echo -n "Enter an admin password (cleartext!): "; read ADMIN_PASSWORD
-echo -n "Enter an email: "; read EMAIL
+if test -n "$2"; then
+	PASSWORD="$2"
+else
+	echo -n "Enter a password (cleartext!): "; read PASSWORD
+fi
+
+if test -n "$3"; then
+	ADMIN_PASSWORD="$3"
+else
+	echo -n "Enter an admin password (cleartext!): "; read ADMIN_PASSWORD
+fi
+
+if test -n "$4"; then
+	EMAIL="$4"
+else
+	echo -n "Enter an email: "; read EMAIL
+fi
 
 echo "--- Creating databases"
 bundle exec rake cartodb:db:setup --trace SUBDOMAIN="${SUBDOMAIN}" \

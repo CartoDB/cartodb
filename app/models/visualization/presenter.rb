@@ -8,7 +8,7 @@ module CartoDB
       def initialize(visualization, options={})
         @visualization   = visualization
         @options         = options
-        @user            = options.fetch(:user, nil)
+        @viewing_user    = options.fetch(:user, nil)
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         @rows_and_sizes  = options[:rows_and_sizes] || {}
@@ -61,9 +61,17 @@ module CartoDB
 
       def table_data_for(table=nil)
         return {} unless table
+        table_name = table.name
+        unless @viewing_user.nil?
+          unless @visualization.is_owner?(@viewing_user)
+            table_name = "\"#{@visualization.user.database_schema}\".#{table.name}"
+          end
+        end
+
         table_data = {
           id:           table.id,
-          name:         table.name
+          name:         table_name,
+          permission:   table.table_visualization.permission.to_poro
         }
 
         table_data.merge!(

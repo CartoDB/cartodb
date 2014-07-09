@@ -42,9 +42,9 @@ class Api::Json::ColumnsController < Api::ApplicationController
           and pg_class.oid=pg_constraint.conrelid
           and pg_constraint.contype='p' limit 1"
     
-    pkey_name = current_user.run_query(sql)[:rows][0][:conname]
+    pkey_name = current_user.run_pg_query(sql)[:rows][0][:conname]
     # Recompact table on disk
-    current_user.run_query("CLUSTER #{@table.name} USING #{pkey_name}")
+    current_user.run_pg_query("CLUSTER #{@table.name} USING #{pkey_name}")
     
     head :no_content
   rescue => e
@@ -52,12 +52,10 @@ class Api::Json::ColumnsController < Api::ApplicationController
     render_jsonp({:errors => errors}, 400) and return
   end
 
-
-
   protected
 
   def load_table
-    @table = Table.where(:name => params[:table_id], :user_id => current_user.id).first
+    @table = Table.get_by_id_or_name(params[:table_id],current_user)
     raise RecordNotFound if @table.nil?
   end
 end

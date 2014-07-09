@@ -56,9 +56,9 @@ class DataImport < Sequel::Model
       success = false
       begin
         current_user.oauths.remove(ex.service_name)
-      rescue => ex
-        log.append "Exception removing OAuth: #{ex.message}"
-        log.append ex.backtrace
+      rescue => ex2
+        log.append "Exception removing OAuth: #{ex2.message}"
+        log.append ex2.backtrace
       end
     end
 
@@ -132,7 +132,7 @@ class DataImport < Sequel::Model
     CartodbStats.increment_imports
     self.success  = true
     self.state    = 'complete'
-    log.append "SUCCESS!\n"
+    log.append "Import finished\n"
     save
     notify(results)
     self
@@ -152,6 +152,8 @@ class DataImport < Sequel::Model
   end #handle_failure
 
   def table
+    # We can assume the owner is always who imports the data
+    # so no need to change to a Visualization::Collection based load
     Table.where(id: table_id, user_id: user_id).first
   end #table
 
@@ -254,11 +256,13 @@ class DataImport < Sequel::Model
     self.save
 
     candidates =  current_user.tables.select_map(:name)
-    table_name = Table.get_valid_table_name(name, name_candidates: candidates)
+    table_name = Table.get_valid_table_name(name, {
+        name_candidates: candidates,
+        database_schema: current_user.database_schema
+    })
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
-      log.append 'Over storage quota'
-      log.append "Dropping table #{table_name}"
+      log.append "Over storage quota. Dropping table #{table_name}"
       current_user.in_database.run(%Q{DROP TABLE #{table_name}})
       self.error_code = 8001
       self.state      = 'failure'
@@ -327,8 +331,8 @@ class DataImport < Sequel::Model
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
-    importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id)
-
+    destination_schema = current_user.database_schema
+    importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
     log.append 'Before run.'
     importer.run(tracker)
     log.append 'After run.'
@@ -337,6 +341,7 @@ class DataImport < Sequel::Model
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
+    log.append 'WARNING: No tables registered at Metadata DB'
 
     if synchronization_id
       log.append "synchronization_id: #{synchronization_id}"

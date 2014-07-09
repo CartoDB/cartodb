@@ -1,6 +1,6 @@
-// cartodb.js version: 3.9.07-dev
+// cartodb.js version: 3.10.2-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 84799e58606ecc6eefdfb92c1775b393304a4693
+// sha: 0ae01ed6325e76704c59a5f3d4179b60c74c3d7d
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.9.07-dev';
+    cdb.VERSION = '3.10.2-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20743,7 +20743,6 @@ this.LZMA = LZMA;
         'geo/geocoder.js',
         'geo/geometry.js',
         'geo/map.js',
-        'geo/ui/widget.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
         'geo/ui/mobile.js',
@@ -22505,177 +22504,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 }
 );
-cdb.geo.ui.Title = cdb.core.View.extend({
-
-  className: "cartodb-widget widget-title",
-
-  events: { },
-
-  default_options: { },
-
-  initialize: function() {
-
-    _.defaults(this.options, this.default_options);
-
-    this.template = this.options.template;
-
-  },
-
-  _applyStyle: function() { },
-
-  render: function() {
-
-    this.$el.html(this.template(this.model.attributes));
-
-    var extra            = this.model.get("extra");
-
-    var show_title       = extra.show_title;
-    var show_description = extra.show_description;
-
-    if ( show_title || show_description ) {
-
-      if (show_title)       this.$el.find(".text").show();
-      if (show_description) this.$el.find(".description").show();
-
-      this.$el.show();
-    }
-
-    this.$text = this.$el.find(".text");
-    
-    return this;
-
-  }
-
-});
-
-cdb.geo.ui.Widget = cdb.core.View.extend({
-
-  className: "cartodb-widget",
-
-  events: {},
-  default_options: {},
-
-  initialize: function() {
-
-    _.defaults(this.options, this.default_options);
-
-    this.template = this.options.template;
-
-  },
-
-  _applyStyle: function() {
-
-    var style      = this.model.get("style");
-
-    var boxColor   = style["box-color"];
-    var boxOpacity = style["box-opacity"];
-    var boxWidth   = style["box-width"];
-    var fontFamily = style["font-family-name"];
-
-    this.$text.css(style);
-    this.$text.css("font-size", style["font-size"] + "px");
-
-    var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
-    + ',' + parseInt(boxColor.slice(-4,-2),16)
-    + ',' + parseInt(boxColor.slice(-2),16)
-    +', ' + boxOpacity + ' )';
-
-    var fontFamilyClass = "";
-
-    if      (fontFamily  == "DejaVu Sans Book") fontFamilyClass = "dejavu";
-    else if (fontFamily  == "unifont Medium")   fontFamilyClass = "unifont";
-    else if (fontFamily  == "Open Sans")        fontFamilyClass = "open_sans";
-
-    this.$el
-      .removeClass("dejavu")
-      .removeClass("unifont")
-      .removeClass("open_sans");
-
-    this.$el.addClass(fontFamilyClass);
-
-    this.$el.css({
-      left:            this.model.get("x"),
-      top:             this.model.get("y"),
-      backgroundColor: rgbaCol,
-      maxWidth:        boxWidth
-    });
-
-    var self = this;
-
-    setTimeout(function() {
-      self.$el.css({ width: self.$el.width() }) // TODO: calculate width on editing
-    }, 250)
-
-  },
-
-  render: function() {
-
-    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
-
-    this.$text = this.$el.find(".text");
-
-    this._applyStyle();
-
-    return this;
-
-  }
-
-});
-
-cdb.geo.ui.Image = cdb.core.View.extend({
-
-  className: "cartodb-widget image-widget",
-
-  events: { },
-
-  default_options: { },
-
-  initialize: function() {
-
-    _.defaults(this.options, this.default_options);
-
-    this.template = this.options.template;
-
-  },
-
-  _applyStyle: function() {
-
-    var style      = this.model.get("style");
-
-    var boxColor   = style["box-color"];
-    var boxOpacity = style["box-opacity"];
-    var boxWidth   = style["box-width"];
-
-    this.$text.css(style);
-
-    var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
-    + ',' + parseInt(boxColor.slice(-4,-2),16)
-    + ',' + parseInt(boxColor.slice(-2),16)
-    +', ' + boxOpacity + ' )';
-
-    this.$el.css({
-      left:            this.model.get("x"),
-      top:             this.model.get("y"),
-      backgroundColor: rgbaCol
-    });
-
-    this.$el.find("img").css({ width: boxWidth });
-
-  },
-
-  render: function() {
-
-    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
-
-    this.$text = this.$el.find(".text");
-
-    this._applyStyle();
-
-    return this;
-
-  }
-
-});
 /**
  * View to control the zoom of the map.
  *
@@ -24435,6 +24263,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
+    maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: "",
     content: "",
@@ -24660,12 +24489,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       this._setTemplate();
     }
 
-    this.model.bind('change:content',           this.render, this);
-    this.model.bind('change:template_name',     this._setTemplate, this);
-    this.model.bind('change:latlng',            this._update, this);
-    this.model.bind('change:visibility',        this.toggle, this);
-    this.model.bind('change:template',          this._compileTemplate, this);
-    this.model.bind('change:alternative_names', this.render, this);
+    this.model.bind('change:content',             this.render, this);
+    this.model.bind('change:template_name',       this._setTemplate, this);
+    this.model.bind('change:latlng',              this._update, this);
+    this.model.bind('change:visibility',          this.toggle, this);
+    this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:alternative_names',   this.render, this);
+    this.model.bind('change:width',               this.render, this);
+    this.model.bind('change:maxHeight',           this.render, this);
 
     this.mapView.map.bind('change',             this._updatePosition, this);
 
@@ -24678,9 +24509,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     });
 
     this.add_related_model(this.mapView.map);
-
-    // Set min height to show the scroll
-    this.minHeightToScroll = 180;
 
     // Hide the element
     this.$el.hide();
@@ -24695,11 +24523,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      var $jscrollpane = this.$(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-
+      
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -24731,15 +24559,21 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       this.$el.html(this.template(obj));
 
+      // Set width and max-height from the model only
+      // If there is no width set, we don't force our infowindow
+      if (this.model.get('width')) {
+        this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      }
+      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
       var self = this;
       setTimeout(function() {
-        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
-        if (self.minHeightToScroll <= actual_height)
-          self.$el.find(".cartodb-popup-content").jScrollPane({
+        var actual_height = self.$(".cartodb-popup-content").outerHeight();
+        if (self.model.get('maxHeight') <= actual_height)
+          self.$(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
@@ -26295,6 +26129,8 @@ Map.prototype = {
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
+        jsonpCallback: self.options.instanciateCallback,
+        cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
           if(0 === self._queue.length) {
@@ -26350,7 +26186,13 @@ Map.prototype = {
       params.push("map_key=" + api_key);
     }
     if(extra_params.auth_token) {
-      params.push("auth_token=" + extra_params.auth_token);
+      if (_.isArray(extra_params.auth_token)) {
+        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
+          params.push("auth_token[]=" + extra_params.auth_token[i]);
+        }
+      } else {
+        params.push("auth_token=" + extra_params.auth_token);
+      }
     }
     // mark as the request is being done
     this._waiting = true;
@@ -26552,9 +26394,15 @@ Map.prototype = {
       var k = included[i]
       var p = params[k];
       if(p) {
-        var q = encodeURIComponent(p);
-        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-        url_params.push(k + "=" + q);
+        if (_.isArray(p)) {
+          for (var j = 0, len = p.length; j < len; j++) {
+            url_params.push(k + "[]=" + encodeURIComponent(p[j]));
+          }
+        } else {
+          var q = encodeURIComponent(p);
+          q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+          url_params.push(k + "=" + q);
+        }
       }
     }
     return url_params.join('&')
@@ -26617,7 +26465,7 @@ Map.prototype = {
     var layers =  this.options.layer_definition.layers;
     for(var i = 0; i < layers.length; ++i) {
       var tooltip = layers[i].tooltip;
-      if (tooltip) {
+      if (tooltip && tooltip.fields && tooltip.fields.length) {
         return true;
       }
     }
@@ -26663,6 +26511,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       params[attr] = v;
     } else {
       params = attr;
+    }
+    if (!this.named_map.params) {
+      this.named_map.params = {};
     }
     for (var k in params) {
       if (params[k] === undefined || params[k] === null) {
@@ -26726,7 +26577,15 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var extra_params = this.options.extra_params || {};
     var token = extra_params.auth_token;
     if (token) {
-      url += "?auth_token=" + token
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
     }
     return url;
   },
@@ -31495,11 +31354,25 @@ var Vis = cdb.core.View.extend({
 
         layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
+          // Old viz.json doesn't contain width and maxHeight properties
+          // and we have to get the default values if there are not defined.
+          var extra = _.defaults(
+            {
+              offset: infowindowFields.offset,
+              width: infowindowFields.width,
+              maxHeight: infowindowFields.maxHeight
+            },
+            cdb.geo.ui.InfowindowModel.prototype.defaults
+          );
+
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names
+            'alternative_names': infowindowFields.alternative_names,
+            'offset': extra.offset,
+            'width': extra.width,
+            'maxHeight': extra.maxHeight
           });
 
           if (attributes) {
@@ -31712,18 +31585,29 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    layer.setInteractivity(fields);
+    // try to change interactivity, it the layer is a named map 
+    // it's inmutable so it'a assumed the interactivity already has
+    // the fields it needs
+    try {
+      layer.setInteractivity(fields);
+    } catch(e) {
+    }
     layer.setInteraction(true);
 
     layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
       var render_fields = [];
-      for(var k in data) {
-        render_fields.push({
-          title: k,
-          value: data[k],
-          index: 0
-        });
+      var d;
+      for (var f = 0; f < fields.length; ++f) {
+        var field = fields[f];
+        if (d = data[field]) {
+          render_fields.push({
+            title: field,
+            value: d,
+            index: 0
+          });
+        }
       }
+
       infowindow.model.set({
         content:  {
           fields: render_fields,
@@ -31818,64 +31702,6 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
   });
 
   return mobile.render();
-});
-
-cdb.vis.Overlay.register('title', function(data, vis) {
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text">{{{ title }}}</div>\
-    <div class="description">{{{ description }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new cdb.geo.ui.Title({
-    model: new cdb.core.Model(JSON.parse(data.options)),
-    template: template
-  });
-
-  return widget.render();
-
-});
-
-cdb.vis.Overlay.register('image', function(data, vis) {
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text widget_text">{{{ text }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new cdb.geo.ui.Image({
-    model: new cdb.core.Model(JSON.parse(data.options)),
-    template: template
-  });
-
-  return widget.render();
-
-});
-
-cdb.vis.Overlay.register('text', function(data, vis) {
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text widget_text">{{{ text }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new cdb.geo.ui.Widget({
-    model: new cdb.core.Model(JSON.parse(data.options)),
-    template: template
-  });
-
-  return widget.render();
-
 });
 
 // map zoom control

@@ -33,6 +33,7 @@ module CartoDB
       user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
+      user.organization          = attributes[:organization] || nil
       user
     end
 
@@ -51,9 +52,9 @@ module CartoDB
       user.save
     end
 
-    def reload_user_data user    
-      
-      delete_user_data user      
+    def reload_user_data user
+
+      delete_user_data user
 
       fixture     = "#{Rails.root}/db/fake_data/import_csv_1.csv"
       data_import = create_import(@user, fixture)

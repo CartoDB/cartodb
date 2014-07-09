@@ -13,6 +13,7 @@
   @import "../common/mixins";
   @import "../common/fonts";
   @import "../common/buttons";
+  @import "../common/vars";
   @import "../common/common-sprite";
   @import "../front/front-sprite";
 
@@ -137,7 +138,7 @@
           position:absolute;
           top:0;
           left:16px;
-          font:normal 15px "Helvetica Neue","Helvetica",Arial;
+          font:normal 15px $text-fonts;
           color:#CCCCCC;
           z-index:0;
           font-style:italic;
@@ -155,7 +156,7 @@
           @include border-radius(3px);
           background:none;
           border:1px solid #CCCCCC;
-          font:normal 15px "Helvetica Neue","Helvetica",Arial;
+          font:normal 15px $text-fonts;
           color:#333333;
           z-index:10;
           line-height:normal;

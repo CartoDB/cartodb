@@ -9,12 +9,12 @@
           <li><span class="author"></span></li>
         </ul>
 
-        <div class="vis_navigation">
+        <!--<div class="vis_navigation">
           <nav>
-            <%= link_to "Table",  public_table_path(@visualization.id), :class => "smaller strong tab" %>
-            <%= link_to "Map view", public_table_map_path(@visualization.id), :class => "selected" %>
+            <%#= link_to "Table",  public_table_path(@visualization.id), :class => "smaller strong tab" %>
+            <%#= link_to "Map view", public_table_map_path(@visualization.id), :class => "selected" %>
           </nav>
-        </div>
+        </div>-->
 
         <div class="description">
           <p class="public"></p>
@@ -28,6 +28,12 @@
       </div>
     </div>
 
+    <div class="vis_navigation">
+      <nav>
+        <%= link_to "Table",  public_table_path(user_domain: params[:user_domain], id: @visualization.id), :class => "smaller strong tab" %>
+        <%= link_to "Map view", public_table_map_path(user_domain: params[:user_domain], id: @visualization.id), :class => "selected" %>
+      </nav>
+    </div>
 
   </div>
 </header>

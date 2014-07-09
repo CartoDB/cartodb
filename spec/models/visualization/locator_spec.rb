@@ -26,7 +26,7 @@ describe Visualization::Locator do
 
     @user_id = UUIDTools::UUID.timestamp_create.to_s
 
-    @map_id         = UUIDTools::UUID.timestamp_create.to_s
+    @map_id = UUIDTools::UUID.timestamp_create.to_s
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
@@ -50,11 +50,10 @@ describe Visualization::Locator do
       }
     ).store
 
-    table_fake    = model_fake
-    user_fake     = model_fake(@map_id)
+    user_fake     = model_fake(@map_id, @user_id)
 
     @subdomain    = 'bogus'
-    @locator      = Visualization::Locator.new(table_fake, user_fake)
+    @locator      = Visualization::Locator.new(user_fake)
   end
 
   describe '#get' do
@@ -66,6 +65,7 @@ describe Visualization::Locator do
     end
 
     it 'fetches a Visualization::Member if passed a visualization name' do
+      Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
       rehydrated  = @locator.get(@visualization.name, @subdomain).first
 
       rehydrated.id.should == @visualization.id
@@ -73,25 +73,46 @@ describe Visualization::Locator do
     end
 
     it 'fetches a Table if passed a table id' do
-      table_fake, user_fake = model_fake, model_fake(@map_id)
-      locator = Visualization::Locator.new(table_fake, user_fake)
-      locator.get(0, @subdomain)
-      table_fake.called_filter.should == { id: 0, user_id: nil }
+      user = create_user(quota_in_bytes: 1234567890, table_quota: 10)
+      table = Table.new
+      table.user_id = user.id
+      table.save
+      table.reload
+
+      table_vis = table.table_visualization
+
+      table = Visualization::Locator.new.get(table.id, user.username)
+      table[1].nil?.should eq false
+      table[1].id.should eq table_vis.table.id
+
+      user.destroy
     end
 
     it 'returns nil if no visualization or table found' do
+      Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
       @locator.get('bogus', @subdomain).should == [nil, nil]
     end
   end #get
 
-  def model_fake(map_id=nil)
+  def model_fake(map_id=nil, user_id=UUID)
     model_klass = Object.new
+
+    class << model_klass
+      attr_accessor :id
+    end
+    model_klass.id = user_id
+
     def model_klass.where(filter)
       @called_filter = filter
-      [OpenStruct.new(maps: [OpenStruct.new(id: UUID)])]
+      [OpenStruct.new(
+        maps: [OpenStruct.new(id: UUID)],
+        id: id
+       )]
     end
 
-    def model_klass.called_filter; @called_filter; end
+    def model_klass.called_filter
+      @called_filter
+    end
     model_klass
   end #model_fake
 end # Visualization::Locator

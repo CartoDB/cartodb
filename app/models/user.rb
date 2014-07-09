@@ -4,10 +4,13 @@ require_relative './user/oauths'
 require_relative '../models/synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative './visualization/collection'
+require_relative './user/user_organization'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
+  include Concerns::CartodbCentralSynchronizable
+
   self.strict_param_setting = false
 
   # @param name             String
@@ -59,6 +62,8 @@ class User < Sequel::Model
     validates_presence :username
     validates_unique   :username
     validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
+    errors.add(:name, 'is taken') if name_exists_in_organizations?
+
     validates_presence :email
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
@@ -84,12 +89,22 @@ class User < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
+
+    # Set account_type and default values for organization users
+    # TODO: Abstract this
+    self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
+    if self.organization_user?
+      self.max_layers ||= 6
+      self.private_tables_enabled ||= true
+      self.sync_tables_enabled ||= true
+    end
   end #before_save
 
   def after_create
     super
     setup_user
     save_metadata
+    self.avatar_url = self.gravatar('//')
     monitor_user_notification
     sleep 3
     set_statement_timeouts
@@ -106,12 +121,40 @@ class User < Sequel::Model
        changes.include?(:twitter_username)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
+    if changes.include?(:database_host)
+      User.terminate_database_connections(database_name, previous_changes[:database_host][0])
+    elsif changes.include?(:database_schema)
+      User.terminate_database_connections(database_name, database_host)
+    end
+
   end
 
   def before_destroy
     error_happened = false
+    has_organization = false
+
+    unless self.organization_id.nil?
+      if self.organization.owner.id == self.id && self.organization.users.count > 1
+        msg = 'Attempted to delete owner from organization with other users'
+        CartoDB::Logger.info msg
+        raise CartoDB::BaseCartoDBError.new(msg)
+      end
+
+      # Right now, cannot delete users with entities shared with other users or the org.
+      can_delete = true
+      CartoDB::Permission.where(owner_id: self.id).each { |permission|
+        can_delete = can_delete && permission.acl.empty?
+      }
+      unless can_delete
+        raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
+      end
+
+      has_organization = true
+    end
+
     begin
+      self.organization_id = nil
+
       # Remove user tables
       self.tables.all.each { |t| t.destroy }
 
@@ -131,7 +174,42 @@ class User < Sequel::Model
 
     # Invalidate user cache
     self.invalidate_varnish_cache
-    self.drop_database_and_user unless error_happened
+
+    # Delete the DB or the schema
+    if has_organization
+      self.drop_organization_user unless error_happened
+    else
+      if User.where(:database_name => self.database_name).count > 1
+        raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
+      else
+        self.drop_database_and_user unless error_happened
+      end
+    end
+  end
+
+  # Org users share the same db, so must only delete the schema
+  def drop_organization_user
+    Thread.new do
+      in_database(as: :superuser) do |database|
+        # Drop user quota function
+        database.run(%Q{ DROP FUNCTION IF EXISTS \"#{self.database_schema}\"._cdb_userquotainbytes()})
+        # If user is in an organization should never have public schema, so to be safe check
+        database.run(%Q{ DROP SCHEMA "#{database_schema}" }) unless database_schema == 'public'
+      end
+
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          'host' => database_host,
+          'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params)
+      User.terminate_database_connections(database_name, database_host)
+      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_username}\"")
+      conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_public_username}\"")
+      conn.run("DROP USER \"#{database_public_username}\"")
+      conn.run("DROP USER \"#{database_username}\"")
+      conn.disconnect
+    end.join
+    monitor_user_notification
   end
 
   def drop_database_and_user
@@ -140,7 +218,9 @@ class User < Sequel::Model
         'host' => database_host,
         'database' => 'postgres'
       ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+      end)))
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
       User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
@@ -157,30 +237,30 @@ class User < Sequel::Model
       ) {|key, o, n| n.nil? ? o : n}
       conn = ::Sequel.connect(connection_params)
       conn.run("
-DO language plpgsql $$
-DECLARE
-    ver INT[];
-    sql TEXT;
-BEGIN
-    SELECT INTO ver regexp_split_to_array(
-      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-      '\\.'
-    );
-    sql := 'SELECT pg_terminate_backend(';
-    IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
-      sql := sql || 'pid';
-    ELSE
-      sql := sql || 'procpid';
-    END IF;
+        DO language plpgsql $$
+        DECLARE
+            ver INT[];
+            sql TEXT;
+        BEGIN
+            SELECT INTO ver regexp_split_to_array(
+              regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+              '\\.'
+            );
+            sql := 'SELECT pg_terminate_backend(';
+            IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+              sql := sql || 'pid';
+            ELSE
+              sql := sql || 'procpid';
+            END IF;
 
-    sql := sql || ') FROM pg_stat_activity WHERE datname = '
-      || quote_literal('#{database_name}');
-  
-    RAISE NOTICE '%', sql;
+            sql := sql || ') FROM pg_stat_activity WHERE datname = '
+              || quote_literal('#{database_name}');
 
-    EXECUTE sql;
-END
-$$
+            RAISE NOTICE '%', sql;
+
+            EXECUTE sql;
+        END
+        $$
       ")
       conn.disconnect
   end
@@ -203,7 +283,7 @@ $$
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.where(enabled: true).all.select do |u|
+    User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
@@ -254,6 +334,10 @@ $$
     end
   end
 
+  def database_public_username
+    has_organization_enabled? ? "cartodb_publicuser_#{id}" : 'publicuser'
+  end
+
   def database_password
     crypted_password + database_username
   end
@@ -262,15 +346,21 @@ $$
     self.database_host
   end
 
-  def reset_pooled_connections()
+  def reset_pooled_connections
     # Only close connections to this users' database
     $pool.close_connections!(self.database_name)
   end
 
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
+
     connection = $pool.fetch(configuration) do
-      ::Sequel.connect(configuration)
+      db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+      end)))
+      db.extension(:connection_validator)
+      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', 900)
+      db
     end
 
     if block_given?
@@ -299,34 +389,13 @@ $$
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name,
         :logger => logger,
-        'username' => database_username, 
+        'username' => database_username,
         'password' => database_password,
         'host' => self.database_host
       ) {|key, o, n| n.nil? ? o : n}
     end
   end
 
-
-  # TODO: delete - superceded by run_pg_query
-  def run_query(query)
-    rows = []
-    time = nil
-    in_database do |user_database|
-      time = Benchmark.measure {
-        rows = user_database[query].all
-      }
-    end
-    #TODO: This part of the code should be using memcache.
-    {
-      :time => time.real,
-      :total_rows => rows.size,
-      :rows => rows.map{ |row| row.delete("the_geom"); row }
-    }
-  rescue Sequel::DatabaseError => exception
-    raise CartoDB::ColumnNotExists, exception.message if exception.message =~ /column.*does not exist/
-    raise CartoDB::TableNotExists, exception.message if exception.message =~ /does not exist/
-    raise CartoDB::ErrorRunningQuery, exception.message
-  end
 
   def run_pg_query(query)
     time = nil
@@ -365,9 +434,11 @@ $$
   end
 
   # List all public visualization tags of the user
-  def tags
+  def tags(exclude_shared=false)
     require_relative './visualization/tags'
-    CartoDB::Visualization::Tags.new(self).names({
+    options = {}
+    options[:exclude_shared] = true if exclude_shared
+    CartoDB::Visualization::Tags.new(self, options).names({
       type: CartoDB::Visualization::Member::DERIVED_TYPE,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
@@ -384,6 +455,20 @@ $$
 
   def tables
     ::Table.filter(:user_id => self.id).order(:id).reverse
+  end
+
+  def tables_including_shared
+    CartoDB::Visualization::Collection.new.fetch(
+        user_id: self.id,
+        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+    ).map { |item|
+      item.table
+    }
+  end
+
+  def reload_avatar
+    self.avatar_url = self.gravatar('//')
+    self.save
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
@@ -424,16 +509,30 @@ $$
   end
 
   def dedicated_support?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? true : false
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
   def remove_logo?
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
+  def soft_geocoding_limit?
+    if self[:soft_geocoding_limit].nil?
+      plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
+      (self.account_type =~ /(#{plan_list})/ ? false : true)
+    else
+      self[:soft_geocoding_limit]
+    end
+  end
+  alias_method :soft_geocoding_limit, :soft_geocoding_limit?
+
   def hard_geocoding_limit?
-    plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
-    (self.account_type =~ /(#{plan_list})/ ? true : false)
+    !self.soft_geocoding_limit?
+  end
+  alias_method :hard_geocoding_limit, :hard_geocoding_limit?
+
+  def hard_geocoding_limit=(val)
+    self[:soft_geocoding_limit] = !val
   end
 
   def private_maps_enabled
@@ -460,14 +559,33 @@ $$
 
   # save users basic metadata to redis for node sql api to use
   def save_metadata
-    $users_metadata.HMSET key, 
-      'id', id, 
-      'database_name', database_name, 
-      'database_password', database_password, 
+    $users_metadata.HMSET key,
+      'id', id,
+      'database_name', database_name,
+      'database_password', database_password,
       'database_host', database_host,
+      'database_publicuser', database_public_username,
       'map_key', api_key
   end
 
+  def get_auth_tokens
+    tokens = [get_auth_token]
+    if has_organization?
+      tokens << organization.get_auth_token
+    end
+    tokens
+  end
+
+  def get_auth_token
+    if self.auth_token.nil?
+      self.auth_token = make_auth_token
+      self.save
+    end
+    self.auth_token
+  end
+
+  # Returns an array representing the last 30 days, populated with api_calls
+  # from three different sources
   def get_api_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
@@ -482,7 +600,7 @@ $$
     calls = calls.zip(old_calls).map { |pair|
       pair[0].to_i + pair[1].to_i
     } unless old_calls.blank?
-    
+
     # Add ES api calls
     es_calls = get_es_api_calls_from_redis(options) rescue []
     calls = calls.zip(es_calls).map { |pair|
@@ -511,6 +629,15 @@ $$
     return es_calls
   end
 
+  def remaining_geocoding_quota
+    if organization.present?
+      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+    else
+      remaining = geocoding_quota - get_geocoding_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
   # Get the api calls from ES and sum them to the stored ones in redis
   # Returns the final sum of them
   def get_api_calls_from_es
@@ -537,7 +664,7 @@ $$
     JSON.parse(response.body)["aggregations"]["0"]["buckets"].each {|i| values[i['key']] = i['doc_count']}
     return values
   end
- 
+
   # Get the final api calls from ES and write them to redis
   def set_api_calls_from_es(options = {})
     if options[:force_update]
@@ -547,13 +674,13 @@ $$
       end
     end
   end
-  
+
   # Legacy stats fetching
 
     def get_old_api_calls
       JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
     end
-    
+
     def set_old_api_calls(options = {})
       # Ensure we update only once every 3 hours
       if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
@@ -615,25 +742,28 @@ $$
   end
 
   def database_exists?
-    return false if database_name.blank?  
+    return false if database_name.blank?
     connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
       'host' => self.database_host,
       'database' => 'postgres'
     ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
+    conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
+      conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+    end)))
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
   private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
-  #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      # Hack to support users without the new MU functiones loaded
+      user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
+      result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       update_gauge("db_size", result)
       result
     rescue
@@ -767,6 +897,7 @@ $$
     end
   end
 
+  # Only returns owned tables (not shared ones)
   def table_count(privacy_filter=nil)
     filter = {
         user_id: self.id
@@ -782,23 +913,28 @@ $$
   def success_import_count
     DataImport.where(user_id: self.id, state: 'complete').count
   end
- 
+
   def import_count
     DataImport.where(user_id: self.id).count
   end
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count(CartoDB::Visualization::Member::DERIVED_TYPE, CartoDB::Visualization::Member::PRIVACY_PUBLIC)
+    visualization_count(
+      CartoDB::Visualization::Member::DERIVED_TYPE,
+      CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      true
+    )
   end #public_visualization_count
 
   # Get a count of visualizations with optional type and privacy filters
-  def visualization_count(type_filter=nil, privacy_filter=nil)
+  def visualization_count(type_filter=nil, privacy_filter=nil, exclude_shared=false)
     parameters = {
-        map_id:   maps.map(&:id)
+      user_id: self.id
     }
     parameters[:type] = type_filter unless type_filter.nil?
     parameters[:privacy] = privacy_filter unless privacy_filter.nil?
+    parameters[:exclude_shared] = true if exclude_shared
 
     CartoDB::Visualization::Collection.new.fetch(parameters).count
   end #visualization_count
@@ -822,7 +958,7 @@ $$
   def update_visualization_metrics
     update_gauge("visualizations.total", maps.count)
     update_gauge("visualizations.table", table_count)
-    update_gauge("visualizations.derived", visualization_count)
+    update_gauge("visualizations.derived", visualization_count(nil,nil,true))
   end
 
   def rebuild_quota_trigger
@@ -832,9 +968,12 @@ $$
         # NOTE: this has been written to work for both
         #       databases that switched to "cartodb" extension
         #       and those before the switch.
+        #       In the future we should guarantee that exntension
+        #       lives in cartodb schema so we don't need to set
+        #       a search_path before
         search_path = db.fetch("SHOW search_path;").first[:search_path]
-        db.run("SET search_path TO cartodb,public;")
-        db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
+        db.run("SET search_path TO cartodb, public;")
+        db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
         db.run("SET search_path TO #{search_path};")
       end
     end
@@ -859,70 +998,263 @@ $$
     "account#{self.username}"
   end
 
-  ## User's databases setup methods
-  def setup_user
-    return if disabled?
+  def partial_db_name
+    if self.has_organization_enabled?
+      self.organization.owner_id
+    else
+      self.id
+    end
+  end
 
+  def has_organization_enabled?
+    if self.has_organization? && self.organization.owner.present?
+      true
+    else
+      false
+    end
+  end
+
+  def has_organization?
+    !!self.organization
+  end
+
+  def organization_owner?
+    self.organization.present? && self.organization.owner == self
+  end
+
+  def organization_user?
+    self.organization.present?
+  end
+
+  def create_client_application
+    ClientApplication.create(:user_id => self.id)
+  end
+
+  def create_db_user
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    begin
+      conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+    rescue => e
+      puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+      raise e
+    end
+  end
+
+  def create_public_db_user
+    in_database(as: :superuser) do |database|
+      database.run(%Q{ CREATE USER \"#{database_public_username}\" LOGIN INHERIT })
+      database.run(%Q{ GRANT publicuser TO \"#{database_public_username}\" })
+      database.run(%Q{ ALTER USER \"#{database_public_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
+    end
+  end
+
+  def create_user_db
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    begin
+      conn.run("CREATE DATABASE \"#{self.database_name}\"
+      WITH TEMPLATE = template_postgis
+      OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+      ENCODING = 'UTF8'
+      CONNECTION LIMIT=-1")
+    rescue => e
+      puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+      raise e
+    end
+  end
+
+  def set_database_name
     # Assign database_name
     self.database_name = case Rails.env
       when 'development'
-        "cartodb_dev_user_#{self.id}_db"
+        "cartodb_dev_user_#{self.partial_db_name}_db"
       when 'staging'
-        "cartodb_staging_user_#{self.id}_db"
+        "cartodb_staging_user_#{self.partial_db_name}_db"
       when 'test'
-        "cartodb_test_user_#{self.id}_db"
+        "cartodb_test_user_#{self.partial_db_name}_db"
       else
-        "cartodb_user_#{self.id}_db"
+        "cartodb_user_#{self.partial_db_name}_db"
     end
-   
-    raise "Database #{database_name} already exists" if database_exists?
-
+    if self.has_organization_enabled?
+      if !database_exists?
+        raise "Organization database #{database_name} doesn't exist"
+      end
+    else
+      if database_exists?
+        raise "Database #{database_name} already exists"
+      end
+    end
     self.this.update database_name: self.database_name
-    ClientApplication.create(:user_id => self.id)
-
-    Thread.new do
-      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'host' => self.database_host,
-        'database' => 'postgres'
-      ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
-      begin
-        conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
-      rescue => e
-        puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-        raise e
-      end
-      begin
-        conn.run("CREATE DATABASE \"#{self.database_name}\"
-        WITH TEMPLATE = template_postgis
-        OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-        ENCODING = 'UTF8'
-        CONNECTION LIMIT=-1")
-      rescue => e
-        puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-        raise e
-      end
-    end.join
-
-    create_schemas_and_set_permissions
-    set_database_permissions
-    load_cartodb_functions
-    rebuild_quota_trigger
-    create_function_invalidate_varnish
   end
 
-  def create_schemas_and_set_permissions
-    create_schema('cdb')
+  def setup_new_user
+    self.create_client_application
+    Thread.new do
+      self.create_db_user
+      self.create_user_db
+      self.grant_owner_in_database
+    end.join
+    self.create_importer_schema
+    self.load_cartodb_functions
+    self.set_database_search_path
+    self.reset_database_permissions # Reset privileges
+    self.grant_publicuser_in_database
+    self.set_user_privileges # Set privileges
+    self.set_user_as_organization_member
+    self.rebuild_quota_trigger
+    self.create_function_invalidate_varnish
+  end
+
+  def setup_organization_user
+    self.create_client_application
+    Thread.new do
+      self.create_db_user
+      self.grant_user_in_database
+    end.join
+    self.load_cartodb_functions
+    self.database_schema = self.username
+    self.this.update database_schema: self.database_schema
+    self.create_user_schema
+    self.set_database_search_path
+    self.create_public_db_user
+    self.reset_user_schema_permissions # Reset privileges
+    self.set_user_privileges # Set privileges
+    self.set_user_as_organization_member
+    self.rebuild_quota_trigger
+  end
+
+  def grant_owner_in_database
+    self.run_queries_in_transaction(
+      self.grant_all_on_database_queries,
+      true
+    )
+  end
+
+  def grant_user_in_database
+    self.run_queries_in_transaction(
+      self.grant_connect_on_database_queries,
+      true
+    )
+  end
+
+  def grant_publicuser_in_database
+    self.run_queries_in_transaction(
+      self.grant_connect_on_database_queries(CartoDB::PUBLIC_DB_USER),
+      true
+    )
+    self.run_queries_in_transaction(
+      self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      true
+    )
+    self.run_queries_in_transaction(
+      [
+        "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
+        "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"
+      ],
+      true
+    )
+  end
+
+  def set_user_privileges_in_cartodb_schema # MU
+    # Privileges in cartodb schema
+    self.run_queries_in_transaction(
+      (
+        self.grant_read_on_schema_queries('cartodb') +
+        self.grant_write_on_cdb_tablemetadata_queries
+      ),
+      true
+    )
+  end
+
+  def set_user_privileges_in_public_schema # MU
+    # Privileges in public schema
+    self.run_queries_in_transaction(
+      self.grant_read_on_schema_queries('public'),
+      true
+    )
+  end
+
+  def set_user_privileges_in_own_schema # MU
+    # Privileges in its own schema
+    self.run_queries_in_transaction(
+      self.grant_all_on_user_schema_queries,
+      true
+    )
+  end
+
+  def set_user_privileges_in_importer_schema # MU
+    # Privileges in cdb_importer_schema
+    self.run_queries_in_transaction(
+      self.grant_all_on_schema_queries('cdb_importer'),
+      true
+    )
+  end
+
+  def set_privileges_to_publicuser_in_own_schema # MU
+    # Privileges in user schema for publicuser
+    self.run_queries_in_transaction(
+      self.grant_usage_on_user_schema_to_other(CartoDB::PUBLIC_DB_USER),
+      true
+    )
+  end
+
+  def set_user_privileges # MU
+    self.set_user_privileges_in_cartodb_schema
+    self.set_user_privileges_in_public_schema
+    self.set_user_privileges_in_own_schema
+    self.set_user_privileges_in_importer_schema
+    self.set_privileges_to_publicuser_in_own_schema
+  end
+
+
+
+  ## User's databases setup methods
+  def setup_user
+    return if disabled?
+    self.set_database_name
+
+    if self.has_organization_enabled?
+      self.setup_organization_user
+    else
+      if self.has_organization?
+        raise "It's not possible to create a user within a inactive organization"
+      else
+        self.setup_new_user
+      end
+    end
+    #set_user_as_organization_owner_if_needed
+  end
+
+  def set_database_search_path
+    in_database(as: :superuser) do |database|
+      database.run(%Q{ ALTER USER "#{database_username}" SET search_path = "#{database_schema}", public, cartodb })
+    end
+  end
+
+  def create_importer_schema
     create_schema('cdb_importer')
-    set_database_permissions_in_schema('cdb')
-    set_database_permissions_in_schema('cdb_importer')
+  end
+
+  def create_user_schema
+    create_schema(self.database_schema, self.database_username)
   end
 
   # Attempts to create a new database schema
   # Does not raise exception if the schema already exists
-  def create_schema(schema)
+  def create_schema(schema, role = nil)
     in_database(as: :superuser) do |database|
-      database.run(%Q{CREATE SCHEMA #{schema}})
+      if role
+        database.run(%Q{CREATE SCHEMA \"#{schema}\" AUTHORIZATION "#{role}"})
+      else
+        database.run(%Q{CREATE SCHEMA \"#{schema}\"})
+      end
     end
   rescue Sequel::DatabaseError => e
     raise unless e.message =~ /schema .* already exists/
@@ -930,7 +1262,10 @@ $$
 
   # Add plpythonu pl handler
   def add_python
-    in_database(:as => :superuser).run(<<-SQL
+    in_database(
+      :as => :superuser,
+      no_cartodb_in_schema: true
+    ).run(<<-SQL
       CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
     SQL
     )
@@ -958,6 +1293,8 @@ $$
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
     purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+
 
     in_database(:as => :superuser).run(<<-TRIGGER
     BEGIN;
@@ -993,7 +1330,7 @@ $$
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
             #
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name)
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))
@@ -1011,36 +1348,32 @@ TRIGGER
     )
   end
 
-  # Create an "update_timestamp()" trigger function to invalidate Varnish
-  # This is currently invoked by the "cache_checkpoint" trigger attached
-  # to tables
-  #
-  # TODO: drop this and replace with a trigger on CDB_TableMetadata
-  #
-  def create_trigger_function_update_timestamp
-    in_database(:as => :superuser).run(<<-TRIGGER
-    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
-    $$
-        table_name = TD["table_name"]
-        plan = plpy.prepare("SELECT public.cdb_invalidate_varnish($1)", ["text"])
-        plpy.execute(plan, [table_name])
-    $$
-    LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;
-TRIGGER
-    )
+  def cartodb_extension_version
+    version, revision = self.in_database(:as => :superuser).fetch("select cartodb.cdb_version() as v").first[:v].split(" ")
+    return [version, revision]
   end
 
+  def cartodb_extension_version_pre_mu?
+    current_version_match = /(\d\.\d\.\d).*/.match(self.cartodb_extension_version.first)
+    if current_version_match.nil?
+      raise "Current cartodb extension version does not match standard x.y.z format"
+    else
+      current_version_match[1] < '0.3.0'
+    end
+  end
 
   # Cartodb functions
-
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.2.1' # TODO: optionally take as parameter? 
-    tgt_rev = 'v0.2.1'
+    tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
+    tgt_rev = 'v0.2.1-32-g2bd0b22'
 
-    add_python;
+    add_python
 
-    in_database(:as => :superuser) do |db|
+    in_database({
+                    as: :superuser,
+                    no_cartodb_in_schema: true
+                }) do |db|
       db.transaction do
 
         unless statement_timeout.nil?
@@ -1064,7 +1397,7 @@ TRIGGER
       ver TEXT;
     BEGIN
       BEGIN
-        SELECT cdb_version() INTO ver;
+        SELECT cartodb.cdb_version() INTO ver;
       EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
         RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
         BEGIN
@@ -1092,8 +1425,8 @@ TRIGGER
         end
 
         exp = tgt_ver + ' ' + tgt_rev
-        obt = db.fetch('SELECT cdb_version() as v').first[:v]
-      
+        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
+
         raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
           unless exp == obt
 
@@ -1120,78 +1453,136 @@ TRIGGER
   rescue Sequel::DatabaseConnectionError => e
   end
 
-  # Whitelist Permissions
-  def set_database_permissions_in_schema(schema)
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-
-        # grant core permissions to database user
-        user_database.run("GRANT ALL ON SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO \"#{database_username}\"")
-
-        yield(user_database) if block_given?
-      end
+  def run_queries_in_transaction(queries, superuser = false)
+    conn_params = {}
+    if superuser
+      conn_params[:as] = :superuser
     end
-  end #set_database_permissions_in_schema
-
-  def set_database_permissions
-    in_database(:as => :superuser) do |user_database|
+    in_database(conn_params) do |user_database|
       user_database.transaction do
-        schema = 'public'
-
-        # remove all public and tile user permissions
-        user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM PUBLIC")
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
-
-        user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-
-        user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-
-        # grant core permissions to database user
-        user_database.run("GRANT ALL ON DATABASE \"#{database_name}\" TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO \"#{database_username}\"")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO \"#{database_username}\"")
-
-        # grant select permissions to public user (for SQL API)
-        user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}")
-
-        # grant select permissions to tile user (for tile API + internal tiles)
-        user_database.run("GRANT CONNECT ON DATABASE \"#{database_name}\" TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-
+        queries.each do |q|
+          user_database.run(q)
+        end
         yield(user_database) if block_given?
       end
     end
   end
 
-  # Utility methods
-  def fix_permissions
-    set_database_permissions do |user_database|
-      tables.each do |table|
-        user_database.run("ALTER TABLE #{table.name} OWNER TO \"#{database_username}\"")
+  def set_user_as_organization_member
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        user_database.run("SELECT cartodb.CDB_Organization_Create_Member('#{database_username}');")
       end
     end
+  end
+
+  def set_user_as_organization_owner_if_needed
+    if self.organization && self.organization.reload && self.organization.owner.nil? && self.organization.users.count == 1
+      self.organization.owner = self
+      self.organization.save
+    end
+  end
+
+  def grant_connect_on_database_queries(db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
+    [
+      "GRANT CONNECT ON DATABASE \"#{self.database_name}\" TO \"#{granted_user}\""
+    ]
+  end
+
+  def grant_all_on_database_queries
+    [
+      "GRANT ALL ON DATABASE \"#{self.database_name}\" TO \"#{self.database_username}\""
+    ]
+  end
+
+  def grant_read_on_schema_queries(schema, db_user = nil)
+    granted_user = db_user.nil? ? self.database_username : db_user
+    [
+      "GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" TO \"#{granted_user}\"",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"#{schema}\" TO \"#{granted_user}\""
+    ]
+  end
+
+  def grant_write_on_cdb_tablemetadata_queries
+    [
+      "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_tablemetadata TO \"#{database_username}\""
+    ]
+  end
+
+  def grant_all_on_user_schema_queries
+    [
+      "GRANT ALL ON SCHEMA \"#{self.database_schema}\" TO \"#{database_username}\"",
+      "GRANT ALL ON ALL SEQUENCES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
+      "GRANT ALL ON ALL FUNCTIONS IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\"",
+      "GRANT ALL ON ALL TABLES IN SCHEMA  \"#{self.database_schema}\" TO \"#{database_username}\""
+    ]
+  end
+
+  def grant_usage_on_user_schema_to_other(granted_user)
+    [
+      "GRANT USAGE ON SCHEMA \"#{self.database_schema}\" TO \"#{granted_user}\""
+    ]
+  end
+
+  def grant_all_on_schema_queries(schema)
+    [
+      "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\""
+    ]
+  end
+
+  def reset_user_schema_permissions
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        schemas = [self.database_schema].uniq
+        schemas.each do |schema|
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM PUBLIC")
+        end
+        yield(user_database) if block_given?
+      end
+    end
+  end
+
+  def reset_database_permissions
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        schemas = ['public', 'cdb_importer', 'cartodb'].uniq
+
+        ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
+          user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{u}")
+          schemas.each do |schema|
+            user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
+            user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
+            user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
+            user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+          end
+        end
+        yield(user_database) if block_given?
+      end
+    end
+  end
+
+
+  # Utility methods
+  def fix_permissions
+    self.reset_database_permissions
+    self.reset_user_schema_permissions
+    self.set_user_privileges
+    tables_queries = []
+    tables.each do |table|
+      if table.public?
+        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO #{CartoDB::PUBLIC_DB_USER}"
+      end
+      tables_queries << "ALTER TABLE \"#{self.database_schema}\".#{table.name} OWNER TO \"#{database_username}\""
+    end
+    self.run_queries_in_transaction(
+      tables_queries,
+      true
+    )
   end
 
   def monitor_user_notification
@@ -1217,4 +1608,23 @@ TRIGGER
       end
     end
   end
+
+  private
+
+  def name_exists_in_organizations?
+    !Organization.where(name: self.username).first.nil?
+  end
+
+  def make_auth_token
+    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
+    10.times do
+      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
+    end
+    digest
+  end
+
+  def secure_digest(*args)
+    Digest::SHA256.hexdigest(args.flatten.join)
+  end
+
 end

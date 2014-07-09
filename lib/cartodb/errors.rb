@@ -23,40 +23,40 @@ module CartoDB
   class InvalidSRID < StandardError; end
   class InvalidGeoJSONFormat < StandardError; end
   class QueryNotAllowed < StandardError; end
-  
+
   class InvalidMember < StandardError; end
 
   class TableError < StandardError; end
 
   # importer errors
-  class EmptyFile < StandardError 
+  class EmptyFile < StandardError
     def detail
       Cartodb.error_codes[:empty_file]
-    end  
+    end
   end
 
-  class InvalidUrl < StandardError 
+  class InvalidUrl < StandardError
     def detail
       Cartodb.error_codes[:url_error]
-    end  
+    end
   end
 
-  class InvalidFile < StandardError 
+  class InvalidFile < StandardError
     def detail
       Cartodb.error_codes[:file_error]
-    end  
+    end
   end
-  
-  class TableCopyError < StandardError 
+
+  class TableCopyError < StandardError
     def detail
       Cartodb.error_codes[:table_copy_error]
-    end  
+    end
   end
-  
+
   class QuotaExceeded < StandardError
     def detail
-      Cartodb.error_codes[:quota_error].merge(:raw_error => self.message)      
-    end  
+      Cartodb.error_codes[:quota_error].merge(:raw_error => self.message)
+    end
   end
 
   class DataSourceError < BaseCartoDBError; end
@@ -86,7 +86,7 @@ module CartoDB
       super(message)
       @db_message = message.split("\n")[0]
       @syntax_message = message.split("\n")[1..-1].join("\n")
-    end    
+    end
   end
 
   class InvalidType < DbError
@@ -124,4 +124,7 @@ module CartoDB
   end
 
   class NonConvertibleData < StandardError; end
-end  
+
+  class CentralCommunicationFailure < StandardError; end
+
+end

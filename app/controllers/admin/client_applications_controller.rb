@@ -9,7 +9,7 @@ class Admin::ClientApplicationsController < ApplicationController
     @client_application = current_user.client_application
     return if request.get?
     current_user.reset_client_application!
-    redirect_to api_key_credentials_path(type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successuflly"}
+    redirect_to api_key_credentials_path(user_domain: params[:user_domain], type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successuflly"}
   end
 
   def api_key
@@ -31,7 +31,7 @@ class Admin::ClientApplicationsController < ApplicationController
     rescue => e
       raise e
     end 
-    redirect_to api_key_credentials_path(type: 'api_key'), :flash => {:success => "Your API key has been regenerated successfully"}
+    redirect_to api_key_credentials_path(user_domain: params[:user_domain], type: 'api_key'), :flash => {:success => "Your API key has been regenerated successfully"}
   end
 
 end

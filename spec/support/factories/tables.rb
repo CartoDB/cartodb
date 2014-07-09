@@ -4,7 +4,8 @@ module CartoDB
       attributes = attributes.dup
       table = ::Table.new(attributes)
       table.user_id = if attributes[:user_id].nil?
-        create_user.id
+        UUIDTools::UUID.timestamp_create.to_s
+        #create_user.id
       else
         attributes.delete(:user_id)
       end
@@ -21,6 +22,7 @@ module CartoDB
       table = new_table(attributes)
       table.save
       table.reload
+
     end
   end
 end

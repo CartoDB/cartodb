@@ -6,6 +6,7 @@ production:
   database: carto_db_production
   username: postgres
   password:
+  conn_validator_timeout: 900
 
 staging:
   adapter: postgres
@@ -15,6 +16,7 @@ staging:
   database: carto_db_staging
   username: postgres
   password:
+  conn_validator_timeout: 900
 
 development:
   adapter: postgres
@@ -24,6 +26,7 @@ development:
   database: carto_db_development
   username: postgres
   password:
+  conn_validator_timeout: 900
 
 test:
   adapter: postgres
@@ -33,4 +36,5 @@ test:
   port: 5432  
   username: postgres
   password:
+  conn_validator_timeout: -1
 

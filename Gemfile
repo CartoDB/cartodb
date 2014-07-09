@@ -70,6 +70,9 @@ gem 'sinatra',                  '1.3.4', require: 'sinatra/base'
 # Markdown
 gem 'redcarpet', '3.1.1'
 
+# CartoDB Central client
+gem 'httparty',                 '0.9'
+
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
 gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'

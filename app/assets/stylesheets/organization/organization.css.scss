@@ -35,7 +35,14 @@
 
     // head
     div.head {
-      h2 { font-size:27px }
+      h2 { font-size:25px }
+      
+      .right-link {
+        position:absolute;
+        top:43px;
+        right:40px;
+        text-decoration: underline;
+      }
     }
 
     // content

@@ -1,0 +1,44 @@
+<div class="info">
+
+  <div class="user-info">
+
+    <div class="avatar">
+      <a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="circle">
+      <img src="<%= @organization.avatar_url.present? ? @organization.avatar_url : 'http://cartodb.s3.amazonaws.com/static/public_dashboard_default_organization_avatar.png' %>"
+        width="128" height="128" />
+      </a>
+    </div>
+
+    <div class="details">
+      <%= content_tag :h2, ( @organization.display_name.present? ? @organization.name : @organization.display_name ) %>
+
+      <%= link_to "@#{@organization.twitter_username}", "http://twitter.com/#{@organization.twitter_username}", :class => :twitter if @organization.twitter_username.present? %>
+
+      <%= content_tag :p, @organization.description if @organization.description.present? %>
+
+      <% if @organization.website.present? %>
+
+        <% if @organization.description.present? || @organization.twitter_username.present?  %>
+        <div class="separator"></div>
+        <% end %>
+
+        <div class="website"><%= link_to @organization.website.gsub(/https?:\/\//, ""), @organization.website if @organization.website.present? %></div>
+      <% end %>
+    </div>
+
+    <ul>
+      <li>
+        <div class="count">
+          <strong><%= @public_org_visualizations.count %></strong>
+          visualization<%= 's' if @public_org_visualizations.count != 1 %>
+        </div>
+      </li>
+      <li>
+        <div class="count">
+          <strong><%= @organization.users.count %></strong>
+          users
+        </div>
+      </li>
+    </ul>
+
+  </div>

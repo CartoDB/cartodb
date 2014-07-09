@@ -16,13 +16,13 @@
         <% else %>
 
           <% if action_name == 'datasets' %>
-          <%= link_to tag.capitalize.truncate(40), dataset_public_tag_url(tag) %>
+          <%= link_to tag.capitalize.truncate(40), public_datasets_tag_url(user_domain: params[:user_domain], tag: tag) %>
           <% else %>
-          <%= link_to tag.capitalize.truncate(40), public_tag_url(tag) %>
+          <%= link_to tag.capitalize.truncate(40), public_tag_url(user_domain: params[:user_domain], tag: tag) %>
           <% end %>
 
         <% end %>
       <% end %>
-
+      </li>
     </ul>
   <% end %>

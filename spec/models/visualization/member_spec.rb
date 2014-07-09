@@ -68,6 +68,8 @@ describe Visualization::Member do
     it 'persists tags as an array if the backend supports it' do
       relation_id = UUIDTools::UUID.timestamp_create.to_s
 
+      Permission.any_instance.stubs(:update_shared_entities).returns(nil)
+
       db_config   = Rails.configuration.database_configuration[Rails.env]
       # Why not passing db_config directly to Sequel.postgres here ?
       # See https://github.com/CartoDB/cartodb/issues/421
@@ -206,6 +208,9 @@ describe Visualization::Member do
     end
 
     it 'checks has_permission? permissions' do
+      @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+
       user2_mock = mock
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user2_mock.stubs(:username).returns('user2')
@@ -223,7 +228,7 @@ describe Visualization::Member do
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
           type: Visualization::Member::CANONICAL_TYPE,
-          user_id: @user_mock.id
+          user_id: @user.id
       )
       visualization.store
 
@@ -272,6 +277,8 @@ describe Visualization::Member do
 
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
+
+      @user.destroy
     end
   end
 
@@ -503,13 +510,14 @@ describe Visualization::Member do
   end #default_privacy_values
 
   it 'should not allow to change permission from the outside' do
-    member = Visualization::Member.new(random_attributes)
+    @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+    member = Visualization::Member.new(random_attributes({user_id: @user.id}))
     member.store
-
     member = Visualization::Member.new(id: member.id).fetch
     member.permission.should_not be nil
     member.permission_id = UUIDTools::UUID.timestamp_create.to_s
     member.valid?.should eq false
+    @user.destroy
   end
 
   def random_attributes(attributes={})

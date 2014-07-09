@@ -272,6 +272,17 @@ namespace :cartodb do
         end
       end
     end
+
+    ##########################################
+    # SET ORGANIZATION GROUP ROLE TO ALL USERS
+    ##########################################
+    desc 'Set organization member group role'
+    task :set_user_as_organization_member => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.set_user_as_organization_member
+      end
+    end
         
     ##############
     # SET DB PERMS
@@ -280,21 +291,7 @@ namespace :cartodb do
     task :set_permissions => :environment do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-
-        # reset perms
-        user.set_database_permissions
-
-        # rebuild public access perms from redis
-        user.tables.all.each do |table|
-          
-          # reset public
-          if table.public?
-            user.in_database(:as => :superuser).run("GRANT SELECT ON #{table.name} TO #{CartoDB::PUBLIC_DB_USER};")
-          end
-          
-          # reset triggers
-          table.set_triggers
-        end  
+        user.fix_permissions
       end
     end
 
@@ -446,7 +443,7 @@ namespace :cartodb do
                 col[:geometrytype]
               end
               geometry_type ||= "POINT"
-              user_database.run("SELECT AddGeometryColumn('#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
+              user_database.run("SELECT public.AddGeometryColumn('#{user.database_schema}','#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
               user_database.run("ANALYZE #{table.name}")
               table.save_changes
@@ -556,6 +553,18 @@ namespace :cartodb do
     task :save_users_metadata => :environment do
       User.all.each do |u|
         u.save_metadata
+      end
+    end
+
+    desc 'Create public users for users beloging to an organization'
+    task :create_organization_members_public_users => :environment do
+      User.exclude(organization_id: nil).each do |user|
+        begin
+          user.create_public_db_user
+          user.save_metadata
+        rescue
+          puts "user #{user.username} already has the public user"
+        end
       end
     end
 
@@ -694,7 +703,7 @@ namespace :cartodb do
         log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
-        file_handle.puts "[#{Time.now}] #{entry}\n"
+	file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 
@@ -705,6 +714,26 @@ namespace :cartodb do
       puts "Old API Calls from ES: #{u.get_es_api_calls_from_redis}"
       u.set_api_calls_from_es({:force_update => true})
       puts "New API Calls from ES: #{u.get_es_api_calls_from_redis}"
+    end
+    
+    desc "Create new organization with owner"
+    task :create_new_organization_with_owner => :environment do
+      raise "You should provide a ORGANIZATION_NAME" if ENV['ORGANIZATION_NAME'].blank?
+      raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
+      raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
+      raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
+      user = User.where(:username => ENV['USERNAME']).first
+      raise "User #{ENV['USERNAME']} does not exist" if user.nil?
+      organization = Organization.where(:name => ENV['ORGANIZATION_NAME']).first
+      if organization.nil?
+        organization = Organization.new
+        organization.name = ENV['ORGANIZATION_NAME']
+        organization.seats = ENV['ORGANIZATION_SEATS']
+        organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        organization.save
+      end
+      uo = CartoDB::UserOrganization.new(organization.id, user.id)
+      uo.promote_user_to_admin
     end
 
   end

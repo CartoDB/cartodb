@@ -1,11 +1,16 @@
 
 * New Features
+  * Added avatar_url to User model
   * Added Permission model and permission attribute for Visualizations
+  * Activated Sequel extension connection_validator.
+    This requires adding to database.yml a value for 'conn_validator_timeout',
+    else code will default to 900 seconds
 
 * Fixed bugs
   * Security fix regarding Typhoeus library  
 
-* Migration Type (see UPGRADE): Mandatory migration 
+* Migration Type (see UPGRADE): Mandatory migration
+  * As stated by the README, PostgreSQL now MUST be at least 9.3 to avoid search_path errors
   * Cartodb postgres extension update to 0.2.1
   * Also mandatory to run:
     * rake cartodb:db:create_default_vis_permissions

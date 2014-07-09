@@ -9,6 +9,10 @@ describe DataImport do
     @table = create_table :user_id => @user.id
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   folder = ENV['TEST_FILES'] || File.join(File.dirname(__FILE__), '../support/data/')
   Dir[folder + '/*'].each do |file|
   	it "imports #{file}" do

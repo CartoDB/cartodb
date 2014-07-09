@@ -12,6 +12,10 @@ describe CartoDB::ColumnTypecaster do
                       )
   end
 
+  after do
+    @user.destroy
+  end
+
   it 'raises NonConvertibleData when trying to cast 
   a non-supported time format to date' do
     @user.in_database { |database| @db = database }

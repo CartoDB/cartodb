@@ -34,7 +34,7 @@
 
   </head>
   <body>
-    <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? %>
+    <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
 
       <div class="cartodb-public-wrapper">
         <div class="cartodb-public-header">
@@ -75,13 +75,13 @@
 
                 <p class="description"><%= raw @visualization.description_md %></p>
                 <p class="options">
-                  <a href="/viz/<%= @visualization.id %>/embed_map?<%= @visualization.url_options %>" class="iframe">View as an iFrame</a>
+                  <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>?<%= @visualization.url_options %>" class="iframe">View as an iFrame</a>
                 </p>
               </div>
             </div>
 
             <div class="user embed-right-col">
-              <a href="/" title="Maps by <%= @name %>" class="content">
+              <a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" title="Maps by <%= @name %>" class="content">
                 <div class="user-info">
                   <h4>by <%= @name %></h4>
                   <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
@@ -103,13 +103,17 @@
                 <ul>
 
                   <% @related_tables.each do |table| %>
-                    <% if (table.privacy_text == "PUBLIC") %>
-                      <li><a href="/tables/<%= table.name %>/public" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span></li>
+                    <% if table.privacy_text == "PUBLIC" %>
+                      <li>
+                        <a href="<%= public_table_url(user_domain: params[:user_domain], id: table.name) %>" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span>
+                      </li>
                     <% end %>
                   <% end %>
 
-                  <% if (@nonpublic_tables_count > 0) %>
-                    <li class="private"><%= @nonpublic_tables_count %> private dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains <%= @nonpublic_tables_count %> dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
+                  <% if @nonpublic_tables_count > 0 %>
+                    <li class="private">
+                      <%= @nonpublic_tables_count %> private dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains <%= @nonpublic_tables_count %> dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %> made private by the publisher">(?)</span>
+                    </li>
                   <% end %>
                 </ul>
 
@@ -251,23 +255,26 @@
             return { visible: !!parseInt(v, 10) }
           });
 
-        };
+          };
 
-        var opt = get_url_params({
-          'search':       bool_fn,
-          'title':        bool_fn,
-          'description':  bool_fn,
-          'shareable':    bool_fn,
-          'fullscreen':   bool_fn,
-          'cartodb_logo': false,
-          'scrollwheel':  bool_fn,
-          'sublayer_options': layer_fn,
-          'layer_selector': bool_fn,
-          'legends': bool_fn
-        });
+          var opt = get_url_params({
+            'search':       bool_fn,
+            'title':        bool_fn,
+            'description':  bool_fn,
+            'shareable':    bool_fn,
+            'fullscreen':   bool_fn,
+            'cartodb_logo': false,
+            'scrollwheel':  bool_fn,
+            'sublayer_options': layer_fn,
+            'layer_selector': bool_fn,
+            'legends': bool_fn
+          });
 
-          <% if (@visualization.password_protected?) %>
-              opt.auth_token = '<%= @protected_map_token %>';
+          <% if (@visualization.password_protected? or @visualization.organization?) %>
+              opt.auth_token = [];
+              <% @protected_map_tokens.each do |token| %>
+                  opt.auth_token.push('<%= token %>');
+              <% end %>
               opt.https = true; // when auth_token is used tiles should be fetch using https
           <% end %>
 
@@ -433,4 +440,3 @@
 
   </body>
 </html>
-

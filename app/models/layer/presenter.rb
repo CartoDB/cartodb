@@ -61,6 +61,18 @@ module CartoDB
           options:    options_data_v1
         }
       end #to_vizjson_v1
+
+      def to_poro
+        poro = layer.public_values
+        if options[:viewer_user] and poro['options'] and poro['options']['table_name']
+          # if the table_name already have a schema don't add another one
+          # this case happens when you share a layer already shared with you
+          if poro['options']['user_name'] != options[:viewer_user].username and not poro['options']['table_name'].include?('.')
+            poro['options']['table_name'] = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
+          end
+        end
+        poro
+      end
   
       private
 
@@ -68,7 +80,7 @@ module CartoDB
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
       def decorate_with_data(source_hash, decoration_data=nil)
-        if (not decoration_data.nil?)
+        if not decoration_data.nil?
           decoration_data.each { |key, value| 
             source_hash[key] = value
             source_hash.delete_if { |k, v| 
@@ -88,7 +100,7 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        attributes = decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
+        decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)
@@ -97,7 +109,7 @@ module CartoDB
 
         layer_options = decorate_with_data(layer.options, @decoration_data)
 
-        data = {
+        {
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
@@ -120,12 +132,12 @@ module CartoDB
 
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
-      rescue => exception
+      rescue
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
-      rescue => exception
+      rescue
       end
 
       def tooltip_data_v2 
@@ -156,10 +168,15 @@ module CartoDB
             interactivity:      layer.options.fetch('interactivity')
           }
           data = decorate_with_data(data, @decoration_data)
+
+          if options[:viewer_user]
+            unless data['user_name'] == options[:viewer_user].username
+              data['table_name'] = "\"#{data['user_name']}\".#{data['table_name']}"
+            end
+          end
+          data
         end
       end #options_data_v2
-
-      alias_method :to_poro, :to_vizjson_v1
 
       def name_for(layer)
         layer_alias = layer.options.fetch('table_name_alias', nil)

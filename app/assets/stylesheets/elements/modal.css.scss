@@ -63,11 +63,12 @@
           overflow:auto;
 
           h4 {
-            letter-spacing:0;
+            line-height:18px;
             padding-left:30px;
+            letter-spacing:0;
 
-            &.exclamation { @include elements-sprite(background_loader_error, $offset-y:2px); }
-            &.question    { @include elements-sprite(question, $offset-y:2px); }
+            &.exclamation { @include elements-sprite(background_loader_error, $offset-y:0); }
+            &.question    { @include elements-sprite(question, $offset-y:0); }
           }
 
           p { padding-left:30px }

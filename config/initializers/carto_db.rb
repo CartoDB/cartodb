@@ -1,7 +1,39 @@
 module CartoDB
 
+  # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
-    request.host.to_s.gsub(self.session_domain, '')
+    if request.params[:user_domain].nil?
+      request.host.to_s.gsub(self.session_domain, '')
+    else
+      request.params[:user_domain]
+    end
+  end
+
+  def self.extract_host_subdomain(request)
+    if request.params[:user_domain].nil?
+      nil
+    else
+      request.host.to_s.gsub(self.session_domain, '')
+    end
+  end
+
+  # Actually the two previous methods return the requested username, not the real subdomain
+  def self.extract_real_subdomain(request)
+      request.host.to_s.gsub(self.session_domain, '')
+  end
+
+  def self.base_url(subdomain, org_username=nil)
+    if Rails.env.production? || Rails.env.staging?
+      base_url ="https://#{subdomain}#{self.session_domain}"
+    elsif Rails.env.development?
+      base_url ="http://#{subdomain}#{self.session_domain}:3000"
+    else
+      base_url = "http://#{subdomain}#{self.session_domain}:53716"
+    end
+    unless org_username.nil?
+      base_url << "/u/#{org_username}"
+    end
+    base_url
   end
 
   def self.session_domain

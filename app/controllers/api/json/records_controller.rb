@@ -1,9 +1,12 @@
-# coding: UTF-8
+# encoding: UTF-8
+
+require_relative '../../../models/visualization/member'
+
 class Api::Json::RecordsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy
 
   REJECT_PARAMS = %W{ format controller action row_id requestId column_id
-  api_key table_id oauth_token oauth_token_secret api_key }
+  api_key table_id oauth_token oauth_token_secret api_key user_domain }
 
   before_filter :load_table, :set_start_time
 
@@ -28,6 +31,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def update
+    return(head 401) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
     unless params[:id].blank?
       begin
         resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
@@ -46,8 +50,14 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def destroy
+    return(head 401) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+
     id = (params[:id] =~ /^\d+$/ ? params[:id] : params[:id].to_s.split(','))
-    current_user.in_database.select.from(@table.name).where(cartodb_id: id).delete
+    schema_name = current_user.database_schema
+    if current_user.id != @table.owner.id
+      schema_name = @table.owner.database_schema
+    end
+    current_user.in_database.select.from(@table.name.to_sym.qualify(schema_name.to_sym)).where(cartodb_id: id).delete
     head :no_content
   rescue => e
     render_jsonp({ errors: ["row identified with #{params[:id]} not found"] }, 404)
@@ -60,7 +70,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def load_table
-    @table = Table.where(:name => params[:table_id], :user_id => current_user.id).first
+    @table = Table.get_by_id_or_name(params[:table_id], current_user)
     raise RecordNotFound if @table.nil?
   end
 end

@@ -76,6 +76,10 @@
         }
       }
 
+      &.disabled {
+        @include opacity(0.5);
+      }
+
       &.shared {
         .value { max-width:200px }
       }

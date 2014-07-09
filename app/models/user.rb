@@ -1609,6 +1609,14 @@ TRIGGER
     end
   end
 
+  # return quoated database_schema when needed
+  def sql_safe_database_schema
+    if self.database_schema.include?('-')
+      return "\"#{self.database_schema}\""
+    end
+    self.database_schema
+  end
+
   private
 
   def name_exists_in_organizations?

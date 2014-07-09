@@ -27,7 +27,10 @@
     div.content {
       padding:0;
 
-      #tablelist { margin-top:10px }
+      #tablelist {
+        min-height:300px;
+        margin-top:10px;
+      }
 
       &.hidden { display: none; }
     }

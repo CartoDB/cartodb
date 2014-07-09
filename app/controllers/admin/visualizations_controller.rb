@@ -45,8 +45,10 @@ class Admin::VisualizationsController < ApplicationController
 
     @vizjson = @visualization.to_vizjson
     @auth_tokens = nil
+    @api_key = nil
     if current_user && @visualization.organization? && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
       @auth_tokens = current_user.get_auth_tokens
+      @api_key = current_user.api_key
     end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)

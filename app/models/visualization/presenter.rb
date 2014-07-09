@@ -64,7 +64,7 @@ module CartoDB
         table_name = table.name
         unless @viewing_user.nil?
           unless @visualization.is_owner?(@viewing_user)
-            table_name = "\"#{@visualization.user.database_schema}\".#{table.name}"
+            table_name = "#{@visualization.user.sql_safe_database_schema}.#{table.name}"
           end
         end
 

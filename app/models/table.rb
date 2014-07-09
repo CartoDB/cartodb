@@ -667,7 +667,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_zoom_overlay(member, order)
 
-    options = { :display => true, :x => 20, :y => 40 } 
+    options = { :display => true, :x => 20, :y => 20 } 
 
     member = CartoDB::Overlay::Member.new(
       order: order,
@@ -683,7 +683,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_zoom_info_overlay(member, order)
 
-    options = { :display => true, :x => 20, :y => 120 } 
+    options = { :display => true, :x => 20, :y => 100 } 
 
     member = generate_overlay(member.id, options, "zoom_info", order)
     member.store
@@ -701,7 +701,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_share_overlay(member, order)
 
-    options = { :display => true, :x => 20, :y => 40 } 
+    options = { :display => true, :x => 20, :y => 20 } 
 
     member = generate_overlay(member.id, options, "share", order)
     member.store
@@ -710,7 +710,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_search_overlay(member, order)
 
-    options = { :display => true, :x => 60, :y => 40 } 
+    options = { :display => true, :x => 60, :y => 20 } 
 
     member = generate_overlay(member.id, options, "search", order)
     member.store
@@ -719,7 +719,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_layer_selector_overlay(member, order)
 
-    options = { :display => false, :x => 212, :y => 40 }
+    options = { :display => false, :x => 212, :y => 20 }
 
     member = generate_overlay(member.id, options, "layer_selector", order)
     member.store

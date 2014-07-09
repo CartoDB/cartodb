@@ -71,7 +71,7 @@ module CartoDB
             user_name = poro['options']['user_name']
             table_name = nil
             if user_name.include?('-')
-              table_name "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
+              table_name = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
             else
               table_name = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
             end

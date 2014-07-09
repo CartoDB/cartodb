@@ -788,11 +788,11 @@ sql.getBounds('select * from table').done(function(bounds) {
 
 + **sql**: a string with the sql query to calculate the bounds from.
 
-### Application of getBounds in Leaflet and GMaps
+##### Application of getBounds in Leaflet and GMaps
 
-You can use the `getBounds results to center data on your maps using Leaflet and GMaps. 
+You can use the `getBounds` results to center data on your maps using Leaflet and GMaps. 
 
-#### getBounds and Leaflet
+- **getBounds and Leaflet**
 
 <div class="code-title">sql.getBounds</div>
 {% highlight javascript %}
@@ -801,7 +801,7 @@ sql.getBounds('select * from table').done(function(bounds) {
 });
 {% endhighlight %}
 
-#### getBounds and GMaps v3
+- **getBounds and GMaps v3**
 
 <div class="code-title">sql.getBounds</div>
 {% highlight javascript %}

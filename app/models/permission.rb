@@ -63,9 +63,7 @@ module CartoDB
       incoming_acl = value.nil? ? ::JSON.parse(DEFAULT_ACL_VALUE) : value
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
-        unless item.kind_of?(Hash) && item[:entity].present? && item[:type].present? && item[:access].present? \
-          && (item[:entity].keys - ALLOWED_ENTITY_KEYS == []) \
-          && [ACCESS_READONLY, ACCESS_READWRITE, ACCESS_NONE].include?(item[:access])
+        unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
           raise PermissionError.new('Wrong ACL entry format')
         end
       }
@@ -240,7 +238,6 @@ module CartoDB
 
       # Create user entities for the new ACL
       users = relevant_user_acl_entries(acl)
-      users_entities = User.where(id: users.map { |u| u[:id] }).all
       users.each { |user|
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
@@ -249,35 +246,9 @@ module CartoDB
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
 
-        # if the entity is a canonical visualizations give database permissions
-        if (e.table)
-          if self.owner_id != e.permission.owner_id
-            raise PermissionError.new('Change permission without ownership')
-          end
-          priv = e.privacy
-          if priv == CartoDB::Visualization::Member::PRIVACY_PRIVATE
-            e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
-            e.store
-          end
+        if e.table?
           grant_db_permission(e, user[:access], shared_entity)
-        else
-          # update acl for related tables using canonical visualization preserving the previous permissions
-          e.related_tables.each { |t|
-            # if the user is the owner of the table just give access
-            if self.owner_id == e.permission.owner_id
-              vis = t.table_visualization
-              perm = vis.permission
-              users_entities.each { |u|
-                # check permission and give read perm
-                if not vis.has_permission?(u, CartoDB::Visualization::Member::PERMISSION_READONLY)
-                  perm.set_user_permission(u, CartoDB::Visualization::Member::PERMISSION_READONLY)
-                end
-              }
-              perm.save
-            end
-          }
         end
-
       }
 
       org = relevant_org_acl_entry(acl)
@@ -288,32 +259,10 @@ module CartoDB
             entity_id:      self.entity_id,
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
-        # if the entity is a canonical visualizations give database permissions
-        if (e.table)
-          if self.owner_id != e.permission.owner_id
-            raise PermissionError.new('Change permission without ownership')
-          end
-          priv = e.privacy
-          if priv == CartoDB::Visualization::Member::PRIVACY_PRIVATE
-            e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
-            e.store
-          end
-          grant_db_permission(e, org[:access], shared_entity)
-        else
-          # update acl for related tables using canonical visualization preserving the previous permissions
-          e.related_tables.each { |t|
-            # if the user is the owner of the table just give access
-            if self.owner_id == e.permission.owner_id
-              vis = t.table_visualization
-              perm = vis.permission
-              if vis.permission.permission_for_org == ACCESS_NONE
-                perm.set_subject_permission(org[:id], CartoDB::Visualization::Member::PERMISSION_READONLY, TYPE_ORGANIZATION)
-                perm.save
-              end
-            end
-          }
-        end
 
+        if e.table?
+          grant_db_permission(e, org[:access], shared_entity)
+        end
       end
     end
 
@@ -435,6 +384,18 @@ module CartoDB
             access: entry[:access]
         }
       }
+    end
+
+    def acl_has_required_fields?(acl_item)
+      acl_item[:entity].present? && acl_item[:type].present? && acl_item[:access].present? && acl_item[:entity].keys - ALLOWED_ENTITY_KEYS == []
+    end
+
+    def acl_has_valid_access?(acl_item)
+      valid_access = [ACCESS_READONLY, ACCESS_NONE]
+      if entity.table?
+        valid_access << ACCESS_READWRITE
+      end
+      valid_access.include?(acl_item[:access])
     end
 
   end

@@ -32,8 +32,8 @@ class Api::Json::LayersController < Api::ApplicationController
       end
       if Layer::DATA_LAYER_KINDS.include?(@layer.kind)
         table_visualization = Table.get_by_id_or_name(@layer.options['table_name'], current_user).table_visualization
-        unless @parent.all_members_have_permissions?(table_visualization)
-          return(render_jsonp({:description => 'Every user in the visualization should have permission in the layer'}, 400))
+        unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+          return(render_jsonp({:description => 'You do not have permission in the layer you are trying to add'}, 400))
         end
       end
     end

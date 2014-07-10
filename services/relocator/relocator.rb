@@ -68,7 +68,7 @@ module CartoDB
       end
 
       def rollback
-        if config[:mode] == :relocate
+        if @config[:mode] == :relocate
           @trigger_loader.unload_triggers
           @consumer.empty_queue
         end

@@ -469,6 +469,9 @@ div.cartodb-footer a:hover {
 div.cartodb-public-header .inner .options {
   margin: 23px 0;
 }
+div.cartodb-public-header .inner .options .fork {
+  display: none;
+}
 
 div.cartodb-public-header .inner .options .regular {
   margin-right: 26px;

@@ -15,7 +15,7 @@ module CartoDB
         state = {}
         state[:number_of_tables] = get_number_of_tables(conn)
         state[:names_of_tables] = get_names_of_tables(conn)
-        state[:statement_timeout] = get_statement_timeout(conn)
+        #state[:statement_timeout] = get_statement_timeout(conn)
         state[:query_tables_layers] = query_tables_layers(conn)
         state
       end

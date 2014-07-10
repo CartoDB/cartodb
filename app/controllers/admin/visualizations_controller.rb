@@ -50,9 +50,23 @@ class Admin::VisualizationsController < ApplicationController
     @vizjson = @visualization.to_vizjson
     @auth_tokens = nil
     @api_key = nil
-    if current_user && @visualization.organization? && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-      @auth_tokens = current_user.get_auth_tokens
-      @api_key = current_user.api_key
+    @can_copy = false;
+
+    if current_user && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      if @visualization.organization?
+        @auth_tokens = current_user.get_auth_tokens
+        @api_key = current_user.api_key
+      end
+      @can_copy = true # this table can be copied to user dashboard
+    end
+
+    owner = @visualization.user
+    # set user to current user only if the user is in the same organization
+    # this allows to enable "copy this table to your tables" button
+    if current_user && current_user.organization.present? && owner.organization.present? && current_user.organization_id == owner.organization_id
+      @user = current_user
+    else
+      @user = @visualization.user
     end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)

@@ -19,6 +19,9 @@
     
     ul {
       display:block;
+      max-height:180px;
+      overflow-x:hidden;
+      overflow-y:auto;
       margin-top:20px;
       
       li {

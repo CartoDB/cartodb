@@ -186,6 +186,39 @@
       }
     }
 
+    ul.actions {
+
+         li .privacy {
+
+            &.public             i { background: rgba(#D0DDA5, 1) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+            &.link_protected     i { background: rgba(#FFA64D, 1) sprite( $table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
+            &.password_protected i { background: rgba(#FFA64D, 1) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
+            &.organization       i { background: rgba(#FFA64D, 1) sprite( $table-sprites, lock_user,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+            &.private            i { background: rgba(#FF7373, 1) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+            &.public             i:hover { background-color: rgba(#D0DDA5, 1); }
+            &.link_protected     i:hover { background-color: rgba(#FFA64D, 1); }
+            &.password_protected i:hover { background-color: rgba(#FFA64D, 1); }
+            &.organization       i:hover { background-color: rgba(#FFA64D, 1); }
+            &.private            i:hover { background-color: rgba(#FF7373, 1); }
+
+            i {
+              @include inline-block();
+              margin: 0 0 0 11px;
+              width: 20px; height: 20px;
+              background: rgba(#EEE, .8) sprite($table-sprites,  lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat;
+              @include simple-transition(all, 150ms);
+              @include border-radius(3px);
+
+              &.disabled {
+                @include opacity(0.5);
+                &:hover { cursor:default }
+              }
+            }
+
+          }
+    }
+
     ul.options {
       position:absolute;
       top:0;
@@ -197,6 +230,25 @@
         position:relative;
         padding:0;
         margin:0;
+
+        a.share {
+          padding: 3px 20px;
+          text-shadow: none;
+          color: #fff;
+          @include box-shadow(none);
+          border-radius: 30px;
+          border: 2px solid #fff;
+          background:none;
+
+          span { vertical-align: middle; }
+          span { color: #fff; }
+          span { font-size: 12px; }
+
+          &:hover {
+            span { text-decoration: underline; }
+          }
+
+        }
 
         &.dropdown { padding-right: 12px; }
 
@@ -221,56 +273,6 @@
           display: block;
           font-weight:300;
           &.share, &.data_download { font-weight:500; }
-
-          &.privacy {
-
-            padding: 3px 20px;
-            text-shadow: none;
-            /*@include box-shadow(0px 0px 0px 3px rgba(#333, .1));*/
-            border-radius: 30px;
-            border: 2px solid #fff;
-            background:none;
-
-            &.public             i { background: rgba(#97C341, .5) sprite($table-sprites,  lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.organization       i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_user,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.private            i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 12px, $offset-y: 4px) no-repeat; }
-
-            &.public             i:hover { background-color: rgba(#97C341, .65); }
-            &.link_protected     i:hover { background-color: rgba(#FFA64D, .65); }
-            &.password_protected i:hover { background-color: rgba(#FFA64D, .65); }
-            &.organization       i:hover { background-color: rgba(#FFA64D, .65); }
-            &.private            i:hover { background-color: rgba(#FF7373, .65); }
-
-            span { vertical-align: middle; }
-            span { color: #fff; }
-            span { font-size: 12px; }
-
-            &:hover {
-              span { text-decoration: underline; }
-              /*color: #1D4569;*/
-              /*@include box-shadow(0px 0px 0px 3px rgba(#333, .2));*/
-            }
-
-            i {
-              @include inline-block();
-              width: 30px; height: 20px;
-              margin: 0 10px 0 0;
-              background: rgba(#EEE, .5) sprite($table-sprites,  lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat;
-              border-right: 1px solid rgba(#000, .15);
-              @include simple-transition(all, 150ms);
-              @include border-radius(25px 0 0 25px);
-
-              display:none;
-
-              &.disabled {
-                @include opacity(0.5);
-                &:hover { cursor:default }
-              }
-            }
-
-          }
         }
 
       }

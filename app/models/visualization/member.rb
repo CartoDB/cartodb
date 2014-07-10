@@ -400,7 +400,7 @@ module CartoDB
         end
 
         # when visualization turns private remove the acl
-        if not organization? and private? and privacy_changed
+        if not organization? and privacy_changed
           permission.clear
         end
 

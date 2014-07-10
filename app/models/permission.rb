@@ -264,6 +264,10 @@ module CartoDB
           grant_db_permission(e, org[:access], shared_entity)
         end
       end
+
+      if e.table? and (org or users.any?)
+        e.invalidate_cache_and_refresh_named_map
+      end
     end
 
     def users_with_permissions(permission_type)

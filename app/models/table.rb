@@ -538,7 +538,7 @@ class Table < Sequel::Model(:user_tables)
     self.create_default_visualization
     self.send_tile_style_request
 
-    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
+    grant_select_to_tiler_user
     set_default_table_privacy
 
     @force_schema = nil
@@ -560,6 +560,10 @@ class Table < Sequel::Model(:user_tables)
     self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
+  end
+
+  def grant_select_to_tiler_user
+    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
   end
 
   def optimize

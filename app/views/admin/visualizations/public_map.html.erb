@@ -43,6 +43,7 @@
             <a class="logo" href="http://www.cartodb.com">CartoDB</a>
 
             <div class="options">
+              <a href="#fork" class="fork green button" title="">fork</a>
               <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
             </div>
 
@@ -398,6 +399,26 @@
             }
 
           }).on('error', manageError);
+
+
+          <% if @can_fork %>
+            $('.fork').show().click(function() {
+              var baseUrl = location.pathname.substring(0, location.pathname.indexOf('/viz/'))
+              $.ajax({
+                url: baseUrl + '/api/v1/viz/',
+                type: 'POST',
+                data: JSON.stringify({
+                  source_visualization_id: '<%= @visualization.id%>',
+                  name: '<%= @visualization.name %> copy'
+                }),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(vis) {
+                  window.location = baseUrl + "/viz/" + vis.id
+                }
+              });
+            });
+          <% end %>
 
           <% if Cartodb.config[:graphite_public] %>
             if (location.protocol.indexOf('https') === -1) {

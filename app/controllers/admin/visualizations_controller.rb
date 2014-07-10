@@ -100,7 +100,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)
-    
+
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
@@ -132,6 +132,10 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+
+    @can_fork = @visualization.related_tables.map { |t|
+      t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    }.all?
 
     response.headers['Cache-Control'] = "no-cache,private"
 

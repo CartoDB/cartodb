@@ -54,6 +54,14 @@ class Admin::VisualizationsController < ApplicationController
       @auth_tokens = current_user.get_auth_tokens
       @api_key = current_user.api_key
     end
+    owner = @visualization.user
+    # set user to current user only if the user is in the same organization
+    # this allows to enable "copy this table to your tables" button
+    if current_user && current_user.organization.present? && owner.organization.present? && current_user.organization_id == owner.organization_id
+      @user = current_user
+    else
+      @user = @visualization.user
+    end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.gravatar(request.protocol, 64)

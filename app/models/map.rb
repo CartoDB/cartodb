@@ -131,7 +131,7 @@ class Map < Sequel::Model
     return self unless layer.uses_private_tables?
 
     visualizations.each do |visualization|
-      unless visualization.privacy == CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
+      unless visualization.organization?
         visualization.privacy = 'private'
         visualization.store
       end

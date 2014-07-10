@@ -207,11 +207,11 @@ module CartoDB
       end #public_with_link?
 
       def private?
-        privacy == PRIVACY_PRIVATE
+        privacy == PRIVACY_PRIVATE and not organization?
       end #private?
 
       def organization?
-        privacy == PRIVACY_ORGANIZATION
+        privacy == PRIVACY_PRIVATE and permission.acl.size > 0
       end
 
       def password_protected?
@@ -293,7 +293,7 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-        if type != CANONICAL_TYPE or privacy == PRIVACY_ORGANIZATION
+        if type != CANONICAL_TYPE or organization?
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
@@ -399,14 +399,13 @@ module CartoDB
           repository.store(id, attributes.to_hash)
         end
 
-        priv = @privacy
         # when visualization turns private remove the acl
-        if priv == PRIVACY_PRIVATE && privacy_changed
+        if not organization? and private? and privacy_changed
           permission.clear
         end
 
         if type == CANONICAL_TYPE
-          if priv == PRIVACY_ORGANIZATION
+          if organization?
             save_named_map
           end
           propagate_privacy_and_name_to(table) if table and propagate_changes

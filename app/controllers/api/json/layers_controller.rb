@@ -22,7 +22,7 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def create
-    @layer = CartoDB::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+    @layer = Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
     if @parent.is_a?(Map)
       unless @parent.admits_layer?(@layer)
         return(render status: 400, text: "Can't add more layers of this type")

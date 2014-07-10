@@ -74,7 +74,7 @@ class Table < Sequel::Model(:user_tables)
 
     attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
-      attrs[:name] = "\"#{owner.database_schema}\".#{attrs[:name]}"
+      attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end
     attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization, { real_privacy: true, user: viewer_user }).to_poro
     attrs
@@ -205,7 +205,9 @@ class Table < Sequel::Model(:user_tables)
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
-      table_name.split('.').reverse
+      table_name, schema = table_name.split('.').reverse
+      # remove quotes from schema
+      [table_name, schema.gsub('"', '')]
     else
       [table_name, nil]
     end

@@ -65,6 +65,7 @@ class Admin::VisualizationsController < ApplicationController
     # this allows to enable "copy this table to your tables" button
     if current_user && current_user.organization.present? && owner.organization.present? && current_user.organization_id == owner.organization_id
       @user = current_user
+      response.headers['Cache-Control'] = "no-cache,private"
     else
       @user = @visualization.user
     end
@@ -132,8 +133,7 @@ class Admin::VisualizationsController < ApplicationController
 
     return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
 
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    response.headers['Cache-Control'] = "no-cache,private"
 
     @protected_map_tokens = current_user.get_auth_tokens
 
@@ -211,8 +211,7 @@ class Admin::VisualizationsController < ApplicationController
       return(embed_protected)
     end
 
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    response.headers['Cache-Control']   = "no-cache, private"
 
     @protected_map_tokens = @visualization.get_auth_tokens
 

@@ -87,7 +87,7 @@ describe Visualization::Member do
     @org.destroy
   end
 
-  describe 'sharing permissions' do
+  describe 'sharing tables and visualizations' do
 
     it 'should give read permission to table aka canonical visualization' do
       owner_table = create_table(@owner_user)
@@ -112,7 +112,7 @@ describe Visualization::Member do
       vis.has_permission?(@other_user, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
     end
 
-    it 'other user will lose permission to visualization when adding a layer with a private table' do
+    it 'other user will get permission in private table when the table owners adds it to the visualization' do
       owner_table = create_table(@owner_user)
       vis = create_vis_from_table(@owner_user, owner_table)
       give_permission(vis, @other_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
@@ -242,11 +242,11 @@ describe Visualization::Member do
             :sql_domain => 'localhost.lan',
             :sql_port => '80',
             :sql_protocol => 'http',
-            :tile_style_history => ["/** simple visualization */\n\n#table_50m_rivers_lake_centerlines_with_scale_r{\n  line-color: #FF6600;\n  line-width: 2;\n  line-opacity: 0.7;\n}"],
+            :tile_style_history => ["##{table.name}{ line-color: #FF6600; line-width: 2; line-opacity: 0.7; }"],
             :style_version => '2.1.1',
             :table_name => table.name,
             :user_name => 'foo',
-            :tile_style => '/** simple visualization */\n\n#table_50m_rivers_lake_centerlines_with_scale_r{\n  line-color: #FF6600;\n  line-width: 2;\n  line-opacity: 0.7;\n}',
+            :tile_style => "##{table.name}{ line-color: #FF6600; line-width: 2; line-opacity: 0.7; }",
             :use_server_style => true,
             :query_history => [],
             :wizard_properties => {

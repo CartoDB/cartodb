@@ -49,12 +49,14 @@ class Admin::VisualizationsController < ApplicationController
 
     @vizjson = @visualization.to_vizjson
     @auth_tokens = nil
+    @use_https = false
     @api_key = nil
-    @can_copy = false;
+    @can_copy = false
 
     if current_user && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
       if @visualization.organization?
         @auth_tokens = current_user.get_auth_tokens
+        @use_https = true
         @api_key = current_user.api_key
       end
       @can_copy = true # this table can be copied to user dashboard

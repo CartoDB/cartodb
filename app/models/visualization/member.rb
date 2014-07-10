@@ -26,11 +26,10 @@ module CartoDB
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
       PRIVACY_LINK         = 'link'          # published but not listen in public profile
       PRIVACY_PROTECTED    = 'password'      # published but password protected
-      PRIVACY_ORGANIZATION = 'organization'  # published but password protected
 
       CANONICAL_TYPE  = 'table'
       DERIVED_TYPE    =  'derived'
-      PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED, PRIVACY_ORGANIZATION ]
+      PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
@@ -400,7 +399,7 @@ module CartoDB
         end
 
         # when visualization turns private remove the acl
-        if not organization? and private? and privacy_changed
+        if not organization? and privacy_changed
           permission.clear
         end
 

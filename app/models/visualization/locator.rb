@@ -28,7 +28,13 @@ module CartoDB
       end #user_from
 
       def visualization_from(id_or_name, user)
-        visualization = get_by_id(id_or_name) || get_by_name(id_or_name, user)
+        if user
+          visualization = get_by_name(id_or_name, user)
+        end
+        unless visualization
+          visualization = get_by_id(id_or_name)
+        end
+
         return false if visualization.nil?
 
         [visualization, visualization.table]
@@ -51,10 +57,12 @@ module CartoDB
       end #get_by_id
 
       def get_by_name(name, user)
+        # when looking for a visualization using name return
+        # the ones that user owns. Collection returns
         Visualization::Collection.new.fetch(
             name:   name,
             user_id: user.id
-        ).first
+        ).select { |u| u.user_id == user.id }.first
       rescue KeyError
         nil
       end #get_by_name

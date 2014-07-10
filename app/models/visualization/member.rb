@@ -293,7 +293,7 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-        if type != CANONICAL_TYPE
+        if type != CANONICAL_TYPE or privacy == PRIVACY_ORGANIZATION
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map

@@ -86,6 +86,7 @@ describe Organization do
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      Permission.any_instance.stubs(:acl_has_valid_entity_field?).returns(true)
 
       vis_1_name = 'viz_1'
       vis_2_name = 'viz_2'
@@ -121,7 +122,7 @@ describe Organization do
                   id:       organization.id,
                   username: organization.name
               },
-              access: Permission::ACCESS_READWRITE
+              access: Permission::ACCESS_READONLY
           }
       ]
       perm.save
@@ -134,7 +135,7 @@ describe Organization do
                   id:       organization.id,
                   username: organization.name
               },
-              access: Permission::ACCESS_READWRITE
+              access: Permission::ACCESS_READONLY
           }
       ]
       perm.save

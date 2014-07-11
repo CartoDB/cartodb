@@ -148,6 +148,10 @@
       margin-right:10px;
     }
 
+    .table-title > a {
+      text-decoration: none;
+    }
+
     // Description
     p { @include text-overflow() }
   }

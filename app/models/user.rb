@@ -103,7 +103,7 @@ class User < Sequel::Model
     super
     setup_user
     save_metadata
-    self.avatar_url = self.gravatar('//')
+    self.load_avatar
     monitor_user_notification
     sleep 3
     set_statement_timeouts
@@ -190,10 +190,16 @@ class User < Sequel::Model
   def drop_organization_user
     Thread.new do
       in_database(as: :superuser) do |database|
+        # Drop this user privileges in every schema of the DB
+        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] + 
+          User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema).uniq
+        schemas.each do |s|
+          drop_user_privileges_in_schema(s)
+        end
         # Drop user quota function
         database.run(%Q{ DROP FUNCTION IF EXISTS \"#{self.database_schema}\"._cdb_userquotainbytes()})
         # If user is in an organization should never have public schema, so to be safe check
-        database.run(%Q{ DROP SCHEMA "#{database_schema}" }) unless database_schema == 'public'
+        database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
       end
 
       connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -465,15 +471,56 @@ class User < Sequel::Model
     }
   end
 
-  def reload_avatar
-    self.avatar_url = self.gravatar('//')
-    self.save
+  def load_avatar
+    if self.avatar_url.nil?
+      self.reload_avatar
+    end
   end
 
-  def gravatar(protocol = "http://", size = 128, default_image = "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
-    digest = Digest::MD5.hexdigest(email.downcase)
-    "#{protocol}gravatar.com/avatar/#{digest}?s=#{size}&d=#{protocol}#{URI.encode(default_image)}"
+  def reload_avatar
+    request = Typhoeus::Request.new(
+      self.gravatar(protocol = 'http://', 128, default_image = '404'),
+      method: :get
+    )
+    response = request.run
+    if response.code == 200 
+      # First try to update the url with the user gravatar
+      self.avatar_url = "//#{gravatar_user_url}"
+      self.this.update avatar_url: self.avatar_url
+    else
+      # If the user doesn't have gravatar try to get a cartodb avatar
+      if self.avatar_url.nil? || self.avatar_url == "//#{default_avatar}"
+        # Only update the avatar if the user avatar is nil or the default image
+        self.avatar_url = "//#{cartodb_avatar}"
+        self.this.update avatar_url: self.avatar_url
+      end
+    end 
+  end
+
+  def cartodb_avatar
+    avatar_kind = ['ghost', 'heart', 'marker', 'mountain', 'pacman', 'planet', 'star']
+    avatar_color = ['yellow', 'red', 'orange', 'green']
+    if !Cartodb.config[:avatars_base_url].nil? && !Cartodb.config[:avatars_base_url].empty?
+      avatar_base_url = "#{Cartodb.config[:avatars_base_url]}"
+      return "#{avatar_base_url}/avatar_#{avatar_kind[Random.new.rand(0..avatar_kind.length - 1)]}_#{avatar_color[Random.new.rand(0..avatar_color.length - 1)]}.png"
+    else
+      CartoDB::Logger.info "Attribute avatars_base_url not found in config. Using default avatar"
+      return default_avatar
+    end
+  end
+
+  def default_avatar
+    return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
+  end
+
+  def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
+    "#{protocol}#{self.gravatar_user_url}?s=#{size}&d=#{protocol}#{URI.encode(default_image)}"
   end #gravatar
+
+  def gravatar_user_url
+    digest = Digest::MD5.hexdigest(email.downcase)
+    return "gravatar.com/avatar/#{digest}"
+  end
 
   # Retrive list of user tables from database catalogue
   #
@@ -1542,6 +1589,19 @@ TRIGGER
     [
       "GRANT ALL ON SCHEMA \"#{schema}\" TO \"#{database_username}\""
     ]
+  end
+
+  def drop_user_privileges_in_schema(schema)
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        [self.database_user, self.database_public_user].each do |u|
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+        end
+      end
+    end
   end
 
   def reset_user_schema_permissions

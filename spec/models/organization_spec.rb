@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
 
@@ -190,8 +190,8 @@ describe Organization do
       @organization.get_api_calls.should == (0..30).to_a.sum
     end
     it "should return the sum of the geocodings for all organization users" do
-      User.any_instance.stubs(:get_geocodings).returns(30)
-      @organization.get_geocoding_calls.should == 30 * @organization.users
+      User.any_instance.stubs(:get_geocoding_calls).returns(30)
+      @organization.get_geocoding_calls.should == 30 * @organization.users.size
     end
   end
 

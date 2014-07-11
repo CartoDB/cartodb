@@ -2078,6 +2078,12 @@ exports.Profiler = Profiler;
           for(var k in opt) {
             self.options[k] = opt[k];
           }
+          // use cdn_url if present
+          if (data.cdn_url) {
+            var c = self.options.cdn_url = self.options.cdn_url || {};
+            c.http = data.cdn_url.http || c.http;
+            c.https = data.cdn_url.https || c.https;
+          }
           self.templateUrl = self.url() + "/api/v1/map/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
           self._setReady(true);
         } else {

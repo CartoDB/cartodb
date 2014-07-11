@@ -18,6 +18,9 @@
    <%= csrf_meta_tags %>
 
   <div class="head">
+    <% if !@user.new? && @user.avatar_url.present? %>
+      <img src="<%= @user.avatar_url %>" alt="<%= @user.username %>" title="<%= @user.username %>" />
+    <% end %>
     <h2>
       <% if @user.new? -%>
         Create new user
@@ -143,7 +146,7 @@
               <% else %>
                 You enter
               <% end %>
-              through <%= link_to "#{@user.username}#{Cartodb.config[:session_domain]}", "http://#{@user.username}#{Cartodb.config[:session_domain]}" %></p>
+              through <%= link_to "#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}", "http://#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}" %></p>
             <% end -%>
         </div>
 

@@ -1042,6 +1042,7 @@ class Table < Sequel::Model(:user_tables)
   def convert_column_datatype(database, table_name, column_name, new_type)
     CartoDB::ColumnTypecaster.new(
       user_database:  database,
+      schema:         self.owner.database_schema,
       table_name:     table_name,
       column_name:    column_name,
       new_type:       new_type

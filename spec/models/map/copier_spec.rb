@@ -5,7 +5,7 @@ require_relative '../../../app/models/layer'
 
 describe CartoDB::Map::Copier do
   before do
-    @user_id  = rand(999)
+    @user_id  = UUIDTools::UUID.timestamp_create.to_s
     @map      = OpenStruct.new(
                   user_id: @user_id,
                   to_hash: { user_id: @user_id },

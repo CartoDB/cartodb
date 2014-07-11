@@ -26,6 +26,7 @@ class Api::Json::UsersController < Api::ApplicationController
     # This array is actually a hack. We will only return at most 1 url, but this way is compatible with the old endpoint
     dashboard_urls = []
     dashboard_base_url = ''
+    can_fork = false
 
     if !authenticated_users.empty?
       # It doesn't have a organization username component
@@ -34,6 +35,7 @@ class Api::Json::UsersController < Api::ApplicationController
         # The user is seeing its own dashboard
         if authenticated_users.include?(subdomain)
           dashboard_base_url = CartoDB.base_url(subdomain)
+          can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
         # The user is authenticated but seeing another user dashboard
         else
           user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
@@ -42,12 +44,14 @@ class Api::Json::UsersController < Api::ApplicationController
             dashboard_base_url = CartoDB.base_url(authenticated_users.first)
           else
             dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
+            can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
           end
         end
       else
         # The user is seeing its own organization dashboard
         if authenticated_users.include?(organization_username)
           dashboard_base_url = CartoDB.base_url(subdomain, organization_username)
+          can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
         # The user is seeing a organization dashboard, but not its one
         else
           # Get all users on the referer organization and intersect with the authenticated users list
@@ -77,7 +81,38 @@ class Api::Json::UsersController < Api::ApplicationController
       end
     end
 
-    render json: dashboard_urls
+    render json: {
+      urls: dashboard_urls,
+      can_fork: can_fork
+    }
+
+  end
+
+  private
+
+  # get visualization from url
+  def can_org_user_fork_resource(url, current_user)
+    referer_match = /tables\/([^\/]+)\/public/.match(url)
+    res = nil
+    if referer_match.nil?
+      referer_match = /viz\/([^\/]+)/.match(url)
+      if not referer_match.nil?
+        res = referer_match[1]
+        vis = CartoDB::Visualization::Collection.new.fetch(
+          id: res,
+          user_id: current_user.id
+        ).first
+        vis.related_tables.map { |t|
+          t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        }.all?
+      end
+    else
+      #a public table always can be forked by org user
+      true
+      #res = referer_match[1]
+      #vis = Table.get_by_id_or_name(res, current_user).table_visualization
+      #vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    end
   end
 
 end

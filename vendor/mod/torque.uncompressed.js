@@ -615,7 +615,20 @@ exports.torque.common.TorqueLayer = TorqueLayer;
   };
 
   exports.torque.Event = Event;
+  exports.torque.extend = function(a, b) {
+    for (var k in b) {
+      a[k] = b[k];
+    }
+    return a
+  }
 
+  exports.torque.clone = function(a) {
+    return exports.torque.extend({}, a);
+  }
+
+  exports.torque.isArray = function(value) {
+      return value && typeof value == 'object' && Object.prototype.toString.call(value) == '[object Array]';
+  };
 
   // types
   exports.torque.types = {
@@ -1875,7 +1888,13 @@ exports.Profiler = Profiler;
         for(var k in this.options.extra_params) {
           var v = this.options.extra_params[k];
           if (v) {
-            p.push(k + "=" + encodeURIComponent(v));
+            if (torque.isArray(v)) {
+              for (var i = 0, len = v.length; i < len; i++) {
+                p.push(k + "[]=" + encodeURIComponent(v[i]));
+              }
+            } else {
+              p.push(k + "=" + encodeURIComponent(v));
+            }
           }
         }
         return p.join('&');
@@ -2058,6 +2077,12 @@ exports.Profiler = Profiler;
           var opt = data.metadata.torque[torque_key];
           for(var k in opt) {
             self.options[k] = opt[k];
+          }
+          // use cdn_url if present
+          if (data.cdn_url) {
+            var c = self.options.cdn_url = self.options.cdn_url || {};
+            c.http = data.cdn_url.http || c.http;
+            c.https = data.cdn_url.https || c.https;
           }
           self.templateUrl = self.url() + "/api/v1/map/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
           self._setReady(true);
@@ -3435,7 +3460,7 @@ function GMapsTorqueLayer(options) {
     if(self.key !== k) {
       self.setKey(k);
     }
-  }, this.options);
+  }, torque.clone(this.options));
 
   this.play = this.animator.start.bind(this.animator);
   this.stop = this.animator.stop.bind(this.animator);
@@ -4200,7 +4225,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
       if(self.key !== k) {
         self.setKey(k, { direct: true });
       }
-    }, options);
+    }, torque.clone(options));
 
     this.play = this.animator.start.bind(this.animator);
     this.stop = this.animator.stop.bind(this.animator);

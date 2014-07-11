@@ -116,7 +116,7 @@ div.cartodb-popup.v2.header div.cartodb-popup-header {
   height:auto;
   max-height:62px;
   overflow:hidden;
-  padding:17px 19px 17px 19px;
+  padding:17px 12px;
   background: none;
   background: -ms-linear-gradient(top, #4F9CD7, #2B68A8); 
   background: -o-linear-gradient(right, #4F9CD7, #2B68A8);

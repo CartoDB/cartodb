@@ -18,6 +18,9 @@
    <%= csrf_meta_tags %>
 
   <div class="head">
+    <% if !@user.new? && @user.avatar_url.present? %>
+      <img src="<%= @user.avatar_url %>" alt="<%= @user.username %>" title="<%= @user.username %>" />
+    <% end %>
     <h2>
       <% if @user.new? -%>
         Create new user

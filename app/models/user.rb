@@ -1101,6 +1101,7 @@ class User < Sequel::Model
       self.grant_owner_in_database
     end.join
     self.create_importer_schema
+    self.create_geocoding_schema
     self.load_cartodb_functions
     self.set_database_search_path
     self.reset_database_permissions # Reset privileges
@@ -1191,8 +1192,15 @@ class User < Sequel::Model
   def set_user_privileges_in_importer_schema # MU
     # Privileges in cdb_importer_schema
     self.run_queries_in_transaction(
-      self.grant_all_on_schema_queries('cdb_importer') + self.grant_all_on_schema_queries('cdb'),
+      self.grant_all_on_schema_queries('cdb_importer'),
       true
+    )
+  end
+
+  def set_user_privileges_in_geocoding_schema
+    self.run_queries_in_transaction(
+        self.grant_all_on_schema_queries('cdb'),
+        true
     )
   end
 
@@ -1209,6 +1217,7 @@ class User < Sequel::Model
     self.set_user_privileges_in_public_schema
     self.set_user_privileges_in_own_schema
     self.set_user_privileges_in_importer_schema
+    self.set_user_privileges_in_geocoding_schema
     self.set_privileges_to_publicuser_in_own_schema
   end
 
@@ -1238,8 +1247,11 @@ class User < Sequel::Model
   end
 
   def create_importer_schema
-    create_schema('cdb')
     create_schema('cdb_importer')
+  end
+
+  def create_geocoding_schema
+    create_schema('cdb')
   end
 
   def create_user_schema

@@ -8,7 +8,7 @@
 <% end %>
 
 <script>
-  var table_name          = '"<%=raw @table.owner.username %>".<%= @table.name %>';
+  var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
   var table_id            = '<%= @table.id %>';
   var schema              = <%=raw @table.schema.to_json %>;
   var user_name           = '<%=raw @user.username %>';

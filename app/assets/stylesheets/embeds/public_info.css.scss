@@ -487,7 +487,8 @@ div.cartodb-public-header .inner .options .regular:hover {
   text-decoration: underline;
 }
 
-div.cartodb-public-header a.button.green {
+div.cartodb-public-header a.button.green,
+div.cartodb-public-header a.button.grey {
   padding: 8px 10px 7px;
   font:bold 12px $title-fonts;
   line-height: normal;

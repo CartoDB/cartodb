@@ -391,7 +391,11 @@ module CartoDB
     end
 
     def acl_has_required_fields?(acl_item)
-      acl_item[:entity].present? && acl_item[:type].present? && acl_item[:access].present? && acl_item[:entity].keys - ALLOWED_ENTITY_KEYS == []
+      acl_item[:entity].present? && acl_item[:type].present? && acl_item[:access].present? && acl_has_valid_entity_field?(acl_item)
+    end
+
+    def acl_has_valid_entity_field?(acl_item)
+      acl_item[:entity].keys - ALLOWED_ENTITY_KEYS == []
     end
 
     def acl_has_valid_access?(acl_item)

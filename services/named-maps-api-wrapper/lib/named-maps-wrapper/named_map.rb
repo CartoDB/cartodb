@@ -83,7 +83,11 @@ module CartoDB
 			end # self.normalize_name
 
 			def self.get_template_data( visualization, parent )
-				presenter_options = { full: false, user_name: parent.username }
+				presenter_options = { 
+          full: false, 
+          user_name: parent.username, 
+          viewer_user: OpenStruct.new( :username => parent.username)
+        }
 
         # Layers are zero-based on the client
         layer_num = 0

@@ -34,10 +34,11 @@ module CartoDB
 
     def initialize(arguments)
       @user_database        = arguments.fetch(:user_database)
+      @schema               = arguments.fetch(:schema)
       @table_name           = arguments.fetch(:table_name)
       @column_name          = arguments.fetch(:column_name)
       @new_type             = arguments.fetch(:new_type)
-    end #initialize
+    end
 
     def run
       return if nothing_to_do
@@ -62,7 +63,11 @@ module CartoDB
 
     private
 
-    attr_reader :user_database, :table_name, :old_type
+    attr_reader :user_database, :table_name, :schema, :old_type
+
+    def qualified_table
+      "\"#{schema}\".\"#{table_name}\""
+    end
 
     def nothing_to_do
       @new_type.blank? || @new_type == column_type(@column_name).convert_to_cartodb_type
@@ -73,7 +78,7 @@ module CartoDB
     end #conversion_method_for
 
     def column_type(column_name)
-      user_database.schema(table_name).select { |c|
+      user_database.schema(table_name, schema: @schema).select { |c|
         c[0] == column_name.to_sym
       }.flatten.last.fetch(:db_type).to_s
     end #column_type
@@ -81,7 +86,7 @@ module CartoDB
     def straight_cast(new_type=self.new_type, options = {})
       cast = options.fetch(:cast, "cast(#{column_name} as #{new_type})")
       user_database.run(%Q{
-        ALTER TABLE "#{table_name}"
+        ALTER TABLE #{qualified_table}
         ALTER COLUMN #{column_name}
         TYPE #{new_type}
         USING #{cast}
@@ -105,7 +110,7 @@ module CartoDB
 
       # normalise truthy (anything not false and NULL is true...)
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name}='t'
         WHERE trim(\"#{column_name}\") !~* '^(#{falsy})$'
         AND #{column_name} IS NOT NULL
@@ -113,7 +118,7 @@ module CartoDB
 
       # normalise falsy
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name}='f'
         WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
       })
@@ -125,7 +130,7 @@ module CartoDB
 
       # normalise truthy to 1
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name}='1'
         WHERE #{column_name} = 'true'
         AND #{column_name} IS NOT NULL
@@ -133,7 +138,7 @@ module CartoDB
 
       # normalise falsy to 0
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name}='0'
         WHERE #{column_name} = 'false'
         AND #{column_name} IS NOT NULL
@@ -153,7 +158,7 @@ module CartoDB
       # normalise 0 to falsy else truthy
       # normalise truthy
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name}='t'
         WHERE #{column_name} !~* '^0$'
         AND #{column_name} IS NOT NULL
@@ -161,7 +166,7 @@ module CartoDB
 
       # normalise falsy
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name}='f'
         WHERE #{column_name} ~* '^0$'
       })
@@ -177,7 +182,7 @@ module CartoDB
 
     def normalize_empty_string_to_null
       user_database.run(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET "#{column_name}" = NULL
         WHERE \"#{column_name}\" = ''
       })
@@ -207,7 +212,7 @@ module CartoDB
     def normalize_digit_separators(thousand=nil, decimal=nil)
       return unless thousand && decimal
       user_database.execute(%Q{
-        UPDATE "#{table_name}"
+        UPDATE #{qualified_table}
         SET #{column_name} = replace(
           replace(#{column_name}, '#{thousand}', ''), '#{decimal}', '.'
         )

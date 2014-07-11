@@ -17,11 +17,26 @@
 
   .privacy-status {
     @include inline-block();
-    width:20px;
+    width:auto;
+    min-width:20px;
     height:20px;
     @include border-radius(3px);
     text-decoration: none;
     border:0px;
+
+    // Total shared users
+    span.shared_users {
+      @include inline-block();
+      height:20px;
+      line-height:20px;
+      margin:0 0 0 20px;
+      padding:0 6px 0 5px;
+      color:rgba(black,0.3);
+      border-left:1px solid rgba(black,0.1);
+      font-size:11px;
+      font-weight:bold;
+      text-decoration:none;
+    }
 
     @mixin privacy-disabled($color) {
       @include opacity(0.5);

@@ -74,7 +74,7 @@ class Table < Sequel::Model(:user_tables)
 
     attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
-      attrs[:name] = "\"#{owner.database_schema}\".#{attrs[:name]}"
+      attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end
     attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization, { real_privacy: true, user: viewer_user }).to_poro
     attrs
@@ -184,8 +184,8 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
-    table = CartoDB::Visualization::Collection.new.fetch(query_filters).first
-    table = table.table unless table.nil?
+    vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u| u.user_id == query_filters[:user_id] }.first
+    table = vis.table unless vis.nil?
 
     if rx.match(id_or_name) && table.nil?
       table_temp = Table.where(id: id_or_name).first
@@ -205,7 +205,9 @@ class Table < Sequel::Model(:user_tables)
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
-      table_name.split('.').reverse
+      table_name, schema = table_name.split('.').reverse
+      # remove quotes from schema
+      [table_name, schema.gsub('"', '')]
     else
       [table_name, nil]
     end
@@ -536,7 +538,7 @@ class Table < Sequel::Model(:user_tables)
     self.create_default_visualization
     self.send_tile_style_request
 
-    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
+    grant_select_to_tiler_user
     set_default_table_privacy
 
     @force_schema = nil
@@ -558,6 +560,10 @@ class Table < Sequel::Model(:user_tables)
     self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
+  end
+
+  def grant_select_to_tiler_user
+    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
   end
 
   def optimize

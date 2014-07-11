@@ -116,7 +116,8 @@ class Organization < Sequel::Model
           :avatar_url => u.avatar_url
         }
       },
-      :website          => self.website
+      :website          => self.website,
+      :avatar_url       => self.avatar_url
     }
   end
 

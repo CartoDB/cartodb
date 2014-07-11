@@ -5,6 +5,7 @@ require 'redis'
 require_relative 'relocator/dumper'
 require_relative 'relocator/queue_consumer'
 require_relative 'relocator/dumper'
+require_relative 'relocator/tester'
 require_relative 'relocator/table_dumper'
 require_relative 'relocator/trigger_loader'
 module CartoDB
@@ -25,7 +26,7 @@ module CartoDB
           :target => {
             :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'}, :schema => 'public',
           },
-          :create => true, :add_roles => true}
+          :create => true, :add_roles => true, :user_object => nil}
 
         @config = Utils.deep_merge(default_config, config)
 
@@ -39,6 +40,7 @@ module CartoDB
           @dumper = TableDumper.new(config: @config)
         end
         @consumer = QueueConsumer.new(config: @config)
+        @tester   = Tester.new(config: @config) 
       end
 
       def migrate
@@ -61,9 +63,12 @@ module CartoDB
         end
       end
 
+      def compare
+        @tester.compare_state
+      end
 
       def rollback
-        if config[:mode] == :relocate
+        if @config[:mode] == :relocate
           @trigger_loader.unload_triggers
           @consumer.empty_queue
         end

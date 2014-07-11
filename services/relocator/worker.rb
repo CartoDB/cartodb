@@ -18,11 +18,12 @@ module CartoDB
         relocator = CartoDB::Relocator::Relocation.new(
           source: {conn: {host: user.database_host, port: port,
                           dbname: user.database_name,
-                          user: 'postgres'}, schema: 'public'},
+                          user: 'postgres'}, schema: user.database_schema},
           target: {conn: {host: org.owner.database_host,  port: port,
                           dbname: org.owner.database_name, user: user.database_username}, schema: user.username},
           redis: {host: Cartodb.config[:redis]['host'], port: Cartodb.config[:redis]['port']},
-          dbname: user.database_name, username: user.database_username, :mode => :organize
+          dbname: user.database_name, username: user.database_username, :mode => :organize,
+          user_object: user
         )
         begin
           user.database_host = org.owner.database_host
@@ -34,23 +35,30 @@ module CartoDB
           rescue => e
             puts "Error #{e} while creating user. Ignoring as it probably already existed"
           end
+          begin
+            user.create_public_db_user
+          rescue => e
+            puts "Error #{e} while creating public user. Ignoring as it probably already existed"
+          end
           user.monitor_user_notification
           user.create_user_schema
           user.set_database_search_path
           user.grant_user_in_database
           user.set_user_privileges
           relocator.migrate
+          user.set_statement_timeouts
+          relocator.compare
           relocator.finalize
-          user.create_public_db_user
           user.set_user_privileges
-          user.reload_quota_trigger
+          user.rebuild_quota_trigger
           user.set_user_as_organization_member
+          user.enable_remote_db_user
           user.save
           user.create_in_central
           user.update_in_central
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"
-          puts "Rolling back (changing back database_host and dropping triggers) in 5 secs"
+          puts "Rolling back in 5 secs"
           sleep 5
           relocator.rollback
         end
@@ -66,11 +74,14 @@ module CartoDB
           target: {conn: {host: new_database_host,  port: new_database_port,
                           dbname: user.database_name, user: 'postgres'}},
           redis: {host: Cartodb.config[:redis]['host'], port: Cartodb.config[:redis]['port']},
-          dbname: user.database_name, username: user.database_username
+          dbname: user.database_name, username: user.database_username,
+          user_object: user
         )
         begin
           relocator.migrate
           user.database_host = new_database_host
+          user.set_statement_timeouts
+          relocator.compare
           puts user.save #this will terminate all connections
           user.enable_remote_db_user
           relocator.finalize

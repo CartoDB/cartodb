@@ -144,8 +144,12 @@
     h3 {
       @include inline-block();
       width:auto;
-      max-width:85%;
+      max-width:76%;
       margin-right:10px;
+    }
+
+    .table-title > a {
+      text-decoration: none;
     }
 
     // Description

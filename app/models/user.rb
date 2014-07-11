@@ -50,7 +50,6 @@ class User < Sequel::Model
   }
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
-  SCHEMAS = %w( public cdb_importer )
   GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
@@ -1102,6 +1101,7 @@ class User < Sequel::Model
       self.grant_owner_in_database
     end.join
     self.create_importer_schema
+    self.create_geocoding_schema
     self.load_cartodb_functions
     self.set_database_search_path
     self.reset_database_permissions # Reset privileges
@@ -1197,6 +1197,13 @@ class User < Sequel::Model
     )
   end
 
+  def set_user_privileges_in_geocoding_schema
+    self.run_queries_in_transaction(
+        self.grant_all_on_schema_queries('cdb'),
+        true
+    )
+  end
+
   def set_privileges_to_publicuser_in_own_schema # MU
     # Privileges in user schema for publicuser
     self.run_queries_in_transaction(
@@ -1210,6 +1217,7 @@ class User < Sequel::Model
     self.set_user_privileges_in_public_schema
     self.set_user_privileges_in_own_schema
     self.set_user_privileges_in_importer_schema
+    self.set_user_privileges_in_geocoding_schema
     self.set_privileges_to_publicuser_in_own_schema
   end
 
@@ -1240,6 +1248,10 @@ class User < Sequel::Model
 
   def create_importer_schema
     create_schema('cdb_importer')
+  end
+
+  def create_geocoding_schema
+    create_schema('cdb')
   end
 
   def create_user_schema
@@ -1550,7 +1562,7 @@ TRIGGER
   def reset_database_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        schemas = ['public', 'cdb_importer', 'cartodb'].uniq
+        schemas = %w(public cdb_importer cdb cartodb)
 
         ['PUBLIC', CartoDB::PUBLIC_DB_USER].each do |u|
           user_database.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM #{u}")

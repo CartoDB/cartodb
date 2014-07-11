@@ -1,5 +1,5 @@
-// version: 3.10.1
-// sha: 270a2bc86c4cbf9e8b6256fa6e79371cc58bce4d
+// version: 3.10.2
+// sha: 7330fa0363f836ccda1450b11a897ef16b885ae1
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.10.1';
+    cdb.VERSION = '3.10.2';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2212,6 +2212,8 @@ Map.prototype = {
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
+        jsonpCallback: self.options.instanciateCallback,
+        cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
           if(0 === self._queue.length) {
@@ -2267,7 +2269,13 @@ Map.prototype = {
       params.push("map_key=" + api_key);
     }
     if(extra_params.auth_token) {
-      params.push("auth_token=" + extra_params.auth_token);
+      if (_.isArray(extra_params.auth_token)) {
+        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
+          params.push("auth_token[]=" + extra_params.auth_token[i]);
+        }
+      } else {
+        params.push("auth_token=" + extra_params.auth_token);
+      }
     }
     // mark as the request is being done
     this._waiting = true;
@@ -2469,9 +2477,15 @@ Map.prototype = {
       var k = included[i]
       var p = params[k];
       if(p) {
-        var q = encodeURIComponent(p);
-        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-        url_params.push(k + "=" + q);
+        if (_.isArray(p)) {
+          for (var j = 0, len = p.length; j < len; j++) {
+            url_params.push(k + "[]=" + encodeURIComponent(p[j]));
+          }
+        } else {
+          var q = encodeURIComponent(p);
+          q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+          url_params.push(k + "=" + q);
+        }
       }
     }
     return url_params.join('&')
@@ -2646,7 +2660,15 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var extra_params = this.options.extra_params || {};
     var token = extra_params.auth_token;
     if (token) {
-      url += "?auth_token=" + token
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
     }
     return url;
   },

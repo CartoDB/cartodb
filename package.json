@@ -1,6 +1,6 @@
 {
     "name": "cartodb.js",
-    "version": "3.10.2-dev",
+    "version": "3.10.2",
     "description": "CartoDB javascript library",
     "repository": {
         "type": "git",
@@ -12,10 +12,11 @@
         "email": "wadus@cartodb.com"
     },
     "contributors": [
-        "Javier Alvarez <jmedina@vizzuality.com>",
+        "Javier Alvarez <jmedina@cartodb.com>",
         "Javier Alvarez <xabel@vizzuality.com>",
-        "Javier Arce <javierarce@vizzuality.com>",
-        "Javier Santana <jsantana@vizzuality.com>"
+        "Javier Arce <javierarce@cartodb.com>",
+        "Javier Santana <jsantana@cartodb.com>",
+        "Raul Ochoa <rochoa@cartodb.com>"
     ],
     "licenses": [{
       "type": "BSD"

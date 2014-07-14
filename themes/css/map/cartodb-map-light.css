@@ -1815,3 +1815,137 @@ div.cartodb-timeslider p {
   text-align:center;
   color:#999999;
 }
+
+.cartodb-header {
+  display:none;
+  position:absolute;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  line-height: normal;
+  z-index: 99999;
+}
+
+.cartodb-header .content {
+  padding: 10px;
+}
+
+.cartodb-header .content a {
+  color: #fff;
+}
+
+.cartodb-header .content a:hover {
+  color: #ccc;
+}
+
+.cartodb-header .content .title {
+  display:none;
+  margin: 0 0 5px 0;
+  line-height: normal;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight: bold;
+  font-size:15px;
+  color: #fff;
+}
+
+.cartodb-header .content .description {
+  display:none;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  line-height: normal;
+  color: #fff;
+  font-size:13px;
+}
+
+.cartodb-overlay.overlay-text{
+  position:absolute;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+
+  font-size: 20px;
+  line-height: normal;
+  color: #fff;
+
+  -ms-word-break: break-all;
+  word-break: break-all;
+
+  // Non standard for webkit
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+
+  z-index: 99999;
+}
+
+.cartodb-overlay.overlay-text.mobile {
+  display:none;
+}
+
+.cartodb-overlay.overlay-text .content {
+  padding: 10px;
+}
+
+.cartodb-overlay.overlay-text .text {
+
+  font-size: 20px;
+  line-height: normal;
+  color: #fff;
+
+  -ms-word-break: break-all;
+  word-break: break-all;
+
+  // Non standard for webkit
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+
+}
+.cartodb-widget.overlay-text .text strong {
+  font-weight: bold;
+}
+
+.cartodb-widget.overlay-text .text em {
+  font-style: italic;
+}
+
+.cartodb-widget.overlay-text .text a {
+  color: inherit;
+}
+
+.cartodb-widget.overlay-text .text a:hover {
+  color: #333;
+}
+
+.cartodb-overlay.image-overlay {
+  position:absolute;
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+
+  z-index: 99999;
+}
+
+.cartodb-overlay.image-overlay .content {
+  padding: 10px;
+}
+
+.cartodb-overlay.image-overlay img {
+  display: block;
+}
+
+.cartodb-map-wrapper.with_header div.cartodb-zoom,
+.cartodb-map-wrapper.with_header div.cartodb-share,
+.cartodb-map-wrapper.with_header div.cartodb-searchbox,
+.cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
+  margin-top: 60px;
+}

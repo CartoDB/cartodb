@@ -22,9 +22,15 @@ var Overlay = {
     if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
+
     var widget = t(data, vis);
-    widget.type = type;
-    return widget;
+
+    if (widget) {
+      widget.type = type;
+      return widget;
+    }
+
+    return false;
   }
 };
 
@@ -175,7 +181,7 @@ var Vis = cdb.core.View.extend({
   },
 
   doOnOrientationChange: function() {
-    this.setMapPosition();
+    //this.setMapPosition();
   },
 
   /**
@@ -241,13 +247,15 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
-    var scrollwheel = true;
-
     options = options || {};
 
     this._applyOptions(data, options);
     this.cartodb_logo = options.cartodb_logo;
-    scrollwheel       = options.scrollwheel;
+
+    console.log("logo", this.cartodb_logo, options.cartodb_logo);
+    console.log("scrollwheel", data.scrollwheel, options.scrollwheel);
+
+    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -333,10 +341,6 @@ var Vis = cdb.core.View.extend({
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (options.shareable && !device) {
-      this.container.find(".cartodb-map-wrapper").append('<div class="cartodb-share" style="display: block;"><a href="#"></a></div>');
-    }
-
     if (!device && options.legends) {
       this.addLegends(data.layers);
     } else {
@@ -347,7 +351,7 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(options.time_slider) {
+    if (options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
       if (torque.length) {
@@ -397,14 +401,14 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    // Create the overlays
-    for (var i in data.overlays) {
-      this.addOverlay(data.overlays[i]);
-    }
+    // Sort the overlays by its internal order
+    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order; });
+
+    this._createOverlays(overlays, options);
 
     var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
 
-    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
+    //if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -413,11 +417,46 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addFullScreen: function() {
+  _createOverlays: function(overlays, options) {
 
-    this.addOverlay({
-      type: 'fullscreen'
-    });
+    _.each(overlays, function(data) {
+
+      var type = data.type;
+
+      var overlay = this.addOverlay(data);
+
+      if (overlay && (type in options) && options[type] === false) overlay.hide();
+
+      var opt = JSON.parse(data.options)
+
+      if (type == 'share'          && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'     && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
+
+      if (type == 'header') {
+
+        if ((options.title == undefined && opt.extra.show_title) || (options.description == undefined && opt.extra.show_description)) {
+
+          if (options.title != undefined)       overlay.model.set("show_title", options.title);
+          else overlay.model.set("show_title", opt.extra.show_title);
+
+          if (options.description != undefined) overlay.model.set("show_description", options.description);
+          else overlay.model.set("show_description", opt.extra.show_description);
+
+          $(".cartodb-map-wrapper").addClass("with_header");
+
+        } else {
+          overlay.model.set("show_title", options.title);
+          overlay.model.set("show_description", options.description);
+
+          if (options.title || options.description) $(".cartodb-map-wrapper").addClass("with_header");
+        }
+
+
+      }
+
+    }, this);
 
   },
 
@@ -482,6 +521,7 @@ var Vis = cdb.core.View.extend({
     });
 
     this.mapView.addOverlay(this.legends);
+
   },
 
   addOverlay: function(overlay) {
@@ -494,12 +534,8 @@ var Vis = cdb.core.View.extend({
         this.loader = v;
       }
 
-      if (overlay.type == "header") {
-        this.addView(v);
-        this.container.append(v.el);
-      } else {
-        this.mapView.addOverlay(v);
-      }
+      this.mapView.addOverlay(v);
+
       this.overlays.push(v);
 
       v.bind('clean', function() {
@@ -515,7 +551,7 @@ var Vis = cdb.core.View.extend({
       // Set map position correctly taking into account
       // header height
       if (overlay.type == "header") {
-        this.setMapPosition();
+        //this.setMapPosition();
       }
     }
     return v;
@@ -525,13 +561,13 @@ var Vis = cdb.core.View.extend({
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
-      search: false,
-      title: false,
-      description: false,
+      //search: false,
+      //title: false,
+      //description: false,
+      //layer_selector: false,
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
-      layer_selector: false,
       searchControl: false,
       infowindow: true,
       tooltip: true,
@@ -567,36 +603,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    // remove search if the vizualization does not contain it
-    if (opt.search || opt.searchControl) {
-      vizjson.overlays.push({
-         type: "search"
-      });
-    }
-
-    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
-      vizjson.overlays.unshift({
-        type: "header",
-        shareable: opt.shareable ? true: false,
-        url: vizjson.url
-      });
-
-    }
-
-    if (opt.shareable && !device) {
-      vizjson.overlays.push({
-        type: "share",
-        url: vizjson.url
-      });
-    }
-
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!device && opt.layer_selector) {
-      vizjson.overlays.push({
-        type: "layer_selector"
-      });
-    }
 
     if (!opt.title) {
       vizjson.title = null;
@@ -610,12 +617,16 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (!opt.zoomControl) {
-      remove_overlay('zoom');
-    }
-
     if (!opt.loaderControl) {
       remove_overlay('loader');
+    }
+
+    // We remove certain overlays in mobile devices
+    if (device) {
+      remove_overlay('share');
+      remove_overlay('layer_selector');
+      remove_overlay('fullscreen');
+      remove_overlay('zoom');
     }
 
     // if bounds are present zoom and center will not taken into account
@@ -667,18 +678,7 @@ var Vis = cdb.core.View.extend({
   },
 
   // Set map top position taking into account header height
-  setMapPosition: function() {
-    var map_h = this.$el.outerHeight();
-
-    if (map_h !== 0) {
-      var header_h = this.$(".cartodb-header:not(.cartodb-popup)").outerHeight();
-      this.$el
-        .find("div.cartodb-map-wrapper")
-        .css("top", header_h);
-
-      this.mapView.invalidateSize();
-    }
-  },
+  setMapPosition: function() { },
 
   createLayer: function(layerData, opts) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
@@ -894,7 +894,7 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
-      this.$el.find(".cartodb-fullscreen").hide();
+      //this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
     }
     if(this.layersLoading === 0) {
@@ -906,7 +906,7 @@ var Vis = cdb.core.View.extend({
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
-      this.$el.find(".cartodb-fullscreen").fadeIn(150);
+      //this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
     this.layersLoading--;
     // check less than 0 because loading event sometimes is
@@ -967,7 +967,9 @@ var Vis = cdb.core.View.extend({
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function() {
-      self.setMapPosition();
+
+      //self.setMapPosition();
+      
       var c = self.mapConfig;
       if (c.view_bounds_sw) {
         self.mapView.map.setBounds([

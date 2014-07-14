@@ -635,7 +635,7 @@ class Table < Sequel::Model(:user_tables)
 
   def create_logo_overlay(member, order)
 
-    options = { :display => true }
+    options = { :display => true, :x => 10, :y => 40 }
 
     member = CartoDB::Overlay::Member.new(
       order: order,

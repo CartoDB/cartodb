@@ -40,7 +40,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token')
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);

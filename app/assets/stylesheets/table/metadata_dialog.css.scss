@@ -1,0 +1,131 @@
+/**
+ *  Metadata dialog styles
+ */
+
+@import "compass/css3/box-sizing";
+@import "compass/css3/images";
+@import "common/form-elements";
+
+.metadata_dialog {
+
+  @include default-form-info();
+  @include default-input();
+  @include default-textarea();
+
+  section.block div.content {
+    padding: 22px 40px 40px 40px;
+  }
+
+  input,
+  textarea {
+    @include box-sizing(border-box);
+    width:412px;
+    padding:14px 11px;
+  }
+
+  textarea { height: 90px; }
+
+  label {
+    display:block;
+    margin:0 0 7px 0;
+  }
+
+  .hint {
+    margin: 4px 0 0 0;
+    padding: 4px 3px 0 0;
+    font-size: 12px;
+    text-align: right;
+    color: #ccc;
+
+    strong { margin-right: 3px; }
+    em { margin-right: 3px; font-style: italic; }
+
+  }
+
+  .modal.error {
+    display:none;
+    width:600px!important;
+  }
+
+  section.block div.foot  {
+    padding: 0 40px 35px 40px;
+    border:none;
+  }
+ 
+  section.block ul {
+    position:relative;
+    @include box-sizing(border-box);
+    @include inline-block();
+    max-height:100px!important;
+    min-width:215px;
+    max-width:410px;
+    padding: 8px 11px;
+    background:white;
+    border: 1px solid #C0C1C2;
+    @include border-radius(4px);
+
+    li { border:none; }
+
+    li.tagit-choice {
+      margin:0 3px 3px 0;
+      padding:0;
+      background:#4086C3;
+      border:1px solid #2B5B85;
+      @include border-radius(3px);
+      font:normal 11px "Arial";
+      color:#FFFFFF;
+
+      span.tagit-label {
+        @include inline-block();
+        padding:2px 5px;
+        font-size: 14px;
+        border-right:1px solid #2B5B85;
+        line-height:19px;
+      }
+
+      a.tagit-close {
+        position:relative;
+        @include inline-block();
+        width:auto;
+        height:100%;
+        margin:0;
+        line-height:19px;
+
+        &:hover {
+          span.text-icon {color:white;}
+          text-decoration:none;
+        }
+
+        span.text-icon {
+          display:block;
+          margin:0;
+          padding:0 5px 0px 7px;
+          line-height:19px;
+          color:#1F4362;
+        }
+      }
+    }
+
+    li.tagit-new {
+      padding:0;
+      margin-top:0;
+      margin-bottom:0;
+      width: 100px;
+
+      input {
+        @include inline-block();
+        &:focus { @include box-shadow(none); }
+        position:relative;
+        top:0;
+        right:auto;
+        left:auto;
+        bottom:auto;
+        margin:3px 0 3px 5px;
+        padding:0;
+        font-size:14px;
+        line-height:15px;
+      }
+    }
+  }
+
+}

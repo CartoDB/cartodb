@@ -10,14 +10,28 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
-.overlay.text.dejavu .content > .text {
-  font-family: 'DejaVu Sans Book', sans-serif;
+.overlay.text.droid .content > .text {
+  font-family: 'Droid Sans', serif;
+  font-weight: 400;
+  strong { 
+    font-family: 'Droid Sans', serif;
+    font-weight: 700;
+  }
 }
-.overlay.text.unifont .content > .text {
-  font-family: 'unifont Medium', sans-serif;
+
+.overlay.text.roboto .content > .text {
+  font-family: 'Roboto Slab', serif;
+  font-weight: 400;
 }
+
+.overlay.text.vollkorn .content > .text {
+  font-family: 'Vollkorn', serif!important;
+  font-weight: 400;
+}
+
 .overlay.text.open_sans .content > .text {
   font-family: 'Open Sans', sans-serif;
+  strong { font-family: 'Open Sans Bold', sans-serif; }
 }
 
 .cartodb-logo {

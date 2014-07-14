@@ -272,7 +272,7 @@
             'legends': bool_fn
           });
 
-          <% if (@visualization.password_protected? or @visualization.organization?) %>
+          <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
               opt.auth_token = [];
               <% @protected_map_tokens.each do |token| %>
                   opt.auth_token.push('<%= token %>');

@@ -126,7 +126,9 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render layout: false }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
-  rescue
+  rescue => e
+    stacktrace = e.to_s + e.backtrace.join
+    CartoDB::Logger.info "Problem loading public map", stacktrace
     embed_forbidden
   end #public_map
 
@@ -155,6 +157,9 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'public_map', layout: false }
     end
+  rescue => e
+    stacktrace = e.to_s + e.backtrace.join
+    CartoDB::Logger.info "Problem loading org public map", stacktrace
   end
 
   def show_organization_embed_map

@@ -153,8 +153,8 @@
         color:white;
       }
 
-      // Description
-      div.description {
+      // Metadata
+      div.metadata {
         display:block;
         margin: 0 0 0 11px;
 
@@ -190,21 +190,23 @@
 
          li .privacy {
 
-            &.public             i { background: rgba(#D0DDA5, 1) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-            &.link_protected     i { background: rgba(#FFA64D, 1) sprite( $table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
-            &.password_protected i { background: rgba(#FFA64D, 1) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
-            &.organization       i { background: rgba(#FFA64D, 1) sprite( $table-sprites, lock_user,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-            &.private            i { background: rgba(#FF7373, 1) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+           margin-left: 11px;
 
-            &.public             i:hover { background-color: rgba(#D0DDA5, 1); }
-            &.link_protected     i:hover { background-color: rgba(#FFA64D, 1); }
-            &.password_protected i:hover { background-color: rgba(#FFA64D, 1); }
-            &.organization       i:hover { background-color: rgba(#FFA64D, 1); }
-            &.private            i:hover { background-color: rgba(#FF7373, 1); }
+            &.public             i { background: rgba(#D0DDA5, .9) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+            &.link_protected     i { background: rgba(#FFA64D, .9) sprite( $table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
+            &.password_protected i { background: rgba(#FFA64D, .9) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
+            &.organization       i { background: rgba(#FFA64D, .9) sprite( $table-sprites, lock_user,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+            &.private            i { background: rgba(#FF7373, .9) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+            &.public:hover            i { background-color: rgba(#D0DDA5, 1); }
+            &.link_protected:hover    i { background-color: rgba(#FFA64D, 1); }
+            &.password_protected:hoveri { background-color: rgba(#FFA64D, 1); }
+            &.organization:hover      i { background-color: rgba(#FFA64D, 1); }
+            &.private:hover           i { background-color: rgba(#FF7373, 1); }
 
             i {
               @include inline-block();
-              margin: 0 0 0 11px;
+              margin: 0;
               width: 20px; height: 20px;
               background: rgba(#EEE, .8) sprite($table-sprites,  lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat;
               @include simple-transition(all, 150ms);

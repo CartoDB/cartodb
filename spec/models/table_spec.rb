@@ -2108,4 +2108,13 @@ describe Table do
     end
   end
 
+  describe 'Valid names for new table' do
+    it 'Regression for CDB-3446' do
+      new_name = 'table_'
+      Table.get_valid_table_name(new_name, {
+        name_candidates: %w(table_ table_1)
+      }).should_not == 'table_1'
+    end
+  end
+
 end

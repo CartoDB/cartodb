@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.2-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8dac4cbc89dd6d32c278b6a9863e0d2bd29c6060
+// sha: f95db2254a5a51696afbdc60e35954b17efa01f2
 (function() {
   var root = this;
 
@@ -20743,6 +20743,9 @@ this.LZMA = LZMA;
         'geo/geocoder.js',
         'geo/geometry.js',
         'geo/map.js',
+        'geo/ui/text.js',
+        'geo/ui/image.js',
+        'geo/ui/share.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
         'geo/ui/mobile.js',
@@ -22504,6 +22507,262 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 }
 );
+cdb.geo.ui.Text = cdb.core.View.extend({
+
+  className: "cartodb-overlay overlay-text",
+
+  events: {
+  },
+
+  default_options: {
+  },
+
+  initialize: function() {
+
+    _.defaults(this.options, this.default_options);
+
+    this.template = this.options.template;
+
+  },
+
+  _applyStyle: function() {
+
+    var style      = this.model.get("style");
+
+    var boxColor   = style["box-color"];
+    var boxOpacity = style["box-opacity"];
+    var boxWidth   = style["box-width"];
+
+    this.$text.css(style);
+    this.$text.css("font-size", style["font-size"] + "px");
+
+    var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
+    + ',' + parseInt(boxColor.slice(-4,-2),16)
+    + ',' + parseInt(boxColor.slice(-2),16)
+    +', ' + boxOpacity + ' )';
+
+    this.$el.css({
+      backgroundColor: rgbaCol,
+      maxWidth:        boxWidth
+    });
+
+  },
+
+  _place: function() {
+
+    var landscapeDirection = this.model.get("extra").landscapeDirection;
+    var portraitDirection  = this.model.get("extra").portraitDirection;
+
+    if (portraitDirection == 'bottom') {
+
+      this.$el.css({
+        top: this.model.get("y")
+      });
+
+      this.$el.css({
+        top: "auto",
+        bottom: this.model.get("y")
+      });
+
+    } else {
+      this.$el.css({
+        top: this.model.get("y")
+      });
+    }
+
+    if (landscapeDirection == 'right') {
+
+      this.$el.css({
+        left: this.model.get("x")
+      });
+
+      this.$el.css({
+        left: "auto",
+        right: this.model.get("x")
+      });
+
+    } else {
+      this.$el.css({
+        left: this.model.get("x")
+      });
+    }
+
+  },
+
+
+  render: function() {
+
+    this._place();
+
+    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
+
+    this.$text = this.$el.find(".text");
+
+    this._applyStyle();
+
+    return this;
+
+  }
+
+});
+cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
+
+  className: "cartodb-overlay image-overlay",
+
+  events: { },
+
+  default_options: { },
+
+  initialize: function() {
+
+    _.defaults(this.options, this.default_options);
+
+    this.template = this.options.template;
+
+  },
+
+  _applyStyle: function() {
+
+    var style      = this.model.get("style");
+
+    var boxColor   = style["box-color"];
+    var boxOpacity = style["box-opacity"];
+    var boxWidth   = style["box-width"];
+
+    this.$text.css(style);
+
+    var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
+    + ',' + parseInt(boxColor.slice(-4,-2),16)
+    + ',' + parseInt(boxColor.slice(-2),16)
+    +', ' + boxOpacity + ' )';
+
+    this.$el.css({
+      backgroundColor: rgbaCol
+    });
+
+    this.$el.find("img").css({ width: boxWidth });
+
+  },
+
+  render: function() {
+
+    this._place();
+
+    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
+
+    this.$text = this.$el.find(".text");
+
+    this._applyStyle();
+
+    return this;
+
+  }
+
+});
+cdb.geo.ui.Share = cdb.core.View.extend({
+
+  className: "cartodb-share",
+
+  events: {
+    "click a": "_onClick"
+  },
+  default_options: { },
+
+  initialize: function() {
+
+    _.bindAll(this, "_onClick");
+
+    _.defaults(this.options, this.default_options);
+
+    this.template = this.options.template;
+
+  },
+
+  _applyStyle: function() { },
+
+  _onClick: function(e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.dialog.show();
+
+  },
+
+  createDialog: function() {
+
+    var data = this.options;
+    data.template = "";
+
+    // Add the complete url for facebook and twitter
+    if (location.href) {
+      data.share_url = encodeURIComponent(location.href);
+    } else {
+      data.share_url = data.url;
+    }
+
+    var template = cdb.core.Template.compile(
+      data.template || '\
+      <div class="mamufas">\
+      <div class="block modal {{modal_type}}">\
+      <a href="#close" class="close">x</a>\
+      <div class="head">\
+      <h3>Share this map</h3>\
+      </div>\
+      <div class="content">\
+      <div class="buttons">\
+      <h4>Social</h4>\
+      <ul>\
+      <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
+      <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+      <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
+      </ul>\
+      </div><div class="embed_code">\
+      <h4>Embed this map</h4>\
+      <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
+      </div>\
+      </div>\
+      </div>\
+      </div>\
+      ',
+      data.templateType || 'mustache'
+    );
+
+    var url = location.href;
+
+    url = url.replace("public_map", "embed_map");
+
+    var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
+
+    var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
+
+    this.dialog = new cdb.ui.common.ShareDialog({
+      title: data.map.get("title"),
+      description: data.map.get("description"),
+      model: this.options.vis.map,
+      code: code,
+      url: data.url,
+      public_map_url: public_map_url,
+      share_url: data.share_url,
+      template: template,
+      target: $(".cartodb-share a"),
+      size: $(document).width() > 400 ? "" : "small",
+      width: $(document).width() > 400 ? 430 : 216
+    });
+
+    $(".cartodb-map-wrapper").append(this.dialog.render().$el);
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(_.extend(this.model.attributes)));
+
+    return this;
+
+  }
+
+});
 /**
  * View to control the zoom of the map.
  *
@@ -25091,19 +25350,84 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   }
 
 });
-
 cdb.geo.ui.Header = cdb.core.View.extend({
 
-  className: 'cartodb-header',
+  className: "cartodb-header",
 
-  initialize: function() {},
+  events: { },
+
+  default_options: { },
+
+  initialize: function() {
+
+    _.defaults(this.options, this.default_options);
+
+    this.template = this.options.template;
+
+    this.model.on("change:show_title", this._onChangeTitle, this);
+    this.model.on("change:show_description", this._onChangeDescription, this);
+
+  },
+
+  _applyStyle: function() { },
+
+  _onChangeTitle: function() {
+
+    if (this.model.get("show_title")) this.showTitle();
+    else this.hideTitle();
+
+  },
+
+  _onChangeDescription: function() {
+
+    if (this.model.get("show_description")) this.showDescription();
+    else this.hideDescription();
+
+
+  },
+
+  showTitle: function() {
+
+    this.$el.find(".title").show();
+    this.$el.show();
+
+  },
+
+  showDescription: function() {
+
+    this.$el.find(".description").show();
+    this.$el.show();
+
+  },
+
+  hideTitle: function() {
+
+    this.$el.find(".title").hide();
+    if (!this.model.get("show_decription")) this.$el.hide();
+
+  },
+
+  hideDescription: function() {
+
+    this.$el.find(".description").hide();
+    if (!this.model.get("show_title")) this.$el.hide();
+
+  },
 
   render: function() {
-    this.$el.html(this.options.template(this.options));
-    return this;
-  }
-});
 
+    var extra = this.model.get("extra");
+
+    this.$el.html(this.template(extra));
+
+    if (this.model.get("extra").show_title) this.showTitle();
+    if (this.model.get("extra").show_description) this.showDescription();
+
+    return this;
+
+  }
+
+});
 cdb.geo.ui.Search = cdb.core.View.extend({
 
   className: 'cartodb-searchbox',
@@ -25747,9 +26071,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
 
-    this.model = new cdb.core.Model({
-      allowWheelOnFullscreen: false
-    });
+    if (!this.model) {
+      this.model = new cdb.core.Model({
+        allowWheelOnFullscreen: false
+      });
+    }
 
     this._addWheelEvent();
 
@@ -26129,6 +26455,8 @@ Map.prototype = {
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
+        jsonpCallback: self.options.instanciateCallback,
+        cache: !!self.options.instanciateCallback,
         success: function(data) {
           loadingTime.end();
           if(0 === self._queue.length) {
@@ -30558,9 +30886,15 @@ var Overlay = {
     if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
+
     var widget = t(data, vis);
-    widget.type = type;
-    return widget;
+
+    if (widget) {
+      widget.type = type;
+      return widget;
+    }
+
+    return false;
   }
 };
 
@@ -30711,7 +31045,7 @@ var Vis = cdb.core.View.extend({
   },
 
   doOnOrientationChange: function() {
-    this.setMapPosition();
+    //this.setMapPosition();
   },
 
   /**
@@ -30777,13 +31111,15 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
-    var scrollwheel = true;
-
     options = options || {};
 
     this._applyOptions(data, options);
     this.cartodb_logo = options.cartodb_logo;
-    scrollwheel       = options.scrollwheel;
+
+    console.log("logo", this.cartodb_logo, options.cartodb_logo);
+    console.log("scrollwheel", data.scrollwheel, options.scrollwheel);
+
+    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -30869,10 +31205,6 @@ var Vis = cdb.core.View.extend({
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (options.shareable && !device) {
-      this.container.find(".cartodb-map-wrapper").append('<div class="cartodb-share" style="display: block;"><a href="#"></a></div>');
-    }
-
     if (!device && options.legends) {
       this.addLegends(data.layers);
     } else {
@@ -30883,7 +31215,7 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(options.time_slider) {
+    if (options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
       if (torque.length) {
@@ -30933,14 +31265,14 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    // Create the overlays
-    for (var i in data.overlays) {
-      this.addOverlay(data.overlays[i]);
-    }
+    // Sort the overlays by its internal order
+    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order; });
+
+    this._createOverlays(overlays, options);
 
     var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
 
-    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
+    //if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -30949,11 +31281,46 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addFullScreen: function() {
+  _createOverlays: function(overlays, options) {
 
-    this.addOverlay({
-      type: 'fullscreen'
-    });
+    _.each(overlays, function(data) {
+
+      var type = data.type;
+
+      var overlay = this.addOverlay(data);
+
+      if (overlay && (type in options) && options[type] === false) overlay.hide();
+
+      var opt = JSON.parse(data.options)
+
+      if (type == 'share'          && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'     && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
+
+      if (type == 'header') {
+
+        if ((options.title == undefined && opt.extra.show_title) || (options.description == undefined && opt.extra.show_description)) {
+
+          if (options.title != undefined)       overlay.model.set("show_title", options.title);
+          else overlay.model.set("show_title", opt.extra.show_title);
+
+          if (options.description != undefined) overlay.model.set("show_description", options.description);
+          else overlay.model.set("show_description", opt.extra.show_description);
+
+          $(".cartodb-map-wrapper").addClass("with_header");
+
+        } else {
+          overlay.model.set("show_title", options.title);
+          overlay.model.set("show_description", options.description);
+
+          if (options.title || options.description) $(".cartodb-map-wrapper").addClass("with_header");
+        }
+
+
+      }
+
+    }, this);
 
   },
 
@@ -31018,6 +31385,7 @@ var Vis = cdb.core.View.extend({
     });
 
     this.mapView.addOverlay(this.legends);
+
   },
 
   addOverlay: function(overlay) {
@@ -31030,12 +31398,8 @@ var Vis = cdb.core.View.extend({
         this.loader = v;
       }
 
-      if (overlay.type == "header") {
-        this.addView(v);
-        this.container.append(v.el);
-      } else {
-        this.mapView.addOverlay(v);
-      }
+      this.mapView.addOverlay(v);
+
       this.overlays.push(v);
 
       v.bind('clean', function() {
@@ -31051,7 +31415,7 @@ var Vis = cdb.core.View.extend({
       // Set map position correctly taking into account
       // header height
       if (overlay.type == "header") {
-        this.setMapPosition();
+        //this.setMapPosition();
       }
     }
     return v;
@@ -31061,13 +31425,13 @@ var Vis = cdb.core.View.extend({
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
-      search: false,
-      title: false,
-      description: false,
+      //search: false,
+      //title: false,
+      //description: false,
+      //layer_selector: false,
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
-      layer_selector: false,
       searchControl: false,
       infowindow: true,
       tooltip: true,
@@ -31103,36 +31467,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    // remove search if the vizualization does not contain it
-    if (opt.search || opt.searchControl) {
-      vizjson.overlays.push({
-         type: "search"
-      });
-    }
-
-    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
-      vizjson.overlays.unshift({
-        type: "header",
-        shareable: opt.shareable ? true: false,
-        url: vizjson.url
-      });
-
-    }
-
-    if (opt.shareable && !device) {
-      vizjson.overlays.push({
-        type: "share",
-        url: vizjson.url
-      });
-    }
-
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!device && opt.layer_selector) {
-      vizjson.overlays.push({
-        type: "layer_selector"
-      });
-    }
 
     if (!opt.title) {
       vizjson.title = null;
@@ -31146,12 +31481,16 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (!opt.zoomControl) {
-      remove_overlay('zoom');
-    }
-
     if (!opt.loaderControl) {
       remove_overlay('loader');
+    }
+
+    // We remove certain overlays in mobile devices
+    if (device) {
+      remove_overlay('share');
+      remove_overlay('layer_selector');
+      remove_overlay('fullscreen');
+      remove_overlay('zoom');
     }
 
     // if bounds are present zoom and center will not taken into account
@@ -31203,18 +31542,7 @@ var Vis = cdb.core.View.extend({
   },
 
   // Set map top position taking into account header height
-  setMapPosition: function() {
-    var map_h = this.$el.outerHeight();
-
-    if (map_h !== 0) {
-      var header_h = this.$(".cartodb-header:not(.cartodb-popup)").outerHeight();
-      this.$el
-        .find("div.cartodb-map-wrapper")
-        .css("top", header_h);
-
-      this.mapView.invalidateSize();
-    }
-  },
+  setMapPosition: function() { },
 
   createLayer: function(layerData, opts) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
@@ -31430,7 +31758,7 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
-      this.$el.find(".cartodb-fullscreen").hide();
+      //this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
     }
     if(this.layersLoading === 0) {
@@ -31442,7 +31770,7 @@ var Vis = cdb.core.View.extend({
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
-      this.$el.find(".cartodb-fullscreen").fadeIn(150);
+      //this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
     this.layersLoading--;
     // check less than 0 because loading event sometimes is
@@ -31503,7 +31831,9 @@ var Vis = cdb.core.View.extend({
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function() {
-      self.setMapPosition();
+
+      //self.setMapPosition();
+      
       var c = self.mapConfig;
       if (c.view_bounds_sw) {
         self.mapView.map.setBounds([
@@ -31563,18 +31893,29 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    layer.setInteractivity(fields);
+    // try to change interactivity, it the layer is a named map 
+    // it's inmutable so it'a assumed the interactivity already has
+    // the fields it needs
+    try {
+      layer.setInteractivity(fields);
+    } catch(e) {
+    }
     layer.setInteraction(true);
 
     layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
       var render_fields = [];
-      for(var k in data) {
-        render_fields.push({
-          title: k,
-          value: data[k],
-          index: 0
-        });
+      var d;
+      for (var f = 0; f < fields.length; ++f) {
+        var field = fields[f];
+        if (d = data[field]) {
+          render_fields.push({
+            title: field,
+            value: d,
+            index: 0
+          });
+        }
       }
+
       infowindow.model.set({
         content:  {
           fields: render_fields,
@@ -31644,8 +31985,82 @@ cdb.vis.INFOWINDOW_TEMPLATE = {
 cdb.vis.Vis = Vis;
 
 })();
-
 (function() {
+
+cdb.vis.Overlay.register('logo', function(data, vis) {
+
+});
+
+cdb.vis.Overlay.register('image', function(data, vis) {
+
+  var options = JSON.parse(data.options);
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Image({
+    model: new cdb.core.Model(options),
+    template: template
+  });
+
+  return widget.render();
+
+});
+
+cdb.vis.Overlay.register('text', function(data, vis) {
+
+  var options = JSON.parse(data.options);
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Text({
+    model: new cdb.core.Model(options),
+    template: template,
+    className: "cartodb-overlay overlay-text " + options.device
+  });
+
+  return widget.render();
+
+});
+
+cdb.vis.Overlay.register('zoom_info', function(data, vis) {
+  console.log("placeholder for the zoom_info overlay");
+});
+
+cdb.vis.Overlay.register('header', function(data, vis) {
+
+  var options = JSON.parse(data.options);
+
+  console.log("options", options);
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="title">{{{ title }}}</div>\
+    <div class="description">{{{ description }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Header({
+    model: new cdb.core.Model(options),
+    template: template
+  });
+
+  return widget.render();
+
+});
 
 // map mobile control
 cdb.vis.Overlay.register('mobile', function(data, vis) {
@@ -31685,6 +32100,7 @@ cdb.vis.Overlay.register('zoom', function(data, vis) {
   });
 
   return zoom.render();
+
 });
 
 // Tiles loader
@@ -31704,7 +32120,7 @@ cdb.vis.Overlay.register('time_slider', function(data, viz) {
 
 
 // Header to show informtion (title and description)
-cdb.vis.Overlay.register('header', function(data, vis) {
+cdb.vis.Overlay.register('_header', function(data, vis) {
   var MAX_SHORT_DESCRIPTION_LENGTH = 100;
 
   // Add the complete url for facebook and twitter
@@ -31808,6 +32224,10 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 // layer_selector
 cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
+  var options = JSON.parse(data.options);
+
+  //if (!options.display) return;
+
   var template = cdb.core.Template.compile(
     data.template || '\
       <a href="#/change-visibility" class="layers">Visible layers<div class="count"></div></a>\
@@ -31823,6 +32243,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   );
 
   var layerSelector = new cdb.geo.ui.LayerSelector({
+    model: new cdb.core.Model(options),
     mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template,
@@ -31851,7 +32272,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
           legend[visible ? 'show': 'hide']();
         }
 
-      } 
+      }
 
     });
   }
@@ -31863,6 +32284,8 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 // fullscreen
 cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
+  var options = JSON.parse(data.options);
+
   var template = cdb.core.Template.compile(
     data.template || '<a href="#"></a>',
     data.templateType || 'mustache'
@@ -31870,6 +32293,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
   var fullscreen = new cdb.ui.common.FullScreen({
     doc: "#map > div",
+    model: new cdb.core.Model(options),
     mapView: vis.mapView,
     template: template
   });
@@ -31878,72 +32302,35 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
 });
 
-
 // share content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
-  // Add the complete url for facebook and twitter
-  if (location.href) {
-    data.share_url = encodeURIComponent(location.href);
-  } else {
-    data.share_url = data.url;
-  }
+  var options = JSON.parse(data.options);
 
   var template = cdb.core.Template.compile(
-    data.template || '\
-      <div class="mamufas">\
-        <div class="block modal {{modal_type}}">\
-          <a href="#close" class="close">x</a>\
-          <div class="head">\
-            <h3>Share this map</h3>\
-          </div>\
-          <div class="content">\
-            <div class="buttons">\
-              <h4>Social</h4>\
-              <ul>\
-                <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
-                <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
-                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
-              </ul>\
-            </div><div class="embed_code">\
-             <h4>Embed this map</h4>\
-             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
-           </div>\
-          </div>\
-        </div>\
-      </div>\
-    ',
+    data.template || '<a href="#"></a>',
     data.templateType || 'mustache'
   );
 
-  var url = location.href;
-
-  url = url.replace("public_map", "embed_map");
-
-  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
-
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
-
-  var dialog = new cdb.ui.common.ShareDialog({
-    title: data.map.get("title"),
-    description: data.map.get("description"),
-    model: vis.map,
-    code: code,
-    url: data.url,
-    public_map_url: public_map_url,
-    share_url: data.share_url,
-    template: template,
-    target: $(".cartodb-share a"),
-    size: $(document).width() > 400 ? "" : "small",
-    width: $(document).width() > 400 ? 430 : 216
+  var widget = new cdb.geo.ui.Share({
+    model: new cdb.core.Model(options),
+    vis: vis,
+    map: vis.map,
+    template: template
   });
 
-  return dialog.render();
+  widget.createDialog();
+
+  return widget.render();
 
 });
 
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
+
+  var options = JSON.parse(data.options);
+
+  //if (!options.display) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -31962,6 +32349,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   });
 
   return search.render();
+
 });
 
 // tooltip
@@ -31975,9 +32363,10 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
     data.layer = layer;
   }
 
-  if(!data.layer) {
+  if (!data.layer) {
     throw new Error("layer is null");
   }
+
   data.layer.setInteraction(true);
   var tooltip = new cdb.geo.ui.Tooltip(data);
   return tooltip;

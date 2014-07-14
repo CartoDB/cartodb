@@ -109,6 +109,9 @@ class Admin::VisualizationsController < ApplicationController
     if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
       return(show_organization_public_map)
     end
+    CartoDB::Logger.info 'public_map username', current_user.username
+    CartoDB::Logger.info 'public_map vis name', @visualization.name
+    CartoDB::Logger.info 'public_map has permission', @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"

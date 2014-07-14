@@ -1467,10 +1467,11 @@ class Table < Sequel::Model(:user_tables)
       suffix = "_#{count}"
       name = name[0..62-suffix.length]
       name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
+      # Re-check for duplicated underscores
+      name = name.gsub(/_{2,}/, '_')
     end
 
-    # Re-check for duplicated underscores
-    return name.gsub(/_{2,}/, '_')
+    name
   end
 
   def get_new_column_type(invalid_column)

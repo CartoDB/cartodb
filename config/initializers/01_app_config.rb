@@ -19,6 +19,18 @@ module Cartodb
       raise "Missing the following config keys on config/app_config.yml: #{(@config[:mandatory_keys].map(&:to_sym) - @config.keys).join(', ')}"
     end
     ActionDispatch::Http::URL.tld_length = @config[:session_domain].split('.').delete_if {|i| i.empty? }.length - 1
+   
+    if !@config[:mailer].nil?
+      # AuthSMTP
+      CartoDB::Application.config.action_mailer.delivery_method = :smtp
+      CartoDB::Application.config.action_mailer.smtp_settings = { 
+        :address              => Cartodb.config[:mailer]['address'],
+        :port                 => Cartodb.config[:mailer]['port'],
+        :user_name            => Cartodb.config[:mailer]['user_name'],
+        :password             => Cartodb.config[:mailer]['password'],
+        :authentication       => Cartodb.config[:mailer]['authentication'],
+        :enable_starttls_auto => Cartodb.config[:mailer]['enable_starttls_auto'] }
+    end
   end
 
   def self.error_codes

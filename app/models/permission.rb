@@ -35,9 +35,127 @@ module CartoDB
 
     ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url]
 
+    def old_acl
+      @old_acl
+    end
+
     # @return Hash
     def acl
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
+    end
+
+    def real_entity_type
+      if self.entity_type == 'vis'
+        if self.entity.type == 'table'
+          return 'table'
+        else
+          return 'visualization'
+        end
+      else
+        return self.entity_type
+      end
+    end
+
+    def notify_permission_change(old_acl = @old_acl, new_acl = self.acl)
+      begin
+        changes = self.compare_new_acl(old_acl, new_acl)
+        changes.each do |c, v|
+          # At the moment we just check users permissions
+          if c == 'user'
+            v.each do |i, perm|
+              affected_user = User.where(:id => i).first
+              # Perm is an array. For the moment just one type of permission can
+              # be applied to a type of object. But with an array this is open
+              # to more than one permission change at a time
+              perm.each do |p|
+                if self.real_entity_type == 'visualization'
+                  if p['action'] == 'grant'
+                    # At this moment just inform as read grant
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_user.id)
+                    end
+                  elsif p['action'] == 'revoke'
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::UnshareVisualization, self.entity.id, affected_user.id)
+                    end
+                  end
+                elsif self.real_entity_type == 'table'
+                  if p['action'] == 'grant'
+                    # At this moment just inform as read grant
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_user.id)
+                    end
+                  elsif p['action'] == 'revoke'
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::UnshareTable, self.entity.id, affected_user.id)
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      rescue => e
+        CartoDB::Logger.info "Problem sending notification mail"
+        CartoDB::Logger.info e
+      end
+    end
+
+    def compare_new_acl(old_acl = @old_acl, new_acl = self.acl)
+      temp_old_acl = {}
+      # Convert the old and new acls to a better format for searching
+      old_acl.each do |i|
+        if !temp_old_acl.has_key?(i[:type])
+          temp_old_acl[i[:type]] = {}
+        end
+        temp_old_acl[i[:type]][i[:id]] = i
+      end
+      temp_new_acl = {}
+      new_acl.each do |i|
+        if !temp_new_acl.has_key?(i[:type])
+          temp_new_acl[i[:type]] = {}
+        end
+        temp_new_acl[i[:type]][i[:id]] = i
+      end
+      
+      # Iterate through the new acl and compare elements with the old one
+      permissions_change = {}
+      temp_new_acl.each do |pt, pv|
+        permissions_change[pt] = {}
+        pv.each do |oi, iacl|
+          # See if a specific permission exists in the old acl
+          # If the new acl is greater than the old we suppose that write
+          # permissions were granted. Otherwise they were revoked
+          # If the permissions doesn't exist in the old acl it has been granted
+          # After the comparisson both old and new acl are removed from the
+          # temporal structure
+          if !temp_old_acl[pt].nil? && !temp_old_acl[pt][oi].nil?
+            case temp_new_acl[pt][oi][:access] <=> temp_old_acl[pt][oi][:access]
+            when 1
+              permissions_change[pt][oi] = [{'action' => 'grant', 'type' => 'w'}]
+            when -1
+              permissions_change[pt][oi] = [{'action' => 'revoke', 'type' => 'w'}]
+            end
+            temp_old_acl[pt].delete(oi)
+          else
+            permissions_change[pt][oi] = [{'action' => 'grant', 'type' => temp_new_acl[pt][oi][:access]}]
+          end
+          temp_new_acl[pt].delete(oi)
+        end
+      end
+
+      # Iterate through the old acl. All the permissions in this structure are
+      # supposed so be revokes
+      temp_old_acl.each do |pt, pv|
+        if permissions_change[pt].nil?
+          permissions_change[pt] = {}
+        end
+        pv.each do |oi, iacl|
+          permissions_change[pt][oi] = [{'action' => 'revoke', 'type' => temp_old_acl[pt][oi][:access]}]
+        end
+      end
+
+      return permissions_change
     end
 
     # Format:
@@ -163,11 +281,29 @@ module CartoDB
       self.updated_at = Time.now
     end
 
+    def after_create
+      # Hack. I need to set the old_acl to the same value than the new because
+      # the new? sequel method doesn't work as expected
+      @old_acl = self.acl
+    end
+
     def after_save
+      # WARNING: The sequel new? method doesn't work as expected in all the 
+      # after callbacks. It will always return false
+      notify_permission_change unless new?
       update_shared_entities unless new?
     end
 
+    def after_destroy
+      # Hack. I need to set the new acl as empty so all the old acls are
+      # considered revokes
+      self.notify_permission_change(@old_acl, [])
+    end
+
     def before_destroy
+      # Hack. I need to set the old_acl to the current acl before destroying 
+      # so after that I can be notified about real revokes
+      @old_acl = self.acl
       destroy_shared_entities
     end
 

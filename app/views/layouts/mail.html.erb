@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta content="en-us" http-equiv="Content-Language">
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <title><%= yield :subject %></title>
+  <style type="text/css">
+    body {
+      background: #f1f1f1;
+      font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-text-size-adjust: none;
+    }   
+    .letter p { 
+      margin: 0px 0px 20px;
+      padding: 0px;
+    }   
+    .contact-module p { 
+      line-height: 1.5em; 
+    }   
+    h1, h2, h3, h4, h5, h6 {
+      color: #333 !important;
+    }   
+    h2 a { 
+      color: #397DB9 !important;
+    }   
+    a, a:link, a:visited, a:hover, a:active {
+      color: #397DB9;
+    }   
+    img {
+      border: 0;
+    }   
+    th {
+      text-align: left;
+    }  
+    /* Hotmail and Yahoo specific code */
+    .ReadMsgBody { width: 100%; }
+    .ExternalClass { width: 100%; }
+    .yshortcuts { color: #999; }
+    .yshortcuts a span { color: #777; }
+    /* Hotmail and Yahoo specific code */
+  </style>
+</head>
+<body style="background: #f1f1f1;">
+  <table width="660" border="0" cellspacing="0" cellpadding="20" class="mainwrap" style="margin:0px auto; background: #f1f1f1;">
+    <tr>
+      <td>
+        <table width="604" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>
+              <table width="604" border="0" cellspacing="0" cellpadding="0" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                <tr><!-- body -->
+                  <td style="padding-bottom: 40px;">
+                    <table width="604" border="0" cellspacing="0" cellpadding="0" class="letter">
+                      <tr>
+                        <td align="center" valign="bottom" height="3" style="line-height: 0px; font-size: 0; height: 3px;">
+                          <img src="http://cartodb.s3.amazonaws.com/mails/editor/<%= yield :header_img %>" width="604" height="3" alt="" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width:602px; padding: 0 1px;">
+                          <table width="602" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="font: 16px/1.5em 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #666; background: #<%= yield :header_color %>; padding: 40px; width: 598px; border-left: solid 1px #<%= yield :header_color %>; border-right: solid 1px #<%= yield :header_color %>; text-align: center;">
+                                <img src="http://cartodb.s3.amazonaws.com/mails/editor/cartodb-logo.png" width="131" height="24" alt="CARTODB" />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="font: 16px/1.5em 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #666; background: #fff; padding: 40px; width: 598px; border-left: solid 1px #ccc; border-right: solid 1px #ccc;">
+                                <%= yield :body %>
+
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" valign="top" height="8" style="line-height: 0px; height: 13px;">
+                          <img src="http://cartodb.s3.amazonaws.com/mails/editor/bottom.png" width="604" height="7" alt="" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font: 15px/1.4em 'Helvetica Neue', Helvetica, sans-serif; color: #666; padding:8px 20px 3px;">
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td align="middle" style="font-size: 13px; font-family:'Helvetica Neue', Helvetica; color: #999;">2014 CartoDB</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr><!-- body -->
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+

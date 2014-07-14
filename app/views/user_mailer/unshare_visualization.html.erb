@@ -1,0 +1,8 @@
+<% content_for(:header_color) {"FF7373"} %>
+<% content_for(:header_img) {"top-red.png"} %>
+  
+<% content_for :body do %>
+
+<p style="text-align: center;">Your colleague <%= @visualization.user.username %> has stopped sharing the visualization <strong><%= @visualization.name %></strong> with you so it may dissapear from your dashboard.</p>
+
+<% end %>

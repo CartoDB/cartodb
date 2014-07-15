@@ -13,6 +13,9 @@ module CartoDB
     # @param entity_id String (uuid)
     # @param entity_type String
 
+    # Another hack to resolve the problem with Sequel new? method
+    @new_object = false
+
     @old_acl = nil
 
     ACCESS_READONLY   = 'r'
@@ -52,10 +55,9 @@ module CartoDB
       end
     end
 
-    def notify_permission_change(old_acl = @old_acl, new_acl = self.acl)
+    def notify_permission_change(permission_changes)
       begin
-        changes = self.compare_new_acl(old_acl, new_acl)
-        changes.each do |c, v|
+        permission_changes.each do |c, v|
           # At the moment we just check users permissions
           if c == 'user'
             v.each do |i, perm|
@@ -72,7 +74,7 @@ module CartoDB
                     end
                   elsif p['action'] == 'revoke'
                     if p['type'].include?('r')
-                      Resque.enqueue(Resque::UserJobs::Mail::UnshareVisualization, self.entity.id, affected_user.id)
+                      Resque.enqueue(Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.entity.user.username, affected_user.id)
                     end
                   end
                 elsif self.real_entity_type == 'table'
@@ -83,7 +85,7 @@ module CartoDB
                     end
                   elsif p['action'] == 'revoke'
                     if p['type'].include?('r')
-                      Resque.enqueue(Resque::UserJobs::Mail::UnshareTable, self.entity.id, affected_user.id)
+                      Resque.enqueue(Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.entity.user.username, affected_user.id)
                     end
                   end
                 end
@@ -97,7 +99,7 @@ module CartoDB
       end
     end
 
-    def compare_new_acl(old_acl = @old_acl, new_acl = self.acl)
+    def self.compare_new_acl(old_acl, new_acl)
       temp_old_acl = {}
       # Convert the old and new acls to a better format for searching
       old_acl.each do |i|
@@ -277,29 +279,25 @@ module CartoDB
       self.updated_at = Time.now
     end
 
-    def after_create
-      # Hack. I need to set the old_acl to the same value than the new because
-      # the new? sequel method doesn't work as expected
-      # @old_acl = self.acl
+    def after_update
+      if !@old_acl.nil?
+        self.notify_permission_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
+      end
     end
 
     def after_save
-      # WARNING: The sequel new? method doesn't work as expected in all the 
-      # after callbacks. It will always return false
-      # notify_permission_change unless new?
       update_shared_entities unless new?
     end
 
     def after_destroy
       # Hack. I need to set the new acl as empty so all the old acls are
       # considered revokes
-      # self.notify_permission_change(@old_acl, [])
+      # We need to pass the current acl as old_acl and the new_acl as something
+      # empty to recreate a revoke by deletion
+      self.notify_permission_change(CartoDB::Permission.compare_new_acl(self.acl, []))
     end
 
     def before_destroy
-      # Hack. I need to set the old_acl to the current acl before destroying 
-      # so after that I can be notified about real revokes
-      # @old_acl = self.acl
       destroy_shared_entities
     end
 

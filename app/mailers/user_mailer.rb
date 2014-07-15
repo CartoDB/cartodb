@@ -20,15 +20,19 @@ class UserMailer < ActionMailer::Base
          :subject => "Someone has shared a CartoDB visualization with you"
   end
 
-  def unshare_table(table, user)
-    @table_visualization = table
+  def unshare_table(table_visualization_name, table_visualization_owner_name, user)
+    @table_visualization_name = table_visualization_name
+    @table_visualization_owner_name = table_visualization_owner_name
+    #@table_visualization = table
     @user = user
     mail :to => @user.email,
          :subject => "Someone has stopped sharing a CartoDB table with you"
   end
   
-  def unshare_visualization(visualization, user)
-    @visualization = visualization
+  def unshare_visualization(visualization_name, visualization_owner_name, user)
+    @visualization_name = visualization_name
+    @visualization_owner_name = visualization_owner_name
+    #@visualization = visualization
     @user = user
     mail :to => @user.email,
          :subject => "Someone has stopped sharing a CartoDB visualization with you"

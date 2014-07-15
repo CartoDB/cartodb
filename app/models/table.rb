@@ -679,7 +679,11 @@ class Table < Sequel::Model(:user_tables)
   end #invalidate_cache_for
 
   def varnish_key
-    "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+    if owner.cartodb_extension_version_pre_mu?
+      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
+    else
+      "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+    end
   end
 
   # adds the column if not exists or cast it to timestamp field

@@ -54,7 +54,7 @@
 
   </head>
   <body>
-    <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? %>
+    <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
       <div id="map"></div>
       <div id="not_supported_dialog" style="display: none">
         <h2>CartoDB</h2>
@@ -163,9 +163,12 @@
           'legends': bool_fn
         });
 
-        <% if (@visualization.password_protected?) %>
-          opt.auth_token = '<%= @protected_map_token %>';
-          opt.https = true; // when auth_token is used tiles should be fetch using https
+        <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
+            opt.auth_token = [];
+            <% @protected_map_tokens.each do |token| %>
+                opt.auth_token.push('<%= token %>');
+            <% end %>
+            opt.https = true; // when auth_token is used tiles should be fetch using https
         <% end %>
 
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>

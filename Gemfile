@@ -26,7 +26,7 @@ gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
-gem 'therubyracer'                      # Required by ejs
+gem 'therubyracer',            '0.12.1' # Required by ejs
 
 
 group :production, :staging do
@@ -69,6 +69,9 @@ gem 'sinatra',                  '1.3.4', require: 'sinatra/base'
 
 # Markdown
 gem 'redcarpet', '3.1.1'
+
+# CartoDB Central client
+gem 'httparty',                 '0.9'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

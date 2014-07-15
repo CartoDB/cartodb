@@ -12,11 +12,15 @@ describe CartoDB::ColumnTypecaster do
                       )
   end
 
-  it 'raises NonConvertibleData when trying to cast 
-  a non-supported time format to date' do
+  after do
+    @user.destroy
+  end
+
+  pending 'raises NonConvertibleData when trying to cast a non-supported time format to date' do
     @user.in_database { |database| @db = database }
 
     table_name  = "test_#{rand(999)}"
+    schema      = @user.database_schema
     dataset     = @db[table_name.to_sym]
     time_text   = 'Mon Oct 13 1997 15:32:18 GMT+0200 (CEST)'
 
@@ -28,6 +32,7 @@ describe CartoDB::ColumnTypecaster do
 
     typecaster  = CartoDB::ColumnTypecaster.new(
       user_database:  @db,
+      schema:         schema,
       table_name:     table_name,
       column_name:    :time_with_timezone,
       new_type:       'date'

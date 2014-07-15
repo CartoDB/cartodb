@@ -38,6 +38,10 @@ describe Visualization::NameChecker do
     )
   end
 
+  after do
+    @user.destroy
+  end
+
   describe '#available?' do
     it 'returns true if passed visualization name is available for the user' do
       checker = Visualization::NameChecker.new(@user)

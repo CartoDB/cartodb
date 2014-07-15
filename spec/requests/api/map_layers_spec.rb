@@ -13,6 +13,11 @@ feature "API 1.0 map layers management" do
     host! 'test.localhost.lan'
     @table = create_table(user_id: @user.id)
     @map = create_map(user_id: @user.id, table_id: @table.id)
+    @table.reload
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   let(:params) { { api_key: @user.api_key } }
@@ -23,7 +28,7 @@ feature "API 1.0 map layers management" do
 
     data = { kind: 'gmapsbase', infowindow: infowindow, options: opts }
 
-    post_json v1_map_layers_url(params.merge(map_id: @map.id)), data do |response|
+    post_json api_v1_maps_layers_create_url(params.merge(map_id: @map.id)), data do |response|
       response.status.should be_success
       @map.layers.size.should == 1
       response.body[:id].should == @map.layers.first.id
@@ -38,7 +43,7 @@ feature "API 1.0 map layers management" do
     layer = Layer.create kind: 'carto', order: 1, options: { opt1: 'value' }, infowindow: {:fields => ['column1', 'column2']}, tooltip: {:fields => ['column1', 'column3']}
     @map.add_layer layer
 
-    get_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
+    get_json api_v1_maps_layers_show_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
       response.status.should be_success
       response.body[:id].should    eq layer.id
       response.body[:kind].should  eq 'carto'
@@ -56,7 +61,7 @@ feature "API 1.0 map layers management" do
     @map.add_layer layer2
     @map.add_layer layer3
 
-    get_json v1_map_layers_url(params.merge(map_id: @map.id)) do |response|
+    get_json api_v1_maps_layers_index_url(params.merge(map_id: @map.id)) do |response|
       response.status.should be_success
       response.body[:total_entries].should == 3
       response.body[:layers].size.should == 3
@@ -72,7 +77,7 @@ feature "API 1.0 map layers management" do
 
     data = { options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 3, kind: 'carto' }
 
-    put_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
+    put_json api_v1_maps_layers_update_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
       response.body[:options].should == { 'opt1' => 'value' }
@@ -89,7 +94,7 @@ feature "API 1.0 map layers management" do
 
     data = { options: { opt1: 'value' }, infowindow: ['column1', 'column2'], order: 999, kind: 'carto' }
 
-    put_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
+    put_json api_v1_maps_layers_update_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
       response.status.should eq 400
       layer.reload.order.should_not eq 999
     end
@@ -99,13 +104,10 @@ feature "API 1.0 map layers management" do
     layer = Layer.create kind: 'carto'
     @map.add_layer layer
     
-    delete_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
+    delete_json api_v1_maps_layers_destroy_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
       response.status.should eq 204
       expect { layer.refresh }.to raise_error
     end
   end
 
-  after(:all) do
-    @user.destroy
-  end
 end

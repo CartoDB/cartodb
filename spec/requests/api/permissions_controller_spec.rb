@@ -36,7 +36,6 @@ describe Api::Json::PermissionsController do
         password: 'clientex3',
         avatar_url: nil
     )
-
   end
 
   before(:each) do
@@ -47,10 +46,23 @@ describe Api::Json::PermissionsController do
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'
     }
+    Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+    Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+    vis_entity_mock = mock
+    Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+  end
+
+  after(:all) do
+    @user.destroy
+    @user2.destroy
+    @user3.destroy
   end
 
   describe 'GET /api/v1/perm' do
     it 'returns an existing permission' do
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
       acl = [
         {
           type: Permission::TYPE_USER,
@@ -89,7 +101,10 @@ describe Api::Json::PermissionsController do
       ]
 
       permission = CartoDB::Permission.new(
-          owner_id: @user.id, owner_username: @user.username
+          owner_id: @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    entity_type
       )
       permission.acl = acl
       permission.save
@@ -101,6 +116,9 @@ describe Api::Json::PermissionsController do
       owner_fragment = response.fetch(:owner)
       owner_fragment[:id].should eq permission.owner_id
       owner_fragment[:username].should eq permission.owner_username
+      entity_fragment = response.fetch(:entity)
+      entity_fragment[:id].should eq entity_id
+      entity_fragment[:type].should eq entity_type
       Time.parse(response.fetch(:updated_at)).to_i.should eq permission.updated_at.to_i
       Time.parse(response.fetch(:created_at)).to_i.should eq permission.created_at.to_i
       response.fetch(:acl).should eq response_acl
@@ -109,6 +127,9 @@ describe Api::Json::PermissionsController do
 
   describe 'POST /api/v1/perm' do
     it 'modifies an existing permission' do
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
       acl_initial = [ ]
       client_acl_modified = [
         {
@@ -133,7 +154,10 @@ describe Api::Json::PermissionsController do
       client_acl_final = [ ]
 
       permission = CartoDB::Permission.new(
-          owner_id: @user.id, owner_username: @user.username
+          owner_id: @user.id,
+          owner_username: @user.username,
+          entity_id:      entity_id,
+          entity_type:    entity_type
       )
       permission.acl = acl_initial
       permission.save
@@ -147,6 +171,9 @@ describe Api::Json::PermissionsController do
       owner_fragment = response.fetch(:owner)
       owner_fragment[:id].should eq permission.owner_id
       owner_fragment[:username].should eq permission.owner_username
+      entity_fragment = response.fetch(:entity)
+      entity_fragment[:id].should eq entity_id
+      entity_fragment[:type].should eq entity_type
       Time.parse(response.fetch(:created_at)).to_i.should eq permission.created_at.to_i
       Time.parse(response.fetch(:updated_at)).to_i.should_not eq permission.updated_at.to_i
       response.fetch(:acl).should eq client_acl_modified_expected
@@ -160,7 +187,10 @@ describe Api::Json::PermissionsController do
   describe 'PUT/DELETE /api/v1/perm' do
     it "makes sure we don't expose unwanted call types" do
       permission = CartoDB::Permission.new(
-          owner_id: @user.id, owner_username: @user.username
+          owner_id: @user.id,
+          owner_username: @user.username,
+          entity_id:      UUIDTools::UUID.timestamp_create.to_s,
+          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.save
 
@@ -171,12 +201,6 @@ describe Api::Json::PermissionsController do
         delete "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", nil, @headers
       }.to raise_exception ActionController::RoutingError
     end
-  end
-
-  after(:all) do
-    @user.destroy
-    @user2.destroy
-    @user3.destroy
   end
 
 end

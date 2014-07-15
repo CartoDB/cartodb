@@ -1,0 +1,26 @@
+
+  /**
+   *  Styles for watching notifier view.
+   *  Showing users editing the current visualization
+   */
+
+  @import "compass/css3/border-radius";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+
+  .watching-notifier {
+    position:fixed;
+    bottom:-50px;
+    right:0;
+    padding:8px 10px;
+    background:#FF4D4D;
+    color:white;
+    font-size:13px;
+    z-index:100;
+    @include border-top-left-radius(3px);
+    @include transform-style("linear");
+    @include transition-property("bottom");
+    @include transition-duration(250ms);
+
+    &.active { bottom:0 }
+  }

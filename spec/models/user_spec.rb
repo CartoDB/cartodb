@@ -16,10 +16,16 @@ describe User do
   before(:each) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+  end
+
+  after(:all) do
+    @user.destroy
+    @user2.destroy
   end
 
   it "should set a default database_host" do
-    @user.database_host.should eq 'localhost'
+    @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
   end
 
   it "should set a default api_key" do
@@ -93,50 +99,126 @@ describe User do
     end
   end
 
-  describe "organization checks" do
+  it "should not allow a username in use by an organization" do
+    organization = create_org('testusername', 10.megabytes, 1)
+    @user.username = 'testusername'
+    @user.valid?.should be_false
+    @user.username = 'wadus'
+    @user.valid?.should be_true
+  end
+
+  describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
-      organization = FactoryGirl.create(:organization, seats: 1)
-      orguser = FactoryGirl.create(:user, organization: organization)
-      user = User.new
-      user.organization = organization
-      user.valid?.should be_false
-      user.errors.keys.should include(:organization)
-      orguser.destroy
+
+      organization = create_org('testorg', 10.megabytes, 1)
+      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user1.organization = organization
+      user1.save
+      organization.owner_id = user1.id
+      organization.save
+      organization.reload
+      user1.reload
+
+      # Don't remove this line or the spec will fail (magic):
+      puts "Organization users: #{organization.users.count}"
+
+      user2 = new_user
+      user2.organization = organization
+      user2.valid?.should be_false
+      user2.errors.keys.should include(:organization)
+
+      organization.destroy
+      user1.destroy
     end
 
-    it "should be valid if his organization has enough seats" do
-      organization = FactoryGirl.create(:organization, seats: 1)
+    it 'should be valid if his organization has enough seats' do
+      organization = create_org('testorg', 10.megabytes, 1)
       user = User.new
       user.organization = organization
       user.valid?
       user.errors.keys.should_not include(:organization)
+      organization.destroy
     end
-    
+
     it "should not be valid if his organization doesn't have enough disk space" do
-      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+      organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
       user = User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?.should be_false
       user.errors.keys.should include(:quota_in_bytes)
+      organization.destroy
     end
 
-    it "should be valid if his organization has enough disk space" do
-      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+    it 'should be valid if his organization has enough disk space' do
+      organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(9.megabytes)
       user = User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
       user.valid?
       user.errors.keys.should_not include(:quota_in_bytes)
+      organization.destroy
+    end
+
+    it 'should set account_type properly' do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.account_type.should == "ORGANIZATION USER"
+      end
+      organization.destroy
+    end
+
+    it 'should set default settings properly unless overriden' do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.max_layers.should == 6
+        u.private_tables_enabled.should be_true
+        u.sync_tables_enabled.should be_true
+      end
+      user = FactoryGirl.build(:user, organization: organization)
+      user.max_layers = 3
+      user.private_tables_enabled = false
+      user.sync_tables_enabled = false
+      user.save
+      user.max_layers.should == 3
+      user.private_tables_enabled.should be_false
+      user.sync_tables_enabled.should be_false
+      organization.destroy
+    end
+
+    it "should return proper values for non-persisted settings" do
+      organization = FactoryGirl.create(:organization_with_users)
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.dedicated_support?.should be_true
+        u.remove_logo?.should be_true
+        u.private_maps_enabled?.should be_true
+        u.import_quota.should == 3
+      end
+      organization.destroy
+    end
+  end
+
+  describe 'central synchronization' do
+    it 'should create remote user in central if needed' do
+      pending "Central API credentials not provided" unless User.new.sync_data_with_cartodb_central?
+      organization = create_org('testorg', 500.megabytes, 1)
+      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user.organization = organization
+      user.save
+      Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
+      user.create_in_central.should be_true
+    end
+    it 'should update remote user in central if needed' do
+      pending
     end
   end
 
   it "should have a default dashboard_viewed? false" do
     user = User.new
     user.dashboard_viewed?.should be_false
-  end 
+  end
 
   it "should reset dashboard_viewed when dashboard gets viewed" do
     user = User.new
@@ -218,8 +300,8 @@ describe User do
 
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
-      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0], 
-      "total"=>49, 
+      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
+      "total"=>49,
       "updated_at"=>1370362756
     })
     @user.stubs(:get_es_api_calls_from_redis).returns([
@@ -227,7 +309,7 @@ describe User do
     ])
     @user.get_api_calls.should == [21, 0, 0, 0, 6, 17, 0, 5, 0, 0, 0, 0, 0, 0, 8, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
     @user.get_api_calls(
-      from: (Date.today - 6.days), 
+      from: (Date.today - 6.days),
       to: Date.today
     ).should == [21, 0, 0, 0, 6, 17, 0]
   end
@@ -250,26 +332,26 @@ describe User do
                             "key" => to_date.to_i,
                             "doc_count" => 6
                           }
-                        ]  
+                        ]
                       }
-                    } 
+                    }
                    }
     Typhoeus.stub(api_url,
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s) 
-                  )  
+                    Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s)
+                  )
     @user.get_api_calls_from_es.should == {from_date.to_i => 4, to_date.to_i => 6}
   end
 
   describe '#overquota' do
-    it "should return users over their map view quota" do
+    it "should return users over their map view quota, excluding organization users" do
       User.overquota.should be_empty
       User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       User.any_instance.stubs(:map_view_quota).returns 10
       User.overquota.map(&:id).should include(@user.id)
-      User.overquota.size.should == User.count
+      User.overquota.size.should == User.reject{|u| u.organization_id.present? }.count
     end
 
     it "should return users near their map view quota" do
@@ -277,10 +359,10 @@ describe User do
       User.any_instance.stubs(:map_view_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.count
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
       User.overquota(0.10).should be_empty
     end
-    
+
     it "should return users near their geocoding quota" do
       User.any_instance.stubs(:get_api_calls).returns([0])
       User.any_instance.stubs(:map_view_quota).returns(120)
@@ -288,10 +370,15 @@ describe User do
       User.any_instance.stubs(:geocoding_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
-      User.overquota(0.20).size.should == User.count
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
       User.overquota(0.10).should be_empty
     end
-  
+
+    it "should not return organization users" do
+      User.any_instance.stubs(:organization_id).returns("organization-id")
+      User.any_instance.stubs(:organization).returns(Organization.new)
+      User.overquota.should be_empty
+    end
   end
 
   describe '#get_geocoding_calls' do
@@ -357,6 +444,7 @@ describe User do
   end
 
   it 'creates a cdb schema in the user database' do
+    pending "I believe cdb schema was never used"
     @user.in_database[%Q(SELECT * FROM pg_namespace)]
       .map { |record| record.fetch(:nspname) }
       .should include 'cdb'
@@ -370,11 +458,12 @@ describe User do
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
-      
+
     @user.in_database[query].to_a
   end
 
   it 'allows access to the cdb schema by the owner' do
+    pending "I believe cdb schema was never used"
     @user.in_database.run(%Q{
       CREATE TABLE cdb.bogus ( bogus varchar(40) )
     })
@@ -382,7 +471,7 @@ describe User do
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
-      
+
     @user.in_database[query].to_a
   end
 
@@ -440,7 +529,7 @@ describe User do
 
   it "should run valid queries against his database" do
     # initial select tests
-    query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -449,22 +538,22 @@ describe User do
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
     # update and reselect
-    query_result = @user.run_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
-    query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
 
     # check counts
-    query_result = @user.run_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
 
     # test a product
-    query_result = @user.run_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
 
     # test counts
-    query_result = @user.run_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -474,7 +563,7 @@ describe User do
 
   it "should raise errors when running invalid queries against his database" do
     lambda {
-      @user.run_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
@@ -557,7 +646,7 @@ describe User do
   it "should return the result from the last select query if multiple selects" do
     reload_user_data(@user) && @user.reload
 
-    query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -566,7 +655,7 @@ describe User do
   end
 
   it "should allow multiple queries in the format: insert_query; select_query" do
-    query_result = @user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
+    query_result = @user.run_pg_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3
     query_result[:rows].map { |i| i[:name_of_species] }.should =~ ["Barrukia cristata", "Eulagisca gigantea", "cristata barrukia"]
   end
@@ -574,7 +663,7 @@ describe User do
   it "should fail with error if table doesn't exist" do
     reload_user_data(@user) && @user.reload
     lambda {
-      @user.run_query("select * from wadus")
+      @user.run_pg_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
@@ -645,19 +734,19 @@ describe User do
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
     uuid      = Table.where(id: table_id).first.table_visualization.id
-    
+
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{doomed_user.database_name}.*")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("^#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
+      .with("^#{doomed_user.database_name}:(.*public\\.clubbing.*)|(table)$")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")
       .times(2)
       .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)
-    
+
     doomed_user.destroy
 
     DataImport.where(:user_id => doomed_user.id).count.should == 0
@@ -701,18 +790,49 @@ describe User do
   end
 
   describe '#hard_geocoding_limit?' do
-    it 'returns true when the plan is AMBASSADOR or FREE' do
+    it 'returns true when the plan is AMBASSADOR or FREE unless it has been manually set to false' do
+      @user[:soft_geocoding_limit].should be_nil
+
       @user.stubs(:account_type).returns('AMBASSADOR')
+      @user.soft_geocoding_limit?.should be_false
+      @user.soft_geocoding_limit.should be_false
       @user.hard_geocoding_limit?.should be_true
+      @user.hard_geocoding_limit.should be_true
+
       @user.stubs(:account_type).returns('FREE')
+      @user.soft_geocoding_limit?.should be_false
+      @user.soft_geocoding_limit.should be_false
       @user.hard_geocoding_limit?.should be_true
+      @user.hard_geocoding_limit.should be_true
+
+      @user.hard_geocoding_limit = false
+      @user[:soft_geocoding_limit].should_not be_nil
+
+      @user.stubs(:account_type).returns('AMBASSADOR')
+      @user.soft_geocoding_limit?.should be_true
+      @user.soft_geocoding_limit.should be_true
+      @user.hard_geocoding_limit?.should be_false
+      @user.hard_geocoding_limit.should be_false
+
+      @user.stubs(:account_type).returns('FREE')
+      @user.soft_geocoding_limit?.should be_true
+      @user.soft_geocoding_limit.should be_true
+      @user.hard_geocoding_limit?.should be_false
+      @user.hard_geocoding_limit.should be_false
     end
 
-    it 'returns false when the plan is CORONELLI or MERCATOR' do
+    it 'returns false when the plan is CORONELLI or MERCATOR unless it has been manually set to true' do
       @user.stubs(:account_type).returns('CORONELLI')
       @user.hard_geocoding_limit?.should be_false
       @user.stubs(:account_type).returns('MERCATOR')
       @user.hard_geocoding_limit?.should be_false
+
+      @user.hard_geocoding_limit = true
+
+      @user.stubs(:account_type).returns('CORONELLI')
+      @user.hard_geocoding_limit?.should be_true
+      @user.stubs(:account_type).returns('MERCATOR')
+      @user.hard_geocoding_limit?.should be_true
     end
   end
 
@@ -769,9 +889,134 @@ describe User do
     end
   end
 
-  after(:all) do
-    @user.destroy
-    @user2.destroy
+  describe '#shared_tables' do
+    it 'Checks that shared tables include not only owned ones' do
+      require_relative '../../app/models/visualization/collection'
+      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      # No need to really touch the DB for the permissions
+      Table::any_instance.stubs(:add_read_permission).returns(nil)
+
+      # We're leaking tables from some tests, make sure there are no tables
+      @user.tables.all.each { |t| t.destroy }
+      @user2.tables.all.each { |t| t.destroy }
+
+      table = Table.new
+      table.user_id = @user.id
+      table.save.reload
+      table2 = Table.new
+      table2.user_id = @user.id
+      table2.save.reload
+
+      table3 = Table.new
+      table3.user_id = @user2.id
+      table3.name = 'sharedtable'
+      table3.save.reload
+
+      table4 = Table.new
+      table4.user_id = @user2.id
+      table4.name = 'table4'
+      table4.save.reload
+
+      # Only owned tables
+      user_tables = @user.tables_including_shared
+      user_tables.count.should eq 2
+
+      # Grant permission
+      user2_vis  = CartoDB::Visualization::Collection.new.fetch(user_id: @user2.id, name: table3.name).first
+      permission = CartoDB::Permission.new(
+        owner_id:       @user2.id,
+        owner_username: @user2.username,
+        entity_id:      user2_vis.id,
+        entity_type:    CartoDB::Permission::ENTITY_TYPE_VISUALIZATION
+      )
+      permission.acl = [
+        {
+          type: CartoDB::Permission::TYPE_USER,
+          entity: {
+              id: @user.id,
+              username: @user.username
+          },
+          access: CartoDB::Permission::ACCESS_READONLY
+        }
+      ]
+      permission.save
+
+      # Now owned + shared...
+      user_tables = @user.tables_including_shared
+      user_tables.count.should eq 3
+
+      contains_shared_table = false
+      user_tables.each{ |item|
+        contains_shared_table ||= item.id == table3.id
+      }
+      contains_shared_table.should eq true
+
+      contains_shared_table = false
+      user_tables.each{ |item|
+        contains_shared_table ||= item.id == table4.id
+      }
+      contains_shared_table.should eq false
+
+      @user.tables.all.each { |t| t.destroy }
+      @user2.tables.all.each { |t| t.destroy }
+    end
+  end
+
+  describe '#destroy_restrictions' do
+    it 'Checks some scenarios upon user destruction regarding organizations' do
+      u1 = create_user(email: 'u1@example.com', username: 'u1', password: 'admin123')
+      u2 = create_user(email: 'u2@example.com', username: 'u2', password: 'admin123')
+
+      org = create_org('cartodb', 1234567890, 5)
+
+      u1.organization = org
+      u1.save
+      u1.reload
+      u1.organization.nil?.should eq false
+      org = u1.organization
+      org.owner_id = u1.id
+      org.save
+      u1.reload
+      u1.organization.owner.id.should eq u1.id
+
+      u2.organization = org
+      u2.save
+      u2.reload
+      u2.organization.nil?.should eq false
+      u2.reload
+
+      # Cannot remove as more users depend on the org
+      expect {
+        u1.destroy
+      }.to raise_exception CartoDB::BaseCartoDBError
+
+
+      pending "Until User organization is stabilized, cannot properly delete stuff"
+
+      # Remove non-admin first
+      u2.destroy
+
+      u1.reload
+      org.reload
+      org.users.count.should eq 1
+
+      # And now we can destroy the owner
+      u1.destroy
+
+      org.reload
+      org.users.count.should eq 0
+    end
+  end
+
+  def create_org(org_name, org_quota, org_seats)
+    organization = Organization.new
+    organization.name = org_name
+    organization.quota_in_bytes = org_quota
+    organization.seats = org_seats
+    organization.save!
+    organization
   end
 
 end
+

@@ -35,7 +35,27 @@
 
     // head
     div.head {
-      h2 { font-size:27px }
+      @include display-flex();
+      @include cross-browser(align-items, center);
+
+      h2 {
+        font-size:25px;
+        line-height:normal;
+      }
+
+      img {
+        width:32px;
+        height:32px;
+        margin-right:10px;
+        @include border-radius(28px);
+      }
+      
+      .right-link {
+        position:absolute;
+        top:43px;
+        right:40px;
+        text-decoration: underline;
+      }
     }
 
     // content

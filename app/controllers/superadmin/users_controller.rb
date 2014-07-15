@@ -6,14 +6,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   layout 'application'
 
-  ALLOWED_ATTRIBUTES = [
-    :username, :email, :admin, :quota_in_bytes, :table_quota, :account_type,
-    :private_tables_enabled, :sync_tables_enabled, :map_view_quota, :map_view_block_price,
-    :geocoding_quota, :geocoding_block_price, :period_end_date, :max_layers, :user_timeout,
-    :database_timeout, :database_host, :upgraded_at, :notification, :organization_owner,
-    :disqus_shortname, :twitter_username, :name, :description, :website
-  ]
-
   def show
     respond_with(@user.data(:extended => true))
   end
@@ -25,10 +17,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def create
     @user = User.new
-    attributes = params[:user]
-    @user.set_only(attributes, ALLOWED_ATTRIBUTES)
+
+    @user.set_fields_from_central(params[:user], :create)
     @user.enabled = true
-    set_password_if_present(attributes)
 
     @user.save
     respond_with(:superadmin, @user)
@@ -36,9 +27,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def update
     attributes = params[:user]
-    @user.set_only(attributes, ALLOWED_ATTRIBUTES)
-    set_password_if_present(attributes)
-    set_organization_if_present(attributes)
+
+    @user.set_fields_from_central(params[:user], :update)
 
     @user.save
     respond_with(:superadmin, @user)
@@ -56,18 +46,4 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     raise RecordNotFound unless @user
   end # get_user
 
-  def set_password_if_present(attributes)
-    @user.password         = attributes[:password] if attributes[:password].present?
-    @user.password_confirmation = attributes[:password] if attributes[:password].present?
-    @user.crypted_password = attributes[:crypted_password] if attributes[:crypted_password].present?
-    @user.salt             = attributes[:salt] if attributes[:salt].present?
-  end # set_password_if_present
-
-  def set_organization_if_present(attributes)
-    return if attributes[:organization_attributes].blank?
-    organization = (@user.organization.blank? ? Organization.new : @user.organization)
-    organization.set_only(attributes[:organization_attributes], [:name, :seats, :quota_in_bytes])
-    organization.save
-    @user.organization = organization
-  end
 end # Superadmin::UsersController

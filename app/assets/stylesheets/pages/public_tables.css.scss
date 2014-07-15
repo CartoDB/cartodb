@@ -36,7 +36,7 @@ article.public_tables {
 
       font-size: 25px;
       color: #B8B8B8;
-      font-family: "Segoe UI Bold", "Helvetica";
+      font-family: $title-fonts;
 
       word-spacing: 0;
 
@@ -47,7 +47,7 @@ article.public_tables {
       margin: 14px 0 0 0;
 
       color: #868686;
-      font: italic 15px "Helvetica", Arial;
+      font: italic 15px $text-fonts2;
     }
 
   }
@@ -104,9 +104,11 @@ article.public_tables {
       @include inline-block();
       margin: 0 0 5px 0;
 
-      font-size: 21px;
+      font-size: 17px;
+      font-weight:bold;
+      font-family: $title-fonts;
       color: #2483B2;
-      font-family: "Segoe UI Bold", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      
       @include simple-transition(color);
 
       &:hover {
@@ -117,13 +119,13 @@ article.public_tables {
 
     p {
       color: #878787;
-      font: normal 15px "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font: normal 15px $text-fonts;
     }
 
     .stats {
       margin: 0 0 7px 0;
 
-      font: normal 11px "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font: normal 11px $text-fonts;
       font-weight: 500;
       color: $cGray3;
 
@@ -132,7 +134,7 @@ article.public_tables {
 
     .author {
       &, a {
-        font: normal 13px "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font: normal 13px $text-fonts;
         color: #868686;
       }
       a { text-decoration: underline; }

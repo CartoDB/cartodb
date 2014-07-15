@@ -32,6 +32,10 @@ describe Admin::TablesController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe 'GET /dashboard' do
     it 'returns a list of tables' do
       login_as(@user, scope: 'test')
@@ -55,8 +59,5 @@ describe Admin::TablesController do
     new_table(user_id: @user.id).save.reload
   end #table_attributes
 
-  after(:all) do
-    @user.destroy
-  end
 end # Admin::TablesController
 

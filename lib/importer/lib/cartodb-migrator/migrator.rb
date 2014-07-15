@@ -20,6 +20,8 @@ module CartoDB
       @suggested_name = options[:current_name]
       @current_name = options[:current_name]
 
+      @target_schema = options[:schema]
+
       #@data_import      = DataImport.find(:id=>options[:data_import_id])
       #@data_import_id   = options[:data_import_id]
 
@@ -54,7 +56,7 @@ module CartoDB
       # end
 
       # Sanitize column names where needed
-      column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
+      column_names = @db_connection.schema(@current_name, {:schema => @target_schema}).map{ |s| s[0].to_s }
 
       sanitize(column_names)
 
@@ -120,7 +122,7 @@ module CartoDB
         if matching_latitude and matching_longitude
             #@data_import.log << ("converting #{matching_latitude}, #{matching_latitude} to the_geom")
             #we know there is a latitude/longitude columns
-            @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
+            @db_connection.run("SELECT public.AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
             @db_connection.run(<<-GEOREF
             UPDATE \"#{@suggested_name}\"

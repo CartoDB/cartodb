@@ -4,6 +4,8 @@ class Api::Json::ColumnsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy
 
   before_filter :load_table, :set_start_time
+  before_filter :read_privileges?, only: [:show]
+  before_filter :write_privileges?, only: [:create, :update, :destroy]
 
   def index
     render_jsonp(@table.schema(:cartodb_types => true))
@@ -42,9 +44,9 @@ class Api::Json::ColumnsController < Api::ApplicationController
           and pg_class.oid=pg_constraint.conrelid
           and pg_constraint.contype='p' limit 1"
     
-    pkey_name = current_user.run_query(sql)[:rows][0][:conname]
+    pkey_name = current_user.run_pg_query(sql)[:rows][0][:conname]
     # Recompact table on disk
-    current_user.run_query("CLUSTER #{@table.name} USING #{pkey_name}")
+    current_user.run_pg_query("CLUSTER #{@table.name} USING #{pkey_name}")
     
     head :no_content
   rescue => e
@@ -52,12 +54,18 @@ class Api::Json::ColumnsController < Api::ApplicationController
     render_jsonp({:errors => errors}, 400) and return
   end
 
-
-
   protected
 
   def load_table
-    @table = Table.where(:name => params[:table_id], :user_id => current_user.id).first
+    @table = Table.get_by_id_or_name(params[:table_id],current_user)
     raise RecordNotFound if @table.nil?
+  end
+
+  def write_privileges?
+    head(401) unless current_user and @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+  end
+
+  def read_privileges?
+    head(401) unless current_user and @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
   end
 end

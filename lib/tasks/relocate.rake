@@ -10,6 +10,14 @@ namespace :user do
       sleep 5
       CartoDB::Relocator::Worker.relocate(user, args[:new_database_host])
     end
+    desc 'Relocate user to organization'
+    task :organize, [:username, :new_organization] => [:environment] do |task, args|
+      user = User.find(username: args[:username])
+      organization = Organization.find(name: args[:new_organization])
+      puts "Organizing user #{user.username} (#{user.id}) from #{user.database_host} to #{args[:new_organization]} in 5 seconds."
+      sleep 5
+      CartoDB::Relocator::Worker.organize(user, organization)
+    end
   end
 end
 

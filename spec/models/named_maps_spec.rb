@@ -65,6 +65,11 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user)
   end
 
+  after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    @user.destroy
+  end
+
   describe '#normalize_name' do
     it 'tests normalization of names' do
       name_1 = '08fee512-97cf-11e3-a775-30f9edfe5da6'
@@ -155,7 +160,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.is_password_valid?(password).should eq true
       derived_vis.is_password_valid?('some invalid passsword').should eq false
 
-      derived_vis.get_auth_token().should eq auth_token
+      derived_vis.get_auth_tokens().should eq [auth_token]
     end
   end
 
@@ -834,9 +839,5 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     return table, derived_vis, template_id
   end #create_map_with_public_visualization
-
-  after(:all) do
-    @user.destroy
-  end
 
 end

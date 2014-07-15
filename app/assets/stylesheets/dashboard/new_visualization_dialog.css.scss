@@ -11,34 +11,82 @@
 @import "../common/common-sprite";
 @import "../common/mixins";
 
+
 .new_visualization_dialog {
-  width: 200px;
 
   p { margin: 0 0 20px 0; }
+  
   .hidden { display: none; }
-
   .cancel { display:none; }
+  a.button.green.ok {
+    font-weight:normal;
+    font-size:17px;
+  }
 
   .tables {
-
-    width: 383px;
+    display:block;
     list-style:none;
 
     li {
       display:none;
-
       padding:12px;
       margin: 0 0 5px 0;
       background:#F2F2F2;
       @include border-radius(6px);
-      font-weight:bold;
 
-      .remove {
-        float: right;
-        @include common-sprite(close_grey);
-        @include size(13px);
+      
+      div.vis-info-item {
+        @include display-flex();
+        @include cross-browser(justify-content, space-between);
+        @include cross-browser(align-items, center);
 
-        &:hover { @include common-sprite(close_grey, $offset_y:-13px); }
+        img {
+          width:18px;
+          height:18px;
+          margin-left:6px;
+          background:#EDEDED;
+          @include border-radius(18px);
+        }
+
+        .value {
+          color: #333333;
+          font-weight:bold;
+          @include text-overflow();
+          line-height:17px;
+        }
+
+        .by {
+          @include display-flex();
+          @include cross-browser(justify-content, flex-end);
+          @include cross-browser(align-items, center);
+          color:#999999;
+
+          span.permission {
+            width:40px;
+            line-height:15px;
+            margin-right:5px;
+            font-size:10px;
+            text-align:center;
+            border:1px solid #BBBBBB;
+            @include border-radius(20px);
+          }
+
+          span.username {
+            font-size:11px;
+          }
+
+          .remove {
+            margin-left:5px;
+            @include common-sprite(close_grey);
+            @include size(13px);
+
+            &:hover { @include common-sprite(close_grey, $offset_y:-13px); }
+          }
+        }
+
+        &.shared {
+          .value { max-width:230px }
+        }
       }
     }
   }
@@ -73,11 +121,13 @@
   }
 
   .combo_wrapper {
+    display:none;
 
-    &.disabled {
-      .tableListCombo { @include opacity(.3); }
-      .add { @include opacity(.3); }
-      .add:hover { text-decoration: none; }
+    &.active {
+      @include display-flex();
+      @include cross-browser(justify-content, space-between);
+      @include cross-browser(align-items, center);
+      @include cross-browser(flex-wrap, nowrap);
     }
 
     padding:12px;
@@ -85,30 +135,35 @@
     @include border-radius(6px);
 
     .tableListCombo {
-      margin: 0 3px 0 0;
-    }
-
-    .tableListCombo, .add {
-      @include inline-block();
+      display:inherit;
+      width:86%;
     }
 
     .add {
       padding: 3px 8px;
       font-size: 13px;
       font-weight: bold;
+      text-align: center;
       color:#333;
       border: 1px solid #9E9E9E;
       @include border-radius(3px);
-
       background-color: #fff;
-      background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(0.5, white));
-      background-image: -webkit-linear-gradient(center bottom, #eeeeee 0%, white 50%);
-      background-image: -moz-linear-gradient(center bottom, #eeeeee 0%, white 50%);
-      background-image: -o-linear-gradient(bottom, #eeeeee 0%, #ffffff 50%);
-      background-image: -ms-linear-gradient(top, #eeeeee 0%, #ffffff 50%);
-      background-image: linear-gradient(top, #eeeeee 0%, #ffffff 50%);
+      @include background(linear-gradient(#fff, #eee 50%));
+    }
 
+    // States
+
+    &.disabled {
+      .add {
+        @include opacity(.3);
+        
+        &:hover {
+          text-decoration:none;
+          cursor:default;
+        }
+      }
+      
     }
   }
-
 }
+

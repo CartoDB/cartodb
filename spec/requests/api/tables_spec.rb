@@ -20,6 +20,11 @@ describe "Tables API" do
     }
   end
 
+  after(:all) do
+    @user.destroy
+    @another_user.destroy
+  end
+
   let(:params) { { :api_key => @user.api_key } }
 
   describe 'GET /api/v1/tables' do
@@ -350,6 +355,8 @@ describe "Tables API" do
     delete_json v1_table_url(table1.name, params) do |response|
       response.status.should == 404
     end
+
+    another_user.destroy
   end
 
   it "updates a table and sets the lat and long columns" do

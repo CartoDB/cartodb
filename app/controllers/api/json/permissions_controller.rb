@@ -1,7 +1,7 @@
 class Api::Json::PermissionsController < Api::ApplicationController
 
   if Rails.env.production? || Rails.env.staging?
-    ssl_required :show
+    ssl_required :show, :update
   end
 
   def update

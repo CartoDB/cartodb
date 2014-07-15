@@ -27,6 +27,10 @@ describe Api::Json::RecordsController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   it "Insert a new row and get the record" do
     base_url  = "/api/v1/tables/#{@table.name}"
     payload   = {
@@ -207,7 +211,4 @@ describe Api::Json::RecordsController do
     last_response.status.should == 200
   end
 
-  after(:all) do
-    @user.destroy
-  end
 end

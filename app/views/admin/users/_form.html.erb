@@ -1,10 +1,10 @@
   <script type="text/javascript">
     var organization_users = <%= raw current_user.organization.users.map { |u| {
       id: u.id,
-      username: u.username, 
-      quota_in_bytes: u.quota_in_bytes, 
+      username: u.username,
+      quota_in_bytes: u.quota_in_bytes,
       remaining_quota: u.remaining_quota,
-      organization_owner: u.organization_owner
+      organization_owner: u.organization_owner?
     }}.to_json -%>;
     <% if !@user.new? %>
     var organization_user_data = <%= raw @user.data.to_json.html_safe -%>;
@@ -12,11 +12,15 @@
   </script>
 
 
-<%= form_for @user, url: (@user.new? ? organization_users_path(@organization) : organization_user_path(@user.username)) do |form| %>
+<%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)) do |form| %>
 
   <%= form.hidden_field :private_tables_enabled %>
+   <%= csrf_meta_tags %>
 
   <div class="head">
+    <% if !@user.new? && @user.avatar_url.present? %>
+      <img src="<%= @user.avatar_url %>" alt="<%= @user.username %>" title="<%= @user.username %>" />
+    <% end %>
     <h2>
       <% if @user.new? -%>
         Create new user
@@ -27,8 +31,8 @@
   </div>
 
   <ul><%= render partial: 'shared/flash_message' %></ul>
-  
-  <% if !@user.new? && current_user.organization_owner -%>
+
+  <% if !@user.new? && current_user.organization_owner? -%>
   <div class="content user-details">
     <ul>
       <li><%= @user.tables.count %> tables created</li>
@@ -49,7 +53,7 @@
         'danger'
       else
         'boom'
-      end -%> 
+      end -%>
 
       <li><strong class="<%= user_type %>"><%= number_to_percentage used_percentage, precision: 2 %></strong> of user quota used</li>
       <li><%= @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum %> map views this month</li>
@@ -90,8 +94,8 @@
             <%= form_error_for :password_confirmation, @user.errors %>
           </div>
         </div>
-        
-        <% if current_user.organization_owner -%>
+
+        <% if current_user.organization_owner? -%>
           <div class="row">
             <div class="field field-1">
               <label>
@@ -110,7 +114,6 @@
           </div>
 
           <!-- USER EXTRAS -->
-          <% if false %>
             <div class="extras margin20">
               <div class="row">
                 <div class="field field-1">
@@ -120,13 +123,12 @@
                       <span class="light">Allow geocoding</span>
                     </div>
                     <div class="right">
-                      <input type="checkbox" />
+                      <%= form.check_box :soft_geocoding_limit %>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          <% end %>
 
         <% end -%>
       </div>
@@ -138,17 +140,17 @@
         <div class="row">
           <p>
             <% unless @user.new? -%>
-              <% if current_user.organization_owner -%>
+              <% if current_user.organization_owner? -%>
                 This user
                 <%= @user.new? ? "will enter" : "enters" %>
               <% else %>
                 You enter
               <% end %>
-              through <%= link_to "#{@user.username}#{Cartodb.config[:session_domain]}", "http://#{@user.username}#{Cartodb.config[:session_domain]}" %></p>
+              through <%= link_to "#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}", "http://#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}" %></p>
             <% end -%>
         </div>
 
-        <% if current_user.organization_owner -%>
+        <% if current_user.organization_owner? -%>
           <div class="row">
             <% if false %><p>Or <a href="#/generate-pass" class="pass-generator">generate</a> a random password for this user</p><% end %>
           </div>
@@ -163,7 +165,7 @@
 
   <div class="foot">
     <% if !@user.new? -%>
-      <%= link_to("delete this user", organization_user_path(@user.username), :class => "left delete red margin15") if current_user.organization_owner %>
+      <%= link_to("delete this user", delete_organization_user_path(user_domain: params[:user_domain], id: @user.username), :class => "left delete red margin15") if current_user.organization_owner? %>
       <%= form.submit 'Save changes', :class => "right grey button new" %>
     <% else %>
       <%= form.submit 'Create user', :class => "right grey button new" %>

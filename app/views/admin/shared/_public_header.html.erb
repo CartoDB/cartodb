@@ -1,8 +1,12 @@
 <header>
   <div class="inner">
-    <div class="logo left"><%= link_to "CartoDB", "http://www.cartodb.com" %></div>
+    <div class="logo left">
+      <h1><%= link_to "CartoDB", "http://www.cartodb.com", :id => "the_logo" %></h1>
+    </div>
     <ul class="right">
-    <li class="signin"><a href="http://cartodb.com/login" class="signin green button" title="Sign in">Sign in</a></li>
-  </ul>
-</div>
+      <li class="signin">
+        <a href="http://cartodb.com/login" class="signin green button" title="Sign in">Sign in</a>
+      </li>
+    </ul>
+  </div>
 </header>

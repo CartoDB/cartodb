@@ -3,6 +3,9 @@ require_relative '../../lib/cartodb/image_metadata.rb'
 class Asset < Sequel::Model
 
   many_to_one :user
+
+  KIND_ORG_AVATAR = 'orgavatar'
+
   PUBLIC_ATTRIBUTES = %W{ id public_url user_id kind }
 
   attr_accessor :asset_file, :url

@@ -6,6 +6,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
+  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map, :show_protected_embed_map, :embed_map]
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
@@ -17,25 +18,59 @@ class Admin::VisualizationsController < ApplicationController
     update_user_last_activity
   end #index
 
+  def resolve_visualization_and_table(request)
+    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request))
+  end
+
   def show
-    id = params.fetch(:id)
-    return(redirect_to public_url_for(id)) unless current_user.present?
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    return(redirect_to public_url) unless current_user.present?
+    @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
+
+    return(redirect_to public_url) unless \
+      @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+
     respond_to { |format| format.html }
 
     update_user_last_activity
   end #show
 
   def public_table
-
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
-    return(redirect_to public_map_url_for(id)) if @visualization.derived?
+    if @visualization.organization?
+      unless current_user and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        return(embed_forbidden)
+      end
+    end
+    return(redirect_to public_map_url()) if @visualization.derived?
+    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
 
     @vizjson = @visualization.to_vizjson
+    @auth_tokens = nil
+    @use_https = false
+    @api_key = nil
+    @can_copy = false
+
+    if current_user && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      if @visualization.organization?
+        @auth_tokens = current_user.get_auth_tokens
+        @use_https = true
+        @api_key = current_user.api_key
+      end
+      @can_copy = true # this table can be copied to user dashboard
+    end
+
+    owner = @visualization.user
+    # set user to current user only if the user is in the same organization
+    # this allows to enable "copy this table to your tables" button
+    if current_user && current_user.organization.present? && owner.organization.present? && current_user.organization_id == owner.organization_id
+      @user = current_user
+      response.headers['Cache-Control'] = "no-cache,private"
+    else
+      @user = @visualization.user
+    end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.gravatar(request.protocol, 64)
@@ -66,12 +101,14 @@ class Admin::VisualizationsController < ApplicationController
   end #public_table
 
   def public_map
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
-    
+    @visualization, @table = resolve_visualization_and_table(request)
+
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
+    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      return(show_organization_public_map)
+    end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -93,15 +130,56 @@ class Admin::VisualizationsController < ApplicationController
     embed_forbidden
   end #public_map
 
+  def show_organization_public_map
+    @visualization, @table = resolve_visualization_and_table(request)
+
+    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+
+    @can_fork = @visualization.related_tables.map { |t|
+      t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    }.all?
+
+    response.headers['Cache-Control'] = "no-cache,private"
+
+    @protected_map_tokens = current_user.get_auth_tokens
+
+    @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @avatar_url = @visualization.user.gravatar(request.protocol, 64)
+
+    @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
+    @visualization_count    = @visualization.user.public_visualization_count
+    @related_tables         = @visualization.related_tables
+    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    respond_to do |format|
+      format.html { render 'public_map', layout: false }
+    end
+  end
+
+  def show_organization_embed_map
+    @visualization, @table = resolve_visualization_and_table(request)
+
+    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    @protected_map_tokens = current_user.get_auth_tokens
+
+    respond_to do |format|
+      format.html { render 'embed_map', layout: false }
+    end
+  end
+
   def show_protected_public_map
-    id = params.fetch(:id)
     submitted_password = params.fetch(:password)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
 
-    if not @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size()
+    unless @visualization.is_password_valid?(submitted_password)
+      flash[:placeholder] = '*' * submitted_password.size
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
@@ -109,7 +187,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @protected_map_token = @visualization.get_auth_token()
+    @protected_map_tokens = @visualization.get_auth_tokens
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url = @visualization.user.gravatar(request.protocol, 64)
@@ -128,22 +206,20 @@ class Admin::VisualizationsController < ApplicationController
   end #show_protected_public_map
 
   def show_protected_embed_map
-    id = params.fetch(:id)
     submitted_password = params.fetch(:password)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
 
-    if not @visualization.is_password_valid?(submitted_password)
-      flash[:placeholder] = '*' * submitted_password.size()
+    unless @visualization.is_password_valid?(submitted_password)
+      flash[:placeholder] = '*' * submitted_password.size
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
 
-    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    response.headers['Cache-Control']   = "no-cache, private"
 
-    @protected_map_token = @visualization.get_auth_token()
+    @protected_map_tokens = @visualization.get_auth_tokens
 
     respond_to do |format|
       format.html { render 'embed_map', layout: false }
@@ -153,12 +229,14 @@ class Admin::VisualizationsController < ApplicationController
   end #show_protected_embed_map
 
   def embed_map
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    @visualization, @table = resolve_visualization_and_table(request)
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
+    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      return(show_organization_embed_map)
+    end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -192,24 +270,47 @@ class Admin::VisualizationsController < ApplicationController
 
   private
 
-  def public_url_for(id)
-    "/#{resource_base}/#{id}/public"
+  def table_and_schema_from_params
+    if params.fetch('id', nil) =~ /\./
+      @table_id, @schema = params.fetch('id').split('.').reverse
+    else
+      @table_id, @schema = [params.fetch('id', nil), nil]
+    end
+  end
+
+  def full_table_id
+    id = @table_id
+    if @schema
+      id = @schema + "." + id
+    end
+    id
+  end
+
+  def public_url()
+    if request.path_info =~ %r{/tables/}
+      public_table_path(user_domain: params[:user_domain], id: full_table_id)
+    else
+      public_visualization_path(user_domain: params[:user_domain], id: full_table_id)
+    end
   end #public_url_for
 
-  def public_map_url_for(id)
-    "/#{resource_base}/#{id}/public_map"
-  end #public_url_for
+  def public_map_url()
+    if request.path_info =~ %r{/tables/}
+      public_table_map_path(user_domain: params[:user_domain], id: full_table_id)
+    else
+      public_visualizations_public_map_path(user_domain: params[:user_domain], id: full_table_id)
+    end
+  end #public_map_url_for
 
   def embed_map_url_for(id)
-    "/#{resource_base}/#{id}/embed_map"
-  end #public_url_for
+    if request.path_info =~ %r{/tables/}
+      public_tables_embed_map_path(user_domain: params[:user_domain], id: id)
+    else
+      public_visualizations_embed_map_path(user_domain: params[:user_domain], id: id)
+    end
+  end #embed_map_url_for
 
-  def resource_base
-    return 'viz'    if request.path_info =~ %r{/viz/}
-    return 'tables' if request.path_info =~ %r{/tables/}
-  end #resource_base
-
-  def download_formats table, format
+  def download_formats(table, format)
     format.sql  { send_data table.to_sql, data_for(table, 'zip', 'zip') }
     format.kml  { send_data table.to_kml, data_for(table, 'zip', 'kmz') }
     format.csv  { send_data table.to_csv, data_for(table, 'zip', 'zip') }

@@ -23,8 +23,8 @@ module CartoDB
 
       def table_visualization
         @table_visualization ||= Visualization::Collection.new.fetch(
-          map_id: table.map_id,
-          type:   'table'
+          map_id: @table.map_id,
+          type:   Visualization::Member::CANONICAL_TYPE
         ).first
       end #table_visualization
 

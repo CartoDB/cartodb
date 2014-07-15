@@ -5878,6 +5878,9 @@ exports.torque.common.TorqueLayer = TorqueLayer;
     return exports.torque.extend({}, a);
   }
 
+  exports.torque.isArray = function(value) {
+      return value && typeof value == 'object' && Object.prototype.toString.call(value) == '[object Array]';
+  };
 
   // types
   exports.torque.types = {
@@ -7137,7 +7140,13 @@ exports.Profiler = Profiler;
         for(var k in this.options.extra_params) {
           var v = this.options.extra_params[k];
           if (v) {
-            p.push(k + "=" + encodeURIComponent(v));
+            if (torque.isArray(v)) {
+              for (var i = 0, len = v.length; i < len; i++) {
+                p.push(k + "[]=" + encodeURIComponent(v[i]));
+              }
+            } else {
+              p.push(k + "=" + encodeURIComponent(v));
+            }
           }
         }
         return p.join('&');

@@ -40,7 +40,7 @@ module HelperMethods
     trap("INT"){ server.shutdown }
 
     a = Thread.new { server.start }
-    
+
     begin
       yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
     rescue => e
@@ -72,8 +72,8 @@ module HelperMethods
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
 
-  def delete_json(path, headers ={}, &block)
-    delete path, {}, headers
+  def delete_json(path, params = {}, headers ={}, &block)
+    delete path, params, headers
     response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
@@ -86,7 +86,7 @@ module HelperMethods
   def default_schema
     [
       ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-      ["the_geom", "geometry", "geometry", "geometry"], 
+      ["the_geom", "geometry", "geometry", "geometry"],
       ["created_at", "timestamp with time zone"],
       ["updated_at", "timestamp with time zone"]
     ]

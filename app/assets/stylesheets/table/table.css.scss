@@ -97,7 +97,7 @@ body.public { /* Public table CSS */
         margin: 0 0 5px 0;
         color: #666666;
         text-transform: uppercase;
-        font-family:"Helvetica Neue", "Helvetica", Arial;
+        font-family: $text-fonts;
         font-size:11px;
       }
 
@@ -171,11 +171,6 @@ body.public { /* Public table CSS */
         margin: 0 1px 0 0;
         pointer-events:all;
 
-        a.selected { 
-          text-decoration: none;
-          color: rgba(#fff, .7);
-        }
-
         &:first-child a { @include border-radius(2px 0 0 2px); }
         &:last-child  a { @include border-radius(0 2px 2px 0); }
 
@@ -185,7 +180,7 @@ body.public { /* Public table CSS */
             text-decoration: underline;
           }
 
-          font-family:"Helvetica Neue", "Helvetica", Arial;
+          font-family: $text-fonts;
 
           display:block;
           padding: 9px 10px 10px 10px;
@@ -194,6 +189,12 @@ body.public { /* Public table CSS */
           font-weight:bold;
           color: #FFFFFF;
           text-transform: uppercase;
+        }
+
+        a.selected { 
+          text-decoration: none;
+          color: rgba(#fff, .7);
+          cursor:default;
         }
 
       }
@@ -332,7 +333,7 @@ div.panes {
         color: #333;
         font-weight: bold;
         font-size: 17px;
-        font-family: helvetica;
+        font-family: $title-fonts;
         text-indent:0;
       }
 

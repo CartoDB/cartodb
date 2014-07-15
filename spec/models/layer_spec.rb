@@ -11,7 +11,6 @@ describe Layer do
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-
     @user.destroy
   end
 
@@ -100,8 +99,10 @@ describe Layer do
         end
 
         key = @layer.affected_tables.first.varnish_key
-        CartoDB::Varnish.any_instance.expects(:purge).times(1)
-          .with("#{key}").returns(true)
+        CartoDB::Varnish.any_instance.expects(:purge).times(1).with("#{key}").returns(true)
+
+        vizzjson_key = @layer.affected_tables.first.table_visualization.varnish_vizzjson_key
+        CartoDB::Varnish.any_instance.expects(:purge).times(1).with("#{vizzjson_key}").returns(true)
 
         @layer.save
       end

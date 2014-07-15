@@ -7,6 +7,7 @@ class Layer < Sequel::Model
   
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
+  DATA_LAYER_KINDS = ALLOWED_KINDS - BASE_LAYER_KINDS
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
@@ -125,7 +126,7 @@ class Layer < Sequel::Model
   end #data_layer?
 
   def base_layer?
-    BASE_LAYER_KINDS.include?(kind) # TODO: ask Lorenzo
+    BASE_LAYER_KINDS.include?(kind)
   end #base_layer?
 
   def register_table_dependencies(db=Rails::Sequel.connection)
@@ -133,7 +134,7 @@ class Layer < Sequel::Model
       delete_table_dependencies
       insert_table_dependencies
     end
-  end #register_table_dependencies
+  end
 
   def rename_table(current_table_name, new_table_name)
     return self unless data_layer?
@@ -179,18 +180,14 @@ class Layer < Sequel::Model
 
   def tables_from_query_option
     return [] unless query.present?
-    tables_from(affected_table_names)
+    Table.get_all_by_names(affected_table_names, user)
   rescue => exception
     []
   end
 
   def tables_from_table_name_option
-    tables_from([options.symbolize_keys[:table_name]])
+    Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
   end #tables_from_table_name_option
-
-  def tables_from(names)
-    Table.where(user_id: user.id, name: names).all
-  end #tables_from
 
   def affected_table_names
     CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables

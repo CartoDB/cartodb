@@ -5,6 +5,8 @@ require 'redis'
 require_relative 'relocator/dumper'
 require_relative 'relocator/queue_consumer'
 require_relative 'relocator/dumper'
+require_relative 'relocator/tester'
+require_relative 'relocator/table_dumper'
 require_relative 'relocator/trigger_loader'
 module CartoDB
   module Relocator
@@ -14,16 +16,17 @@ module CartoDB
       def initialize(config = {})
         @dbname = ARGV[0] || ""
         default_config = {
+          :mode => :relocate, # relocate, organize
           :dbname => @dbname,
           :username => @dbname.gsub(/_db$/, ""),
           :redis => {:host => '127.0.0.1', :port => 6379, :db => 10},
           :source => {
-            :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'},
+            :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'}, :schema => 'public',
           },
           :target => {
-            :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'},
+            :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'}, :schema => 'public',
           },
-          :create => true, :add_roles => true}
+          :create => true, :add_roles => true, :user_object => nil}
 
         @config = Utils.deep_merge(default_config, config)
 
@@ -31,26 +34,44 @@ module CartoDB
         #@target_db = PG.connect(@config[:target][:conn])
 
         @trigger_loader = TriggerLoader.new(config: @config)
-        @dumper = Dumper.new(config: @config)
+        if config[:mode] == :relocate
+          @dumper = Dumper.new(config: @config)
+        else
+          @dumper = TableDumper.new(config: @config)
+        end
         @consumer = QueueConsumer.new(config: @config)
+        @tester   = Tester.new(config: @config) 
       end
 
       def migrate
+        if @config[:mode] == :relocate
         @trigger_loader.load_triggers
         @dumper.migrate
         @trigger_loader.unload_triggers(target_db)
         @consumer.redis_migrator_loop
+        end
+
+        if @config[:mode] == :organize
+          @dumper.migrate
+        end
       end
 
       def finalize
-        @consumer.redis_migrator_loop
-        @trigger_loader.unload_triggers
+        if @config[:mode] == :relocate
+          @consumer.redis_migrator_loop
+          @trigger_loader.unload_triggers
+        end
       end
 
+      def compare
+        @tester.compare_state
+      end
 
       def rollback
-        @trigger_loader.unload_triggers
-        @consumer.empty_queue
+        if @config[:mode] == :relocate
+          @trigger_loader.unload_triggers
+          @consumer.empty_queue
+        end
       end
     end
   end

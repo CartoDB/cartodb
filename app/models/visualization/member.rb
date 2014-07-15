@@ -22,10 +22,10 @@ module CartoDB
       extend Forwardable
       include Virtus.model
 
-      PRIVACY_PUBLIC    = 'public'    # published and listable in public user profile
-      PRIVACY_PRIVATE   = 'private'   # not published (viz.json and embed_map should return 404)
-      PRIVACY_LINK      = 'link'      # published but not listen in public profile
-      PRIVACY_PROTECTED = 'password'  # published but password protected
+      PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
+      PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
+      PRIVACY_LINK         = 'link'          # published but not listen in public profile
+      PRIVACY_PROTECTED    = 'password'      # published but password protected
 
       CANONICAL_TYPE  = 'table'
       DERIVED_TYPE    =  'derived'
@@ -79,20 +79,21 @@ module CartoDB
       end #default_privacy
 
       def store
-        raise CartoDB::InvalidMember unless self.valid?
+        raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
         do_store
         self
       end #store
 
-      def store_using_table(privacy_text)
+      def store_using_table(fields)
         if type == CANONICAL_TYPE
           # Each table has a canonical visualization which must have privacy synced
-          self.privacy = privacy_text
+          self.privacy = fields[:privacy_text]
+          self.map_id = fields[:map_id]
         end
         # But as this method also notifies of changes in a table, must save always
         do_store(false)
         self
-      end #store_using_table
+      end
 
       def valid?
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
@@ -205,8 +206,12 @@ module CartoDB
       end #public_with_link?
 
       def private?
-        privacy == PRIVACY_PRIVATE
+        privacy == PRIVACY_PRIVATE and not organization?
       end #private?
+
+      def organization?
+        privacy == PRIVACY_PRIVATE and permission.acl.size > 0
+      end
 
       def password_protected?
         privacy == PRIVACY_PROTECTED
@@ -220,7 +225,8 @@ module CartoDB
         options = {
           full: false,
           user_name: user.username,
-          user_api_key: user.api_key
+          user_api_key: user.api_key,
+          user: user
         }
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
@@ -235,6 +241,24 @@ module CartoDB
         # TODO: Make checks mandatory after permissions migration
         return is_owner?(user) if permission_id.nil?
         is_owner?(user) || permission.is_permitted?(user, permission_type)
+      end
+
+      def have_permission?(users, permission_type)
+        users.select { |user|
+          has_permission?(user, permission_type)
+        }.size == users.size
+      end
+
+      def users_with_permission(permission_type)
+        users_with_permissions([permission_type])
+      end
+
+      def users_with_permissions(permission_types)
+        permission.users_with_permissions(permission_types)
+      end
+
+      def all_users_with_read_permission
+        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
       end
 
       def varnish_key
@@ -258,13 +282,17 @@ module CartoDB
         derived? && !single_data_layer?
       end #non_dependent?
 
+      def varnish_vizzjson_key
+        ".*#{id}:vizjson"
+      end
+
       def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge(".*#{id}:vizjson")
-      end #invalidate_varnish_cache
+        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+      end
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-        if type != CANONICAL_TYPE
+        if type != CANONICAL_TYPE or organization?
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
@@ -320,14 +348,14 @@ module CartoDB
         digest            
       end #make_auth_token
 
-      def get_auth_token
+      def get_auth_tokens
         named_map = has_named_map?
         raise CartoDB::InvalidMember unless named_map
 
         tokens = named_map.template[:template][:auth][:valid_tokens]
         raise CartoDB::InvalidMember if tokens.size == 0
-        tokens.first
-      end #get_auth_token
+        tokens
+      end
 
       def supports_private_maps?
         if @user_data.nil? && !user.nil?
@@ -354,19 +382,31 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        if permission.nil?
-          perm = CartoDB::Permission.new
-          perm.owner = user
-          perm.save
-          @permission_id = perm.id
-        end
-
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
 
         repository.store(id, attributes.to_hash)
 
+        # Careful to not call Permission.save until after persisted the vis
+        if permission.nil?
+          perm = CartoDB::Permission.new
+          perm.owner = user
+          perm.entity = self
+          perm.save
+          @permission_id = perm.id
+          # Need to save again
+          repository.store(id, attributes.to_hash)
+        end
+
+        # when visualization turns private remove the acl
+        if not organization? and privacy_changed
+          permission.clear
+        end
+
         if type == CANONICAL_TYPE
+          if organization?
+            save_named_map
+          end
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map
@@ -439,6 +479,7 @@ module CartoDB
         self
       end #propagate_privacy_to
 
+      # @param table Table
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)

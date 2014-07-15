@@ -1,5 +1,7 @@
 # encoding: utf-8
 require_relative './map/copier'
+require_relative '../models/visualization/collection'
+
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -57,7 +59,7 @@ class Map < Sequel::Model
 
   def after_save
     super
-    update_map_id_on_associated_table
+    update_map_on_associated_entities
     invalidate_vizjson_varnish_cache
   end #after_save
 
@@ -93,7 +95,7 @@ class Map < Sequel::Model
     visualizations.each do |visualization|
       visualization.invalidate_cache_and_refresh_named_map
     end
-  end #invalidate_varnish_cache
+  end
 
   def copy_for(user)
     CartoDB::Map::Copier.new(self, user).copy
@@ -105,16 +107,34 @@ class Map < Sequel::Model
     return admits_more_base_layers? if layer.base_layer?
   end #admits?
 
+  def can_add_layer(user)
+    current_vis = visualizations.first
+    current_vis.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+  end
+
+  def all_members_have_permissions?(table_visualization)
+    if table_visualization.public?
+      true
+    else
+      current_vis = visualizations.first
+      current_vis_users = current_vis.all_users_with_read_permission
+
+      table_visualization.have_permission?(current_vis_users, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    end
+  end
+
   def visualizations
     CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
   end #visualizations
 
   def process_privacy_in(layer)
     return self unless layer.uses_private_tables?
-    
+
     visualizations.each do |visualization|
-      visualization.privacy = 'private'
-      visualization.store
+      unless visualization.organization?
+        visualization.privacy = 'private'
+        visualization.store
+      end
     end
   end #process_privacy_in
 
@@ -131,15 +151,27 @@ class Map < Sequel::Model
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
   end #get_the_last_time_tiles_have_changes_to_render_it_in_vizjsons
-  
-  def update_map_id_on_associated_table
+
+  def update_map_on_associated_entities
     return unless table_id
+
+    # Cannot filter by user_id as might be a shared table not owned by us
     related_table = Table.filter(
-                      id:       table_id,
-                      user_id:  user_id
+                      id: table_id
                     ).first
-    related_table.this.update(map_id: id) if related_table.map_id != id
-  end #updated_map_id_on_associated_tale
+    if related_table.map_id != id
+      # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
+      CartoDB::Visualization::Collection.new.fetch(
+          user_id:  user_id,
+          map_id:   related_table.map_id
+      ).each { |entry|
+        entry.map_id = id
+        entry.store
+      }
+      # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
+      related_table.this.update(map_id: id)
+    end
+  end
 
   def get_map_bounds
     result = current_map_bounds
@@ -180,7 +212,7 @@ class Map < Sequel::Model
 
   def table_visualization
     CartoDB::Visualization::Collection.new
-      .fetch(map_id: [self.id], type: 'table')
+      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::CANONICAL_TYPE)
       .first
   end #table_visualization
 

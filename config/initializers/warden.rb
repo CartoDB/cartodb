@@ -17,7 +17,7 @@ end
 Warden::Strategies.add(:password) do
   def authenticate!
     if params[:email] && params[:password]
-      if (user = User.authenticate(params[:email], params[:password])) && user.username == CartoDB.extract_subdomain(request) && user.enabled?
+      if (user = User.authenticate(params[:email], params[:password])) && user.enabled?
         success!(user, :message => "Success")
         request.flash['logged'] = true
       else

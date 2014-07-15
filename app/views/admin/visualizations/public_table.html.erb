@@ -8,13 +8,17 @@
 <% end %>
 
 <script>
-  var table_name = '<%= @table.name %>';
-  var table_id   = '<%= @table.id %>';
-  var schema     = <%=raw @table.schema.to_json %>;
-  var user_name  = '<%=raw @table.owner.username %>';
-  var map        = <%=raw @table.map.to_json %>;
-  var config     = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
-  var vizjson    = <%=raw @vizjson.to_json %>;
+  var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
+  var table_id            = '<%= @table.id %>';
+  var schema              = <%=raw @table.schema.to_json %>;
+  var user_name           = '<%=raw @user.username %>';
+  var belong_organization = <%= @table.owner.has_organization? %>;
+  var map                 = <%=raw @table.map.to_json %>;
+  var config              = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
+  var vizjson             = <%=raw @vizjson.to_json %>;
+  var auth_token          = <%=raw @auth_tokens.to_json %>;
+  var use_https           = <%= @use_https =%>;
+  var api_key             = <%=raw @api_key.to_json %>;
 </script>
 
 <script>
@@ -59,7 +63,7 @@
           </div>
 
           <div class="user embed-right-col">
-            <a href="/datasets" title="Datasets by <%= @name %>" class="content">
+            <a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" title="Datasets by <%= @name %>" class="content">
               <div class="user-info">
                 <h4>by <%= @name %></h4>
                 <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>
@@ -86,19 +90,23 @@
             <h2>Visualizations using this data</h2>
             <ul>
 
-              <% if (@total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0) %>
+              <% if @total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0 %>
                 <li class="private">This dataset is not used in any map</li>
               <% end %>
 
               <% @total_visualizations.each do |vis| %>
-                <% if (vis.privacy == "public") %>
-                  <li><a href="/viz/<%= vis.id %>/public_map?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a></li>
+                <% if vis.privacy == "public" %>
+                  <li>
+                    <a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis.id) %>?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
+                  </li>
                 <% end %>
               <% end %>
 
-              <% if (@total_nonpublic_total_vis_count > 0) %>
+              <% if @total_nonpublic_total_vis_count > 0 %>
 
-                <li class="private"><%= @total_nonpublic_total_vis_count %> private visualization<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @total_nonpublic_total_vis_count %> map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
+                <li class="private">
+                  <%= @total_nonpublic_total_vis_count %> private visualization<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @total_nonpublic_total_vis_count %> map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span>
+                </li>
               <% end %>
             </ul>
 

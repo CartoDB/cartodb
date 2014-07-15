@@ -1,0 +1,21 @@
+<% content_for(:header_color) {"3B7EBB"} %>
+<% content_for(:header_img) {"top.png"} %>
+
+<% content_for :body do %>
+
+<p style="text-align: center;">Your colleague <%= @table_visualization.user.username %> has shared a new table called <strong><%= @table_visualization.name %></strong> with you.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+  <tr>
+    <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat left; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>
+    <td style="background: #407CC0; color:#fff; padding: 10px;">
+      <a href="<%= @link %>" style="color: #fff; text-decoration: none;">View the new table</a>
+    </td>
+    <td style="background: url(http://cartodb.s3.amazonaws.com/mails/editor/button-bg.png) no-repeat right; padding: 10px 0; font-size: 16px; width: 21px;">&nbsp;</td>
+  </tr>
+  <tr>
+    <td style="height: 20px;">&nbsp;</td>
+  </tr>
+</table>
+
+<% end %>

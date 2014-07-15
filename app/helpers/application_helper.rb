@@ -43,12 +43,14 @@ module ApplicationHelper
     end
   end
 
+  # TODO: Check this for MU
   def account_url
     if Cartodb.config[:account_host]
       request.protocol + CartoDB.account_host + CartoDB.account_path + '/' + current_user.username
     end
   end
 
+  # TODO: Check this for MU
   def upgrade_url
     account_url + '/upgrade'
   end
@@ -71,7 +73,8 @@ module ApplicationHelper
       oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
       oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
       tumblr_api_key:      Cartodb.config[:tumblr]['api_key'],
-      max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
+      max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
+      watcher_ttl:         Cartodb.config[:watcher].try("fetch", 'ttl', 60),
     }
 
     if Cartodb.config[:graphite_public].present?
@@ -143,13 +146,13 @@ module ApplicationHelper
     end
   end
 
-  def insert_rollbar()
+  def insert_rollbar
     if not Cartodb.config[:rollbar].blank? and not Cartodb.config[:rollbar]['token'].blank?
       render(:partial => 'shared/rollbar', :locals => { token: Cartodb.config[:rollbar]['token'] })
     end
   end
 
-  def insert_trackjs()
+  def insert_trackjs
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
       render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
     end
@@ -189,10 +192,12 @@ module ApplicationHelper
     content_tag :div, error_messages, :class => 'field_error' if error_messages.present?
   end
 
+  # TODO: Check this for MU
   def v1_vizjson_url(visualization)
     "/api/v1/viz/#{visualization.id}/viz"
   end #v1_vizjson_url
 
+  # TODO: Check this for MU
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
   end #v2_vizjson_url

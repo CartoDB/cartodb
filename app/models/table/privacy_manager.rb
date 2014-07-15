@@ -35,13 +35,16 @@ module CartoDB
       def set_from(visualization)
         set_public                if visualization.public?
         set_public_with_link_only if visualization.public_with_link?
-        set_private               if visualization.private?
+        set_private               if visualization.private? or visualization.organization? 
         table.update(privacy: privacy)
         self
       end #set_from
 
       def propagate_to(visualization)
-        visualization.store_using_table(::Table::PRIVACY_VALUES_TO_TEXTS[privacy])
+        visualization.store_using_table({
+                                          privacy_text: ::Table::PRIVACY_VALUES_TO_TEXTS[privacy],
+                                          map_id: visualization.map_id
+                                        })
         self
       end #propagate_to
 
@@ -82,28 +85,32 @@ module CartoDB
 
       def revoke_query
         %Q{
-          REVOKE SELECT ON "#{table.name}"
+          REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
           FROM #{CartoDB::PUBLIC_DB_USER}
         }
       end #revoke_query
 
       def grant_query
         %Q{
-          GRANT SELECT ON "#{table.name}"
+          GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
           TO #{CartoDB::PUBLIC_DB_USER};
         }
       end #grant_query
 
       def invalidate_varnish_cache
         Varnish.new.purge("#{varnish_key}")
-      end #invalidate_varnish_cache
+      end
 
       def varnish_key
-        "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
+        if table.owner.cartodb_extension_version_pre_mu?
+          "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
+        else
+          "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
+        end
       end #varnish_key
 
       def redis_key
-        "rails:#{table.owner.database_name}:#{table.name}"
+        "rails:#{table.owner.database_name}:#{owner.database_schema}.#{table.name}"
       end #redis_key
     end # PrivacyManager
   end # Table

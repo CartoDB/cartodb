@@ -15,11 +15,14 @@ class Api::Json::TablesController < Api::ApplicationController
   # All other table creation things are controlled via the imports_controller#create
   def create
     @table = Table.new
-    @table.user_id        = current_user.id
+    @table.user_id = current_user.id
     if params[:name]
       @table.name = params[:name]
     else
-      @table.name = Table.get_valid_table_name('', {  connection: current_user.in_database })
+      @table.name = Table.get_valid_table_name('', {
+          connection:       current_user.in_database,
+          database_schema:  current_user.database_schema
+      })
     end
     @table.description    = params[:description]   if params[:description]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
@@ -42,6 +45,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def show
     return head(404) if @table == nil
+    return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
     respond_to do |format|
       format.csv do
         send_data @table.to_csv,
@@ -59,12 +63,14 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
-        render_jsonp(@table.public_values.merge(schema: @table.schema(reload: true)))
+        render_jsonp(@table.public_values({}, current_user).merge(schema: @table.schema(reload: true)))
       end
     end
   end
 
   def update
+    return head(404) if @table == nil
+    return head(403) unless @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
     warnings = []
 
     # Perform name validations
@@ -110,6 +116,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def destroy
+    return head(403) unless @table.table_visualization.is_owner?(current_user)
     @table.destroy
     head :no_content
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
@@ -121,11 +128,24 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def vizzjson
-    @table = Table.find_by_subdomain(CartoDB.extract_subdomain(request), params[:id])
-    if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
-      response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
-      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-      render_jsonp({})
+    table = Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
+    if table.present?
+      allowed = table.public?
+
+      unless allowed && current_user.present?
+        user_tables = current_user.tables_including_shared
+        user_tables.each{ |item|
+          allowed ||= item.id == params.fetch('id')
+        }
+      end
+
+      if allowed
+        response.headers['X-Cache-Channel'] = "#{table.varnish_key}:vizjson"
+        response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+        render_jsonp({})
+      else
+        head :forbidden
+      end
     else
       head :forbidden
     end
@@ -134,12 +154,7 @@ class Api::Json::TablesController < Api::ApplicationController
   protected
 
   def load_table
-    rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-    if rx.match(params[:id])
-      @table = Table.where('user_id = ? AND (name = ? OR id = ?)', current_user.id, params[:id], params[:id]).first
-    else
-      @table = Table.where(:name => params[:id], :user_id => current_user.id).first
-    end
+    @table = Table.get_by_id_or_name(params.fetch('id'), current_user)
   end
 end
 

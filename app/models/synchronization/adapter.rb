@@ -77,7 +77,7 @@ module CartoDB
         table.save
         table.send(:invalidate_varnish_cache)
         update_cdb_tablemetadata(table.name)
-        database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
+        database.run("UPDATE \"#{user.database_schema}\".\"#{table_name}\" SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from \"#{user.database_schema}\".\"#{table_name}\")")
       rescue => exception
         puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
         Rollbar.report_exception(exception)
@@ -87,12 +87,12 @@ module CartoDB
       def update_cdb_tablemetadata(name)
         # TODO: use upsert (see table.update_cdb_tablemetadata)
         user.in_database(as: :superuser).run(%Q{
-          INSERT INTO cdb_tablemetadata (tabname, updated_at)
+          INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
           VALUES ('#{name}'::regclass::oid, NOW())
         })
       rescue Sequel::DatabaseError
         user.in_database(as: :superuser).run(%Q{
-           UPDATE cdb_tablemetadata
+           UPDATE cartodb.cdb_tablemetadata
            SET updated_at = NOW()
            WHERE tabname = '#{name}'::regclass
         })
@@ -118,19 +118,19 @@ module CartoDB
         return self if schema == result.schema
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"
-          SET SCHEMA public
+          SET SCHEMA "#{user.database_schema}"
         })
       end
 
       def rename(current_name, new_name)
         database.execute(%Q{
-          ALTER TABLE "public"."#{current_name}"
-          RENAME TO "#{new_name}"
+          ALTER TABLE "#{user.database_schema}"."#{current_name}"
+          RENAME TO #{new_name}
         })
       end
 
       def drop(table_name)
-        database.execute(%Q(DROP TABLE #{table_name}))
+        database.execute(%Q(DROP TABLE "#{user.database_schema}"."#{table_name}"))
       rescue
         self
       end
@@ -194,7 +194,7 @@ module CartoDB
       private
 
       attr_reader :table_name, :runner, :database, :user
-    end # Synchronization
-  end # Connector
-end # CartoDB
+    end
+  end
+end
 

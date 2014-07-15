@@ -35,10 +35,6 @@ module CartoDB
 
     ALLOWED_ENTITY_KEYS = [:id, :username, :name, :avatar_url]
 
-    def old_acl
-      @old_acl
-    end
-
     # @return Hash
     def acl
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
@@ -284,26 +280,26 @@ module CartoDB
     def after_create
       # Hack. I need to set the old_acl to the same value than the new because
       # the new? sequel method doesn't work as expected
-      @old_acl = self.acl
+      # @old_acl = self.acl
     end
 
     def after_save
       # WARNING: The sequel new? method doesn't work as expected in all the 
       # after callbacks. It will always return false
-      notify_permission_change unless new?
+      # notify_permission_change unless new?
       update_shared_entities unless new?
     end
 
     def after_destroy
       # Hack. I need to set the new acl as empty so all the old acls are
       # considered revokes
-      self.notify_permission_change(@old_acl, [])
+      # self.notify_permission_change(@old_acl, [])
     end
 
     def before_destroy
       # Hack. I need to set the old_acl to the current acl before destroying 
       # so after that I can be notified about real revokes
-      @old_acl = self.acl
+      # @old_acl = self.acl
       destroy_shared_entities
     end
 

@@ -43,6 +43,7 @@ describe Visualization::Member do
         :grant_user_in_database => nil,
         :set_statement_timeouts => nil,
         :set_user_as_organization_member => nil,
+        :cartodb_extension_version_pre_mu? => false,
         :rebuild_quota_trigger => nil
     )
 

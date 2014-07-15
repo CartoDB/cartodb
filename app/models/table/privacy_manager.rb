@@ -102,7 +102,11 @@ module CartoDB
       end
 
       def varnish_key
-        "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
+        if table.owner.cartodb_extension_version_pre_mu?
+          "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
+        else
+          "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
+        end
       end #varnish_key
 
       def redis_key

@@ -1019,7 +1019,11 @@ class User < Sequel::Model
         #       a search_path before
         search_path = db.fetch("SHOW search_path;").first[:search_path]
         db.run("SET search_path TO cartodb, public;")
-        db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
+        if cartodb_extension_version_pre_mu?
+          db.run("SELECT CDB_SetUserQuotaInBytes(#{self.quota_in_bytes});")
+        else
+          db.run("SELECT CDB_SetUserQuotaInBytes('#{self.database_schema}', #{self.quota_in_bytes});")
+        end
         db.run("SET search_path TO #{search_path};")
       end
     end

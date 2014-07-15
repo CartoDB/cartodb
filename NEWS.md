@@ -1,3 +1,8 @@
+3.0.X
+------------------
+* Fixed bugs
+  * Fixed write buttons are shown when watching sync tables
+
 3.0.0 (2014-07-15)
 ------------------
 * New Features

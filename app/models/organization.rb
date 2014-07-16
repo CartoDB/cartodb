@@ -137,8 +137,8 @@ class Organization < Sequel::Model
     public_vis_count_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE)
   end
 
-  def tags(exclude_shared=true)
-    users.map { |u| u.tags(exclude_shared) }.flatten
+  def tags(type, exclude_shared=true)
+    users.map { |u| u.tags(exclude_shared, type) }.flatten
   end
 
   def get_auth_token

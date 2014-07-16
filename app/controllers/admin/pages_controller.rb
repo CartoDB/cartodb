@@ -29,7 +29,7 @@ class Admin::PagesController < ApplicationController
 
     return render_404 if viewed_user.nil?
 
-    @tags             = viewed_user.tags(true)
+    @tags             = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
@@ -86,7 +86,7 @@ class Admin::PagesController < ApplicationController
 
     return render_404 if viewed_user.nil?
 
-    @tags             = viewed_user.tags(true)
+    @tags             = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description
@@ -160,7 +160,7 @@ class Admin::PagesController < ApplicationController
       )
     end
 
-    @tags = @organization.tags
+    @tags = @organization.tags(Visualization::Member::DERIVED_TYPE)
 
     respond_to do |format|
       format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
@@ -190,7 +190,7 @@ class Admin::PagesController < ApplicationController
       )
     end
 
-    @tags = @organization.tags
+    @tags = @organization.tags(Visualization::Member::CANONICAL_TYPE)
 
     respond_to do |format|
       format.html { render 'datasets_organization', layout: 'application_public_organization_dashboard' }

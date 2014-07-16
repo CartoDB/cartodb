@@ -24,12 +24,21 @@
   @import "../table/table-sprite";
 
   
+  // Modal dialogs
   .vis_privacy_dialog {
-    section.block div.foot {
-      position:relative;
-      padding:0 40px 35px;
-      border:none;
+    
+    section.block {
+      div.foot {
+        position:relative;
+        padding:0 40px 35px;
+        border:none;
+      }
     }
+
+    section.warning {
+      display:none;
+    }
+
   }
 
 

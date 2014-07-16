@@ -17,7 +17,7 @@ module CartoDB
       end
 
       def restore_command(config)
-        "pg_restore --verbose --single-transaction --disable-triggers #{Utils.conn_string(config)}"
+        "pg_restore -e --verbose --single-transaction --disable-triggers #{Utils.conn_string(config)}"
       end
 
       def superuser_conn

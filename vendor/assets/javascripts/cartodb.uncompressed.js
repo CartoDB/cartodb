@@ -1,6 +1,6 @@
-// cartodb.js version: 3.10.2-dev
+// cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f95db2254a5a51696afbdc60e35954b17efa01f2
+// sha: eec93eeba1079329c6def1c7fc675eb0a1817d33
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.10.2-dev';
+    cdb.VERSION = '3.10.3-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25350,84 +25350,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   }
 
 });
+
 cdb.geo.ui.Header = cdb.core.View.extend({
 
-  className: "cartodb-header",
+  className: 'cartodb-header',
 
-  events: { },
-
-  default_options: { },
-
-  initialize: function() {
-
-    _.defaults(this.options, this.default_options);
-
-    this.template = this.options.template;
-
-    this.model.on("change:show_title", this._onChangeTitle, this);
-    this.model.on("change:show_description", this._onChangeDescription, this);
-
-  },
-
-  _applyStyle: function() { },
-
-  _onChangeTitle: function() {
-
-    if (this.model.get("show_title")) this.showTitle();
-    else this.hideTitle();
-
-  },
-
-  _onChangeDescription: function() {
-
-    if (this.model.get("show_description")) this.showDescription();
-    else this.hideDescription();
-
-
-  },
-
-  showTitle: function() {
-
-    this.$el.find(".title").show();
-    this.$el.show();
-
-  },
-
-  showDescription: function() {
-
-    this.$el.find(".description").show();
-    this.$el.show();
-
-  },
-
-  hideTitle: function() {
-
-    this.$el.find(".title").hide();
-    if (!this.model.get("show_decription")) this.$el.hide();
-
-  },
-
-  hideDescription: function() {
-
-    this.$el.find(".description").hide();
-    if (!this.model.get("show_title")) this.$el.hide();
-
-  },
+  initialize: function() {},
 
   render: function() {
-
-    var extra = this.model.get("extra");
-
-    this.$el.html(this.template(extra));
-
-    if (this.model.get("extra").show_title) this.showTitle();
-    if (this.model.get("extra").show_description) this.showDescription();
-
+    this.$el.html(this.options.template(this.options));
     return this;
-
   }
-
 });
+
 cdb.geo.ui.Search = cdb.core.View.extend({
 
   className: 'cartodb-searchbox',
@@ -26071,11 +26006,9 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
 
-    if (!this.model) {
-      this.model = new cdb.core.Model({
-        allowWheelOnFullscreen: false
-      });
-    }
+    this.model = new cdb.core.Model({
+      allowWheelOnFullscreen: false
+    });
 
     this._addWheelEvent();
 
@@ -26512,7 +26445,13 @@ Map.prototype = {
       params.push("map_key=" + api_key);
     }
     if(extra_params.auth_token) {
-      params.push("auth_token=" + extra_params.auth_token);
+      if (_.isArray(extra_params.auth_token)) {
+        for (var i = 0, len = extra_params.auth_token.length; i < len; i++) {
+          params.push("auth_token[]=" + extra_params.auth_token[i]);
+        }
+      } else {
+        params.push("auth_token=" + extra_params.auth_token);
+      }
     }
     // mark as the request is being done
     this._waiting = true;
@@ -26714,9 +26653,15 @@ Map.prototype = {
       var k = included[i]
       var p = params[k];
       if(p) {
-        var q = encodeURIComponent(p);
-        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-        url_params.push(k + "=" + q);
+        if (_.isArray(p)) {
+          for (var j = 0, len = p.length; j < len; j++) {
+            url_params.push(k + "[]=" + encodeURIComponent(p[j]));
+          }
+        } else {
+          var q = encodeURIComponent(p);
+          q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+          url_params.push(k + "=" + q);
+        }
       }
     }
     return url_params.join('&')
@@ -26891,7 +26836,15 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var extra_params = this.options.extra_params || {};
     var token = extra_params.auth_token;
     if (token) {
-      url += "?auth_token=" + token
+      if (_.isArray(token)) {
+        var tokenParams = [];
+        for (var i = 0, len = token.length; i < len; i++) {
+          tokenParams.push("auth_token[]=" + token[i]);
+        }
+        url += "?" + tokenParams.join('&')
+      } else {
+        url += "?auth_token=" + token
+      }
     }
     return url;
   },

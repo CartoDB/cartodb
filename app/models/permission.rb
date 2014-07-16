@@ -40,6 +40,120 @@ module CartoDB
       ::JSON.parse((self.access_control_list.nil? ? DEFAULT_ACL_VALUE : self.access_control_list), symbolize_names: true)
     end
 
+    def real_entity_type
+      if self.entity_type == 'vis'
+        if self.entity.type == 'table'
+          return 'table'
+        else
+          return 'visualization'
+        end
+      else
+        return self.entity_type
+      end
+    end
+
+    def notify_permission_change(old_acl = @old_acl, new_acl = self.acl)
+      begin
+        changes = self.compare_new_acl(old_acl, new_acl)
+        changes.each do |c, v|
+          # At the moment we just check users permissions
+          if c == 'user'
+            v.each do |i, perm|
+              affected_user = User.where(:id => i).first
+              # Perm is an array. For the moment just one type of permission can
+              # be applied to a type of object. But with an array this is open
+              # to more than one permission change at a time
+              perm.each do |p|
+                if self.real_entity_type == 'visualization'
+                  if p['action'] == 'grant'
+                    # At this moment just inform as read grant
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_user.id)
+                    end
+                  elsif p['action'] == 'revoke'
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::UnshareVisualization, self.entity.id, affected_user.id)
+                    end
+                  end
+                elsif self.real_entity_type == 'table'
+                  if p['action'] == 'grant'
+                    # At this moment just inform as read grant
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_user.id)
+                    end
+                  elsif p['action'] == 'revoke'
+                    if p['type'].include?('r')
+                      Resque.enqueue(Resque::UserJobs::Mail::UnshareTable, self.entity.id, affected_user.id)
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      rescue => e
+        CartoDB::Logger.info "Problem sending notification mail"
+        CartoDB::Logger.info e
+      end
+    end
+
+    def compare_new_acl(old_acl = @old_acl, new_acl = self.acl)
+      temp_old_acl = {}
+      # Convert the old and new acls to a better format for searching
+      old_acl.each do |i|
+        if !temp_old_acl.has_key?(i[:type])
+          temp_old_acl[i[:type]] = {}
+        end
+        temp_old_acl[i[:type]][i[:id]] = i
+      end
+      temp_new_acl = {}
+      new_acl.each do |i|
+        if !temp_new_acl.has_key?(i[:type])
+          temp_new_acl[i[:type]] = {}
+        end
+        temp_new_acl[i[:type]][i[:id]] = i
+      end
+      
+      # Iterate through the new acl and compare elements with the old one
+      permissions_change = {}
+      temp_new_acl.each do |pt, pv|
+        permissions_change[pt] = {}
+        pv.each do |oi, iacl|
+          # See if a specific permission exists in the old acl
+          # If the new acl is greater than the old we suppose that write
+          # permissions were granted. Otherwise they were revoked
+          # If the permissions doesn't exist in the old acl it has been granted
+          # After the comparisson both old and new acl are removed from the
+          # temporal structure
+          if !temp_old_acl[pt].nil? && !temp_old_acl[pt][oi].nil?
+            case temp_new_acl[pt][oi][:access] <=> temp_old_acl[pt][oi][:access]
+            when 1
+              permissions_change[pt][oi] = [{'action' => 'grant', 'type' => 'w'}]
+            when -1
+              permissions_change[pt][oi] = [{'action' => 'revoke', 'type' => 'w'}]
+            end
+            temp_old_acl[pt].delete(oi)
+          else
+            permissions_change[pt][oi] = [{'action' => 'grant', 'type' => temp_new_acl[pt][oi][:access]}]
+          end
+          temp_new_acl[pt].delete(oi)
+        end
+      end
+
+      # Iterate through the old acl. All the permissions in this structure are
+      # supposed so be revokes
+      temp_old_acl.each do |pt, pv|
+        if permissions_change[pt].nil?
+          permissions_change[pt] = {}
+        end
+        pv.each do |oi, iacl|
+          permissions_change[pt][oi] = [{'action' => 'revoke', 'type' => temp_old_acl[pt][oi][:access]}]
+        end
+      end
+
+      return permissions_change
+    end
+
     # Format:
     # [
     #   {
@@ -63,9 +177,7 @@ module CartoDB
       incoming_acl = value.nil? ? ::JSON.parse(DEFAULT_ACL_VALUE) : value
       raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
-        unless item.kind_of?(Hash) && item[:entity].present? && item[:type].present? && item[:access].present? \
-          && (item[:entity].keys - ALLOWED_ENTITY_KEYS == []) \
-          && [ACCESS_READONLY, ACCESS_READWRITE, ACCESS_NONE].include?(item[:access])
+        unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
           raise PermissionError.new('Wrong ACL entry format')
         end
       }
@@ -165,11 +277,29 @@ module CartoDB
       self.updated_at = Time.now
     end
 
+    def after_create
+      # Hack. I need to set the old_acl to the same value than the new because
+      # the new? sequel method doesn't work as expected
+      # @old_acl = self.acl
+    end
+
     def after_save
+      # WARNING: The sequel new? method doesn't work as expected in all the 
+      # after callbacks. It will always return false
+      # notify_permission_change unless new?
       update_shared_entities unless new?
     end
 
+    def after_destroy
+      # Hack. I need to set the new acl as empty so all the old acls are
+      # considered revokes
+      # self.notify_permission_change(@old_acl, [])
+    end
+
     def before_destroy
+      # Hack. I need to set the old_acl to the current acl before destroying 
+      # so after that I can be notified about real revokes
+      # @old_acl = self.acl
       destroy_shared_entities
     end
 
@@ -240,7 +370,6 @@ module CartoDB
 
       # Create user entities for the new ACL
       users = relevant_user_acl_entries(acl)
-      users_entities = User.where(id: users.map { |u| u[:id] }).all
       users.each { |user|
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
@@ -249,35 +378,9 @@ module CartoDB
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
 
-        # if the entity is a canonical visualizations give database permissions
-        if (e.table)
-          if self.owner_id != e.permission.owner_id
-            raise PermissionError.new('Change permission without ownership')
-          end
-          priv = e.privacy
-          if priv == CartoDB::Visualization::Member::PRIVACY_PRIVATE
-            e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
-            e.store
-          end
+        if e.table?
           grant_db_permission(e, user[:access], shared_entity)
-        else
-          # update acl for related tables using canonical visualization preserving the previous permissions
-          e.related_tables.each { |t|
-            # if the user is the owner of the table just give access
-            if self.owner_id == e.permission.owner_id
-              vis = t.table_visualization
-              perm = vis.permission
-              users_entities.each { |u|
-                # check permission and give read perm
-                if not vis.has_permission?(u, CartoDB::Visualization::Member::PERMISSION_READONLY)
-                  perm.set_user_permission(u, CartoDB::Visualization::Member::PERMISSION_READONLY)
-                end
-              }
-              perm.save
-            end
-          }
         end
-
       }
 
       org = relevant_org_acl_entry(acl)
@@ -288,32 +391,14 @@ module CartoDB
             entity_id:      self.entity_id,
             entity_type:    type_for_shared_entity(self.entity_type)
         ).save
-        # if the entity is a canonical visualizations give database permissions
-        if (e.table)
-          if self.owner_id != e.permission.owner_id
-            raise PermissionError.new('Change permission without ownership')
-          end
-          priv = e.privacy
-          if priv == CartoDB::Visualization::Member::PRIVACY_PRIVATE
-            e.privacy = CartoDB::Visualization::Member::PRIVACY_ORGANIZATION
-            e.store
-          end
-          grant_db_permission(e, org[:access], shared_entity)
-        else
-          # update acl for related tables using canonical visualization preserving the previous permissions
-          e.related_tables.each { |t|
-            # if the user is the owner of the table just give access
-            if self.owner_id == e.permission.owner_id
-              vis = t.table_visualization
-              perm = vis.permission
-              if vis.permission.permission_for_org == ACCESS_NONE
-                perm.set_subject_permission(org[:id], CartoDB::Visualization::Member::PERMISSION_READONLY, TYPE_ORGANIZATION)
-                perm.save
-              end
-            end
-          }
-        end
 
+        if e.table?
+          grant_db_permission(e, org[:access], shared_entity)
+        end
+      end
+
+      if e.table? and (org or users.any?)
+        e.invalidate_cache_and_refresh_named_map
       end
     end
 
@@ -435,6 +520,22 @@ module CartoDB
             access: entry[:access]
         }
       }
+    end
+
+    def acl_has_required_fields?(acl_item)
+      acl_item[:entity].present? && acl_item[:type].present? && acl_item[:access].present? && acl_has_valid_entity_field?(acl_item)
+    end
+
+    def acl_has_valid_entity_field?(acl_item)
+      acl_item[:entity].keys - ALLOWED_ENTITY_KEYS == []
+    end
+
+    def acl_has_valid_access?(acl_item)
+      valid_access = [ACCESS_READONLY, ACCESS_NONE]
+      if entity.table?
+        valid_access << ACCESS_READWRITE
+      end
+      valid_access.include?(acl_item[:access])
     end
 
   end

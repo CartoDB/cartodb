@@ -68,7 +68,14 @@ module CartoDB
           # if the table_name already have a schema don't add another one
           # this case happens when you share a layer already shared with you
           if poro['options']['user_name'] != options[:viewer_user].username and not poro['options']['table_name'].include?('.')
-            poro['options']['table_name'] = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
+            user_name = poro['options']['user_name']
+            table_name = nil
+            if user_name.include?('-')
+              table_name = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
+            else
+              table_name = "#{poro['options']['user_name']}.#{poro['options']['table_name']}"
+            end
+            poro['options']['table_name'] = table_name
           end
         end
         poro
@@ -209,8 +216,13 @@ module CartoDB
         EJS.evaluate(wrapper, sql: query)
       end #wrap
 
-      def default_query_for(options)
-        "select * from #{options.fetch('table_name')}"
+      def default_query_for(layer_options)
+        if options[:viewer_user]
+          unless layer_options['user_name'] == options[:viewer_user].username
+            return "select * from \"#{layer_options['user_name']}\".#{layer_options['table_name']}"
+          end
+        end
+        "select * from #{layer_options.fetch('table_name')}"
       end #defaut_query_for
 
       def public_options

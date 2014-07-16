@@ -135,6 +135,8 @@ class Admin::PagesController < ApplicationController
 
     @pages = (vis_list.count.to_f / VISUALIZATIONS_PER_PAGE).ceil
 
+    @public_org_tables = []
+
     @public_org_visualizations = []
     vis_list.each do |vis|
       @public_org_visualizations.push(

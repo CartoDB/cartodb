@@ -9,6 +9,8 @@ class Api::Json::RecordsController < Api::ApplicationController
   api_key table_id oauth_token oauth_token_secret api_key user_domain }
 
   before_filter :load_table, :set_start_time
+  before_filter :read_privileges?, only: [:show]
+  before_filter :write_privileges?, only: [:create, :update, :destroy]
 
   #def index
     #render_jsonp(Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))))
@@ -72,5 +74,13 @@ class Api::Json::RecordsController < Api::ApplicationController
   def load_table
     @table = Table.get_by_id_or_name(params[:table_id], current_user)
     raise RecordNotFound if @table.nil?
+  end
+
+  def write_privileges?
+    head(401) unless current_user and @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+  end
+
+  def read_privileges?
+    head(401) unless current_user and @table.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
   end
 end

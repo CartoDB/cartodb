@@ -76,7 +76,7 @@ class Table < Sequel::Model(:user_tables)
 
     attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
-      attrs[:name] = "\"#{owner.database_schema}\".#{attrs[:name]}"
+      attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end
     attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization, { real_privacy: true, user: viewer_user }).to_poro
     attrs
@@ -186,8 +186,8 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
-    table = CartoDB::Visualization::Collection.new.fetch(query_filters).first
-    table = table.table unless table.nil?
+    vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u| u.user_id == query_filters[:user_id] }.first
+    table = vis.table unless vis.nil?
 
     if rx.match(id_or_name) && table.nil?
       table_temp = Table.where(id: id_or_name).first
@@ -207,7 +207,9 @@ class Table < Sequel::Model(:user_tables)
 
   def self.table_and_schema(table_name)
     if table_name =~ /\./
-      table_name.split('.').reverse
+      table_name, schema = table_name.split('.').reverse
+      # remove quotes from schema
+      [table_name, schema.gsub('"', '')]
     else
       [table_name, nil]
     end
@@ -538,7 +540,7 @@ class Table < Sequel::Model(:user_tables)
     self.create_default_visualization
     self.send_tile_style_request
 
-    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
+    grant_select_to_tiler_user
     set_default_table_privacy
 
     @force_schema = nil
@@ -560,6 +562,10 @@ class Table < Sequel::Model(:user_tables)
     self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
+  end
+
+  def grant_select_to_tiler_user
+    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
   end
 
   def optimize
@@ -805,7 +811,11 @@ class Table < Sequel::Model(:user_tables)
   end #invalidate_cache_for
 
   def varnish_key
-    "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+    if owner.cartodb_extension_version_pre_mu?
+      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
+    else
+      "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+    end
   end
 
   # adds the column if not exists or cast it to timestamp field
@@ -1168,6 +1178,7 @@ class Table < Sequel::Model(:user_tables)
   def convert_column_datatype(database, table_name, column_name, new_type)
     CartoDB::ColumnTypecaster.new(
       user_database:  database,
+      schema:         self.owner.database_schema,
       table_name:     table_name,
       column_name:    column_name,
       new_type:       new_type
@@ -1592,10 +1603,11 @@ class Table < Sequel::Model(:user_tables)
       suffix = "_#{count}"
       name = name[0..62-suffix.length]
       name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
+      # Re-check for duplicated underscores
+      name = name.gsub(/_{2,}/, '_')
     end
 
-    # Re-check for duplicated underscores
-    return name.gsub(/_{2,}/, '_')
+    name
   end
 
   def get_new_column_type(invalid_column)

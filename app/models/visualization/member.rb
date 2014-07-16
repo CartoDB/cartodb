@@ -26,11 +26,10 @@ module CartoDB
       PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
       PRIVACY_LINK         = 'link'          # published but not listen in public profile
       PRIVACY_PROTECTED    = 'password'      # published but password protected
-      PRIVACY_ORGANIZATION = 'organization'  # published but password protected
 
       CANONICAL_TYPE  = 'table'
       DERIVED_TYPE    =  'derived'
-      PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED, PRIVACY_ORGANIZATION ]
+      PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
@@ -207,11 +206,11 @@ module CartoDB
       end #public_with_link?
 
       def private?
-        privacy == PRIVACY_PRIVATE
+        privacy == PRIVACY_PRIVATE and not organization?
       end #private?
 
       def organization?
-        privacy == PRIVACY_ORGANIZATION
+        privacy == PRIVACY_PRIVATE and permission.acl.size > 0
       end
 
       def password_protected?
@@ -293,7 +292,7 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-        if type != CANONICAL_TYPE
+        if type != CANONICAL_TYPE or organization?
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
@@ -399,14 +398,13 @@ module CartoDB
           repository.store(id, attributes.to_hash)
         end
 
-        priv = @privacy
         # when visualization turns private remove the acl
-        if priv == PRIVACY_PRIVATE && privacy_changed
+        if not organization? and privacy_changed
           permission.clear
         end
 
         if type == CANONICAL_TYPE
-          if priv == PRIVACY_ORGANIZATION
+          if organization?
             save_named_map
           end
           propagate_privacy_and_name_to(table) if table and propagate_changes

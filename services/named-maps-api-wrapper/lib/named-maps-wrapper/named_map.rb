@@ -82,8 +82,12 @@ module CartoDB
 				( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
 			end # self.normalize_name
 
-			def self.get_template_data( visualization, parent )
-				presenter_options = { full: false, user_name: parent.username }
+      def self.get_template_data( visualization, parent )
+        presenter_options = {
+          full: false, 
+          user_name: parent.username, 
+          viewer_user: User.where(username: parent.username).first
+        }
 
         # Layers are zero-based on the client
         layer_num = 0

@@ -139,7 +139,7 @@ module CartoDB
         if @user.nil? || @visualization.is_owner?(@user)
           visualization.name
         else
-          "\"#{@visualization.user.database_schema}\".#{visualization.name}"
+          "#{@visualization.user.sql_safe_database_schema}.#{visualization.name}"
         end
       end
 

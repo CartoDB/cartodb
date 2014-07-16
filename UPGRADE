@@ -1,3 +1,13 @@
+2.x -> 3.0.0
+------------
+* Install CartoDB extension version 0.3.x
+* Run rake tasks:
+  - bundle exec rake cartodb:db:create_default_vis_permissions
+  - bundle exec rake cartodb:db:populate_permission_entity_id
+
+
+General notes
+-------------
 
 NOTES:
  - Redis server must be listening on the configured

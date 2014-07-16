@@ -37,22 +37,12 @@
     <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
 
       <div class="cartodb-public-wrapper">
-        <div class="cartodb-public-header">
-          <div class="inner">
-
-            <a class="logo" href="http://www.cartodb.com">CartoDB</a>
-
-            <div class="options">
-              <a href="#fork" class="fork green button" title="">fork</a>
-              <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
-            </div>
-
-          </div>
-        </div>
+        
+        <%= render 'admin/shared/public_header', :clone => false, :signin => false %>
 
         <div class="separator top"></div>
 
-          <div id="map"></div>
+        <div id="map"></div>
 
         <div id="not_supported_dialog" style="display: none">
           <h2>CartoDB</h2>

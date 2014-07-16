@@ -19,25 +19,18 @@
   }
 
   .table-item-inner {
-    display:block;
+    @include display-flex();
+    @include cross-browser(justify-content, space-between);
     overflow:hidden;
     padding:21px 0 22px;
     border-top:1px solid rgba(#CCCCCC, 0.5);
-  }
-
-  .table-desc,
-  .table-info {
-    @include inline-block();
-    vertical-align: top;
   }
 
 
 
   // Info, tags, syncing status,...  
   .table-info {
-    float:right;
     width:40%;
-    text-align: right;
 
     .table-list-info {
       display:block;
@@ -129,15 +122,15 @@
 
     // Tags
     .table-tags {
-      display:block;
-      margin-top:4px;
+      @include cross-browser(justify-content, flex-end);
+
+      a { margin-left:3px }
     }
   }
 
 
   // Title and description
   .table-desc {
-    float:left;
     width:60%;
 
     // Title

@@ -68,12 +68,12 @@
     // Tags
     .vis-tags,
     .table-tags {
+      @include display-flex();
       
       a {
-        @include inline-block();
         @include size(auto, 13px);
         padding:2px 7px;
-        margin-left:1px;
+        margin-top:3px;
         font:normal 11px $text-fonts2;
         color:#666666;
         line-height:14px;

@@ -1375,6 +1375,15 @@ class Table < Sequel::Model(:user_tables)
     @name_changed_from = nil
   end
 
+  # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
+  def sequel_qualified_table_name
+    "#{owner.database_schema}__#{self.name}".to_sym
+  end
+
+  def qualified_table_name
+    "\"#{owner.database_schema}\".\"#{self.name}\""
+  end
+
   ############################### Sharing tables ##############################
 
   # @param [User] organization_user Gives read permission to this user
@@ -1676,15 +1685,6 @@ class Table < Sequel::Model(:user_tables)
     CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
     CartodbStats.update_tables_counter_per_host(-1)
     CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
-  end
-
-  def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{self.name}\""
-  end
-
-  # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
-  def sequel_qualified_table_name
-    "#{owner.database_schema}__#{self.name}".to_sym
   end
 
   ############################### Sharing tables ##############################

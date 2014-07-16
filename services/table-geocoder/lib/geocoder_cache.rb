@@ -14,6 +14,7 @@ module CartoDB
       @sql_api       = arguments.fetch(:sql_api)
       @connection    = arguments.fetch(:connection)
       @table_name    = arguments.fetch(:table_name)
+      @qualified_table_name = arguments.fetch(:qualified_table_name)
       @working_dir   = arguments[:working_dir] || Dir.mktmpdir
       `chmod 777 #{@working_dir}`
       @formatter     = arguments.fetch(:formatter)
@@ -41,7 +42,7 @@ module CartoDB
         limit = [@batch_size, @max_rows - (count * @batch_size)].min
         rows = connection.fetch(%Q{
             SELECT DISTINCT(md5(#{formatter})) AS searchtext
-            FROM #{table_name}
+            FROM #{@qualified_table_name}
             WHERE cartodb_georef_status IS NULL
             LIMIT #{limit} OFFSET #{count * @batch_size}
         }).all
@@ -77,7 +78,7 @@ module CartoDB
         }
         rows = connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
-          FROM #{table_name} AS orig
+          FROM #{@qualified_table_name} AS orig
           WHERE orig.cartodb_georef_status IS NOT NULL
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
@@ -104,7 +105,7 @@ module CartoDB
 
     def copy_results_to_table
       connection.run(%Q{
-        UPDATE #{table_name} AS dest
+        UPDATE #{@qualified_table_name} AS dest
         SET the_geom = ST_GeomFromText(
               'POINT(' || orig.longitude || ' ' || orig.latitude || ')', 4326
             ),

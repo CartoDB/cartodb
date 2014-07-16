@@ -15,6 +15,8 @@ module CartoDB
       @working_dir = arguments[:working_dir] || Dir.mktmpdir
       `chmod 777 #{@working_dir}`
       @table_name  = arguments[:table_name]
+      @qualified_table_name = arguments[:qualified_table_name]
+      @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
       @schema      = arguments[:schema] || 'cdb'
@@ -34,6 +36,7 @@ module CartoDB
         sql_api:     arguments[:cache],
         working_dir: working_dir,
         table_name:  table_name,
+        qualified_table_name: @qualified_table_name,
         max_rows:    @max_rows
       )
     end # initialize
@@ -64,7 +67,7 @@ module CartoDB
 
     def dataset
       connection.select("DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText".lit)
-        .from(table_name.lit)
+        .from(@sequel_qualified_table_name)
         .limit(max_rows)
         .where("cartodb_georef_status IS NULL".lit)
     end
@@ -129,7 +132,7 @@ module CartoDB
 
     def load_results_into_original_table
       connection.run(%Q{
-        UPDATE #{table_name} AS dest
+        UPDATE #{@qualified_table_name} AS dest
         SET the_geom = ST_GeomFromText(
             'POINT(' || orig.displayLongitude || ' ' ||
               orig.displayLatitude || ')', 4326
@@ -142,7 +145,7 @@ module CartoDB
 
     def add_georef_status_column
       connection.run(%Q{
-        ALTER TABLE #{table_name} 
+        ALTER TABLE #{@qualified_table_name}
         ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
       })
     rescue Sequel::DatabaseError => e
@@ -152,7 +155,7 @@ module CartoDB
 
     def cast_georef_status_column
       connection.run(%Q{
-        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
+        ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
         TYPE boolean USING cast(cartodb_georef_status as boolean)
       })
     rescue => e

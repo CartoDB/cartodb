@@ -36,17 +36,21 @@ class Api::Json::ColumnsController < Api::ApplicationController
 
   def destroy
     @table.drop_column!(:name => params[:id])
+
+    # disabled because cluster raise an error when the owner of the table
+    # is not the current user (in MU)
     
+    # table_schema = @table.owner.database_schema
     # Select the primary key name of the table. This is neccesary because if you change the name of the table
     # the primary key index name does not change, so only way is to find it again on the postgresql schema
-    sql="select conname from pg_constraint,pg_namespace, pg_class where pg_namespace.nspname='public'
-          and pg_class.relname='#{@table.name}'
-          and pg_class.oid=pg_constraint.conrelid
-          and pg_constraint.contype='p' limit 1"
+    #sql="select conname from pg_constraint,pg_namespace, pg_class where pg_namespace.nspname='#{table_schema}'
+          #and pg_class.relname='#{@table.name}'
+          #and pg_class.oid=pg_constraint.conrelid
+          #and pg_constraint.contype='p' limit 1"
     
-    pkey_name = current_user.run_pg_query(sql)[:rows][0][:conname]
+    # key_name = current_user.run_pg_query(sql)[:rows][0][:conname]
     # Recompact table on disk
-    current_user.run_pg_query("CLUSTER #{@table.name} USING #{pkey_name}")
+    #current_user.run_pg_query("CLUSTER #{@table.name} USING #{pkey_name}")
     
     head :no_content
   rescue => e

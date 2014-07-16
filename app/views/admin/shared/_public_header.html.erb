@@ -1,12 +1,15 @@
-<header>
+<div class="cartodb-public-header">
   <div class="inner">
-    <div class="logo left">
-      <h1><%= link_to "CartoDB", "http://www.cartodb.com", :id => "the_logo" %></h1>
+    <div class="left">
+      <h1><%= link_to "CartoDB", "http://www.cartodb.com", :id => "the_logo", :class => "logo" %></h1>
     </div>
-    <ul class="right">
-      <li class="signin">
-        <a href="http://cartodb.com/login" class="signin green button" title="Sign in">Sign in</a>
-      </li>
-    </ul>
+    <div class="options">
+      <% if clone %>
+        <a href="#/clone" class="fork grey small button" title="Clone">Clone</a>
+      <% end %>
+      <% if signin %>
+        <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
+      <% end %>
+    </div>
   </div>
-</header>
+</div>

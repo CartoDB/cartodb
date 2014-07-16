@@ -14,7 +14,7 @@
     <%= csrf_meta_tag %>
   </head>
   <body class="public">
-    <%= render 'admin/shared/public_table_header' %>
+    <%= render 'admin/shared/public_header', :clone => true, :signin => false %>
     <%= yield %>
   </body>
 </html>

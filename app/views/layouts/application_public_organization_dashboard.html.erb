@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <% @name = ( !@organization.display_name.empty? ? @organization.display_name : @organization.name ) %>
     <meta charset='utf-8' />
-    <title>Maps by <%= ( !@organization.display_name.empty? ? @organization.display_name : @organization.name ) %> on CartoDB</title>
+    <title>Maps by <%= @name %> on CartoDB</title>
     <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
 
     <meta name="description" content="<%= @name %> is creating maps and visualizations using CartoDB">
@@ -23,7 +24,7 @@
     <%= csrf_meta_tag %>
   </head>
   <body>
-    <%= render 'admin/shared/public_header' %>
+    <%= render 'admin/shared/public_header', :clone => false, :signin => true %>
     <%= yield %>
     <%= render 'admin/shared/public_footer' %>
   </body>

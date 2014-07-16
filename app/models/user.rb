@@ -1428,8 +1428,8 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-32-g2bd0b22'
+    tgt_ver = '0.3.0' # TODO: optionally take as parameter?
+    tgt_rev = '0.3.0'
 
     add_python
 
@@ -1487,11 +1487,10 @@ TRIGGER
           db.run("SET statement_timeout TO '#{old_timeout}';")
         end
 
-        exp = tgt_ver + ' ' + tgt_rev
-        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
+        expected = "#{tgt_ver} #{tgt_rev}"
+        obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
-        raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
-          unless exp == obt
+        raise("Expected cartodb extension '#{expected}' obtained '#{obtained}'") unless expected == obtained
 
 #       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end

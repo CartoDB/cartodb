@@ -121,47 +121,24 @@ class Organization < Sequel::Model
     }
   end
 
-  def organization_visualizations(page_num = 1, items_per_page = 5)
-    redis_key = ORG_VIS_KEY_FORMAT % [self.id]
+  def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)
+    public_vis_by_type(CartoDB::Visualization::Member::DERIVED_TYPE, page_num, items_per_page, tag)
+  end
 
-    entity_ids = (Rails.env.production? || Rails.env.testing?) ? $tables_metadata.get(redis_key) : nil
+  def public_visualizations_count
+    public_vis_count_by_type(CartoDB::Visualization::Member::DERIVED_TYPE)
+  end
 
-    if entity_ids.nil?
-      member_ids = self.users.map { |user|
-        user.id
-      }
-      entity_ids = CartoDB::Permission.where(owner_id: member_ids).map { |perm|
-        if perm.acl.empty?
-          nil
-        else
-          entity_id = nil
-          perm.acl.each { |acl_entry|
-            if perm[:entity_type] == CartoDB::Permission::ENTITY_TYPE_VISUALIZATION && \
-             acl_entry[:type] == CartoDB::Permission::TYPE_ORGANIZATION && acl_entry[:id] == self.id
-              entity_id = perm[:entity_id]
-            end
-          }
-          entity_id
-        end
-      }.compact
+  def public_datasets(page_num = 1, items_per_page = 5, tag = nil)
+    public_vis_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE, page_num, items_per_page, tag)
+  end
 
-      $tables_metadata.multi do
-        $tables_metadata.set(redis_key, entity_ids.join(','))
-        $tables_metadata.expire(redis_key, ORG_VIS_KEY_REDIS_TTL)
-      end if Rails.env.production? || Rails.env.testing?
-    else
-      entity_ids = entity_ids.split(',')
-    end
+  def public_datasets_count
+    public_vis_count_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE)
+  end
 
-    CartoDB::Visualization::Collection.new.fetch(
-        id: entity_ids,
-        type:     CartoDB::Visualization::Member::DERIVED_TYPE,
-        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-        page:     page_num,
-        per_page: items_per_page,
-        order:    'updated_at',
-        o:        {updated_at: :desc},
-    )
+  def tags(exclude_shared=true)
+    users.map { |u| u.tags(exclude_shared) }.flatten
   end
 
   def get_auth_token
@@ -173,6 +150,27 @@ class Organization < Sequel::Model
   end
 
   private
+
+  def public_vis_by_type(type, page_num, items_per_page, tags)
+    CartoDB::Visualization::Collection.new.fetch(
+        user_id:  self.users.map(&:id),
+        type:     type,
+        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        page:     page_num,
+        per_page: items_per_page,
+        tags:     tags,
+        order:    'updated_at',
+        o:        {updated_at: :desc}
+    )
+  end
+
+  def public_vis_count_by_type(type)
+    CartoDB::Visualization::Collection.new.fetch(
+        user_id:  self.users.map(&:id),
+        type:     type,
+        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC
+    ).count
+  end
 
   def name_exists_in_users?
     !User.where(username: self.name).first.nil?

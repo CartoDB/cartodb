@@ -21,6 +21,12 @@ class Admin::PagesController < ApplicationController
 
     user = CartoDB.extract_subdomain(request)
     viewed_user = User.where(username: user.strip.downcase).first
+
+    if viewed_user.nil?
+      org = get_organization_if_exists(user)
+      return datasets_organization(org) unless org.nil?
+    end
+
     return render_404 if viewed_user.nil?
 
     @tags             = viewed_user.tags(true)
@@ -127,37 +133,69 @@ class Admin::PagesController < ApplicationController
 
   end #public
 
+  private
+
   def public_organization(organization)
     @organization = organization
 
-    vis_list = @organization.organization_visualizations(
-        params[:page].nil? ? 1 : params[:page], VISUALIZATIONS_PER_PAGE)
+    @public_org_tables_count = @organization.public_datasets_count
+    @public_org_vis_count = @organization.public_visualizations_count
 
-    @pages = (vis_list.count.to_f / VISUALIZATIONS_PER_PAGE).ceil
+    page = params[:page].nil? ? 1 : params[:page]
+    vis_list = @organization.public_visualizations(page, VISUALIZATIONS_PER_PAGE, params[:tag])
 
-    @public_org_tables = []
+    @pages = (vis_list.total_entries / VISUALIZATIONS_PER_PAGE).ceil
 
     @public_org_visualizations = []
     vis_list.each do |vis|
       @public_org_visualizations.push(
-          {
-              title:        vis.name,
-              description:  vis.description_clean,
-              id:           vis.id,
-              tags:         vis.tags,
-              layers:       vis.layers(:carto_and_torque),
-              mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
-              url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
-          }
+        {
+          title:        vis.name,
+          description:  vis.description_clean,
+          id:           vis.id,
+          tags:         vis.tags,
+          layers:       vis.layers(:carto_and_torque),
+          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
+        }
       )
     end
+
+    @tags = @organization.tags
 
     respond_to do |format|
       format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
     end
   end
 
-  private
+  def datasets_organization(organization)
+    @organization = organization
+
+    @public_org_tables_count = @organization.public_datasets_count
+    @public_org_vis_count = @organization.public_visualizations_count
+
+    page = params[:page].nil? ? 1 : params[:page]
+    vis_list = @organization.public_datasets(page, VISUALIZATIONS_PER_PAGE, params[:tag])
+
+    @pages = (vis_list.total_entries.to_f / DATASETS_PER_PAGE).ceil
+
+    @datasets = []
+    vis_list.each do |dataset|
+      @datasets.push(
+        {
+          title:        dataset.name,
+          description:  dataset.description_clean,
+          updated_at:   dataset.updated_at,
+          tags:         dataset.tags
+        }
+      )
+    end
+
+    @tags = @organization.tags
+
+    respond_to do |format|
+      format.html { render 'datasets_organization', layout: 'application_public_organization_dashboard' }
+    end
+  end
 
   def get_organization_if_exists(name)
     Organization.where(name: name).first

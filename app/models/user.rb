@@ -439,12 +439,12 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false)
+  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::DERIVED_TYPE)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
     CartoDB::Visualization::Tags.new(self, options).names({
-      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      type: type,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
   end #tags

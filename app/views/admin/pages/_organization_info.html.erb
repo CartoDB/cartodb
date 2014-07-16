@@ -28,11 +28,11 @@
 
     <ul>
       <% if action_name == 'datasets' %>
-        <li><div class="count"><strong><%= @public_org_tables.count %></strong>dataset<%= @public_org_tables.count == 1 ? '' : 's' %></div></li>
-        <li><a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @public_org_visualizations.count %></strong>visualization<%= @public_org_visualizations.count == 1 ? '' : 's' %></a></li>
+        <li><div class="count"><strong><%= @public_org_tables_count %></strong>dataset<%= @public_org_tables_count == 1 ? '' : 's' %></div></li>
+        <li><a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @public_org_vis_count %></strong>visualization<%= @public_org_vis_count == 1 ? '' : 's' %></a></li>
       <% else %>
-        <li><a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @public_org_tables.count %></strong>dataset<%= @public_org_tables.count == 1 ? '' : 's' %></a></li>
-        <li><div class="count"><strong><%= @public_org_visualizations.count %></strong>visualization<%= @public_org_visualizations.count == 1 ? '' : 's' %></div></li>
+        <li><a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @public_org_tables_count %></strong>dataset<%= @public_org_tables_count == 1 ? '' : 's' %></a></li>
+        <li><div class="count"><strong><%= @public_org_vis_count %></strong>visualization<%= @public_org_vis_count == 1 ? '' : 's' %></div></li>
       <% end %>
     </ul>
 

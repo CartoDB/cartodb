@@ -154,7 +154,7 @@ describe Organization do
 
       # Setup done, now to the proper test
 
-      org_vis_array = organization.organization_visualizations.map { |vis|
+      org_vis_array = organization.public_visualizations.map { |vis|
         vis.id
       }
       # Order is newest to oldest

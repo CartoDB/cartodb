@@ -1,19 +1,30 @@
+3.0.X
+------------------
+* Fixed bugs
+  * Fixed write buttons are shown when watching sync tables
 
+3.0.0 (2014-07-15)
+------------------
 * New Features
+  * Multiuser support
   * Added avatar_url to User model
+  * Added custom avatars
   * Added Permission model and permission attribute for Visualizations
   * Activated Sequel extension connection_validator.
     This requires adding to database.yml a value for 'conn_validator_timeout',
     else code will default to 900 seconds
+  * Several minor improvements
 
 * Fixed bugs
   * Security fix regarding Typhoeus library  
+  * Several minor bugs
 
 * Migration Type (see UPGRADE): Mandatory migration
   * As stated by the README, PostgreSQL now MUST be at least 9.3 to avoid search_path errors
-  * Cartodb postgres extension update to 0.2.1
+  * Cartodb postgres extension update to 0.3.0
   * Also mandatory to run:
     * rake cartodb:db:create_default_vis_permissions
+    * rake cartodb:db:populate_permission_entity_id
 
 2.14.3 (2014-06-11)
 -------------------

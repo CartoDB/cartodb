@@ -49,7 +49,7 @@ class DataImport < Sequel::Model
 
   def run_import!
     log.append 'Before dispatch'
-
+    log.append "Running on server #{Socket.gethostname} with PID: #{Process.pid}"
     begin
       success = !!dispatch
     rescue TokenExpiredOrInvalidError => ex

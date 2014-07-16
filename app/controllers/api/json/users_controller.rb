@@ -102,9 +102,13 @@ class Api::Json::UsersController < Api::ApplicationController
           id: res,
           user_id: current_user.id
         ).first
-        vis.related_tables.map { |t|
-          t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-        }.all?
+        if vis.nil?
+          false
+        else
+          vis.related_tables.map { |t|
+            t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+          }.all?
+        end
       end
     else
       #a public table always can be forked by org user

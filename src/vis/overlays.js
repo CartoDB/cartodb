@@ -298,6 +298,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
   var options = JSON.parse(data.options);
+  options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(
     data.template || '<a href="#"></a>',

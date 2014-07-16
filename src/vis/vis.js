@@ -19,6 +19,7 @@ var Overlay = {
   // raise an exception if the type does not exist
   create: function(type, vis, data) {
     var t = Overlay._types[type];
+
     if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }

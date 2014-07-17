@@ -251,10 +251,9 @@ var Vis = cdb.core.View.extend({
     options = options || {};
 
     this._applyOptions(data, options);
-    this.cartodb_logo = options.cartodb_logo;
 
-    console.log("logo", this.cartodb_logo, options.cartodb_logo);
-    console.log("scrollwheel", data.scrollwheel, options.scrollwheel);
+    // to know if the logo is enabled search in the overlays and see if logo overlay is included and is shown
+    this.cartodb_logo = options.cartodb_logo !== undefined ? options.cartodb_logo: !!_.find(data.overlays, function(o) { return o.type === 'logo' && o.options.display; });
 
     var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 

@@ -1168,7 +1168,7 @@ class Table < Sequel::Model(:user_tables)
             %Q{
             UPDATE #{qualified_table_name}
             SET
-              the_geom = "#{owner.database_schema}".ST_GeomFromText(
+              the_geom = ST_GeomFromText(
                 'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')', #{CartoDB::SRID}
               )
             #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}

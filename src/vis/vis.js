@@ -23,6 +23,7 @@ var Overlay = {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
 
+    data.options = typeof data.options === 'string' ? JSON.parse(data.options): data.options;
     var widget = t(data, vis);
 
     if (widget) {
@@ -427,7 +428,7 @@ var Vis = cdb.core.View.extend({
 
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
-      var opt = JSON.parse(data.options)
+      var opt = data.options;
 
       if (type == 'share'          && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
       if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();

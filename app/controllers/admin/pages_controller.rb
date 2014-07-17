@@ -174,7 +174,7 @@ class Admin::PagesController < ApplicationController
     @public_org_vis_count = @organization.public_visualizations_count
 
     page = params[:page].nil? ? 1 : params[:page]
-    vis_list = @organization.public_datasets(page, VISUALIZATIONS_PER_PAGE, params[:tag])
+    vis_list = @organization.public_datasets(page, DATASETS_PER_PAGE, params[:tag])
 
     @pages = (vis_list.total_entries.to_f / DATASETS_PER_PAGE).ceil
 

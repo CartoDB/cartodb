@@ -48,6 +48,7 @@ class Geocoding < Sequel::Model
   def table_geocoder
     geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder)
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
+      table_schema:  table.try(:database_schema),
       table_name:    table.try(:name),
       qualified_table_name: table.try(:qualified_table_name),
       sequel_qualified_table_name: table.try(:sequel_qualified_table_name),

@@ -736,5 +736,18 @@ namespace :cartodb do
       uo.promote_user_to_admin
     end
 
+    desc "Reload users avatars"
+    task :reload_users_avatars => :environment do
+      count = User.count
+      User.all.each_with_index do |user, i|
+        begin
+          user.reload_avatar
+          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+        rescue => e
+          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+        end
+      end
+    end
+
   end
 end

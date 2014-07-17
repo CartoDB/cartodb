@@ -14,6 +14,7 @@ class Admin::PagesController < ApplicationController
   ssl_required :common_data, :public, :datasets
 
   before_filter :login_required, :except => [:public, :datasets]
+  before_filter :belongs_to_organization
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
@@ -199,6 +200,18 @@ class Admin::PagesController < ApplicationController
 
   def get_organization_if_exists(name)
     Organization.where(name: name).first
+  end
+
+  def belongs_to_organization
+    user_or_org_domain = CartoDB.extract_real_subdomain(request)
+    user_domain = CartoDB.extract_subdomain(request)
+    user = User.where(username: user_domain).first
+
+    unless user.nil?
+      if user.username != user_or_org_domain and not user.belongs_to_organization?(Organization.where(name: user_or_org_domain).first)
+        render_404
+      end
+    end
   end
 
 end

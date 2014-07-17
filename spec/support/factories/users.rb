@@ -13,6 +13,25 @@ module CartoDB
       user
     end
     def new_user(attributes = {})
+
+      if attributes[:fake_user]
+        User.any_instance.stubs(
+            :enable_remote_db_user => nil,
+            :after_create => nil,
+            :create_schema => nil,
+            :create_public_db_user => nil,
+            :set_database_search_path => nil,
+            :load_cartodb_functions => nil,
+            :set_user_privileges => nil,
+            :monitor_user_notification => nil,
+            :grant_user_in_database => nil,
+            :set_statement_timeouts => nil,
+            :set_user_as_organization_member => nil,
+            :cartodb_extension_version_pre_mu? => false,
+            :rebuild_quota_trigger => nil
+        )
+      end
+
       attributes = attributes.dup
       user = User.new
       user.username              = attributes[:username] || String.random(5).downcase

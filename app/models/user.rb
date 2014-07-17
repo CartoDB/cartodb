@@ -1076,6 +1076,10 @@ class User < Sequel::Model
     self.organization.present?
   end
 
+  def belongs_to_organization?(organization)
+    organization_user? and self.organization.eql? organization
+  end
+
   def create_client_application
     ClientApplication.create(:user_id => self.id)
   end

@@ -14,7 +14,7 @@
   #vislist li {
     @include size(274px, 276px);
     @include display-flex();
-    @include cross-browser(align-items, center);
+    @include align-items(center, center);
     @include cross-browser(flex-wrap, wrap);
     letter-spacing:0;
     
@@ -43,7 +43,7 @@
       position:relative;
       @include display-flex();
       @include cross-browser(flex-direction, column);
-      @include cross-browser(justify-content, space-between);
+      @include justify-content(space-between, justify);
       @include cross-browser(flex-wrap, wrap);
       height:100%;
     }
@@ -81,8 +81,8 @@
     .vis-shared {
       @include display-flex();
       @include cross-browser(flex-direction, row);
-      @include cross-browser(justify-content, space-between);
-      @include cross-browser(align-items, center);
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
       @include cross-browser(flex-wrap, wrap);
       padding:0 22px;
 
@@ -108,7 +108,7 @@
 
       .vis-shared-info {
         @include display-flex();
-        @include cross-browser(align-items, center);
+        @include align-items(center, center);
       }
     }
 
@@ -146,12 +146,14 @@
     .vis-tools {
       @include display-flex();
       @include cross-browser(flex-direction, row);
-      @include cross-browser(justify-content, space-between);
-      @include cross-browser(align-items, center);
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
       @include cross-browser(flex-wrap, wrap);
       padding:10px 0 0;
       margin:0 22px 22px;
       overflow:hidden;
+
+      span { display:inline-block }
 
       i.delete {
         @include transform-style("linear");

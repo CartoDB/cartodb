@@ -31,8 +31,8 @@
     
     div.vis-info-item {
       @include display-flex();
-      @include cross-browser(justify-content, space-between);
-      @include cross-browser(align-items, center);
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
 
       img {
         width:18px;
@@ -49,8 +49,8 @@
 
       .by {
         @include display-flex();
-        @include cross-browser(justify-content, flex-end);
-        @include cross-browser(align-items, center);
+        @include justify-content(flex-end, end);
+        @include align-items(center, center);
         color:#999999;
 
         span.permission {

@@ -29,8 +29,8 @@
 
       #vislist {
         @include display-flex();
-        @include cross-browser(justify-content, space-between);
-        @include cross-browser(align-items, center);
+        @include justify-content(space-between, justify);
+        @include align-items(center, center);
         @include cross-browser(flex-wrap, wrap);
         width:890px;
       }

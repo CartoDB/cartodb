@@ -24,8 +24,8 @@
     li {
       // Hello flex!
       @include display-flex();
-      @include cross-browser(justify-content, space-between);
-      @include cross-browser(align-items, center);
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
       @include cross-browser(flex-wrap, wrap);
 
       padding:30px 40px;
@@ -34,8 +34,8 @@
       // Info + storage
       div.info {
         @include display-flex();
-        @include cross-browser(justify-content, flex-start);
-        @include cross-browser(align-items, center);
+        @include justify-content(flex-start, start);
+        @include align-items(center, center);
         width:60%;  
       }
 

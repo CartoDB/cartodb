@@ -1384,6 +1384,10 @@ class Table < Sequel::Model(:user_tables)
     "\"#{owner.database_schema}\".\"#{self.name}\""
   end
 
+  def database_schema
+    owner.database_schema
+  end
+
   ############################### Sharing tables ##############################
 
   # @param [User] organization_user Gives read permission to this user

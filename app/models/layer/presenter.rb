@@ -46,6 +46,7 @@ module CartoDB
             tooltip:    tooltip_data_v2,
             legend:     layer.legend,
             order:      layer.order,
+            visible:    layer.public_values['options']['visible'],
             options:    options_data_v2
           }
         end

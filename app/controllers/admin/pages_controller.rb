@@ -36,7 +36,7 @@ class Admin::PagesController < ApplicationController
     @website          = viewed_user.website 
     @website_clean    = @website ? @website.gsub(/https?:\/\//, '') : ''
 
-    @avatar_url = viewed_user.gravatar(request.protocol)
+    @avatar_url = viewed_user.avatar
 
     #@tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
@@ -93,7 +93,7 @@ class Admin::PagesController < ApplicationController
     @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
-    @avatar_url = viewed_user.gravatar(request.protocol)
+    @avatar_url = viewed_user.avatar
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count

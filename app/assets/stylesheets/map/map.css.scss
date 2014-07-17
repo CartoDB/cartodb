@@ -338,10 +338,6 @@ div.map {
     @include position(false, 80px, 20px, false);
     margin: 0;
 
-    @include transform-style("linear");
-    @include transition-property("margin-right");
-    @include transition-duration(300ms);
-
     z-index: 10001;
 
     div.cartodb-legend {
@@ -354,13 +350,20 @@ div.map {
     }
   }
 
+  // animations
+  div.cartodb-legend,
+  div.cartodb-legend-stack,
+  div.cartodb-share,
+  div.cartodb-layer-selector-box,
+  div.cartodb-searchbox {
+    @include transform-style("linear");
+    @include transition-property("margin");
+    @include transition-duration(300ms);
+  }
+
   div.cartodb-legend {
     @include position(false, 0, 20px, false);
     margin: 0 80px 0 0;
-
-    @include transform-style("linear");
-    @include transition-property("right");
-    @include transition-duration(300ms);
 
     .warning {
       text-transform: none;
@@ -413,10 +416,6 @@ div.map {
   div.cartodb-share {
     margin: 0;
     position:absolute;
-
-    @include transform-style("linear");
-    @include transition-property("right");
-    @include transition-duration(300ms);
   }
 
   // Search box in core map
@@ -424,10 +423,6 @@ div.map {
     display:none;
     position:absolute;
     margin:0;
-
-    @include transform-style("linear");
-    @include transition-property("right");
-    @include transition-duration(300ms);
   }
 
   // Public map
@@ -583,62 +578,62 @@ div.map {
     }
   } //div.sqlview
 
-  // When a panel view is openned or closed
+  // When a panel view is open or closed
   &.displaced {
 
     div.sqlview p {
       text-indent: -600px;
     }
 
-    &.map.table .cartodb-map {
-
-      div.cartodb-legend-stack {
-        margin-right:550px;
-      }
-
-    }
-
+    // Vis
     &.map.derived .cartodb-map {
 
-      div.cartodb-legend-stack {
-        margin-right:530px;
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:520px;
+      }
+    }
+
+    // Vis Narrow
+    &.narrow.map.derived .cartodb-map {
+
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:375px;
       }
 
     }
 
-    .cartodb-map {
+    // Table
+    &.map.table .cartodb-map {
 
-      div.share                      { right:595px; }
-      div.cartodb-searchbox          { right: 630px; }
-      div.cartodb-layer-selector-box { right:550px; }
-      div.cartodb-legend             { margin-right:550px; }
-
-      div.cartodb-legend-stack {
-        margin-right:550px;
-
-        div.cartodb-legend { margin: 0; }
-
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:540px;
       }
     }
 
-    &.narrow {
+    // Table Narrow
+    &.narrow.map.table .cartodb-map {
 
-      div.cartodb-searchbox { right: 400px; }
-      div.cartodb-legend    { margin-right:462px; }
-      div.sqlview p         { text-indent:-450px; }
-      div.share             { right:445px; }
-
-      div.cartodb-legend-stack {
-
-        margin-right:462px;
-
-        div.cartodb-legend { margin: 0; }
-
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:394px;
       }
 
-    } // .narrow
+      div.sqlview p { text-indent:-450px; }
 
-  } //&.displaced
+    }
+
+  } // &.displaced
 
 } // div.cartodb-map
 

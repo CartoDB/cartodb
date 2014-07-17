@@ -366,6 +366,17 @@ var Vis = cdb.core.View.extend({
 
     if (device) this.addMobile(torqueLayer);
 
+    if (!options.sublayer_options) {
+      options.sublayer_options = [];
+      _.each(data.layers.slice(1), function(lyr) {
+         if (lyr.type === 'layergroup') {
+           _.each(lyr.options.layer_definition.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+         } else if (lyr.type === 'namedmap') {
+           _.each(lyr.options.named_map.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+         }
+      });
+    }
+
     // set layer options
     if (options.sublayer_options) {
 

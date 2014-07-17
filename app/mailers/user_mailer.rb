@@ -15,7 +15,7 @@ class UserMailer < ActionMailer::Base
     @visualization = visualization
     @user = user
     organization = @visualization.user.organization
-    @link = "#{CartoDB.base_url(organization.name)}#{public_visualizations_show_map_path(user_domain: @user.username, id: @visualization.id)}"
+    @link = "#{CartoDB.base_url(organization.name)}#{public_visualizations_show_map_path(user_domain: @visualization.user.username, id: @visualization.id)}"
     mail :to => @user.email,
          :subject => "Someone has shared a CartoDB visualization with you"
   end

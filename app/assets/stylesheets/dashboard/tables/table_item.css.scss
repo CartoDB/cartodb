@@ -163,8 +163,15 @@
       cursor: pointer;
       background:white;
 
-      .table-info { width:50% }
-      .table-desc { width:50% }
+      .table-item-inner {
+        .table-info { width:50% }
+        .table-desc { width:50% }
+
+        &.shared {
+          .table-info { width:55% }
+          .table-desc { width:45% }
+        }
+      }
 
       & + .table-item {
         .table-item-inner { border-color:transparent }
@@ -180,9 +187,4 @@
   .table-item-inner.shared {
     .table-info { width:40% }
     .table-desc { width:60% }
-
-    &:hover {
-      .table-info { width:55% }
-      .table-desc { width:45% }      
-    }
   }

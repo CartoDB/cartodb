@@ -48,14 +48,12 @@ cdb.vis.Overlay.register('text', function(data, vis) {
 });
 
 cdb.vis.Overlay.register('zoom_info', function(data, vis) {
-  console.log("placeholder for the zoom_info overlay");
+  //console.log("placeholder for the zoom_info overlay");
 });
 
 cdb.vis.Overlay.register('header', function(data, vis) {
 
   var options = JSON.parse(data.options);
-
-  console.log("options", options);
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -73,30 +71,6 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   return widget.render();
 
-});
-
-// map mobile control
-cdb.vis.Overlay.register('mobile', function(data, vis) {
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="torque"></div>\
-    <div class="top-shadow"></div>\
-    <div class="bottom-shadow"></div>\
-    <div class="legends"></div>\
-    <a class="toggle" href="#"></a>\
-    ',
-    data.templateType || 'mustache'
-  );
-
-  var mobile = new cdb.geo.ui.Mobile({
-    template: template,
-    torqueLayer: data.torqueLayer,
-    legends: data.legends,
-    map: data.map
-  });
-
-  return mobile.render();
 });
 
 // map zoom control

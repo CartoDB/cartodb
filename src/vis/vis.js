@@ -19,6 +19,7 @@ var Overlay = {
   // raise an exception if the type does not exist
   create: function(type, vis, data) {
     var t = Overlay._types[type];
+
     if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
@@ -341,6 +342,10 @@ var Vis = cdb.core.View.extend({
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    if (device) {
+      $(".cartodb-map-wrapper").addClass("device");
+    }
+
     if (!device && options.legends) {
       this.addLegends(data.layers);
     } else {
@@ -357,14 +362,22 @@ var Vis = cdb.core.View.extend({
       if (torque.length) {
         torqueLayer = torque[0];
 
-        if (!device && torque.length) {
-          this.addTimeSlider(torqueLayer);
+        if (torque.length) {
+          this.addTimeSlider(torqueLayer, device);
+          //$(".cartodb-timeslider").width(width);
+
+          /*var windowWidth = $(window).width();
+          var width = windowWidth - $(".cartodb-timeslider .controls").outerWidth() - $(".cartodb-timeslider .time").outerWidth() - 6;
+          $(".cartodb-timeslider .last").width(width);
+          $(".cartodb-timeslider .slider-wrapper").width(width);
+          $(".cartodb-timeslider .slider-wrapper .slider").width(width - 20);*/
+
         }
 
       }
     }
 
-    if (device) this.addMobile(torqueLayer);
+    //if (device) this.addMobile(torqueLayer);
 
     if (!options.sublayer_options) {
       options.sublayer_options = [];
@@ -471,7 +484,7 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addMobile: function(torqueLayer) {
+  /*addMobile: function(torqueLayer) {
 
     this.addOverlay({
       type: 'mobile',
@@ -479,12 +492,14 @@ var Vis = cdb.core.View.extend({
       legends: this.legends
     });
 
-  },
+  },*/
 
-  addTimeSlider: function(torqueLayer) {
+  addTimeSlider: function(torqueLayer, device) {
     if (torqueLayer) {
       this.addOverlay({
         type: 'time_slider',
+        width: device ? "100%" : "auto",
+        pos_margin: device ? 0 : 20, 
         layer: torqueLayer
       });
     }

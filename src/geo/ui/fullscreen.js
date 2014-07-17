@@ -24,9 +24,9 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
 
-    this.model = new cdb.core.Model({
-      allowWheelOnFullscreen: false
-    });
+    //this.model = new cdb.core.Model({
+      //allowWheelOnFullscreen: false
+    //});
 
     this._addWheelEvent();
 

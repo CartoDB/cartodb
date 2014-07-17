@@ -1,3 +1,48 @@
+
+  .cartodb-map-wrapper.device .cartodb-logo {
+    bottom: 45px!Important;
+  }
+
+  /*.cartodb-map-wrapper.device .cartodb-timeslider .slider-wrapper, */
+  /*.cartodb-map-wrapper.device .cartodb-timeslider .slider { width:154px; } */
+
+  /*.cartodb-map-wrapper.device .cartodb-timeslider ul {*/
+    /*width: 100%;*/
+  /*}*/
+
+  .cartodb-map-wrapper.device .cartodb-timeslider li {
+    float:left;
+    display: block;
+  }
+
+  .cartodb-map-wrapper.device .cartodb-timeslider li.last {
+    float:none;
+    width: auto;
+  }
+
+  .cartodb-map-wrapper.device .cartodb-timeslider {
+    width: 100%;
+    overflow:hidden;
+    border: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    box-shadow:none;
+    border-top: 1px solid #ccc;
+    margin-bottom: 0;
+    z-index: 1000000;
+  }
+
+  .cartodb-map-wrapper.device .cartodb-timeslider .ui-slider .ui-slider-handle {
+    top: -12px;
+    padding: 9px 3px;
+    background: transparent url('../img/handle@2x.png') center center no-repeat;
+    border:none;
+    background-size: 11px 12px;
+  }
+
+
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
@@ -34,12 +79,13 @@ only screen and (                min-resolution: 2dppx) {
 @media only screen 
 and (max-device-width : 320px) 
 and (max-device-width : 480px) {
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    top: -12px!Important;
+
+  .cartodb-map-wrapper .cartodb-timeslider .ui-slider .ui-slider-handle {
+    top: -12px;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
-    border:none!Important;
-    background-size: 11px 12px!Important;
+    background: transparent url('../img/handle@2x.png') center center no-repeat;
+    border:none;
+    background-size: 11px 12px;
   }
 
 }
@@ -75,12 +121,9 @@ and (orientation : landscape) {
 
 @media only screen and (min-width: 360px) and (max-width: 490px) {
 
-  div.cartodb-timeslider .slider-wrapper {
-    width:198px!important;
-  }
-
-  div.cartodb-timeslider .slider {
-    width:198px!important;
+  .cartodb-map-wrapper .cartodb-timeslider .slider-wrapper,
+  .cartodb-map-wrapper .cartodb-timeslider .slider {
+    width:224px;
   }
 
 }

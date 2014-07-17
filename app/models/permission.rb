@@ -55,13 +55,12 @@ module CartoDB
       end
     end
 
-    def notify_permission_change(permission_changes)
+    def notify_permissions_change(permissions_changes)
       begin
-        permission_changes.each do |c, v|
+        permissions_changes.each do |c, v|
           # At the moment we just check users permissions
           if c == 'user'
-            v.each do |i, perm|
-              affected_user = User.where(:id => i).first
+            v.each do |affected_id, perm|
               # Perm is an array. For the moment just one type of permission can
               # be applied to a type of object. But with an array this is open
               # to more than one permission change at a time
@@ -70,22 +69,22 @@ module CartoDB
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
                     if p['type'].include?('r')
-                      Resque.enqueue(Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_user.id)
+                      ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, self.entity.id, affected_id)
                     end
                   elsif p['action'] == 'revoke'
                     if p['type'].include?('r')
-                      Resque.enqueue(Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.entity.user.username, affected_user.id)
+                      ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.owner_username, affected_id)
                     end
                   end
                 elsif self.real_entity_type == CartoDB::Visualization::Member::CANONICAL_TYPE
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
                     if p['type'].include?('r')
-                      Resque.enqueue(Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_user.id)
+                      ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, self.entity.id, affected_id)
                     end
                   elsif p['action'] == 'revoke'
                     if p['type'].include?('r')
-                      Resque.enqueue(Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.entity.user.username, affected_user.id)
+                      ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, self.entity.name, self.owner_username, affected_id)
                     end
                   end
                 end
@@ -281,7 +280,7 @@ module CartoDB
 
     def after_update
       if !@old_acl.nil?
-        self.notify_permission_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
+        self.notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
       end
     end
 
@@ -294,7 +293,7 @@ module CartoDB
       # considered revokes
       # We need to pass the current acl as old_acl and the new_acl as something
       # empty to recreate a revoke by deletion
-      self.notify_permission_change(CartoDB::Permission.compare_new_acl(self.acl, []))
+      self.notify_permissions_change(CartoDB::Permission.compare_new_acl(self.acl, []))
     end
 
     def before_destroy

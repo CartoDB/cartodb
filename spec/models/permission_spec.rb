@@ -37,6 +37,7 @@ describe CartoDB::Permission do
       vis_perm_mock = mock
       vis_perm_mock.stubs(:owner_id).returns(@user.id)
       vis_perm_mock.stubs(:save)
+
       vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
       vis_entity_mock.stubs(:table?).returns(true)
       vis_entity_mock.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
@@ -45,6 +46,8 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:privacy=)
       vis_entity_mock.stubs(:store)
       vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::DERIVED_TYPE)
+      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
       acl_initial = []
@@ -531,6 +534,40 @@ describe CartoDB::Permission do
   end
 
   describe "permissions diffs" do
+    it "should enqueue the right notification email" do
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      prepare_vis_mock_in_permission
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username,
+        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+      )
+      permission.entity_id = permission.entity.id
+
+      permission.save
+     
+      user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
+      user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      permissions_changes = {
+        "user" => {
+          user2_id => [{ "action"=>"grant", "type"=>"r" }],
+          user3_id => [{ "action"=>"revoke", "type"=>"r" }]
+          }
+        }
+
+      ::Resque.stubs(:enqueue).returns(nil)
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization, permission.entity.name, permission.owner_username, user3_id).once
+      
+      permission.notify_permissions_change(permissions_changes)
+      permission.destroy
+    end
+
     it "should call the permissions comparisson function with correct values" do
       user2_mock = mock
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
@@ -545,21 +582,15 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
-      entity_id = UUIDTools::UUID.timestamp_create.to_s
-      entity_name = 'foobar_vis'
       prepare_vis_mock_in_permission
 
       permission = Permission.new(
         owner_id:       @user.id,
         owner_username: @user.username,
-        entity_id: entity_id,
         entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
+      permission.entity_id = permission.entity.id
     
-      permission.entity.stubs(:id).returns(entity_id)
-      permission.entity.stubs(:name).returns(entity_name)
-      
-      CartoDB::Permission.any_instance.stubs(:compare_new_acl).returns({})
       Resque.stubs(:enqueue).returns(nil)
       
       permission.acl = [
@@ -602,10 +633,6 @@ describe CartoDB::Permission do
       CartoDB::Permission.expects(:compare_new_acl).with(acl1, acl2).once
       CartoDB::Permission.expects(:compare_new_acl).with(acl2, []).once
       
-      Resque.expects(:enqueue).with(Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user3_mock.id) 
-      Resque.expects(:enqueue).with(Resque::UserJobs::Mail::UnshareVisualization, permission.entity.name, permission.owner_username, user3_mock.id).once
-      Resque.expects(:enqueue).with(Resque::UserJobs::Mail::UnshareVisualization, permission.entity.name, permission.owner_username, user2_mock.id).once
-
       permission.save
       permission.destroy
     end
@@ -633,6 +660,8 @@ describe CartoDB::Permission do
     vis_entity_mock.stubs(:table?).returns(true)
     vis_entity_mock.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
     vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::DERIVED_TYPE)
+    vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+    vis_entity_mock.stubs(:name).returns("foobar_visualization")
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 

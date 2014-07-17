@@ -742,9 +742,13 @@ namespace :cartodb do
       User.all.each_with_index do |user, i|
         begin
           user.reload_avatar
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+          message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+          print message
+          log(message, :reload_users_avatars.to_s)
         rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+          message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+          print message
+          log(message, :reload_users_avatars.to_s)
         end
       end
     end

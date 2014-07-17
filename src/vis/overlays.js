@@ -4,6 +4,27 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
+cdb.vis.Overlay.register('aside', function(data, vis) {
+
+  var options = data.options;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Aside({
+    model: new cdb.core.Model(options),
+    template: template,
+    className: "cartodb-overlay cartodb-aside " 
+  });
+
+  return widget.render();
+
+});
+
 cdb.vis.Overlay.register('image', function(data, vis) {
 
   var options = data.options;
@@ -270,6 +291,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
   var options = data.options;
+
   options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(

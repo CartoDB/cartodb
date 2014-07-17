@@ -364,20 +364,14 @@ var Vis = cdb.core.View.extend({
 
         if (torque.length) {
           this.addTimeSlider(torqueLayer, device);
-          //$(".cartodb-timeslider").width(width);
-
-          /*var windowWidth = $(window).width();
-          var width = windowWidth - $(".cartodb-timeslider .controls").outerWidth() - $(".cartodb-timeslider .time").outerWidth() - 6;
-          $(".cartodb-timeslider .last").width(width);
-          $(".cartodb-timeslider .slider-wrapper").width(width);
-          $(".cartodb-timeslider .slider-wrapper .slider").width(width - 20);*/
-
         }
 
       }
     }
 
-    //if (device) this.addMobile(torqueLayer);
+    if (device) {
+      this.addAside();
+    }
 
     // set layer options
     if (options.sublayer_options) {
@@ -473,15 +467,14 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  /*addMobile: function(torqueLayer) {
+  addAside: function() {
 
     this.addOverlay({
-      type: 'mobile',
-      torqueLayer: torqueLayer,
+      type: 'aside',
       legends: this.legends
     });
 
-  },*/
+  },
 
   addTimeSlider: function(torqueLayer, device) {
     if (torqueLayer) {
@@ -548,6 +541,7 @@ var Vis = cdb.core.View.extend({
       if (overlay.type == "loader") {
         this.loader = v;
       }
+
 
       this.mapView.addOverlay(v);
 

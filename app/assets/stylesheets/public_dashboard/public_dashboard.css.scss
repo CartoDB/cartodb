@@ -208,12 +208,14 @@ header {
   } // .avatar
 
   .separator {
+    position:relative;
+    width: 122px;
     height: 1px;
     padding: 22px 0 0 0;
     margin: 27px auto 0 auto;
-
     border-top: 1px solid #DBDBDB;
-    width: 122px;
+    background:transparent;
+    @include opacity(1);
   }
 
   ul {

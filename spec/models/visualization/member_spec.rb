@@ -211,6 +211,8 @@ describe Visualization::Member do
       @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
 
+      Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
+
       user2_mock = mock
       user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       user2_mock.stubs(:username).returns('user2')

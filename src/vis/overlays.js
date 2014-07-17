@@ -6,8 +6,7 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 cdb.vis.Overlay.register('image', function(data, vis) {
 
-  var options = JSON.parse(data.options);
-
+  var options = data.options;
   var template = cdb.core.Template.compile(
     data.template || '\
     <div class="content">\
@@ -27,7 +26,7 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 
 cdb.vis.Overlay.register('text', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -53,7 +52,7 @@ cdb.vis.Overlay.register('zoom_info', function(data, vis) {
 
 cdb.vis.Overlay.register('header', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -211,8 +210,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 // layer_selector
 cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
-  var options = JSON.parse(data.options);
-
+  var options = data.options;
   //if (!options.display) return;
 
   var template = cdb.core.Template.compile(
@@ -271,7 +269,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 // fullscreen
 cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
   options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(
@@ -293,7 +291,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 // share content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
 
   var template = cdb.core.Template.compile(
     data.template || '<a href="#"></a>',
@@ -316,7 +314,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
 
   //if (!options.display) return;
 

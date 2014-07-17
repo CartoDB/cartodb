@@ -593,7 +593,7 @@ describe("NamedMap", function() {
     waits(100);
     runs(function() {
       expect(params.dataType).toEqual('jsonp');
-      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing/jsonp?config=' + encodeURIComponent(JSON.stringify({ color: 'red'})));
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing/jsonp?config=' + encodeURIComponent(JSON.stringify({ color: 'red', layer0: 1})));
     });
   });
 
@@ -614,7 +614,7 @@ describe("NamedMap", function() {
       expect(params.type).toEqual('POST');
       expect(params.dataType).toEqual('json');
       expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/named/testing')
-      expect(params.data).toEqual(JSON.stringify({color: 'red'}));
+      expect(params.data).toEqual(JSON.stringify({color: 'red', layer0: 1}));
     });
   });
 
@@ -663,7 +663,7 @@ describe("NamedMap", function() {
     });
     waits(100);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0, layer1: 1}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
 
@@ -685,7 +685,7 @@ describe("NamedMap", function() {
     });
     waits(200);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer1: 0}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 1, layer1: 0}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
   });
@@ -806,7 +806,7 @@ describe("NamedMap", function() {
     runs(function() { namedMap._getLayerToken(); });
     waits(100);
     runs(function() {
-      var config = "config=" + encodeURIComponent(JSON.stringify({color: 'red'}));
+      var config = "config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 1}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
   });
@@ -826,7 +826,7 @@ describe("NamedMap", function() {
     runs(function() { namedMap._getLayerToken(); });
     waits(100);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', test: 10}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', test: 10, layer0: 1}));
       console.log(params.url);
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
@@ -837,7 +837,7 @@ describe("NamedMap", function() {
     });
     waits(100);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({ test: 10}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({ test: 10, layer0: 1}));
       console.log(params.url);
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });

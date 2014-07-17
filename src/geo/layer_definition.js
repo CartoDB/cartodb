@@ -706,12 +706,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var p = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options.hidden) {
-        p['layer' + i] = 0;
-      } else {
-        // when it's show just don't send it
-        delete p['layer' + i];
-      }
+      p['layer' + i] = layer.options.hidden ? 0: 1;
     }
     return p;
   },

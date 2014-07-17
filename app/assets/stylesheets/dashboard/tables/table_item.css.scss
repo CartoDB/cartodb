@@ -20,7 +20,7 @@
 
   .table-item-inner {
     @include display-flex();
-    @include cross-browser(justify-content, space-between);
+    @include justify-content(space-between, justify);
     overflow:hidden;
     padding:21px 0 22px;
     border-top:1px solid rgba(#CCCCCC, 0.5);
@@ -38,16 +38,16 @@
 
       ul {
         @include display-flex();
-        @include cross-browser(justify-content, flex-end);
-        @include cross-browser(align-items, center);
+        @include justify-content(flex-end, end);
+        @include align-items(center, center);
         height:20px;
       }
 
       li {
         position:relative;
         @include display-flex();
-        @include cross-browser(justify-content, flex-end);
-        @include cross-browser(align-items, center);
+        @include justify-content(flex-end, end);
+        @include align-items(center, center);
         width:auto;
         padding:0 7px 0 5px;
         font:300 11px $text-fonts2;
@@ -87,7 +87,7 @@
 
         &.feed {
           @include display-flex();
-          @include cross-browser(align-items, center);
+          @include align-items(center, center);
           @include cross-browser(flex-wrap, wrap);
         }
 
@@ -113,8 +113,8 @@
     // Table sharing
     .table-shared {
       @include display-flex();
-      @include cross-browser(justify-content, flex-end);
-      @include cross-browser(align-items, inherit);
+      @include justify-content(flex-end, end);
+      @include align-items(inherit, inherit);
 
       .round,
       img.avatar { margin-right:5px }
@@ -122,8 +122,8 @@
 
     // Tags
     .table-tags {
-      @include cross-browser(justify-content, flex-end);
-      @include cross-browser(align-items, center);
+      @include justify-content(flex-end, end);
+      @include align-items(center, center);
 
       a { margin-left:3px }
     }
@@ -170,7 +170,7 @@
         .table-item-inner { border-color:transparent }
       }
 
-      .table-info li.table-order { display:inherit; }
+      .table-info li.table-order { display:inline-block; }
       .table-item-inner { border-color: transparent }
     }
   }

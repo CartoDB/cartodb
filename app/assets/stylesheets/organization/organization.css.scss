@@ -36,7 +36,7 @@
     // head
     div.head {
       @include display-flex();
-      @include cross-browser(align-items, center);
+      @include align-items(center, center);
 
       h2 {
         font-size:25px;

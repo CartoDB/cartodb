@@ -123,6 +123,7 @@
     // Tags
     .table-tags {
       @include cross-browser(justify-content, flex-end);
+      @include cross-browser(align-items, center);
 
       a { margin-left:3px }
     }

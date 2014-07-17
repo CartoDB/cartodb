@@ -2695,25 +2695,12 @@ div.cartodb-timeslider p {
   display: block;
 }
 
-.cartodb-map-wrapper.with_header div.cartodb-zoom,
+/*.cartodb-map-wrapper.with_header div.cartodb-zoom,
 .cartodb-map-wrapper.with_header div.cartodb-share,
 .cartodb-map-wrapper.with_header div.cartodb-searchbox,
 .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
   margin-top: 60px;
-}
-
-/* ASIDE */
-
-.cartodb-map-wrapper .cartodb-aside {
-  position: absolute;
-  top: 0; 
-  right: -250px;
-  width: 250px;
-  background: #333;
-  height: 100%;
-  z-index: 10000000;
-}
-
+}*/
 /* DEVICE */
 .cartodb-map-wrapper.device .cartodb-logo {
   bottom: 45px!Important;

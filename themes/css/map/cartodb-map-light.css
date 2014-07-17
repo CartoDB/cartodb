@@ -1532,9 +1532,9 @@ div.cartodb-timeslider p {
   display: block;
 }
 
-.cartodb-map-wrapper.with_header div.cartodb-zoom,
+/*.cartodb-map-wrapper.with_header div.cartodb-zoom,
 .cartodb-map-wrapper.with_header div.cartodb-share,
 .cartodb-map-wrapper.with_header div.cartodb-searchbox,
 .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
   margin-top: 60px;
-}
+}*/

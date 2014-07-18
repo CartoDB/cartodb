@@ -6,6 +6,7 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './visualization/overlays'
 require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
@@ -615,134 +616,10 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
-    create_header_overlay(member, 1)
-    create_share_overlay(member, 2)
-    create_search_overlay(member, 3)
-    create_layer_selector_overlay(member, 4)
-    create_zoom_overlay(member, 6)
-    create_fullscreen_overlay(member, 7)
-    create_zoom_info_overlay(member, 8)
-    create_loader_overlay(member, 9)
-    create_logo_overlay(member, 10)
-
+    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 
-  def generate_overlay(id, options, type, order)
 
-    return CartoDB::Overlay::Member.new(
-      order: order,
-      type: type,
-      template: "",
-      options: options,
-      visualization_id: id
-    )
-
-  end
-
-  def create_logo_overlay(member, order)
-
-    options = { :display => true, :x => 10, :y => 40 }
-
-    member = CartoDB::Overlay::Member.new(
-      order: order,
-      type: "logo",
-      template: '',
-      options: options,
-      visualization_id: member.id
-    )
-
-    member.store
-
-  end
-
-  def create_loader_overlay(member, order)
-
-    options = { :display => true, :x => 20, :y => 192 }
-
-    member = CartoDB::Overlay::Member.new(
-      order: order,
-      type: "loader",
-      template: '<div class="loader" original-title=""></div>',
-      options: options,
-      visualization_id: member.id
-    )
-
-    member.store
-
-  end
-
-  def create_zoom_overlay(member, order)
-
-    options = { :display => true, :x => 20, :y => 20 } 
-
-    member = CartoDB::Overlay::Member.new(
-      order: order,
-      type: "zoom",
-      template: '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>',
-      options: options,
-      visualization_id: member.id
-    )
-
-    member.store
-
-  end
-
-  def create_zoom_info_overlay(member, order)
-
-    options = { :display => true, :x => 20, :y => 100 } 
-
-    member = generate_overlay(member.id, options, "zoom_info", order)
-    member.store
-
-  end
-
-  def create_fullscreen_overlay(member, order)
-
-    options = { :display => false, :x => 20, :y => 172 } 
-
-    member = generate_overlay(member.id, options, "fullscreen", order)
-    member.store
-
-  end
-
-  def create_share_overlay(member, order)
-
-    options = { :display => true, :x => 20, :y => 20 } 
-
-    member = generate_overlay(member.id, options, "share", order)
-    member.store
-
-  end
-
-  def create_search_overlay(member, order)
-
-    options = { :display => true, :x => 60, :y => 20 } 
-
-    member = generate_overlay(member.id, options, "search", order)
-    member.store
-
-  end
-
-  def create_layer_selector_overlay(member, order)
-
-    options = { :display => false, :x => 212, :y => 20 }
-
-    member = generate_overlay(member.id, options, "layer_selector", order)
-    member.store
-
-  end
-
-  def create_header_overlay(member, order)
-
-    options = {
-      :display => false,
-      :extra => { :title => member.name, :description => member.description, :show_title => false, :show_description => false }
-    }
-
-    member = generate_overlay(member.id, options, "header", order)
-    member.store
-
-  end
 
   ##
   # Post the style to the tiler

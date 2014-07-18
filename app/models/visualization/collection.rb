@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'set'
 require_relative './member'
+require_relative './overlays'
 require_relative '../shared_entity'
 require_relative '../../../services/data-repository/structures/collection'
 

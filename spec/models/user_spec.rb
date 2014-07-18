@@ -351,9 +351,11 @@ describe User do
       avatar_kind = Cartodb.config[:avatars]['kinds'][0]
       avatar_color = Cartodb.config[:avatars]['colors'][0]
       avatar_base_url = Cartodb.config[:avatars]['base_url']
-      gravatar_url = %r{gravatar.com}
       Random.any_instance.stubs(:rand).returns(0)
+      gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
+      user1.avatar_url = nil
+      user1.save
       user1.reload_avatar
       user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png" 
       user1.destroy

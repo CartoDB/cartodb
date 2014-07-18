@@ -2,6 +2,10 @@
 ------------------
 * Fixed bugs
   * Fixed write buttons are shown when watching sync tables
+  * Fixed some avatar tests
+
+* New Features
+  * Mail notifications when sharing or unsharing objects in organizations
 
 3.0.0 (2014-07-15)
 ------------------

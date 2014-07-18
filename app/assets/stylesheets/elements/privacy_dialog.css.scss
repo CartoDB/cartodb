@@ -83,6 +83,12 @@
 
       &:hover { background:#FFCA94; cursor:pointer }
       &:active { background:#FFC182 }
+
+      &.disabled {
+        @include opacity(0.5);
+        &:hover { background:#FFD2A6; cursor:default }
+        &:active { background:#FFD2A6 }
+      }
     }
   }
 

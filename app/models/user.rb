@@ -498,11 +498,15 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    avatar_kind = ['ghost', 'heart', 'marker', 'mountain', 'pacman', 'planet', 'star']
-    avatar_color = ['yellow', 'red', 'orange', 'green']
-    if !Cartodb.config[:avatars_base_url].nil? && !Cartodb.config[:avatars_base_url].empty?
-      avatar_base_url = "#{Cartodb.config[:avatars_base_url]}"
-      return "#{avatar_base_url}/avatar_#{avatar_kind[Random.new.rand(0..avatar_kind.length - 1)]}_#{avatar_color[Random.new.rand(0..avatar_color.length - 1)]}.png"
+    puts Cartodb.config[:avatars]
+    if !Cartodb.config[:avatars].nil? && 
+       !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
+       !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
+       !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
+      avatar_base_url = Cartodb.config[:avatars]['base_url']
+      avatar_kind = Cartodb.config[:avatars]['kinds'][Random.new.rand(0..Cartodb.config[:avatars]['kinds'].length - 1)]
+      avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
+      return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
       CartoDB::Logger.info "Attribute avatars_base_url not found in config. Using default avatar"
       return default_avatar

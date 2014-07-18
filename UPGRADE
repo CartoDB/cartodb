@@ -1,3 +1,8 @@
+3.0.0 -> 3.1.0
+--------------
+* Run rake task:
+    bundle exec rake cartodb:overlays:create_overlays
+
 2.x -> 3.0.0
 ------------
 * Install CartoDB extension version 0.3.x

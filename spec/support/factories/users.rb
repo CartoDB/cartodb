@@ -34,6 +34,7 @@ module CartoDB
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
+      user.avatar_url            = user.default_avatar
       user
     end
 

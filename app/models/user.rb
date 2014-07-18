@@ -513,6 +513,10 @@ class User < Sequel::Model
     end
   end
 
+  def avatar
+    self.avatar_url.nil? ? "//#{self.default_avatar}" : self.avatar_url
+  end
+
   def default_avatar
     return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
   end

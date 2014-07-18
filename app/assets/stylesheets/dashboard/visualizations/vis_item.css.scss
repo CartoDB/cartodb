@@ -46,6 +46,11 @@
       @include justify-content(space-between, justify);
       @include cross-browser(flex-wrap, wrap);
       height:100%;
+
+      div.top,
+      div.bottom {
+        width:100%
+      }
     }
 
 
@@ -75,6 +80,11 @@
       h3 {
         display:block;
         max-width:100%;
+      }
+
+      p {
+        display:block;
+        word-wrap:break-word;
       }
     }
 

@@ -71,7 +71,8 @@ feature "API 1.0 map layers management" do
     end
   end
 
-  scenario "Update a layer" do
+  # see https://cartodb.atlassian.net/browse/CDB-3350
+  pending "Update a layer" do
     layer = Layer.create kind: 'carto', order: 0
     @map.add_layer layer
 
@@ -87,7 +88,8 @@ feature "API 1.0 map layers management" do
     end
   end
 
-  scenario "Update a layer > tiler error" do
+  # see https://cartodb.atlassian.net/browse/CDB-3350
+  pending "Update a layer > tiler error" do
     layer = Layer.create kind: 'carto', order: 0
     @map.add_layer layer
     Layer.any_instance.stubs(:after_save).raises(RuntimeError)

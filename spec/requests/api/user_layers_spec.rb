@@ -45,7 +45,8 @@ feature "API 1.0 user layers management" do
     end
   end
 
-  scenario "Update a layer" do
+  # see https://cartodb.atlassian.net/browse/CDB-3350
+  pending "Update a layer" do
     layer = Layer.create kind: 'carto'
     @user.add_layer layer
     opts = { options: { opt1: 'value' }, infowindow: ['column1', 'column2'], kind: 'carto' }

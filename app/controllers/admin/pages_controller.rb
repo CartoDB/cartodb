@@ -14,6 +14,7 @@ class Admin::PagesController < ApplicationController
   ssl_required :common_data, :public, :datasets
 
   before_filter :login_required, :except => [:public, :datasets]
+  before_filter :belongs_to_organization
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
@@ -36,7 +37,7 @@ class Admin::PagesController < ApplicationController
     @website          = viewed_user.website 
     @website_clean    = @website ? @website.gsub(/https?:\/\//, '') : ''
 
-    @avatar_url = viewed_user.gravatar(request.protocol)
+    @avatar_url = viewed_user.avatar
 
     #@tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
@@ -93,7 +94,7 @@ class Admin::PagesController < ApplicationController
     @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
-    @avatar_url = viewed_user.gravatar(request.protocol)
+    @avatar_url = viewed_user.avatar
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
@@ -155,7 +156,8 @@ class Admin::PagesController < ApplicationController
           id:           vis.id,
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
-          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
+          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
+          owner: vis.user.username
         }
       )
     end
@@ -185,7 +187,8 @@ class Admin::PagesController < ApplicationController
           title:        dataset.name,
           description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
-          tags:         dataset.tags
+          tags:         dataset.tags,
+          owner:        dataset.user.username
         }
       )
     end
@@ -199,6 +202,18 @@ class Admin::PagesController < ApplicationController
 
   def get_organization_if_exists(name)
     Organization.where(name: name).first
+  end
+
+  def belongs_to_organization
+    user_or_org_domain = CartoDB.extract_real_subdomain(request)
+    user_domain = CartoDB.extract_subdomain(request)
+    user = User.where(username: user_domain).first
+
+    unless user.nil?
+      if user.username != user_or_org_domain and not user.belongs_to_organization?(Organization.where(name: user_or_org_domain).first)
+        render_404
+      end
+    end
   end
 
 end

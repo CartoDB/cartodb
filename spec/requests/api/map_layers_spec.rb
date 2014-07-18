@@ -71,6 +71,7 @@ feature "API 1.0 map layers management" do
     end
   end
 
+  # see https://cartodb.atlassian.net/browse/CDB-3350
   scenario "Update a layer" do
     layer = Layer.create kind: 'carto', order: 0
     @map.add_layer layer
@@ -87,6 +88,21 @@ feature "API 1.0 map layers management" do
     end
   end
 
+  scenario "Update a layer does not change table_name neither user_name" do
+    layer = Layer.create kind: 'carto', order: 0, options: {'table_name' => 'table1', 'user_name' => @user.username}
+    @map.add_layer layer
+
+    data = { options: { table_name: 't1', user_name: 'u1'}, order: 3, kind: 'carto' }
+
+    put_json api_v1_maps_layers_update_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
+      response.status.should be_success
+      layer.options['table_name'].should == 'table1'
+      layer.options['user_name'].should == @user.username
+      response.body[:options].should == { 'table_name' => 'table1', 'user_name' => @user.username }
+    end
+  end
+
+  # see https://cartodb.atlassian.net/browse/CDB-3350
   scenario "Update a layer > tiler error" do
     layer = Layer.create kind: 'carto', order: 0
     @map.add_layer layer

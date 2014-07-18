@@ -164,6 +164,10 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
+  avatars:
+    base_url: 'example.com/avatars'
+    kinds: ['stars', 'mountains']
+    colors: ['red', 'blue']
   dropbox_api_key: ""
   gdrive: 
     api_key: ""

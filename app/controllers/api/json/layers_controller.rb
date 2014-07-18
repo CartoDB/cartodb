@@ -57,8 +57,8 @@ class Api::Json::LayersController < Api::ApplicationController
     @layer.raise_on_save_failure = true
     # don't allow to override table_name and user_name
     # https://cartodb.atlassian.net/browse/CDB-3350
-    params[:options]['table_name'] = @layer.options['table_name']
-    params[:options]['user_name'] = @layer.options['user_name']
+    params[:options]['table_name'] = @layer.options['table_name'] if params.include?(:options) && params[:options].include?('table_name')
+    params[:options]['user_name'] = @layer.options['user_name'] if params.include?(:options) && params[:options].include?('user_name')
     @layer.update(params.slice(:options, :kind, :infowindow, :tooltip, :order))
 
     render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro

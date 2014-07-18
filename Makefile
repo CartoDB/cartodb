@@ -20,7 +20,6 @@ WORKING_SPECS_2 = \
   $(NULL)
 
 WORKING_SPECS_3 = \
-  spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \

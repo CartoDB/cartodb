@@ -20,7 +20,8 @@
       <%= form_for @user, url: update_organization_user_path(user_domain: params[:user_domain], id: @user.username) do |f| %>
 
         <%= f.hidden_field :private_tables_enabled %>
-         <%= csrf_meta_tags %>
+        <%= hidden_field_tag :show_dashboard_details_flash, true %>
+        <%= csrf_meta_tags %>
 
         <div class="head">
           <% if !@user.new? && @user.avatar_url.present? %>
@@ -29,7 +30,9 @@
           <h2>You public dashboard</h2>
         </div>
 
-        <ul><%= render partial: 'shared/flash_message' %></ul>
+        <% if @show_dashboard_details_flash %>
+          <ul><%= render partial: 'shared/flash_message' %></ul>
+        <% end %>
 
         <div class="content">
           <div class="org-user-form">
@@ -71,7 +74,7 @@
                   <%= f.label :disqus_shortname, 'Your disqus shortname' %>
                   <%= f.text_field :disqus_shortname %>
                 </div>
-              </div>              
+              </div>
             </div>
 
             <div class="right-column">
@@ -83,7 +86,7 @@
               <div class="row">
                 <p class="margin35">Moderate the comments in your maps using your Disqus shortname. <a href="#/how-to" class="disqus_help">Here's how</a>.</p>
               </div>
-              
+
             </div>
 
           </div>
@@ -109,7 +112,8 @@
     <%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)) do |form| %>
 
       <%= form.hidden_field :private_tables_enabled %>
-       <%= csrf_meta_tags %>
+      <%= hidden_field_tag :show_account_settings_flash, true %>
+      <%= csrf_meta_tags %>
 
       <div class="head">
         <% if !@user.new? && @user.avatar_url.present? && current_user.organization_owner? %>
@@ -126,7 +130,9 @@
         </h2>
       </div>
 
-      <ul><%= render partial: 'shared/flash_message' %></ul>
+      <% if @show_account_settings_flash %>
+        <ul><%= render partial: 'shared/flash_message' %></ul>
+      <% end %>
 
       <% if !@user.new? && current_user.organization_owner? -%>
       <div class="content user-details">

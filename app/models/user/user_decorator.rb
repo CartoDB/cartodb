@@ -3,7 +3,7 @@ module CartoDB
     def data(options = {})
       calls = self.get_api_calls(from: self.last_billing_cycle, to: Date.today)
       calls.fill(0, calls.size..29)
-      data = { 
+      data = {
         id: self.id,
         email: self.email,
         username: self.username,
@@ -20,13 +20,13 @@ module CartoDB
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
         api_calls: calls,
-        api_calls_quota: self.map_view_quota,
-        api_calls_block_price: self.map_view_block_price,
+        api_calls_quota: self.organization_user? ? self.organization.map_view_quota : self.map_view_quota,
+        api_calls_block_price: self.organization_user? ? self.organization.map_view_block_price : self.map_view_block_price,
         geocoding: {
-          quota:       self.geocoding_quota,
-          block_price: self.geocoding_block_price,
-          monthly_use: self.get_geocoding_calls,
-          hard_limit:  self.hard_geocoding_limit?,
+          quota:       self.organization_user? ? self.organization.geocoding_quota : self.geocoding_quota,
+          block_price: self.organization_user? ? self.organization.geocoding_block_price : self.geocoding_block_price,
+          monthly_use: self.organization_user? ? self.organization.get_geocoding_calls : self.get_geocoding_calls,
+          hard_limit:  self.hard_geocoding_limit?
         },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,

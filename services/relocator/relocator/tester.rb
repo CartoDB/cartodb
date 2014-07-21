@@ -28,8 +28,8 @@ module CartoDB
 
       def get_names_of_tables(conn)
         PG.connect(conn[:conn])
-          .query("select count(*) from information_schema.tables where table_type='BASE TABLE' AND table_schema='#{conn[:schema]}' and table_name NOT IN ('spatial_ref_sys');")
-          .to_a.collect{|t| t['rel_name']}
+          .query("select * from information_schema.tables where table_type='BASE TABLE' AND table_schema='#{conn[:schema]}' and table_name NOT IN ('spatial_ref_sys');")
+          .to_a.collect{|t| t['table_name']}.sort
       end
 
       def get_statement_timeout(conn)
@@ -68,8 +68,9 @@ module CartoDB
         first = get_state(@config[:source])
         puts "Fetching stats for target database.."
         last = get_state(@config[:target])
+        p [first, last]
         first.keys.collect do |key|
-          throw "Consistency fail: #{key} (#{first[key]} != #{last[key][to_s]}) " if first[key] != last[key]
+          throw "Consistency fail: #{key} (#{first[key].to_s} != #{last[key].to_s}) " if first[key] != last[key]
           [key, first[key] == last[key]]
         end
       end

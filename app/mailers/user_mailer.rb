@@ -8,7 +8,7 @@ class UserMailer < ActionMailer::Base
     organization = @table_visualization.user.organization
     @link = "#{CartoDB.base_url(organization.name)}#{public_tables_show_bis_path(user_domain: @user.username, id: "#{@table_visualization.user.username}.#{@table_visualization.name}")}"
     mail :to => @user.email, 
-         :subject => "Someone has shared a CartoDB table with you"
+         :subject => "#{@table_visualization.user.username} has shared a CartoDB table with you"
   end
   
   def share_visualization(visualization, user)
@@ -17,7 +17,7 @@ class UserMailer < ActionMailer::Base
     organization = @visualization.user.organization
     @link = "#{CartoDB.base_url(organization.name)}#{public_visualizations_show_map_path(user_domain: @visualization.user.username, id: @visualization.id)}"
     mail :to => @user.email,
-         :subject => "Someone has shared a CartoDB visualization with you"
+         :subject => "#{@visualization.user.username} has shared a CartoDB visualization with you"
   end
 
   def unshare_table(table_visualization_name, table_visualization_owner_name, user)
@@ -26,7 +26,7 @@ class UserMailer < ActionMailer::Base
     #@table_visualization = table
     @user = user
     mail :to => @user.email,
-         :subject => "Someone has stopped sharing a CartoDB table with you"
+         :subject => "#{@table_visualization_owner_name} has stopped sharing a CartoDB table with you"
   end
   
   def unshare_visualization(visualization_name, visualization_owner_name, user)
@@ -35,7 +35,7 @@ class UserMailer < ActionMailer::Base
     #@visualization = visualization
     @user = user
     mail :to => @user.email,
-         :subject => "Someone has stopped sharing a CartoDB visualization with you"
+         :subject => "#{@visualization_owner_name} has stopped sharing a CartoDB visualization with you"
   end
   
 end

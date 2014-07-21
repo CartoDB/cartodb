@@ -1652,14 +1652,8 @@ TRIGGER
       end
     end
   end
-
-
-  # Utility methods
-  def fix_permissions
-    self.reset_database_permissions
-    self.reset_user_schema_permissions
-    self.grant_publicuser_in_database
-    self.set_user_privileges
+ 
+  def fix_table_permissions
     tables_queries = []
     tables.each do |table|
       if table.public? || table.public_with_link_only?
@@ -1671,6 +1665,18 @@ TRIGGER
       tables_queries,
       true
     )
+  end
+
+  # Utility methods
+  def fix_permissions
+    # /!\ WARNING
+    # This will delete all database permissions, and try to recreate them from scratch.
+    # Use only if you know what you're doing. (or, better, don't use it)
+    self.reset_database_permissions
+    self.reset_user_schema_permissions
+    self.grant_publicuser_in_database
+    self.set_user_privileges
+    self.fix_table_permissions
   end
 
   def monitor_user_notification

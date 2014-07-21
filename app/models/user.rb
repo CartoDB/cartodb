@@ -513,6 +513,10 @@ class User < Sequel::Model
     end
   end
 
+  def avatar
+    self.avatar_url.nil? ? "//#{self.default_avatar}" : self.avatar_url
+  end
+
   def default_avatar
     return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
   end
@@ -1078,6 +1082,10 @@ class User < Sequel::Model
 
   def organization_user?
     self.organization.present?
+  end
+
+  def belongs_to_organization?(organization)
+    organization_user? and self.organization.eql? organization
   end
 
   def create_client_application

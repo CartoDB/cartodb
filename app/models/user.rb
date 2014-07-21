@@ -1662,7 +1662,7 @@ TRIGGER
     tables_queries = []
     tables.each do |table|
       if table.public?
-        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO \"#{database_public_user}\""
+        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO #{CartoDB::PUBLIC_DB_USER}"
       end
       tables_queries << "ALTER TABLE \"#{self.database_schema}\".#{table.name} OWNER TO \"#{database_username}\""
     end

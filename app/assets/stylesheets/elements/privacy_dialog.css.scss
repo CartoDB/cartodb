@@ -147,8 +147,13 @@
         font-size:15px
       }
 
-      a.switch {
-        margin-left:19px;
+      span.separator {
+        position:relative;
+        width:3px;
+        height:3px;
+        margin:0 10px;
+        background:#EEE;
+        @include border-radius(4px);
       }
     }
 

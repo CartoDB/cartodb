@@ -105,6 +105,14 @@
     height:auto;
     margin:20px 0 0;
 
+    // List wrapper
+    .org_users_wrapper {
+      &.scrollpane {
+        height:215px;
+        overflow:hidden;
+      }
+    }
+
     ul {
       display:block;
 
@@ -192,7 +200,7 @@
       pointer-events:none;
       z-index:10;
 
-      &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+      &.top { display:none; top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
       &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
     }
   }

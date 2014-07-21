@@ -1661,7 +1661,7 @@ TRIGGER
     self.set_user_privileges
     tables_queries = []
     tables.each do |table|
-      if table.public?
+      if table.public? || table.public_with_link_only?
         tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO #{CartoDB::PUBLIC_DB_USER}"
       end
       tables_queries << "ALTER TABLE \"#{self.database_schema}\".#{table.name} OWNER TO \"#{database_username}\""

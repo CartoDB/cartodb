@@ -484,7 +484,6 @@ module CartoDB
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)
-        table.update_name_changes
         self
       end #propagate_name_to
 

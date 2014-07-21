@@ -23,6 +23,7 @@ describe Visualization::Member do
     Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
 
     CartoDB::Relocator::TableDumper.any_instance.stubs(:migrate).returns(nil)
+    CartoDB::Relocator::SchemaDumper.any_instance.stubs(:migrate).returns(nil)
     CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
 
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)

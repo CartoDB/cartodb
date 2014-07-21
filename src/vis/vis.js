@@ -356,21 +356,17 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (options.time_slider) {
+  if (options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
       if (torque.length) {
         torqueLayer = torque[0];
 
-        if (torque.length) {
-          this.addTimeSlider(torqueLayer, device);
+        if (!device && torque.length) {
+          this.addTimeSlider(torqueLayer);
         }
 
       }
-    }
-
-    if (device) {
-      this.addAside();
     }
 
     if (!options.sublayer_options) {
@@ -383,6 +379,8 @@ var Vis = cdb.core.View.extend({
          }
       });
     }
+
+    if (device) this.addMobile(torqueLayer);
 
     // set layer options
     if (options.sublayer_options) {
@@ -478,21 +476,20 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addAside: function() {
+  addMobile: function(torqueLayer) {
 
     this.addOverlay({
-      type: 'aside',
+      type: 'mobile',
+      torqueLayer: torqueLayer,
       legends: this.legends
     });
 
   },
 
-  addTimeSlider: function(torqueLayer, device) {
+  addTimeSlider: function(torqueLayer) {
     if (torqueLayer) {
       this.addOverlay({
         type: 'time_slider',
-        width: device ? "100%" : "auto",
-        pos_margin: device ? 0 : 20, 
         layer: torqueLayer
       });
     }

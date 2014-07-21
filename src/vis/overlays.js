@@ -4,25 +4,28 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
-cdb.vis.Overlay.register('aside', function(data, vis) {
-
-  var options = data.options;
+// map mobile control
+cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
-    <div class="content">\
-    </div>',
+    <div class="torque"></div>\
+    <div class="top-shadow"></div>\
+    <div class="bottom-shadow"></div>\
+    <div class="legends"></div>\
+    <a class="toggle" href="#"></a>\
+    ',
     data.templateType || 'mustache'
   );
 
-  var widget = new cdb.geo.ui.Aside({
-    model: new cdb.core.Model(options),
+  var mobile = new cdb.geo.ui.Mobile({
     template: template,
-    className: "cartodb-overlay cartodb-aside " 
+    torqueLayer: data.torqueLayer,
+    legends: data.legends,
+    map: data.map
   });
 
-  return widget.render();
-
+  return mobile.render();
 });
 
 cdb.vis.Overlay.register('image', function(data, vis) {

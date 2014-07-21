@@ -26,7 +26,7 @@ module CartoDB
           user_object: user
         )
         begin
-          #we first move the user to its own schema
+          # --------------- we first move the user to its own schema
           case user.database_schema
           when 'public'
             #associate it to the organization now so it lets create the public_user
@@ -55,6 +55,8 @@ module CartoDB
           else
             raise "User is on a different schema than expected."
           end
+
+          # --------------- then move the user to its new place
           user.database_host = org.owner.database_host
           user.database_name = org.owner.database_name
           user.organization = org

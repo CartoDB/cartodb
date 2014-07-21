@@ -73,15 +73,24 @@ prepare-test-db:
 	# TODO skip this if db already exists ?
 	bundle exec rake cartodb:test:prepare
 
-check-prepared:
+check-1:
 	bundle exec rspec $(WORKING_SPECS_1)
+check-2:
 	bundle exec rspec $(WORKING_SPECS_2)
+check-3:
 	bundle exec rspec $(WORKING_SPECS_3)
+check-4:
 	bundle exec rspec $(WORKING_SPECS_4)
+check-5:
 	bundle exec rspec $(WORKING_SPECS_5)
+check-6:
 	bundle exec rspec $(WORKING_SPECS_6)
+check-7:
 	bundle exec rspec $(WORKING_SPECS_7)
+check-8:
 	bundle exec rspec $(WORKING_SPECS_8)
+
+check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8
 
 check: prepare-test-db check-prepared
 check-frontend:

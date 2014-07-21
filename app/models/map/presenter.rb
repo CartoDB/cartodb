@@ -22,6 +22,7 @@ module CartoDB
           url:            options.delete(:url),
           map_provider:   map.provider,
           scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
           bounds:         bounds_from(map),
           center:         map.center,
           zoom:           map.zoom,
@@ -40,7 +41,7 @@ module CartoDB
 
       private
 
-      attr_reader :map, :table, :options, :configuration, :scrollwheel
+      attr_reader :map, :table, :options, :configuration, :scrollwheel, :legends
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")

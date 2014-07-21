@@ -29,7 +29,7 @@ class Api::Json::MapsController < Api::ApplicationController
 
   def update
     updated = @map.update(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id, \
-                                       :view_bounds_sw, :view_bounds_ne, :scrollwheel))
+                                       :view_bounds_sw, :view_bounds_ne, :legends, :scrollwheel))
     unless updated == false
       render_jsonp(@map.public_values)
     else

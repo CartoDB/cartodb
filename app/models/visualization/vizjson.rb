@@ -31,6 +31,7 @@ module CartoDB
           title:          qualify_vis_name,
           description:    visualization.description_md,
           scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
           url:            options.delete(:url),
           map_provider:   map.provider,
           bounds:         bounds_from(map),

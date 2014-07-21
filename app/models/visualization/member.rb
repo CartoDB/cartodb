@@ -244,16 +244,6 @@ module CartoDB
         is_owner?(user) || permission.is_permitted?(user, permission_type)
       end
 
-      def have_permission?(users, permission_type)
-        users.select { |user|
-          has_permission?(user, permission_type)
-        }.size == users.size
-      end
-
-      def users_with_permission(permission_type)
-        users_with_permissions([permission_type])
-      end
-
       def users_with_permissions(permission_types)
         permission.users_with_permissions(permission_types)
       end

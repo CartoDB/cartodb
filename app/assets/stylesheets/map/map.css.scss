@@ -28,9 +28,15 @@ div.map {
 
   &.derived {
 
-    &.mobile div.cartodb-map {
+    &.mobile div.cartodb-map { // MOBILE VERSION
 
       @include border-radius(0);
+
+      .cartodb-timeslider {
+        .slider-wrapper {
+          width: 85px;
+        }
+      }
 
       .cartodb-logo { margin-bottom: 0px; }
 
@@ -310,7 +316,6 @@ div.map {
     // Move attributions in different providers
     .leaflet-right .leaflet-control, #cartodb_attribution {
       @include simple-transition(width, 150ms, ease-in-out);
-      margin-right: 62px;
     }
 
     div.cartodb-searchbox{
@@ -627,6 +632,20 @@ div.map {
       div.cartodb-legend-stack,
       div.cartodb-searchbox {
         margin-right:394px;
+      }
+
+      div.sqlview p { text-indent:-450px; }
+
+    }
+
+    &.narrow.map.derived.mobile .cartodb-map,
+    &.map.derived.mobile .cartodb-map {
+
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right: 0!important;
       }
 
       div.sqlview p { text-indent:-450px; }

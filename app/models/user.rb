@@ -832,7 +832,7 @@ class User < Sequel::Model
     .select(:pg_class__oid, :pg_class__relname)
     .from(:pg_class)
     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-    .where(:relkind => 'r', :nspname => 'public')
+    .where(:relkind => 'r', :nspname => self.database_schema)
     .exclude(:relname => SYSTEM_TABLE_NAMES)
     .all
   end

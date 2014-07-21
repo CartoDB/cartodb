@@ -1658,6 +1658,7 @@ TRIGGER
   def fix_permissions
     self.reset_database_permissions
     self.reset_user_schema_permissions
+    self.grant_publicuser_in_database
     self.set_user_privileges
     tables_queries = []
     tables.each do |table|

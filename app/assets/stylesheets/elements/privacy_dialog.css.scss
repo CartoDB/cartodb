@@ -100,13 +100,21 @@
 
   .org_users_list {
     position:relative;
+    display:block;
+    width:100%;
+    height:auto;
     margin:20px 0 0;
+
+    // List wrapper
+    .org_users_wrapper {
+      &.scrollpane {
+        height:215px;
+        overflow:hidden;
+      }
+    }
 
     ul {
       display:block;
-      max-height:215px;
-      overflow-x:visible;
-      overflow-y:auto;
 
       li {
         padding:14px 0;
@@ -155,6 +163,32 @@
         background:#EEE;
         @include border-radius(4px);
       }
+
+      // Scrollpane!
+      &.scrollpane {
+        width: 100%!important;
+        height: 215px;
+        overflow-y: hidden;
+        overflow-x: visible;
+
+        // space for scroll
+        li { padding-right:10px }
+
+        .jspContainer { overflow: hidden; position: relative; }
+        .jspPane { position: absolute }
+        .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 0; width: 5px; height: 100%; background: none; z-index: 20; }
+        .jspVerticalBar * { margin: 0; padding: 0; }
+        .jspCap { display: none; }
+        .jspTrack { background: none; position: relative; }
+        .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+        .jspDrag.jspHover { background: rgba(#BBB,1) }
+        .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+        .jspVerticalBar .jspArrow { height: 10px; }
+        .jspVerticalBar .jspArrow:focus { outline: none; }
+        .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+        &:hover .jspVerticalBar { @include opacity(1); }
+      }
     }
 
     // Scroll gradients
@@ -171,7 +205,7 @@
       pointer-events:none;
       z-index:10;
 
-      &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+      &.top { display:none; top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
       &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
     }
   }

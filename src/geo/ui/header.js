@@ -3,7 +3,16 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
   className: 'cartodb-header',
 
-  initialize: function() {},
+  initialize: function() {
+    var extra = this.model.get("extra");
+
+    this.model.set({
+      title:            extra.title,
+      description:      extra.description,
+      show_title:       extra.show_title,
+      show_description: extra.show_description
+    }, { silent: true });
+  },
 
   show: function() {
 
@@ -33,23 +42,16 @@ cdb.geo.ui.Header = cdb.core.View.extend({
       left: this.model.get("x")
     });
 
-    this.extra = this.model.get("extra");
-
-    this.model.set({
-
-      title:            this.extra.title,
-      description:      this.extra.description,
-      show_title:       this.extra.show_title,
-      show_description: this.extra.show_description
-
-    }, { silent: true });
-
     this.$el.html(this.options.template(this.model.attributes));
 
     this.$title       = this.$el.find(".content div.title");
     this.$description = this.$el.find(".content div.description");
 
-    if (this.model.get("show_title") || this.model.get("show_description")) this.show();
+    if (this.model.get("show_title") || this.model.get("show_description")) {
+      this.show();
+    } else {
+      this.hide();
+    }
 
     return this;
 

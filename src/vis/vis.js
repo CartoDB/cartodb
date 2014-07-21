@@ -22,6 +22,7 @@ var Overlay = {
 
     if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
+      return;
     }
 
     data.options = typeof data.options === 'string' ? JSON.parse(data.options): data.options;
@@ -450,26 +451,18 @@ var Vis = cdb.core.View.extend({
       if (type == 'fullscreen'     && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
       if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
-      if (type == 'header') {
-
-        if ((options.title == undefined && opt.extra.show_title) || (options.description == undefined && opt.extra.show_description)) {
-
-          if (options.title != undefined)       overlay.model.set("show_title", options.title);
-          else overlay.model.set("show_title", opt.extra.show_title);
-
-          if (options.description != undefined) overlay.model.set("show_description", options.description);
-          else overlay.model.set("show_description", opt.extra.show_description);
-
-          $(".cartodb-map-wrapper").addClass("with_header");
-
-        } else {
-          overlay.model.set("show_title", options.title);
-          overlay.model.set("show_description", options.description);
-
-          if (options.title || options.description) $(".cartodb-map-wrapper").addClass("with_header");
+      if (type === 'header') {
+        var m = overlay.model;
+        if (options.title !== undefined) {
+          m.set("show_title", options.title);
         }
-
-
+        if(options.description !== undefined) {
+          m.set("show_description", options.description);
+        }
+        if (m.get('show_title') || m.get('show_description')) {
+          $(".cartodb-map-wrapper").addClass("with_header");
+        }
+        overlay.render()
       }
 
     }, this);
@@ -636,6 +629,51 @@ var Vis = cdb.core.View.extend({
 
     if (!opt.loaderControl) {
       remove_overlay('loader');
+    }
+
+    if (opt.search || opt.searchControl) {
+      if (!search_overlay('search')) {
+        vizjson.overlays.push({
+           type: "search"
+        });
+      }
+    }
+
+    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
+
+      if (!search_overlay('header')) {
+        vizjson.overlays.unshift({
+          type: "header",
+          shareable: opt.shareable ? true: false,
+          url: vizjson.url,
+          options: {
+            extra: {
+              title: vizjson.title,
+              description: vizjson.description,
+              show_title: opt.title,
+              show_description: opt.description
+            }
+          }
+        });
+      }
+    }
+ 
+
+    if (opt.layer_selector) {
+      if (!search_overlay('layer_selector')) {
+        vizjson.overlays.push({
+          type: "layer_selector"
+        });
+      }
+    }
+
+    if (opt.shareable && !device) {
+      if (!search_overlay('share')) {
+        vizjson.overlays.push({
+          type: "share",
+          url: vizjson.url
+        });
+      }
     }
 
     // We remove certain overlays in mobile devices

@@ -22,7 +22,7 @@
 
 <%= content_for(:css) do %>
 
-  <%= stylesheet_link_tag "common", "dashboard", "public_dashboard" %>
+  <%= stylesheet_link_tag "common", "embeds/public_info", "public_dashboard" %>
   <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
   <!--[if lte IE 8]>
   <%= stylesheet_link_tag "public_dashboard_ie" %>
@@ -33,7 +33,8 @@
 <div class="content<%= " empty" if @public_org_visualizations.count == 0 %>">
 
   <div class="inner">
-    <%= render(:partial => 'organization_info') %>
+      <%= render(:partial => 'organization_info') %>
+      <%= render(:partial => 'tags', :locals => {:collection => @tags }) %>
   </div>
 
   <div class="visualizations">
@@ -48,8 +49,7 @@
         <% @public_org_visualizations.each_with_index do |vis, i| %>
           <li>
             <div class="map-wrapper headless">
-
-              <a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]) %>?<%= vis[:url_options].presence %>" class="backdrop"></a>
+              <a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>?<%= vis[:url_options].presence %>" class="backdrop"></a>
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
@@ -58,6 +58,19 @@
               </div>
               <div class="gradient"></div>
             </div>
+
+            <% if vis[:tags].size > 0 %>
+                <div class="header">
+                    <% if vis[:tags].size > 0 %>
+                        <ul class="tags">
+                            <% vis[:tags].each do |tag| %>
+                                <li><%= link_to tag, public_tag_url(user_domain: params[:user_domain], tag: tag) %></li>
+                            <% end %>
+                        </ul>
+                    <% end %>
+                    <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
+                </div>
+            <% end %>
           </li>
         <% end %>
       </ul>

@@ -8,7 +8,7 @@ module CartoDB
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
                   :working_dir, :remote_id, :state, :processed_rows
 
-    attr_accessor :table_name, :column_name
+    attr_accessor :table_schema, :table_name, :column_name
 
     SQL_PATTERNS = {
       point: {
@@ -29,6 +29,8 @@ module CartoDB
       @working_dir       = Dir.mktmpdir
       `chmod 777 #{@working_dir}`
       @table_name        = arguments[:table_name]
+      @table_schema        = arguments[:table_schema]
+      @qualified_table_name = arguments[:qualified_table_name]
       @column_name       = arguments[:formatter]
       @countries         = arguments[:countries].to_s
       @geometry_type     = arguments.fetch(:geometry_type, '').to_sym
@@ -58,7 +60,7 @@ module CartoDB
       @column_datatype ||= connection.fetch(%Q{
         SELECT column_name, data_type
         FROM information_schema.columns
-        WHERE table_name='#{table_name}' AND column_name='#{column_name}'
+        WHERE table_schema = '#{table_schema}' AND table_name='#{table_name}' AND column_name='#{column_name}'
       }).first[:data_type]
     end
 
@@ -87,14 +89,14 @@ module CartoDB
       when 'double precision'
         connection.fetch(%Q{
             SELECT DISTINCT(#{column_name}) AS searchtext
-            FROM #{table_name}
+            FROM #{@qualified_table_name}
             WHERE cartodb_georef_status IS NULL
             LIMIT #{@batch_size} OFFSET #{page * @batch_size}
         }).all.map { |r| r[:searchtext].to_i }
       when 'text'
         connection.fetch(%Q{
             SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
-            FROM #{table_name}
+            FROM #{@qualified_table_name}
             WHERE cartodb_georef_status IS NULL
             LIMIT #{@batch_size} OFFSET #{page * @batch_size}
         }).all.map { |r| r[:searchtext] }
@@ -124,7 +126,7 @@ module CartoDB
 
     def copy_results_to_table
       connection.run(%Q{
-        UPDATE #{table_name} AS dest
+        UPDATE #{@qualified_table_name} AS dest
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM #{temp_table_name} AS orig
         WHERE #{column_name}::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
@@ -141,7 +143,7 @@ module CartoDB
 
     def add_georef_status_column
       connection.run(%Q{
-        ALTER TABLE #{table_name}
+        ALTER TABLE #{@qualified_table_name}
         ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
       })
     rescue Sequel::DatabaseError => e
@@ -151,7 +153,7 @@ module CartoDB
 
     def cast_georef_status_column
       connection.run(%Q{
-        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status
+        ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
         TYPE boolean USING cast(cartodb_georef_status as boolean)
       })
     rescue => e

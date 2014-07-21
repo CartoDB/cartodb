@@ -439,12 +439,12 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false)
+  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::DERIVED_TYPE)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
     CartoDB::Visualization::Tags.new(self, options).names({
-      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      type: type,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
   end #tags
@@ -498,15 +498,23 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    avatar_kind = ['ghost', 'heart', 'marker', 'mountain', 'pacman', 'planet', 'star']
-    avatar_color = ['yellow', 'red', 'orange', 'green']
-    if !Cartodb.config[:avatars_base_url].nil? && !Cartodb.config[:avatars_base_url].empty?
-      avatar_base_url = "#{Cartodb.config[:avatars_base_url]}"
-      return "#{avatar_base_url}/avatar_#{avatar_kind[Random.new.rand(0..avatar_kind.length - 1)]}_#{avatar_color[Random.new.rand(0..avatar_color.length - 1)]}.png"
+    puts Cartodb.config[:avatars]
+    if !Cartodb.config[:avatars].nil? && 
+       !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
+       !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
+       !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
+      avatar_base_url = Cartodb.config[:avatars]['base_url']
+      avatar_kind = Cartodb.config[:avatars]['kinds'][Random.new.rand(0..Cartodb.config[:avatars]['kinds'].length - 1)]
+      avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
+      return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
       CartoDB::Logger.info "Attribute avatars_base_url not found in config. Using default avatar"
       return default_avatar
     end
+  end
+
+  def avatar
+    self.avatar_url.nil? ? "//#{self.default_avatar}" : self.avatar_url
   end
 
   def default_avatar
@@ -1076,6 +1084,10 @@ class User < Sequel::Model
     self.organization.present?
   end
 
+  def belongs_to_organization?(organization)
+    organization_user? and self.organization.eql? organization
+  end
+
   def create_client_application
     ClientApplication.create(:user_id => self.id)
   end
@@ -1428,8 +1440,8 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.0dev' # TODO: optionally take as parameter?
-    tgt_rev = 'v0.2.1-32-g2bd0b22'
+    tgt_ver = '0.3.0' # TODO: optionally take as parameter?
+    tgt_rev = '0.3.0'
 
     add_python
 
@@ -1487,11 +1499,10 @@ TRIGGER
           db.run("SET statement_timeout TO '#{old_timeout}';")
         end
 
-        exp = tgt_ver + ' ' + tgt_rev
-        obt = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
+        expected = "#{tgt_ver} #{tgt_rev}"
+        obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
-        raise("Expected cartodb extension '#{exp}' obtained '#{obt}'") \
-          unless exp == obt
+        raise("Expected cartodb extension '#{expected}' obtained '#{obtained}'") unless expected == obtained
 
 #       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end

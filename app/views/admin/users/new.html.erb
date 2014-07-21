@@ -23,11 +23,7 @@
 <% end %>
 
 <article>
-
   <div class="inner">
-    <section class="block">
-      <%= link_to "back", organization_url(user_domain: params[:user_domain]), :class => "back" %>
-      <%= render partial: 'form' %>
-    </section>
+    <%= render partial: 'form' %>
   </div>
 </article>

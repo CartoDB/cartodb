@@ -1,5 +1,5 @@
 # coding: UTF-8
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe User do
   before(:all) do
@@ -345,6 +345,31 @@ describe User do
     @user.get_api_calls_from_es.should == {from_date.to_i => 4, to_date.to_i => 6}
   end
 
+  describe "avatar checks" do
+    it "should load a cartodb avatar url" do
+      user1 = create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
+      avatar_kind = Cartodb.config[:avatars]['kinds'][0]
+      avatar_color = Cartodb.config[:avatars]['colors'][0]
+      avatar_base_url = Cartodb.config[:avatars]['base_url']
+      Random.any_instance.stubs(:rand).returns(0)
+      gravatar_url = %r{gravatar.com}
+      Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
+      user1.avatar_url = nil
+      user1.save
+      user1.reload_avatar
+      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png" 
+      user1.destroy
+    end
+    it "should load a the user gravatar url" do
+      user1 = create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
+      gravatar_url = %r{gravatar.com}
+      Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
+      user1.reload_avatar
+      user1.avatar_url.should == "//#{user1.gravatar_user_url}"
+      user1.destroy
+    end
+  end
+  
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
       User.overquota.should be_empty
@@ -1008,6 +1033,7 @@ describe User do
       org.users.count.should eq 0
     end
   end
+
 
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new

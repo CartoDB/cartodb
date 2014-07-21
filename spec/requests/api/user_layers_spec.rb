@@ -45,6 +45,7 @@ feature "API 1.0 user layers management" do
     end
   end
 
+  # see https://cartodb.atlassian.net/browse/CDB-3350
   scenario "Update a layer" do
     layer = Layer.create kind: 'carto'
     @user.add_layer layer

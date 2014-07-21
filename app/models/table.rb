@@ -1177,7 +1177,7 @@ class Table < Sequel::Model(:user_tables)
             %Q{
             UPDATE #{qualified_table_name}
             SET
-              the_geom = "#{owner.database_schema}".ST_GeomFromText(
+              the_geom = ST_GeomFromText(
                 'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')', #{CartoDB::SRID}
               )
             #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
@@ -1382,6 +1382,19 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     @name_changed_from = nil
+  end
+
+  # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
+  def sequel_qualified_table_name
+    "#{owner.database_schema}__#{self.name}".to_sym
+  end
+
+  def qualified_table_name
+    "\"#{owner.database_schema}\".\"#{self.name}\""
+  end
+
+  def database_schema
+    owner.database_schema
   end
 
   ############################### Sharing tables ##############################
@@ -1685,15 +1698,6 @@ class Table < Sequel::Model(:user_tables)
     CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
     CartodbStats.update_tables_counter_per_host(-1)
     CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
-  end
-
-  def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{self.name}\""
-  end
-
-  # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
-  def sequel_qualified_table_name
-    "#{owner.database_schema}__#{self.name}".to_sym
   end
 
   ############################### Sharing tables ##############################

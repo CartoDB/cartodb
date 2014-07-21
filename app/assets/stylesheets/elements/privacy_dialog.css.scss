@@ -83,6 +83,12 @@
 
       &:hover { background:#FFCA94; cursor:pointer }
       &:active { background:#FFC182 }
+
+      &.disabled {
+        @include opacity(0.5);
+        &:hover { background:#FFD2A6; cursor:default }
+        &:active { background:#FFD2A6 }
+      }
     }
   }
 
@@ -105,14 +111,14 @@
       li {
         padding:14px 0;
         @include display-flex();
-        @include cross-browser(justify-content, space-between);
-        @include cross-browser(align-items, center);
+        @include justify-content(space-between, justify);
+        @include align-items(center, center);
       }
 
       div.info ,
       div.switches {
         @include display-flex();
-        @include cross-browser(align-items, center);
+        @include align-items(center, center);
       }
 
       div.info {
@@ -125,7 +131,7 @@
       div.switches {
         text-align: right;
         width:125px;
-        @include cross-browser(justify-content, flex-end);
+        @include justify-content(flex-end, end);
       }
 
       img {

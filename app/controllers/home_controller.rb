@@ -3,6 +3,8 @@
 class HomeController < ApplicationController
   layout 'front_layout'
   skip_before_filter :browser_is_html5_compliant?, :only => :app_status
+  # Don't force org urls
+  skip_before_filter :ensure_org_url_if_org_user
 
   def app_status
     db_ok    = Rails::Sequel.connection.select('OK').first.values.include?('OK')

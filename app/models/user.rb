@@ -107,6 +107,9 @@ class User < Sequel::Model
     monitor_user_notification
     sleep 3
     set_statement_timeouts
+    if self.has_organization_enabled?
+      ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
+    end
   end
 
   def after_save
@@ -268,6 +271,7 @@ class User < Sequel::Model
         $$
       ")
       conn.disconnect
+      $pool.close_connections!(database_name)
   end
 
   def invalidate_varnish_cache(options = {})
@@ -498,7 +502,6 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    puts Cartodb.config[:avatars]
     if !Cartodb.config[:avatars].nil? && 
        !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
        !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
@@ -1611,11 +1614,11 @@ TRIGGER
   def drop_user_privileges_in_schema(schema)
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        [self.database_user, self.database_public_user].each do |u|
-          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+        [self.database_username, self.database_public_username].each do |u|
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
         end
       end
     end

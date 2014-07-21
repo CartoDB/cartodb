@@ -48,7 +48,9 @@ describe Api::Json::PermissionsController do
     }
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
     Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+    Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
     vis_entity_mock = mock
+    vis_entity_mock.stubs(:table?).returns(false)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 
@@ -76,7 +78,7 @@ describe Api::Json::PermissionsController do
           entity: {
             id: @user3.id,
           },
-          access: Permission::ACCESS_READWRITE
+          access: Permission::ACCESS_READONLY
         }
       ]
       response_acl = [
@@ -96,7 +98,7 @@ describe Api::Json::PermissionsController do
             username:   @user3.username,
             avatar_url: @user3.avatar_url
           },
-          access: Permission::ACCESS_READWRITE
+          access: Permission::ACCESS_READONLY
         }
       ]
 

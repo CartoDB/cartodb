@@ -137,7 +137,7 @@ class Layer < Sequel::Model
   end
 
   def rename_table(current_table_name, new_table_name)
-    return self unless data_layer?
+    return self unless data_layer? or torque_layer?
     target_keys = %w{ table_name tile_style query }
 
     options = JSON.parse(self[:options])

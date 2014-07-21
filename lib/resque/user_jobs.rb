@@ -28,20 +28,20 @@ module Resque
       module UnshareVisualization
         @queue = :users
 
-        def self.perform(visualization_id, user_id)
-          v = CartoDB::Visualization::Member.new(id: visualization_id).fetch
+        def self.perform(visualization_name, visualization_owner_name, user_id)
+          #v = CartoDB::Visualization::Member.new(id: visualization_id).fetch
           u = User.where(id: user_id).first
-          UserMailer.unshare_visualization(v, u).deliver
+          UserMailer.unshare_visualization(visualization_name, visualization_owner_name, u).deliver
         end
       end
       
       module UnshareTable
         @queue = :users
 
-        def self.perform(table_id, user_id)
-          t = CartoDB::Visualization::Member.new(id: table_id).fetch
+        def self.perform(table_name, table_owner_name, user_id)
+          #t = CartoDB::Visualization::Member.new(id: table_id).fetch
           u = User.where(id: user_id).first
-          UserMailer.unshare_table(t, u).deliver
+          UserMailer.unshare_table(table_name, table_owner_name, u).deliver
         end
       end
 

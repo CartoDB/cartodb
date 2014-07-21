@@ -20,7 +20,6 @@ WORKING_SPECS_2 = \
   $(NULL)
 
 WORKING_SPECS_3 = \
-  spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
@@ -36,6 +35,7 @@ WORKING_SPECS_4 = \
 
 WORKING_SPECS_5 = \
   spec/requests/api/imports_spec.rb \
+  spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \

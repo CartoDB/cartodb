@@ -23,7 +23,7 @@
     <%= csrf_meta_tag %>
   </head>
   <body>
-    <%= render 'admin/shared/public_header' %>
+    <%= render 'admin/shared/public_header', :clone => false, :signin => true %>
     <%= yield %>
     <%= render 'admin/shared/public_footer' %>
   </body>

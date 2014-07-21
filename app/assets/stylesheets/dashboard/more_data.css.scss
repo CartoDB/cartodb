@@ -47,22 +47,20 @@
 
     ul {
       @include display-flex();
-      @include cross-browser(justify-content, space-between);
-      @include cross-browser(align-items, center);
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
       @include cross-browser(flex-wrap, nowrap);
       margin: 35px 0 0 0;
+      width:100%;
 
       li {
-        @include inline-block();
-        width:272px;
+        display:inline-block;
+        width:227px;
         margin:0 25px 0 0;
-        vertical-align: top;
         letter-spacing:0;
 
-        &:last-child { margin:0; }
-
         a {
-          display:block;
+          display:inline-block;
           height: 56px;
           padding:10px 0 0 55px;
           line-height:18px;

@@ -45,7 +45,8 @@ describe Visualization::Member do
         :set_statement_timeouts => nil,
         :set_user_as_organization_member => nil,
         :cartodb_extension_version_pre_mu? => false,
-        :rebuild_quota_trigger => nil
+        :rebuild_quota_trigger => nil,
+        :grant_publicuser_in_database => nil
     )
 
     Organization.all.each { |org|

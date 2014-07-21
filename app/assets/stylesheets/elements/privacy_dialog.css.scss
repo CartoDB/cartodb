@@ -155,7 +155,8 @@
       &.scrollpane {
         width: 100%!important;
         height: 215px;
-        overflow: auto;
+        overflow-y: hidden;
+        overflow-x: visible;
 
         // space for scroll
         li { padding-right:10px }

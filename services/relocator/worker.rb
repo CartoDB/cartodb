@@ -43,10 +43,12 @@ module CartoDB
             user.set_user_privileges
             user.organization = nil
             User.terminate_database_connections(user.database_name, user.database_host)
-            user.in_database(as: :superuser) do |database|
-              database['ALTER SCHEMA public RENAME TO '+user.username].all
-              # An apple a day keeps PostGIS away
-              database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
+            unless Rails.env.test?
+              user.in_database(as: :superuser) do |database|
+                database['ALTER SCHEMA public RENAME TO '+user.username].all
+                # An apple a day keeps PostGIS away
+                database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
+              end
             end
             user.save
             puts "Migrated to schema-powered successfully!"

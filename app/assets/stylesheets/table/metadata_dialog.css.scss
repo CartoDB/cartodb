@@ -51,6 +51,31 @@
     padding: 0 40px 35px 40px;
     border:none;
   }
+
+  section.block div.foot .owner {
+    float:left;
+
+    h3  {
+      color: #ccc;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin: 0 0 7px 0;
+    }
+
+    span  {
+      vertical-align: top;
+      color: #666666;
+      font-size: 15px;
+      line-height: 20px;
+    }
+
+    img {
+      width: 20px;
+      height: 20px;
+      vertical-align: top;
+      @include border-radius(100px);
+    }
+  }
  
   section.block ul {
     position:relative;

@@ -1201,9 +1201,16 @@ class User < Sequel::Model
     #This method is used both when creating a new user
     #and by the relocator when user is relocated to an org database.
     self.reset_user_schema_permissions # Reset privileges
+    self.reset_schema_owner # Set user as his schema owner
     self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
+  end
+
+  def reset_schema_owner
+    in_database(as: :superuser) do |database|
+      database.run(%Q{ALTER SCHEMA \"#{self.database_schema}\" SET OWNER TO "#{self.database_username}"})
+    end
   end
 
   def grant_owner_in_database

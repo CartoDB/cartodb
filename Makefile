@@ -17,6 +17,7 @@ WORKING_SPECS_2 = \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/lib/sql_parser_spec.rb \
+  spec/lib/connection_pool_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \

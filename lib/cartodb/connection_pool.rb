@@ -32,6 +32,8 @@ module CartoDB
           sleep 2
         end
       end
+      # This conn may be still broken after 3 tries
+      return conn
     end
 
     def max_pool_size?

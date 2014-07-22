@@ -285,10 +285,9 @@ describe Admin::VisualizationsController do
 
       login_as(user_b, scope: user_b.username)
 
-      get "/viz/#{vis_id}", {}, get_headers(user_b)
+      source_url = public_table_url(user_domain: user_a.username, id: vis_id)
+      get source_url, {}, get_headers(user_b)
       last_response.status.should == 302
-
-      pending 'Needs '
 
       url = public_table_url(user_domain: user_b.username, id: user_a.username << '.' << vis_id)
       last_response.location.should eq url

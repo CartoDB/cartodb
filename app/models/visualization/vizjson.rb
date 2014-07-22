@@ -127,7 +127,9 @@ module CartoDB
       end #overlays_for
 
       def ordered_overlays_for(visualization)
-        hardcoded_overlays + visualization.overlays.to_a
+        # don't render overlays in database, just serve the hardcoded ones
+        # please, enable this on branch CDB-3556
+        hardcoded_overlays #+ visualization.overlays.to_a
       end #ordered_overlays_for
 
       def hardcoded_overlays

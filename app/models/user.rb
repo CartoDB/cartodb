@@ -989,6 +989,7 @@ class User < Sequel::Model
     parameters[:type] = type_filter unless type_filter.nil?
     parameters[:privacy] = privacy_filter unless privacy_filter.nil?
     parameters[:exclude_shared] = true if exclude_shared
+    parameters[:per_page] = CartoDB::Visualization::Collection::ALL_RECORDS
 
     CartoDB::Visualization::Collection.new.fetch(parameters).count
   end #visualization_count

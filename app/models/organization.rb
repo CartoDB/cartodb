@@ -172,7 +172,8 @@ class Organization < Sequel::Model
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
         type:     type,
-        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
     ).count
   end
 

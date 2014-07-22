@@ -28,6 +28,10 @@ div.map {
 
   &.derived {
 
+    &.hide_legends div.cartodb-map div.cartodb-legend-stack {
+      display:none!important;
+    }
+
     &.mobile div.cartodb-map { // MOBILE VERSION
 
       @include border-radius(0);

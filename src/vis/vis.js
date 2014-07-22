@@ -268,6 +268,7 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
+      legends: data.legends,
       scrollwheel: scrollwheel,
       provider: data.map_provider
     };
@@ -290,9 +291,9 @@ var Vis = cdb.core.View.extend({
     }
 
     var map = new cdb.geo.Map(mapConfig);
-    this.map = map;
-    this.updated_at = data.updated_at || new Date().getTime();
 
+    this.map        = map;
+    this.updated_at = data.updated_at || new Date().getTime();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -330,9 +331,8 @@ var Vis = cdb.core.View.extend({
     this.$el.append(div);
 
     // Create the map
-    var mapView = new cdb.geo.MapView.create(div_hack, map);
+    var mapView  = new cdb.geo.MapView.create(div_hack, map);
     this.mapView = mapView;
-
 
     // Add layers
     for(var i in data.layers) {
@@ -340,21 +340,27 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData, options);
     }
 
-    var legends, torqueLayer;
+    var torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (device) {
       $(".cartodb-map-wrapper").addClass("device");
     }
 
-    if (!device && options.legends) {
-      this.addLegends(data.layers);
-    } else {
-      legends = this.createLegendView(data.layers);
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false))  {
 
-      this.legends = new cdb.geo.ui.StackedLegend({
-        legends: legends
-      });
+      if (!device) {
+
+        this.addLegends(data.layers);
+
+      } else {
+
+        this.legends = new cdb.geo.ui.StackedLegend({
+          legends: this.createLegendView(data.layers)
+        });
+
+      }
+
     }
 
   if (options.time_slider) {
@@ -452,16 +458,21 @@ var Vis = cdb.core.View.extend({
       if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
       if (type === 'header') {
+
         var m = overlay.model;
+
         if (options.title !== undefined) {
           m.set("show_title", options.title);
         }
-        if(options.description !== undefined) {
+
+        if (options.description !== undefined) {
           m.set("show_description", options.description);
         }
+
         if (m.get('show_title') || m.get('show_description')) {
           $(".cartodb-map-wrapper").addClass("with_header");
         }
+
         overlay.render()
       }
 
@@ -575,13 +586,13 @@ var Vis = cdb.core.View.extend({
       //title: false,
       //description: false,
       //layer_selector: false,
+      //legends: true,
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
       searchControl: false,
       infowindow: true,
       tooltip: true,
-      legends: true,
       time_slider: true
     });
     vizjson.overlays = vizjson.overlays || [];

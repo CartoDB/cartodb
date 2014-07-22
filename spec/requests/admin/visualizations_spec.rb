@@ -268,12 +268,12 @@ describe Admin::VisualizationsController do
       org.seats = 10
       org.save
 
-      user_a = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+      user_a = create_user({username: 'user-a', quota_in_bytes: 1234567890, table_quota: 400})
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
 
-      user_b = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+      user_b = create_user({username: 'user-b', quota_in_bytes: 1234567890, table_quota: 400})
       CartoDB::Relocator::Worker.organize(user_b, org)
 
       vis_id = factory(user_a).fetch('id')
@@ -285,15 +285,15 @@ describe Admin::VisualizationsController do
 
       login_as(user_b, scope: user_b.username)
 
-      source_url = public_table_url(user_domain: user_a.username, id: vis_id)
-      get source_url, {}, get_headers(user_b)
+      host! "#{org.name}.localhost.lan"
+
+      source_url = public_table_url(user_domain: user_a.username, id: vis.name)
+      get source_url, {}, get_headers(org.name)
       last_response.status.should == 302
 
-      url = public_table_url(user_domain: user_b.username, id: user_a.username << '.' << vis_id)
+      url = public_table_url(user_domain: user_b.username, id: user_a.username << '.' << vis.name)
       last_response.location.should eq url
 
-      user_a.destroy
-      user_b.destroy
       org.destroy
     end
   end
@@ -308,8 +308,7 @@ describe Admin::VisualizationsController do
       description:  'bogus',
       type:         'derived'
     }
-    post "/api/v1/viz?api_key=#{owner.api_key}",
-      payload.to_json, get_headers(owner)
+    post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json, get_headers(owner.username)
 
     JSON.parse(last_response.body)
   end
@@ -318,11 +317,11 @@ describe Admin::VisualizationsController do
     new_table(attrs.merge(user_id: @user.id)).save.reload
   end
 
-  def get_headers(user=nil)
-    user = @user if user.nil?
+  def get_headers(subdomain=nil)
+    subdomain = @user.username if subdomain.nil?
     @headers = {
         'CONTENT_TYPE'  => 'application/json',
-        'HTTP_HOST'     => "#{user.username}.localhost.lan"
+        'HTTP_HOST'     => "#{subdomain}.localhost.lan"
     }
   end
 

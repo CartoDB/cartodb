@@ -485,7 +485,7 @@ class User < Sequel::Model
     response = request.run
     if response.code == 200 
       # First try to update the url with the user gravatar
-      self.avatar_url = "//#{gravatar_user_url}"
+      self.avatar_url = "//#{gravatar_user_url(128)}"
       self.this.update avatar_url: self.avatar_url
     else
       # If the user doesn't have gravatar try to get a cartodb avatar
@@ -522,12 +522,12 @@ class User < Sequel::Model
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
-    "#{protocol}#{self.gravatar_user_url}?s=#{size}&d=#{protocol}#{URI.encode(default_image)}"
+    "#{protocol}#{self.gravatar_user_url(size)}&d=#{protocol}#{URI.encode(default_image)}"
   end #gravatar
 
-  def gravatar_user_url
+  def gravatar_user_url(size = 128)
     digest = Digest::MD5.hexdigest(email.downcase)
-    return "gravatar.com/avatar/#{digest}"
+    return "gravatar.com/avatar/#{digest}?s=#{size}"
   end
 
   # Retrive list of user tables from database catalogue
@@ -832,7 +832,7 @@ class User < Sequel::Model
     .select(:pg_class__oid, :pg_class__relname)
     .from(:pg_class)
     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-    .where(:relkind => 'r', :nspname => 'public')
+    .where(:relkind => 'r', :nspname => self.database_schema)
     .exclude(:relname => SYSTEM_TABLE_NAMES)
     .all
   end
@@ -1218,6 +1218,7 @@ class User < Sequel::Model
     )
     self.run_queries_in_transaction(
       [
+        "GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
         "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
         "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"
       ],
@@ -1652,16 +1653,11 @@ TRIGGER
       end
     end
   end
-
-
-  # Utility methods
-  def fix_permissions
-    self.reset_database_permissions
-    self.reset_user_schema_permissions
-    self.set_user_privileges
+ 
+  def fix_table_permissions
     tables_queries = []
     tables.each do |table|
-      if table.public?
+      if table.public? || table.public_with_link_only?
         tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO #{CartoDB::PUBLIC_DB_USER}"
       end
       tables_queries << "ALTER TABLE \"#{self.database_schema}\".#{table.name} OWNER TO \"#{database_username}\""
@@ -1670,6 +1666,18 @@ TRIGGER
       tables_queries,
       true
     )
+  end
+
+  # Utility methods
+  def fix_permissions
+    # /!\ WARNING
+    # This will delete all database permissions, and try to recreate them from scratch.
+    # Use only if you know what you're doing. (or, better, don't use it)
+    self.reset_database_permissions
+    self.reset_user_schema_permissions
+    self.grant_publicuser_in_database
+    self.set_user_privileges
+    self.fix_table_permissions
   end
 
   def monitor_user_notification

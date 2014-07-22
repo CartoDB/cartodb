@@ -738,8 +738,13 @@ namespace :cartodb do
 
     desc "Reload users avatars"
     task :reload_users_avatars => :environment do
-      count = User.count
-      User.all.each_with_index do |user, i|
+      if ENV['ONLY_GRAVATAR'].blank?
+        users = User.all
+      else
+        users = User.where(Sequel.like(:avatar_url, '%gravatar.com%'))
+      end
+      count = users.count
+      users.each_with_index do |user, i|
         begin
           user.reload_avatar
           message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count

@@ -7,6 +7,7 @@ require_relative 'relocator/queue_consumer'
 require_relative 'relocator/dumper'
 require_relative 'relocator/tester'
 require_relative 'relocator/table_dumper'
+require_relative 'relocator/schema_dumper'
 require_relative 'relocator/trigger_loader'
 module CartoDB
   module Relocator
@@ -37,7 +38,7 @@ module CartoDB
         if config[:mode] == :relocate
           @dumper = Dumper.new(config: @config)
         else
-          @dumper = TableDumper.new(config: @config)
+          @dumper = SchemaDumper.new(config: @config)
         end
         @consumer = QueueConsumer.new(config: @config)
         @tester   = Tester.new(config: @config) 
@@ -71,6 +72,10 @@ module CartoDB
         if @config[:mode] == :relocate
           @trigger_loader.unload_triggers
           @consumer.empty_queue
+        end
+
+        if @config[:mode] == :organize
+          @dumper.remove_target_schema
         end
       end
     end

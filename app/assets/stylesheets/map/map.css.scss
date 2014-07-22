@@ -26,7 +26,27 @@ div.map, .mobile_bkg {
 
 div.map {
 
-  &.derived {
+  &.table { // TABLE'S MAP
+
+    div.cartodb-legend-stack {
+      @include position(false, 80px, 20px, false);
+    }
+
+    .leaflet-right .leaflet-control, #cartodb_attribution {
+      margin-right: 62px;
+    }
+
+    div.cartodb-map div.cartodb-logo {
+      bottom: 0!important;
+    }
+
+  }
+
+  &.derived { // VISUALIZATION'S MAP
+
+    div.cartodb-legend-stack {
+      @include position(false, 20px, 20px, false);
+    }
 
     &.hide_legends div.cartodb-map div.cartodb-legend-stack {
       display:none!important;
@@ -332,28 +352,6 @@ div.map {
       position: absolute;
     }
 
-  }
-
-  &.map.table {
-
-    div.cartodb-legend-stack {
-      @include position(false, 80px, 20px, false);
-    }
-
-    .leaflet-right .leaflet-control, #cartodb_attribution {
-      margin-right: 62px;
-    }
-
-    div.cartodb-map div.cartodb-logo {
-      bottom: 0!important;
-    }
-
-  }
-
-  &.map.derived {
-    div.cartodb-legend-stack {
-      @include position(false, 20px, 20px, false);
-    }
   }
 
   div.cartodb-legend-stack {

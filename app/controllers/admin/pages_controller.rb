@@ -17,6 +17,8 @@ class Admin::PagesController < ApplicationController
   before_filter :belongs_to_organization
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
+  # Don't force org urls
+  skip_before_filter :ensure_org_url_if_org_user
 
   def datasets
 

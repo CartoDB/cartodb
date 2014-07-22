@@ -37,7 +37,7 @@ module CartoDB
         if base?(layer)
           with_kind_as_type(layer.public_values) 
         elsif torque?(layer)
-          as_torque(layer)
+          as_torque
         else
           {
             id:         layer.id,
@@ -69,7 +69,6 @@ module CartoDB
           # this case happens when you share a layer already shared with you
           if poro['options']['user_name'] != options[:viewer_user].username and not poro['options']['table_name'].include?('.')
             user_name = poro['options']['user_name']
-            table_name = nil
             if user_name.include?('-')
               table_name = "\"#{poro['options']['user_name']}\".#{poro['options']['table_name']}"
             else
@@ -110,7 +109,7 @@ module CartoDB
         decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
       end #with_kind_as_type
 
-      def as_torque(attributes)
+      def as_torque
         # Make torque always have a SQL query too (as vizjson v2)
         layer.options['query'] = sql_from(layer.options)
 
@@ -135,7 +134,7 @@ module CartoDB
           }.merge(
             layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
-      end #as_torque
+      end
 
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
@@ -195,7 +194,6 @@ module CartoDB
 
       def options_data_v1
         return layer.options if options[:full]
-        sql = sql_from(layer.options)
         layer.options.select { |key, value| public_options.include?(key.to_s) }
       end #options_data
 

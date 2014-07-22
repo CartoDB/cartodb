@@ -25,6 +25,7 @@ class Admin::VisualizationsController < ApplicationController
   def show
     return(redirect_to public_url) unless current_user.present?
     @visualization, @table = resolve_visualization_and_table(request)
+
     return(pretty_404) unless @visualization
 
     return(redirect_to public_url) unless \
@@ -39,10 +40,13 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
+
+    return(redirect_to public_map_url) if @visualization.derived?
+
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_public_table_url_if_proceeds
       unless redirect_url.nil?
-        redirect_to redirect_url  and return
+        redirect_to redirect_url and return
       end
     end
 
@@ -51,7 +55,7 @@ class Admin::VisualizationsController < ApplicationController
         return(embed_forbidden)
       end
     end
-    return(redirect_to public_map_url()) if @visualization.derived?
+
     return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
 
     @vizjson = @visualization.to_vizjson

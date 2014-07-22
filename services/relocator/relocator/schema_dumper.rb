@@ -56,9 +56,13 @@ module CartoDB
         return_code = system(command)
         raise "Error dumping and restoring! Please cleanup" if return_code != true
         get_tables(@config[:target]).reject{|t| t == "spatial_ref_sys"}.each do |table|
-          puts "Cartodbfying table #{table}.."
-          @cartodbfy_conn ||= PG.connect(@config[:target][:conn])
-          puts @cartodbfy_conn.query("select cdb_cartodbfytable('#{@config[:target][:schema]}.#{table}')").to_a
+          begin
+            puts "Cartodbfying table #{table}.."
+            @cartodbfy_conn ||= PG.connect(@config[:target][:conn])
+            puts @cartodbfy_conn.query("select cdb_cartodbfytable('#{@config[:target][:schema]}.#{table}')").to_a
+          rescue PG::Error => e
+            puts "Cannot cartodbfy table #{table}."
+          end
         end
       end
     end

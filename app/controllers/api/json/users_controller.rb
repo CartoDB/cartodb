@@ -36,7 +36,6 @@ class Api::Json::UsersController < Api::ApplicationController
         # The user is seeing its own dashboard
         if authenticated_users.include?(subdomain)
           dashboard_base_url = CartoDB.base_url(subdomain)
-          can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
           username = authenticated_users.first
         # The user is authenticated but seeing another user dashboard
         else
@@ -46,7 +45,6 @@ class Api::Json::UsersController < Api::ApplicationController
             dashboard_base_url = CartoDB.base_url(authenticated_users.first)
           else
             dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
-            can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
             username = authenticated_users.first
           end
         end
@@ -120,9 +118,6 @@ class Api::Json::UsersController < Api::ApplicationController
     else
       #a public table always can be forked by org user
       true
-      #res = referer_match[1]
-      #vis = Table.get_by_id_or_name(res, current_user).table_visualization
-      #vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
     end
   end
 

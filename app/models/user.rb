@@ -485,7 +485,7 @@ class User < Sequel::Model
     response = request.run
     if response.code == 200 
       # First try to update the url with the user gravatar
-      self.avatar_url = "//#{gravatar_user_url}"
+      self.avatar_url = "//#{gravatar_user_url(128)}"
       self.this.update avatar_url: self.avatar_url
     else
       # If the user doesn't have gravatar try to get a cartodb avatar
@@ -522,12 +522,12 @@ class User < Sequel::Model
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
-    "#{protocol}#{self.gravatar_user_url}?s=#{size}&d=#{protocol}#{URI.encode(default_image)}"
+    "#{protocol}#{self.gravatar_user_url(size)}&d=#{protocol}#{URI.encode(default_image)}"
   end #gravatar
 
-  def gravatar_user_url
+  def gravatar_user_url(size = 128)
     digest = Digest::MD5.hexdigest(email.downcase)
-    return "gravatar.com/avatar/#{digest}"
+    return "gravatar.com/avatar/#{digest}?s=#{size}"
   end
 
   # Retrive list of user tables from database catalogue

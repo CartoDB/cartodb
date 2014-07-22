@@ -119,6 +119,7 @@
       div.metadata {
         display:block;
         margin: 0 0 0 11px;
+        width: 200px;
 
         p {
           @include inline-block();

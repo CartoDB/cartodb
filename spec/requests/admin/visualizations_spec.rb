@@ -5,6 +5,9 @@ require 'json'
 require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
+require_relative '../../../services/relocator/relocator'
+require_relative '../../../services/relocator/worker'
+require_relative '../../../services/relocator/relocator/table_dumper'
 
 def app
   CartoDB::Application.new
@@ -15,7 +18,6 @@ describe Admin::VisualizationsController do
   include Warden::Test::Helpers
 
   before(:all) do
-
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
@@ -206,8 +208,99 @@ describe Admin::VisualizationsController do
     end
   end # non existent visualization
 
-  def factory
-    map     = Map.create(user_id: @user.id)
+  describe 'org user visualization redirection' do
+    it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
+      db_config   = Rails.configuration.database_configuration[Rails.env]
+      # Why not passing db_config directly to Sequel.postgres here ?
+      # See https://github.com/CartoDB/cartodb/issues/421
+      db = Sequel.postgres(
+          host:     db_config.fetch('host'),
+          port:     db_config.fetch('port'),
+          database: db_config.fetch('database'),
+          username: db_config.fetch('username')
+      )
+      CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
+
+      CartoDB::Relocator::TableDumper.any_instance.stubs(:migrate).returns(nil)
+      CartoDB::Relocator::SchemaDumper.any_instance.stubs(:migrate).returns(nil)
+      CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
+
+      CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
+      CartoDB::Table::PrivacyManager.any_instance.stubs(
+          :set_from_table_privacy => nil,
+          :propagate_to_redis_and_varnish => nil
+      )
+
+      User.any_instance.stubs(
+          :enable_remote_db_user => nil,
+          :after_create => nil,
+          :create_schema => nil,
+          :create_public_db_user => nil,
+          :set_database_search_path => nil,
+          :load_cartodb_functions => nil,
+          :set_user_privileges => nil,
+          :monitor_user_notification => nil,
+          :grant_user_in_database => nil,
+          :set_statement_timeouts => nil,
+          :set_user_as_organization_member => nil,
+          :cartodb_extension_version_pre_mu? => false,
+          :rebuild_quota_trigger => nil,
+          :grant_publicuser_in_database => nil
+      )
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Table.any_instance.stubs(
+          :perform_cartodb_function => nil,
+          :update_cdb_tablemetadata => nil,
+          :update_table_pg_stats => nil,
+          :create_table_in_database! => nil,
+          :get_table_id => 1,
+          :grant_select_to_tiler_user => nil,
+          :cartodbfy => nil,
+          :set_the_geom_column! => nil
+      )
+
+      # --------TEST ITSELF-----------
+
+      org = Organization.new
+      org.name = 'vis-spec-org'
+      org.quota_in_bytes = 1024 ** 3
+      org.seats = 10
+      org.save
+
+      user_a = create_user({username: 'user-a', quota_in_bytes: 1234567890, table_quota: 400})
+      user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
+      user_org.promote_user_to_admin
+      org.reload
+
+      user_b = create_user({username: 'user-b', quota_in_bytes: 1234567890, table_quota: 400})
+      CartoDB::Relocator::Worker.organize(user_b, org)
+
+      vis_id = factory(user_a).fetch('id')
+
+      vis = CartoDB::Visualization::Member.new(id:vis_id).fetch
+      perm = vis.permission
+      perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
+      perm.save
+
+      login_as(user_b, scope: user_b.username)
+
+      host! "#{org.name}.localhost.lan"
+
+      source_url = public_table_url(user_domain: user_a.username, id: vis.name)
+      get source_url, {}, get_headers(org.name)
+      last_response.status.should == 302
+
+      url = public_table_url(user_domain: user_b.username, id: user_a.username << '.' << vis.name)
+      last_response.location.should eq url
+
+      org.destroy
+    end
+  end
+
+  def factory(owner=nil)
+    owner = @user if owner.nil?
+    map     = Map.create(user_id: owner.id)
     payload = {
       name:         "visualization #{rand(9999)}",
       tags:         ['foo', 'bar'],
@@ -215,14 +308,21 @@ describe Admin::VisualizationsController do
       description:  'bogus',
       type:         'derived'
     }
-    post "/api/v1/viz?api_key=#{@api_key}",
-      payload.to_json, @headers
+    post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json, get_headers(owner.username)
 
     JSON.parse(last_response.body)
-  end #factory
+  end
 
   def table_factory(attrs = {})
     new_table(attrs.merge(user_id: @user.id)).save.reload
-  end #table_factory
+  end
+
+  def get_headers(subdomain=nil)
+    subdomain = @user.username if subdomain.nil?
+    @headers = {
+        'CONTENT_TYPE'  => 'application/json',
+        'HTTP_HOST'     => "#{subdomain}.localhost.lan"
+    }
+  end
 
 end # Admin::VisualizationsController

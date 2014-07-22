@@ -23,6 +23,8 @@ module CartoDB
     end
     
     class Collection
+      ALL_RECORDS = 999999
+
       def initialize(attributes={}, options={})
 
         @total_entries = 0

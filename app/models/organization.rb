@@ -27,6 +27,8 @@ class Organization < Sequel::Model
   # @param twitter_username String
   # @param geocoding_quota Integer
   # @param map_view_quota Integer
+  # @param geocoding_block_price Integer
+  # @param map_view_block_price Integer
 
   one_to_many :users
   many_to_one :owner, class_name: 'User', key: 'owner_id'
@@ -102,13 +104,15 @@ class Organization < Sequel::Model
         :avatar_url => self.owner ? self.owner.avatar_url : nil,
         :email      => self.owner ? self.owner.email : nil
       },
-      :quota_in_bytes   => self.quota_in_bytes,
-      :geocoding_quota  => self.geocoding_quota,
-      :map_view_quota   => self.map_view_quota,
-      :seats            => self.seats,
-      :twitter_username => self.twitter_username,
-      :updated_at       => self.updated_at,
-      :users            => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
+      :quota_in_bytes        => self.quota_in_bytes,
+      :geocoding_quota       => self.geocoding_quota,
+      :map_view_quota        => self.map_view_quota,
+      :map_view_block_price  => self.map_view_block_price,
+      :geocoding_block_price => self.geocoding_block_price,
+      :seats                 => self.seats,
+      :twitter_username      => self.twitter_username,
+      :updated_at            => self.updated_at,
+      :users                 => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
         .map { |u|
         {
           :id         => u.id,
@@ -168,7 +172,8 @@ class Organization < Sequel::Model
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
         type:     type,
-        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
     ).count
   end
 

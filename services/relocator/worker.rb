@@ -84,7 +84,7 @@ module CartoDB
           User.terminate_database_connections(user.database_name, user.database_host)
           relocator.migrate
           #wipe all OIDs
-          user.tables.each{|t| t.table_id=nil; t.save}
+          user.tables.update({:table_id =>nil})
           user.user_timeout = old_user_timeout
           user.set_statement_timeouts
           relocator.compare

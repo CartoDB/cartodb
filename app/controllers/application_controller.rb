@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :ensure_user_domain_param
   before_filter :ensure_user_organization_valid
+  before_filter :ensure_org_url_if_org_user
   before_filter :browser_is_html5_compliant?
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
@@ -156,6 +157,14 @@ class ApplicationController < ActionController::Base
       if current_user.organization.nil? || current_user.organization.name != org_subdomain
         render_404
       end
+    end
+  end
+
+  # By default, override Admin urls unless :dont_rewrite param is present
+  def ensure_org_url_if_org_user
+    rewrite_url = !request.params[:dont_rewrite].present?
+    if rewrite_url && !current_user.nil? && !current_user.organization.nil? && CartoDB.extract_real_subdomain(request) == current_user.username
+      redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
     end
   end
 

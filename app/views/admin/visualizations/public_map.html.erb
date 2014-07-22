@@ -393,18 +393,22 @@
 
           $('.fork').click(function(e) {
             e.preventDefault();
-            var baseUrl = location.pathname.substring(0, location.pathname.indexOf('/viz/'))
+            var baseUrl = location.origin
+            // HACK
+            // gloabl AUTH_USERNAME is set from a javascript request. That request enables .fork button
+            // so in theory when this code is executed AUTH_USER should be set
+            // see public_dashboard.js
             $.ajax({
-              url: baseUrl + '/api/v1/viz/',
+              url: baseUrl + '/u/' + window.AUTH_USER + '/api/v1/viz/',
               type: 'POST',
               data: JSON.stringify({
-                source_visualization_id: '<%= @visualization.id%>',
-                name: '<%= @visualization.name %> copy'
+                source_visualization_id: '<%= @visualization.id %>',
+                name: '<%= @visualization.name %> clone'
               }),
               dataType: 'json',
               contentType: 'application/json',
               success: function(vis) {
-                window.location = baseUrl + "/viz/" + vis.id
+                window.location = baseUrl + '/u/' + window.AUTH_USER + "/viz/" + vis.id
               }
             });
             return false;

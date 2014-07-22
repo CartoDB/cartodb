@@ -40,10 +40,12 @@ module Concerns
         case action
         when :create
           [:name, :seats, :quota_in_bytes, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota]
+          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
+          :geocoding_block_price, :map_view_block_price]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota]
+          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
+          :geocoding_block_price, :map_view_block_price]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,

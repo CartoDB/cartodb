@@ -39,6 +39,13 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
+    if current_user.nil?
+      redirect_url = get_public_table_url_if_proceeds
+      unless redirect_url.nil?
+        redirect_to redirect_url and return
+      end
+    end
+
     if @visualization.organization?
       unless current_user and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
         return(embed_forbidden)
@@ -269,6 +276,25 @@ class Admin::VisualizationsController < ApplicationController
   end #track_embed
 
   private
+
+  # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
+  # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
+  def get_public_table_url_if_proceeds
+    url = nil
+    if CartoDB.extract_subdomain(request) != CartoDB.extract_real_subdomain(request)
+      # Might be an org url, try getting the org
+      organization = Organization.where(name: CartoDB.extract_real_subdomain(request)).first
+      unless organization.nil?
+        authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
+        authenticated_users.each { |username|
+          if url.nil? && !User.where(username:username).first.nil?
+            url = public_table_url(user_domain: username, id: params[:user_domain] << '.' << params[:id])
+          end
+        }
+      end
+    end
+    url
+  end
 
   def table_and_schema_from_params
     if params.fetch('id', nil) =~ /\./

@@ -5,8 +5,13 @@ class Api::Json::TagsController < Api::ApplicationController
   ssl_required :index
 
   def index
-    tag_counts = CartoDB::Visualization::Tags.new(current_user)
-                  .count(params)
+    options = {}
+    if params[:exclude_shared].present?
+      options[:exclude_shared] = true
+    end
+
+    tag_counts = CartoDB::Visualization::Tags.new(current_user, options)
+      .count(params)
     render_jsonp(tag_counts)
   end
 end

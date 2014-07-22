@@ -38,7 +38,10 @@ div.map {
         }
       }
 
-      .cartodb-logo { margin-bottom: 0px; }
+      .cartodb-logo { 
+        margin-bottom: 0px;
+        bottom: 10px!important;
+      }
 
       .leaflet-control-attribution.leaflet-control {
         margin-right: 0;

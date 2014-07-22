@@ -46,6 +46,7 @@ describe Visualization::Member do
         :set_user_as_organization_member => nil,
         :cartodb_extension_version_pre_mu? => false,
         :rebuild_quota_trigger => nil,
+        :setup_schema => nil,
         :grant_publicuser_in_database => nil
     )
 

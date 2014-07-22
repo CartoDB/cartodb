@@ -5,6 +5,8 @@ class SessionsController < ApplicationController
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
   before_filter :api_authorization_required, :only => :show
+  # Don't force org urls
+  skip_before_filter :ensure_org_url_if_org_user
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
@@ -23,7 +25,7 @@ class SessionsController < ApplicationController
       destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
     end
     # Removed ATM for multiuser: session[:return_to] || ...
-    redirect_to(destination_url)
+    redirect_to destination_url
   end
 
   def destroy

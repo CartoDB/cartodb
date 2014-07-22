@@ -39,6 +39,17 @@ describe Admin::PagesController do
       last_response.status.should == 200
     end
 
+    it 'returns 200 if it is an org user but gets called without organization' do
+      prepare_user(@org_user_name, @user_org, @belongs_to_org)
+
+      get "", {}, {
+          'CONTENT_TYPE' => 'application/json',
+          'HTTP_HOST' => "#{@org_user_name}.localhost.lan"
+      }
+
+      last_response.status.should == 200
+    end
+
     it 'returns 404 if it is an org user but does NOT belong to host organization' do
       prepare_user(@other_org_user_name, @user_org, !@belongs_to_org)
 

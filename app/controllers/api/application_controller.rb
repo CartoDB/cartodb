@@ -1,6 +1,7 @@
 # coding: utf-8
 class Api::ApplicationController < ApplicationController
-  skip_before_filter :browser_is_html5_compliant?, :verify_authenticity_token
+  # Don't force org urls
+  skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?, :verify_authenticity_token
   before_filter :api_authorization_required
 
   protected

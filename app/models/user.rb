@@ -271,7 +271,6 @@ class User < Sequel::Model
         $$
       ")
       conn.disconnect
-      $pool.close_connections!(database_name)
   end
 
   def invalidate_varnish_cache(options = {})

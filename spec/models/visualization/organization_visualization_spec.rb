@@ -23,6 +23,7 @@ describe Visualization::Member do
     Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
 
     CartoDB::Relocator::TableDumper.any_instance.stubs(:migrate).returns(nil)
+    CartoDB::Relocator::SchemaDumper.any_instance.stubs(:migrate).returns(nil)
     CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
 
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
@@ -44,7 +45,8 @@ describe Visualization::Member do
         :set_statement_timeouts => nil,
         :set_user_as_organization_member => nil,
         :cartodb_extension_version_pre_mu? => false,
-        :rebuild_quota_trigger => nil
+        :rebuild_quota_trigger => nil,
+        :grant_publicuser_in_database => nil
     )
 
     Organization.all.each { |org|

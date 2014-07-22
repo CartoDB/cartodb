@@ -18,14 +18,47 @@ module CartoDB
         relocator = CartoDB::Relocator::Relocation.new(
           source: {conn: {host: user.database_host, port: port,
                           dbname: user.database_name,
-                          user: 'postgres'}, schema: user.database_schema},
+                          user: 'postgres'}, schema: user.username}, #we will move 'public' to this schema
           target: {conn: {host: org.owner.database_host,  port: port,
-                          dbname: org.owner.database_name, user: user.database_username}, schema: user.username},
+                          dbname: org.owner.database_name, user: 'postgres'}, schema: user.username},
           redis: {host: Cartodb.config[:redis]['host'], port: Cartodb.config[:redis]['port']},
           dbname: user.database_name, username: user.database_username, :mode => :organize,
           user_object: user
         )
         begin
+          # --------------- we first move the user to its own schema
+          case user.database_schema
+          when 'public'
+            #associate it to the organization now so it lets create the public_user
+            #on the schema.
+            user.organization = org
+            user.database_schema = user.username
+            begin
+              user.create_public_db_user
+            rescue => e
+              puts "Error #{e} while creating public user. Ignoring as it probably already existed"
+            end
+            user.set_database_search_path
+            user.grant_publicuser_in_database
+            user.set_user_privileges
+            user.organization = nil
+            User.terminate_database_connections(user.database_name, user.database_host)
+            unless Rails.env.test?
+              user.in_database(as: :superuser) do |database|
+                database['ALTER SCHEMA public RENAME TO '+user.username].all
+                # An apple a day keeps PostGIS away
+                database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
+              end
+            end
+            user.save
+            puts "Migrated to schema-powered successfully!"
+          when user.username
+            puts "User is already on its own, non-public schema."
+          else
+            raise "User is on a different schema than expected."
+          end
+
+          # --------------- then move the user to its new place
           user.database_host = org.owner.database_host
           user.database_name = org.owner.database_name
           user.organization = org
@@ -45,23 +78,32 @@ module CartoDB
           user.set_database_search_path
           user.grant_user_in_database
           user.set_user_privileges
+          old_user_timeout = user.user_timeout
+          user.user_timeout = 0
+          user.set_statement_timeouts
+          User.terminate_database_connections(user.database_name, user.database_host)
           relocator.migrate
+          #wipe all OIDs
+          user.tables.each{|t| t.table_id=nil; t.save}
+          user.user_timeout = old_user_timeout
           user.set_statement_timeouts
           relocator.compare
           relocator.finalize
+          user.grant_publicuser_in_database
           user.set_user_privileges
           user.rebuild_quota_trigger
           user.set_user_as_organization_member
           user.enable_remote_db_user
-          user.save
-          user.create_in_central
-          user.update_in_central
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"
           puts "Rolling back in 5 secs"
           sleep 5
           relocator.rollback
+          return
         end
+        user.save
+        user.create_in_central
+        user.update_in_central
       end # organize
       
       def self.relocate(user, new_database_host, new_database_port=nil)

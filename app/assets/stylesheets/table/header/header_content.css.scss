@@ -223,17 +223,15 @@
           &.share, &.data_download { font-weight:500; }
 
           &.privacy {
-
-            padding: 0 14px 0 0;
+            padding: 0 9px 0 0;
             text-shadow: none;
-            /*@include simple-transition(all, 150ms);*/
             @include box-shadow(0px 0px 0px 3px rgba(#333, .1));
 
-            &.public             i { background: rgba(#97C341, .5) sprite($table-sprites,  lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.organization       i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_user,   $offset-x: 12px, $offset-y: 4px) no-repeat; }
-            &.private            i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 12px, $offset-y: 4px) no-repeat; }
+            &.public             i { background: rgba(#97C341, .5) sprite($table-sprites,  lock_open,   $offset-x: 8px, $offset-y: 4px) no-repeat; }
+            &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 8px, $offset-y: 4px) no-repeat; }
+            &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 8px, $offset-y: 4px) no-repeat; }
+            &.organization       i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_user,   $offset-x: 8px, $offset-y: 4px) no-repeat; }
+            &.private            i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 8px, $offset-y: 4px) no-repeat; }
 
             &.public             i:hover { background-color: rgba(#97C341, .65); }
             &.link_protected     i:hover { background-color: rgba(#FFA64D, .65); }
@@ -243,23 +241,34 @@
 
             span { vertical-align: middle; }
 
-            &:hover {
-              color: #1D4569;
-              @include box-shadow(0px 0px 0px 3px rgba(#333, .2));
-            }
-
             i {
               @include inline-block();
-              width: 30px; height: 20px;
-              margin: 0 10px 0 0;
-              background: rgba(#EEE, .5) sprite($table-sprites,  lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat;
+              width:auto;
+              min-width:22px;
+              height: 20px;
+              margin: 0 5px 0 0;
+              background: rgba(#EEE, .5) sprite($table-sprites,  lock_open,   $offset-x: 8px, $offset-y: 4px) no-repeat;
               border-right: 1px solid rgba(#000, .15);
               @include simple-transition(all, 150ms);
               @include border-radius(25px 0 0 25px);
 
+              span.shared_users {
+                margin-left:23px;
+              }
+
               &.disabled {
                 @include opacity(0.5);
                 &:hover { cursor:default }
+              }
+            }
+
+            // Hover styles
+            &:hover {
+              @include box-shadow(0px 0px 0px 3px rgba(#333, .2));
+              
+              & > span {
+                color:#3474AF;
+                &:hover { color: #1D4569 }
               }
             }
 

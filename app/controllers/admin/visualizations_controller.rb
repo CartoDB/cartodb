@@ -39,10 +39,10 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
-    if current_user.nil?
+    if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_public_table_url_if_proceeds
       unless redirect_url.nil?
-        redirect_to redirect_url and return
+        redirect_to redirect_url  and return
       end
     end
 
@@ -288,7 +288,7 @@ class Admin::VisualizationsController < ApplicationController
         authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
         authenticated_users.each { |username|
           if url.nil? && !User.where(username:username).first.nil?
-            url = public_table_url(user_domain: username, id: params[:user_domain] << '.' << params[:id])
+            url = public_table_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
           end
         }
       end

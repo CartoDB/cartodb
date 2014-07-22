@@ -17,13 +17,13 @@ module CartoDB
       OR CONCAT(name, ' ', description) ILIKE ?
     }
 
-    ALL = 999999
-
     class << self
       attr_accessor :repository
     end
     
     class Collection
+      ALL_RECORDS = 999999
+
       def initialize(attributes={}, options={})
 
         @total_entries = 0

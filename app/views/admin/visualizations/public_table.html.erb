@@ -63,7 +63,7 @@
           </div>
 
           <div class="user embed-right-col">
-            <a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" title="Datasets by <%= @name %>" class="content">
+            <a href="<%= public_datasets_home_url(user_domain: @visualization.user.username) %>" title="Datasets by <%= @name %>" class="content">
               <div class="user-info">
                 <h4>by <%= @name %></h4>
                 <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>

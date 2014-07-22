@@ -335,9 +335,19 @@ div.map {
   }
 
   &.map.table {
+
     div.cartodb-legend-stack {
       @include position(false, 80px, 20px, false);
     }
+
+    .leaflet-right .leaflet-control, #cartodb_attribution {
+      margin-right: 62px;
+    }
+
+    div.cartodb-map div.cartodb-logo {
+      bottom: 0!important;
+    }
+
   }
 
   &.map.derived {

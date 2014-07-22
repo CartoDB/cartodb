@@ -17,6 +17,8 @@ module CartoDB
       OR CONCAT(name, ' ', description) ILIKE ?
     }
 
+    ALL = 999999
+
     class << self
       attr_accessor :repository
     end

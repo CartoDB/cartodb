@@ -163,7 +163,7 @@ class ApplicationController < ActionController::Base
   # By default, override Admin urls unless :dont_rewrite param is present
   def ensure_org_url_if_org_user
     rewrite_url = !request.params[:dont_rewrite].present?
-    if rewrite_url && !current_user.organization.nil? && CartoDB.extract_real_subdomain(request) == current_user.username
+    if rewrite_url && !current_user.nil? && !current_user.organization.nil? && CartoDB.extract_real_subdomain(request) == current_user.username
       redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
     end
   end

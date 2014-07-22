@@ -102,7 +102,7 @@ module CartoDB
 
       def create_loader_overlay(member, order)
 
-        options = { :display => true, :x => 20, :y => 192 }
+        options = { :display => true, :x => 20, :y => 150 }
 
         member = CartoDB::Overlay::Member.new(
           order: order,

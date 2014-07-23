@@ -42,6 +42,7 @@ describe CartoDB::ConnectionPool do
     expect { 
       puts "*** QUERY START"
       begin
+        sleep 10
         puts user1.real_tables
         puts "**** OK query"
       rescue => e

@@ -43,8 +43,12 @@ describe CartoDB::ConnectionPool do
       puts "*** QUERY START"
       begin
         sleep 10
-        puts user1.real_tables
+        tables = user1.real_tables
+        puts tables "###### #{tables}"
         puts "**** OK query"
+        if !tables.match("terminating connection due to administrator command").nil?
+          raise Sequel::DatabaseDisconnectError
+        end
       rescue => e
         puts "**** FAIL query"
         puts e

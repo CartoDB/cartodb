@@ -33,7 +33,6 @@ module CartoDB
             #on the schema.
             user.organization = org
             user.database_schema = user.username
-            user.setup_schema
             user.organization = nil
             unless Rails.env.test?
               user.in_database(as: :superuser) do |database|
@@ -42,6 +41,7 @@ module CartoDB
                 database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
               end
             end
+            user.setup_schema
             User.terminate_database_connections(user.database_name, user.database_host)
             user.save
             puts "Migrated to schema-powered successfully!"

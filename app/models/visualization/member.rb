@@ -42,7 +42,6 @@ module CartoDB
 
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
-      # db/schema.rb -> create_table()
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       attribute :id,                  String
       attribute :name,                String
@@ -59,6 +58,7 @@ module CartoDB
       attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
       attribute :user_id,             String
       attribute :permission_id,       String
+      attribute :locked,              Boolean, default: false
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE

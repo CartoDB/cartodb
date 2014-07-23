@@ -8,7 +8,7 @@ module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
     # user_id filtered by default if present upon fetch()
-    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id }
+    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id locked }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -25,7 +25,6 @@ module CartoDB
       ALL_RECORDS = 999999
 
       def initialize(attributes={}, options={})
-
         @total_entries = 0
 
         @collection = DataRepository::Collection.new(
@@ -33,7 +32,7 @@ module CartoDB
           repository:   options.fetch(:repository, Visualization.repository),
           member_class: Member
         )
-      end #initialize
+      end
 
       DataRepository::Collection::INTERFACE.each do |method_name|
         define_method(method_name) do |*arguments, &block|
@@ -75,21 +74,21 @@ module CartoDB
         end
 
         self
-      end #fetch
+      end
 
       def store
         #map { |member| member.fetch.store }
         self
-      end #store
+      end
 
       def destroy
         map(&:delete)
         self
-      end #destroy
+      end
 
       def to_poro
         map { |member| member.to_hash(related: false, table_data: true) }
-      end #to_poro
+      end
 
       attr_reader :total_entries
 
@@ -100,7 +99,7 @@ module CartoDB
       def order(dataset, criteria={})
         return dataset if criteria.nil? || criteria.empty?
         dataset.order(*order_params_from(criteria))
-      end #order
+      end
 
       def filter_by_tags(dataset, tags=[])
         return dataset if tags.nil? || tags.empty?
@@ -108,12 +107,12 @@ module CartoDB
         filter       = "tags && ARRAY[#{placeholders}]"
        
         dataset.where([filter].concat(tags))
-      end #filter_by_tags
+      end
 
       def filter_by_partial_match(dataset, pattern=nil)
         return dataset if pattern.nil? || pattern.empty?
         dataset.where(PARTIAL_MATCH_QUERY, pattern, "%#{pattern}%")
-      end #filter_by_partial_match
+      end
 
       def filter_by_only_shared(dataset, filters)
         return dataset unless (filters[:user_id].present? && filters[:only_shared].present?)
@@ -156,13 +155,13 @@ module CartoDB
 
       def tags_from(filters={})
         filters.delete(:tags).to_s.split(',')
-      end #tags_from
+      end
 
       def order_params_from(criteria)
         criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
-      end #order_params_from
+      end
 
-    end # Collection
-  end # Visualization
-end # CartoDB
+    end
+  end
+end
 

@@ -41,7 +41,13 @@ describe CartoDB::ConnectionPool do
     
     expect { 
       puts "*** QUERY START"
-      puts user1.real_tables
+      begin
+        puts user1.real_tables
+        puts "**** OK query"
+      rescue => e
+        puts "**** FAIL query"
+        puts e
+      end
       puts "*** QUERY END"
     }.to raise_error(Sequel::DatabaseDisconnectError)
     

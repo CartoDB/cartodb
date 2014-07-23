@@ -29,7 +29,11 @@ module CartoDB
         begin
           puts "******* Testing pool key: #{connection_id(configuration)}"
           puts "******* Testing pool connection: #{conn.opts[:database]}:#{conn.opts[:username]}"
-          puts conn.get(1)
+          res = conn.get(1)
+          puts res
+          if !res.match("terminating connection due to administrator command").nil?
+            raise Sequel::DatabaseDisconnectError 
+          end
           puts "******* PASSED"
           return conn
         rescue => e

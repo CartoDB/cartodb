@@ -105,7 +105,7 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render 'public_table', layout: 'application_table_public' }
     end
 
-  end #public_table
+  end
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)

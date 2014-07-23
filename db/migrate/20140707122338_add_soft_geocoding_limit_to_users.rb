@@ -4,6 +4,6 @@ Sequel.migration do
   end
 
   down do
-    remove_column :users, :soft_geocoding_limit
+    drop_column :users, :soft_geocoding_limit
   end
 end

@@ -32,7 +32,7 @@ describe CartoDB::ConnectionPool do
     show_connections(user1)
     puts "*** BEFORE END ***"
     # This will make the pooler to think that the connections is working fine
-    Sequel::Postgres::Database.any_instance.stubs(:get).with(1).returns([])
+    Sequel::Postgres::Database.any_instance.stubs(:get).with(1).returns(0)
     User.terminate_database_connections(user1.database_name, user1.database_host)     
     puts "*** AFTER START ***"
     show_pool
@@ -40,7 +40,9 @@ describe CartoDB::ConnectionPool do
     puts "*** AFTER END ***"
     
     expect { 
+      puts "*** QUERY START"
       puts user1.real_tables
+      puts "*** QUERY END"
     }.to raise_error(Sequel::DatabaseDisconnectError)
     
     user1.destroy
@@ -65,7 +67,9 @@ describe CartoDB::ConnectionPool do
     show_connections(user2)
     puts "*** AFTER END ***"
   
+    puts "*** QUERY START"
     tables = user2.real_tables
+    puts "*** QUERY END"
     tables.should be_an_instance_of Array
     tables.length.should == 1
     tables.first[:relname].should == table_name

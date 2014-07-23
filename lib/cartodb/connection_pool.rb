@@ -27,10 +27,15 @@ module CartoDB
       # Test the connection to see if it's still alive
       while pool_tries < 3
         begin
-          conn.get(1)
+          puts "******* Testing pool key: #{connection_id(configuration)}"
+          puts "******* Testing pool connection: #{conn.opts[:database]}:#{conn.opts[:username]}"
+          puts conn.get(1)
+          puts "******* PASSED"
           return conn
-        rescue
+        rescue => e
+          puts e
           # If it's not alive, close it and create a new one
+          puts "######### FAILED ##########"
           conn.disconnect
           conn = create_new_connection(configuration, &block)
           pool_tries = pool_tries + 1

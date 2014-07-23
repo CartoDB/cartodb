@@ -23,12 +23,19 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def show
-    return(redirect_to public_url) unless current_user.present?
+    unless current_user.present?
+      if request.original_fullpath =~ %r{/tables/}
+        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id]))
+      else
+        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id]))
+      end
+    end
+
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
 
-    return(redirect_to public_url) unless \
-      @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
+      unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
 
     respond_to { |format| format.html }
 
@@ -39,8 +46,12 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
-    if current_user.nil?
-      redirect_url = get_public_table_url_if_proceeds
+
+    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
+      if @visualization.derived?
+
+    if current_user.nil? && !request.params[:redirected].present?
+      redirect_url = get_corrected_url_if_proceeds(for_table=true)
       unless redirect_url.nil?
         redirect_to redirect_url and return
       end
@@ -51,7 +62,7 @@ class Admin::VisualizationsController < ApplicationController
         return(embed_forbidden)
       end
     end
-    return(redirect_to public_map_url()) if @visualization.derived?
+
     return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
 
     @vizjson = @visualization.to_vizjson
@@ -105,12 +116,20 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render 'public_table', layout: 'application_table_public' }
     end
 
-  end #public_table
+  end
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization
+
+    if current_user.nil? && !request.params[:redirected].present?
+      redirect_url = get_corrected_url_if_proceeds(for_table=false)
+      unless redirect_url.nil?
+        redirect_to redirect_url and return
+      end
+    end
+
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
     if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
@@ -279,7 +298,7 @@ class Admin::VisualizationsController < ApplicationController
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
   # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
-  def get_public_table_url_if_proceeds
+  def get_corrected_url_if_proceeds(for_table=true)
     url = nil
     if CartoDB.extract_subdomain(request) != CartoDB.extract_real_subdomain(request)
       # Might be an org url, try getting the org
@@ -288,7 +307,11 @@ class Admin::VisualizationsController < ApplicationController
         authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
         authenticated_users.each { |username|
           if url.nil? && !User.where(username:username).first.nil?
-            url = public_table_url(user_domain: username, id: params[:user_domain] << '.' << params[:id])
+            if for_table
+              url = public_table_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+            else
+              url = public_visualizations_public_map_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+            end
           end
         }
       end

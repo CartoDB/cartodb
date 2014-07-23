@@ -1210,7 +1210,7 @@ class User < Sequel::Model
 
   def reset_schema_owner
     in_database(as: :superuser) do |database|
-      database.run(%Q{ALTER SCHEMA \"#{self.database_schema}\" SET OWNER TO "#{self.database_username}"})
+      database.run(%Q{ALTER SCHEMA \"#{self.database_schema}\" OWNER TO "#{self.database_username}"})
     end
   end
 

@@ -290,8 +290,12 @@ describe Admin::VisualizationsController do
       source_url = public_table_url(user_domain: user_a.username, id: vis.name)
       get source_url, {}, get_headers(org.name)
       last_response.status.should == 302
-
-      url = public_table_url(user_domain: user_b.username, id: user_a.username << '.' << vis.name)
+      # First we'll get redirected to the public map url
+      follow_redirect!
+      # Now url will get rewritten to current user
+      last_response.status.should == 302
+      url = public_visualizations_public_map_url(user_domain: user_b.username, id: "#{user_a.username}.#{vis.name}") \
+        + "?redirected=true"
       last_response.location.should eq url
 
       org.destroy

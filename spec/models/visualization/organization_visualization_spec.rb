@@ -46,6 +46,7 @@ describe Visualization::Member do
         :set_user_as_organization_member => nil,
         :cartodb_extension_version_pre_mu? => false,
         :rebuild_quota_trigger => nil,
+        :setup_schema => nil,
         :grant_publicuser_in_database => nil
     )
 
@@ -196,9 +197,13 @@ describe Visualization::Member do
     user_org.promote_user_to_admin
     org.reload
 
-    user_b = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+    user_b = create_user(
+      :quota_in_bytes => 12345678, :table_quota => 400,
+      :organization => org
+    )
+    org.reload
 
-    CartoDB::Relocator::Worker.organize(user_b, org)
+    #CartoDB::Relocator::Worker.organize(user_b, org)
 
     user_a.database_name.should eq user_b.database_name
 

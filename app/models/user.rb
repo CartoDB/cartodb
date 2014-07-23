@@ -390,6 +390,13 @@ class User < Sequel::Model
         'username' => CartoDB::PUBLIC_DB_USER, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
         'host' => self.database_host
       ) {|key, o, n| n.nil? ? o : n}
+    elsif user == :public_db_user
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => self.database_name,
+        :logger => logger,
+        'username' => database_public_username, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name,
@@ -1188,10 +1195,23 @@ class User < Sequel::Model
     self.create_user_schema
     self.set_database_search_path
     self.create_public_db_user
+    self.setup_schema
+  end
+
+  def setup_schema
+    #This method is used both when creating a new user
+    #and by the relocator when user is relocated to an org database.
     self.reset_user_schema_permissions # Reset privileges
+    self.reset_schema_owner # Set user as his schema owner
     self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
+  end
+
+  def reset_schema_owner
+    in_database(as: :superuser) do |database|
+      database.run(%Q{ALTER SCHEMA \"#{self.database_schema}\" SET OWNER TO "#{self.database_username}"})
+    end
   end
 
   def grant_owner_in_database

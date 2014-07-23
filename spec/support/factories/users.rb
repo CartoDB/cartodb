@@ -59,6 +59,7 @@ module CartoDB
 
     def create_user(attributes = {})
       user = new_user(attributes)
+      user.valid?.should eq true
       user.save
       load_user_functions(user)
       user

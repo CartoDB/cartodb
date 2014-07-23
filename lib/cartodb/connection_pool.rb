@@ -8,7 +8,12 @@ module CartoDB
     def initialize
       @pool = {}
     end
-    
+
+    # Intended only for testing
+    def all
+      @pool
+    end
+
     def fetch(configuration, &block)
       conn = nil
       if @pool[connection_id(configuration)]

@@ -20,7 +20,7 @@ describe CartoDB::ConnectionPool do
 
   def show_pool
     puts "*** POOL START"
-    puts $pool.inspect
+    puts $pool.all.keys
     puts "*** POOL END"
   end
 

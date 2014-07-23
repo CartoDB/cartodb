@@ -126,6 +126,14 @@ describe Api::Json::VisualizationsController do
       get "/api/v2/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 200
+
+      # include overlays
+
+      get "/api/v1/viz/#{visualization.fetch('id')}/overlays?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+      overlays = JSON.parse(last_response.body)
+      overlays.length.should == 9
     end
 
     it 'creates a private visualization from a private table' do
@@ -657,7 +665,7 @@ describe Api::Json::VisualizationsController do
       VALUES('bogus description')
     })
 
-    get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
+    #get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
     table_attributes
   end #table_factory
 end # Api::Json::VisualizationsController

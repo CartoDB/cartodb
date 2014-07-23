@@ -2,9 +2,17 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
   className: "cartodb-overlay image-overlay",
 
-  events: { },
+  events: {
+    "click": "stopPropagation"
+  },
 
   default_options: { },
+
+  stopPropagation: function(e) {
+
+    e.stopPropagation();
+
+  },
 
   initialize: function() {
 

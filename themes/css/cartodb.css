@@ -2983,20 +2983,22 @@ div.cartodb-timeslider p {
   hyphens: auto;
 
 }
-.cartodb-widget.overlay-text .text strong {
+.cartodb-overlay.overlay-text .text strong {
   font-weight: bold;
 }
 
-.cartodb-widget.overlay-text .text em {
+.cartodb-overlay.overlay-text .text em {
   font-style: italic;
 }
 
-.cartodb-widget.overlay-text .text a {
+.cartodb-overlay.overlay-text div.text a {
   color: inherit;
 }
 
-.cartodb-widget.overlay-text .text a:hover {
-  color: #333;
+.cartodb-overlay.overlay-text .text a:hover {
+  color: inherit;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  opacity: 0.8;
 }
 
 .cartodb-overlay.image-overlay {

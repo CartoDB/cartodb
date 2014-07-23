@@ -3,9 +3,15 @@ cdb.geo.ui.Text = cdb.core.View.extend({
   className: "cartodb-overlay overlay-text",
 
   events: {
+    "click": "stopPropagation"
   },
 
-  default_options: {
+  default_options: { },
+
+  stopPropagation: function(e) {
+
+    e.stopPropagation();
+
   },
 
   initialize: function() {

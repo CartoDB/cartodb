@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: eec93eeba1079329c6def1c7fc675eb0a1817d33
+// sha: 4669608e2b8522e4d83b3605f0b26fb64137f074
 (function() {
   var root = this;
 
@@ -22850,7 +22850,6 @@ cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
     return this;
   }
 });
-
 cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   className: "cartodb-mobile",
@@ -23009,7 +23008,6 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     return this;
   }
-
 
 });
 /*
@@ -25355,12 +25353,60 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
   className: 'cartodb-header',
 
-  initialize: function() {},
+  initialize: function() {
+    var extra = this.model.get("extra");
+
+    this.model.set({
+      title:            extra.title,
+      description:      extra.description,
+      show_title:       extra.show_title,
+      show_description: extra.show_description
+    }, { silent: true });
+  },
+
+  show: function() {
+
+    //var display        = this.model.get("display");
+    var hasTitle       = this.model.get("title") && this.model.get("show_title");
+    var hasDescription = this.model.get("description") && this.model.get("show_description");
+
+    if (hasTitle || hasDescription) {
+
+      var self = this;
+
+      this.$el.show();
+
+      if (hasTitle)       self.$title.show();
+      if (hasDescription) self.$description.show();
+
+    }
+
+  },
 
   render: function() {
-    this.$el.html(this.options.template(this.options));
+
+    var self = this;
+
+    this.$el.offset({
+      top:  this.model.get("y"),
+      left: this.model.get("x")
+    });
+
+    this.$el.html(this.options.template(this.model.attributes));
+
+    this.$title       = this.$el.find(".content div.title");
+    this.$description = this.$el.find(".content div.description");
+
+    if (this.model.get("show_title") || this.model.get("show_description")) {
+      this.show();
+    } else {
+      this.hide();
+    }
+
     return this;
+
   }
+
 });
 
 cdb.geo.ui.Search = cdb.core.View.extend({
@@ -26006,9 +26052,9 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
 
-    this.model = new cdb.core.Model({
-      allowWheelOnFullscreen: false
-    });
+    //this.model = new cdb.core.Model({
+      //allowWheelOnFullscreen: false
+    //});
 
     this._addWheelEvent();
 
@@ -26789,12 +26835,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var p = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options.hidden) {
-        p['layer' + i] = 0;
-      } else {
-        // when it's show just don't send it
-        delete p['layer' + i];
-      }
+      p['layer' + i] = layer.options.hidden ? 0: 1;
     }
     return p;
   },
@@ -30836,10 +30877,13 @@ var Overlay = {
   // raise an exception if the type does not exist
   create: function(type, vis, data) {
     var t = Overlay._types[type];
+
     if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
+      return;
     }
 
+    data.options = typeof data.options === 'string' ? JSON.parse(data.options): data.options;
     var widget = t(data, vis);
 
     if (widget) {
@@ -31067,10 +31111,9 @@ var Vis = cdb.core.View.extend({
     options = options || {};
 
     this._applyOptions(data, options);
-    this.cartodb_logo = options.cartodb_logo;
 
-    console.log("logo", this.cartodb_logo, options.cartodb_logo);
-    console.log("scrollwheel", data.scrollwheel, options.scrollwheel);
+    // to know if the logo is enabled search in the overlays and see if logo overlay is included and is shown
+    this.cartodb_logo = options.cartodb_logo !== undefined ? options.cartodb_logo: !!_.find(data.overlays, function(o) { return o.type === 'logo' && o.options.display; });
 
     var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
@@ -31083,6 +31126,7 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
+      legends: data.legends,
       scrollwheel: scrollwheel,
       provider: data.map_provider
     };
@@ -31105,9 +31149,9 @@ var Vis = cdb.core.View.extend({
     }
 
     var map = new cdb.geo.Map(mapConfig);
-    this.map = map;
-    this.updated_at = data.updated_at || new Date().getTime();
 
+    this.map        = map;
+    this.updated_at = data.updated_at || new Date().getTime();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -31145,9 +31189,8 @@ var Vis = cdb.core.View.extend({
     this.$el.append(div);
 
     // Create the map
-    var mapView = new cdb.geo.MapView.create(div_hack, map);
+    var mapView  = new cdb.geo.MapView.create(div_hack, map);
     this.mapView = mapView;
-
 
     // Add layers
     for(var i in data.layers) {
@@ -31155,20 +31198,30 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData, options);
     }
 
-    var legends, torqueLayer;
+    var torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (!device && options.legends) {
-      this.addLegends(data.layers);
-    } else {
-      legends = this.createLegendView(data.layers);
-
-      this.legends = new cdb.geo.ui.StackedLegend({
-        legends: legends
-      });
+    if (device) {
+      $(".cartodb-map-wrapper").addClass("device");
     }
 
-    if (options.time_slider) {
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false))  {
+
+      if (!device) {
+
+        this.addLegends(data.layers);
+
+      } else {
+
+        this.legends = new cdb.geo.ui.StackedLegend({
+          legends: this.createLegendView(data.layers)
+        });
+
+      }
+
+    }
+
+  if (options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
       if (torque.length) {
@@ -31179,6 +31232,17 @@ var Vis = cdb.core.View.extend({
         }
 
       }
+    }
+
+    if (!options.sublayer_options) {
+      options.sublayer_options = [];
+      _.each(data.layers.slice(1), function(lyr) {
+         if (lyr.type === 'layergroup') {
+           _.each(lyr.options.layer_definition.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+         } else if (lyr.type === 'namedmap') {
+           _.each(lyr.options.named_map.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+         }
+      });
     }
 
     if (device) this.addMobile(torqueLayer);
@@ -31244,33 +31308,30 @@ var Vis = cdb.core.View.extend({
 
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
-      var opt = JSON.parse(data.options)
+      var opt = data.options;
 
       if (type == 'share'          && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
       if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
       if (type == 'fullscreen'     && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
       if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
-      if (type == 'header') {
+      if (type === 'header') {
 
-        if ((options.title == undefined && opt.extra.show_title) || (options.description == undefined && opt.extra.show_description)) {
+        var m = overlay.model;
 
-          if (options.title != undefined)       overlay.model.set("show_title", options.title);
-          else overlay.model.set("show_title", opt.extra.show_title);
-
-          if (options.description != undefined) overlay.model.set("show_description", options.description);
-          else overlay.model.set("show_description", opt.extra.show_description);
-
-          $(".cartodb-map-wrapper").addClass("with_header");
-
-        } else {
-          overlay.model.set("show_title", options.title);
-          overlay.model.set("show_description", options.description);
-
-          if (options.title || options.description) $(".cartodb-map-wrapper").addClass("with_header");
+        if (options.title !== undefined) {
+          m.set("show_title", options.title);
         }
 
+        if (options.description !== undefined) {
+          m.set("show_description", options.description);
+        }
 
+        if (m.get('show_title') || m.get('show_description')) {
+          $(".cartodb-map-wrapper").addClass("with_header");
+        }
+
+        overlay.render()
       }
 
     }, this);
@@ -31351,6 +31412,7 @@ var Vis = cdb.core.View.extend({
         this.loader = v;
       }
 
+
       this.mapView.addOverlay(v);
 
       this.overlays.push(v);
@@ -31382,13 +31444,13 @@ var Vis = cdb.core.View.extend({
       //title: false,
       //description: false,
       //layer_selector: false,
+      //legends: true,
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
       searchControl: false,
       infowindow: true,
       tooltip: true,
-      legends: true,
       time_slider: true
     });
     vizjson.overlays = vizjson.overlays || [];
@@ -31436,6 +31498,51 @@ var Vis = cdb.core.View.extend({
 
     if (!opt.loaderControl) {
       remove_overlay('loader');
+    }
+
+    if (opt.search || opt.searchControl) {
+      if (!search_overlay('search')) {
+        vizjson.overlays.push({
+           type: "search"
+        });
+      }
+    }
+
+    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
+
+      if (!search_overlay('header')) {
+        vizjson.overlays.unshift({
+          type: "header",
+          shareable: opt.shareable ? true: false,
+          url: vizjson.url,
+          options: {
+            extra: {
+              title: vizjson.title,
+              description: vizjson.description,
+              show_title: opt.title,
+              show_description: opt.description
+            }
+          }
+        });
+      }
+    }
+ 
+
+    if (opt.layer_selector) {
+      if (!search_overlay('layer_selector')) {
+        vizjson.overlays.push({
+          type: "layer_selector"
+        });
+      }
+    }
+
+    if (opt.shareable && !device) {
+      if (!search_overlay('share')) {
+        vizjson.overlays.push({
+          type: "share",
+          url: vizjson.url
+        });
+      }
     }
 
     // We remove certain overlays in mobile devices
@@ -31944,77 +32051,6 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
-cdb.vis.Overlay.register('image', function(data, vis) {
-
-  var options = JSON.parse(data.options);
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text widget_text">{{{ text }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new cdb.geo.ui.Image({
-    model: new cdb.core.Model(options),
-    template: template
-  });
-
-  return widget.render();
-
-});
-
-cdb.vis.Overlay.register('text', function(data, vis) {
-
-  var options = JSON.parse(data.options);
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text widget_text">{{{ text }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new cdb.geo.ui.Text({
-    model: new cdb.core.Model(options),
-    template: template,
-    className: "cartodb-overlay overlay-text " + options.device
-  });
-
-  return widget.render();
-
-});
-
-cdb.vis.Overlay.register('zoom_info', function(data, vis) {
-  console.log("placeholder for the zoom_info overlay");
-});
-
-cdb.vis.Overlay.register('header', function(data, vis) {
-
-  var options = JSON.parse(data.options);
-
-  console.log("options", options);
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="title">{{{ title }}}</div>\
-    <div class="description">{{{ description }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new cdb.geo.ui.Header({
-    model: new cdb.core.Model(options),
-    template: template
-  });
-
-  return widget.render();
-
-});
-
 // map mobile control
 cdb.vis.Overlay.register('mobile', function(data, vis) {
 
@@ -32037,6 +32073,74 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
   });
 
   return mobile.render();
+});
+
+cdb.vis.Overlay.register('image', function(data, vis) {
+
+  var options = data.options;
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Image({
+    model: new cdb.core.Model(options),
+    template: template
+  });
+
+  return widget.render();
+
+});
+
+cdb.vis.Overlay.register('text', function(data, vis) {
+
+  var options = data.options;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Text({
+    model: new cdb.core.Model(options),
+    template: template,
+    className: "cartodb-overlay overlay-text " + options.device
+  });
+
+  return widget.render();
+
+});
+
+cdb.vis.Overlay.register('zoom_info', function(data, vis) {
+  //console.log("placeholder for the zoom_info overlay");
+});
+
+cdb.vis.Overlay.register('header', function(data, vis) {
+
+  var options = data.options;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="title">{{{ title }}}</div>\
+    <div class="description">{{{ description }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Header({
+    model: new cdb.core.Model(options),
+    template: template
+  });
+
+  return widget.render();
+
 });
 
 // map zoom control
@@ -32177,8 +32281,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 // layer_selector
 cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
-  var options = JSON.parse(data.options);
-
+  var options = data.options;
   //if (!options.display) return;
 
   var template = cdb.core.Template.compile(
@@ -32237,7 +32340,9 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 // fullscreen
 cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
+
+  options.allowWheelOnFullscreen = false;
 
   var template = cdb.core.Template.compile(
     data.template || '<a href="#"></a>',
@@ -32258,7 +32363,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 // share content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
 
   var template = cdb.core.Template.compile(
     data.template || '<a href="#"></a>',
@@ -32281,7 +32386,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
-  var options = JSON.parse(data.options);
+  var options = data.options;
 
   //if (!options.display) return;
 

@@ -70,9 +70,12 @@ div.dropdown.basemap {
   }
 
   div.custom > ul {
-    border-bottom: 1px solid rgba(204,204,204,0.35);
+    width: auto;
     @include box-sizing(border-box);
+    margin: 0 10px;
     padding: 10px 10px;
+
+    border-bottom: 1px solid rgba(204,204,204,0.35);
 
     & > li {
 

@@ -221,10 +221,6 @@ describe Admin::VisualizationsController do
       )
       CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
 
-      CartoDB::Relocator::TableDumper.any_instance.stubs(:migrate).returns(nil)
-      CartoDB::Relocator::SchemaDumper.any_instance.stubs(:migrate).returns(nil)
-      CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
-
       CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
       CartoDB::Table::PrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
@@ -268,13 +264,12 @@ describe Admin::VisualizationsController do
       org.seats = 10
       org.save
 
-      user_a = create_user({username: 'user-a', quota_in_bytes: 1234567890, table_quota: 400})
+      user_a = create_user({username: 'user-a', quota_in_bytes: 123456789, table_quota: 400})
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
 
-      user_b = create_user({username: 'user-b', quota_in_bytes: 1234567890, table_quota: 400})
-      CartoDB::Relocator::Worker.organize(user_b, org)
+      user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
 
       vis_id = factory(user_a).fetch('id')
 

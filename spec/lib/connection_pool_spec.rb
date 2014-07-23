@@ -44,7 +44,7 @@ describe CartoDB::ConnectionPool do
       begin
         sleep 10
         tables = user1.real_tables
-        puts tables "###### #{tables}"
+        puts "###### #{tables}"
         puts "**** OK query"
         if !tables.match("terminating connection due to administrator command").nil?
           raise Sequel::DatabaseDisconnectError

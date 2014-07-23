@@ -1103,8 +1103,10 @@ class User < Sequel::Model
     conn = ::Sequel.connect(connection_params)
     begin
       conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+      conn.disconnect
     rescue => e
       puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+      conn.disconnect
       raise e
     end
   end
@@ -1129,8 +1131,10 @@ class User < Sequel::Model
       OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
       ENCODING = 'UTF8'
       CONNECTION LIMIT=-1")
+      conn.disconnect
     rescue => e
       puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+      conn.disconnect
       raise e
     end
   end

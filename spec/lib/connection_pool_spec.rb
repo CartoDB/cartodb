@@ -25,51 +25,51 @@ describe CartoDB::ConnectionPool do
   end
 
   it "it should return a broken connection" do
-    user = create_user(username: 'test', email: "client@example.com", password: "clientex")
+    user1 = create_user(username: 'test1', email: "client@example.com", password: "clientex")
    
     puts "*** BEFORE START ***"
     show_pool
-    show_connections(user)
+    show_connections(user1)
     puts "*** BEFORE END ***"
     # This will make the pooler to think that the connections is working fine
     Sequel::Postgres::Database.any_instance.stubs(:get).with(1).returns([])
-    User.terminate_database_connections(user.database_name, user.database_host)     
+    User.terminate_database_connections(user1.database_name, user1.database_host)     
     puts "*** AFTER START ***"
     show_pool
-    show_connections(user)
+    show_connections(user1)
     puts "*** AFTER END ***"
     
     expect { 
-      puts user.real_tables
+      puts user1.real_tables
     }.to raise_error(Sequel::DatabaseDisconnectError)
     
-    user.destroy
+    user1.destroy
   end
 
   it "it should return a working connection" do
-    user = create_user(username: 'test', email: "client@example.com", password: "clientex")
+    user2 = create_user(username: 'test2', email: "client@example.com", password: "clientex")
 
     table_name = 'foobar'
     
-    user.in_database do |database|
+    user2.in_database do |database|
       database.run("CREATE TABLE #{table_name} (id integer)")
     end
 
     puts "*** BEFORE START ***"
     show_pool
-    show_connections(user)
+    show_connections(user2)
     puts "*** BEFORE END ***"
-    User.terminate_database_connections(user.database_name, user.database_host)     
+    User.terminate_database_connections(user2.database_name, user2.database_host)     
     puts "*** AFTER START ***"
     show_pool
-    show_connections(user)
+    show_connections(user2)
     puts "*** AFTER END ***"
   
-    tables = user.real_tables
+    tables = user2.real_tables
     tables.should be_an_instance_of Array
     tables.length.should == 1
     tables.first[:relname].should == table_name
 
-    user.destroy
+    user2.destroy
   end
 end

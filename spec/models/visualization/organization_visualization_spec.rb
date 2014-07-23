@@ -197,9 +197,13 @@ describe Visualization::Member do
     user_org.promote_user_to_admin
     org.reload
 
-    user_b = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+    user_b = create_user(
+      :quota_in_bytes => 12345678, :table_quota => 400,
+      :organization => org
+    )
+    org.reload
 
-    CartoDB::Relocator::Worker.organize(user_b, org)
+    #CartoDB::Relocator::Worker.organize(user_b, org)
 
     user_a.database_name.should eq user_b.database_name
 

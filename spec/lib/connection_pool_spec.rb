@@ -47,6 +47,7 @@ describe CartoDB::ConnectionPool do
       rescue => e
         puts "**** FAIL query"
         puts e
+        raise e
       end
       puts "*** QUERY END"
     }.to raise_error(Sequel::DatabaseDisconnectError)

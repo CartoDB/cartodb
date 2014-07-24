@@ -1731,7 +1731,7 @@ div.cartodb-timeslider p {
 
 .cartodb-header {
   display:none;
-  position:absolute;
+  position:relative;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
@@ -1856,11 +1856,4 @@ div.cartodb-timeslider p {
 
 .cartodb-overlay.image-overlay img {
   display: block;
-}
-
-.cartodb-map-wrapper.with_header div.cartodb-zoom,
-.cartodb-map-wrapper.with_header div.cartodb-share,
-.cartodb-map-wrapper.with_header div.cartodb-searchbox,
-.cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
-  margin-top: 60px;
 }

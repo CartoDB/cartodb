@@ -102,6 +102,23 @@
     background:rgba(#333, .7);
   }
 
+  .hint {
+    display:none;
+
+    margin: 2px 1px 0 0;
+    padding: 0 0 0 20px;
+    font-size: 11px;
+    text-align: right;
+    color: #fff;
+    @include opacity(.7);
+
+    strong, em, span { 
+      @include inline-block();
+      margin-left: 3px;
+    }
+
+  }
+
   /* Image Overlay */
   &.image {
 
@@ -168,9 +185,15 @@
 
   &.editable {
 
+    .hint { display: block; }
+
     .text {
 
       padding: 5px 9px;
+
+      .content {
+        padding: 10px 10px 3px 10px;
+      }
 
       border: 1px dashed #ccc;
       cursor: text!important;

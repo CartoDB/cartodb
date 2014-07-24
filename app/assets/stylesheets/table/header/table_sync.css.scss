@@ -17,7 +17,7 @@
   div.sync_info {
     position:absolute;
     display:block;
-    bottom:48px;
+    bottom:0;
     left:0;
     right:0;
     padding:0 0 0 43px;
@@ -36,13 +36,13 @@
       @include display-flex();
       @include align-items(center, center);
       @include justify-content(flex-start, start);
-      height:29px;
+      height:20px;
       margin-top:0;
 
       li {
         margin:0;
         padding:0 7px 0 0;
-        line-height:29px;
+        line-height:20px;
 
         &.separator {
           padding:0 7px;
@@ -57,7 +57,7 @@
       vertical-align:top;
       width:10px;
       height:10px;
-      margin-top:10px;
+      margin-top:5px;
 
       span.point {
         position:absolute;
@@ -106,7 +106,7 @@
       font-size:13px;
       font-family:$text-fonts;
       color:rgba(white,.65);
-      line-height:29px;
+      line-height:20px;
 
       &.light {color:rgba(white, .35)}
     }

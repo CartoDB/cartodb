@@ -203,7 +203,8 @@
         margin:0;
 
         a.share {
-          padding: 3px 20px;
+          line-height:20px;
+          padding: 0 20px;
           text-shadow: none;
           color: #fff;
           @include box-shadow(none);

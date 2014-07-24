@@ -33,9 +33,21 @@ describe CartoDB::ConnectionPool do
     puts "*** BEFORE END ***"
     # This will make the pooler to think that the connections is working fine
     Sequel::Postgres::Database.any_instance.stubs(:get).with(1).returns(0)
+    puts "###############################################################"
+    puts "## TERMINATING #{user1.database_name}:#{user1.database_host}"
+    puts "###############################################################"
     User.terminate_database_connections(user1.database_name, user1.database_host)     
+    puts "###############################################################"
+    puts "## TERMINATED #{user1.database_name}:#{user1.database_host}"
+    puts "###############################################################"
     puts "*** AFTER START ***"
+    puts "###############################"
+    puts "### SHOW POOL"
+    puts "###############################"
     show_pool
+    puts "###############################"
+    puts "### SHOW CONNECTIONS"
+    puts "###############################"
     show_connections(user1)
     puts "*** AFTER END ***"
     
@@ -43,7 +55,12 @@ describe CartoDB::ConnectionPool do
       puts "*** QUERY START"
       begin
         sleep 10
-        tables = user1.real_tables
+        puts "###############################"
+        puts "### TABLES FETCH"
+        puts "###############################"
+        show_pool
+        show_connections(user1)
+        tables = user1.in_database(as: :superuser).fetch("select table_name from information_schema.tables where table_type='BASE TABLE' and table_schema='public'").all
         puts "###### #{tables}"
         puts "**** OK query"
       rescue => e

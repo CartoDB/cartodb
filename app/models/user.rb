@@ -362,6 +362,20 @@ class User < Sequel::Model
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
 
+    puts "**** BEFORE POOL in_database"
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    puts "*** CONN START"
+    conn.fetch("SELECT datname,usename,pid from pg_stat_activity").all.each do |r|
+      puts r
+    end
+    puts "*** CONN END"
+    conn.disconnect
+    puts "**** BEFORE POOL in_database"
+
     connection = $pool.fetch(configuration) do
       db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
@@ -370,24 +384,25 @@ class User < Sequel::Model
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', 900)
       db
     end
+    
+    puts "**** AFTER POOL in_database"
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    puts "*** CONN START"
+    conn.fetch("SELECT datname,usename,pid from pg_stat_activity").all.each do |r|
+      puts r
+    end
+    puts "*** CONN END"
+    conn.disconnect
+    puts "**** AFTER POOL in_database"
 
     if block_given?
       yield(connection)
     else
       
-      puts "**** RIGHT BEFORE RETURNING THE CONN FROM in_database START"
-      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'host' => self.database_host,
-        'database' => 'postgres'
-      ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
-      puts "*** CONN START"
-      conn.fetch("SELECT datname,usename,pid from pg_stat_activity").all.each do |r|
-        puts r
-      end
-      puts "*** CONN END"
-      conn.disconnect
-      puts "**** RIGHT BEFORE RETURNING THE CONN FROM in_database END"
 
       connection
     end

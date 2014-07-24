@@ -66,39 +66,19 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var right  = "auto";
     var bottom = "auto";
 
-    if (pLeft < 30 ) {
-
-    } else if (pLeft > 80) { // right fixed
-
-      left  = "auto";
-      right = this.model.get("extra").w;
-
-    } else {
-
-      left = $(".cartodb-map-wrapper").width() * pLeft / 100;
-
+    if (this.model.get("extra").landscapeDominantSide == 'right') {
+      left = "auto";
+      right = this.model.get("extra").r;
     }
 
-    console.log("pLeft: " + pLeft);
-    console.log("pTop: " + pTop);
-
-    if (pTop < 30 ) {
-
-    } else if (pTop > 80) { 
-
-      top    = "auto";
-      bottom = this.model.get("extra").z;
-
-    } else {
-
-      top = $(".cartodb-map-wrapper").height() * pTop / 100;
-
+    if (this.model.get("extra").portraitDominantSide == 'bottom') {
+      top = "auto";
+      bottom = this.model.get("extra").b;
     }
 
-    console.log("top: " + top, "left: " + left, "right: " + right, "bottom: " + bottom);
+    //console.log("top: " + top, "left: " + left, "right: " + right, "bottom: " + bottom);
 
     var width = this.model.get("extra").width;
-    console.log(width)
 
     this.$el.css({
       width: width,

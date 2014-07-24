@@ -290,7 +290,6 @@
           var onResize = function() {
             $("#map").css({ height: $(window).height() - 194 }); 
             $("#map").delay(500).animate({ opacity: 1 }, 250); 
-            $(window).trigger("map_resized");
           };
 
           var setupMapDimensions;
@@ -381,6 +380,10 @@
             }
 
             setupMapDimensions(mobileDevice);
+
+            setTimeout(function() {
+              $(window).trigger("map_resized");
+            }, 300);
 
             // recalc map position on orientation change
             if (!window.addEventListener) {

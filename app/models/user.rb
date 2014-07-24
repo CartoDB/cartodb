@@ -202,72 +202,60 @@ class User < Sequel::Model
         database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
       end
 
-      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'host' => database_host,
-          'database' => 'postgres'
-      ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
+      conn = self.in_database(as: :cluster_admin)
       User.terminate_database_connections(database_name, database_host)
       conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_username}\"")
       conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_username}\"")
-      conn.disconnect
     end.join
     monitor_user_notification
   end
 
   def drop_database_and_user
     Thread.new do
-      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'host' => database_host,
-        'database' => 'postgres'
-      ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
-      end)))
+      conn = self.in_database(as: :cluster_admin)
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
       User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
-      conn.disconnect
     end.join
     monitor_user_notification
   end
 
   def self.terminate_database_connections(database_name, database_host)
-      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'host' => database_host,
-        'database' => 'postgres'
-      ) {|key, o, n| n.nil? ? o : n}
-      conn = ::Sequel.connect(connection_params)
-      conn.run("
-        DO language plpgsql $$
-        DECLARE
-            ver INT[];
-            sql TEXT;
-        BEGIN
-            SELECT INTO ver regexp_split_to_array(
-              regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-              '\\.'
-            );
-            sql := 'SELECT pg_terminate_backend(';
-            IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
-              sql := sql || 'pid';
-            ELSE
-              sql := sql || 'procpid';
-            END IF;
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    conn.run("
+      DO language plpgsql $$
+      DECLARE
+          ver INT[];
+          sql TEXT;
+      BEGIN
+          SELECT INTO ver regexp_split_to_array(
+            regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+            '\\.'
+          );
+          sql := 'SELECT pg_terminate_backend(';
+          IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+            sql := sql || 'pid';
+          ELSE
+            sql := sql || 'procpid';
+          END IF;
 
-            sql := sql || ') FROM pg_stat_activity WHERE datname = '
-              || quote_literal('#{database_name}');
+          sql := sql || ') FROM pg_stat_activity WHERE datname = '
+            || quote_literal('#{database_name}');
 
-            RAISE NOTICE '%', sql;
+          RAISE NOTICE '%', sql;
 
-            EXECUTE sql;
-        END
-        $$
-      ")
-      conn.disconnect
+          EXECUTE sql;
+      END
+      $$
+    ")
+    conn.disconnect
   end
 
   def invalidate_varnish_cache(options = {})
@@ -361,7 +349,7 @@ class User < Sequel::Model
 
     connection = $pool.fetch(configuration) do
       db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
       end)))
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', 900)
@@ -380,6 +368,12 @@ class User < Sequel::Model
     if user == :superuser
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name,
+        :logger => logger,
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
+    elsif user == :cluster_admin
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => 'postgres',
         :logger => logger,
         'host' => self.database_host
       ) {|key, o, n| n.nil? ? o : n}
@@ -804,13 +798,7 @@ class User < Sequel::Model
 
   def database_exists?
     return false if database_name.blank?
-    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      'host' => self.database_host,
-      'database' => 'postgres'
-    ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params.merge(:after_connect=>(proc do |conn|
-      conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public })
-    end)))
+    conn = self.in_database(as: :cluster_admin)
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
@@ -1101,11 +1089,7 @@ class User < Sequel::Model
   end
 
   def create_db_user
-    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      'host' => self.database_host,
-      'database' => 'postgres'
-    ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
+    conn = self.in_database(as: :cluster_admin)
     begin
       conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
     rescue => e
@@ -1123,11 +1107,7 @@ class User < Sequel::Model
   end
 
   def create_user_db
-    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      'host' => self.database_host,
-      'database' => 'postgres'
-    ) {|key, o, n| n.nil? ? o : n}
-    conn = ::Sequel.connect(connection_params)
+    conn = self.in_database(as: :cluster_admin)
     begin
       conn.run("CREATE DATABASE \"#{self.database_name}\"
       WITH TEMPLATE = template_postgis

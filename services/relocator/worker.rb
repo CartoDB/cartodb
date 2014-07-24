@@ -33,14 +33,15 @@ module CartoDB
             #on the schema.
             user.organization = org
             user.database_schema = user.username
-            user.organization = nil
-            unless Rails.env.test?
-              user.in_database(as: :superuser) do |database|
-                database['ALTER SCHEMA public RENAME TO '+user.username].all
-                # An apple a day keeps PostGIS away
-                database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
-              end
+            user.in_database(as: :superuser) do |database|
+              database['ALTER SCHEMA public RENAME TO '+user.username].all
+              # An apple a day keeps PostGIS away
+              database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
             end
+            user.set_database_search_path
+            user.create_public_db_user
+            user.organization = nil
+            user.save_metadata
             user.setup_schema
             User.terminate_database_connections(user.database_name, user.database_host)
             user.save

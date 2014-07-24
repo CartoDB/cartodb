@@ -38,15 +38,15 @@ module CartoDB
 
       def delete
         repository.delete(id)
-        self.attributes.keys.each { |k| self.send("#{k}=", nil) }
         visualization.invalidate_varnish_cache
+        self.attributes.keys.each { |k| self.send("#{k}=", nil) }
         self
       end #delete
 
       private
 
       def visualization
-         CartoDB::Visualization::Member.new({ id => visualization_id })
+         CartoDB::Visualization::Member.new({ :id => self.attributes[:visualization_id] }).fetch
       end
 
       attr_reader :repository

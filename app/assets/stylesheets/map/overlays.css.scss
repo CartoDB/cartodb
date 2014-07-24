@@ -42,7 +42,7 @@
   z-index: 100000;
 }
 
-.overlay.header {
+.header {
   display: none;
   width: 100%;
   @include border-radius(0);
@@ -52,6 +52,11 @@
   &:hover { background:rgba(#333, .5); }
 
   @include simple-transition(all, .10s, ease-in-out);
+
+  position: absolute;
+  background:rgba(#333, .5);
+
+  @include simple-transition(background, .10s, ease-in-out);
 
   .content { padding: 10px; }
 
@@ -100,6 +105,23 @@
 
   &:hover { 
     background:rgba(#333, .7);
+  }
+
+  .hint {
+    display:none;
+
+    margin: 2px 1px 0 0;
+    padding: 0 0 0 20px;
+    font-size: 11px;
+    text-align: right;
+    color: #fff;
+    @include opacity(.7);
+
+    strong, em, span { 
+      @include inline-block();
+      margin-left: 3px;
+    }
+
   }
 
   /* Image Overlay */
@@ -168,9 +190,17 @@
 
   &.editable {
 
+    .hint { display: block; }
+
     .text {
 
+      @include user-select(inherit);
+
       padding: 5px 9px;
+
+      .content {
+        padding: 10px 10px 3px 10px;
+      }
 
       border: 1px dashed #ccc;
       cursor: text!important;
@@ -269,6 +299,7 @@
 
 } // .overlay
 
+.header .content,
 .overlay .content {
 
   padding: 10px;
@@ -295,6 +326,8 @@
     em, i { font-style: italic; } 
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
+
+    @include user-select(none);
 
     &.text img {
       display:block;

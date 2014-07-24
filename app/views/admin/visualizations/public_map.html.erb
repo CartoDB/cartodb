@@ -290,6 +290,7 @@
           var onResize = function() {
             $("#map").css({ height: $(window).height() - 194 }); 
             $("#map").delay(500).animate({ opacity: 1 }, 250); 
+            $(window).trigger("map_resized");
           };
 
           var setupMapDimensions;

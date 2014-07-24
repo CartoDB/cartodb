@@ -31,17 +31,18 @@
     ul {
       margin: 38px 0 0 0;
       width: 722px;
+
       @include display-flex();
-      flex-direction: row;
-      justify-content: space-between;
+      @include cross-browser(flex-direction, row);
+      @include cross-browser(justify-content, space-between);
 
       li {
         position:relative;
         width: 240px;
         display:block;
-        column-rule:3px outset #ff00ff;
-        -moz-column-rule:3px outset #ff00ff; /* Firefox */
-        -webkit-column-rule:3px outset #ff00ff; /* Safari and Chrome */
+
+        @include cross-browser(column-rule, 3px outset #ff00ff);
+
         height:280px;
         background: #f1f1f1;
         border:none;

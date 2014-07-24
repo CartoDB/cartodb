@@ -197,7 +197,7 @@
     outline:none;
 
     .jspContainer { overflow: hidden; position: relative; }
-    .jspPane { position: absolute }
+    .jspPane { position: absolute; width:100%!important }
     .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 0; width: 6px; height: 100%; background: none; z-index: 20; }
     .jspVerticalBar * { margin: 0; padding: 0; }
     .jspCap { display: none; }

@@ -3,8 +3,13 @@
  */
 
 @import "compass/css3/box-sizing";
+@import "compass/css3/opacity";
 @import "compass/css3/images";
+@import "compass/css3/transition";
 @import "common/form-elements";
+@import "common/mixins";
+
+
 
 .metadata_dialog {
 
@@ -12,18 +17,35 @@
   @include default-input();
   @include default-textarea();
 
-  section.block div.content {
+  // Sections
+  div.content {
     padding: 22px 40px 40px 40px;
   }
 
-  input,
+  div.foot  {
+    padding: 0 40px 35px 40px!important;
+    border:none!important;
+  }
+
+  // Elements
+  input[type="text"],
   textarea {
     @include box-sizing(border-box);
-    width:412px;
+    width:410px;
     padding:14px 11px;
   }
 
-  textarea { height: 90px; }
+  textarea {
+    height: 90px;
+    max-width:410px;
+    max-height:90;
+    resize: none;
+
+    &[readonly] {
+      background: #F5F5F5;
+      color: #CCC;
+    }
+  }
 
   label {
     display:block;
@@ -39,20 +61,11 @@
 
     strong { margin-right: 3px; }
     em { margin-right: 3px; font-style: italic; }
-
   }
 
-  .modal.error {
-    display:none;
-    width:600px!important;
-  }
 
-  section.block div.foot  {
-    padding: 0 40px 35px 40px;
-    border:none;
-  }
-
-  section.block div.foot .owner {
+  // Owner
+  .owner {
     float:left;
 
     h3  {
@@ -77,17 +90,24 @@
     }
   }
  
-  section.block ul {
+  // Tags
+  ul {
     position:relative;
     @include box-sizing(border-box);
     @include inline-block();
     max-height:100px!important;
-    min-width:215px;
-    max-width:410px;
-    padding: 8px 11px;
+    width:410px;
+    padding: 12px 11px 8px;
     background:white;
     border: 1px solid #C0C1C2;
     @include border-radius(4px);
+
+    // Focus?
+    &.focus {
+      outline:none;
+      border-color:#999999;
+      @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+    }
 
     li { border:none; }
 
@@ -95,7 +115,7 @@
       margin:0 3px 3px 0;
       padding:0;
       background:#4086C3;
-      border:1px solid #2B5B85;
+      border:1px solid #2B5B85!important;
       @include border-radius(3px);
       font:normal 11px "Arial";
       color:#FFFFFF;
@@ -131,6 +151,10 @@
       }
     }
 
+    li.tagit-choice.tagit-choice-read-only {
+      .tagit-label { border-right: 0px }
+    }
+
     li.tagit-new {
       padding:0;
       margin-top:0;
@@ -147,10 +171,67 @@
         bottom:auto;
         margin:3px 0 3px 5px;
         padding:0;
-        font-size:14px;
-        line-height:15px;
+        font-size:15px;
+        line-height:16px;
       }
     }
+
+    // Read only state
+    &.readonly {
+      background:#F5F5F5;
+
+      li {
+        @include opacity(0.5);
+      }
+    }
+  }
+
+
+  // Scrollpane!
+  .metadata_list {
+    position:relative;
+    width: 100%!important;
+    height: 350px;
+    overflow-y: hidden;
+    overflow-x: visible;
+    outline:none;
+
+    .jspContainer { overflow: hidden; position: relative; }
+    .jspPane { position: absolute; width:100%!important }
+    .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 0; width: 6px; height: 100%; background: none; z-index: 20; }
+    .jspVerticalBar * { margin: 0; padding: 0; }
+    .jspCap { display: none; }
+    .jspTrack { background: none; position: relative; }
+    .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+    .jspDrag.jspHover { background: rgba(#BBB,1) }
+    .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+    .jspVerticalBar .jspArrow { height: 10px; }
+    .jspVerticalBar .jspArrow:focus { outline: none; }
+    .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+    &:hover .jspVerticalBar { @include opacity(0.8); }
+  }
+
+  // Scroll gradients
+  span.scroll {
+    position:absolute;
+    left:0;
+    right:5px;
+    width:100%;
+    height:30px;
+    background:transparent;
+    padding:0;
+    margin:0;
+    @include border-radius(0);
+    pointer-events:none;
+    z-index:10;
+
+    &.top { display:none; top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+    &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+  }
+
+  section.modal.confirmation {
+    display:none;
   }
 
 }

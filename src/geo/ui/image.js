@@ -20,6 +20,16 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
     this.template = this.options.template;
 
+    var self = this;
+
+    $(window).on("map_resized", function() {
+      self._place();
+    });
+
+    $(window).on("resize", function() {
+      self._place();
+    });
+
   },
 
   _applyStyle: function() {

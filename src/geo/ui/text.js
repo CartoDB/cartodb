@@ -23,11 +23,11 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var self = this;
 
     $(window).on("map_resized", function() {
-      self._percentage_placement();
+      self._place();
     });
 
     $(window).on("resize", function() {
-      self._percentage_placement();
+      self._place();
     });
 
   },
@@ -55,7 +55,7 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   },
 
-  _percentage_placement: function() {
+  _place: function() {
 
     var pTop  = this.model.get("extra").pTop
     var pLeft = this.model.get("extra").pLeft;
@@ -108,76 +108,12 @@ cdb.geo.ui.Text = cdb.core.View.extend({
       bottom: bottom - this.$el.height()
     });
 
-    //console.log(top, left, right, bottom)
-
-      /*var top   = this.model.get("y");
-
-      this.$el.css({
-        top: top,
-        right: right
-      });
-
-      return;
-    }
-
-    // Percent
-    var left = $(".cartodb-map-wrapper").width() * pLeft / 100;
-    var top  = this.model.get("y");
-
-    this.$el.css({
-      top: top,
-      left: left
-    });*/
-
-  },
-
-  _place: function() {
-
-    var landscapeDirection = this.model.get("extra").landscapeDirection;
-    var portraitDirection  = this.model.get("extra").portraitDirection;
-
-    if (portraitDirection == 'bottom') {
-
-      this.$el.css({
-        top: this.model.get("y")
-      });
-
-      this.$el.css({
-        top: "auto",
-        bottom: this.model.get("y")
-      });
-
-    } else {
-      this.$el.css({
-        top: this.model.get("y")
-      });
-    }
-
-    if (landscapeDirection == 'right') {
-
-      this.$el.css({
-        left: this.model.get("x")
-      });
-
-      this.$el.css({
-        left: "auto",
-        right: this.model.get("x")
-      });
-
-    } else {
-      this.$el.css({
-        left: this.model.get("x")
-      });
-    }
-
   },
 
 
   render: function() {
 
-    //this._place();
-
-    this._percentage_placement();
+    this._place();
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 

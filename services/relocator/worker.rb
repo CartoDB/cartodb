@@ -33,16 +33,7 @@ module CartoDB
             #on the schema.
             user.organization = org
             user.database_schema = user.username
-            begin
-              user.create_public_db_user
-            rescue => e
-              puts "Error #{e} while creating public user. Ignoring as it probably already existed"
-            end
-            user.set_database_search_path
-            user.grant_publicuser_in_database
-            user.set_user_privileges
             user.organization = nil
-            User.terminate_database_connections(user.database_name, user.database_host)
             unless Rails.env.test?
               user.in_database(as: :superuser) do |database|
                 database['ALTER SCHEMA public RENAME TO '+user.username].all
@@ -50,6 +41,8 @@ module CartoDB
                 database['CREATE SCHEMA public; ALTER EXTENSION postgis SET SCHEMA public'].all
               end
             end
+            user.setup_schema
+            User.terminate_database_connections(user.database_name, user.database_host)
             user.save
             puts "Migrated to schema-powered successfully!"
           when user.username
@@ -60,14 +53,17 @@ module CartoDB
 
           # --------------- then move the user to its new place
           user.database_host = org.owner.database_host
+          user.database_schema = user.username
           user.database_name = org.owner.database_name
           user.organization = org
-          user.database_schema = user.username
-          begin
-            user.create_db_user
-          rescue => e
-            puts "Error #{e} while creating user. Ignoring as it probably already existed"
-          end
+          Thread.new do 
+            begin
+              user.create_db_user
+            rescue => e
+              puts "Error #{e} while creating user. Ignoring as it probably already existed"
+            end
+            user.grant_user_in_database
+          end.join
           begin
             user.create_public_db_user
           rescue => e
@@ -76,24 +72,14 @@ module CartoDB
           user.monitor_user_notification
           user.create_user_schema
           user.set_database_search_path
-          user.grant_user_in_database
-          user.set_user_privileges
-          old_user_timeout = user.user_timeout
-          user.user_timeout = 0
-          user.set_statement_timeouts
-          User.terminate_database_connections(user.database_name, user.database_host)
+          #User.terminate_database_connections(user.database_name, user.database_host)
           relocator.migrate
+          user.setup_schema
           #wipe all OIDs
           user.tables.update({:table_id =>nil})
-          user.user_timeout = old_user_timeout
-          user.set_statement_timeouts
           relocator.compare
           relocator.finalize
-          user.grant_publicuser_in_database
-          user.set_user_privileges
-          user.rebuild_quota_trigger
-          user.set_user_as_organization_member
-          user.enable_remote_db_user
+          relocator.check_org_user(user)
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"
           puts "Rolling back in 5 secs"

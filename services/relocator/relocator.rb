@@ -6,6 +6,7 @@ require_relative 'relocator/dumper'
 require_relative 'relocator/queue_consumer'
 require_relative 'relocator/dumper'
 require_relative 'relocator/tester'
+require_relative 'relocator/organization_tester'
 require_relative 'relocator/table_dumper'
 require_relative 'relocator/schema_dumper'
 require_relative 'relocator/trigger_loader'
@@ -41,7 +42,10 @@ module CartoDB
           @dumper = SchemaDumper.new(config: @config)
         end
         @consumer = QueueConsumer.new(config: @config)
-        @tester   = Tester.new(config: @config) 
+        @tester   = Tester.new(config: @config)
+        if config[:mode] == :organize
+          @org_tester = OrganizationTester.new(config: @config)
+        end 
       end
 
       def migrate
@@ -66,6 +70,10 @@ module CartoDB
 
       def compare
         @tester.compare_state
+      end
+
+      def check_org_user(user)
+        @org_tester.check_user_permissions(user)
       end
 
       def rollback

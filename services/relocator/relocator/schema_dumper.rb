@@ -6,10 +6,6 @@ module CartoDB
       include CartoDB::Relocator::Connections
       def initialize(params={})    
         @config = params[:config]
-        #@source_db = params[:source_db] || PG.connect(@config[:source][:conn])
-        #@target_db = params[:source_db] || PG.connect(@config[:target][:conn])
-        @dbname = @config[:dbname]
-        @username = @config[:username]
       end
 
       def dump_command(config, schema)
@@ -51,7 +47,7 @@ module CartoDB
       end
 
       def migrate
-        command = "(echo \"BEGIN TRANSACTION;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
+        command = "(echo \"BEGIN TRANSACTION;SET statement_timeout=0;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
         puts "Running: #{command}"
         return_code = system(command)
         raise "Error dumping and restoring! Please cleanup" if return_code != true

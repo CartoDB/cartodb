@@ -71,6 +71,9 @@ all:
 	@echo "Try make check"
 
 prepare-test-db:
+ifdef JENKINS_URL
+	cp .rspec_ci .rspec
+endif
 	# TODO skip this if db already exists ?
 	bundle exec rake cartodb:test:prepare
 

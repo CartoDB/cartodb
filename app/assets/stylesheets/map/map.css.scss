@@ -82,8 +82,10 @@ div.map {
         right: 15px!important;
       }
 
+      // Overlays hidden in mobile
       div.cartodb-layer-selector-box,
       div.cartodb-share,
+      div.cartodb-searchbox,
       div.cartodb-fullscreen,
       div.cartodb-zoom,
       div.cartodb-zoom-info {

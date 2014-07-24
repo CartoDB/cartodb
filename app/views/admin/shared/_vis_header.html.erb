@@ -8,17 +8,16 @@
           <%= link_to "Data view",    "#/table", :class => "smaller strong tab selected" %>
           <%= link_to "Visualization", "#/map",   :class => "smaller strong tab" %>
         </nav>
-        <div class="globalerror"></div>
       </div>
 
       <div class="left">
         <ul class="actions">
           <li><%= link_to "Back", root_path, :class => "back" %></li>
           <li><a class="privacy" href="#/visualize"><i class="privacy-status"></i></a></li>
-          <li><h1><%= link_to "", "#/change-title", :class => "title" %></h1></li>
+          <li><h1><%= link_to @visualization.name, "#/change-title", :class => "title" %></h1></li>
         </ul>
         <div class="metadata">
-          <p><a href="#/edit-metadata">edit metadata…</a></p>
+          <p><a href="#/edit-metadata">Edit metadata…</a></p>
         </div>
       </div>
       
@@ -31,7 +30,7 @@
     </div>
 
     <div class="sync_status"></div>
-
+    <div class="globalerror"></div>
   </div>
 </header>
 

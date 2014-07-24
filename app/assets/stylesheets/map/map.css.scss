@@ -18,6 +18,7 @@ div.map {
   @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
   background: #333 image-url('layout/noise.png') repeat 0 0;
+  z-index:1;
 }
 
 div.map, .mobile_bkg {

@@ -374,6 +374,21 @@ class User < Sequel::Model
     if block_given?
       yield(connection)
     else
+      
+      puts "**** RIGHT BEFORE RETURNING THE CONN FROM in_database START"
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'host' => self.database_host,
+        'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params)
+      puts "*** CONN START"
+      conn.fetch("SELECT datname,usename,pid from pg_stat_activity").all.each do |r|
+        puts r
+      end
+      puts "*** CONN END"
+      conn.disconnect
+      puts "**** RIGHT BEFORE RETURNING THE CONN FROM in_database END"
+
       connection
     end
   end

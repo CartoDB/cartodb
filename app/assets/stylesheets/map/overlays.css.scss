@@ -42,7 +42,7 @@
   z-index: 100000;
 }
 
-.overlay.header {
+.header {
   display: none;
   width: 100%;
   @include border-radius(0);
@@ -52,6 +52,11 @@
   &:hover { background:rgba(#333, .5); }
 
   @include simple-transition(all, .10s, ease-in-out);
+
+  position: absolute;
+  background:rgba(#333, .5);
+
+  @include simple-transition(background, .10s, ease-in-out);
 
   .content { padding: 10px; }
 
@@ -189,6 +194,8 @@
 
     .text {
 
+      @include user-select(inherit);
+
       padding: 5px 9px;
 
       .content {
@@ -292,6 +299,7 @@
 
 } // .overlay
 
+.header .content,
 .overlay .content {
 
   padding: 10px;
@@ -318,6 +326,8 @@
     em, i { font-style: italic; } 
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
+
+    @include user-select(none);
 
     &.text img {
       display:block;

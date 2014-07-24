@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../spec_helper'
 require_relative '../../../app/models/overlay/member'
 require_relative '../../../services/data-repository/repository'
 
@@ -17,6 +18,9 @@ describe Overlay::Member do
   describe '#store' do
     it 'persists attributes to the data repository' do
       member = Overlay::Member.new(type: 'bogus')
+      vis_mock = mock
+      member.stubs(:visualization).returns(vis_mock)
+      vis_mock.expects(:invalidate_varnish_cache)
       member.store
 
       member = Overlay::Member.new(id: member.id)
@@ -41,6 +45,9 @@ describe Overlay::Member do
   describe '#delete' do
     it 'deletes this member data from the data repository' do
       member = Overlay::Member.new(type: 'bogus')
+      vis_mock = mock
+      member.stubs(:visualization).returns(vis_mock)
+      vis_mock.expects(:invalidate_varnish_cache).twice
       member.store
 
       member.fetch

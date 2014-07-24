@@ -56,6 +56,9 @@ module CartoDB
 
             # map stuff, already in the viz
             when :legends
+              map = @visualization.map
+              map.legends = bool_value
+              map.save
             when :scrollwheel
               map = @visualization.map
               map.scrollwheel = bool_value

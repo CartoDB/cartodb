@@ -211,9 +211,12 @@
           border: 2px solid #fff;
           background:none;
 
-          span { vertical-align: middle; }
-          span { color: #fff; }
-          span { font-size: 12px; }
+          span { 
+            padding: 1px 0;
+            @include inline-block();
+            color: #fff; 
+            font-size: 12px;
+          }
 
           &:hover {
             span { text-decoration: underline; }

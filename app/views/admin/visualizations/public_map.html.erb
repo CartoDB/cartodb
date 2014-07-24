@@ -66,7 +66,7 @@
 
                 <p class="description"><%= raw @visualization.description_md %></p>
                 <p class="options">
-                  <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>?<%= @visualization.url_options %>" class="iframe">View as an iFrame</a>
+                  <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>" class="iframe">View as an iFrame</a>
                 </p>
               </div>
             </div>

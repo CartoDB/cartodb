@@ -18,6 +18,7 @@ describe Visualization::Collection do
                     database: db_config.fetch('database'),
                     username: db_config.fetch('username')
                   )
+    # Careful, uses another DB table (and deletes it at after:(each) )
     @relation   = "visualizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)
     Visualization::Migrator.new(@db).migrate(@relation)
@@ -156,7 +157,6 @@ describe Visualization::Collection do
       records.first.name.should eq vis1.name
     end
 
-
   end
 
   def random_attributes(attributes={})
@@ -166,7 +166,7 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'public'),
+      type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
       user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
       locked:       attributes.fetch(:locked, false)
     }

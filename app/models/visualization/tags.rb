@@ -11,7 +11,7 @@ module CartoDB
       def initialize(user, options={})
         @user = user
         @exclude_shared = options[:exclude_shared].present?
-      end #initialize
+      end
 
       def names(params={})
         if only_shared?(params)
@@ -25,23 +25,25 @@ module CartoDB
               WHERE #{shared_entities_sql_filter(only_shared?(params))}
               AND type IN ?
               AND privacy IN ?
+              #{locked_from(params)}
               LIMIT ?
             }, types_from(params), privacy_from(params), limit_from(params)
             ).map{ |tag| tag.name}
           end
         else
-            Tag.fetch(%Q{
+          Tag.fetch(%Q{
             SELECT DISTINCT (unnest(tags)) as name
             FROM visualizations
             WHERE user_id = ?
             AND type IN ?
             AND privacy IN ?
+            #{locked_from(params)}
             #{shared_entities_sql_filter(only_shared?(params))}
             LIMIT ?
           }, user.id, types_from(params), privacy_from(params), limit_from(params)
             ).map{ |tag| tag.name}
         end
-      end #names
+      end
 
       def count(params={})
         if only_shared?(params)
@@ -55,6 +57,7 @@ module CartoDB
               FROM visualizations
               WHERE #{shared_entities_sql_filter(only_shared?(params))}
               AND type IN ?
+              #{locked_from(params)}
               LIMIT ?
             )
             SELECT name, count(*) as count
@@ -71,6 +74,7 @@ module CartoDB
               FROM visualizations
               WHERE user_id = ?
               AND type IN ?
+              #{locked_from(params)}
               #{shared_entities_sql_filter(only_shared?(params))}
               LIMIT ?
             )
@@ -81,7 +85,7 @@ module CartoDB
           }, user.id, types_from(params), limit_from(params)
           ).all.map(&:values)
         end
-      end #count
+      end
 
       private
       
@@ -106,6 +110,16 @@ module CartoDB
         end
       end
 
+      def locked_from(params={})
+        locked = params.fetch(:locked, nil)
+        if locked.nil?
+          ""
+        else
+          locked = locked ? 'true' : 'false'
+          "AND locked=#{locked}"
+        end
+      end
+
       def only_shared?(params)
         params[:only_shared].present?
       end
@@ -113,16 +127,16 @@ module CartoDB
       def privacy_from(params={})
         privacy = params.fetch(:privacy, nil)
         (privacy.nil? || privacy.empty?) ? Member::PRIVACY_VALUES : [privacy]
-      end #privacy_from
+      end
 
       def types_from(params={})
         type    = params.fetch(:type, nil)
         (type.nil? || type.empty?) ? [Member::CANONICAL_TYPE, Member::DERIVED_TYPE] : [type]
-      end #type_filter_from
+      end
 
       def limit_from(params={})
         (params.fetch(:limit, DEFAULT_LIMIT) || DEFAULT_LIMIT).to_i
-      end #limit_from
-    end # Tags
-  end # Visualization   
-end # CartoDB
+      end
+    end
+  end
+end

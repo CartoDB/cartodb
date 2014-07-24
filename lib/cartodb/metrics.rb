@@ -4,35 +4,47 @@ require 'rollbar'
 
 module CartoDB
   class Metrics
-    def report(payload)
+    def report(event, payload)
+      return self unless event.present?
       if payload.fetch(:success, false)
-        report_success(payload) 
+        report_success(event, payload)
       else
-        report_failure(payload)
+        report_failure(event, payload)
       end
     rescue => exception
       self
     end #report
 
-    def mixpanel_payload(metric_payload)
+    def mixpanel_payload(event, metric_payload)
+      return nil unless event.present?
       #remove the log from the payload
       payload = metric_payload.select {|k,v| k != :log }
-      Hash[payload.map{ |key,value| 
+      Hash[payload.map{ |key,value|
         [(["username","account_type", "distinct_id"].include?(key.to_s) ?
-            key.to_s : "import_"+key.to_s), 
+            key.to_s : "#{ event }_" + key.to_s),
           value]
         }].symbolize_keys
     end
 
-    def report_failure(metric_payload)
-      mixpanel_event("Import failed", mixpanel_payload(metric_payload))
-      ducksboard_report_failed(metric_payload[:extension])
-      Rollbar.report_message("Failed import", "error", error_info: metric_payload)
+    def report_failure(event, metric_payload)
+      case event
+      when :import
+        mixpanel_event("Import failed", mixpanel_payload(event, metric_payload))
+        ducksboard_report_failed(metric_payload[:extension])
+        Rollbar.report_message("Failed import", "error", error_info: metric_payload)
+      when :geocoding
+        mixpanel_event("Geocoding failed", mixpanel_payload(event, metric_payload))
+      end
     end #report_failure
 
-    def report_success(metric_payload)
-      mixpanel_event("Import successful", mixpanel_payload(metric_payload))
-      ducksboard_report_done(metric_payload[:extension])
+    def report_success(event, metric_payload)
+      case event
+      when :import
+        mixpanel_event("Import successful", mixpanel_payload(event, metric_payload))
+        ducksboard_report_done(metric_payload[:extension])
+      when :geocoding
+        mixpanel_event("Geocoding successful", mixpanel_payload(event, metric_payload))
+      end
     end #report_success
 
     def mixpanel_event(*args)

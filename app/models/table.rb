@@ -399,7 +399,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_cleanup
-    owner.in_database do |user_database|
+    owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -489,6 +489,7 @@ class Table < Sequel::Model(:user_tables)
       self.schema(reload: true)
 
       set_the_geom_column!
+
       import_cleanup
 
       set_table_id
@@ -502,6 +503,36 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
+  rescue => e
+    self.handle_creation_error(e)
+  end
+
+  def after_create
+    super
+    self.create_default_map_and_layers
+    self.create_default_visualization
+    self.send_tile_style_request
+
+    grant_select_to_tiler_user
+    set_default_table_privacy
+
+    @force_schema = nil
+    $tables_metadata.hset key, 'user_id', user_id
+    self.new_table = true
+
+    # finally, close off the data import
+    if data_import_id
+      @data_import = DataImport.find(id: data_import_id)
+      @data_import.table_id   = id
+      @data_import.table_name = name
+      @data_import.save
+    end
+    add_table_to_stats
+
+    update_table_pg_stats
+
+    # Cartodbfy !
+    self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
   end
@@ -533,36 +564,6 @@ class Table < Sequel::Model(:user_tables)
     table_visualization.name = name
     table_visualization.store
   end #propagate_namechange_to_table_vis
-
-  def after_create
-    super
-    self.create_default_map_and_layers
-    self.create_default_visualization
-    self.send_tile_style_request
-
-    grant_select_to_tiler_user
-    set_default_table_privacy
-
-    @force_schema = nil
-    $tables_metadata.hset key, 'user_id', user_id
-    self.new_table = true
-
-    # finally, close off the data import
-    if data_import_id
-      @data_import = DataImport.find(id: data_import_id)
-      @data_import.table_id   = id
-      @data_import.table_name = name
-      @data_import.save
-    end
-    add_table_to_stats
-
-    update_table_pg_stats
-
-    # Cartodbfy !
-    self.cartodbfy
-  rescue => e
-    self.handle_creation_error(e)
-  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -1294,7 +1295,6 @@ class Table < Sequel::Model(:user_tables)
     self.schema(reload:true)
   end
 
-  # move to C
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
   end

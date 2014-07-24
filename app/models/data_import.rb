@@ -26,7 +26,7 @@ class DataImport < Sequel::Model
   attr_accessor   :log, :results
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
-    error_code queue_id get_error_text tables_created_count 
+    error_code queue_id get_error_text tables_created_count
     synchronization_id service_name service_item_id }
 
   def after_initialize
@@ -94,7 +94,7 @@ class DataImport < Sequel::Model
     raise CartoDB::QuotaExceeded, 'More tables required'
   end
 
-  def mark_as_failed_if_stuck!    
+  def mark_as_failed_if_stuck!
     return false unless stuck?
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
@@ -162,7 +162,7 @@ class DataImport < Sequel::Model
   def dispatch
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    new_importer       
+    new_importer
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
     raise
@@ -197,10 +197,10 @@ class DataImport < Sequel::Model
 
     if valid_uuid?(uuid)
       self.log  = TrackRecord::Log.new(
-        id:         uuid.to_s, 
+        id:         uuid.to_s,
         prefix:     REDIS_LOG_KEY_PREFIX,
         expiration: REDIS_LOG_EXPIRATION_IN_SECS
-      ).fetch 
+      ).fetch
     else
       self.log  = TrackRecord::Log.new(
         prefix:     REDIS_LOG_KEY_PREFIX,
@@ -208,7 +208,7 @@ class DataImport < Sequel::Model
       )
     end
   end #instantiate_log
-  
+
   def uploaded_file
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
   end
@@ -229,7 +229,7 @@ class DataImport < Sequel::Model
     number_of_tables = 1
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     if quota_checker.will_be_over_table_quota?(number_of_tables)
-      raise_over_table_quota_error 
+      raise_over_table_quota_error
     end
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
@@ -400,7 +400,7 @@ class DataImport < Sequel::Model
   end
 
   def notify(results)
-    results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
+    results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
   end
 
   def payload_for(result=nil)
@@ -449,6 +449,6 @@ class DataImport < Sequel::Model
     )]
     self.error_code = error_code
     self.state = 'failure'
-  end 
+  end
 end
 

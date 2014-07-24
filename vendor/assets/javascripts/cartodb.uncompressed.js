@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 4669608e2b8522e4d83b3605f0b26fb64137f074
+// sha: 623cb93d2ef594183ee1763188dab93bf340e658
 (function() {
   var root = this;
 
@@ -22512,9 +22512,15 @@ cdb.geo.ui.Text = cdb.core.View.extend({
   className: "cartodb-overlay overlay-text",
 
   events: {
+    "click": "stopPropagation"
   },
 
-  default_options: {
+  default_options: { },
+
+  stopPropagation: function(e) {
+
+    e.stopPropagation();
+
   },
 
   initialize: function() {
@@ -22522,6 +22528,16 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template;
+
+    var self = this;
+
+    $(window).on("map_resized", function() {
+      self._place();
+    });
+
+    $(window).on("resize", function() {
+      self._place();
+    });
 
   },
 
@@ -22550,42 +22566,56 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   _place: function() {
 
-    var landscapeDirection = this.model.get("extra").landscapeDirection;
-    var portraitDirection  = this.model.get("extra").portraitDirection;
+    var pTop  = this.model.get("extra").pTop
+    var pLeft = this.model.get("extra").pLeft;
 
-    if (portraitDirection == 'bottom') {
+    var top   = this.model.get("y");
+    var left  = this.model.get("x");
 
-      this.$el.css({
-        top: this.model.get("y")
-      });
+    var right  = "auto";
+    var bottom = "auto";
 
-      this.$el.css({
-        top: "auto",
-        bottom: this.model.get("y")
-      });
+    if (pLeft < 30 ) {
 
-    } else {
-      this.$el.css({
-        top: this.model.get("y")
-      });
-    }
+    } else if (pLeft > 80) { // right fixed
 
-    if (landscapeDirection == 'right') {
-
-      this.$el.css({
-        left: this.model.get("x")
-      });
-
-      this.$el.css({
-        left: "auto",
-        right: this.model.get("x")
-      });
+      left  = "auto";
+      right = this.model.get("extra").w;
 
     } else {
-      this.$el.css({
-        left: this.model.get("x")
-      });
+
+      left = $(".cartodb-map-wrapper").width() * pLeft / 100;
+
     }
+
+    console.log("pLeft: " + pLeft);
+    console.log("pTop: " + pTop);
+
+    if (pTop < 30 ) {
+
+    } else if (pTop > 80) { 
+
+      top    = "auto";
+      bottom = this.model.get("extra").z;
+
+    } else {
+
+      top = $(".cartodb-map-wrapper").height() * pTop / 100;
+
+    }
+
+    console.log("top: " + top, "left: " + left, "right: " + right, "bottom: " + bottom);
+
+    var width = this.model.get("extra").width;
+    console.log(width)
+
+    this.$el.css({
+      width: width,
+      top: top,
+      left: left,
+      right: right - this.$el.width(),
+      bottom: bottom - this.$el.height()
+    });
 
   },
 
@@ -22609,15 +22639,33 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
   className: "cartodb-overlay image-overlay",
 
-  events: { },
+  events: {
+    "click": "stopPropagation"
+  },
 
   default_options: { },
+
+  stopPropagation: function(e) {
+
+    e.stopPropagation();
+
+  },
 
   initialize: function() {
 
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template;
+
+    var self = this;
+
+    $(window).on("map_resized", function() {
+      self._place();
+    });
+
+    $(window).on("resize", function() {
+      self._place();
+    });
 
   },
 

@@ -1391,15 +1391,15 @@ and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : landscape) {
 
-  .cartodb-map-wrapper div.cartodb-overlay.overlay-text.desktop { display:none; }
-  .cartodb-map-wrapper div.cartodb-overlay.overlay-text.mobile  { display:block; }
+  /*.cartodb-map-wrapper div.cartodb-overlay.overlay-text.desktop { display:none; }*/
+  /*.cartodb-map-wrapper div.cartodb-overlay.overlay-text.mobile  { display:block; }*/
 
 }
 
 @media only screen and (min-width: 360px) and (max-width: 490px) {
 
-  div.cartodb-overlay.overlay-text.desktop { display:none; }
-  div.cartodb-overlay.overlay-text.mobile  { display:block; }
+  /*div.cartodb-overlay.overlay-text.desktop { display:none; }*/
+  /*div.cartodb-overlay.overlay-text.mobile  { display:block; }*/
 
 }
 
@@ -1408,8 +1408,8 @@ and (orientation : landscape) {
 and (min-device-width : 320px) 
 and (max-device-width : 480px) { 
 
-  .cartodb-map-wrapper div.cartodb-overlay.overlay-text.desktop { display:none; }
-  .cartodb-map-wrapper div.cartodb-overlay.overlay-text.mobile  { display:block; }
+  /*.cartodb-map-wrapper div.cartodb-overlay.overlay-text.desktop { display:none; }*/
+  /*.cartodb-map-wrapper div.cartodb-overlay.overlay-text.mobile  { display:block; }*/
 
   div.cartodb-header h1 {
     width:78%; 
@@ -2894,7 +2894,7 @@ div.cartodb-timeslider p {
 
 .cartodb-header {
   display:none;
-  position:absolute;
+  position:relative;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
@@ -3019,13 +3019,6 @@ div.cartodb-timeslider p {
 
 .cartodb-overlay.image-overlay img {
   display: block;
-}
-
-.cartodb-map-wrapper.with_header div.cartodb-zoom,
-.cartodb-map-wrapper.with_header div.cartodb-share,
-.cartodb-map-wrapper.with_header div.cartodb-searchbox,
-.cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
-  margin-top: 60px;
 }
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),

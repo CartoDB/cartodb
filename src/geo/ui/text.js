@@ -20,6 +20,16 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
     this.template = this.options.template;
 
+    var self = this;
+
+    $(window).on("map_resized", function() {
+      self._percentage_placement();
+    });
+
+    $(window).on("resize", function() {
+      self._percentage_placement();
+    });
+
   },
 
   _applyStyle: function() {
@@ -42,6 +52,82 @@ cdb.geo.ui.Text = cdb.core.View.extend({
       backgroundColor: rgbaCol,
       maxWidth:        boxWidth
     });
+
+  },
+
+  _percentage_placement: function() {
+
+    var pTop  = this.model.get("extra").pTop
+    var pLeft = this.model.get("extra").pLeft;
+
+    var top   = this.model.get("y");
+    var left  = this.model.get("x");
+
+    var right  = "auto";
+    var bottom = "auto";
+
+    if (pLeft < 30 ) {
+
+    } else if (pLeft > 80) { // right fixed
+
+      left  = "auto";
+      right = this.model.get("extra").w;
+
+    } else {
+
+      left = $(".cartodb-map-wrapper").width() * pLeft / 100;
+
+    }
+
+    console.log("pLeft: " + pLeft);
+    console.log("pTop: " + pTop);
+
+    if (pTop < 30 ) {
+
+    } else if (pTop > 80) { 
+
+      top    = "auto";
+      bottom = this.model.get("extra").z;
+
+    } else {
+
+      top = $(".cartodb-map-wrapper").height() * pTop / 100;
+
+    }
+
+    console.log("top: " + top, "left: " + left, "right: " + right, "bottom: " + bottom);
+
+    var width = this.model.get("extra").width;
+    console.log(width)
+
+    this.$el.css({
+      width: width,
+      top: top,
+      left: left,
+      right: right - this.$el.width(),
+      bottom: bottom - this.$el.height()
+    });
+
+    //console.log(top, left, right, bottom)
+
+      /*var top   = this.model.get("y");
+
+      this.$el.css({
+        top: top,
+        right: right
+      });
+
+      return;
+    }
+
+    // Percent
+    var left = $(".cartodb-map-wrapper").width() * pLeft / 100;
+    var top  = this.model.get("y");
+
+    this.$el.css({
+      top: top,
+      left: left
+    });*/
 
   },
 
@@ -89,7 +175,9 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   render: function() {
 
-    this._place();
+    //this._place();
+
+    this._percentage_placement();
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 

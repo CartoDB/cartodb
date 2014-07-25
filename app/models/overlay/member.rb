@@ -24,7 +24,7 @@ module CartoDB
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)
-        visualization.invalidate_varnish_cache
+        invalidate_varnish_cache
         self
       end #store
 
@@ -38,12 +38,20 @@ module CartoDB
 
       def delete
         repository.delete(id)
-        visualization.invalidate_varnish_cache
+        invalidate_varnish_cache
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
         self
       end #delete
 
       private
+
+      def invalidate_varnish_cache
+        begin
+          v = visualization
+        rescue KeyError
+        end
+        v.invalidate_varnish_cache unless v.nil?
+      end
 
       def visualization
          CartoDB::Visualization::Member.new({ :id => self.attributes[:visualization_id] }).fetch

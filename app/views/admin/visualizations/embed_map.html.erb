@@ -187,9 +187,13 @@
           visReadyTime.end();
           vis.on('load', function() {
             loadingTime.end();
-          })
-          // add here your code
+          });
+
           window.vis = vis;
+
+          setTimeout(function() {
+          $(window).trigger("map_resized");
+          }, 400);
           // some stats
           stats();
         }).on('error', manageError);

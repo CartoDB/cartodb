@@ -42,7 +42,7 @@
   z-index: 100000;
 }
 
-.header {
+.header.overlay-static {
   display: none;
   width: 100%;
   @include border-radius(0);
@@ -298,7 +298,7 @@
 
 } // .overlay
 
-.header .content,
+.header.overlay-static .content,
 .overlay .content {
 
   padding: 10px;

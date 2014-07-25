@@ -624,7 +624,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var device = this.device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!opt.title) {
       vizjson.title = null;

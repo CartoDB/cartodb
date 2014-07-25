@@ -31,6 +31,11 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 cdb.vis.Overlay.register('image', function(data, vis) {
 
   var options = data.options;
+
+  var isDevice = options.device == "mobile" ? true : false;
+
+  if (vis.device !== isDevice) return;
+
   var template = cdb.core.Template.compile(
     data.template || '\
     <div class="content">\
@@ -51,6 +56,10 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 cdb.vis.Overlay.register('text', function(data, vis) {
 
   var options = data.options;
+
+  var isDevice = options.device == "mobile" ? true : false;
+
+  if (vis.device !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\

@@ -1795,10 +1795,6 @@ div.cartodb-timeslider p {
   z-index: 99999;
 }
 
-.cartodb-overlay.overlay-text.mobile {
-  display:none;
-}
-
 .cartodb-overlay.overlay-text .content {
   padding: 10px;
 }

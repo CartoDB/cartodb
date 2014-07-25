@@ -13,11 +13,16 @@ WORKING_SPECS_1 = \
   $(NULL)
 
 WORKING_SPECS_2 = \
-  spec/models/visualization/*.rb \
-  spec/models/named_maps_spec.rb \
-  spec/models/geocoding_spec.rb \
-  spec/lib/sql_parser_spec.rb \
+  spec/lib/connection_pool_spec.rb \
   $(NULL)
+
+#WORKING_SPECS_2 = \
+#  spec/models/visualization/*.rb \
+#  spec/models/named_maps_spec.rb \
+#  spec/models/geocoding_spec.rb \
+#  spec/lib/sql_parser_spec.rb \
+#  spec/lib/connection_pool_spec.rb \
+#  $(NULL)
 
 WORKING_SPECS_3 = \
   spec/lib/string_spec.rb \
@@ -93,13 +98,15 @@ check-7:
 check-8:
 	bundle exec rspec $(WORKING_SPECS_8)
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8
+#check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8
+check-prepared: check-2
 
 check: prepare-test-db check-prepared
 check-frontend:
 	cd lib/build && grunt test
 
-travis: check-frontend check
+travis: check
+#travis: check-frontend check
 
 
 # update cartodb.js submodule files

@@ -5,6 +5,15 @@ module Resque
   module UserJobs
     module Mail
       
+      module NewOrganizationUser
+        @queue = :users
+
+        def self.perform(user_id)
+          u = User.where(id: user_id).first
+          UserMailer.new_organization_user(u).deliver
+        end
+      end
+      
       module ShareVisualization
         @queue = :users
 

@@ -107,6 +107,9 @@ class User < Sequel::Model
     monitor_user_notification
     sleep 3
     set_statement_timeouts
+    if self.has_organization_enabled?
+      ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
+    end
   end
 
   def after_save
@@ -347,6 +350,20 @@ class User < Sequel::Model
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
 
+    puts "**** BEFORE POOL in_database"
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    puts "*** CONN START"
+    conn.fetch("SELECT datname,usename,pid from pg_stat_activity").all.each do |r|
+      puts r
+    end
+    puts "*** CONN END"
+    conn.disconnect
+    puts "**** BEFORE POOL in_database"
+
     connection = $pool.fetch(configuration) do
       db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
@@ -355,10 +372,26 @@ class User < Sequel::Model
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', 900)
       db
     end
+    
+    puts "**** AFTER POOL in_database"
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    puts "*** CONN START"
+    conn.fetch("SELECT datname,usename,pid from pg_stat_activity").all.each do |r|
+      puts r
+    end
+    puts "*** CONN END"
+    conn.disconnect
+    puts "**** AFTER POOL in_database"
 
     if block_given?
       yield(connection)
     else
+      
+
       connection
     end
   end
@@ -499,7 +532,6 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    puts Cartodb.config[:avatars]
     if !Cartodb.config[:avatars].nil? && 
        !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
        !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
@@ -1092,8 +1124,10 @@ class User < Sequel::Model
     conn = self.in_database(as: :cluster_admin)
     begin
       conn.run("CREATE USER \"#{database_username}\" PASSWORD '#{database_password}'")
+      conn.disconnect
     rescue => e
       puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+      conn.disconnect
       raise e
     end
   end
@@ -1114,8 +1148,10 @@ class User < Sequel::Model
       OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
       ENCODING = 'UTF8'
       CONNECTION LIMIT=-1")
+      conn.disconnect
     rescue => e
       puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+      conn.disconnect
       raise e
     end
   end
@@ -1611,11 +1647,11 @@ TRIGGER
   def drop_user_privileges_in_schema(schema)
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        [self.database_user, self.database_public_user].each do |u|
-          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{u}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{u}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{u}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{u}")
+        [self.database_username, self.database_public_username].each do |u|
+          user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
         end
       end
     end

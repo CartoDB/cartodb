@@ -161,16 +161,16 @@
         margin-left: 11px;
 
         &.public             i { background: rgba(#D0DDA5, .9) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.link_protected     i { background: rgba(#FFA64D, .9) sprite( $table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
-        &.password_protected i { background: rgba(#FFA64D, .9) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.organization       i { background: rgba(#FFA64D, .9) sprite( $table-sprites, lock_user,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.private            i { background: rgba(#FF7373, .9) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.link_protected     i { background: rgba(#F7CB9E, .9) sprite( $table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
+        &.password_protected i { background: rgba(#F7CB9E, .9) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.organization       i { background: rgba(#F7CB9E, .9) sprite( $table-sprites, lock_user,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.private            i { background: rgba(#F2ACAC, .9) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
 
         &.public:hover            i { background-color: rgba(#D0DDA5, 1); }
-        &.link_protected:hover    i { background-color: rgba(#FFA64D, 1); }
-        &.password_protected:hoveri { background-color: rgba(#FFA64D, 1); }
-        &.organization:hover      i { background-color: rgba(#FFA64D, 1); }
-        &.private:hover           i { background-color: rgba(#FF7373, 1); }
+        &.link_protected:hover    i { background-color: rgba(#F7D0A8, 1); }
+        &.password_protected:hoveri { background-color: rgba(#F7D0A8, 1); }
+        &.organization:hover      i { background-color: rgba(#F7D0A8, 1); }
+        &.private:hover           i { background-color: rgba(#F2ACAC, 1); }
 
         i {
           @include inline-block();

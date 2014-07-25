@@ -25,6 +25,9 @@ describe Visualization::Overlays do
     map_mock = mock
     map_mock.stubs(:scrollwheel=)
     map_mock.stubs(:legends=)
+    map_mock.stubs(:legends)
+    map_mock.stubs(:scrollwheel)
+    map_mock.stubs(:id)
     map_mock.stubs(:save)
     Visualization::Member.any_instance.stubs(:map).returns(map_mock)
     @visualization = member

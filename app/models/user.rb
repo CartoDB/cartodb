@@ -352,7 +352,7 @@ class User < Sequel::Model
         conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
       end)))
       db.extension(:connection_validator)
-      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', 900)
+      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
     end
 

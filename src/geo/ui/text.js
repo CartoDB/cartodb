@@ -57,35 +57,61 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   _place: function() {
 
-    var pTop  = this.model.get("extra").pTop
-    var pLeft = this.model.get("extra").pLeft;
-
     var top   = this.model.get("y");
     var left  = this.model.get("x");
 
+    // position percentages
+    var pTop  = this.model.get("extra").pTop
+    var pLeft = this.model.get("extra").pLeft;
+
     var right  = "auto";
     var bottom = "auto";
-
-    if (this.model.get("extra").landscapeDominantSide == 'right') {
-      left = "auto";
-      right = this.model.get("extra").r;
-    }
-
-    if (this.model.get("extra").portraitDominantSide == 'bottom') {
-      top = "auto";
-      bottom = this.model.get("extra").b;
-    }
-
-    //console.log("top: " + top, "left: " + left, "right: " + right, "bottom: " + bottom);
+    
+    var marginTop  = 0;
+    var marginLeft = 0;
 
     var width = this.model.get("extra").width;
 
+    if (pTop > 40 && pTop < 55) {
+
+      top = "50%";
+      marginTop = -this.$el.height()/2;
+
+    }  else {
+
+      var portraitDominantSide  = this.model.get("extra").portraitDominantSide;
+
+      if (portraitDominantSide == 'bottom') {
+        top = "auto";
+        bottom = this.model.get("extra").b - this.$el.height();
+      }
+
+    }
+
+    if (pLeft > 40 && pLeft < 55) {
+
+      left = "50%";
+      marginLeft = -width/2;
+
+    } else {
+
+      var landscapeDominantSide = this.model.get("extra").landscapeDominantSide;
+
+      if (landscapeDominantSide == 'right') {
+        left = "auto";
+        right = this.model.get("extra").r - this.$el.width();
+      }
+
+    }
+
     this.$el.css({
       width: width,
+      marginLeft: marginLeft,
+      marginTop: marginTop,
       top: top,
       left: left,
-      right: right - this.$el.width(),
-      bottom: bottom - this.$el.height()
+      right: right,
+      bottom: bottom
     });
 
   },

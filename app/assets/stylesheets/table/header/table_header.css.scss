@@ -19,8 +19,6 @@
     overflow:visible;
     border-bottom: 1px solid rgba(#333333, 0.8);
     @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
-    @include background(linear-gradient(top, #519FD9,#3383C7));
-    @include background(image-url('layout/vis_header_bkg.jpg') repeat-x);
     z-index:2;
 
     .inner {

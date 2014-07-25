@@ -14,7 +14,7 @@ namespace :cartodb do
               if args[:clear_overlays]
                 vis.overlays.each { |o| o.delete }
               end
-              CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+              CartoDB::Visualization::Overlays.new(vis).create_legacy_overlays
             rescue => e
               puts "ERROR: failed to create overlays for #{vis.id}: #{e.message}"
               failed+=1
@@ -32,7 +32,7 @@ namespace :cartodb do
               if args[:clear_overlays]
                 vis.overlays.each { |o| o.delete }
               end
-              CartoDB::Visualization::Overlays.new(vis).create_overlays_from_url_options(vis.url_options)
+              CartoDB::Visualization::Overlays.new(vis).create_legacy_overlays
             rescue => e
               puts "ERROR: failed to create overlays for #{vis.id}: #{e.message}"
               failed+=1

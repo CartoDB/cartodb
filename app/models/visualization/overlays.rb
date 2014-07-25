@@ -12,6 +12,11 @@ module CartoDB
         @visualization = visualization
       end
 
+      def create_legacy_overlays
+        create_zoom_info_overlay(@visualization, 8)
+        create_loader_overlay(@visualization, 9)
+      end
+
       def create_default_overlays
         create_header_overlay(@visualization, 1)
         create_share_overlay(@visualization, 2)

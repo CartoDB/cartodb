@@ -24,10 +24,14 @@ describe Visualization::Overlays do
     member = Visualization::Member.new
     map_mock = mock
     map_mock.stubs(:scrollwheel=)
+    map_mock.stubs(:legends=)
     map_mock.stubs(:save)
     Visualization::Member.any_instance.stubs(:map).returns(map_mock)
     @visualization = member
 
+    Visualization::Migrator.new(@db).migrate
+    Visualization.repository = 
+      DataRepository::Backend::Sequel.new(@db, :visualizations)
   end
 
   describe 'default' do

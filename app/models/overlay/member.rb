@@ -20,11 +20,11 @@ module CartoDB
         self.id         ||= @repository.next_id
       end #initialize
 
-      def store
+      def store(options={})
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)
-        invalidate_varnish_cache
+        invalidate_varnish_cache if options[:invalidate].present? and options[:invalidate]
         self
       end #store
 
@@ -43,7 +43,25 @@ module CartoDB
         self
       end #delete
 
+      def hide
+        set_option('display', false)
+        self
+      end
+
+      def show
+        set_option('display', true)
+        self
+      end
+
+      def is_hidden
+        !options['display']
+      end
+
       private
+
+      def set_option(key, value)
+        options[key] = value
+      end
 
       def invalidate_varnish_cache
         begin

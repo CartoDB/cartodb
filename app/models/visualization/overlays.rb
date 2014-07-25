@@ -24,12 +24,15 @@ module CartoDB
         create_logo_overlay(@visualization, 10)
       end
 
-      def create_overlays_from_url_options(url_options)
-        header_created = false
+      def get_overlay_by_type(t)
+        o = @visualization.overlays.find { |o| o.type == t }
+        o.fetch
+      end
 
-        # zoom and loader is always added
-        create_zoom_overlay(@visualization, 6)
-        create_loader_overlay(@visualization, 9)
+      def create_overlays_from_url_options(url_options)
+
+        create_default_overlays
+        map_updated = false
 
         return if not url_options
 
@@ -37,32 +40,56 @@ module CartoDB
         opts = CGI::parse(url_options).deep_symbolize_keys
         opts.each_pair { |opt, value|
           bool_value = value[0] == 'true'
+          overlay = nil
           case opt
             when :title, :description
-              if not header_created
-                create_header_overlay(@visualization, 1, opts[:title] == 'true', opts[:description] == 'true')
-                header_created = true
+              overlay = get_overlay_by_type('header')
+              if overlay
+                overlay.options['extra']['show_title'] = opts[:title] == 'true'
+                overlay.options['extra']['show_description'] = opts[:description] == 'true'
+                bool_value = opts[:title] == 'true' || opts[:description] == 'true'
+                overlay.show.store({ invalidate: false }) if overlay and bool_value
               end
             when :shareable
-              create_share_overlay(@visualization, 2) if bool_value
+              overlay = get_overlay_by_type('share')
+              overlay.hide.store({ invalidate: false }) if overlay and not bool_value
             when :search
-              create_search_overlay(@visualization, 3) if bool_value
+              overlay = get_overlay_by_type('search')
+              overlay.hide.store({ invalidate: false }) if overlay and not bool_value
             when :layer_selector
-              create_layer_selector_overlay(@visualization, 4) if bool_value
+              overlay = get_overlay_by_type('layer_selector')
+              overlay.show.store({ invalidate: false }) if overlay and bool_value
             when :fullscreen
-              create_fullscreen_overlay(@visualization, 7) if bool_value
+              overlay = get_overlay_by_type('fullscreen')
+              overlay.show.store({ invalidate: false }) if overlay and bool_value
             when :cartodb_logo
-              create_logo_overlay(@visualization, 10) if bool_value
+              overlay = get_overlay_by_type('logo')
+              overlay.hide.store({ invalidate: false }) if overlay and not bool_value
 
             # map stuff, already in the viz
-            when :legends
-              map = @visualization.map
-              map.legends = bool_value
-              map.save
-            when :scrollwheel
-              map = @visualization.map
-              map.scrollwheel = bool_value
-              map.save
+            when :legends, :scrollwheel
+              if not map_updated
+                map = @visualization.map
+                map_needs_save = false
+                legends = opts[:legends] == 'true'
+                if map.legends != legends
+                  map_needs_save = true
+                end
+                scrollwheel = opts[:scrollwheel] == 'true'
+                if map.scrollwheel != scrollwheel
+                  map_needs_save = true
+                end
+                if map_needs_save
+                   # query directly the database because it's a simple update and
+                   # doing though the ORM raises requests to the tiler (not needed in 
+                   # this case)
+                   # https://mondaybynoon.com/wp-content/uploads/xVyoSl.jpg
+                   Sequel::Model(:maps).fetch(%Q{
+                    UPDATE maps SET scrollwheel= ?, legends = ? WHERE id = ?
+                   }, scrollwheel, legends, map.id).first
+                end
+                map_updated = true
+              end
 
             #when :zoom
             #when :center_lat
@@ -71,6 +98,7 @@ module CartoDB
             # not parsed, already stored in layers visible option
             #when :sublayer_options
           end
+
         }
 
       end

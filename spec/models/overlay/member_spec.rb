@@ -59,4 +59,18 @@ describe Overlay::Member do
       lambda { member.fetch }.should raise_error KeyError
     end
   end #delete
+
+  describe '#hide/show' do
+    it 'should change options to visible = false/true' do
+      member = Overlay::Member.new({type: 't', options: {'display'=> true }})
+      member.is_hidden.should == false
+      member.hide
+      member.options['display'].should == false
+      member.is_hidden.should == true
+      member.show
+      member.is_hidden.should == false
+      member.options['display'].should == true
+    end
+  end
+
 end # Overlay::Member

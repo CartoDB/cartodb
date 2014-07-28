@@ -4,11 +4,11 @@ require_relative '../../acceptance_helper'
 feature "Superadmin's users API" do
   background do
     Capybara.current_driver = :rack_test
-    User.any_instance.stubs(:load_cartodb_functions).returns(true)
-    User.any_instance.stubs(:set_database_permissions).returns(true)
-    User.any_instance.stubs(:rebuild_quota_trigger).returns(true)
-    User.any_instance.stubs(:create_schemas_and_set_permissions).returns(true)
-    User.any_instance.stubs(:remaining_quota).returns(10)
+    #User.any_instance.stubs(:load_cartodb_functions).returns(true)
+    #User.any_instance.stubs(:set_database_permissions).returns(true)
+    #User.any_instance.stubs(:rebuild_quota_trigger).returns(true)
+    #User.any_instance.stubs(:create_schemas_and_set_permissions).returns(true)
+    #User.any_instance.stubs(:remaining_quota).returns(10)
     @new_user = new_user(:password => "this_is_a_password")
     @user_atts = @new_user.values
   end

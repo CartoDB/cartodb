@@ -10,7 +10,7 @@ module CartoDB
 
       def initialize(user, options={})
         @user = user
-        @exclude_shared = options[:exclude_shared].present?
+        @exclude_shared = options[:exclude_shared].present? && options[:exclude_shared] == true
       end
 
       def names(params={})
@@ -121,7 +121,7 @@ module CartoDB
       end
 
       def only_shared?(params)
-        params[:only_shared].present?
+        params[:only_shared].present? && params[:only_shared] == true
       end
 
       def privacy_from(params={})

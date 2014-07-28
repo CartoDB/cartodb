@@ -6,7 +6,7 @@ class Api::Json::TagsController < Api::ApplicationController
 
   def index
     options = {}
-    if params[:exclude_shared].present?
+    if params[:exclude_shared].present? && params[:exclude_shared] == true
       options[:exclude_shared] = true
     end
 

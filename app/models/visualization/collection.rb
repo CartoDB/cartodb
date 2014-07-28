@@ -44,10 +44,10 @@ module CartoDB
 
       # NOTES:
       # - if user_id is present as filter, will fetch visualizations shared with the user,
-      #   except if exclude_shared filter is also present
+      #   except if exclude_shared filter is also present and true,
       # - only_shared forces to use different flow because if there are no shared there's nothing else to do
       def fetch(filters={})
-        if filters[:only_shared].present?
+        if filters[:only_shared].present? && filters[:only_shared] == true
           dataset = repository.collection
           dataset = filter_by_only_shared(dataset, filters)
         else
@@ -115,7 +115,8 @@ module CartoDB
       end
 
       def filter_by_only_shared(dataset, filters)
-        return dataset unless (filters[:user_id].present? && filters[:only_shared].present?)
+        return dataset \
+          unless (filters[:user_id].present? && filters[:only_shared].present? && filters[:only_shared] == true)
 
         shared_vis = user_shared_vis(filters[:user_id])
 
@@ -128,7 +129,7 @@ module CartoDB
 
       def include_shared_entities(dataset, filters)
         return dataset unless filters[:user_id].present?
-        return dataset if filters[:exclude_shared].present?
+        return dataset if filters[:exclude_shared].present? && filters[:exclude_shared] == true
 
         shared_vis = user_shared_vis(filters[:user_id])
 

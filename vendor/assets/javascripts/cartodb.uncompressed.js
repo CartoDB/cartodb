@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9c217e53bf8a7dea9ae7333f41fc26cd16333be3
+// sha: 835350b4338ad6611a82f2b1591b114a2761b9a4
 (function() {
   var root = this;
 
@@ -22566,35 +22566,61 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   _place: function() {
 
-    var pTop  = this.model.get("extra").pTop
-    var pLeft = this.model.get("extra").pLeft;
-
     var top   = this.model.get("y");
     var left  = this.model.get("x");
 
+    // position percentages
+    var pTop  = this.model.get("extra").pTop
+    var pLeft = this.model.get("extra").pLeft;
+
     var right  = "auto";
     var bottom = "auto";
-
-    if (this.model.get("extra").landscapeDominantSide == 'right') {
-      left = "auto";
-      right = this.model.get("extra").r;
-    }
-
-    if (this.model.get("extra").portraitDominantSide == 'bottom') {
-      top = "auto";
-      bottom = this.model.get("extra").b;
-    }
-
-    //console.log("top: " + top, "left: " + left, "right: " + right, "bottom: " + bottom);
+    
+    var marginTop  = 0;
+    var marginLeft = 0;
 
     var width = this.model.get("extra").width;
 
+    if (pTop > 40 && pTop < 55) {
+
+      top = "50%";
+      marginTop = -this.$el.height()/2;
+
+    }  else {
+
+      var portraitDominantSide  = this.model.get("extra").portraitDominantSide;
+
+      if (portraitDominantSide == 'bottom') {
+        top = "auto";
+        bottom = this.model.get("extra").b - this.$el.height();
+      }
+
+    }
+
+    if (pLeft > 40 && pLeft < 55) {
+
+      left = "50%";
+      marginLeft = -width/2;
+
+    } else {
+
+      var landscapeDominantSide = this.model.get("extra").landscapeDominantSide;
+
+      if (landscapeDominantSide == 'right') {
+        left = "auto";
+        right = this.model.get("extra").r - this.$el.width();
+      }
+
+    }
+
     this.$el.css({
       width: width,
+      marginLeft: marginLeft,
+      marginTop: marginTop,
       top: top,
       left: left,
-      right: right - this.$el.width(),
-      bottom: bottom - this.$el.height()
+      right: right,
+      bottom: bottom
     });
 
   },
@@ -31510,7 +31536,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var device = this.device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!opt.title) {
       vizjson.title = null;
@@ -32106,6 +32132,11 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 cdb.vis.Overlay.register('image', function(data, vis) {
 
   var options = data.options;
+
+  var isDevice = options.device == "mobile" ? true : false;
+
+  if (vis.device !== isDevice) return;
+
   var template = cdb.core.Template.compile(
     data.template || '\
     <div class="content">\
@@ -32126,6 +32157,10 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 cdb.vis.Overlay.register('text', function(data, vis) {
 
   var options = data.options;
+
+  var isDevice = options.device == "mobile" ? true : false;
+
+  if (vis.device !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\

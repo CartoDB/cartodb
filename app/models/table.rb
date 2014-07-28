@@ -1287,11 +1287,50 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def cartodbfy
-    cartodbfy_function = owner.cartodb_extension_version_pre_mu? ? 
-      "CDB_CartodbfyTable('#{owner.database_schema}.#{self.name}')" :
-      "CDB_CartodbfyTable('#{owner.database_schema}','#{owner.database_schema}.#{self.name}')"
-    owner.in_database(:as => :superuser)
-         .run("SELECT cartodb.#{cartodbfy_function}")
+    if owner.cartodb_extension_version_pre_mu?
+      schema_name = 'public'
+    else
+      schema_name = owner.database_schema
+    end
+    table_name = "#{owner.database_schema}.#{self.name}"
+
+    # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run(%Q{
+        SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+      })
+
+      user_database.run(%Q{
+        SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
+      })
+
+      user_database.run(%Q{
+        SELECT cartodb._CDB_create_cartodb_id_column('#{table_name}'::REGCLASS);
+      })
+      user_database.run(%Q{
+        SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
+      })
+
+      exists_geom_cols = user_database[%Q{
+        SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
+      }].first
+
+      exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
+
+      # This are the two hot zones
+      user_database.run(%Q{
+        SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
+      })
+      user_database.run(%Q{
+        SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
+      })
+
+      user_database.run(%Q{
+        SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+      })
+
+    end
+
     self.schema(reload:true)
   end
 

@@ -1442,8 +1442,8 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.1' # TODO: optionally take as parameter?
-    tgt_rev = '0.3.1'
+    tgt_ver = '0.3.3' # TODO: optionally take as parameter?
+    tgt_rev = '0.3.1-7-g679af1d'  # from 'git describe'
 
     add_python
 

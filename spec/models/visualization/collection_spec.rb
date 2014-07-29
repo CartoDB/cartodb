@@ -18,6 +18,7 @@ describe Visualization::Collection do
                     database: db_config.fetch('database'),
                     username: db_config.fetch('username')
                   )
+    # Careful, uses another DB table (and deletes it at after:(each) )
     @relation   = "visualizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)
     Visualization::Migrator.new(@db).migrate(@relation)
@@ -136,7 +137,24 @@ describe Visualization::Collection do
       records = collection.fetch(user_id: user1_id, only_shared: true)
       records.count.should eq 1
       records.first.name.should eq vis_2_name
+    end
 
+    it 'checks that filtering collection by locked works' do
+      vis1 = Visualization::Member.new(random_attributes(name: 'viz_1', locked:true)).store
+      vis2 = Visualization::Member.new(random_attributes(name: 'viz_2', locked:false)).store
+
+      collection = Visualization::Collection.new
+
+      records = collection.fetch()
+      records.count.should eq 2
+
+      records = collection.fetch(locked: false)
+      records.count.should eq 1
+      records.first.name.should eq vis2.name
+
+      records = collection.fetch(locked: true)
+      records.count.should eq 1
+      records.first.name.should eq vis1.name
     end
 
   end
@@ -148,8 +166,9 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'public'),
-      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
+      type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
+      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
+      locked:       attributes.fetch(:locked, false)
     }
   end #random_attributes
 end # Visualization::Collection

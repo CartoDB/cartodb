@@ -26,6 +26,7 @@ module CartoDB
           String    :url_options
           String    :user_id
           String    :permission_id
+          Boolean   :locked
         end
 
         @db.run(%Q{

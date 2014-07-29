@@ -121,6 +121,36 @@
       &:hover { background:#DEDEDE }
     }
 
+    // Lock icon
+    i.lock {
+      position:relative;
+      display:none;
+      width:20px;
+      height:20px;
+      @include border-radius(3px);
+      background:#E7E7E7;
+      
+      &:before, &:after {
+        content:'';
+        position:absolute;
+        background:#888888;
+      }
+
+      &:before { 
+        top:6px;
+        left:8px;
+        width:2px;
+        height:8px;
+      }
+      &:after {
+        top:12px;
+        left:8px;
+        width:5px;
+        height:2px;
+      }
+      &:hover { background:#DEDEDE }
+    }
+
   }
 
 

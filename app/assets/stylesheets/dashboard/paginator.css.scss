@@ -14,11 +14,14 @@
   .tables .content .paginator,
   section.visualizations .paginator {
     position:relative;
-    display:block;
-    margin:10px 0 0;
-    padding:0 22px;
+    @include display-flex();
+    @include justify-content(space-between, justify);
+    @include align-items(center, center);
+    margin:10px 22px 0;
+    padding:12px 0;
     letter-spacing:0;
-    text-align: right;
+    border-top:1px solid #E2E2E2;
+    border-bottom:1px solid #E2E2E2;
 
     .dropdown {
       display:block;
@@ -91,10 +94,6 @@
     &.empty { display:none }
 
     & > ul {
-      display:block;
-      padding:12px 0;
-      border-top: 1px solid #E2E2E2;
-      border-bottom: 1px solid #E2E2E2;
 
       li {
         @include inline-block();
@@ -185,5 +184,5 @@
 
   // Visualizations paginator
   section.visualizations .paginator {
-    padding:0 38px 0 0;
+    margin:10px 38px 0 0;
   }

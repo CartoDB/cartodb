@@ -1,6 +1,7 @@
 # encoding: UTF-8'
 require_relative '../../services/table-geocoder/lib/table_geocoder'
 require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
+require_relative '../../lib/cartodb/metrics'
 
 class Geocoding < Sequel::Model
 
@@ -92,8 +93,10 @@ class Geocoding < Sequel::Model
     create_automatic_geocoding if automatic_geocoding_id.blank?
     rows_geocoded_after = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
+    CartoDB::Metrics.new.report(:geocoding, metrics_payload)
   rescue => e
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
+    CartoDB::Metrics.new.report(:geocoding, metrics_payload(e))
     CartoDB::notify_exception(e, user: user)
   end # run!
 
@@ -147,4 +150,52 @@ class Geocoding < Sequel::Model
   rescue
     nil
   end # max_geocodable_rows
+
+  def successful_rows
+    real_rows.to_i
+  end
+
+  def failed_rows
+    processable_rows.to_i - real_rows.to_i
+  end
+
+  def metrics_payload(exception = nil)
+    payload = {
+      distinct_id:      user.username,
+      username:         user.username,
+      email:            user.email,
+      id:               id,
+      table_id:         table_id,
+      kind:             kind,
+      country_code:     country_code,
+      formatter:        formatter,
+      geometry_type:    geometry_type,
+      processed_rows:   processed_rows,
+      cache_hits:       cache_hits,
+      processable_rows: processable_rows,
+      real_rows:        real_rows,
+      successful_rows:  successful_rows,
+      failed_rows:      failed_rows,
+      price:            price,
+      used_credits:     used_credits,
+      remaining_quota:  remaining_quota
+    }
+    if state == 'finished' && exception.nil?
+      payload.merge!(
+        success: true
+      )
+    elsif exception.present?
+      payload.merge!(
+        success: false,
+        error: exception.message
+      )
+    else
+      payload.merge!(
+        success: false,
+        error: error
+      )
+    end
+    payload
+  end
+
 end

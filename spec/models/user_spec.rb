@@ -1034,6 +1034,24 @@ describe User do
     end
   end
 
+  it "should notify a new user created from a organization" do
+   
+    ::Resque.stubs(:enqueue).returns(nil)
+
+    organization = FactoryGirl.create(:organization_with_users)
+    user1 = new_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+    user1.organization = organization
+    user1.id = UUIDTools::UUID.timestamp_create.to_s
+
+    ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
+    
+    user1.save
+
+    organization.destroy
+    #user1.destroy
+    #organization.users.each {|u| u.destroy unless u == organization.owner }
+    #organization.owner.destroy
+  end
 
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new

@@ -21,7 +21,7 @@ module CartoDB
         @named_map          = nil
         @named_map_template = nil
         @loaded				    = false
-      end #initialize
+      end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
@@ -45,7 +45,7 @@ module CartoDB
           },
           'query' => nil  #do not expose SQL query on Torque layers with named maps
         }
-      end #get_decoration_for_layer
+      end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
@@ -81,13 +81,14 @@ module CartoDB
               cdn_url:          @configuration.fetch(:cdn_url, nil),
               named_map:        {
                 name:     @named_map_template[:name],
+                stat_tag: @visualization.id,
                 params:   params,
                 layers:   configure_layers_data
               }
             }
           }
         end
-      end #to_poro
+      end
 
       private
 
@@ -142,8 +143,8 @@ module CartoDB
       	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
         @named_map_template = @named_map.template.fetch(:template) unless @named_map.nil?
       	@loaded = true
-      end #fetch
+      end
 
-		end #Presenter
-	end #NamedMapsWrapper
-end #CartoDB
+		end
+	end
+end

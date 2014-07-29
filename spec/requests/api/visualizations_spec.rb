@@ -658,7 +658,7 @@ describe Api::Json::VisualizationsController do
     name  = "visualization #{rand(9999)}"
     {
       name:         name,
-      tags:         ['foo', 'bar'],
+      tags:         attributes.fetch(:tags, ['foo', 'bar']),
       map_id:       map.id,
       description:  'bogus',
       type:         'derived',

@@ -253,7 +253,11 @@ module CartoDB
       end
 
       def varnish_key
-        sorted_table_names = related_tables.map(&:name).sort { |i, j| i <=> j }.join(',')
+        sorted_table_names = related_tables.map{ |table|
+          "#{user.database_schema}.#{table.name}"
+        }.sort { |i, j|
+          i <=> j
+        }.join(',')
         "#{user.database_name}:#{sorted_table_names},#{id}"
       end #varnish_key
 

@@ -151,6 +151,14 @@ class Geocoding < Sequel::Model
     nil
   end # max_geocodable_rows
 
+  def successful_rows
+    real_rows.to_i
+  end
+
+  def failed_rows
+    processable_rows.to_i - real_rows.to_i
+  end
+
   def metrics_payload(exception = nil)
     payload = {
       distinct_id:      user.username,
@@ -166,6 +174,8 @@ class Geocoding < Sequel::Model
       cache_hits:       cache_hits,
       processable_rows: processable_rows,
       real_rows:        real_rows,
+      successful_rows:  successful_rows,
+      failed_rows:      failed_rows,
       price:            price,
       used_credits:     used_credits,
       remaining_quota:  remaining_quota

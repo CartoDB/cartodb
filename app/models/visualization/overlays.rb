@@ -19,11 +19,12 @@ module CartoDB
 
       def create_default_overlays
         #create_header_overlay(@visualization, 1)
+        #create_layer_selector_overlay(@visualization, 4)
+        #create_fullscreen_overlay(@visualization, 7)
+
         create_share_overlay(@visualization, 2)
         create_search_overlay(@visualization, 3)
-        #create_layer_selector_overlay(@visualization, 4)
         create_zoom_overlay(@visualization, 6)
-        #create_fullscreen_overlay(@visualization, 7)
         create_zoom_info_overlay(@visualization, 8)
         create_loader_overlay(@visualization, 9)
         create_logo_overlay(@visualization, 10)

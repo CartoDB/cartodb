@@ -1,10 +1,11 @@
 # coding: UTF-8
 require_relative './user/user_decorator'
 require_relative './user/oauths'
-require_relative '../models/synchronization/synchronization_oauth'
+require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
+require_relative './synchronization/collection.rb'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -166,6 +167,7 @@ class User < Sequel::Model
       self.layers.each { |l| self.remove_layer l }
       self.geocodings.each { |g| g.destroy }
       self.assets.each { |a| a.destroy }
+      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
     rescue StandardError => exception
       error_happened = true
       CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"

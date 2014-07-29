@@ -3,6 +3,7 @@
 * Fixed bugs
   * Fixed write buttons are shown when watching sync tables
   * Fixed some avatar tests
+  * Upgrades to 0.3.2 cartodb postgresql extension version to make 0.3.0dev version upgradeable
 
 * New Features
   * Mail notifications when sharing or unsharing objects in organizations

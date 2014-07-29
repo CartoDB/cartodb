@@ -43,6 +43,8 @@ module CartoDB
     end
 
     def migrate!
+      # # Check if the file had data, if not rise an error because probably something went wrong
+
       # Sanitize column names where needed
       column_names = @db_connection.schema(@current_name, {:schema => @target_schema}).map{ |s| s[0].to_s }
 

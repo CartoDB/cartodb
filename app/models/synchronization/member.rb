@@ -120,11 +120,16 @@ module CartoDB
       end #should_run?
 
       def run
+        importer = nil
         self.state    = STATE_SYNCING
 
         log           = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX, expiration: REDIS_LOG_EXPIRATION_IN_SECS)
         self.log_id   = log.id
         store
+
+        if user.nil?
+          raise "Couldn't instantiate synchronization user. Data: #{to_s}"
+        end
 
         downloader    = get_downloader
 
@@ -142,8 +147,8 @@ module CartoDB
           }
         )
 
-        database      = user.in_database
-        importer      = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
+        database = user.in_database
+        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
 
         importer.run
         self.ran_at   = Time.now
@@ -159,11 +164,18 @@ module CartoDB
 
         store
       rescue => exception
+        Rollbar.report_exception(exception)
         log.append exception.message
         log.append exception.backtrace
         puts exception.message
         puts exception.backtrace
-        set_failure_state_from(importer)
+
+        if importer.nil?
+          set_general_failure_state_from(exception)
+        else
+          set_failure_state_from(importer)
+        end
+
         store
 
         if exception.kind_of?(TokenExpiredOrInvalidError)
@@ -178,7 +190,6 @@ module CartoDB
       end
 
       def get_downloader
-
         datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
         if service_item_id.nil? || service_item_id.size == 0
           self.service_item_id = url
@@ -248,6 +259,15 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
+        self.retried_times  = self.retried_times + 1
+      end
+
+      def set_general_failure_state_from(exception)
+        self.log            << '******** synchronization raised exception ********'
+        self.log_trace      = ''
+        self.state          = STATE_FAILURE
+        self.error_code     = 99999
+        self.error_message  = exception.message + ' ' + exception.backtrace
         self.retried_times  = self.retried_times + 1
       end
 

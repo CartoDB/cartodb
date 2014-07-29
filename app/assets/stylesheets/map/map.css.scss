@@ -405,12 +405,8 @@ div.map {
     margin: 0;
   }
 
-  div.cartodb-zoom {
-    position:absolute;
-    margin: 0;
-  }
-
-  // Zoom info
+  // Zoom
+  div.cartodb-zoom,
   div.cartodb-zoom-info {
     position:absolute;
     margin: 0;

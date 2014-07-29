@@ -26,7 +26,7 @@ class Api::Json::OverlaysController < Api::ApplicationController
       type:       params[:type],
       options:    params[:options],
       template:   params[:template],
-      order:      1
+      order:      params[:order]
     )
 
     member      = Overlay::Member.new(member_attributes).store

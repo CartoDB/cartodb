@@ -150,18 +150,19 @@ describe Geocoding do
       geocoding.max_geocodable_rows.should eq 100
     end
 
-    pending 'returns nil if the user has soft limit' do
-      @user.stubs('hard_geocoding_limit?').returns(false)
+    it 'returns nil if the user has soft limit' do
+      @user.stubs('soft_geocoding_limit?').returns(true)
       FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
       geocoding.max_geocodable_rows.should eq nil
     end
 
-    pending 'returns the remaining quota for the organization if the user has hard limit and belongs to an org' do
+    it 'returns the remaining quota for the organization if the user has hard limit and belongs to an org' do
       organization = FactoryGirl.create(:organization_with_users, geocoding_quota: 150)
       @user.organization = organization
       @user.quota_in_bytes = 50.megabytes
       @user.save
       delete_user_data @user
+      @user.stubs('soft_geocoding_limit?').returns(false)
       organization.geocoding_quota.should eq 150
       geocoding.max_geocodable_rows.should eq 150
       FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus')
@@ -198,13 +199,13 @@ describe Geocoding do
       geocoding.calculate_used_credits.should eq 0
     end
 
-    pending 'returns 0 when the user has enough quota' do
+    it 'returns 0 when the user has enough quota' do
       # User has 200 geocoding credits, so geocoding 200 strings should take 0 credits
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 200, kind: 'high-resolution')
       geocoding.calculate_used_credits.should eq 0
     end
 
-    pending 'returns the used credits when the user is over geocoding quota' do
+    it 'returns the used credits when the user is over geocoding quota' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution')
       # 100 total (user has 200) => 0 used credits
       geocoding.calculate_used_credits.should eq 0
@@ -231,4 +232,30 @@ describe Geocoding do
     end
   end
 
+  describe '#failed_rows and #successful_rows' do
+    before(:each) do
+      @user.geocodings_dataset.delete
+    end
+    it 'returns expected results' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, real_rows: 100, processable_rows: 100, kind: 'high-resolution')
+      geocoding.failed_rows.should eq 0
+      geocoding.successful_rows.should eq 100
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 10, cache_hits: 150, real_rows: 155, processable_rows: 160, kind: 'high-resolution')
+      geocoding.failed_rows.should eq 5
+      geocoding.successful_rows.should eq 155
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, real_rows: 100, processable_rows: 100, kind: 'high-resolution')
+      geocoding.failed_rows.should eq 0
+      geocoding.successful_rows.should eq 100
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 0, real_rows: 0, processable_rows: 0, kind: 'high-resolution')
+      geocoding.failed_rows.should eq 0
+      geocoding.successful_rows.should eq 0
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, real_rows: 0, processable_rows: 100, kind: 'high-resolution')
+      geocoding.failed_rows.should eq 100
+      geocoding.successful_rows.should eq 0
+    end
+  end
+
+  describe '#successful_rows' do
+
+  end
 end

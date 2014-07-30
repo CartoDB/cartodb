@@ -208,8 +208,14 @@ module CartoDB
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
         if datasource_provider.providers_download_url?
+          resource_url = (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url
+
+          if resource_url.nil?
+            raise CartoDB::DataSourceError.new("Missing resource URL to download. Data:#{to_s}" )
+          end
+
           downloader    = CartoDB::Importer2::Downloader.new(
-              (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url,
+              resource_url,
               etag:             etag,
               last_modified:    modified_at,
               checksum:         checksum,

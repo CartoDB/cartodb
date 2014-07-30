@@ -19,7 +19,9 @@ div.dropdown.map_options_dropdown {
     padding: 12px 15px;
 
     li {
-      display: block;
+      @include display-flex();
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
       margin: 0;
       padding: 10px 0;
       border:none;

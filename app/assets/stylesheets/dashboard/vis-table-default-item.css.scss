@@ -165,7 +165,7 @@
       }
     }
 
-    i.delete { @include inline-block() }
+    i.delete, i.lock { @include inline-block() }
     .table-order,
     .vis-order { display:inherit; }
   }

@@ -19,9 +19,6 @@ class Api::Json::OverlaysController < Api::ApplicationController
   end #index
 
   def create
-    collection  = Overlay::Collection.new(
-                    visualization_id: params.fetch('visualization_id')
-                  )
     member_attributes = payload.merge(
       type:       params[:type],
       options:    params[:options],
@@ -30,8 +27,6 @@ class Api::Json::OverlaysController < Api::ApplicationController
     )
 
     member      = Overlay::Member.new(member_attributes).store
-    collection.add(member)
-    collection.store
     render_jsonp(member.attributes)
   end #create
 
@@ -52,13 +47,8 @@ class Api::Json::OverlaysController < Api::ApplicationController
   end #update
 
   def destroy
-    collection  = Overlay::Collection.new(
-                    visualization_id: params.fetch('visualization_id')
-                  )
     member      = Overlay::Member.new(id: params.fetch('id'))
-    collection.delete(member)
     member.delete
-    collection.store
     head 204
   end #destroy
 

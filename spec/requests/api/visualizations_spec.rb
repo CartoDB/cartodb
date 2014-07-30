@@ -629,16 +629,49 @@ describe Api::Json::VisualizationsController do
     end
   end # non existent visualization
 
-  def factory
+  describe 'tests visualization listing filters' do
+    it 'uses locked filter' do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+      post "/api/v1/viz?api_key=#{@api_key}", factory(locked: true).to_json, @headers
+      vis_1_id = JSON.parse(last_response.body).fetch('id')
+      post "/api/v1/viz?api_key=#{@api_key}", factory(locked: false).to_json, @headers
+      vis_2_id = JSON.parse(last_response.body).fetch('id')
+
+      get "/api/v1/viz?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.length.should eq 2
+
+      get "/api/v1/viz?api_key=#{@api_key}&locked=true", {}, @headers
+      last_response.status.should == 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.length.should eq 1
+      collection.first.fetch('id').should eq vis_1_id
+
+      get "/api/v1/viz?api_key=#{@api_key}&locked=false", {}, @headers
+      last_response.status.should == 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.length.should eq 1
+      collection.first.fetch('id').should eq vis_2_id
+    end
+  end
+
+
+  def factory(attributes={})
     map   = ::Map.create(user_id: @user.id)
     name  = "visualization #{rand(9999)}"
     {
       name:         name,
-      tags:         ['foo', 'bar'],
+      tags:         attributes.fetch(:tags, ['foo', 'bar']),
       map_id:       map.id,
       description:  'bogus',
       type:         'derived',
-      privacy:      'public'
+      privacy:      'public',
+      locked:       attributes.fetch(:locked, false)
     }
   end #factory
 

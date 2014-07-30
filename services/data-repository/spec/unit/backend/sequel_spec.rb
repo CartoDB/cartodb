@@ -21,6 +21,7 @@ describe DataRepository::Backend::Sequel do
       String    :password_salt
       String    :url_options
       String    :permission_id
+      Boolean   :locked
     end
 
     db.create_table :overlays do

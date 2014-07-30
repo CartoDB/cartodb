@@ -14,7 +14,7 @@ module CartoDB
         @rows_and_sizes  = options[:rows_and_sizes] || {}
         # Expose real privacy (used for normal JSON purposes)
         @real_privacy    = options[:real_privacy] || false
-      end #initialize
+      end
 
       def to_poro
         poro = {
@@ -29,13 +29,14 @@ module CartoDB
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
-          permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro
+          permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
+          locked:           visualization.locked
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro
-      end #to_poro
+      end
 
       private
 
@@ -53,11 +54,11 @@ module CartoDB
           when Member::PRIVACY_PROTECTED
             Member::PRIVACY_PROTECTED
         end
-      end #privacy_for_vizjson
+      end
 
       def related
         { related_tables:   related_tables }
-      end #related
+      end
 
       def table_data_for(table=nil)
         return {} unless table
@@ -77,14 +78,14 @@ module CartoDB
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,
           updated_at:   table.updated_at
-        ) #if options.fetch(:table_data, true)
+        )
 
         table_data.merge!(
           size:         rows_and_sizes[table.name][:size],
           row_count:    rows_and_sizes[table.name][:rows]
         ) unless rows_and_sizes.nil? || rows_and_sizes.empty?
         table_data
-      end #table_data_for
+      end
 
       def synchronization_data_for(table=nil)
         return nil unless table
@@ -94,13 +95,13 @@ module CartoDB
       def related_tables
         without_associated_table(visualization.related_tables)
           .map { |table| table_data_for(table) }
-      end #related_tables
+      end
 
       def without_associated_table(tables)
         return tables unless visualization.table
         tables.select { |table| table.id != visualization.table.id }
-      end #without_associated_table
-    end # Presenter
-  end # Visualization
-end # CartoDB
+      end
+    end
+  end
+end
 

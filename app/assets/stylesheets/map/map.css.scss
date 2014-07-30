@@ -263,9 +263,9 @@ div.map {
     position:relative;
     box-sizing: border-box;
     @include inline-block();
-    padding: 11px 14px 0 37px;
+    padding: 10px 14px 10px 37px;
     margin: 0 3px 0 0;
-    height: 34px;
+    height: auto;
     min-width: 70px;
     background: rgba(#000, .7);
     color: #fff;

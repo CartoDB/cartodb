@@ -21,6 +21,7 @@
   }
 
   div.map div.dropdown.basemap ul li > a .thumbs li> a.nokia_reduced_day div.thumb {
+    // TODO: remove this background url
     background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
   }
 
@@ -33,6 +34,7 @@
     @include border-radius(2px);
 
     // Set nokia basemap as default
+    // TODO: remove this background url 
     background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
     background-size: 34px;
     background-color: rgba(0, 0, 0, 0);
@@ -49,7 +51,7 @@
 
   } // thumb
 
-  .info { @include inline-block(); } 
+  .info { @include inline-block(); }
 
 }
 

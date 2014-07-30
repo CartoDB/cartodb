@@ -92,9 +92,9 @@ module CartoDB
       attr_reader :user
 
       def shared_entities_sql_filter(params)
-        only_shared = only_shared?(params)
-
         return '' if @exclude_shared
+
+        only_shared = only_shared?(params)
 
         ids = CartoDB::SharedEntity.where({
           recipient_id: @user.id,
@@ -114,7 +114,7 @@ module CartoDB
             types_fragment = ''
           end
 
-          "OR (id IN ('#{ids.join("','")}') #{types_fragment} #{locked_from(params)})"
+          "OR (id IN ('#{ids.join("','")}') #{types_fragment})"
         end
       end
 

@@ -706,7 +706,7 @@ class User < Sequel::Model
     to_date = DateTime.now.strftime("%Q")
     request_body = Cartodb.config[:api_requests_es_service]['body'].dup
     request_url = Cartodb.config[:api_requests_es_service]['url'].dup
-    request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
+    request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)
     request = Typhoeus::Request.new(

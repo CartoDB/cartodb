@@ -160,6 +160,8 @@ describe Visualization::Collection do
     it "checks that shared entities appear no matter if they're locked or not" do
       vis_1_name = 'viz_1'
       vis_2_name = 'viz_2'
+      vis_3_name = 'viz_3'
+      vis_4_name = 'viz_4'
       user1_id = UUIDTools::UUID.timestamp_create.to_s
       user2_id = UUIDTools::UUID.timestamp_create.to_s
       Visualization::Member.new(random_attributes({
@@ -172,6 +174,16 @@ describe Visualization::Collection do
                                                            user_id: user2_id,
                                                            locked:true
                                                          })).store
+      vis3 = Visualization::Member.new(random_attributes({
+                                                             name: vis_3_name,
+                                                             user_id: user2_id,
+                                                             locked:false
+                                                         })).store
+      Visualization::Member.new(random_attributes({
+                                                      name: vis_4_name,
+                                                      user_id: user1_id,
+                                                      locked:false
+                                                  })).store
 
       shared_entity = CartoDB::SharedEntity.new(
           recipient_id:   user1_id,
@@ -180,22 +192,31 @@ describe Visualization::Collection do
           entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
-      shared_entity.reload
+      shared_entity = CartoDB::SharedEntity.new(
+          recipient_id:   user1_id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      vis3.id,
+          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      shared_entity.save
 
       collection = Visualization::Collection.new
-      collection.stubs(:user_shared_vis).with(user1_id).returns([vis2.id])
+      collection.stubs(:user_shared_vis).with(user1_id).returns([vis2.id, vis3.id])
 
+      # Non-locked vis, all shared vis
       records = collection.fetch(user_id: user1_id)
-      records.count.should eq 2
+      records.count.should eq 4
 
-      records = collection.fetch(user_id: user1_id, locked:true)
-      records.count.should eq 2
-
+      # Same behaviour, non-locked, all shared
       records = collection.fetch(user_id: user1_id, locked:false)
-      records.count.should eq 1
-      records.map { |record| record.name }.first.should eq vis_2_name
-    end
+      records.count.should eq 3
 
+
+      # Only user vis, no shared vis at all
+      records = collection.fetch(user_id: user1_id, locked:true)
+      records.count.should eq 1
+      records.map { |record| record.name }.first.should eq vis_1_name
+    end
   end
 
   def random_attributes(attributes={})

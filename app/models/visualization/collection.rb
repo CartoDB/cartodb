@@ -47,7 +47,7 @@ module CartoDB
       # - if user_id is present as filter, will fetch visualizations shared with the user,
       #   except if exclude_shared filter is also present and true,
       # - only_shared forces to use different flow because if there are no shared there's nothing else to do
-      # - as locked filter only applies to your entities, must be pre-applied before "repository.apply_filters"
+      # - locked filter has special behaviour
       def fetch(filters={})
         if filters[:only_shared].present? && filters[:only_shared].to_s == 'true'
           dataset = repository.collection
@@ -55,6 +55,14 @@ module CartoDB
         else
           dataset = repository.collection(filters,  %w{ user_id })
           locked_filter = filters.delete(:locked)
+          unless locked_filter.nil?
+            if locked_filter.to_s == 'true'
+              locked_filter = true
+              filters[:exclude_shared] = true
+            else
+              locked_filter = locked_filter.to_s == 'false' ? false : nil
+            end
+          end
           dataset = repository.apply_filters(dataset, {locked: locked_filter}, ['locked']) unless locked_filter.nil?
           dataset = include_shared_entities(dataset, filters)
         end

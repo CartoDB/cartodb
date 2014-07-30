@@ -13,7 +13,7 @@ module CartoDB
       end
 
       def create_legacy_overlays
-        create_zoom_info_overlay(@visualization, 8)
+        create_zoom_info_overlay(@visualization, 7)
         create_loader_overlay(@visualization, 9)
       end
 
@@ -24,8 +24,10 @@ module CartoDB
 
         create_share_overlay(@visualization, 2)
         create_search_overlay(@visualization, 3)
+
         create_zoom_overlay(@visualization, 6)
-        create_zoom_info_overlay(@visualization, 8)
+        create_zoom_info_overlay(@visualization, 7)
+
         create_loader_overlay(@visualization, 9)
         create_logo_overlay(@visualization, 10)
       end

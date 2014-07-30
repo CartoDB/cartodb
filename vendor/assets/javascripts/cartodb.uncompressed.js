@@ -22548,15 +22548,30 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var boxColor   = style["box-color"];
     var boxOpacity = style["box-opacity"];
     var boxWidth   = style["box-width"];
+    var fontFamily = style["font-family-name"];
 
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
+
+    var fontFamilyClass = "";
+
+    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)
     + ',' + parseInt(boxColor.slice(-2),16)
     +', ' + boxOpacity + ' )';
 
+    this.$el
+    .removeClass("droid")
+    .removeClass("vollkorn")
+    .removeClass("roboto")
+    .removeClass("open_sans");
+
+    this.$el.addClass(fontFamilyClass);
     this.$el.css({
       backgroundColor: rgbaCol,
       maxWidth:        boxWidth

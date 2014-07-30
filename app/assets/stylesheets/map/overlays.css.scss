@@ -151,6 +151,11 @@
       max-width: 400px;
       min-width: 100px;
 
+      .content div {
+        background: #333;
+        @include opacity(.8);
+      }
+
       .text { font-weight:normal; }
     }
 

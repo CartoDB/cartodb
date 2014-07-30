@@ -704,8 +704,8 @@ class User < Sequel::Model
     yesterday = Date.today - 1
     from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
     to_date = DateTime.now.strftime("%Q")
-    request_body = Cartodb.config[:api_requests_es_service]['body']
-    request_url = Cartodb.config[:api_requests_es_service]['url']
+    request_body = Cartodb.config[:api_requests_es_service]['body'].dup
+    request_url = Cartodb.config[:api_requests_es_service]['url'].dup
     request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)

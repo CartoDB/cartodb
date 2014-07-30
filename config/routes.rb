@@ -36,19 +36,46 @@ CartoDB::Application.routes.draw do
     delete '(/u/:user_domain)/organization/users/:id'       => 'users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
     get    '(/u/:user_domain)/organization/users/new'       => 'users#new',     as: :new_organization_user
 
+    # search
+    get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
+    get '(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
+    get '(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
+    get '(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
+
     # Tables
-    get '(/u/:user_domain)/dashboard/tables'                        => 'visualizations#index', as: :tables_index
-    get '(/u/:user_domain)/dashboard/tables/:page'                  => 'visualizations#index', as: :tables_page
-    get '(/u/:user_domain)/dashboard/tables/tag/:tag'               => 'visualizations#index', as: :tables_tag
-    get '(/u/:user_domain)/dashboard/tables/tag/:tag/:page'         => 'visualizations#index', as: :tables_tag_page
-    #get '(/u/:user_domain)/dashboard/tables/shared'                 => 'visualizations#index', as: :tables_shared
-    #get '(/u/:user_domain)/dashboard/tables/shared/:page'           => 'visualizations#index', as: :tables_shared_page
-    #get '(/u/:user_domain)/dashboard/tables/shared/tag/:tag'        => 'visualizations#index', as: :tables_shared_tag
-    #get '(/u/:user_domain)/dashboard/tables/shared/tag/:tag/:page'  => 'visualizations#index', as: :tables_shared_tag_page
-    get '(/u/:user_domain)/dashboard/tables/mine'                   => 'visualizations#index', as: :tables_mine
-    get '(/u/:user_domain)/dashboard/tables/mine/:page'             => 'visualizations#index', as: :tables_mine_page
-    get '(/u/:user_domain)/dashboard/tables/mine/tag/:tag'          => 'visualizations#index', as: :tables_mine_tag
-    get '(/u/:user_domain)/dashboard/tables/mine/tag/:tag/:page'    => 'visualizations#index', as: :tables_mine_tag_page
+    get '(/u/:user_domain)/dashboard/tables'                            => 'visualizations#index', as: :tables_index
+    get '(/u/:user_domain)/dashboard/tables/:page'                      => 'visualizations#index', as: :tables_page
+    get '(/u/:user_domain)/dashboard/tables/tag/:tag'                   => 'visualizations#index', as: :tables_tag
+    get '(/u/:user_domain)/dashboard/tables/tag/:tag/:page'             => 'visualizations#index', as: :tables_tag_page
+    get '(/u/:user_domain)/dashboard/tables/shared'                     => 'visualizations#index', as: :tables_shared
+    get '(/u/:user_domain)/dashboard/tables/shared/:page'               => 'visualizations#index', as: :tables_shared_page
+    get '(/u/:user_domain)/dashboard/tables/shared/tag/:tag'            => 'visualizations#index', as: :tables_shared_tag
+    get '(/u/:user_domain)/dashboard/tables/shared/tag/:tag/:page'      => 'visualizations#index', as: :tables_shared_tag_page
+    get '(/u/:user_domain)/dashboard/tables/mine'                       => 'visualizations#index', as: :tables_mine
+    get '(/u/:user_domain)/dashboard/tables/mine/:page'                 => 'visualizations#index', as: :tables_mine_page
+    get '(/u/:user_domain)/dashboard/tables/mine/tag/:tag'              => 'visualizations#index', as: :tables_mine_tag
+    get '(/u/:user_domain)/dashboard/tables/mine/tag/:tag/:page'        => 'visualizations#index', as: :tables_mine_tag_page
+    get '(/u/:user_domain)/dashboard/tables/mine/locked'                => 'visualizations#index', as: :tables_mine_locked
+    get '(/u/:user_domain)/dashboard/tables/mine/locked/:page'          => 'visualizations#index', as: :tables_mine_locked_page
+    get '(/u/:user_domain)/dashboard/tables/mine/locked/tag/:tag'       => 'visualizations#index', as: :tables_mine_locked_tag
+    get '(/u/:user_domain)/dashboard/tables/mine/locked/tag/:tag/:page' => 'visualizations#index', as: :tables_mine_locked_tag_page
+    get '(/u/:user_domain)/dashboard/tables/locked'                     => 'visualizations#index', as: :tables_locked
+    get '(/u/:user_domain)/dashboard/tables/locked/:page'               => 'visualizations#index', as: :tables_locked_page
+    get '(/u/:user_domain)/dashboard/tables/locked/tag/:tag'            => 'visualizations#index', as: :tables_locked_tag
+    get '(/u/:user_domain)/dashboard/tables/locked/tag/:tag/:page'      => 'visualizations#index', as: :tables_locked_tag_page
+
+    # Tables search
+    get '(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
+    get '(/u/:user_domain)/dashboard/tables/search/:q/:page'              => 'visualizations#index', as: :tables_search_page
+    get '(/u/:user_domain)/dashboard/tables/shared/search/:q'             => 'visualizations#index', as: :tables_shared_search
+    get '(/u/:user_domain)/dashboard/tables/shared/search/:q/:page'       => 'visualizations#index', as: :tables_shared_search_page
+    get '(/u/:user_domain)/dashboard/tables/locked/search/:q'             => 'visualizations#index', as: :tables_locked_search
+    get '(/u/:user_domain)/dashboard/tables/locked/search/:q/:page'       => 'visualizations#index', as: :tables_locked_search_page
+    get '(/u/:user_domain)/dashboard/tables/mine/search/:q'               => 'visualizations#index', as: :tables_mine_search
+    get '(/u/:user_domain)/dashboard/tables/mine/search/:q/:page'         => 'visualizations#index', as: :tables_mine_search_page
+    get '(/u/:user_domain)/dashboard/tables/mine/locked/search/:q'        => 'visualizations#index', as: :tables_mine_locked_search
+    get '(/u/:user_domain)/dashboard/tables/mine/locked/search/:q/:page'  => 'visualizations#index', as: :tables_mine_locked_search_page
+
 
     # Visualizations
     get '(/u/:user_domain)/dashboard/visualizations'                            => 'visualizations#index', as: :visualizations_index
@@ -72,12 +99,6 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/visualizations/locked/tag/:tag'            => 'visualizations#index', as: :visualizations_locked_tag
     get '(/u/:user_domain)/dashboard/visualizations/locked/tag/:tag/:page'      => 'visualizations#index', as: :visualizations_locked_tag_page
 
-    # search
-    get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
-    get '(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
-    get '(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
-    get '(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
-
     # Visualizations search
     get '(/u/:user_domain)/dashboard/visualizations/search/:q'                    => 'visualizations#index', as: :visualizations_search
     get '(/u/:user_domain)/dashboard/visualizations/search/:q/:page'              => 'visualizations#index', as: :visualizations_search_page
@@ -89,12 +110,6 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/visualizations/mine/search/:q/:page'         => 'visualizations#index', as: :visualizations_mine_search_page
     get '(/u/:user_domain)/dashboard/visualizations/mine/locked/search/:q'        => 'visualizations#index', as: :visualizations_mine_locked_search
     get '(/u/:user_domain)/dashboard/visualizations/mine/locked/search/:q/:page'  => 'visualizations#index', as: :visualizations_mine_locked_search_page
-
-    # Tables search
-    get '(/u/:user_domain)/dashboard/tables/search/:q'              => 'visualizations#index', as: :tables_search
-    get '(/u/:user_domain)/dashboard/tables/search/:q/:page'        => 'visualizations#index', as: :tables_search_page
-    get '(/u/:user_domain)/dashboard/tables/shared/search/:q'       => 'visualizations#index', as: :tables_shared_search
-    get '(/u/:user_domain)/dashboard/tables/shared/search/:q/:page' => 'visualizations#index', as: :tables_shared_search_page
 
     # Tags
     get '(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags

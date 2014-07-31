@@ -24,9 +24,9 @@ module CartoDB
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)
-        invalidate_varnish_cache if options[:invalidate].present? and options[:invalidate]
+        invalidate_varnish_cache
         self
-      end #store
+      end
 
       def fetch
         result = repository.fetch(id)
@@ -66,7 +66,7 @@ module CartoDB
       def invalidate_varnish_cache
         begin
           v = visualization
-        rescue KeyError
+        rescue KeyError => e
         end
         v.invalidate_varnish_cache unless v.nil?
       end

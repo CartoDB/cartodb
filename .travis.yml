@@ -8,7 +8,7 @@ before_install:
   - sudo rm -Rf /var/lib/postgresql /etc/postgresql
   - sudo apt-add-repository --yes ppa:cartodb/postgresql-9.3
   - sudo apt-add-repository --yes ppa:cartodb/gis
-  - sudo apt-get update 
+#  - sudo apt-get update 
   - sudo apt-get install gdal-bin libgdal1-dev python-gdal
   - sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-plpython-9.3 
   - sudo apt-get install postgis

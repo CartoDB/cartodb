@@ -40,7 +40,7 @@ describe Visualization::Overlays do
   describe 'default' do
     it 'should create all overlays' do
       Visualization::Overlays.new(@visualization).create_default_overlays
-      @visualization.overlays.count.should eq 9
+      @visualization.overlays.count.should eq 6
       @visualization.overlays.select { |o| o.options['display'] }.count eq 6
     end
   end

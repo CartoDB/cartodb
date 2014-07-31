@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: d53e2b0777213e413cc210cd45a7572401f7bdc1
+// sha: d97c5be1b4734906b41b066dee1fbca667e13bee
 (function() {
   var root = this;
 
@@ -22581,49 +22581,53 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   _place: function() {
 
+    var extra =this.model.get("extra");
+
     var top   = this.model.get("y");
     var left  = this.model.get("x");
 
+    var bottomPosition = this.model.get("extra").b - this.$el.height();
+    var rightPosition  = this.model.get("extra").r - this.$el.width();
+
     // position percentages
-    var pTop  = this.model.get("extra").pTop
-    var pLeft = this.model.get("extra").pLeft;
+    var pTop  = extra.pTop;
+    var pLeft = extra.pLeft;
 
     var right  = "auto";
     var bottom = "auto";
-    
+
     var marginTop  = 0;
     var marginLeft = 0;
 
-    var width = this.model.get("extra").width;
+    var width = extra.width;
 
-    if (pTop > 40 && pTop < 55) {
+    var portraitDominantSide  = extra.portraitDominantSide;
+    var landscapeDominantSide = extra.landscapeDominantSide;
+
+    if ((landscapeDominantSide === 'top' && top > 200) || (landscapeDominantSide === 'top' && bottomPosition > 200)) {
 
       top = "50%";
       marginTop = -this.$el.height()/2;
 
     }  else {
 
-      var portraitDominantSide  = this.model.get("extra").portraitDominantSide;
-
       if (portraitDominantSide == 'bottom') {
         top = "auto";
-        bottom = this.model.get("extra").b - this.$el.height();
+        bottom = bottomPosition;
       }
 
     }
 
-    if (pLeft > 40 && pLeft < 55) {
+    if ((landscapeDominantSide === 'left' && left > 200) || (landscapeDominantSide === 'right' && rightPosition > 200)) {
 
       left = "50%";
       marginLeft = -width/2;
 
     } else {
 
-      var landscapeDominantSide = this.model.get("extra").landscapeDominantSide;
-
       if (landscapeDominantSide == 'right') {
         left = "auto";
-        right = this.model.get("extra").r - this.$el.width();
+        right = rightPosition;
       }
 
     }
@@ -22717,7 +22721,11 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
     this._place();
 
-    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
+    var content = this.model.get("extra").rendered_text;
+
+    if (this.model.get("extra").has_default_image) content = '<img src="' + this.model.get("extra").public_default_image_url + '" />';
+
+    this.$el.html(this.template(_.extend(this.model.attributes, { content: content })));
 
     this.$text = this.$el.find(".text");
 
@@ -32155,7 +32163,7 @@ cdb.vis.Overlay.register('image', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
     <div class="content">\
-    <div class="text widget_text">{{{ text }}}</div>\
+    <div class="text widget_text">{{{ content }}}</div>\
     </div>',
     data.templateType || 'mustache'
   );

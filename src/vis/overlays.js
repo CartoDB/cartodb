@@ -39,7 +39,7 @@ cdb.vis.Overlay.register('image', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
     <div class="content">\
-    <div class="text widget_text">{{{ text }}}</div>\
+    <div class="text widget_text">{{{ content }}}</div>\
     </div>',
     data.templateType || 'mustache'
   );

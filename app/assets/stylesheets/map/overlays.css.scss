@@ -142,8 +142,14 @@
       display:none;
     }
 
-    &.error .content {
+    &.error .content .text {
+      position: relative;
+      width: 200px!Important;
+      height: 200px!Important;
       background: rgba(#333, .5) image-url('layout/image_not_found.png') no-repeat 50% 50%;
+    }
+
+    &.error .content {
       img { display: none!important; }
     }
 

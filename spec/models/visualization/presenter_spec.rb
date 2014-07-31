@@ -43,5 +43,52 @@ describe Visualization::Member do
       presenter.send(:privacy_for_vizjson).should eq Visualization::Member::PRIVACY_PUBLIC
     end
   end
-end # Visualization
+
+  describe 'to_poro fields' do
+    it 'basic fields as of jul-2014' do
+      user_id = UUIDTools::UUID.timestamp_create.to_s
+
+      perm_mock = mock
+      perm_mock.stubs(:to_poro).returns({ wadus: 'wadus'})
+
+      vis_mock = mock
+      vis_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_mock.stubs(:name).returns('vis1')
+      vis_mock.stubs(:map_id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_mock.stubs(:active_layer_id).returns(1)
+      vis_mock.stubs(:type).returns(Visualization::Member::CANONICAL_TYPE)
+      vis_mock.stubs(:tags).returns(['tag1'])
+      vis_mock.stubs(:description).returns('desc')
+      vis_mock.stubs(:privacy).returns(Visualization::Member::PRIVACY_PUBLIC)
+      vis_mock.stubs(:stats).returns('123')
+      vis_mock.stubs(:created_at).returns(Time.now)
+      vis_mock.stubs(:updated_at).returns(Time.now)
+      vis_mock.stubs(:permission).returns(perm_mock)
+      vis_mock.stubs(:locked).returns(true)
+
+      vis_mock.stubs(:table).returns(nil)
+      vis_mock.stubs(:related_tables).returns([])
+
+      presenter = Visualization::Presenter.new(vis_mock)
+      data = presenter.to_poro
+
+      data[:id].present?.should eq true
+      data[:name].present?.should eq true
+      data[:map_id].present?.should eq true
+      data[:active_layer_id].present?.should eq true
+      data[:type].present?.should eq true
+      data[:tags].present?.should eq true
+      data[:description].present?.should eq true
+      data[:privacy].present?.should eq true
+      data[:stats].present?.should eq true
+      data[:created_at].present?.should eq true
+      data[:updated_at].present?.should eq true
+      data[:permission].present?.should eq true
+      data[:locked].present?.should eq true
+      data[:related_tables].should eq Array.new
+      data[:table].should eq Hash.new
+    end
+  end
+
+end
 

@@ -43,7 +43,7 @@ module CartoDB
       def propagate_to(visualization)
         visualization.store_using_table({
                                           privacy_text: ::Table::PRIVACY_VALUES_TO_TEXTS[privacy],
-                                          map_id: visualization.map_id
+                                          map_id: @table.map_id
                                         })
         self
       end #propagate_to

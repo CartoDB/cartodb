@@ -165,7 +165,13 @@
 
       span { display:inline-block }
 
-      i.delete {
+      span.vis-buttons {
+        @include display-flex();
+        @include align-items(center, center);
+      }
+
+      i.delete, i.lock {
+        margin-right:4px;
         @include transform-style("linear");
         @include transition-property("opacity");
         @include transition-duration(250ms);
@@ -210,7 +216,8 @@
         .vis-tools {
           border-top:1px solid #DDDDDD;
 
-          i.delete {
+          i.delete, i.lock {
+            @include inline-block();
             @include opacity(1);
             z-index:0;
           }

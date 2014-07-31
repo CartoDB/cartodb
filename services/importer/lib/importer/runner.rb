@@ -56,6 +56,7 @@ module CartoDB
         unpacker.run(@downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
+        @downloader.clean_up
         self
       rescue => exception
         log.append exception.to_s

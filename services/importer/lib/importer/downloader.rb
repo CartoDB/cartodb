@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'fileutils'
 require 'typhoeus'
 require 'open3'
 require_relative './exceptions'
@@ -136,6 +137,10 @@ module CartoDB
         # Just return the source file structure
         self.source_file  = SourceFile.new(filepath(name), name)
       end #download_and_store
+
+      def clean_up
+        FileUtils.rm_rf @temporary_directory if defined? @temporary_directory
+      end #clean_up
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)

@@ -264,8 +264,6 @@ var Vis = cdb.core.View.extend({
     // We set the logo by default
     if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true;
 
-    console.log(map.get("legends"), options, data, data.legends);
-
     var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 
     // map

@@ -53,9 +53,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
 
     member.store
-    collection      = Synchronization::Collection.new.fetch
-    collection.add(member)
-    collection.store
 
     response = {
       data_import: { 

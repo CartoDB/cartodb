@@ -108,9 +108,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis.privacy = vis.default_privacy(current_user)
 
     vis.store
-    collection  = Visualization::Collection.new.fetch
-    collection.add(vis)
-    collection.store
     current_user.update_visualization_metrics
     render_jsonp(vis)
   rescue CartoDB::InvalidMember

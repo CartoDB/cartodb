@@ -399,7 +399,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_cleanup
-    owner.in_database do |user_database|
+    owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -444,7 +444,7 @@ class Table < Sequel::Model(:user_tables)
         end
         unless already_had_cartodb_id
           user_database.run(%Q{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
-          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
           # only reset the sequence on real imports.
           # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns
@@ -489,6 +489,7 @@ class Table < Sequel::Model(:user_tables)
       self.schema(reload: true)
 
       set_the_geom_column!
+
       import_cleanup
 
       set_table_id
@@ -502,6 +503,36 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
+  rescue => e
+    self.handle_creation_error(e)
+  end
+
+  def after_create
+    super
+    self.create_default_map_and_layers
+    self.create_default_visualization
+    self.send_tile_style_request
+
+    grant_select_to_tiler_user
+    set_default_table_privacy
+
+    @force_schema = nil
+    $tables_metadata.hset key, 'user_id', user_id
+    self.new_table = true
+
+    # finally, close off the data import
+    if data_import_id
+      @data_import = DataImport.find(id: data_import_id)
+      @data_import.table_id   = id
+      @data_import.table_name = name
+      @data_import.save
+    end
+    add_table_to_stats
+
+    update_table_pg_stats
+
+    # Cartodbfy !
+    self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
   end
@@ -533,36 +564,6 @@ class Table < Sequel::Model(:user_tables)
     table_visualization.name = name
     table_visualization.store
   end #propagate_namechange_to_table_vis
-
-  def after_create
-    super
-    self.create_default_map_and_layers
-    self.create_default_visualization
-    self.send_tile_style_request
-
-    grant_select_to_tiler_user
-    set_default_table_privacy
-
-    @force_schema = nil
-    $tables_metadata.hset key, 'user_id', user_id
-    self.new_table = true
-
-    # finally, close off the data import
-    if data_import_id
-      @data_import = DataImport.find(id: data_import_id)
-      @data_import.table_id   = id
-      @data_import.table_name = name
-      @data_import.save
-    end
-    add_table_to_stats
-
-    update_table_pg_stats
-
-    # Cartodbfy !
-    self.cartodbfy
-  rescue => e
-    self.handle_creation_error(e)
-  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -1286,15 +1287,53 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def cartodbfy
-    cartodbfy_function = owner.cartodb_extension_version_pre_mu? ? 
-      "CDB_CartodbfyTable('#{owner.database_schema}.#{self.name}')" :
-      "CDB_CartodbfyTable('#{owner.database_schema}','#{owner.database_schema}.#{self.name}')"
-    owner.in_database(:as => :superuser)
-         .run("SELECT cartodb.#{cartodbfy_function}")
+    if owner.cartodb_extension_version_pre_mu?
+      schema_name = 'public'
+    else
+      schema_name = owner.database_schema
+    end
+    table_name = "#{owner.database_schema}.#{self.name}"
+
+    # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run(%Q{
+        SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+      })
+
+      user_database.run(%Q{
+        SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
+      })
+
+      user_database.run(%Q{
+        SELECT cartodb._CDB_create_cartodb_id_column('#{table_name}'::REGCLASS);
+      })
+      user_database.run(%Q{
+        SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
+      })
+
+      exists_geom_cols = user_database[%Q{
+        SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
+      }].first
+
+      exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
+
+      # This are the two hot zones
+      user_database.run(%Q{
+        SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
+      })
+      user_database.run(%Q{
+        SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
+      })
+
+      user_database.run(%Q{
+        SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+      })
+
+    end
+
     self.schema(reload:true)
   end
 
-  # move to C
   def update_table_pg_stats
     owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
   end

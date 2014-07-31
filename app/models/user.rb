@@ -1,10 +1,11 @@
 # coding: UTF-8
 require_relative './user/user_decorator'
 require_relative './user/oauths'
-require_relative '../models/synchronization/synchronization_oauth'
+require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
+require_relative './synchronization/collection.rb'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -166,6 +167,7 @@ class User < Sequel::Model
       self.layers.each { |l| self.remove_layer l }
       self.geocodings.each { |g| g.destroy }
       self.assets.each { |a| a.destroy }
+      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
     rescue StandardError => exception
       error_happened = true
       CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
@@ -702,9 +704,9 @@ class User < Sequel::Model
     yesterday = Date.today - 1
     from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
     to_date = DateTime.now.strftime("%Q")
-    request_body = Cartodb.config[:api_requests_es_service]['body']
-    request_url = Cartodb.config[:api_requests_es_service]['url']
-    request_body.gsub!("$CDB_SUBDOMAIN$", self.username + Cartodb.config[:session_domain])
+    request_body = Cartodb.config[:api_requests_es_service]['body'].dup
+    request_url = Cartodb.config[:api_requests_es_service]['url'].dup
+    request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)
     request = Typhoeus::Request.new(
@@ -1444,8 +1446,8 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.2' # TODO: optionally take as parameter?
-    tgt_rev = '0.3.2'
+    tgt_ver = '0.3.3' # TODO: optionally take as parameter?
+    tgt_rev = '0.3.3'
 
     add_python
 

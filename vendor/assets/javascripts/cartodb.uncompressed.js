@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: d59e963da4b9c09e91c0fbaf31b287cb2ec1decd
+// sha: 7c0c791cdbf32938dacedf0d4348dd526f75eed2
 (function() {
   var root = this;
 
@@ -31189,10 +31189,19 @@ var Vis = cdb.core.View.extend({
 
     this._applyOptions(data, options);
 
-    // to know if the logo is enabled search in the overlays and see if logo overlay is included and is shown
-    this.cartodb_logo = options.cartodb_logo !== undefined ? options.cartodb_logo: !!_.find(data.overlays, function(o) { return o.type === 'logo' && o.options.display; });
+    var map = new cdb.geo.Map(mapConfig);
 
-    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
+    // to know if the logo is enabled search in the overlays and see if logo overlay is included and is shown
+    var has_logo_overlay = !!_.find(data.overlays, function(o) { return o.type === 'logo' && o.options.display; });
+
+    this.cartodb_logo = (options.cartodb_logo !== undefined) ? options.cartodb_logo: has_logo_overlay;
+
+    // We set the logo by default
+    if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true;
+
+    console.log(map.get("legends"), options, data, data.legends);
+
+    var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -31225,7 +31234,6 @@ var Vis = cdb.core.View.extend({
       mapConfig.zoom = data.zoom == undefined ? 4: data.zoom;
     }
 
-    var map = new cdb.geo.Map(mapConfig);
 
     this.map        = map;
     this.updated_at = data.updated_at || new Date().getTime();
@@ -31434,18 +31442,6 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  addLegends: function(layers) {
-
-    var legends = this.createLegendView(layers);
-
-    this.legends = new cdb.geo.ui.StackedLegend({
-       legends: legends
-    });
-
-    this.mapView.addOverlay(this.legends);
-
-  },
-
    createLegendView: function(layers) {
     var legends = [];
     for(var i = layers.length - 1; i>= 0; --i) {
@@ -31488,7 +31484,6 @@ var Vis = cdb.core.View.extend({
       if (overlay.type == "loader") {
         this.loader = v;
       }
-
 
       this.mapView.addOverlay(v);
 

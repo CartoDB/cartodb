@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7c0c791cdbf32938dacedf0d4348dd526f75eed2
+// sha: fe725bc53d9aecea1eec4da53abd9702f2e201b5
 (function() {
   var root = this;
 
@@ -31198,8 +31198,6 @@ var Vis = cdb.core.View.extend({
 
     // We set the logo by default
     if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true;
-
-    console.log(map.get("legends"), options, data, data.legends);
 
     var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 

@@ -386,9 +386,13 @@ var Vis = cdb.core.View.extend({
       options.sublayer_options = [];
       _.each(data.layers.slice(1), function(lyr) {
          if (lyr.type === 'layergroup') {
-           _.each(lyr.options.layer_definition.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+          _.each(lyr.options.layer_definition.layers, function(l) {
+            options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
+          });
          } else if (lyr.type === 'namedmap') {
-           _.each(lyr.options.named_map.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+          _.each(lyr.options.named_map.layers, function(l) {
+            options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
+          });
          }
       });
     }

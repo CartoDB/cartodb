@@ -339,7 +339,7 @@
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
 
-    /*@include user-select(none);*/
+    /* @include user-select(none); this breaks safari edition */
 
     &.text img {
       display:block;

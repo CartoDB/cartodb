@@ -23,7 +23,6 @@ module CartoDB
 
     def validate
       super
-      validates_presence([:user_id])
       errors.add(:type, 'unsupported type') unless \
         self.type == TYPE_DATA_IMPORT || self.type == TYPE_SYNCHRONIZATION
     end

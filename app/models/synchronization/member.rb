@@ -2,7 +2,6 @@
 require 'virtus'
 require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer' 
-require_relative '../../../services/track_record/track_record/log'
 require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
@@ -123,8 +122,8 @@ module CartoDB
         importer = nil
         self.state    = STATE_SYNCING
 
-        log           = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX, expiration: REDIS_LOG_EXPIRATION_IN_SECS)
-        self.log_id   = log.id
+        log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+        self.log_id = log.id
         store
 
         if user.nil?
@@ -333,11 +332,12 @@ module CartoDB
       def log
         return @log if defined?(@log) && @log
         log_attributes = {
-          prefix:     REDIS_LOG_KEY_PREFIX,
-          expiration: REDIS_LOG_EXPIRATION_IN_SECS
+          type: CartoDB::TYPE_SYNCHRONIZATION,
         }
         log_attributes.merge(id: log_id) if log_id
-        @log  = TrackRecord::Log.new(log_attributes)
+        log_attributes.merge(user_id: user.id) if user
+
+        @log = CartoDB::Log.new(log_attributes)
         @log.fetch if log_id
         @log_id = @log.id
         @log

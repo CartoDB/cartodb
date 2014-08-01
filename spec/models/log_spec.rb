@@ -15,7 +15,7 @@ describe CartoDB::Log do
       timestamp = Time.now.utc
       expectation = (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + (Log::ENTRY_FORMAT % [ timestamp, text2 ])
 
-      log = Log.new({ user_id: user_id, type: type })
+      log = Log.new({ type: type })
       # Should save automatically
       log.append(text1, timestamp)
       log.append(text2, timestamp)
@@ -24,7 +24,6 @@ describe CartoDB::Log do
       log = Log.where(id:log_id).first
       log.id.should eq log_id
       log.type.should eq type
-      log.user_id.should eq user_id
       log.entries.should eq expectation
     end
   end

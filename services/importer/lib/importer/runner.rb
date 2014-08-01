@@ -25,11 +25,15 @@ module CartoDB
       def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
         @pg_options         = pg_options
         @downloader         = downloader
-        @log                = log             || CartoDB::Log.new
+        @log                = log             || new_logger
         @available_quota    = available_quota || DEFAULT_AVAILABLE_QUOTA
         @unpacker           = unpacker        || Unp.new
         @results            = []
       end #initialize
+
+      def new_logger
+        CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
+      end
 
       def include_additional_errors_mapping(additional_errors)
         @additional_errors = additional_errors

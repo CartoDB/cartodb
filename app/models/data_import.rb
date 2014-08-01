@@ -10,7 +10,6 @@ require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
-#require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -20,8 +19,6 @@ require_relative '../../services/datasources/lib/datasources'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
-  REDIS_LOG_KEY_PREFIX          = 'importer'
-  REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
   attr_accessor   :log, :results

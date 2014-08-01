@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f492d957e9b046415dcd3f6db0c1d487fc48df7f
+// sha: c71d7ce6331917b689a5d66327562ea3720f9067
 (function() {
   var root = this;
 
@@ -31189,8 +31189,6 @@ var Vis = cdb.core.View.extend({
 
     this._applyOptions(data, options);
 
-    var map = new cdb.geo.Map(mapConfig);
-
     // to know if the logo is enabled search in the overlays and see if logo overlay is included and is shown
     var has_logo_overlay = !!_.find(data.overlays, function(o) { return o.type === 'logo' && o.options.display; });
 
@@ -31233,6 +31231,7 @@ var Vis = cdb.core.View.extend({
     }
 
 
+    var map         = new cdb.geo.Map(mapConfig);
     this.map        = map;
     this.updated_at = data.updated_at || new Date().getTime();
 

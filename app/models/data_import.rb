@@ -4,12 +4,13 @@ require 'fileutils'
 require 'uuidtools'
 require_relative './user'
 require_relative './table'
+require_relative './log'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
-require_relative '../../services/track_record/track_record/log'
+#require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -186,7 +187,7 @@ class DataImport < Sequel::Model
     false
   rescue ArgumentError
     false
-  end #instantiate_log
+  end
 
   def before_destroy
     self.remove_uploaded_resources
@@ -196,18 +197,15 @@ class DataImport < Sequel::Model
     uuid = self.logger
 
     if valid_uuid?(uuid)
-      self.log  = TrackRecord::Log.new(
-        id:         uuid.to_s,
-        prefix:     REDIS_LOG_KEY_PREFIX,
-        expiration: REDIS_LOG_EXPIRATION_IN_SECS
-      ).fetch
+      self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
-      self.log  = TrackRecord::Log.new(
-        prefix:     REDIS_LOG_KEY_PREFIX,
-        expiration: REDIS_LOG_EXPIRATION_IN_SECS
+      self.log = CartoDB::Log.new(
+          type:     CartoDB::Log::TYPE_DATA_IMPORT,
+          user_id:  current_user.id
       )
+      self.log.save
     end
-  end #instantiate_log
+  end
 
   def uploaded_file
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
@@ -341,7 +339,6 @@ class DataImport < Sequel::Model
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
-    log.append 'WARNING: No tables registered at Metadata DB'
 
     if synchronization_id
       log.append "synchronization_id: #{synchronization_id}"

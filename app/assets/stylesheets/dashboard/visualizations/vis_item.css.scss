@@ -170,7 +170,7 @@
         @include align-items(center, center);
       }
 
-      i.delete, i.lock {
+      i.delete, i.lock, i.unlock {
         margin-right:4px;
         @include transform-style("linear");
         @include transition-property("opacity");
@@ -216,7 +216,7 @@
         .vis-tools {
           border-top:1px solid #DDDDDD;
 
-          i.delete, i.lock {
+          i.delete, i.lock, i.unlock {
             @include inline-block();
             @include opacity(1);
             z-index:0;

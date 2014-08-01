@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: fe725bc53d9aecea1eec4da53abd9702f2e201b5
+// sha: f492d957e9b046415dcd3f6db0c1d487fc48df7f
 (function() {
   var root = this;
 
@@ -31321,9 +31321,13 @@ var Vis = cdb.core.View.extend({
       options.sublayer_options = [];
       _.each(data.layers.slice(1), function(lyr) {
          if (lyr.type === 'layergroup') {
-           _.each(lyr.options.layer_definition.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+          _.each(lyr.options.layer_definition.layers, function(l) {
+            options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
+          });
          } else if (lyr.type === 'namedmap') {
-           _.each(lyr.options.named_map.layers, function(l) { options.sublayer_options.push({ visible: l.visible }) });
+          _.each(lyr.options.named_map.layers, function(l) {
+            options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
+          });
          }
       });
     }

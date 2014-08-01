@@ -95,31 +95,27 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var portraitDominantSide  = extra.portraitDominantSide;
     var landscapeDominantSide = extra.landscapeDominantSide;
 
-    if ((landscapeDominantSide === 'top' && top > 200) || (landscapeDominantSide === 'top' && bottomPosition > 200)) {
+    if (portraitDominantSide === 'bottom' && bottomPosition <= 250) {
+
+      top = "auto";
+      bottom = bottomPosition;
+
+    } else if (pTop > 45 && pTop < 55) {
 
       top = "50%";
-      marginTop = -this.$el.height()/2;
-
-    }  else {
-
-      if (portraitDominantSide == 'bottom') {
-        top = "auto";
-        bottom = bottomPosition;
-      }
+      marginTop = -height/2;
 
     }
 
-    if ((landscapeDominantSide === 'left' && left > 200) || (landscapeDominantSide === 'right' && rightPosition > 200)) {
+    if (landscapeDominantSide === 'right' && rightPosition <= 250) {
+
+      left = "auto";
+      right = rightPosition;
+
+    } else if (pLeft > 45 && pLeft < 55) {
 
       left = "50%";
       marginLeft = -width/2;
-
-    } else {
-
-      if (landscapeDominantSide == 'right') {
-        left = "auto";
-        right = rightPosition;
-      }
 
     }
 

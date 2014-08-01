@@ -1014,7 +1014,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     column_name = (new_name.present? ? new_name : old_name)
-    convert_column_datatype(owner.in_database(:as => :superuser), name, column_name, options[:type])
+    convert_column_datatype(owner.in_database, name, column_name, options[:type])
     column_type = column_type_for(column_name)
     self.invalidate_varnish_cache
     { name: column_name, type: column_type, cartodb_type: column_type.convert_to_cartodb_type }

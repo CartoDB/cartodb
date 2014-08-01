@@ -34,7 +34,7 @@ module CartoDB
 
       def get_overlay_by_type(t)
         o = @visualization.overlays.find { |o| o.type == t }
-        o.fetch
+        o.nil? ? nil : o.fetch
       end
 
       def create_overlays_from_url_options(url_options)
@@ -52,6 +52,7 @@ module CartoDB
           case opt
             when :title, :description
               overlay = get_overlay_by_type('header')
+              # if not present, cartodb.js will create the title and description, so don't add them here
               if overlay
                 overlay.options['extra']['show_title'] = opts[:title] == 'true'
                 overlay.options['extra']['show_description'] = opts[:description] == 'true'

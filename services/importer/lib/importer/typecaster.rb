@@ -33,7 +33,7 @@ module CartoDB
       end
 
       def cast(column_name) 
-        job.log "Casting #{column_name} to timestamp with time zone"
+        job.log.append "Casting #{column_name} to timestamp with time zone"
         db.run(%Q(
           ALTER TABLE "#{schema}"."#{table_name}"
           ALTER COLUMN #{column_name}

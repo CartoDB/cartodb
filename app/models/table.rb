@@ -1561,7 +1561,7 @@ class Table < Sequel::Model(:user_tables)
 
     #if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == 'multipoint'
-      owner.in_database do |user_database|
+      owner.in_database(:as => :superuser) do |user_database|
         user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'POINT', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
         user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
@@ -1572,7 +1572,7 @@ class Table < Sequel::Model(:user_tables)
 
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
     if %w(linestring polygon).include?(type.to_s.downcase)
-      owner.in_database do |user_database|
+      owner.in_database(:as => :superuser) do |user_database|
         if type.to_s.downcase == 'polygon'
           user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
         else
@@ -1581,7 +1581,7 @@ class Table < Sequel::Model(:user_tables)
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
         user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
-        type = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
+        type = user_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
     end
 
@@ -1638,7 +1638,7 @@ class Table < Sequel::Model(:user_tables)
       end
       geojson = JSON.generate(obj);
 
-      owner.in_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom =
+      owner.in_database(:as => :superuser).run(%Q{UPDATE #{qualified_table_name} SET the_geom =
       ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
       #{primary_key}})
     rescue

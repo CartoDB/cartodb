@@ -130,24 +130,58 @@
       @include border-radius(3px);
       background:#E7E7E7;
       
-      &:before, &:after {
+      &:before {
         content:'';
         position:absolute;
-        background:#888888;
       }
 
       &:before { 
         top:6px;
-        left:8px;
-        width:2px;
-        height:8px;
+        left:7px;
+        width:3px;
+        height:6px;
+        border:2px solid #888888;
+        border-top:0;
+        border-right:0;
       }
+      &:hover { background:#DEDEDE }
+    }
+
+    // Unlock icon
+    i.unlock {
+      position:relative;
+      display:none;
+      width:20px;
+      height:20px;
+      @include border-radius(3px);
+      background:#E7E7E7;
+      
+      &:before, &:after {
+        content:'';
+        position:absolute;
+      }
+
+      &:before { 
+        top:6px;
+        left:7px;
+        width:3px;
+        height:6px;
+        border:2px solid #888888;
+        border-top:0;
+        border-right:0;
+      }
+
       &:after {
-        top:12px;
-        left:8px;
-        width:5px;
-        height:2px;
+        top:10px;
+        left:5px;
+        width:10px;
+        height:1px;
+        background:#CACACA;
+        @include box-shadow(0 0 0 1px rgba(white,1));
+        @include transform(rotate(-45deg));
+        @include border-radius(5px);
       }
+
       &:hover { background:#DEDEDE }
     }
 
@@ -165,7 +199,7 @@
       }
     }
 
-    i.delete, i.lock { @include inline-block() }
+    i.delete, i.lock, i.unlock { @include inline-block() }
     .table-order,
     .vis-order { display:inherit; }
   }

@@ -160,7 +160,6 @@ describe Geocoding do
       organization = create_organization_with_users(:geocoding_quota => 150)
       org_user = organization.users.last
       org_user.stubs('soft_geocoding_limit?').returns(false)
-      debugger
       org_geocoding = FactoryGirl.build(:geocoding, user: org_user)
       organization.geocoding_quota.should eq 150
       org_geocoding.max_geocodable_rows.should eq 150

@@ -7255,7 +7255,7 @@ exports.Profiler = Profiler;
     url: function() {
       var opts = this.options;
       var protocol = opts.tiler_protocol || 'http';
-      if (!this.options.cdn_url) {
+      if (!this.options.cdn_url || this.options.no_cdn) {
         return this._tilerHost();
       }
       var h = protocol + "://"
@@ -7330,12 +7330,18 @@ exports.Profiler = Profiler;
           for(var k in opt) {
             self.options[k] = opt[k];
           }
+          // use cdn_url if present
+          if (data.cdn_url) {
+            var c = self.options.cdn_url = self.options.cdn_url || {};
+            c.http = data.cdn_url.http || c.http;
+            c.https = data.cdn_url.https || c.https;
+          }
           self.templateUrl = self.url() + "/api/v1/map/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
           self._setReady(true);
         } else {
           Profiler.metric('torque.provider.windshaft.layergroup.error').inc();
         }
-      });
+      }, { callbackName: self.options.instanciateCallback });
     }
 
   };
@@ -7351,12 +7357,13 @@ exports.Profiler = Profiler;
   var lastCall = null;
 
   function jsonp(url, callback, options) {
-     options = options || { timeout: 10000 };
+     options = options || {};
+     options.timeout = options.timeout === undefined ? 10000: options.timeout;
      var head = document.getElementsByTagName('head')[0];
      var script = document.createElement('script');
 
      // function name
-     var fnName = 'torque_' + Date.now();
+     var fnName = options.callbackName || 'torque_' + Date.now();
 
      function clean() {
        head.removeChild(script);
@@ -9751,7 +9758,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token')
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn')
   });
 
   //this.setCartoCSS(this.model.get('tile_style'));
@@ -9845,7 +9853,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token')
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);

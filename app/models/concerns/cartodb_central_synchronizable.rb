@@ -40,10 +40,14 @@ module Concerns
         case action
         when :create
           [:name, :seats, :quota_in_bytes, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota]
+          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
+          :twitter_datasource_enabled, :twitter_datasource_block_size,
+          :twitter_datasource_block_price]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota]
+          :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
+          :twitter_datasource_enabled, :twitter_datasource_block_size,
+          :twitter_datasource_block_price]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -52,7 +56,9 @@ module Concerns
         :map_view_quota, :max_layers, :name, :notification, :organization_id,
         :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
         :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
-        :user_timeout, :username, :website, :soft_geocoding_limit]
+        :user_timeout, :username, :website, :soft_geocoding_limit,
+        :twitter_datasource_enabled, :twitter_datasource_block_size,
+        :twitter_datasource_block_price]
       end
     end
 
@@ -72,7 +78,7 @@ module Concerns
           :name, :notification, :organization_id, :period_end_date,
           :private_tables_enabled, :quota_in_bytes, :salt, :sync_tables_enabled,
           :table_quota, :twitter_username, :upgraded_at, :user_timeout, :username,
-          :website, :soft_geocoding_limit)
+          :website, :soft_geocoding_limit, :twitter_datasource_enabled)
         case action
         when :create
           attrs[:remote_user_id] = self.id

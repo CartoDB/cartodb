@@ -14,7 +14,7 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new
-    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation])
+    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
     copy_account_features(current_user, @user)
@@ -35,6 +35,7 @@ class Admin::UsersController < ApplicationController
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
+    @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.update_in_central
     @user.save(raise_on_failure: true)
     redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }

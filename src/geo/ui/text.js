@@ -91,6 +91,7 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var marginLeft = 0;
 
     var width = extra.width;
+    var height = extra.height;
 
     var portraitDominantSide  = extra.portraitDominantSide;
     var landscapeDominantSide = extra.landscapeDominantSide;

@@ -341,19 +341,14 @@ div.map {
 
   div.cartodb-map {
 
-    z-index:1;
-
-    // Move attributions in different providers
-    .leaflet-right .leaflet-control, #cartodb_attribution {
-      @include simple-transition(width, 150ms, ease-in-out);
-    }
-
     div.cartodb-searchbox{
       top: 20px;
       right: 77px;
       float: right;
       position: absolute;
     }
+
+    z-index:1;
 
   }
 
@@ -374,6 +369,7 @@ div.map {
   }
 
   // animations
+  .leaflet-control-attribution.leaflet-control,
   div.cartodb-legend,
   div.cartodb-legend-stack,
   div.cartodb-share,
@@ -607,6 +603,7 @@ div.map {
     // Vis
     &.map.derived .cartodb-map {
 
+      .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
@@ -618,6 +615,8 @@ div.map {
     // Vis Narrow
     &.narrow.map.derived .cartodb-map {
 
+      .leaflet-control-attribution.leaflet-control,
+      div.cartodb-share,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
@@ -630,6 +629,7 @@ div.map {
     // Table
     &.map.table .cartodb-map {
 
+      .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
@@ -641,6 +641,7 @@ div.map {
     // Table Narrow
     &.narrow.map.table .cartodb-map {
 
+      .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
@@ -655,6 +656,7 @@ div.map {
     &.narrow.map.derived.mobile .cartodb-map,
     &.map.derived.mobile .cartodb-map {
 
+      .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,

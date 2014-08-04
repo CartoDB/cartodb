@@ -193,7 +193,7 @@ describe User do
       organization.users.reject(&:organization_owner?).each do |u|
         u.dedicated_support?.should be_true
         u.remove_logo?.should be_true
-        u.private_maps_enabled?.should be_true
+        u.private_maps_enabled.should be_true
         u.import_quota.should == 3
       end
       organization.destroy

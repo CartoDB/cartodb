@@ -434,7 +434,7 @@ var Vis = cdb.core.View.extend({
     }
 
     // Sort the overlays by its internal order
-    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order; });
+    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
 
     this._createOverlays(overlays, options);
 
@@ -649,6 +649,7 @@ var Vis = cdb.core.View.extend({
       if (!search_overlay('header')) {
         vizjson.overlays.unshift({
           type: "header",
+          order: 1,
           shareable: opt.shareable ? true: false,
           url: vizjson.url,
           options: {

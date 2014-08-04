@@ -180,7 +180,7 @@ describe Organization do
 
   describe "#get_api_calls and #get_geocodings" do
     before(:each) do
-      @organization = FactoryGirl.create(:organization_with_users, name: 'overquota-org')
+      @organization = create_organization_with_users(name: 'overquota-org')
     end
     after(:each) do
       @organization.destroy
@@ -197,7 +197,7 @@ describe Organization do
 
   describe '.overquota', focus: true do
     before(:all) do
-      @organization = FactoryGirl.create(:organization_with_users, name: 'overquota-org')
+      @organization = create_organization_with_users(name: 'overquota-org')
     end
     after(:all) do
       @organization.destroy

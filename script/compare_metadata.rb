@@ -11,14 +11,14 @@ database = YAML.load(File.read('../config/database.yml'))
 
 
 RAILS_ENV = ENV['RAILS_ENV'] || 'production'
-DBNAME = database[RAILS_ENV]['database']
-DBUSER = database[RAILS_ENV]['username']
-DBPASS = database[RAILS_ENV]['password']
-DBHOST = database[RAILS_ENV]['host']
-DBPORT = database[RAILS_ENV]['port']
+DBNAME = ENV['DB_NAME'] || database[RAILS_ENV]['database']
+DBUSER = ENV['DB_USER'] || database[RAILS_ENV]['username']
+DBPASS = ENV['DB_PASS'] || database[RAILS_ENV]['password']
+DBHOST = ENV['DB_HOST'] || database[RAILS_ENV]['host']
+DBPORT = ENV['DB_PORT'] || database[RAILS_ENV]['port']
 
-REDISPORT = config[RAILS_ENV]['redis']['port']
-REDISHOST = config[RAILS_ENV]['redis']['host']
+REDISPORT = ENV['REDIS_PORT'] || config[RAILS_ENV]['redis']['port'] 
+REDISHOST = ENV['REDIS_HOST'] || config[RAILS_ENV]['redis']['host']
 
 redis = Redis.new(host: REDISHOST, port: REDISPORT)
 pg = PGconn.connect(user: DBUSER, dbname: DBNAME, port: DBPORT, host: DBHOST)

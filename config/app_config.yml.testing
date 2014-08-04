@@ -187,6 +187,9 @@ defaults: &defaults
   signups:
     service:
       port: 0000
+  users_dumps:
+    service:
+      port: 0000
 
 development:
   <<: *defaults

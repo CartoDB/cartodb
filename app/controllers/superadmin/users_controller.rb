@@ -40,9 +40,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def dump
+    if Cartodb.config[:users_dumps].nil? || Cartodb.config[:users_dumps]["service"].nil? || Cartodb.config[:users_dumps]["service"]["port"].nil?
+      raise "There is not a dump method configured"
+    end
     json_data = {database: @user.database_name, username: @user.username}
     response = Typhoeus::Request.new(
-      "#{@user.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/db_dump",
+      "#{@user.database_host}:#{Cartodb.config[:users_dumps]["service"]["port"]}/scripts/db_dump",
       method: :post,
       headers: { "Content-Type" => "application/json" },
       body: json_data.to_json

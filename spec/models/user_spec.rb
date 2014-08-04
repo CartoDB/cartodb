@@ -1038,9 +1038,8 @@ describe User do
    
     ::Resque.stubs(:enqueue).returns(nil)
 
-    organization = create_organization_with_users
-    user1 = new_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-    user1.organization = organization
+    organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
+    user1 = new_user(:username => 'test', :email => "client@example.com", :organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once

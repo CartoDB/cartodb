@@ -3123,12 +3123,17 @@ only screen and (                min-resolution: 2dppx) {
 @media only screen 
 and (max-device-width : 320px) 
 and (max-device-width : 480px) {
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    top: -12px!Important;
+
+  div.cartodb-map-wrapper div.cartodb-searchbox {
+    display: none;
+  }
+
+  div.cartodb-map-wrapper div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    top: -12px;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
-    border:none!Important;
-    background-size: 11px 12px!Important;
+    background:transparent url('../img/handle@2x.png') center center no-repeat;
+    border:none;
+    background-size: 11px 12px;
   }
 
 }

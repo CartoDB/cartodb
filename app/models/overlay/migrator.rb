@@ -19,7 +19,7 @@ module CartoDB
           String    :template,          text: true
         end
       end #migrate
-    end # Migrator
+    end
   end # Overlay
 end # CartoDB
 

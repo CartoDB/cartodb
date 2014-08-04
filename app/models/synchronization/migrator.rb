@@ -36,7 +36,7 @@ module CartoDB
       def drop(relation=:synchronizations)
         @db.drop_table(relation.to_sym)
       end #drop
-    end # Migrator
+    end
   end # Synchronization
 end # CartoDB
 

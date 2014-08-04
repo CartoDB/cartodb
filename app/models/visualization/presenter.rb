@@ -72,8 +72,9 @@ module CartoDB
         table_data = {
           id:           table.id,
           name:         table_name,
-          permission:   table.table_visualization.permission.to_poro
+          permission:   nil
         }
+        table_data[:permission] = table.table_visualization.permission.to_poro unless table.table_visualization.nil?
 
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,

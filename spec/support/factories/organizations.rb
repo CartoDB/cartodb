@@ -24,14 +24,18 @@ module CartoDB
       organization
     end
 
-    def create_organization_with_users(attributes = {})
+    def create_organization_with_owner(attributes = {})
       organization = create_organization(attributes)
-      owner = create_user
-      #owner = FactoryGirl.create(:user)
+      owner = create_user(quota_in_bytes: 50.megabytes)
       uo = CartoDB::UserOrganization.new(organization.id, owner.id)
       uo.promote_user_to_admin
       organization.reload
-      user1 = create_user(:organization => organization, :organization_id => organization.id)
+      organization
+    end
+
+    def create_organization_with_users(attributes = {})
+      organization = create_organization_with_owner(attributes)
+      user1 = create_user(:organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
       organization.reload
       organization
     end

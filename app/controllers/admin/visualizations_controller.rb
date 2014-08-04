@@ -145,6 +145,18 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_tables_usernames = Hash.new
+    @related_tables.each { |table|
+      unless @related_tables_usernames.include?(table.user_id)
+        table_owner = User.where(id: table.user_id).first
+        if table_owner.nil?
+          # strange scenario, as user has been deleted but his table still exists
+          @related_tables_usernames[table.user_id] = nil
+        else
+          @related_tables_usernames[table.user_id] = table_owner.username
+        end
+      end
+    }
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 

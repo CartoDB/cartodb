@@ -1,6 +1,6 @@
 // cartodb.js version: 3.10.3-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b8fe80d5515a24bd19cf92140dd8d1fa704060ec
+// sha: eaf1f00f303eb45187239e74b840b0152957485b
 (function() {
   var root = this;
 
@@ -22600,6 +22600,7 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var marginLeft = 0;
 
     var width = extra.width;
+    var height = extra.height;
 
     var portraitDominantSide  = extra.portraitDominantSide;
     var landscapeDominantSide = extra.landscapeDominantSide;
@@ -31365,12 +31366,11 @@ var Vis = cdb.core.View.extend({
     }
 
     // Sort the overlays by its internal order
-    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order; });
+    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
 
     this._createOverlays(overlays, options);
 
-    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-
+    //var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
     //if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
@@ -31384,18 +31384,17 @@ var Vis = cdb.core.View.extend({
 
     _.each(overlays, function(data) {
 
-      var type = data.type;
-
+      var type    = data.type;
       var overlay = this.addOverlay(data);
 
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
       var opt = data.options;
 
-      if (type == 'share'          && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'     && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
+      if (type == 'share'                   && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector'          && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'              && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (!this.device && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
       if (type === 'header') {
 
@@ -31569,7 +31568,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (opt.search || opt.searchControl) {
+    if (!this.device && (opt.search || opt.searchControl)) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search"
@@ -31582,6 +31581,7 @@ var Vis = cdb.core.View.extend({
       if (!search_overlay('header')) {
         vizjson.overlays.unshift({
           type: "header",
+          order: 1,
           shareable: opt.shareable ? true: false,
           url: vizjson.url,
           options: {

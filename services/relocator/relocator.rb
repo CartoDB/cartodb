@@ -67,9 +67,12 @@ module CartoDB
           @trigger_loader.unload_triggers
         end
       end
-
       def compare
         @tester.compare_state
+      end
+
+      def setup
+        @dumper.setup
       end
 
       def check_org_user(user)

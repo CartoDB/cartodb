@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+# @see http://support.gnip.com/apis/search_api/
 module CartoDB
   module TwitterSearch
     class SearchAPI
@@ -34,23 +35,37 @@ module CartoDB
         @params = value if value.kind_of? Hash
       end
 
+      # @returns Hash
+      # {
+      #   next  (optional)
+      #   results [
+      #   ... ( @see http://support.gnip.com/sources/twitter/data_format.html )
+      #   ]
+      # }
       def fetch_results(more_results_cursor = nil)
-        params = query_payload(@params)
+        params = query_payload(more_results_cursor.nil? ? @params : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
 
-        response_data = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))
+        response = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))
+
+        raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
+
+        ::JSON.parse(response.body, symbolize_names: true) unless response.body.nil?
       end
 
       private
 
-      def query_payload(params, more_results_cursor = nil)
+      def query_payload(params)
         payload = {
             publisher: 'twitter',
             PARAM_QUERY => params[PARAM_QUERY]
         }
         payload[PARAM_FROMDATE] = params[PARAM_FROMDATE] unless params[PARAM_FROMDATE].nil? or params[PARAM_FROMDATE].empty?
         payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? or params[PARAM_TODATE].empty?
-        payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS] unless params[PARAM_MAXRESULTS].nil? or !params[PARAM_MAXRESULTS].kind_of? Fixnum
-        payload[PARAM_NEXT_PAGE] = more_results_cursor unless more_results_cursor.nil?
+        if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].kind_of?(Fixnum) \
+           && params[PARAM_MAXRESULTS] >= 10 && params[PARAM_MAXRESULTS] <= 500
+        payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
+        end
+        payload[PARAM_NEXT_PAGE] = params[PARAM_NEXT_PAGE] unless params[PARAM_NEXT_PAGE].nil? or params[PARAM_NEXT_PAGE].empty?
 
         payload
       end

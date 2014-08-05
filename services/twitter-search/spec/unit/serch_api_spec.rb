@@ -9,26 +9,26 @@ describe SearchAPI do
   describe ''#config_and_params'' do
     it 'checks correct params sent to config and as query payload' do
       params = {
-          SearchAPI::PARAM_MAXRESULTS => 500,
-          SearchAPI::PARAM_FROMDATE   => '201407070600',
-          SearchAPI::PARAM_TODATE     => '201407132359'
+          # Each term  should have the "has geo"
+          SearchAPI::PARAM_QUERY      => 'cartodb has:geo',
+          SearchAPI::PARAM_MAXRESULTS => 10,
+          #SearchAPI::PARAM_FROMDATE   => '201408070600',
+          #SearchAPI::PARAM_TODATE     => '201408132359'
       }
 
-      #Typhoeus::Request.any_instance.stubs(:run).returns(nil)
-
+      # TODO: Fake url and load from disk to not depend on exteral services
       api = SearchAPI.new({
         SearchAPI::CONFIG_AUTH_REQUIRED => false,
-        #SearchAPI::CONFIG_AUTH_USERNAME => 'testuser',
-        #SearchAPI::CONFIG_AUTH_PASSWORD => 'testpass',
-        SearchAPI::CONFIG_SEARCH_URL => 'http://kartones.net/'
+        SearchAPI::CONFIG_AUTH_USERNAME => 'testuser',
+        SearchAPI::CONFIG_AUTH_PASSWORD => 'testpass',
+        SearchAPI::CONFIG_SEARCH_URL => 'http://kartones.net/tmp/cartodb/sample_tweets.json'
       })
 
       api.params = params
 
       data = api.fetch_results
-      puts data.code
-      puts data.effective_url
 
+      puts data
     end
 
 end

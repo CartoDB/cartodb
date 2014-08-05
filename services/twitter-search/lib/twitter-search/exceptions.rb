@@ -6,7 +6,11 @@ module CartoDB
     # Generic/unmapped errors
     class TwitterException < StandardError; end
 
-    class TwitterHTTPException < TwitterException; end
+    class TwitterHTTPException < TwitterException
+      def initialize(http_code, url, additional_data = '')
+        super("Error fetching results: #{url} (#{http_code}) #{additional_data}")
+      end
+    end
 
     class TwitterConfigException < TwitterException
       def initialize(missing_entry)

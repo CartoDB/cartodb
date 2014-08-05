@@ -2,6 +2,7 @@
 ------------------
 * Fixed bugs
   * Fixed write buttons are shown when watching sync tables
+  * Fixed a bug that prevented choosing a different column from the default to geocode an IP address
   * Fixed some avatar tests
   * Upgrades to 0.3.4 cartodb postgresql extension version:
     * 0.3.4: fixes CDB_QueryTables function

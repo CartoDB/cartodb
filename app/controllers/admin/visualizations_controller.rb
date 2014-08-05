@@ -34,8 +34,13 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
 
-    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
-      unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+    unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+      if request.original_fullpath =~ %r{/tables/}
+        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+      else
+        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+      end
+    end
 
     respond_to { |format| format.html }
 
@@ -320,9 +325,9 @@ class Admin::VisualizationsController < ApplicationController
         authenticated_users.each { |username|
           if url.nil? && !User.where(username:username).first.nil?
             if for_table
-              url = public_table_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+              url = public_tables_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
             else
-              url = public_visualizations_public_map_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+              url = public_visualizations_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
             end
           end
         }

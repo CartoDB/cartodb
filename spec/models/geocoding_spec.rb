@@ -157,18 +157,14 @@ describe Geocoding do
     end
 
     it 'returns the remaining quota for the organization if the user has hard limit and belongs to an org' do
-      organization = FactoryGirl.create(:organization_with_users, geocoding_quota: 150)
-      @user.organization = organization
-      @user.quota_in_bytes = 50.megabytes
-      @user.save
-      delete_user_data @user
-      @user.stubs('soft_geocoding_limit?').returns(false)
+      organization = create_organization_with_users(:geocoding_quota => 150)
+      org_user = organization.users.last
+      org_user.stubs('soft_geocoding_limit?').returns(false)
+      org_geocoding = FactoryGirl.build(:geocoding, user: org_user)
       organization.geocoding_quota.should eq 150
-      geocoding.max_geocodable_rows.should eq 150
-      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus')
-      geocoding.max_geocodable_rows.should eq 50
-      @user.organization = nil
-      @user.save
+      org_geocoding.max_geocodable_rows.should eq 150
+      FactoryGirl.create(:geocoding, user: org_user, processed_rows: 100, remote_id: 'wadus')
+      org_geocoding.max_geocodable_rows.should eq 50
       organization.destroy
     end
 

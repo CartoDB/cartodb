@@ -32,6 +32,8 @@ module CartoDB
         )
       end
 
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+
       attributes = attributes.dup
       user = User.new
       user.username              = attributes[:username] || String.random(5).downcase

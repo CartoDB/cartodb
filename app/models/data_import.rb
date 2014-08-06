@@ -136,7 +136,7 @@ class DataImport < Sequel::Model
     save
     notify(results)
     self
-  end #handle_success
+  end
 
   def handle_failure
     self.success    = false
@@ -149,13 +149,13 @@ class DataImport < Sequel::Model
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     self
-  end #handle_failure
+  end
 
   def table
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
     Table.where(id: table_id, user_id: user_id).first
-  end #table
+  end
 
   private
 
@@ -166,7 +166,7 @@ class DataImport < Sequel::Model
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
     raise
-  end #dispatch
+  end
 
   def running_import_ids
     Resque::Worker.all.map do |worker|
@@ -186,7 +186,7 @@ class DataImport < Sequel::Model
     false
   rescue ArgumentError
     false
-  end #instantiate_log
+  end
 
   def before_destroy
     self.remove_uploaded_resources
@@ -207,7 +207,7 @@ class DataImport < Sequel::Model
         expiration: REDIS_LOG_EXPIRATION_IN_SECS
       )
     end
-  end #instantiate_log
+  end
 
   def uploaded_file
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
@@ -317,7 +317,7 @@ class DataImport < Sequel::Model
         database: current_user.database_name,
         host:     current_user.database_host
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
-  end #pg_options
+  end
 
   def new_importer
     log.append 'new_importer()'
@@ -393,7 +393,7 @@ class DataImport < Sequel::Model
     end
 
     downloader
-  end #get_downloader
+  end
 
   def current_user
     @current_user ||= User[user_id]
@@ -439,7 +439,7 @@ class DataImport < Sequel::Model
       datasource = nil
     end
     datasource
-  end #get_datasource
+  end
 
   def set_merge_error(error_code, log_info='')
     log.append("Going to set merge error with code #{error_code}")

@@ -258,8 +258,10 @@ feature "Superadmin's users API" do
     json_data = {database: user.database_name, username: user.username} 
     response_body = {
       retcode: 0,
-      local_file: '/tmp/foo.sql.gz',
-      remote_file: 's3://foo-bucket/backups/foo.sql.gz'
+      return_values: {
+        local_file: '/tmp/foo.sql.gz',
+        remote_file: 's3://foo-bucket/backups/foo.sql.gz'
+      }
     }
     Typhoeus.stub(dump_url,
                   { method: :post }

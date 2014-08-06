@@ -1,0 +1,308 @@
+
+  /**
+   *  Create dialog content styles
+   *
+   *  - Tabs styles
+   *  - Panes styles
+   *
+   */
+  
+  @import "compass/css3/background-size";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/opacity";
+  @import "compass/css3/images";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+  @import "../../common/mixins";
+  @import "../../common/vars";
+  @import "../../elements/elements-sprite";
+  @import "../../common/common-sprite";
+
+
+  .create-dialog-content {
+
+    ///////////
+    // Tabs! //
+    ///////////
+
+    .create-tabs {
+      // Arg!!!!important :()
+      display: -webkit-box!important;
+      display: -moz-box!important;
+      display: -ms-flexbox!important;
+      display: -webkit-flex!important;
+      display: flex!important;
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
+      padding:0 25px;
+
+      border-bottom:1px solid #CCCCCC;
+    }
+
+    .create-tab {
+      position:relative;
+      width:90px;
+      height:110px;
+      border:none!important;
+
+      a {
+        @include display-flex();
+        @include cross-browser(flex-direction,column);
+        @include align-items(center,center);
+        font-size:13px;
+        text-align:center;
+        @include transform-style("linear");
+        @include transition-property("opacity,margin");
+        @include transition-duration(450ms);
+
+        span { display:block }
+
+        // TYPES
+        &.error {
+          @include opacity(0);
+          margin-top:10px;
+          color:#FF7272!important;
+          font-size:15px;
+        }
+
+        // Disabled state
+        &.disabled {
+          @include opacity(0.5);
+          text-decoration: none;
+
+          &:hover { cursor:default }
+        }
+
+        // Selected state
+        &.selected {
+          color:black;
+          text-decoration: none;
+
+          &:hover {
+            cursor:default;
+            color:inherit;
+            color:black;
+          }
+
+          &:before, &:after {
+            content: '';
+            position:absolute;
+            left:50%;
+            width:0;
+            height:0;
+            margin-left:-18px;
+            border-left:18px solid transparent;
+            border-right:18px solid transparent;
+          }
+
+          &:before {
+            bottom:0;
+            border-bottom:18px solid #CCC;
+            z-index:1;
+          }
+
+          &:after {
+            bottom:-1px;
+            border-bottom:18px solid #F6F6F6;
+            z-index:2;
+          }
+        }
+
+        // Show state
+        &.show {
+          margin-top:0px;
+          @include opacity(1);
+          z-index:1;
+        }
+
+        // Hide state
+        &.hide {
+          margin-top:-30px;
+          @include opacity(0);
+          z-index:0;
+        }
+      }
+
+      // Create icon
+      .create-icon {     
+        width:29px;
+        height:37px;
+        margin-bottom:18px;
+
+        &.file { @include elements-sprite(create-tabs-icons) }
+
+        &.gdrive {
+          width:40px;
+          @include elements-sprite(create-tabs-icons, $offset-x:-29px);
+        }
+
+        &.dropbox {
+          width:40px;
+          @include elements-sprite(create-tabs-icons, $offset-x:-69px); 
+        }
+
+        &.twitter {
+          width:41px;
+          @include elements-sprite(create-tabs-icons, $offset-x:-109px);
+        }
+
+        &.scratch {
+          width:29px;
+          @include elements-sprite(create-tabs-icons, $offset-x:-150px);
+        }
+
+        &.layer {
+          width:29px;
+          @include elements-sprite(create-tabs-icons, $offset-x:-179px);
+        }
+
+        &.error {
+          width:42px;
+          @include elements-sprite(create-tabs-icons, $offset-x:-208px); 
+        }
+        
+      }
+    }
+
+    // Error tab!
+    .create-tab.error {
+      position:absolute;
+      left:0;
+      display:block;
+      width:100%;
+      z-index:-1;
+    }
+
+
+    // Content
+    .create-content {
+      padding:40px;
+      background:#F6F6F6;
+
+      // When fixed class is set, elements out
+      // of bounds will be hidden
+      &.fixed {
+        overflow:hidden;
+      }
+    }
+
+
+    ////////////
+    // Panes! //
+    ////////////
+    .create-panes {
+      background:#F6F6F6;
+
+      // Import
+      .import-pane {
+        // padding:40px;
+        padding:0!important;
+        margin:0!important;
+
+        form.upload .upload { margin-top:0; }
+      }
+
+      // Scratch
+      .create-empty {
+        margin-top:-20px; // HA!
+      }
+
+      // Error
+      .create-error {
+
+        div.item_queue_id {
+          position:absolute;
+          display:none;
+          left:40px;
+          bottom:45px;
+          width:265px;
+
+          a {
+            color: #999;
+            text-decoration:underline;
+            &:hover { color:#666 }   
+          }
+        }
+      }
+    }
+
+    //////////////
+    // Progress //
+    //////////////
+
+    .create-progress {
+      display:block;
+      @include opacity(0);
+      height:0;
+    
+      .progress-bar {
+        position:relative;
+        width:160px;
+        height:12px;
+        margin:0 auto;
+        @include background(#DEDEDE);
+        @include border-radius(2px);
+      }
+
+      .progress-total {
+        display:block;
+        height:100%;
+        width:2%;
+        background-color:#5290D0;
+        @include box-sizing(border-box);
+        @include background-size(12px 12px);
+        @include border-radius(2px);
+        @include progress-background(rgba(74, 132, 194, 1));
+        -webkit-animation:progress 1.5s linear infinite;
+        -moz-animation:progress 1.5s linear infinite;
+        -ms-animation:progress 1.5s linear infinite;
+        animation:progress 1.5s linear infinite;
+        overflow: hidden;
+      }
+
+      p.message {
+        display:block;
+        margin-top:20px;
+        text-align:center;
+        font-size:15px;
+        color:#666666;
+      }
+
+      a.stop {
+        @include inline-block();
+        width:13px;
+        height:13px;
+        margin:0 0px 0 5px;
+        padding:0;
+        @include common-sprite(close_grey);
+        @include text-indent();
+
+        &:hover {@include common-sprite(close_grey, $offset-y: -13px);}
+        &:active {@include common-sprite(close_grey, $offset-y: -26px);}
+      }
+
+    }
+  }
+
+
+
+
+
+
+  // Keyframes for progress bar
+  @-webkit-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }
+  @-moz-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }
+  @-ms-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }
+  @keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  }

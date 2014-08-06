@@ -28,6 +28,13 @@ module CartoDB
           monthly_use: self.organization_user? ? self.organization.get_geocoding_calls : self.get_geocoding_calls,
           hard_limit:  self.hard_geocoding_limit?
         },
+        twitter: {
+          enabled:      false,
+          quota:        1000000,
+          block_price:  30,
+          monthly_use:  0,
+          hard_limit:   false
+        },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,
         api_key: self.api_key,

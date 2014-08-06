@@ -37,7 +37,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token')
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn')
   });
 
   //this.setCartoCSS(this.model.get('tile_style'));

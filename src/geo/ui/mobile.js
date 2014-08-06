@@ -1,4 +1,3 @@
-
 cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   className: "cartodb-mobile",
@@ -157,6 +156,5 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     return this;
   }
-
 
 });

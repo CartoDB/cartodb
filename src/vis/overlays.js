@@ -1,5 +1,8 @@
-
 (function() {
+
+cdb.vis.Overlay.register('logo', function(data, vis) {
+
+});
 
 // map mobile control
 cdb.vis.Overlay.register('mobile', function(data, vis) {
@@ -25,6 +28,83 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
   return mobile.render();
 });
 
+cdb.vis.Overlay.register('image', function(data, vis) {
+
+  var options = data.options;
+
+  var isDevice = options.device == "mobile" ? true : false;
+
+  if (vis.device !== isDevice) return;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ content }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Image({
+    model: new cdb.core.Model(options),
+    template: template
+  });
+
+  return widget.render();
+
+});
+
+cdb.vis.Overlay.register('text', function(data, vis) {
+
+  var options = data.options;
+
+  var isDevice = options.device == "mobile" ? true : false;
+
+  if (vis.device !== isDevice) return;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Text({
+    model: new cdb.core.Model(options),
+    template: template,
+    className: "cartodb-overlay overlay-text " + options.device
+  });
+
+  return widget.render();
+
+});
+
+cdb.vis.Overlay.register('zoom_info', function(data, vis) {
+  //console.log("placeholder for the zoom_info overlay");
+});
+
+cdb.vis.Overlay.register('header', function(data, vis) {
+
+  var options = data.options;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="title">{{{ title }}}</div>\
+    <div class="description">{{{ description }}}</div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var widget = new cdb.geo.ui.Header({
+    model: new cdb.core.Model(options),
+    template: template
+  });
+
+  return widget.render();
+
+});
+
 // map zoom control
 cdb.vis.Overlay.register('zoom', function(data, vis) {
 
@@ -39,6 +119,7 @@ cdb.vis.Overlay.register('zoom', function(data, vis) {
   });
 
   return zoom.render();
+
 });
 
 // Tiles loader
@@ -58,7 +139,7 @@ cdb.vis.Overlay.register('time_slider', function(data, viz) {
 
 
 // Header to show informtion (title and description)
-cdb.vis.Overlay.register('header', function(data, vis) {
+cdb.vis.Overlay.register('_header', function(data, vis) {
   var MAX_SHORT_DESCRIPTION_LENGTH = 100;
 
   // Add the complete url for facebook and twitter
@@ -162,6 +243,9 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 // layer_selector
 cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
+  var options = data.options;
+  //if (!options.display) return;
+
   var template = cdb.core.Template.compile(
     data.template || '\
       <a href="#/change-visibility" class="layers">Visible layers<div class="count"></div></a>\
@@ -177,6 +261,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   );
 
   var layerSelector = new cdb.geo.ui.LayerSelector({
+    model: new cdb.core.Model(options),
     mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template,
@@ -205,7 +290,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
           legend[visible ? 'show': 'hide']();
         }
 
-      } 
+      }
 
     });
   }
@@ -217,6 +302,10 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 // fullscreen
 cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
+  var options = data.options;
+
+  options.allowWheelOnFullscreen = false;
+
   var template = cdb.core.Template.compile(
     data.template || '<a href="#"></a>',
     data.templateType || 'mustache'
@@ -224,6 +313,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
   var fullscreen = new cdb.ui.common.FullScreen({
     doc: "#map > div",
+    model: new cdb.core.Model(options),
     mapView: vis.mapView,
     template: template
   });
@@ -232,72 +322,35 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
 });
 
-
 // share content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
-  // Add the complete url for facebook and twitter
-  if (location.href) {
-    data.share_url = encodeURIComponent(location.href);
-  } else {
-    data.share_url = data.url;
-  }
+  var options = data.options;
 
   var template = cdb.core.Template.compile(
-    data.template || '\
-      <div class="mamufas">\
-        <div class="block modal {{modal_type}}">\
-          <a href="#close" class="close">x</a>\
-          <div class="head">\
-            <h3>Share this map</h3>\
-          </div>\
-          <div class="content">\
-            <div class="buttons">\
-              <h4>Social</h4>\
-              <ul>\
-                <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
-                <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
-                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
-              </ul>\
-            </div><div class="embed_code">\
-             <h4>Embed this map</h4>\
-             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
-           </div>\
-          </div>\
-        </div>\
-      </div>\
-    ',
+    data.template || '<a href="#"></a>',
     data.templateType || 'mustache'
   );
 
-  var url = location.href;
-
-  url = url.replace("public_map", "embed_map");
-
-  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
-
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
-
-  var dialog = new cdb.ui.common.ShareDialog({
-    title: data.map.get("title"),
-    description: data.map.get("description"),
-    model: vis.map,
-    code: code,
-    url: data.url,
-    public_map_url: public_map_url,
-    share_url: data.share_url,
-    template: template,
-    target: $(".cartodb-share a"),
-    size: $(document).width() > 400 ? "" : "small",
-    width: $(document).width() > 400 ? 430 : 216
+  var widget = new cdb.geo.ui.Share({
+    model: new cdb.core.Model(options),
+    vis: vis,
+    map: vis.map,
+    template: template
   });
 
-  return dialog.render();
+  widget.createDialog();
+
+  return widget.render();
 
 });
 
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
+
+  var options = data.options;
+
+  //if (!options.display) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -316,6 +369,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   });
 
   return search.render();
+
 });
 
 // tooltip
@@ -329,9 +383,10 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
     data.layer = layer;
   }
 
-  if(!data.layer) {
+  if (!data.layer) {
     throw new Error("layer is null");
   }
+
   data.layer.setInteraction(true);
   var tooltip = new cdb.geo.ui.Tooltip(data);
   return tooltip;

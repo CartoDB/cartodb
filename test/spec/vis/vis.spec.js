@@ -230,6 +230,21 @@ describe("Vis", function() {
     expect(this.vis.$('.cartodb-header').length).toEqual(1);
   });
 
+  it("should add layer selector", function() {
+    this.vis.load(this.mapConfig, {
+      title: true,
+      layer_selector: true
+    });
+    expect(this.vis.$('.cartodb-layer-selector-box').length).toEqual(1);
+  });
+
+  it("should add share", function() {
+    this.vis.load(this.mapConfig, {
+      shareable: true
+    });
+    expect(this.vis.$('.cartodb-share').length).toEqual(1);
+  });
+
   it("should add header without link in the title", function() {
     var mapConfig = _.clone(this.mapConfig);
     mapConfig.title = "title"

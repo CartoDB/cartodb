@@ -1,3 +1,8 @@
+3.11.0 (06//08/2014)
+- If available visualization uses layer visibility settings from CartoDB viz.json.
+- Map header styles changed.
+- Support for new kind of overlays (text and image).
+
 3.10.2 (11//07/2014)
 - Added instanciateCallback to allow to cache instanciation responses
 - fixed rendering order in cdb.vis.addInfowindow (#126)

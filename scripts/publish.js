@@ -92,7 +92,7 @@ function put_file(local_path, remote_path, file, errors, done) {
           opts.ContentEncoding = headers['Content-Encoding'];
         }
         // send file to S3
-        s3.client.putObject(opts, function (err, data) {
+        s3.putObject(opts, function (err, data) {
           console.log("===>", file);
           if(err || !data) {
             errors.push(file + ' Failed to upload file to Amazon S3', err);

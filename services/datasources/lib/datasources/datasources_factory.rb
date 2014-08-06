@@ -24,7 +24,7 @@ module CartoDB
             else
               raise MissingConfigurationError.new("unrecognized datasource #{datasource_name}", NAME)
           end
-        end #self.get_datasource
+        end
 
         # Gets the config of a certain datasource
         # @param datasource_name string
@@ -35,15 +35,15 @@ module CartoDB
           @config ||= (Cartodb.config[:oauth] rescue [])
           raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME) if @config.empty?
           @config.fetch(datasource_name)
-        end #self.config_for
+        end
 
         # Allows to set a custom config (useful for testing)
         # @param custom_config string
         def self.set_config(custom_config)
           @config = custom_config
-        end #self.set_config
+        end
 
-      end # ProviderFactory
-  end #Syncronizer
-end #CartoDB
+      end
+  end
+end
 

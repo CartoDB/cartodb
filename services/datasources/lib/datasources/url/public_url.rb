@@ -19,14 +19,14 @@ module CartoDB
           @service_name = DATASOURCE_NAME
 
           @headers = nil
-        end #initialize
+        end
 
         # Factory method
         # @param config {}
         # @return CartoDB::Datasources::Url::PublicUrl
         def self.get_new(config={})
           return new(config)
-        end #get_new
+        end
 
         # If will provide a url to download the resource, or requires calling get_resource()
         # @return bool
@@ -39,7 +39,7 @@ module CartoDB
         # @return [ { :id, :title, :url, :service } ]
         def get_resources_list(filter=[])
           nil
-        end #get_resources_list
+        end
 
         # Retrieves a resource and returns its contents
         # @param id string
@@ -52,7 +52,7 @@ module CartoDB
           end
           raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
           response.response_body
-        end #get_resource
+        end
 
         # @param id string
         # @return Hash
@@ -67,7 +67,7 @@ module CartoDB
               size:     0
               # No need to use :filename nor file
           }
-        end #get_resource_metadata
+        end
 
         # Fetches the headers for a given url
         # @throws DataDownloadError
@@ -79,7 +79,7 @@ module CartoDB
           else
             @headers = {}
           end
-        end #fetch_headers
+        end
 
         # Get the etag header if present
         # @return string
@@ -91,7 +91,7 @@ module CartoDB
           etag  ||= @headers.fetch('etag', '')
           etag  = etag.delete('"').delete("'") unless etag.empty?
           etag
-        end #etag_header
+        end
 
         # Get the last modified header if present
         # @return string
@@ -103,7 +103,7 @@ module CartoDB
           last_modified ||= @headers.fetch('last-modified', '')
           last_modified = last_modified.delete('"').delete("'") unless last_modified.empty?
           last_modified
-        end #last_modified_header
+        end
 
         # Just return datasource name
         # @return string
@@ -118,7 +118,7 @@ module CartoDB
         def checksum_of(url, etag, last_modified)
           #noinspection RubyArgCount
           Zlib::crc32(url + etag + last_modified).to_s
-        end #checksum_of
+        end
 
         # HTTP (Typhoeus) options
         def http_options
@@ -127,9 +127,9 @@ module CartoDB
               ssl_verifypeer: false,
               ssl_verifyhost: 0
           }
-        end #http_options
+        end
 
-      end #Dropbox
-    end #FileProviders
-  end #Syncronizer
-end #CartoDB
+      end
+    end
+  end
+end

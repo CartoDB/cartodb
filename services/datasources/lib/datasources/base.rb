@@ -74,6 +74,6 @@ module CartoDB
 
       private_class_method :new
 
-    end #Base
-  end #Datasources
-end #CartoDB
+    end
+  end
+end

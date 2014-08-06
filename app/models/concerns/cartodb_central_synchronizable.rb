@@ -42,12 +42,12 @@ module Concerns
           [:name, :seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
-          :twitter_datasource_block_price]
+          :twitter_datasource_block_price, :twitter_datasource_quota]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
-          :twitter_datasource_block_price]
+          :twitter_datasource_block_price, :twitter_datasource_quota]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -58,7 +58,7 @@ module Concerns
         :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
         :user_timeout, :username, :website, :soft_geocoding_limit,
         :twitter_datasource_enabled, :twitter_datasource_block_size,
-        :twitter_datasource_block_price]
+        :twitter_datasource_block_price, :twitter_datasource_quota]
       end
     end
 

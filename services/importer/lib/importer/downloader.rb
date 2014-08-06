@@ -139,7 +139,11 @@ module CartoDB
       end #download_and_store
 
       def clean_up
-        FileUtils.rm_rf @temporary_directory if defined? @temporary_directory
+        if defined?(@temporary_directory) \
+           && @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ \
+           && !(@temporary_directory =~ /\.\./)
+          FileUtils.rm_rf @temporary_directory
+        end
       end #clean_up
 
       def name_from(headers, url, custom=nil)

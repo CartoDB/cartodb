@@ -1,5 +1,5 @@
-// version: 3.10.2
-// sha: 7330fa0363f836ccda1450b11a897ef16b885ae1
+// version: 3.11.00
+// sha: 6c3c9444d89348b0e050d34a1115f64e7abb71d3
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.10.2';
+    cdb.VERSION = '3.11.00';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1198,6 +1198,9 @@ var Mustache;
         'geo/geocoder.js',
         'geo/geometry.js',
         'geo/map.js',
+        'geo/ui/text.js',
+        'geo/ui/image.js',
+        'geo/ui/share.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
         'geo/ui/mobile.js',
@@ -2613,12 +2616,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     var p = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(layer.options.hidden) {
-        p['layer' + i] = 0;
-      } else {
-        // when it's show just don't send it
-        delete p['layer' + i];
-      }
+      p['layer' + i] = layer.options.hidden ? 0: 1;
     }
     return p;
   },

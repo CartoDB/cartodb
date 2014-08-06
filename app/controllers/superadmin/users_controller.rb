@@ -50,13 +50,24 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       headers: { "Content-Type" => "application/json" },
       body: json_data.to_json
     ).run
-    if response.code == 200
-      if JSON.parse(response.body)['retcode'] != 0 
-        render json: JSON.parse(response.body), status: 400  
-      else
-        render json: JSON.parse(response.body), status: 200
-      end
+    parsed_response = JSON.parse(response.body)
+    if response.code == 200 && 
+       parsed_response['retcode'] == 0 &&
+       !parsed_response['local_file'].nil? &&
+       !parsed_response['local_file'].empty? &&
+       !parsed_response['remote_file'].nil? &&
+       !parsed_response['remote_file'].empty?
+      sa_response = {
+        :dumper_response => parsed_response,
+        :remote_file => parsed_response['remote_file'],
+        :local_file => parsed_response['local_file'],
+        :database_host => @user.database_host
+      }
+      render json: sa_response, status: 200
     else
+      sa_response = {
+        :dumper_response => JSON.parse(response.body)
+      }
       render json: JSON.parse(response.body), status: 400   
     end
   end

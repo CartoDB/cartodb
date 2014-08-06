@@ -256,11 +256,16 @@ feature "Superadmin's users API" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
     json_data = {database: user.database_name, username: user.username} 
+    response_body = {
+      retcode: 0,
+      local_file: '/tmp/foo.sql.gz',
+      remote_file: 's3://foo-bucket/backups/foo.sql.gz'
+    }
     Typhoeus.stub(dump_url,
                   { method: :post }
                  )
                   .and_return(
-                    Typhoeus::Response.new(code: 200, body: '{"retcode": 0}') 
+                    Typhoeus::Response.new(code: 200, body: response_body.to_json) 
                   )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|

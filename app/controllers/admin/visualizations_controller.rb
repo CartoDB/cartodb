@@ -98,6 +98,8 @@ class Admin::VisualizationsController < ApplicationController
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
 
+    @user_domain = user_domain_variable(request)
+
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
@@ -162,6 +164,9 @@ class Admin::VisualizationsController < ApplicationController
         end
       end
     }
+
+    @user_domain = user_domain_variable(request)
+
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
@@ -234,6 +239,8 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url = @visualization.user.avatar
+
+    @user_domain = user_domain_variable(request)
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
@@ -399,6 +406,14 @@ class Admin::VisualizationsController < ApplicationController
   def pretty_404
     render(file: "public/404", layout: false, status: 404)
   end #pretty_404
+
+  def user_domain_variable(request)
+    if params[:user_domain].present?
+      CartoDB.extract_real_subdomain(request) != params[:user_domain] ? params[:user_domain] : nil
+    else
+      nil
+    end
+  end
 
   def locator
     CartoDB::Visualization::Locator.new

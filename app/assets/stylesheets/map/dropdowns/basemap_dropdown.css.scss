@@ -64,7 +64,7 @@ div.dropdown.basemap {
     vertical-align:top;
   }
 
-  ul {
+  div.custom ul {
     @include display-flex();
     vertical-align:top;
     padding: 0 5px 0 10px;
@@ -96,7 +96,7 @@ div.dropdown.basemap {
 
   }
 
-  ul li {
+  .custom ul li {
 
     margin: 0 10px 0 0;
 

@@ -180,14 +180,14 @@ describe Organization do
 
   describe "#get_api_calls and #get_geocodings" do
     before(:each) do
-      @organization = FactoryGirl.create(:organization_with_users, name: 'overquota-org')
+      @organization = create_organization_with_users(name: 'overquota-org')
     end
     after(:each) do
       @organization.destroy
     end
     it "should return the sum of the api_calls for all organization users" do
       User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
-      @organization.get_api_calls.should == (0..30).to_a.sum
+      @organization.get_api_calls.should == (0..30).to_a.sum * @organization.users.size
     end
     it "should return the sum of the geocodings for all organization users" do
       User.any_instance.stubs(:get_geocoding_calls).returns(30)
@@ -197,7 +197,7 @@ describe Organization do
 
   describe '.overquota', focus: true do
     before(:all) do
-      @organization = FactoryGirl.create(:organization_with_users, name: 'overquota-org')
+      @organization = create_organization_with_users(name: 'overquota-org')
     end
     after(:all) do
       @organization.destroy

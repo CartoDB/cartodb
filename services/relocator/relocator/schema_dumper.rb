@@ -47,7 +47,7 @@ module CartoDB
       end
 
       def migrate
-        command = "(echo \"BEGIN TRANSACTION;SET statement_timeout=0;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
+        command = "(echo \"BEGIN TRANSACTION;DROP FUNCTION IF EXISTS \"#{@config[:target][:schema]}\"._cdb_userquotainbytes();SET statement_timeout=0;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
         puts "Running: #{command}"
         return_code = system(command)
         raise "Error dumping and restoring! Please cleanup" if return_code != true

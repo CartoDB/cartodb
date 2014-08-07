@@ -51,10 +51,13 @@ module CartoDB
           throw e
         end
       end
-
-      def migrate
+      
+      def setup
         create_user(@username, superuser_conn)
         create_db(@config[:target][:conn][:dbname])
+      end
+
+      def migrate
         system("#{dump_command(@config[:source][:conn])} | #{restore_command(@config[:target][:conn])}")
       end
     end

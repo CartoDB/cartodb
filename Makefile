@@ -64,7 +64,8 @@ WORKING_SPECS_8 = \
   spec/models/shared_entity_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
-  spec/requests/api/visualizations_spec.rb:102 \
+  spec/requests/api/visualizations_spec.rb \
+  spec/requests/superadmin/users_spec.rb \
   $(NULL)
 
 

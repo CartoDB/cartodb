@@ -34,8 +34,13 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
 
-    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
-      unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+    unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+      if request.original_fullpath =~ %r{/tables/}
+        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+      else
+        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+      end
+    end
 
     respond_to { |format| format.html }
 
@@ -93,6 +98,8 @@ class Admin::VisualizationsController < ApplicationController
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
 
+    @user_domain = user_domain_variable(request)
+
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
@@ -145,6 +152,21 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
+    @related_tables_usernames = Hash.new
+    @related_tables.each { |table|
+      unless @related_tables_usernames.include?(table.user_id)
+        table_owner = User.where(id: table.user_id).first
+        if table_owner.nil?
+          # strange scenario, as user has been deleted but his table still exists
+          @related_tables_usernames[table.user_id] = nil
+        else
+          @related_tables_usernames[table.user_id] = table_owner.username
+        end
+      end
+    }
+
+    @user_domain = user_domain_variable(request)
+
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
@@ -217,6 +239,8 @@ class Admin::VisualizationsController < ApplicationController
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url = @visualization.user.avatar
+
+    @user_domain = user_domain_variable(request)
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
@@ -308,9 +332,9 @@ class Admin::VisualizationsController < ApplicationController
         authenticated_users.each { |username|
           if url.nil? && !User.where(username:username).first.nil?
             if for_table
-              url = public_table_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+              url = public_tables_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
             else
-              url = public_visualizations_public_map_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+              url = public_visualizations_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
             end
           end
         }
@@ -382,6 +406,14 @@ class Admin::VisualizationsController < ApplicationController
   def pretty_404
     render(file: "public/404", layout: false, status: 404)
   end #pretty_404
+
+  def user_domain_variable(request)
+    if params[:user_domain].present?
+      CartoDB.extract_real_subdomain(request) != params[:user_domain] ? params[:user_domain] : nil
+    else
+      nil
+    end
+  end
 
   def locator
     CartoDB::Visualization::Locator.new

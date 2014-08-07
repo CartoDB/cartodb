@@ -163,7 +163,7 @@ describe User do
     end
 
     it 'should set account_type properly' do
-      organization = FactoryGirl.create(:organization_with_users)
+      organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.account_type.should == "ORGANIZATION USER"
       end
@@ -171,7 +171,7 @@ describe User do
     end
 
     it 'should set default settings properly unless overriden' do
-      organization = FactoryGirl.create(:organization_with_users)
+      organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.max_layers.should == 6
         u.private_tables_enabled.should be_true
@@ -189,11 +189,11 @@ describe User do
     end
 
     it "should return proper values for non-persisted settings" do
-      organization = FactoryGirl.create(:organization_with_users)
+      organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.dedicated_support?.should be_true
         u.remove_logo?.should be_true
-        u.private_maps_enabled?.should be_true
+        u.private_maps_enabled.should be_true
         u.import_quota.should == 3
       end
       organization.destroy
@@ -1038,9 +1038,8 @@ describe User do
    
     ::Resque.stubs(:enqueue).returns(nil)
 
-    organization = FactoryGirl.create(:organization_with_users)
-    user1 = new_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-    user1.organization = organization
+    organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
+    user1 = new_user(:username => 'test', :email => "client@example.com", :organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once

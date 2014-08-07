@@ -20,7 +20,7 @@ describe Visualization::Copier do
     Visualization.repository = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    @user = FactoryGirl.create(:user)
+    @user = create_user
 
 
     #@user = OpenStruct.new(id: rand(999), maps: [])

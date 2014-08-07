@@ -8,7 +8,7 @@ namespace :cartodb do
     task :create_overlays, [:clear_overlays] => :environment do |t, args|
       ok = 0
       failed = 0
-      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::CANONICAL_TYPE }).each { |vis|
+      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::CANONICAL_TYPE, per_page: 999999 }).each { |vis|
           if vis.user
             begin
               if args[:clear_overlays]
@@ -26,7 +26,7 @@ namespace :cartodb do
           end
       }
 
-      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::DERIVED_TYPE }).each { |vis|
+      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::DERIVED_TYPE, per_page: 999999 }).each { |vis|
           if vis.user
             begin
               if args[:clear_overlays]

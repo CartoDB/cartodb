@@ -8,13 +8,21 @@ namespace :cartodb do
     task :create_overlays, [:clear_overlays] => :environment do |t, args|
       ok = 0
       failed = 0
+      count = 0
       CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::CANONICAL_TYPE, per_page: 999999 }).each { |vis|
           if vis.user
             begin
               if args[:clear_overlays]
                 vis.overlays.each { |o| o.delete }
               end
-              CartoDB::Visualization::Overlays.new(vis).create_legacy_overlays
+              # Do not recreate if already has
+              if vis.overlays.nil? || vis.overlays.count == 0
+                CartoDB::Visualization::Overlays.new(vis).create_legacy_overlays
+              end
+              if count % 500 == 0
+                puts "Progress: #{count}"
+              end
+              count+=1
             rescue => e
               puts "ERROR: failed to create overlays for #{vis.id}: #{e.message}"
               failed+=1
@@ -32,7 +40,14 @@ namespace :cartodb do
               if args[:clear_overlays]
                 vis.overlays.each { |o| o.delete }
               end
-              CartoDB::Visualization::Overlays.new(vis).create_legacy_overlays
+              # Do not recreate if already has
+              if vis.overlays.nil? || vis.overlays.count == 0
+                CartoDB::Visualization::Overlays.new(vis).create_legacy_overlays
+              end
+              if count % 500 == 0
+                puts "Progress: #{count}"
+              end
+              count+=1
             rescue => e
               puts "ERROR: failed to create overlays for #{vis.id}: #{e.message}"
               failed+=1

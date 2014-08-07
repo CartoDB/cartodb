@@ -643,6 +643,15 @@ class User < Sequel::Model
     self.auth_token
   end
 
+  # TODO: Implement this
+  # Should return the number of tweets imported by this user for the
+  # specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    return 0
+  end
+
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})

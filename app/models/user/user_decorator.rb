@@ -32,6 +32,7 @@ module CartoDB
           enabled:      true,
           quota:        1000000,
           block_price:  30,
+          block_quota:  1000,
           monthly_use:  0,
           hard_limit:   false
         },

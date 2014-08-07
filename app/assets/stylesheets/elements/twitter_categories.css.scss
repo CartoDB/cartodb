@@ -32,12 +32,6 @@
       @include transition-property("opacity, height, margin");
       @include transition-duration(250ms);
 
-      &.enabled {
-        margin-bottom:7px;
-        height:46px;
-        @include opacity(1);
-      }
-
       i.twitter-icon {
         width:17px;
         height:14px;
@@ -75,6 +69,18 @@
 
         &.long { width:268px }
         &.short { width:120px }
+      }
+
+      // Enabled
+      &.enabled {
+        margin-bottom:7px;
+        height:46px;
+        @include opacity(1);
+      }
+
+      // Focus state
+      &.focus {
+        border-color:#AAA;
       }
 
     }

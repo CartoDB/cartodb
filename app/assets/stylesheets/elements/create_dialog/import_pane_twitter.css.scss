@@ -1,0 +1,34 @@
+
+  /**
+   *  Twitter import pane styles
+   *
+   *  - Error info
+   *  - Warning message, etc...
+   */
+
+  @import "common/form-elements";
+
+  .import-twitter-pane {
+
+    @include default-form-info();
+
+    .twitter-categories,
+    .twitter-date {
+      position:relative;
+      z-index:1
+    }
+
+    p {
+      font-size:13px;
+      em { font-weight:bold }
+    }
+    
+    div.infobox {
+      z-index:0;
+
+      div.info.active {
+        margin-top:-10px;
+      }
+    }
+
+  }

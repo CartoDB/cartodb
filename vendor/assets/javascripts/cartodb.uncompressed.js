@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9a37b2e7f4e5dae0ab5c53965924b6def5310796
+// sha: 469beca409fd63e8d46923cd587b56674409e527
 (function() {
   var root = this;
 
@@ -22629,7 +22629,6 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
     }
 
-    console.log(top, left, right, bottom)
     this.$el.css({
       width: width,
       marginLeft: marginLeft,

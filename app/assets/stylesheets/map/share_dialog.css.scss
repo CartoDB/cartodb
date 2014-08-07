@@ -11,570 +11,143 @@
 @import "../common/mixins";
 @import "../table/table-sprite";
 
-// Map preview
 .share_dialog {
 
-  section.block {
-    .content > div {
-
-      @include display-flex();
-      @include box-orient(horizontal);
-      @include box-align(stretch);
-    }
-  }
-
   & > .mamufas > section.block {
-
-    .content > div { width: 100%;}
-
     top: auto;
     margin-top: 0;
-    min-width: 800px;
-    min-height: 632px;
   }
 
-  section.block .content {
-    padding: 0;
+  section.block > .foot {
+    border:none;
   }
 
-  div.torque_warning {
-    display: none;
-    padding: 13px 40px;
-    background-color: #FCF3DB;
-    font-size: 13px;
-    color: $cGray2;
-    border-bottom: 1px solid #E5E5E5;
-    @include border-radius(4px 4px 0 0);
-  }
+  section.block > .content {
 
-  .cartodb-map_wrapper:-webkit-full-screen {
-    width: 100%!important;
-    height:100%!important;;
-    display:block!important;
-  }
+    padding: 40px 40px 0 40px;
 
-  .cartodb-map_wrapper:-moz-full-screen {
-    width: 100%!important;
-    height:100%!important;;
-    display:block!important;
-  }
+    h3 { margin: 0 0 5px 0; }
 
-  .map_container {
-    width: 100%;
-    @include flex(1);
-    padding: 40px 40px 34px 40px;
-    border-left: 1px solid #E5E5E5;
-  }
+    ul {
+      margin: 38px 0 0 0;
+      width: 722px;
 
-  .cartodb-map_wrapper {
-    margin: 0 0 33px 0;
-    position: relative;
-    width:auto;
-    height: 470px;
-    border: 1px solid rgba(#000,.3);
-    @include translateZ(10px);
-    @include border-radius(3px);
-    @include translate3d(0,0,10px);
-    overflow:hidden!important;
-
-    .cartodb-map {
-      position:absolute;
-      top:65px;
-      bottom:0px;
-      right:0;
-      left:0;
-      width: 100%;
-      @include border-bottom-radius(3px);
-      overflow:hidden!important;
-    }
-
-    .leaflef-container {
-      @include border-radius(3px);
-      @include translate3d(0,0,0);
-      @include translateZ(0);
-      overflow:hidden;
-    }
-
-    .leaflet-control-attribution {
-      @include border-bottom-right-radius(1px);
-      @include border-top-left-radius(1px);
-      overflow:hidden;
-    }
-
-    div.cartodb-header {
-      min-height:68px;
-      @include box-sizing(border-box);
-      p { width: auto; }
-    }
-
-    .cartodb-share-dialog {
-
-      .mamufas { position:absolute }
-
-      section.block.modal {
-        position:absolute;
-        top: 50%;
-        left: 50%;
-        min-width: inherit;
-        @include box-sizing(border-box);
-        margin-left: -216px;
-        margin-top: -99px;
-        min-width: auto;
-
-        @include translateZ(20px);
-
-        .head { padding: 5px 25px; }
-
-        .head h3  {
-          font: bold 15px $title-fonts;
-          letter-spacing: 0;
-        }
-
-        .content {
-          & > div { width :auto; }
-          padding: 20px 26px 30px 26px;
-        }
-
-      }
-    }
-
-    div.cartodb-fullscreen {
-      margin: 10px 0 0 15px;
-    }
-
-    div.cartodb-share {
-      display:none;
-      position:relative;
-      float:right;
-      margin: 15px 15px 0 0;
-      z-index: 5;
-
-      a {
-        width: 13px;
-        height: 13px;
-        display: block;
-        padding: 8px 8px;
-
-        color: #397DB8;
-        font-size:10px;
-        font-weight:bold;
-        text-transform: uppercase;
-        text-shadow: none;
-
-        @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
-        @include border-radius(4px);
-
-        border: 1px solid #999999;
-
-        background: #fff sprite( $table-sprites, share, $offset-x: 8px, $offset-y: 8px) no-repeat;
-
-        &:hover {
-          background: #fff sprite( $table-sprites, share, $offset-x: -27px, $offset-y: 8px) no-repeat;
-        }
-
-        &:active, &:hover:active {
-          background: #fff sprite( $table-sprites, share, $offset-x: 8px, $offset-y: 8px) no-repeat!important;
-        }
-
-      }
-
-    }
-
-    div.cartodb-searchbox { display:none; margin: 15px 10px 0 0; }
-    div.cartodb-zoom { top:0; margin: 15px 0 0 15px; }
-    div.cartodb-layer-selector-box { display:none; font-weight: normal; margin: 15px 10px 0 0; }
-    div.cartodb-legends {
-      position:absolute;
-      display:none;
-      bottom: 30px;
-      right: 15px;
-
-      @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
-      @include border-radius(4px);
-
-      border: 1px solid #999999;
-      background: white;
-      z-index: 5;
-
-      padding: 6px 8px;
-
-      font:normal 13px $text-fonts2;
-      color:#858585;
-    }
-
-    &.no-logo {
-      .cartodb-map {bottom:0}
-      .cartodb-legends {bottom:30px}
-    }
-  }
-
-  // Sharing and privacy options
-  div.options {
-
-    @include flex(1);
-    position:relative;
-    width:299px;
-    max-width:299px;
-    min-width:299px;
-    height: 100%;
-
-    h3 {
-      height: 94px; // prevents the jump in size due to the webfont loading
-      @include box-sizing(border-box);
-      padding: 31px 0 30px 0;
-
-      .inner { width: 221px; }
-    }
-
-    h4 {
-
-      height: 41px; // prevents the jump in size due to the webfont loading
-      @include box-sizing(border-box);
-
-      position:relative;
-      z-index: 11;
-
-      .inner { width: 221px; }
-
-      padding: 12px 0;
-      background: #F6F6F6;
-      border-top: 1px solid #E5E5E5;
-      border-bottom: 1px solid #E5E5E5;
-      color: #CCCCCC;
-      font-size: 11px;
-      font-weight:bold;
-      text-transform: uppercase;
-    }
-
-    h5 {
-      font-size:17px;
-      line-height:67px;
-      border-bottom:1px solid rgba(204, 204, 204, 0.75);
-      letter-spacing:-1px;
-    }
-
-    .white-gradient-shadow {
-
-      pointer-events: none;
-
-      &.top    { @include opacity(1); @include position(135px, false, false, 0); @extend .white-gradient-shadow-top; z-index: 10; }
-      &.bottom { @include opacity(1); @include position(0, false, false, 0);  @extend .white-gradient-shadow-bottom; z-index: 10; }
-
-      @include size(100%, 16px);
-
-    }
-
-    .scrollpane {
-      overflow: hidden;
-      outline:none;
-
-      &:hover .jspVerticalBar { @include opacity(1); }
-
-      .jspContainer { overflow: hidden; position: relative; }
-      .jspPane { position: absolute; }
-      .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
-      .jspVerticalBar * { margin: 0; padding: 0; }
-      .jspCap { display: none; }
-      .jspTrack { background: none; position: relative; }
-      .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
-      .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
-      .jspVerticalBar .jspArrow { height: 10px; }
-      .jspVerticalBar .jspArrow:focus { outline: none; }
-      .jspCorner { background: #eeeef4; float: left; height: 100%; }
-
-    }
-
-    ul.switches {
-      display:block;
-      width: 221px;
-      letter-spacing:-4px;
-      word-spacing:-4px;
-      padding: 7px 40px;
-
-      &.privacy, &.privacy li:last-child {
-        padding-bottom: 0;
-      }
-
-      &.privacy li.upgrade_message { padding: 18px; }
+      @include display-flex();
+      @include cross-browser(flex-direction, row);
+      @include cross-browser(justify-content, space-between);
 
       li {
-        @include inline-block();
-        width: 100%;
-        padding:12px 0;
-        color: #999999;
-        letter-spacing:0px;
-        word-spacing:0px;
-        font:normal 15px $text-fonts;
-        @include simple-transition(color, 250ms);
-      }
-
-      li.upgrade_message {
         position:relative;
-        @include box-sizing(border-box);
-        background: rgba(#FF7373, .3) ;
-        color: #666;
-        @include border-radius(3px);
-        width: 221px;
+        width: 240px;
+        display:block;
+
+        @include cross-browser(column-rule, 3px outset #ff00ff);
+
+        height:280px;
+        background: #f1f1f1;
         border:none;
-        margin: 29px 0 0 0;
-        line-height: 120%;
 
-        &, p, a {
-          font-size: 15px;
+        &:hover { 
+          background:#E9E9E9;
+          @include simple-transition(background, 150ms, ease-in-out);
         }
-        p { margin: 0 0 15px 0; }
 
-        a { text-decoration: underline; }
-        i { position:absolute; bottom: 5px; right: 3px; background: transparent sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &:first-child { @include border-radius(4px 0 0 4px); }
+        &:last-child { @include border-radius(0 4px 4px 0); }
 
-      }
-
-      li {
-
-        .radiobutton span.radio {
-          @include inline-block();
-          margin: -2px 5px 0 0;
+        h4  {
+          width: 100%;
+          position:absolute;
+          top: 136px;
+          margin: auto;
+          text-align:center;
+          font-size: 17px;
+          font-weight:bold;
         }
 
         .input_field {
-
-          position:relative;
-          width: 203px;
-          @include box-sizing(border-box);
-          padding: 5px 4px 5px 7px;
-          @include inline-block();
+          @include absolute-landscape-center(183px);
+          top: 166px;
+          padding: 2px;
+          @include border-radius(4px);
+          background:#fff;
+          clear:both;
           border: 1px solid #CCCCCC;
-          @include border-radius(3px);
+          overflow: hidden;
 
-          float:left;
+          &.loading input {
+            background: image-url('layout/loader_transparent.gif') no-repeat 5px 50%;
+          }
 
-          input[type="password"] {
-            position:absolute;
+          input {
+        min-height:17px;
+            float:left;
+            width: 142px;
             border:none;
-            outline:none;
-            width:130px;
-            line-height:120%;
-            font-size:12px;
-            z-index:0;
-          }
-
-          i {
-            position:relative;
-            float:right;
-            @include inline-block();
-            @include border-radius(0 3px 3px 0);
-            z-index: 10;
-          }
-
-          a {
-            position:relative;
+            padding: 5px 5px;
+            color: #999999;
+            font-size: 13px;
+            background: transparent;
+            outline: none;
             @include box-sizing(border-box);
-            float:right;
-            height:20px;
-            @include inline-block();
-            background: rgba(#FFA64D, .5);
-            text-transform: uppercase;
-            font-weight:bold;
-            font-size:11px;
-            color: #AD9571;
-            padding: 3px 7px;
-            @include border-radius(3px 0 0 3px);
-            text-align:center;
-            margin: 0 1px 0 0;
-            z-index: 10;
           }
+
+          a.copy {
+            width:38px;
+            height: 25px;
+            float:right;
+            display: block;
+            @include box-sizing(border-box);
+            font-size:9px;
+            padding: 8px 7px;
+            text-align:center;
+            @include border-radius(2px);
+            text-transform: uppercase;
+            color: #fff;
+            background: #3B7EBB;
+          }
+
         }
 
-        &:last-child {
-          margin-right: 0;
-          border:none;
-        }
+        p {
+          top: 206px;
+          @include absolute-landscape-center(182px);
+          font-size:13px;
+          color: #666666;
+          text-align: center;
 
-        a.form_switch {
-          float: right;
-        }
+          a { text-decoration: underline; }
 
-        a.radiobutton {
-          font-size: 15px;
-          display:block;
         }
-
-        &.disabled { color: #CCCCCC; }
 
         i {
-          float: right;
-          @include inline-block();
-          width: 20px; height: 20px;
-          background: rgba(#97C341, .5) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
-          @include border-radius(3px);
+          top:43px;
+          @include absolute-landscape-center(64px);
+          display:block;
+        }
+        
+        &.link i {
+          top: 44px;
+          height: 60px;
+          background: transparent image-url('layout/plane.png') no-repeat;
         }
 
-        &.loading i {
-          background: rgba(#97C341, .5) image-url('layout/public_loader.gif') no-repeat;
-          background-size: 12px;
-          background-position: 50%;
+        &.embed i {
+          top: 54px;
+          height: 40px;
+          background: transparent image-url('layout/tag.png') no-repeat;
         }
 
-        &.disabled {
-         &.link i { background-color: rgba(#CCC, .5); }
+        &.api i {
+          top: 47px;
+          height: 54px;
+          background: transparent image-url('layout/map.png') no-repeat;
         }
-
-        &.link     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-
-        &.private a          i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
-
-        &.private.loading i {
-          background: rgba(#FF7373, .5) image-url('layout/private_loader.gif') no-repeat;
-          background-size: 12px;
-          background-position: 50%;
-        }
-
-        &.password i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
-
-        &.link.loading i,
-        &.password.loading i {
-          background: rgba(#FFA64D, .5) image-url('layout/password_protected_loader.gif') no-repeat;
-          background-size: 12px;
-          background-position: 50%;
-        }
-
-
-        .trial {
-          margin: 5px 0 0 17px;
-          display: block;
-          font-size: 13px;
-          color: #666;
-          text-decoration: underline;
-
-          &:hover { 
-            color: #333;
-          }
-
-        }
-
+        
       }
-
-      li.password {
-
-        .radiobutton { width: 100%; }
-        .input_field { display:none; }
-        i { float:right; }
-
-        &.open {
-
-          clear:both;
-          overflow:hidden;
-
-          .title, a > i { display: none; }
-
-          /*.input_field { display: block; }*/
-
-          .radiobutton {
-            float:left;
-            width: 12px;
-            margin: 11px 6px 0 0;
-
-            span.radio { float:left; }
-          }
-        }
-      }
-
-    } // ul.switches
+    
+    }
+  
   }
 
-  ul.format_selector {
-    float:right;
-    li {
-      @include inline-block();
-    }
-  }
-
-  .input {
-
-    display:block;
-    margin-top:5px;
-    padding:14px 50px 14px 14px;
-    @include border-radius(3px);
-    line-height:normal;
-    border:1px solid #CCCCCC;
-    background:#F5F5F5;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
-    font-size:15px;
-
-    p {
-      width:480px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-
-      &.loading {
-        min-height:17px;
-        background: image-url('layout/loader_transparent.gif') no-repeat;
-      }
-    }
-
-    input {
-      width: 100%;
-      padding: 0;
-      margin: 0;
-
-      padding-right: 250px;
-      @include box-sizing(border-box);
-
-      overflow:hidden;
-      border:none;
-      outline:none;
-
-      &.url { z-index: 0; }
-
-      &.loading {
-        background: image-url('layout/loader_transparent.gif') no-repeat;
-      }
-
-      &:focus { @include box-shadow(none); }
-    }
-
-    ul {
-      clear:both;
-      overflow:hidden;
-      @include position(false, 45px, 11px, false);
-
-      li {
-        float:left;
-        background:#E7E7E7;
-        padding: 5px 6px;
-        margin: 0 1px 0 0;
-        border:none!important;
-        line-height:14px;
-
-        &:hover {
-          color: #fff;
-        }
-
-        &:first-child { @include border-radius(3px 0 0 3px); }
-        &:last-child  { margin: 0; @include border-radius(0 3px 3px 0); }
-
-        &.selected {
-          background:$cBlue;
-          a { color: #fff; }
-        }
-      }
-
-    }
-
-
-    &:hover {
-      border-color:#999999;
-    }
-
-  }
-
-
-  div.description {
-    margin: 0 0 30px;
-    color: #666;
-    font-size:15px;
-    line-height: 1.2em;
-  }
 }

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.10.3-dev
+// cartodb.js version: 3.11.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b8fe80d5515a24bd19cf92140dd8d1fa704060ec
+// sha: ca5b8d95002b342a2406976cc8207fcc90eb6d95
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.10.3-dev';
+    cdb.VERSION = '3.11.00-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22579,19 +22579,19 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   },
 
-  _place: function() {
+  _place: function(position) {
 
-    var extra =this.model.get("extra");
+    var extra = position || this.model.get("extra");
 
     var top   = this.model.get("y");
     var left  = this.model.get("x");
 
-    var bottomPosition = this.model.get("extra").b - this.$el.height();
-    var rightPosition  = this.model.get("extra").r - this.$el.width();
+    var bottom_position = extra.bottom - this.$el.height();
+    var right_position  = extra.right  - this.$el.width();
 
     // position percentages
-    var pTop  = extra.pTop;
-    var pLeft = extra.pLeft;
+    var top_percentage  = extra.top_percentage;
+    var left_percentage = extra.left_percentage;
 
     var right  = "auto";
     var bottom = "auto";
@@ -22599,29 +22599,30 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var marginTop  = 0;
     var marginLeft = 0;
 
-    var width = extra.width;
+    var width  = extra.width;
+    var height = extra.height;
 
-    var portraitDominantSide  = extra.portraitDominantSide;
-    var landscapeDominantSide = extra.landscapeDominantSide;
+    var portrait_dominant_side  = extra.portrait_dominant_side;
+    var landscape_dominant_side = extra.landscape_dominant_side;
 
-    if (portraitDominantSide === 'bottom' && bottomPosition <= 250) {
+    if (portrait_dominant_side === 'bottom' && bottom_position <= 250) {
 
       top = "auto";
-      bottom = bottomPosition;
+      bottom = bottom_position;
 
-    } else if (pTop > 45 && pTop < 55) {
+    } else if (top_percentage > 45 && top_percentage < 55) {
 
       top = "50%";
       marginTop = -height/2;
 
     }
 
-    if (landscapeDominantSide === 'right' && rightPosition <= 250) {
+    if (landscape_dominant_side === 'right' && right_position <= 250) {
 
       left = "auto";
-      right = rightPosition;
+      right = right_position;
 
-    } else if (pLeft > 45 && pLeft < 55) {
+    } else if (left_percentage > 45 && left_percentage < 55) {
 
       left = "50%";
       marginLeft = -width/2;
@@ -22639,7 +22640,6 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     });
 
   },
-
 
   render: function() {
 
@@ -31365,12 +31365,11 @@ var Vis = cdb.core.View.extend({
     }
 
     // Sort the overlays by its internal order
-    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order; });
+    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
 
     this._createOverlays(overlays, options);
 
-    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-
+    //var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
     //if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
@@ -31384,18 +31383,17 @@ var Vis = cdb.core.View.extend({
 
     _.each(overlays, function(data) {
 
-      var type = data.type;
-
+      var type    = data.type;
       var overlay = this.addOverlay(data);
 
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
       var opt = data.options;
 
-      if (type == 'share'          && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'     && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'search'         && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
+      if (type == 'share'                   && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector'          && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'              && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (!this.device && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
       if (type === 'header') {
 
@@ -31569,7 +31567,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (opt.search || opt.searchControl) {
+    if (!this.device && (opt.search || opt.searchControl)) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search"
@@ -31582,6 +31580,7 @@ var Vis = cdb.core.View.extend({
       if (!search_overlay('header')) {
         vizjson.overlays.unshift({
           type: "header",
+          order: 1,
           shareable: opt.shareable ? true: false,
           url: vizjson.url,
           options: {

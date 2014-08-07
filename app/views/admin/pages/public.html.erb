@@ -139,11 +139,20 @@
   _.each(urls, function(url, i) {
 
     var options = {
-      zoomControl:  false,
-      cartodb_logo: false,
-      scrollwheel:  false,
-      legends:      false,
-      time_slider:  false,
+      title:          false,
+      header:         false,
+      description:    false,
+      search:         false,
+      layer_selector: false,
+      text:           false,
+      image:          false,
+      shareable:      false,
+      zoom:           false,
+      cartodb_logo:   false,
+      scrollwheel:    false,
+      legends:        false,
+      time_slider:    false,
+      loader:         false,
       sublayer_options: url.layer_visibility
     };
 

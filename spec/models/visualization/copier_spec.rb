@@ -12,11 +12,16 @@ include CartoDB
 describe Visualization::Copier do
   before do
     @db   = Sequel.sqlite
+    CartoDB::Overlay::Migrator.new(@db).migrate
+    CartoDB::Overlay.repository        =
+      DataRepository::Backend::Sequel.new(@db, :overlays)
+
     Visualization::Migrator.new(@db).migrate
     Visualization.repository = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @user = create_user
+
 
     #@user = OpenStruct.new(id: rand(999), maps: [])
   end
@@ -69,6 +74,7 @@ describe Visualization::Copier do
       description:  'bogus',
       map_id:       rand(999),
       type:         'table',
+      overlays:     [],
       map:          OpenStruct.new(
                       user_id: @user.id,
                       to_hash: { user_id: @user.id },

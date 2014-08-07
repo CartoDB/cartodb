@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../spec_helper'
 require_relative '../../../app/models/overlay/member'
 require_relative '../../../services/data-repository/repository'
 
@@ -17,6 +18,9 @@ describe Overlay::Member do
   describe '#store' do
     it 'persists attributes to the data repository' do
       member = Overlay::Member.new(type: 'bogus')
+      vis_mock = mock
+      member.stubs(:visualization).returns(vis_mock)
+      vis_mock.expects(:invalidate_varnish_cache)
       member.store
 
       member = Overlay::Member.new(id: member.id)
@@ -41,6 +45,9 @@ describe Overlay::Member do
   describe '#delete' do
     it 'deletes this member data from the data repository' do
       member = Overlay::Member.new(type: 'bogus')
+      vis_mock = mock
+      member.stubs(:visualization).returns(vis_mock)
+      vis_mock.expects(:invalidate_varnish_cache).twice
       member.store
 
       member.fetch
@@ -52,4 +59,18 @@ describe Overlay::Member do
       lambda { member.fetch }.should raise_error KeyError
     end
   end #delete
+
+  describe '#hide/show' do
+    it 'should change options to visible = false/true' do
+      member = Overlay::Member.new({type: 't', options: {'display'=> true }})
+      member.is_hidden.should == false
+      member.hide
+      member.options['display'].should == false
+      member.is_hidden.should == true
+      member.show
+      member.is_hidden.should == false
+      member.options['display'].should == true
+    end
+  end
+
 end # Overlay::Member

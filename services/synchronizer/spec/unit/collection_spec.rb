@@ -31,7 +31,7 @@ describe Collection do
       collection = Collection.new(@options)
       EventMachine.run { collection.fetch(@run_call, @stop) }
 
-      collection.members.to_a.length.must_equal 1
+      collection.members.to_a.length.must_equal 1ensure_table_created_in
       collection.members.first.must_be_instance_of CartoDB::Synchronization::Member
     end
   end

@@ -11,7 +11,7 @@ module CartoDB
         {
           type:     overlay.type,
           order:    overlay.order,
-          options:  overlay.options,
+          options:  JSON.parse(overlay.options),
           template: overlay.template
         }
       end #to_poro

@@ -121,7 +121,6 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     }
 
     this.$el.css({
-      width: width,
       marginLeft: marginLeft,
       marginTop: marginTop,
       top: top,

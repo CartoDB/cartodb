@@ -36,12 +36,11 @@ module CartoDB
           :location,  # May be a Twitter Place, with a displayName and objectType, or a simple String
           :languages  #languages[0]
         ],
+        # if this gets renamed to the_geom, cartodb will import it as a bounding box
         :location => [
-          :geo,     # Bounding box, careful: http://support.gnip.com/sources/twitter/data_format.html
+          :geo
         ],
-        :geo => [
-          :coordinates  # Array lat-lon
-        ]
+        # same as location->geo, but as a point, so should have higher priority
       }
 
       # This fields will get dumped as field_subfield. If not preent here will be saved as a stringified json
@@ -85,10 +84,6 @@ module CartoDB
           :geo,
           :streetAddress,
           :name
-        ],
-        :geo => [
-          :type,
-          :coordinates
         ]
       }
 
@@ -150,7 +145,6 @@ module CartoDB
 
         results.join("\n")
       end
-
 
       private
 

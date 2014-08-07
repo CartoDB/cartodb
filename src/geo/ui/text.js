@@ -70,19 +70,19 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   },
 
-  _place: function() {
+  _place: function(position) {
 
-    var extra =this.model.get("extra");
+    var extra = position || this.model.get("extra");
 
     var top   = this.model.get("y");
     var left  = this.model.get("x");
 
-    var bottomPosition = this.model.get("extra").b - this.$el.height();
-    var rightPosition  = this.model.get("extra").r - this.$el.width();
+    var bottom_position = extra.bottom - this.$el.height();
+    var right_position  = extra.right  - this.$el.width();
 
     // position percentages
-    var pTop  = extra.pTop;
-    var pLeft = extra.pLeft;
+    var top_percentage  = extra.top_percentage;
+    var left_percentage = extra.left_percentage;
 
     var right  = "auto";
     var bottom = "auto";
@@ -90,30 +90,30 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var marginTop  = 0;
     var marginLeft = 0;
 
-    var width = extra.width;
+    var width  = extra.width;
     var height = extra.height;
 
-    var portraitDominantSide  = extra.portraitDominantSide;
-    var landscapeDominantSide = extra.landscapeDominantSide;
+    var portrait_dominant_side  = extra.portrait_dominant_side;
+    var landscape_dominant_side = extra.landscape_dominant_side;
 
-    if (portraitDominantSide === 'bottom' && bottomPosition <= 250) {
+    if (portrait_dominant_side === 'bottom' && bottom_position <= 250) {
 
       top = "auto";
-      bottom = bottomPosition;
+      bottom = bottom_position;
 
-    } else if (pTop > 45 && pTop < 55) {
+    } else if (top_percentage > 45 && top_percentage < 55) {
 
       top = "50%";
       marginTop = -height/2;
 
     }
 
-    if (landscapeDominantSide === 'right' && rightPosition <= 250) {
+    if (landscape_dominant_side === 'right' && right_position <= 250) {
 
       left = "auto";
-      right = rightPosition;
+      right = right_position;
 
-    } else if (pLeft > 45 && pLeft < 55) {
+    } else if (left_percentage > 45 && left_percentage < 55) {
 
       left = "50%";
       marginLeft = -width/2;
@@ -131,7 +131,6 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     });
 
   },
-
 
   render: function() {
 

@@ -1259,7 +1259,7 @@ div.cartodb-layer-selector-box {
   -o-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #999999;
-  z-index:5;
+  z-index:100000;
 }
 
 div.cartodb-layer-selector-box a.layers {
@@ -1481,7 +1481,6 @@ div.cartodb-searchbox {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  z-index: 5;
   background: white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -1560,7 +1559,6 @@ div.cartodb-infobox {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  z-index: 5;
   background: white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -1917,6 +1915,8 @@ div.cartodb-timeslider p {
   src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(http://themes.googleusercontent.com/static/fonts/robotoslab/v3/dazS1PrQQuCxC3iOAJFEJRbnBKKEOwRKgsHDreGcocg.woff) format('woff');
 }
 
+.cartodb-overlay.overlay-text .content > .text { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-text .content > .text strong { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 700; }
 .cartodb-overlay.overlay-text.droid .content > .text { font-family: 'Droid Sans', serif; font-weight: 400; }
 .cartodb-overlay.overlay-text.droid .content > .text strong { font-family: 'Droid Sans', serif; font-weight: 700; }
 .cartodb-overlay.overlay-text.roboto .content > .text { font-family: 'Roboto Slab', serif; font-weight: 400; }

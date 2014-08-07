@@ -1,4 +1,7 @@
-3.11.1 (07//08/2014)
+3.11.02 (07//08/2014)
+- No longer sets the width to the text overlays
+
+3.11.01 (07//08/2014)
 - Improves text and image overlay positioning.
 
 3.11.0 (06//08/2014)

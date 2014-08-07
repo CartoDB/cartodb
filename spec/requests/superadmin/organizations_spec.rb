@@ -5,7 +5,7 @@ require 'ruby-debug'
 feature "Superadmin's organization API" do
   before(:all) do
     # Capybara.current_driver = :rack_test
-    @organization = FactoryGirl.create(:organization_with_users, name: 'vizzuality')
+    @organization = create_organization_with_users(name: 'vizzuality')
     @org_atts = @organization.values
   end
 

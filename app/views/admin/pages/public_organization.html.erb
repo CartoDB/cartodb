@@ -49,7 +49,7 @@
         <% @public_org_visualizations.each_with_index do |vis, i| %>
           <li>
             <div class="map-wrapper headless">
-              <a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>?<%= vis[:url_options].presence %>" class="backdrop"></a>
+              <a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>" class="backdrop"></a>
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">

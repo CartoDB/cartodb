@@ -16,9 +16,10 @@ module CartoDB
           String    :options,           text: true
           String    :type
           String    :visualization_id,  index: true
+          String    :template,          text: true
         end
       end #migrate
-    end # Migrator
+    end
   end # Overlay
 end # CartoDB
 

@@ -95,6 +95,20 @@ and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : portrait) {
 
+  .cartodb-public-wrapper div.cartodb-public-header {
+    height: 50px;
+
+    .inner .left h1 a {
+      margin: 15px 0;
+    }
+
+  }
+
+  .cartodb-public-wrapper div.separator.top {
+    top: 50px;
+  }
+
+
   .cartodb-map-data .cartodb-info {
     padding: 20px 0;
   }

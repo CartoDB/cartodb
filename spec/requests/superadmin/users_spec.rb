@@ -4,6 +4,11 @@ require_relative '../../acceptance_helper'
 feature "Superadmin's users API" do
   background do
     Capybara.current_driver = :rack_test
+    #User.any_instance.stubs(:load_cartodb_functions).returns(true)
+    #User.any_instance.stubs(:set_database_permissions).returns(true)
+    #User.any_instance.stubs(:rebuild_quota_trigger).returns(true)
+    #User.any_instance.stubs(:create_schemas_and_set_permissions).returns(true)
+    #User.any_instance.stubs(:remaining_quota).returns(10)
     @new_user = new_user(:password => "this_is_a_password")
     @user_atts = @new_user.values
   end
@@ -42,6 +47,7 @@ feature "Superadmin's users API" do
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
   scenario "user create with crypted_password and salt success" do
@@ -58,6 +64,7 @@ feature "Superadmin's users API" do
       user.id.should == response.body[:id]
       User.authenticate(user.username, "this_is_a_password").should == user
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
   scenario "user create default account settings" do
@@ -83,6 +90,7 @@ feature "Superadmin's users API" do
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
 
@@ -122,6 +130,7 @@ feature "Superadmin's users API" do
       user.geocoding_block_price.should == 2
       user.notification.should == 'Test'
     end
+    User.where(:username => @user_atts[:username]).first.destroy
   end
 
 
@@ -240,6 +249,66 @@ feature "Superadmin's users API" do
     end
     User[user.id].should be_nil
 
+    user.destroy
+  end
+
+  scenario "user dump success" do
+    user = create_user
+    dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
+    json_data = {database: user.database_name, username: user.username} 
+    response_body = {
+      retcode: 0,
+      return_values: {
+        local_file: '/tmp/foo.sql.gz',
+        remote_file: 's3://foo-bucket/backups/foo.sql.gz'
+      }
+    }
+    Typhoeus.stub(dump_url,
+                  { method: :post }
+                 )
+                  .and_return(
+                    Typhoeus::Response.new(code: 200, body: response_body.to_json) 
+                  )
+
+    get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
+      response.status.should == 200
+      response.body['retcode'] == 0
+    end
+    user.destroy
+  end
+  
+  scenario "user dump fail" do
+    user = create_user
+    dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
+    json_data = {database: user.database_name, username: user.username} 
+    Typhoeus.stub(dump_url,
+                  { method: :post }
+                 )
+                  .and_return(
+                    Typhoeus::Response.new(code: 200, body: '{"retcode": 111}') 
+                  )
+
+    get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
+      response.status.should == 400
+      response.body['retcode'] != 0
+    end
+    user.destroy
+  end
+
+  scenario "user dump fail retcode" do
+    user = create_user
+    dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
+    json_data = {database: user.database_name, username: user.username} 
+    Typhoeus.stub(dump_url,
+                  { method: :post }
+                 )
+                  .and_return(
+                    Typhoeus::Response.new(code: 500, body: '{"retcode": 0}') 
+                  )
+
+    get_json "/superadmin/users/#{user.id}/dump", {}, default_headers do |response|
+      response.status.should == 400
+    end
     user.destroy
   end
 

@@ -55,5 +55,5 @@ module CartoDB
       end
     end
 
-  end # DataMigrator
+  end
 end # CartoDB

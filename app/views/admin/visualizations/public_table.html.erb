@@ -63,7 +63,7 @@
           </div>
 
           <div class="user embed-right-col">
-            <a href="<%= public_datasets_home_url(user_domain: @visualization.user.username) %>" title="Datasets by <%= @name %>" class="content">
+            <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
               <div class="user-info">
                 <h4>by <%= @name %></h4>
                 <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>
@@ -97,7 +97,7 @@
               <% @total_visualizations.each do |vis| %>
                 <% if vis.privacy == "public" %>
                   <li>
-                    <a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis.id) %>?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
+                    <a href="<%= public_visualizations_public_map_url(user_domain: @user_domain, id: vis.id) %>?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
                   </li>
                 <% end %>
               <% end %>

@@ -32,7 +32,7 @@ module CartoDB
       def drop(relation=RELATION_NAME)
         @db.drop_table(relation.to_sym)
       end #drop
-    end # Migrator
+    end
   end # Visualization
 end # CartoDB
 

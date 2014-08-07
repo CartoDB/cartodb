@@ -1,3 +1,14 @@
+3.0.0 -> 3.1.0
+--------------
+* Run rake task:
+    bundle exec rake cartodb:overlays:create_overlays
+
+    if the task is run more than one time (because something happened) a flag to remove previous overlays should be pass
+
+    bundle exec rake cartodb:overlays:create_overlays[true]
+
+    this will remove all the overlays for visualizations so it MUST NOT be called after visualization overlays has been customized
+
 2.x -> 3.0.0
 ------------
 * Install CartoDB extension version 0.3.x

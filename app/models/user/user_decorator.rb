@@ -29,7 +29,7 @@ module CartoDB
           hard_limit:  self.hard_geocoding_limit?
         },
         twitter: {
-          enabled:      false,
+          enabled:      true,
           quota:        1000000,
           block_price:  30,
           monthly_use:  0,

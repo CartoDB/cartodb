@@ -1,0 +1,283 @@
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/opacity";
+@import "compass/css3/transform";
+@import "../common/vars";
+@import "../common/mixins";
+@import "../map/map-sprite";
+@import "../elements/elements-sprite";
+
+.option-button.basemap_dropdown {
+
+  @include inline-block();
+
+  cursor: pointer;
+
+  strong {
+    color: #fff;
+    font-weight:normal;
+  }
+
+  div.map div.dropdown.basemap ul li > a .thumbs li> a.nokia_reduced_day div.thumb {
+    // TODO: remove this background url
+    background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+  }
+
+  & > .thumb {
+
+    margin: 0 5px 0 0;
+    @include position(6px, false, false, 6px);
+    @include inline-block();
+    @include size(22px);
+    @include border-radius(2px);
+
+    // Set nokia basemap as default
+    // TODO: remove this background url 
+    background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+    background-size: 34px;
+    background-color: rgba(0, 0, 0, 0);
+    background-position: 50% 50%;
+
+    @include box-shadow(0 0 1px rgba(#000, .9));
+
+    &:before {
+      content: ' ';
+      @include position(0, 0, 0, 0);
+      @include border-radius(2px);
+      border: 1px solid rgba(0, 0,0, 0.15);
+    }
+
+  } // thumb
+
+  .info { @include inline-block(); }
+
+}
+
+div.dropdown.basemap {
+
+  border: 1px solid #999999;
+
+  div.custom {
+    display:inline;
+    vertical-align:top;
+  }
+
+  div.custom ul {
+    @include display-flex();
+    vertical-align:top;
+    padding: 0 5px 0 10px;
+    border-bottom: none;
+  }
+
+  div.custom > ul {
+    width: auto;
+    @include box-sizing(border-box);
+    margin: 0 10px;
+    padding: 10px 10px;
+
+    border-bottom: 1px solid rgba(204,204,204,0.35);
+
+    & > li {
+
+      &:first-child {
+        width: 60px;
+        margin: 7px 4px 0 0;
+        color: #CCCCCC;
+      }
+
+    }
+
+    li {
+      border:none;;
+      font-size: 13px;
+    }
+
+  }
+
+  .custom ul li {
+
+    margin: 0 10px 0 0;
+
+    &:last-child { margin-right: 0; }
+
+    &.wms {
+
+      .thumb {
+        background-size:auto;
+        @include map-sprite(wms);
+      }
+
+      a { line-height: 24px; }
+
+    }
+
+    &.selected .name { color: #7B7B7B; }
+
+    &.hidden { display: none; }
+
+    &:hover { background: none; }
+
+    &.add_basemap > a {
+      small, &:hover small {
+        color: #397DB8;
+        @include opacity(.5);
+      }
+    }
+
+    &.map_background > a .name {
+      margin: 5px 0 0 5px;
+    }
+
+    & > a {
+      display:block;
+      padding: 0;
+      box-sizing: border-box;
+
+      line-height: 13px;
+      @include clearfix();
+
+      small {
+        display:block;
+        margin: 0 0 0 29px;
+        font-size: 9px;
+        line-height:11px;
+        color: #AAAAAA;
+      }
+
+      &:hover small {
+        color: #AAAAAA;
+      }
+
+      .name {
+        float:left;
+        width: 150px;
+        margin: 0 0 0 5px;
+        font-size:13px;
+        line-height:14px;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      &.add .thumb { border-color: #397DB8; }
+      &:hover .thumb .remove_layer { opacity: 1; }
+
+      .thumb {
+        position:relative;
+        float:left;
+
+        @include size(24px);
+        @include border-radius(2px);
+        @include text-indent();
+
+        background-size: 34px 34px;
+        background-position: 50% 50%;
+        text-decoration:none;
+
+        &:before {
+          content: '';
+          @include position(0,0,0,0);
+          @include border-radius(2px);
+          border: 1px solid rgba(0,0,0, 0.15);
+        }
+
+        .remove_layer {
+
+          padding: 0;
+
+          @include size(14px, 10px);
+          @include position(false, 0, 0, false);
+          @include simple-transition(opacity, 100ms);
+
+          background:rgba(black, 0.5);
+          @include border-top-left-radius(2px);
+          @include border-bottom-right-radius(2px);
+          text-indent:0;
+
+          z-index:2;
+
+          @include opacity(0);
+
+          &:before {
+            content:' ';
+
+            @include position(4px, false, false, 4px);
+            @include size(0);
+
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid white;
+
+          }
+        }
+
+        &:hover {
+          cursor:pointer;
+          &:before { border: 1px solid rgba(0,0,0, 0.5); }
+        }
+
+      }
+
+      &.nokia_day .thumb             { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24"); }
+      &.nokia_day_grey .thumb        { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24"); }
+      &.nokia_day_transit .thumb     { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.transit/6/30/24/256/png?token=a7tbpacepg9mj_zghvkt9q&app_id=kuyppsdxzznpffjskt24"); }
+      &.nokia_carnav_day_grey .thumb { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/carnav.day.grey/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"); }
+      &.nokia_reduced_day .thumb     { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/reduced.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"); } 
+      &.nokia_night .thumb           { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.night/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"); }
+      &.nokia_terrain_day .thumb     { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/terrain.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"); }
+      &.nokia_satellite_day .thumb   { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/satellite.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"); }
+      &.nokia_hybrid_day .thumb      { background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/hybrid.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24"); }
+
+      &.dark_roadmap .thumb {
+        background-size:auto;
+        @include map-sprite(gmaps_dark_roadmap);
+      }
+
+      a .thumb { background-size:auto; }
+
+      &.gray_roadmap .thumb { @include map-sprite(gmaps_gray_roadmap); }
+      &.roadmap .thumb      { @include map-sprite(gmaps_roadmap); }
+      &.terrain .thumb      { @include map-sprite(gmaps_terrain); }
+      &.satellite .thumb    { @include map-sprite(gmaps_satellite); }
+      &.hybrid .thumb       { @include map-sprite(gmaps_hybrid); }
+      &.add .thumb          { @include map-sprite(plus); } 
+      &.pattern .thumb      { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
+
+      span.color {
+        position:relative;
+        display:block;
+        width:100%;
+        height:14px;
+        padding:15px 0;
+        text-indent:0;
+        font:bold 9px $text-fonts;
+        color:rgba(#999,0.8);
+        text-shadow:0 0 1px rgba(#FFF,0.5);
+        text-transform:uppercase;
+        text-align:center;
+      }
+
+      span.button {
+        @include position(false, 2px, 2px, false);
+        @include size(10px);
+
+        @include border-radius(10px);
+        text-indent:0;
+        background:white;
+        z-index:2;
+
+        &:before {
+          content:' ';
+          @include position(4px, false, false, 3px);
+          @include size(0);
+
+          border-left:2px solid transparent;
+          border-right:2px solid transparent;
+          border-top:3px solid #397DBA;
+        }
+      }
+    }
+  }
+}

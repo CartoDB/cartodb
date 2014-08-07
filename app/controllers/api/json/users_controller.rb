@@ -12,24 +12,26 @@ class Api::Json::UsersController < Api::ApplicationController
   end
 
   def get_authenticated_users
-    authenticated_users = request.session.select {|k,v| k.start_with?("warden.user")}.values
-    referer = request.env["HTTP_REFERER"]
-    referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
- 
-    if referer_match.nil?
-      render status: 400
-    else
-      subdomain = referer_match[1].gsub(CartoDB.session_domain, '')
-      organization_username = referer_match[5]
-    end
-
+    subdomain = nil
+    organization_username = nil
+    users_intersection = []
     dashboard_urls = []
     dashboard_base_url = ''
     username = nil
     can_fork = false
 
+    authenticated_users = request.session.select {|k,v| k.start_with?("warden.user")}.values
+    referer = request.env["HTTP_REFERER"]
+    referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
 
-    if !authenticated_users.empty?
+    if referer_match.nil?
+      render status: 400 and return
+    else
+      subdomain = referer_match[1].gsub(CartoDB.session_domain, '')
+      organization_username = referer_match[5]
+    end
+
+    unless authenticated_users.empty?
       # It doesn't have a organization username component
       # We assume it's not a organization referer
       if organization_username.nil?
@@ -80,7 +82,7 @@ class Api::Json::UsersController < Api::ApplicationController
           end
         end
       end
-      if !dashboard_base_url.empty?
+      unless dashboard_base_url.empty?
         dashboard_urls << "#{dashboard_base_url}/dashboard"
       end
     end
@@ -101,8 +103,14 @@ class Api::Json::UsersController < Api::ApplicationController
     res = nil
     if referer_match.nil?
       referer_match = /viz\/([^\/]+)/.match(url)
-      if not referer_match.nil?
+      unless referer_match.nil?
         res = referer_match[1]
+
+        # If has schema, remove it
+        if res =~ /\./
+          res = res.split('.').reverse.first
+        end
+
         vis = CartoDB::Visualization::Collection.new.fetch(
           id: res,
           user_id: current_user.id

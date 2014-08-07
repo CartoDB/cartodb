@@ -31,7 +31,12 @@
       #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
       #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
 
-      /* Styles showing up new cartodb text */
+      <% has_logo  = @visualization.overlays.any? {|o| o.type == "logo" } %>
+      <% hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false')) %>
+
+      <% if hide_logo %>
+      <% else %>
+        /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
         <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
           .cartodb-map-wrapper {bottom:30px!important;}
@@ -41,6 +46,7 @@
         .cartodb-map-wrapper {bottom:30px!important;}
         .cartodb-text {display:block;}
       <% end %>
+    <% end %>
 
     </style>
 
@@ -175,11 +181,7 @@
           opt.no_cdn = true;
         <% end %>
 
-        <% 
-            # CartoDB Logo hide logic
-          has_logo = @visualization.overlays.any? {|o| o.type == "logo" }
-
-         if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && params["cartodb_logo"] == 'false') %>
+         <% if hide_logo %>
             opt.cartodb_logo = false;
          <% end %>
 

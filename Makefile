@@ -52,7 +52,7 @@ WORKING_SPECS_6 = \
 WORKING_SPECS_7 = \
   spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
-  spec/models/synchronization/member.rb \
+  spec/models/synchronization/member_spec.rb \
   # spec/models/synchronization/collection_spec.rb not working right now \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/organization_spec.rb \

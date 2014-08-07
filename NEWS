@@ -1,3 +1,6 @@
+3.11.1 (07//08/2014)
+- Improves text and image overlay positioning.
+
 3.11.0 (06//08/2014)
 - If available visualization uses layer visibility settings from CartoDB viz.json.
 - Map header styles changed.

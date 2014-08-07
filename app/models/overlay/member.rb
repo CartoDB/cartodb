@@ -73,9 +73,7 @@ module CartoDB
 
       def can_store
         vis = visualization
-        return false unless vis
-
-        if UNIQUE_TYPES.include?(self.attributes[:type])
+        if vis && UNIQUE_TYPES.include?(self.attributes[:type])
           vis.overlays.each { |overlay|
             return false if (overlay.type == self.attributes[:type])
           }

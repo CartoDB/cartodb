@@ -14,6 +14,11 @@ module CartoDB
       attribute :options,           Hash
       attribute :visualization_id,  String
 
+      # There can be at most one of this types per visualization
+      UNIQUE_TYPES = [
+          'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
+      ]
+
       def initialize(attributes={}, repository=Overlay.repository)
         self.attributes = attributes
         @repository     = repository

@@ -57,6 +57,8 @@ WORKING_SPECS_7 = \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/organization_spec.rb \
   spec/models/permission_spec.rb \
+  specs/models/overlay/member.rb \
+  specs/models/overlay/collection.rb \
   $(NULL)
 
 WORKING_SPECS_8 = \

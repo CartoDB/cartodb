@@ -75,6 +75,10 @@ class Organization < Sequel::Model
     users.map(&:get_geocoding_calls).sum
   end
 
+  def get_twitter_imports_count(options = {})
+    users.map(&:get_twitter_imports_count).sum
+  end
+
   def db_size_in_bytes
     users.map(&:db_size_in_bytes).sum.to_i
   end

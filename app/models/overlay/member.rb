@@ -80,6 +80,9 @@ module CartoDB
         end
 
         true
+      rescue KeyError
+        # Scenario of not yet having stored the vis
+        true
       end
 
       def invalidate_varnish_cache

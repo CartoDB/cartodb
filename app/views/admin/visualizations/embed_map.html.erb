@@ -175,6 +175,14 @@
           opt.no_cdn = true;
         <% end %>
 
+        <% 
+            # CartoDB Logo hide logic
+          has_logo = @visualization.overlays.any? {|o| o.type == "logo" }
+
+         if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && params["cartodb_logo"] == 'false') %>
+            opt.cartodb_logo = false;
+         <% end %>
+
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"

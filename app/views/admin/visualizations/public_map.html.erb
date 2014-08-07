@@ -66,7 +66,7 @@
 
                 <p class="description"><%= raw @visualization.description_md %></p>
                 <p class="options">
-                  <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>?<%= @visualization.url_options %>" class="iframe">View as an iFrame</a>
+                  <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>" class="iframe">View as an iFrame</a>
                 </p>
               </div>
             </div>
@@ -234,18 +234,17 @@
 
       $(document).ready(function(){
 
+        var bool_fn = function(v) { return v == 'true' };
+        var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+        var logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' };
+        var layer_fn = function(v) {
+          if (!v || !v.length) {
+            return null;
+          }
 
-        var bool_fn = function(v) { return v == 'true' }
-          , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
-          , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
-          , layer_fn = function(v) {
-        if(!v || !v.length) {
-          return null;
-        }
-
-        return _.map(v.split("|"), function(v) {
-          return { visible: !!parseInt(v, 10) }
-        });
+          return _.map(v.split("|"), function(v) {
+            return { visible: !!parseInt(v, 10) }
+          });
 
           };
 
@@ -276,8 +275,8 @@
 
           var scrollwheelEnabled = opt.scrollwheel;
 
-          opt.title       = false;
-          opt.description = false;
+          // opt.title       = false;
+          // opt.description = false;
           opt.scrollwheel = false; 
 
           cartodb.config.set({
@@ -285,7 +284,7 @@
             cartodb_logo_link: ""
           })
 
-          var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
+          var loadingTime  = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
           var onResize = function() {
@@ -324,7 +323,7 @@
               if (windowHeight > 670) {
                 h = 180;
               } else { // iPhone, etc.
-                h = 200;
+                h = 40;
               }
 
             } else {
@@ -358,7 +357,6 @@
               loadingTime.end();
             });
 
-            // add here your code
             window.vis = vis;
 
             var fullscreen = vis.getOverlay("fullscreen");
@@ -380,6 +378,10 @@
             }
 
             setupMapDimensions(mobileDevice);
+
+            setTimeout(function() {
+              $(window).trigger("map_resized");
+            }, 300);
 
             // recalc map position on orientation change
             if (!window.addEventListener) {
@@ -455,4 +457,3 @@
 
   </body>
 </html>
-

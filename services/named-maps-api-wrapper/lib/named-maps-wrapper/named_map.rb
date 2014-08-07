@@ -134,7 +134,7 @@ module CartoDB
 
             template_data[:placeholders][layer_placeholder.to_sym] = {
               type:     'number',
-              default:  1
+              default:  layer[:visible] ? 1: 0
             }
 
 	        	if layer.include?(:infowindow) && !layer[:infowindow].nil? && layer[:infowindow].fetch('fields').size > 0

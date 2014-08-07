@@ -6,8 +6,11 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './visualization/overlays'
+require_relative './overlay/member'
+require_relative './overlay/collection'
+require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
-
 
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
@@ -604,7 +607,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
-    CartoDB::Visualization::Member.new(
+    member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
@@ -612,8 +615,14 @@ class Table < Sequel::Model(:user_tables)
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
       user_id:      self.owner.id
-    ).store
+    )
+
+    member.store
+
+    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
+
+
 
   ##
   # Post the style to the tiler

@@ -13,39 +13,161 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
+div.map {
+  @include box-sizing(border-box);
+  @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
+  @include size(100%);
+  background: #333 image-url('layout/noise.png') repeat 0 0;
+  z-index:1;
+}
+
+div.map, .mobile_bkg {
+  padding: 84px 84px 20px 20px;
+}
 
 div.map {
-  position:absolute;
-  top:1px; // Header opacity black border needs to be present
-  left:0;
-  bottom:0;
-  right:0;
-  width:100%;
-  padding-top:64px;
+
+  &.table { // TABLE'S MAP
+
+    div.cartodb-legend-stack {
+      @include position(false, 80px, 20px, false);
+    }
+
+    .leaflet-right .leaflet-control, #cartodb_attribution {
+      margin-right: 62px;
+    }
+
+    div.cartodb-map div.cartodb-logo {
+      bottom: 0!important;
+    }
+
+  }
+
+  &.derived { // VISUALIZATION'S MAP
+
+    div.cartodb-legend-stack {
+      @include position(false, 20px, 20px, false);
+    }
+
+    &.hide_legends div.cartodb-map div.cartodb-legend-stack {
+      display:none!important;
+    }
+
+    &.mobile div.cartodb-map { // MOBILE VERSION
+
+      @include border-radius(0);
+
+      .cartodb-timeslider {
+        .slider-wrapper {
+          width: 85px;
+        }
+      }
+
+      .cartodb-logo { 
+        margin-bottom: 0px;
+        bottom: 10px!important;
+      }
+
+      .leaflet-control-attribution.leaflet-control {
+        margin-right: 0;
+        right: 0;
+        width: 132px;
+      }
+
+      .leaflet-right .leaflet-control, #cartodb_attribution {
+        margin-right: 0px;
+      }
+
+      div.cartodb-searchbox {
+        right: 15px!important;
+      }
+
+      // Overlays hidden in mobile
+      div.cartodb-layer-selector-box,
+      div.cartodb-share,
+      div.cartodb-searchbox,
+      div.cartodb-fullscreen,
+      div.cartodb-zoom,
+      div.cartodb-zoom-info {
+        display:none!important;
+      }
+
+    }
+
+  } // derived
+
+  .mobile_bkg {
+    @include opacity(0);
+    @include box-sizing(border-box);
+    @include position(0,0,0,0);
+    @include size(100%);
+    background: #333 image-url('layout/mobile_bkg.png') no-repeat 50% 50%;
+  }
 
   div.map_toolbar {
-    position:absolute;
-    left:0;
-    top:1px;
-    width:100%;
-    height:64px;
-    display:block;
-    z-index:6;
+    @include position(0, false, false, 0px);
+    @include size(100%, 54px);
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+
+    z-index:6;
   }
 
   .options {
     @include inline-block();
-    margin: 17px 0 0 45px;
+    margin: 12px 0 0 45px;
 
-    & > li.dropdown {
+    & > li.button {
+
+      &.canvas_setup, &.add_overlay {
+
+        position:relative;
+
+        & > .thumb {
+          @include size(26px);
+        }
+
+      }
+
+      &.canvas_setup > .thumb { @include map-sprite(setup_canvas); }
+      &.add_overlay  > .thumb { @include map-sprite(add_element);  }
+
+    }
+
+    & > li {
 
       &.full_screen .thumb {
-        @include map-sprite(full_screen);
-
         border: none;
+        @include map-sprite(full_screen);
         @include border-radius(0px);
+      }
+
+      &.dropdown > h5 {
+
+        &:before {
+          content:' ';
+          @include position(-3px, -9px, false, false);
+          margin:8px 0 0 5px;
+
+          border-left:3px solid transparent;
+          border-right:3px solid transparent;
+          border-top:3px solid #7C7C7C;
+
+          z-index:1;
+        }
+
+        &:after {
+          content:' ';
+          @include position(-1px, -9px, false, false);
+          margin:9px 0 0 5px;
+
+          border-left:3px solid transparent;
+          border-right:3px solid transparent;
+          border-top:3px solid transparent;
+
+          z-index:0;
+        }
+
       }
 
       @include inline-block();
@@ -54,32 +176,34 @@ div.map {
       margin: 0 5px 0 0;
 
       border-right: 1px solid rgba(#D9D9D9, .8);
-      &:last-child { border: none; }
 
       cursor: pointer;
 
       & > .thumb {
         position:relative;
+        margin: 0 5px 0 0;
         @include inline-block();
         @include size(30px);
-        margin: 0 5px 0 0;
         @include border-radius(2px);
 
-        // Set nokia basemap as default
-        background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
         background-size: 34px;
         background-color: rgba(0, 0, 0, 0);
         background-position: 50% 50%;
 
         &:before {
           content: ' ';
-          position:absolute;
-          top:0;
-          left:0;
-          right:0;
-          bottom:0;
-          border: 1px solid rgba(0,0,0, 0.15);
+          @include position(0, 0, 0, 0);
           @include border-radius(2px);
+          border: 1px solid rgba(0,0,0, 0.15);
+        }
+
+        h5 {
+          position:relative;
+          padding:0 12px 0 0;
+          display:block;
+          font-family: "Helvetica", Arial;
+          font-weight:normal;
+          line-height:12px;
         }
       }
 
@@ -126,265 +250,112 @@ div.map {
         }
 
       }
-    } // .basemap_dropdown
+    }
   } // .dropdowns
 
-  div.dropdown.basemap {
 
-    width: 646px;
-    border: 1px solid #999999;
+  .map-options {
+    @include position(false, false, 18px, 18px);
+    z-index: 10;
+  }
 
-    .custom {
-      width:200px;
-      display:inline;
-      vertical-align:top;
+  .option-button {
+    position:relative;
+    box-sizing: border-box;
+    @include inline-block();
+    padding: 10px 14px 10px 37px;
+    margin: 0 3px 0 0;
+    height: auto;
+    min-width: 70px;
+    background: rgba(#000, .7);
+    color: #fff;
+    font-size: 13px;
+    @include border-radius(3px);
+
+    &:last-child {
+      margin-right: 0;
     }
 
-    ul {
-      width:200px;
-      @include inline-block();
-      vertical-align:top;
-      padding: 0 5px 0 10px;
+  }
 
-      &.special {
-        background:#F6F6F6;
-        border-left: 1px solid #E7E7E7;
-        @include border-radius(0 2px 2px 0);
-      }
+  .option-button.show-table-options {
+
+    &.open:before {
+
+      -webkit-transform: rotate(180deg);
+      -moz-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      -o-transform: rotate(180deg);
+      transform: rotate(180deg);
+
     }
 
-    ul li {
+    &:before, &:after {
+      content: '';
+      position: absolute;
+      left: 5px; top: 6px;
+      display: block;
+      width: 22px;
+      height: 22px;
+    }
 
-      &.wms {
-        .thumb {
-          background-size:auto;
-          @include map-sprite(wms);
-        }
+    &:before {
+      @include map-sprite(cog, $offset-x:3px, $offset-y:3px);
 
-        a {
-          line-height: 24px;
-        }
-      }
+      -moz-transition: all 750ms ease;
+      -webkit-transition: all 750ms ease;
+      -o-transition: all 750ms ease;
+      transition: all 750ms ease;
 
-      &.selected .name { color: #7B7B7B; }
+      z-index: 10;
 
-      &.hidden { display: none; }
+    }
 
-      &:hover { background: none; }
-
-      &.add_basemap > a {
-        small, &:hover small {
-          color: #397DB8;
-          @include opacity(.5);
-        }
-      }
-
-      &.map_background > a .name {
-          margin: 5px 0 0 5px;
-      }
-
-      & > a {
-        display:block;
-        padding: 11px 10px 11px 0;
-        height: 48px;
-        box-sizing: border-box;
-
-        line-height: 13px;
-        @include clearfix();
-
-        small {
-          display:block;
-          margin: 0 0 0 29px;
-          font-size: 9px;
-          line-height:11px;
-          color: #AAAAAA;
-        }
-
-        &:hover small {
-          color: #AAAAAA;
-        }
-
-        .name {
-          float:left;
-          width: 150px;
-          margin: 0 0 0 5px;
-          font-size:13px;
-          line-height:14px;
-          text-overflow:ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-        }
-
-        &.add .thumb { border-color: #397DB8; }
-        &:hover .thumb .remove_layer { opacity: 1; }
-
-        .thumb {
-          position:relative;
-          float:left;
-          @include size(24px);
-          @include border-radius(2px);
-          @include text-indent();
-          background-size: 34px 34px;
-          background-position: 50% 50%;
-          text-decoration:none;
-
-          &:before {
-            content: '';
-            position:absolute;
-            top:0;
-            left:0;
-            right:0;
-            bottom:0;
-            border: 1px solid rgba(0,0,0, 0.15);
-            @include border-radius(2px);
-          }
-
-          .remove_layer {
-
-            @include size(14px, 10px);
-            @include position(false, 0, 0, false);
-            @include simple-transition(opacity, 100ms);
-            padding: 0;
-
-            background:#333;
-            text-indent:0;
-            @include border-top-left-radius(2px);
-            @include border-bottom-right-radius(2px);
-            background:rgba(black,0.5);
-            z-index:2;
-
-            opacity: 0;
-
-            &:before {
-              position:absolute;
-              content:' ';
-              top:4px;
-              left:4px;
-              width:0;
-              height:0;
-              border-left:3px solid transparent;
-              border-right:3px solid transparent;
-              border-top:3px solid white;
-            }
-          }
-
-          &:hover {
-            cursor:pointer;
-            &:before { border: 1px solid rgba(0,0,0, 0.5); }
-          }
-
-        }
-
-        &.nokia_day .thumb {
-          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24")!Important;
-        }
-
-        &.dark_roadmap .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_dark_roadmap);
-        }
-
-        &.gray_roadmap .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_gray_roadmap);
-        }
-
-        &.roadmap .thumb{
-          background-size:auto;
-          @include map-sprite(gmaps_roadmap);
-        }
-
-        &.terrain .thumb{
-          background-size:auto;
-          @include map-sprite(gmaps_terrain);
-        }
-
-        &.satellite .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_satellite);
-        }
-
-        &.hybrid .thumb {
-          background-size:auto;
-          @include map-sprite(gmaps_hybrid);
-        }
-
-        &.add .thumb {
-          background-size:auto;
-          @include map-sprite(plus);
-        }
-
-        &.pattern .thumb {
-          @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px);
-        }
-
-        span.color {
-          position:relative;
-          display:block;
-          width:100%;
-          height:14px;
-          padding:15px 0;
-          text-indent:0;
-          font:bold 9px $text-fonts;
-          color:rgba(#999,0.8);
-          text-shadow:0 0 1px rgba(#FFF,0.5);
-          text-transform:uppercase;
-          text-align:center;
-        }
-
-        span.button {
-          position:absolute;
-          bottom:2px;
-          right:2px;
-          width:10px;
-          height:10px;
-          text-indent:0;
-          @include border-radius(10px);
-          background:white;
-          z-index:2;
-
-          &:before {
-            position:absolute;
-            content:' ';
-            top:4px;
-            left:3px;
-            width:0;
-            height:0;
-            border-left:2px solid transparent;
-            border-right:2px solid transparent;
-            border-top:3px solid #397DBA;
-          }
-        }
-      }
+    &:after {
+      background-color: #fff;
+      @include box-shadow(0 0 1px rgba(#000, .9));
+      @include border-radius(3px);
     }
   }
 
+  div.dropdown.widgets_dropdown {
+    width: 200px;
+  }
 
   /* CartoDB map styles */
 
+  &.table div.cartodb-map {
+
+    @include position(54px, 0, 0, 0);
+    @include border-radius(0);
+
+  }
+
+  &.derived div.cartodb-map {
+
+    @include position(70px, 79px, 15px, 15px);
+    @include border-radius(3px);
+    @include size(auto);
+
+  }
+
   div.cartodb-map {
-    position:absolute;
-    top:64px;
-    left:0;
-    right:0;
-    bottom:0;
-    width:100%;
-    height:auto;
+
+    div.cartodb-searchbox{
+      top: 20px;
+      right: 77px;
+      float: right;
+      position: absolute;
+    }
+
     z-index:1;
 
-    // Move attributions in different providers
-    .leaflet-right .leaflet-control, #cartodb_attribution {
-      margin-right: 62px!important;
-    }
   }
 
   div.cartodb-legend-stack {
-    @include position(false, 0, 20px, false);
-    margin: 0 80px 0 0;
+    @include position(false, 80px, 20px, false);
+    margin: 0;
 
-    @include transform-style("linear");
-    @include transition-property("margin-right");
-    @include transition-duration(300ms);
     z-index: 10001;
 
     div.cartodb-legend {
@@ -397,13 +368,21 @@ div.map {
     }
   }
 
+  // animations
+  .leaflet-control-attribution.leaflet-control,
+  div.cartodb-legend,
+  div.cartodb-legend-stack,
+  div.cartodb-share,
+  div.cartodb-layer-selector-box,
+  div.cartodb-searchbox {
+    @include transform-style("linear");
+    @include transition-property("margin");
+    @include transition-duration(300ms);
+  }
+
   div.cartodb-legend {
     @include position(false, 0, 20px, false);
     margin: 0 80px 0 0;
-
-    @include transform-style("linear");
-    @include transition-property("margin-right");
-    @include transition-duration(300ms);
 
     .warning {
       text-transform: none;
@@ -413,52 +392,118 @@ div.map {
     }
 
     z-index: 10001;
+
   }
 
-  // Zoom info
+  div.cartodb-layer-selector-box { 
+    display:none;
+    font-weight: normal;
+    margin: 0;
+  }
+
+  // Zoom
+  div.cartodb-zoom,
   div.cartodb-zoom-info {
-    position:relative;
-    float:left;
-    top:0;
-    left:0;
-    margin:10px 0 0 20px;
-    clear:both;
+    position:absolute;
+    margin: 0;
   }
 
   // Tiler in core map
   div.cartodb-tiles-loader {
-    float:left;
     clear:both;
+    position:absolute;
+
     div.loader {
       position:relative;
-      top:0;
-      left:0;
-      margin:10px 0 0 20px;
+      top: 0;
+      left: 0;
+      margin:0;
     }
+  }
+
+  // Fullscreen 
+  div.cartodb-fullscreen {
+    display:none;
+    position:absolute;
+    margin: 0;
+  }
+
+  div.cartodb-share {
+    margin: 0;
+    position:absolute;
   }
 
   // Search box in core map
   div.cartodb-searchbox {
-    position:relative;
-    float:right;
-    margin:20px 77px 0 0;
-    @include transform-style("linear");
-    @include transition-property("margin-right");
-    @include transition-duration(300ms);
+    display:none;
+    position:absolute;
+    margin:0;
   }
 
   // Public map
   .cartodb-map.public {
-    top: 55px;
+
+    @include position(65px, 0, 0, 0);
+
     border-top:1px solid #999999;
 
-    div.cartodb-zoom {position:absolute; top: 0px;}
+    .cartodb-map-wrapper.with_header div.cartodb-zoom,
+    .cartodb-map-wrapper.with_header div.cartodb-share,
+    .cartodb-map-wrapper.with_header div.cartodb-searchbox,
+    .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
+      margin-top: 70px;
+    }
+
+    div.cartodb-fullscreen {
+      position:relative;
+      margin: 41px 0 0 20px;
+    }
+
+    div.cartodb-layer-selector-box { 
+      position:relative;
+      float:right;
+      margin: 20px 20px 0 0;
+    }
+
+    div.cartodb-share {
+      display:none;
+      position:relative;
+      float:right;
+      margin: 20px 20px 0 0;
+      z-index: 5;
+    }
+
+    div.cartodb-tiles-loader {
+      position:relative;
+      float:left;
+      display:block;
+      left:0;
+      top:0;
+    }
+
+    div.cartodb-tiles-loader div.loader {
+      position:absolute;
+      display:block;
+      top:70px;
+      left:-30px;
+      margin:20px 0 0 0;
+      width: 28px;
+      height:28px;
+    }
+
+    div.cartodb-zoom { 
+      position:absolute; 
+      top: 0px;
+      margin: 20px 0 0 20px;
+    }
+
     div.cartodb-tiles-loader {
       position:absolute;
       top:80px;
     }
+
     div.cartodb-searchbox{
-      margin-right:20px;
+      margin-right:0px;
     }
 
     .leaflet-right .leaflet-control, #cartodb_attribution {
@@ -466,10 +511,9 @@ div.map {
     }
   }
 
-
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
-    position: relative;
+    position: absolute;
     @include inline-block;
     top: 20px;
     left: 50%;
@@ -480,7 +524,7 @@ div.map {
     @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
     background:white;
     @include border-radius(3px);
-    z-index: 2;
+    z-index: 1000;
 
     a {
       position:relative;
@@ -519,7 +563,7 @@ div.map {
     display: block;
     width: 100%;
     height: 37px;
-    margin:0;
+    margin: -29px 0 0 0;
     z-index:1;
 
     p {
@@ -544,68 +588,89 @@ div.map {
       @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
 
       &.warn {
-       background-color: rgba(#FFFFBF, 0.90);
+        background-color: rgba(#FFFFBF, 0.90);
       }
     }
   } //div.sqlview
 
-  // When a panel view is openned or closed
+  // When a panel view is open or closed
   &.displaced {
+
     div.sqlview p {
-      text-indent:-600px;
+      text-indent: -600px;
     }
 
-    div.share {
-      right:595px;
-    }
+    // Vis
+    &.map.derived .cartodb-map {
 
-    div.cartodb-searchbox {
-      margin-right:612px;
-    }
-
-    div.cartodb-legend {
-      margin-right:612px;
-    }
-
-    div.cartodb-legend-stack {
-      margin-right:612px;
-
-      div.cartodb-legend {
-        margin: 0;
-      }
-
-    }
-
-    &.narrow {
-      div.sqlview p {
-        text-indent:-450px;
-      }
-
-      div.share {
-        right:445px;
-      }
-
+      .leaflet-control-attribution.leaflet-control,
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
       div.cartodb-searchbox {
-        margin-right:462px;
+        margin-right:520px;
       }
+    }
 
-      div.cartodb-legend {
-        margin-right:462px;
-      }
+    // Vis Narrow
+    &.narrow.map.derived .cartodb-map {
 
-      div.cartodb-legend-stack {
-        margin-right:462px;
-
-        div.cartodb-legend {
-          margin: 0;
-        }
+      .leaflet-control-attribution.leaflet-control,
+      div.cartodb-share,
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:375px;
       }
 
     }
-  } //&.displaced
+
+    // Table
+    &.map.table .cartodb-map {
+
+      .leaflet-control-attribution.leaflet-control,
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:540px;
+      }
+    }
+
+    // Table Narrow
+    &.narrow.map.table .cartodb-map {
+
+      .leaflet-control-attribution.leaflet-control,
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right:394px;
+      }
+
+      div.sqlview p { text-indent:-450px; }
+
+    }
+
+    &.narrow.map.derived.mobile .cartodb-map,
+    &.map.derived.mobile .cartodb-map {
+
+      .leaflet-control-attribution.leaflet-control,
+      div.cartodb-share,
+      div.cartodb-layer-selector-box,
+      div.cartodb-legend-stack,
+      div.cartodb-searchbox {
+        margin-right: 0!important;
+      }
+
+      div.sqlview p { text-indent:-450px; }
+
+    }
+
+  } // &.displaced
 
 } // div.cartodb-map
-
 
 section.block.noGeoRef {
   background-color: #FFF0C1;
@@ -618,6 +683,7 @@ section.block.noGeoRef {
       color: #666;
       line-height:120%;
     }
+
     .foot {
       border-top: 0;
       padding-top: 0px;
@@ -625,17 +691,16 @@ section.block.noGeoRef {
       .cancel {
         margin-top: 15px;
 
-        a {
-          text-decoration: underline;
-        }
+        a { text-decoration: underline; }
+
       }
     }
 
-    .enabled {
-      display: block;
-    }
-  }
-}
+    .enabled { display: block; }
+
+  } // .innerBlock
+
+} // section.bloc.noGeoRef
 
 /* FOOTER EDIT BUTTONS  for infowindow */
 
@@ -713,9 +778,6 @@ div.cartodb-popup.dark  {
   }
 }
 
-
-
-
 // FOR TOOLTIPS //
 
 .cartodb-tooltip-content-wrapper
@@ -773,7 +835,6 @@ div.cartodb-edit-buttons {
     }
   }
 }
-
 
 // Custom styles for Leaflet maps
 

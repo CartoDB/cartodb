@@ -93,6 +93,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           user_id:  current_user.id
         )
       )
+
+      # create default overlays
+      Visualization::Overlays.new(vis).create_default_overlays
     else
       vis = Visualization::Member.new(
         payload_with_default_privacy.merge(

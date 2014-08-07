@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
@@ -9,12 +10,14 @@ require_relative '../../../app/models/synchronization/migrator'
 include CartoDB
 
 describe Synchronization::Collection do
+
   before(:each) do
     db_config   = Rails.configuration.database_configuration[Rails.env]
     @db         = Sequel.postgres(
-                    host:     db_config.fetch('host'),
-                    port:     db_config.fetch('port'),
-                    username: db_config.fetch('username')
+                    host:               db_config.fetch('host'),
+                    port:               db_config.fetch('port'),
+                    username:           db_config.fetch('username'),
+                    schema_search_path: 'public'
                   )
     @relation   = "synchronizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)

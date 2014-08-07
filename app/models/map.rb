@@ -33,7 +33,7 @@ class Map < Sequel::Model
   plugin :association_dependencies, :layers => :nullify
 
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw
-    bounding_box_ne center zoom view_bounds_sw view_bounds_ne }
+    bounding_box_ne center zoom view_bounds_sw view_bounds_ne legends scrollwheel }
 
   DEFAULT_OPTIONS = {
     zoom:            3,

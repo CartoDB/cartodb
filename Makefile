@@ -71,6 +71,10 @@ WORKING_SPECS_8 = \
   spec/requests/api/visualizations_spec.rb:630 \
   $(NULL)
 
+  WORKING_SPECS_9 = \
+  services/datasources/spec/acceptance/datasources_factory_spec.rb \
+  $(NULL)
+
 
 CDB_PATH=lib/assets/javascripts/cdb
 

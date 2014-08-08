@@ -19,6 +19,8 @@ module CartoDB
               Url::GDrive.get_new(DatasourcesFactory.config_for(datasource_name), user)
             when Url::PublicUrl::DATASOURCE_NAME
               Url::PublicUrl.get_new()
+            when Search::Twitter::DATASOURCE_NAME
+              Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name), user)
             when nil
               nil
             else
@@ -36,10 +38,10 @@ module CartoDB
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME
               config = (config_source[:oauth] rescue nil)
-              config = (config_source[:oauth.to_s] rescue nil)
-            when Search::Twitter
-              config = (config_source[:datasources_search] rescue nil)
-              config = (config_source[:datasources_search.to_s] rescue nil)
+              config ||= (config_source[:oauth.to_s] rescue nil)
+            when Search::Twitter::DATASOURCE_NAME
+              config = (config_source[:datasource_search] rescue nil)
+              config ||= (config_source[:datasource_search.to_s] rescue nil)
             else
               config = nil
           end

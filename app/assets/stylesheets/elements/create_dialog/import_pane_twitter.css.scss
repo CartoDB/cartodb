@@ -6,7 +6,9 @@
    *  - Warning message, etc...
    */
 
+  @import "common/mixins";
   @import "common/form-elements";
+  @import "elements/progress-bar";
 
   .import-twitter-pane {
 
@@ -18,10 +20,33 @@
       z-index:1
     }
 
-    p {
-      font-size:13px;
-      em { font-weight:bold }
+    .twitter-quota {
+      @include display-flex();
+      @include justify-content(space-between, justify);
+      @include align-items(center, center);
+
+      .message {
+        width:310px;
+        color:#999;
+        font-size:13px;
+        line-height:16px;
+      }
+
+      .twitter-progress {
+        @include display-flex();
+        @include cross-browser(flex-direction,column);
+        @include justify-content(center,center);
+        width:144px;
+        height:35px;
+        padding-left:10px;
+        border-left: 1px solid #CCCCCC;
+
+        div.progress-bar { margin-top:4px }
+      }
+
+      @include progress-bar(4px, 3px, true, 3px);
     }
+    
     
     div.infobox {
       z-index:0;

@@ -151,9 +151,14 @@
     div.infobox {
       @include default-form-info();
       z-index:2;
+      
       div.info {
         position:relative;
         z-index:1;
+
+        &.error {
+          margin-top:-55px;
+        }
       }
     }
 

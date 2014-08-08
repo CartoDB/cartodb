@@ -14,23 +14,24 @@
 
   .twitter-categories {
     display:block;
+    border:1px solid #CCCCCC;
+    background:white;
+    @include border-radius(3px);
 
     // Category field
     .twitter-category {
       @include display-flex();
       @include justify-content(flex-start, start);
       @include align-items(center, center);
-      height:0;
+      height: 0;
       padding:0 13px;
       margin:0;
       overflow: hidden;
       @include opacity(0);
-      border:1px solid #CCCCCC;
-      @include border-radius(3px);
-      background:white;
-      @include transform-style("linear");
-      @include transition-property("opacity, height, margin");
-      @include transition-duration(250ms);
+      border-bottom:none;
+      // @include transform-style("linear");
+      // @include transition-property("opacity, height");
+      // @include transition-duration(350ms);
 
       i.twitter-icon {
         width:17px;
@@ -73,14 +74,14 @@
 
       // Enabled
       &.enabled {
-        margin-bottom:7px;
+        border-bottom:1px solid #CCC;
         height:46px;
         @include opacity(1);
       }
 
-      // Focus state
-      &.focus {
-        border-color:#AAA;
+      // Last child!
+      &:last-child {
+        border-bottom:none
       }
 
     }

@@ -17,6 +17,8 @@ describe Layer do
   before(:each) do
     CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
 
+    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
+
     delete_user_data @user
     @table = Table.new
     @table.user_id = @user.id

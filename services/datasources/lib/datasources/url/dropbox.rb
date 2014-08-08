@@ -22,11 +22,12 @@ module CartoDB
             FORMAT_COMPRESSED =>  %W( .zip )
         }
 
-        # Constructor (hidden)
-        # @param config
+        # Constructor
+        # @param config Array
         # [
         #  'app_key'
         #  'app_secret'
+        #  'callback_url'
         # ]
         # @param user User
         # @throws UninitializedError

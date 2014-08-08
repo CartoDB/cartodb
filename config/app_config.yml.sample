@@ -181,11 +181,11 @@ defaults: &defaults
       callback_url:         ''
   datasource_search:
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
-    twitter:
+    twitter_search:
       auth_required:  false
       username:       ''
       password:       ''
-      search_url:     ''
+      search_url:     'http://fake.url.nil'
 
 development:
   <<: *defaults

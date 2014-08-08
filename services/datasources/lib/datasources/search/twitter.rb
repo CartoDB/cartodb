@@ -2,6 +2,10 @@
 
 require 'typhoeus'
 
+require_relative '../../../../twitter-search/twitter-search'
+
+include CartoDB
+
 module CartoDB
   module Datasources
     module Search
@@ -19,18 +23,41 @@ module CartoDB
             'term1', 'term2', 'term3', 'term4', 'max_results'
         ]
 
-        # Constructor (hidden)
-        # @param config Hash
-        def initialize(config)
+        # Constructor
+        # @param config Array
+        # [
+        #  'auth_required'
+        #  'username'
+        #  'password'
+        #  'search_url'
+        # ]
+        # @param user User
+        # @throws UninitializedError
+        def initialize(config, user)
           @service_name = DATASOURCE_NAME
           @filters = Hash.new
+
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
+          raise MissingConfigurationError.new('missing auth_required', DATASOURCE_NAME) unless config.include?('auth_required')
+          raise MissingConfigurationError.new('missing username', DATASOURCE_NAME) unless config.include?('username')
+          raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
+          raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
+
+          search_api = TwitterSearch::SearchAPI.new({
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED  => config['auth_required'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME  => config['username'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD  => config['password'],
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL     => config['search_url'],
+          })
+
+          @user = user
         end
 
         # Factory method
         # @param config {}
         # @return CartoDB::Datasources::Search::TwitterSearch
-        def self.get_new(config={})
-          return new(config)
+        def self.get_new(config={}, user)
+          return new(config, user)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()

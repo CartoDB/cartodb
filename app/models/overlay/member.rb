@@ -27,7 +27,7 @@ module CartoDB
 
       # @throws DuplicateOverlayError
       def store(options={})
-        raise DuplicateOverlayError if !can_store
+        #raise DuplicateOverlayError if !can_store
 
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])

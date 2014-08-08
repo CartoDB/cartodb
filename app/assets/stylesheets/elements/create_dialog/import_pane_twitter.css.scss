@@ -6,6 +6,7 @@
    *  - Warning message, etc...
    */
 
+  @import "compass/css3/inline-block";
   @import "common/mixins";
   @import "common/form-elements";
   @import "elements/progress-bar";
@@ -41,7 +42,25 @@
         padding-left:10px;
         border-left: 1px solid #CCCCCC;
 
-        div.progress-bar { margin-top:4px }
+        div.progress-bar { margin-top:7px }
+        
+        i.icon.help {
+          @include inline-block();
+          width:15px;
+          width:15px;
+          @include border-radius(15px);
+          background:#CCC;
+          text-align:center;
+          line-height:15px;
+          font-weight:300;
+          font-size:10px;
+          color:white;
+          
+          &:hover {
+            background:#999;
+            cursor:pointer;
+          }
+        }
       }
 
       @include progress-bar(4px, 3px, true, 3px);

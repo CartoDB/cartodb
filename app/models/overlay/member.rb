@@ -14,13 +14,21 @@ module CartoDB
       attribute :options,           Hash
       attribute :visualization_id,  String
 
+      # There can be at most one of this types per visualization
+      UNIQUE_TYPES = [
+          'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
+      ]
+
       def initialize(attributes={}, repository=Overlay.repository)
         self.attributes = attributes
         @repository     = repository
         self.id         ||= @repository.next_id
       end #initialize
 
+      # @throws DuplicateOverlayError
       def store(options={})
+        raise DuplicateOverlayError if !can_store
+
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)
@@ -63,6 +71,20 @@ module CartoDB
         options[key] = value
       end
 
+      def can_store
+        vis = visualization
+        if vis && UNIQUE_TYPES.include?(self.attributes[:type])
+          vis.overlays.each { |overlay|
+            return false if (overlay.type == self.attributes[:type])
+          }
+        end
+
+        true
+      rescue KeyError
+        # Scenario of not yet having stored the vis
+        true
+      end
+
       def invalidate_varnish_cache
         begin
           v = visualization
@@ -77,6 +99,8 @@ module CartoDB
 
       attr_reader :repository
     end # Member
+
+    class DuplicateOverlayError < StandardError; end
   end # Overlay
 end # CartoDB
 

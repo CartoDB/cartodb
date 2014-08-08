@@ -43,6 +43,8 @@ describe Table do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
   end
 
   after(:all) do

@@ -1,5 +1,9 @@
-3.0.X
+3.0.1 (2014-08-07)
 ------------------
+* New Features
+  * Publication system: you can now add text and images on top of your maps!
+  * New basemap selector
+  * Simplified share dialog
 * Fixed bugs
   * Fixed write buttons are shown when watching sync tables
   * Fixed a bug that prevented choosing a different column from the default to geocode an IP address

@@ -1,5 +1,8 @@
+3.11.03 (08//08/2014)
+- Fixes rendering issues with webfonts.
+
 3.11.02 (07//08/2014)
-- No longer sets the width to the text overlays
+- No longer sets the width to the text overlays.
 
 3.11.01 (07//08/2014)
 - Improves text and image overlay positioning.

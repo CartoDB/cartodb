@@ -26,6 +26,7 @@
     ///////////
 
     .create-tabs {
+      position:relative;
       // Arg!!!!important :()
       display: -webkit-box!important;
       display: -moz-box!important;
@@ -35,6 +36,7 @@
       @include justify-content(space-between, justify);
       @include align-items(center, center);
       padding:0 25px;
+      z-index:1;
 
       border-bottom:1px solid #CCCCCC;
     }
@@ -176,8 +178,10 @@
 
     // Content
     .create-content {
+      position:relative;
       padding:40px;
       background:#F6F6F6;
+      z-index:2;
 
       // When fixed class is set, elements out
       // of bounds will be hidden

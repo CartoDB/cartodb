@@ -15,6 +15,7 @@
   div.custom-datepicker {
     position:relative;
     background:white;
+    z-index:3;
 
     // Button
     .dates {
@@ -71,10 +72,47 @@
 
     }
 
+    // Hint
+    p.hint {
+      display:block;
+      font-size:11px;
+      color:#AAA;
+      font-style:italic;
+      text-align:center;
+    }
+
+    // Timers
+    .timers {
+      @include display-flex();
+      @include align-items(center, center);
+      @include justify-content(space-between, justify);
+
+      .from,
+      .to {
+        @include display-flex();
+        @include align-items(center, center);
+        @include justify-content(space-between, justify);
+        width:175px;
+        padding-top:15px;
+        border-top:1px solid #CCCCCC;
+      }
+
+      label {
+        position:relative;
+        top:auto;
+        left:auto;
+        width:auto;
+        margin:0 5px 0 0;
+        font-weight:bold;
+        font-size:11px;
+        color:#666;
+      }
+    }
+
     // Date picker + timers
     div.calendar {
       position:absolute;
-      top:54px;
+      bottom:54px;
       left:0;
       right:0;
       padding:30px;
@@ -82,13 +120,14 @@
       background:white;
       @include border-radius($border-radius);
       @include box-shadow(0 2px 2px 2px rgba(0,0,0,0.1));
-      z-index:1;
+      z-index:10;
 
+      // Default datepicker styles
       div.datepicker {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 11px;
         width: 174px;
-        height: 196px;
+        height: 195px;
         cursor: default;
       }
 
@@ -102,7 +141,7 @@
       }
       div.datepicker a {
         text-decoration: none;
-        cursor: default;
+        cursor: pointer;
         outline: none;
       }
       div.datepicker table td {
@@ -124,9 +163,9 @@
       }
       .datepickerDays a {
         width: 20px;
-        line-height: 16px;
-        height: 16px;
-        padding-right: 2px;
+        line-height: 20px;
+        height: 20px;
+        border:1px solid white;
       }
       .datepickerYears a,
       .datepickerMonths a{
@@ -217,6 +256,7 @@
         border-bottom:1px solid #CCCCCC;
 
         th {
+          height:30px;
           text-align:center!important;
 
           span {
@@ -227,8 +267,33 @@
         }
       }
 
+      tbody.datepickerDays:before {
+        line-height:5px;
+        content:"-";
+        color:white;
+        display:block;
+      }
+
+      th.datepickerWeek {
+        text-align:center!important;
+        a { color:#CCC }
+      }
+
       td.datepickerSelected a {
-        color:white
+        color:white;
+        border-color:#3B7EBB;
+      }
+
+      tbody.datepickerDays td.datepickerSelectedFirst.datepickerSelected,
+      tbody.datepickerDays td.datepickerSelectedLast.datepickerSelected {
+        background:#3B7EBB;
+        
+        a {
+          background:white;
+          color:#3B7EBB;
+          border-color:#3B7EBB;
+          @include border-radius(22px);
+        }
       }
 
       td.datepickerSelectedFirst {
@@ -245,11 +310,37 @@
         color:#999;
       }
 
+      tbody.datepickerDays
+      td.datepickerNotInMonth.datepickerSelected {
+        background:#E7EAEC;
+        a { border-color:#E7EAEC }
+      }
+
       // Hide week links
       // thead > tr.datepickerDoW > th:first-child,
       // .datepickerWeek {
       //   display:none
       // }
+
+      .datepickerSpace {
+        position:relative;
+        
+        div {
+          height:100%;  
+          width: 70px;
+
+          &:before {
+            content:'';
+            position:absolute;
+            top:0;
+            left:34px;
+            width:1px;
+            height:100%;
+            background:#CCCCCC;
+          }
+        }
+      }
+
 
     }
   }

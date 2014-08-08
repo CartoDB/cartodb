@@ -11,13 +11,12 @@ include CartoDB::Datasources
 describe DatasourcesFactory do
 
   def get_config
-    @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['oauth']
+    @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']
   end #get_config
 
   describe '#provider_instantiations' do
     it 'tests all available provider instantiations' do
       user_mock = Doubles::User.new
-
       DatasourcesFactory.set_config(get_config)
 
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Dropbox::DATASOURCE_NAME, user_mock)

@@ -5,7 +5,7 @@ require 'typhoeus'
 module CartoDB
   module Datasources
     module Search
-      class TwitterSearch < Base
+      class Twitter < Base
 
         # Required for all datasources
         DATASOURCE_NAME = 'twitter_search'

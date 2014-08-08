@@ -100,18 +100,6 @@ defaults: &defaults
   graphite_public:
     host: ""
     port:
-
-
-
-
-
-
-
-
-
-
-
-
   layer_opts:
     public_opts: ["type", "active", "query", "opacity", "auto_bound", 
                   "interactivity", "debug", "visible", "tiler_domain", 
@@ -186,11 +174,18 @@ defaults: &defaults
       application_name:     ''
       client_id:            ''
       client_secret:        ''
-      callback_url:         ''
+      callback_url:         'http://cartodb.com'
     dropbox:
       app_key:              ''
       app_secret:           ''
       callback_url:         ''
+  datasource_search:
+    # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    twitter:
+      auth_required:  false
+      username:       ''
+      password:       ''
+      search_url:     ''
 
 development:
   <<: *defaults

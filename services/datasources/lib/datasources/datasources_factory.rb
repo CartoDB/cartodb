@@ -31,16 +31,29 @@ module CartoDB
         # @return string
         # @throws MissingConfigurationError
         def self.config_for(datasource_name)
-          # Cartodb::config[:assets]["max_file_size"]
-          @config ||= (Cartodb.config[:oauth] rescue [])
-          raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME) if @config.empty?
-          @config.fetch(datasource_name)
+          config_source = @forced_config ? @forced_config : Cartodb.config
+
+          case datasource_name
+            when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME
+              config = (config_source[:oauth] rescue nil)
+              config = (config_source[:oauth.to_s] rescue nil)
+            when Search::Twitter
+              config = (config_source[:datasources_search] rescue nil)
+              config = (config_source[:datasources_search.to_s] rescue nil)
+            else
+              config = nil
+          end
+
+          if config.nil? || config.empty?
+            raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME)
+          end
+          config.fetch(datasource_name)
         end
 
         # Allows to set a custom config (useful for testing)
         # @param custom_config string
         def self.set_config(custom_config)
-          @config = custom_config
+          @forced_config = custom_config
         end
 
       end

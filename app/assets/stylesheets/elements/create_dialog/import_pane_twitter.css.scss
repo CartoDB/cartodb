@@ -42,18 +42,23 @@
         padding-left:10px;
         border-left: 1px solid #CCCCCC;
 
-        div.progress-bar { margin-top:7px }
+        @include progress-bar(4px, 3px, true, 3px);
+
+        div.progress-bar {
+          margin-top:7px;
+          span.bar-2 { z-index:1 }
+        }
         
         i.icon.help {
           @include inline-block();
-          width:15px;
-          width:15px;
-          @include border-radius(15px);
+          width:13px;
+          height:13px;
+          @include border-radius(13px);
           background:#CCC;
           text-align:center;
-          line-height:15px;
+          line-height:14px;
           font-weight:300;
-          font-size:10px;
+          font-size:9px;
           color:white;
           
           &:hover {
@@ -62,8 +67,6 @@
           }
         }
       }
-
-      @include progress-bar(4px, 3px, true, 3px);
     }
     
     

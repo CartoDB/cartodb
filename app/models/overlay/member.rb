@@ -21,17 +21,23 @@ module CartoDB
 
       def initialize(attributes={}, repository=Overlay.repository)
         self.attributes = attributes
-        @repository     = repository
-        self.id         ||= @repository.next_id
+        @repository = repository
+        unless self.id
+          self.id = @repository.next_id
+          @new = true
+        end
       end #initialize
 
       # @throws DuplicateOverlayError
       def store(options={})
-        #raise DuplicateOverlayError if !can_store
+        if @new
+          raise DuplicateOverlayError if !can_store
+        end
 
         attrs = attributes.to_hash
         attrs[:options] = ::JSON.dump(attrs[:options])
         repository.store(id, attrs)
+        @new = false
         invalidate_varnish_cache
         self
       end

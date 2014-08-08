@@ -32,6 +32,7 @@ describe Overlay::Member do
     end
 
     it 'forbids saving 2+ overlays of certain types' do
+      # Forbidding is checked at creation time (not updates) so need to always recreate the member to simulate it
       member = Overlay::Member.new(type: 'header')
 
       logo_overlay_mock = mock
@@ -47,10 +48,11 @@ describe Overlay::Member do
       vis_mock.stubs(:invalidate_varnish_cache)
       vis_mock.stubs(:overlays).returns([logo_overlay_mock])
       member.stubs(:visualization).returns(vis_mock)
-
       # ok
       member.store
 
+      member = Overlay::Member.new(type: 'header')
+      member.stubs(:visualization).returns(vis_mock)
       vis_mock.stubs(:overlays).returns([header_overlay_mock])
       expect {
         member.store
@@ -60,8 +62,48 @@ describe Overlay::Member do
       member = Overlay::Member.new(type: 'text')
       member.stubs(:visualization).returns(vis_mock)
       vis_mock.stubs(:overlays).returns([text_overlay_mock, text_overlay_mock])
-
       # ok
+      member.store
+    end
+
+    it 'allows updating of overlays of restricted-to-unique types' do
+      header_overlay_mock = mock
+      header_overlay_mock.stubs(:type).returns('header')
+
+      vis_mock = mock
+      vis_mock.stubs(:invalidate_varnish_cache)
+      vis_mock.stubs(:overlays).returns([])
+
+      member = Overlay::Member.new(type: 'header')
+      member.stubs(:visualization).returns(vis_mock)
+      # first store, all ok
+      member.store
+
+      # Updates, should be ok
+      member.store
+      member.store
+      member.store
+    end
+
+    it 'allows deletion and re-creation of overlays of restricted-to-unique types' do
+      header_overlay_mock = mock
+      header_overlay_mock.stubs(:type).returns('header')
+
+      vis_mock = mock
+      vis_mock.stubs(:invalidate_varnish_cache)
+      vis_mock.stubs(:overlays).returns([])
+
+      member = Overlay::Member.new(type: 'header')
+      member.stubs(:visualization).returns(vis_mock)
+      member.store
+
+      vis_mock.stubs(:overlays).returns([member])
+
+      member.delete
+      vis_mock.stubs(:overlays).returns([])
+
+      member = Overlay::Member.new(type: 'header')
+      member.stubs(:visualization).returns(vis_mock)
       member.store
     end
 

@@ -345,7 +345,6 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData, options);
     }
 
-    var torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (device) {
@@ -372,10 +371,10 @@ var Vis = cdb.core.View.extend({
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
       if (torque.length) {
-        torqueLayer = torque[0];
+        this.torqueLayer = torque[0];
 
         if (!device && torque.length) {
-          this.addTimeSlider(torqueLayer);
+          this.addTimeSlider();
         }
 
       }
@@ -396,7 +395,10 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (device) this.addMobile(torqueLayer);
+    // Sort the overlays by its internal order
+    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
+
+    if (device) this.addMobile(overlays, data.layers);
 
     // set layer options
     if (options.sublayer_options) {
@@ -433,9 +435,6 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    // Sort the overlays by its internal order
-    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
-
     this._createOverlays(overlays, options);
 
     //var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
@@ -460,11 +459,11 @@ var Vis = cdb.core.View.extend({
       var opt = data.options;
 
       if (type == 'share'                   && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector'          && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'              && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (!this.device && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+      if (type == 'layer_selector'          && options[type]        || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'              && options[type]        || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (!this.device && (type == 'search' && options[type]        || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
-      if (type === 'header') {
+      if (!this.device && type === 'header') {
 
         var m = overlay.model;
 
@@ -487,21 +486,33 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addMobile: function(torqueLayer) {
+  addMobile: function(overlays, data_layers) {
 
+    var layers;
+
+    var layer = data_layers[1];
+
+    if (layer.options && layer.options.layer_definition) {
+      layers = layer.options.layer_definition.layers;
+    } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+      layers = layer.options.named_map.layers;
+    }
+
+    console.log(overlays)
     this.addOverlay({
       type: 'mobile',
-      torqueLayer: torqueLayer,
-      legends: this.legends
+      layers: layers,
+      overlays: overlays,
+      torqueLayer: this.torqueLayer
     });
 
   },
 
-  addTimeSlider: function(torqueLayer) {
-    if (torqueLayer) {
+  addTimeSlider: function() {
+    if (this.torqueLayer) {
       this.addOverlay({
         type: 'time_slider',
-        layer: torqueLayer
+        layer: this.torqueLayer
       });
     }
   },
@@ -684,6 +695,7 @@ var Vis = cdb.core.View.extend({
 
     // We remove certain overlays in mobile devices
     if (device) {
+      remove_overlay('logo');
       remove_overlay('share');
       remove_overlay('layer_selector');
       remove_overlay('fullscreen');

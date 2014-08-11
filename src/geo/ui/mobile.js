@@ -3,7 +3,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   className: "cartodb-mobile",
 
   events: {
-    'click .toggle': '_toggle',
+    'click .open': "_open"
+    /*'click .toggle': '_toggle',
     "dragstart":      "_stopPropagation",
     "mousedown":      "_stopPropagation",
     "touchstart":     "_stopPropagation",
@@ -11,7 +12,15 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     "dblclick":       "_stopPropagation",
     "mousewheel":     "_stopPropagation",
     "DOMMouseScroll": "_stopPropagation",
-    "click":          "_stopPropagation"
+    "click":          "_stopPropagation"*/
+  },
+
+  _open: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.$el.find(".aside").animate({ right:0}, 200)
+
   },
 
   default_options: {
@@ -54,9 +63,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   initialize: function() {
     this.map = this.model;
 
+    _.bindAll(this, "_open");
+
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
+
+    this.layers   = this.options.layers;
+    this.overlays = this.options.overlays;
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
@@ -110,7 +124,31 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
-  render: function() {
+  render:function() {
+
+    this.$el.html(this.template(this.options));
+
+    _.each(this.overlays, function(overlay) {
+      if (overlay.type == 'header') {
+        this._addHeader(overlay);
+        console.log(overlay);
+      }
+    }, this);
+
+    return this;
+
+  },
+
+  _addHeader: function(overlay) {
+
+    this.$header = this.$el.find(".cartodb-header");
+    this.$title  = this.$header.find(".title").html("hola");
+
+    this.$header.show();
+    this.$title.show();
+  },
+
+  render_old: function() {
 
     this.$el.html(this.template(this.options));
     var width = $(document).width() - 40;

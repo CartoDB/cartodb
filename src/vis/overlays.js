@@ -4,8 +4,28 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
-// map mobile control
 cdb.vis.Overlay.register('mobile', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="cartodb-header"><div class="content"><a href="#" class="open">open</a><div class="title"><div><div class="description"></div></div></div></div>\
+    <div class="aside"><div class="layers"></div></div>\
+    ',
+    data.templateType || 'mustache'
+  );
+
+  var mobile = new cdb.geo.ui.Mobile({
+    template: template,
+    layers: data.layers,
+    overlays: data.overlays,
+    torqueLayer: data.torqueLayer,
+    map: data.map
+  });
+
+  return mobile.render();
+});
+
+cdb.vis.Overlay.register('mobile_old', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -84,6 +104,8 @@ cdb.vis.Overlay.register('zoom_info', function(data, vis) {
 });
 
 cdb.vis.Overlay.register('header', function(data, vis) {
+
+  if (vis.device) return;
 
   var options = data.options;
 

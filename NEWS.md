@@ -1,3 +1,8 @@
+3.1.X
+------------------
+* New Features
+  * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
+
 3.0.X
 ------------------
 * Fixed bugs

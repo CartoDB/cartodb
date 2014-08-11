@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'typhoeus'
+require 'json'
 
 require_relative '../../../../twitter-search/twitter-search'
 
@@ -43,7 +44,7 @@ module CartoDB
           raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
           raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
 
-          search_api = TwitterSearch::SearchAPI.new({
+          @search_api = TwitterSearch::SearchAPI.new({
             TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED  => config['auth_required'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME  => config['username'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD  => config['password'],
@@ -70,7 +71,7 @@ module CartoDB
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
         def get_resources_list(filter=[])
-          nil
+          []
         end
 
         # Retrieves a resource and returns its contents
@@ -78,42 +79,60 @@ module CartoDB
         # @return mixed
         # @throws DataDownloadError
         def get_resource(id)
+          fields = ::JSON.parse(id, symbolize_names: true)
+          # Sample contents of fields
+          <<-DOC
+          categories: [
+              {
+                  category: 'Category 1',
+                  terms:    ['uno', 'dos', '@tres', '#cuatro']
+              },
+              {
+                  category: 'Category 2',
+                  terms:    ['uno', 'dos', '@tres', '#cuatro']
+              }
+          ],
+          dates: {
+              fromDate: '2014-03-03', (year month day)
+              fromHour: '13', (24 hours)
+              fromMin:  '49',
+              toDate:   '2014-03-04',
+              toHour:   '11',
+              toDate:   '59'
+          }
+          DOC
+
+          # Will launch one query per category
+          # TODO: Threaded perform each query
+          query = build_queries_from_fields(fields)
+
+
           raise 'TBD'
         end
 
         # @param id string
         # @return Hash
         def get_resource_metadata(id)
-          raise 'TBD'
-
-          #fetch_headers(id)
-          #{
-          #    id:       id,
-          #    title:    id,
-          #    url:      id,
-          #    service:  DATASOURCE_NAME,
-          #    checksum: checksum_of(id, etag_header, last_modified_header),
-          #    size:     0
-          #    # No need to use :filename nor file
-          #}
+          {
+              id:       id,
+              title:    DATASOURCE_NAME,
+              url:      nil,
+              service:  DATASOURCE_NAME,
+              checksum: nil,
+              size:     0
+          }
         end
 
-        # Retrieves current filters
+        # Retrieves current filters. Unused as here there's no get_resources_list
         # @return {}
         def filter
-          @filters
+          {}
         end
 
-        # Sets current filters
+        # Sets current filters. Unused as here there's no get_resources_list
         # @param filter_data {}
         def filter=(filter_data=[])
-          filter_data.each { |k, v|
-            if ALLOWED_FILTERS.include? k
-
-            end
-          }
-
-          raise 'TBD'
+          nil
         end
 
         # Just return datasource name
@@ -124,23 +143,38 @@ module CartoDB
 
         private
 
-        # Calculates a checksum of given url
-        # @return string
-        def checksum_of(url, etag, last_modified)
-          # TODO: Use filters here as basis for checksumming
+        def build_queries_from_fields(fields)
+          raise ParameterError.new('missing categories', DATASOURCE_NAME) \
+              if fields[:categories].nil? || fields[:categories].empty?
 
 
-          #noinspection RubyArgCount
-          Zlib::crc32(url + etag + last_modified).to_s
-        end
+          queries = []
 
-        # HTTP (Typhoeus) options
-        def http_options
-          {
-              followlocation: true,
-              ssl_verifypeer: false,
-              ssl_verifyhost: 0
+          fields[:categories].each { |category|
+            raise ParameterError.new('missing category', DATASOURCE_NAME) if category[:category].nil?
+            raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
+
+            query[category[:category]] = ''
+
+
+
           }
+
+          <<-DOC
+          categories: [
+              {
+                  category: 'Category 1',
+                  terms:    ['uno', 'dos', '@tres', '#cuatro']
+              },
+              {
+                  category: 'Category 2',
+                  terms:    ['uno', 'dos', '@tres', '#cuatro']
+              }
+          ]
+          DOC
+
+
+
         end
 
       end

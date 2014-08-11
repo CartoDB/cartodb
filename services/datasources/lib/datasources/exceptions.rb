@@ -25,6 +25,7 @@ module CartoDB
       class DataDownloadError           < DatasourceBaseError; end
       class MissingConfigurationError   < DatasourceBaseError; end
       class UninitializedError          < DatasourceBaseError; end
+      class ParameterError              < DatasourceBaseError; end
 
 
   end #Datasources

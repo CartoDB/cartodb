@@ -14,6 +14,7 @@ module CartoDB
       # @param table_registrar CartoDB::TableRegistrar
       # @param, quota_checker CartoDB::QuotaChecker
       def initialize(runner, table_registrar, quota_checker, database, data_import_id, destination_schema = nil)
+        @aborted          = false
         @runner           = runner
         @table_registrar  = table_registrar
         @quota_checker    = quota_checker
@@ -27,8 +28,10 @@ module CartoDB
 
         if quota_checker.will_be_over_table_quota?(results.length)
           runner.log.append('Results would set overquota')
-          self.aborted = true
-          drop(results.table_name)
+          @aborted = true
+          results.each { |result|
+            drop(result.table_name)
+          }
         else
           runner.log.append('Proceeding to register')
           results.select(&:success?).each { |result| register(result) }
@@ -109,7 +112,7 @@ module CartoDB
       end 
 
       def over_table_quota?
-        aborted || quota_checker.over_table_quota?
+        @aborted || quota_checker.over_table_quota?
       end
 
       def error_code
@@ -120,7 +123,6 @@ module CartoDB
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
-      attr_accessor :aborted
     end # Importer
   end # Connector
 end # CartoDB

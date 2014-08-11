@@ -147,34 +147,18 @@ module CartoDB
           raise ParameterError.new('missing categories', DATASOURCE_NAME) \
               if fields[:categories].nil? || fields[:categories].empty?
 
-
           queries = []
 
           fields[:categories].each { |category|
             raise ParameterError.new('missing category', DATASOURCE_NAME) if category[:category].nil?
             raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
 
-            query[category[:category]] = ''
-
-
-
+            queries << {
+                category[:category] => category[:terms].join(' has:geo OR ') + (' has:geo')
+            }
           }
 
-          <<-DOC
-          categories: [
-              {
-                  category: 'Category 1',
-                  terms:    ['uno', 'dos', '@tres', '#cuatro']
-              },
-              {
-                  category: 'Category 2',
-                  terms:    ['uno', 'dos', '@tres', '#cuatro']
-              }
-          ]
-          DOC
-
-
-
+          queries
         end
 
       end

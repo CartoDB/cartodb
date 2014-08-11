@@ -37,6 +37,7 @@ module CartoDB
           hard_limit:   false
         },
         twitter_datasource: {
+          enabled:     self.twitter_datasource_enabled,
           quota:       self.twitter_datasource_quota,
           block_size:  self.twitter_datasource_block_size,
           block_price: self.twitter_datasource_block_price,

@@ -21,6 +21,7 @@ module CartoDB
           monthly_use: self.get_geocoding_calls
         },
         twitter_datasource: {
+          enabled:     self.twitter_datasource_enabled,
           quota:       self.twitter_datasource_quota,
           block_size:  self.twitter_datasource_block_size,
           block_price: self.twitter_datasource_block_price,

@@ -28,7 +28,7 @@ module CartoDB
         if quota_checker.will_be_over_table_quota?(results.length)
           runner.log.append('Results would set overquota')
           self.aborted = true
-          drop(results)
+          drop(results.table_name)
         else
           runner.log.append('Proceeding to register')
           results.select(&:success?).each { |result| register(result) }

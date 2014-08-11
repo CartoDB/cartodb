@@ -1,3 +1,7 @@
+
+* Fixed bugs
+  * public map uses CORS headers to fetch user info
+
 3.0.1 (2014-08-07)
 ------------------
 * New Features

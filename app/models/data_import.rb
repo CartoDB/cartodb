@@ -40,6 +40,10 @@ class DataImport < Sequel::Model
     self.updated_at = Time.now
   end
 
+  def dataimport_logger
+    @@dataimport_logger ||= Logger.new("#{Rails.root}/log/imports.log")
+  end
+
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
@@ -400,6 +404,21 @@ class DataImport < Sequel::Model
   end
 
   def notify(results)
+    owner = User.where(:id => self.user_id).first
+    imported_tables = results.select {|r| r.success }.length
+    failed_tables = results.length - imported_tables
+    import_log = {'user' => owner.username, 
+                  'state' => self.state, 
+                  'tables' => results.length, 
+                  'imported_tables' => imported_tables, 
+                  'failed_tables' => failed_tables,
+                  'error_code' => self.error_code,
+                  'import_timestamp' => Time.now,
+                  'queue_server' => `hostname`.strip,
+                  'database_host' => owner.database_host
+                 }
+    dataimport_logger.info(import_log.to_json)
+
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
   end
 

@@ -41,6 +41,10 @@ class Geocoding < Sequel::Model
     self.updated_at = Time.now
     cancel if state == 'cancelled'
   end # before_save
+  
+  def geocoding_logger
+    @@geocoding_logger ||= Logger.new("#{Rails.root}/log/geocodings.log")
+  end
 
   def error
     { title: 'Geocoding error', description: '' }
@@ -93,12 +97,19 @@ class Geocoding < Sequel::Model
     create_automatic_geocoding if automatic_geocoding_id.blank?
     rows_geocoded_after = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
-    CartoDB::Metrics.new.report(:geocoding, metrics_payload)
+    self.report
   rescue => e
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
-    CartoDB::Metrics.new.report(:geocoding, metrics_payload(e))
+    self.report(e)
     CartoDB::notify_exception(e, user: user)
   end # run!
+
+  def report(error = nil)
+    payload = metrics_payload(error)
+    CartoDB::Metrics.new.report(:geocoding, payload)
+    payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
+    geocoding_logger.info(payload.to_json)
+  end
 
   def self.processable_rows(table)
     dataset = table.owner.in_database.select.from(table.sequel_qualified_table_name)

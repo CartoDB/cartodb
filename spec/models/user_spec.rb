@@ -357,7 +357,7 @@ describe User do
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png" 
+      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
       user1.destroy
     end
     it "should load a the user gravatar url" do
@@ -369,7 +369,7 @@ describe User do
       user1.destroy
     end
   end
-  
+
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
       User.overquota.should be_empty
@@ -393,6 +393,19 @@ describe User do
       User.any_instance.stubs(:map_view_quota).returns(120)
       User.any_instance.stubs(:get_geocoding_calls).returns(81)
       User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.overquota.should be_empty
+      User.overquota(0.20).map(&:id).should include(@user.id)
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
+      User.overquota(0.10).should be_empty
+    end
+
+    it "should return users near their twitter quota" do
+      User.any_instance.stubs(:get_api_calls).returns([0])
+      User.any_instance.stubs(:map_view_quota).returns(120)
+      User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+      User.any_instance.stubs(:twitter_datasource_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
       User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count

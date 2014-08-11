@@ -22,6 +22,31 @@
     border:none;
   }
 
+  section.block.private > .content ul {
+
+    li.link .input_field,
+    li.embed .input_field {
+      display: none;
+    }
+
+    li.link h4, li.embed h4 {
+      top: 149px;
+    }
+
+    li.link i {
+      width: 72px;
+      height: 68px;
+      background: transparent image-url('layout/plane_locked.png') no-repeat;
+    }
+
+    li.embed i {
+      width: 75px;
+      height: 58px;
+      background: transparent image-url('layout/tag_locked.png') no-repeat;
+    }
+
+  }
+
   section.block > .content {
 
     padding: 40px 40px 0 40px;
@@ -63,6 +88,7 @@
           text-align:center;
           font-size: 17px;
           font-weight:bold;
+          line-height:120%;
         }
 
         .input_field {

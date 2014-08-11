@@ -42,8 +42,9 @@ module CartoDB
       end
 
       def remove_target_schema(conn=@config[:target])
-        @drop_conn ||= PG.connect(conn[:conn])
-        @drop_conn.query("DROP SCHEMA #{conn[:schema]} CASCADE;")
+#        @drop_conn ||= PG.connect(conn[:conn])
+#        @drop_conn.query("DROP SCHEMA #{conn[:schema]} CASCADE;")
+        puts "Please manually cleanup the schema if it exists: DROP SCHEMA #{conn[:schema]} CASCADE;"
       end
 
       def migrate

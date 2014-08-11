@@ -3,8 +3,13 @@
 * New Features
   * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
 
-3.0.X
+3.0.1 (2014-08-07)
 ------------------
+* New Features
+  * Mail notifications when sharing or unsharing objects in organizations
+  * Publication system: you can now add text and images on top of your maps!
+  * New basemap selector
+  * Simplified share dialog
 * Fixed bugs
   * Fixed write buttons are shown when watching sync tables
   * Fixed a bug that prevented choosing a different column from the default to geocode an IP address
@@ -13,9 +18,6 @@
     * 0.3.4: fixes CDB_QueryTables function
     * 0.3.3: splits cartodbify
     * 0.3.2: makes 0.3.0dev version upgradeable
-
-* New Features
-  * Mail notifications when sharing or unsharing objects in organizations
 
 3.0.0 (2014-07-15)
 ------------------

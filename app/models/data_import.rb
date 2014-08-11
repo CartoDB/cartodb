@@ -412,6 +412,7 @@ class DataImport < Sequel::Model
                   'tables' => results.length, 
                   'imported_tables' => imported_tables, 
                   'failed_tables' => failed_tables,
+                  'error_code' => self.error_code,
                   'import_timestamp' => Time.now,
                   'queue_server' => `hostname`.strip,
                   'database_host' => owner.database_host

@@ -126,7 +126,8 @@
       }
 
       // Create icon
-      .create-icon {     
+      .create-icon {
+        @include inline-block();     
         width:29px;
         height:37px;
         margin-bottom:18px;
@@ -218,7 +219,7 @@
           position:absolute;
           display:none;
           left:40px;
-          bottom:45px;
+          bottom:-35px;
           width:265px;
 
           a {

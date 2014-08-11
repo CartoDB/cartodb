@@ -5,6 +5,7 @@
    */
 
   @import "compass/css3/border-radius";
+  @import "compass/css3/inline-block";
   @import "compass/css3/box-shadow";
   @import "../common/mixins";
   @import "../elements/elements-sprite";
@@ -31,6 +32,7 @@
 
       // Icon
       .calendar.icon {
+        @include inline-block();
         width:14px;
         height:14px;
         @include elements-sprite(calendar);
@@ -327,6 +329,7 @@
         position:relative;
         
         div {
+          @include inline-block();
           height:100%;  
           width: 70px;
 

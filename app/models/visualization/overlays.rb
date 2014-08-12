@@ -166,17 +166,6 @@ module CartoDB
 
       end
 
-
-
-      def create_zoom_info_overlay(member, order)
-
-        options = { :display => true, :x => 20, :y => 100 } 
-
-        member = generate_overlay(member.id, options, "zoom_info", order)
-        member.store
-
-      end
-
       def create_fullscreen_overlay(member, order)
 
         options = { :display => false, :x => 20, :y => 172 } 

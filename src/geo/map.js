@@ -417,18 +417,18 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
   },
 
-  updateAttribution: function(old,new_) {
+  updateAttribution: function(old, new_) {
     var attributions = this.get("attribution") || [];
 
     // Remove the old one
-    if (old && old.get("attribution")) {
-      attributions = _.without(attributions, old.get("attribution"));
+    if (old) {
+      attributions = _.without(attributions, old);
     }
 
     // Save the new one
-    if (new_.get("attribution")) {
-      if (!_.contains(attributions, new_.get("attribution"))) {
-        attributions.push(new_.get("attribution"));
+    if (new_) {
+      if (!_.contains(attributions, new_)) {
+        attributions.push(new_);
       }
     }
 

@@ -158,7 +158,7 @@ class DataImport < Sequel::Model
   def table
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
-    Table.where(id: table_id, user_id: user_id).first
+    ::Table.where(id: table_id, user_id: user_id).first
   end
 
   private
@@ -260,7 +260,7 @@ class DataImport < Sequel::Model
     self.save
 
     candidates =  current_user.tables.select_map(:name)
-    table_name = Table.get_valid_table_name(name, {
+    table_name = ::Table.get_valid_table_name(name, {
         name_candidates: candidates,
         database_schema: current_user.database_schema
     })
@@ -282,7 +282,7 @@ class DataImport < Sequel::Model
 
     log.append 'migrate_existing()'
 
-    table         = Table.new
+    table         = ::Table.new
     table.user_id = user_id
     table.name    = new_name
     table.migrate_existing_table = imported_name
@@ -332,7 +332,7 @@ class DataImport < Sequel::Model
     runner        = CartoDB::Importer2::Runner.new(
                       pg_options, downloader, log, current_user.remaining_quota
                     )
-    registrar     = CartoDB::TableRegistrar.new(current_user, Table)
+    registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
     destination_schema = current_user.database_schema

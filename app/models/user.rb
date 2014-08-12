@@ -872,7 +872,7 @@ class User < Sequel::Model
   def link_created_tables
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
-      table = Table.new
+      table = ::Table.new
       table.user_id  = self.id
       table.name     = t[:relname]
       table.table_id = t[:oid]
@@ -889,7 +889,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.find(:table_id => t[:oid])
+      table = ::Table.find(:table_id => t[:oid])
       begin
         table.synchronize_name(t[:relname])
       rescue Sequel::DatabaseError => e
@@ -956,7 +956,7 @@ class User < Sequel::Model
         user_id: self.id
     }
     filter[:privacy] = privacy_filter unless privacy_filter.nil?
-    Table.filter(filter).count
+    ::Table.filter(filter).count
   end #table_count
 
   def failed_import_count

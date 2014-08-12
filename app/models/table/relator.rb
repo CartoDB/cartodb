@@ -100,7 +100,7 @@ module CartoDB
         nil
       end
 
-    end # Relator
-  end # Table
-end # CartoDB
+    end
+  end
+end
 

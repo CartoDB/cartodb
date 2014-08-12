@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 

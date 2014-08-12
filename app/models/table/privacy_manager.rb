@@ -111,8 +111,8 @@ module CartoDB
 
       def redis_key
         "rails:#{table.owner.database_name}:#{owner.database_schema}.#{table.name}"
-      end #redis_key
-    end # PrivacyManager
-  end # Table
-end # CartoDB
+      end
+    end
+  end
+end
 

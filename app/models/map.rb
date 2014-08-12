@@ -145,7 +145,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = Table.filter(
+    related_table = ::Table.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id

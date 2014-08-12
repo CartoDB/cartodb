@@ -35,13 +35,6 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
   render: function() {
 
-    var self = this;
-
-    this.$el.offset({
-      top:  this.model.get("y"),
-      left: this.model.get("x")
-    });
-
     this.$el.html(this.options.template(this.model.attributes));
 
     this.$title       = this.$el.find(".content div.title");

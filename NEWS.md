@@ -1,6 +1,7 @@
 
 * Fixed bugs
   * public map uses CORS headers to fetch user info
+  * infowindow on hover fixed on table mode
 
 3.0.1 (2014-08-07)
 ------------------

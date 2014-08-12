@@ -64,6 +64,8 @@ module CartoDB
             TwitterSearch::SearchAPI::CONFIG_SEARCH_URL     => config['search_url'],
           })
 
+          @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
+
           @user = user
         end
 
@@ -151,6 +153,8 @@ module CartoDB
 
         private
 
+        attr_accessor :search_api
+
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
         # @param user User
@@ -162,24 +166,49 @@ module CartoDB
 
           total_results = []
 
-          base_filters = filters.select { |k, v|k != FILTER_CATEGORIES }
+          base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
+          category_results = {}
+          threads = {}
           filters[FILTER_CATEGORIES].each { |category|
-            api.params = base_filters
-            api.query_param = category[CATEGORY_TERMS_KEY]
-
-            next_results_cursor = nil
-
-            begin
-              results_page = api.fetch_results(next_results_cursor)
-
-              total_results = total_results + results_page[:results]
-              next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
-              # TODO: Check quota, etc. and add to condition
-            end while !next_results_cursor.nil?
+            threads[category[CATEGORY_NAME_KEY]] = Thread.new {
+              category_results[category[CATEGORY_NAME_KEY]] = search_by_category(api, base_filters, category, user)
+            }
+          }
+          threads.each {|key, thread|
+            thread.join
           }
 
+          category_results.each { |k, v|
+            total_results = total_results + v
+          }
+
+          #test = @json2csv_conversor.process(total_results)
+
           total_results
+        end
+
+        def search_by_category(api, base_filters, category, user)
+          results = []
+
+          api.params = base_filters
+          api.query_param = category[CATEGORY_TERMS_KEY]
+
+          next_results_cursor = nil
+
+          begin
+            results_page = api.fetch_results(next_results_cursor)
+
+            results = results + results_page[:results]
+            next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
+            # TODO: Check quota, etc. and add to condition
+          end while !next_results_cursor.nil?
+
+          results
+        end
+
+        def convert_category_results_to_csv(data, conversor, category)
+
         end
 
         #TODO: Take into account timezones? or will UI inform?

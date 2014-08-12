@@ -63,7 +63,52 @@ describe Search::Twitter do
 
     end
 
-    it 'tests basic search flow' do
+    it 'tests twitter search integration (without conversion to CSV' do
+      # This test bridges lots of internal calls to simulate only up until twitter search call and results
+      user_mock = Doubles::User.new
+
+      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
+
+      input_terms = terms_fixture
+      input_dates = dates_fixture
+
+      Typhoeus.stub(/fakeurl\.cartodb/) do |request|
+        accept = (request.options[:headers]||{})['Accept'] || 'application/json'
+        format = accept.split(',').first
+
+        if request.options[:params][:next].nil?
+          body = data_from_file('sample_tweets.json')
+        else
+          body = data_from_file('sample_tweets_2.json')
+        end
+
+        Typhoeus::Response.new(
+            code: 200,
+            headers: { 'Content-Type' => format },
+            body: body
+        )
+      end
+
+      twitter_api = twitter_datasource.send :search_api
+
+      fields = {
+        categories: input_terms[:categories],
+        dates:      input_dates[:dates]
+      }
+      filters = {
+          Search::Twitter::FILTER_CATEGORIES =>    (twitter_datasource.send :build_queries_from_fields, fields),
+          Search::Twitter::FILTER_FROMDATE =>      (twitter_datasource.send :build_date_from_fields, fields, 'from'),
+          Search::Twitter::FILTER_TODATE =>        (twitter_datasource.send :build_date_from_fields, fields, 'to'),
+          Search::Twitter::FILTER_MAXRESULTS =>    500,
+          Search::Twitter::FILTER_TOTAL_RESULTS => Search::Twitter::NO_TOTAL_RESULTS
+      }
+
+      output = twitter_datasource.send :do_search, twitter_api, filters, user_mock
+
+      output.count.should eq 40
+    end
+
+    it 'tests basic full search flow' do
       user_mock = Doubles::User.new
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)

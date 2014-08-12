@@ -235,7 +235,7 @@ module CartoDB
           INFOWINDOW_KEYS.include?(key.to_s)
         }
       end
-    end # Presenter
-  end # Layer
-end # CartoDB
+    end
+  end
+end
 

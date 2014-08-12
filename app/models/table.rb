@@ -590,7 +590,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_map_and_layers
-    m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
     base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)

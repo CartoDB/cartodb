@@ -1,7 +1,5 @@
 # encoding: utf-8
-require_relative './map/copier'
 require_relative '../models/visualization/collection'
-
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -96,10 +94,6 @@ class Map < Sequel::Model
       visualization.invalidate_cache_and_refresh_named_map
     end
   end
-
-  def copy_for(user)
-    CartoDB::Map::Copier.new(self, user).copy
-  end #copy
 
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?

@@ -22,15 +22,15 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def create
-    @layer = Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
-    if @parent.is_a?(Map)
+    @layer = ::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+    if @parent.is_a?(::Map)
       unless @parent.admits_layer?(@layer)
         return(render status: 400, text: "Can't add more layers of this type")
       end
       unless @parent.can_add_layer(current_user)
         return(render_jsonp({:description => 'You cannot add a layer in this visualization'}, 403))
       end
-      if Layer::DATA_LAYER_KINDS.include?(@layer.kind)
+      if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
         table_visualization = ::Table.get_by_id_or_name(@layer.options['table_name'], current_user).table_visualization
         unless table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
           return(render_jsonp({:description => 'You do not have permission in the layer you are trying to add'}, 400))
@@ -40,8 +40,8 @@ class Api::Json::LayersController < Api::ApplicationController
 
     if @layer.save
       @parent.add_layer(@layer)
-      @layer.register_table_dependencies if @parent.is_a?(Map)
-      @parent.process_privacy_in(@layer) if @parent.is_a?(Map)
+      @layer.register_table_dependencies if @parent.is_a?(::Map)
+      @parent.process_privacy_in(@layer) if @parent.is_a?(::Map)
 
       render_jsonp CartoDB::Layer::Presenter.new(@layer, {:viewer_user => current_user}).to_poro
     else
@@ -53,7 +53,7 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def update
-    @layer = Layer[params[:id]]
+    @layer = ::Layer[params[:id]]
     @layer.raise_on_save_failure = true
     # don't allow to override table_name and user_name
     # https://cartodb.atlassian.net/browse/CDB-3350
@@ -92,11 +92,11 @@ class Api::Json::LayersController < Api::ApplicationController
     )
     raise RecordNotFound if vis.nil?
 
-    Map.filter(id: params[:map_id]).first
+    ::Map.filter(id: params[:map_id]).first
   end #map_from
 
   def validate_read_write_permission
-    layer = Layer[params[:id]]
+    layer = ::Layer[params[:id]]
     layer.maps.each { |map|
       map.visualizations.each { |vis|
         return head(403) unless vis.is_owner?(current_user) || vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)

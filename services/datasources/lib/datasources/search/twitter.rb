@@ -5,8 +5,6 @@ require 'json'
 
 require_relative '../../../../twitter-search/twitter-search'
 
-include CartoDB
-
 module CartoDB
   module Datasources
     module Search
@@ -68,6 +66,7 @@ module CartoDB
 
           @user = user
         end
+
 
         # Hide sensitive fields
         def to_s

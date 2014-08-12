@@ -66,7 +66,7 @@ class Table < Sequel::Model(:user_tables)
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
+  def_delegators :relator, *CartoDB::TableRelator::INTERFACE
 
   def public_values(options = {}, viewer_user=nil)
     selected_attrs = if options[:except].present?
@@ -550,7 +550,7 @@ class Table < Sequel::Model(:user_tables)
     update_name_changes
 
     self.map.save
-    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager = CartoDB::TablePrivacyManager.new(self)
     manager.set_from_table_privacy(privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
@@ -1373,7 +1373,7 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_text_for_vizjson
 
   def relator
-    @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end #relator
 
   def set_table_id

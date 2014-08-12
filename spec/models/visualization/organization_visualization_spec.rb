@@ -27,7 +27,7 @@ describe Visualization::Member do
     CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
 
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
-    CartoDB::Table::PrivacyManager.any_instance.stubs(
+    CartoDB::TablePrivacyManager.any_instance.stubs(
         :set_from_table_privacy => nil,
         :propagate_to_redis_and_varnish => nil
     )

@@ -592,10 +592,10 @@ class Table < Sequel::Model(:user_tables)
   def create_default_map_and_layers
     m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
-    base_layer = Layer.new(Cartodb.config[:layer_opts]['base'])
+    base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
-    data_layer = Layer.new(Cartodb.config[:layer_opts]['data'])
+    data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
     data_layer.options['table_name'] = self.name
     data_layer.options['user_name'] = self.owner.username
     data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"

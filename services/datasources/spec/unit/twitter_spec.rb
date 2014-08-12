@@ -147,6 +147,8 @@ describe Search::Twitter do
 
   end
 
+  protected
+
   def terms_fixture
     {
       categories: [

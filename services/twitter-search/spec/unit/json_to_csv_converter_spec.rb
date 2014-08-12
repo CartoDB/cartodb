@@ -8,13 +8,27 @@ describe JSONToCSVConverter do
     it 'checks conversion of fields' do
       conversor = JSONToCSVConverter.new
 
-      data = json_data_from_file('sample_tweets.json')
-      expected_data = data_from_file('sample_tweets_expected.csv')
-
-      results = conversor.process(data)
-
-      results.should == expected_data
+      results = conversor.process(json_data_from_file('sample_tweets.json'))
+      results.should == data_from_file('sample_tweets_expected.csv')
     end
+
+    it 'checks additional fields are added' do
+      conversor = JSONToCSVConverter.new
+
+      additional_fields = {
+          category_name: 'sample category',
+          category_terms: 'term1 term2'
+      }
+
+      # without data
+      results = conversor.process([], additional_fields)
+      results.should eq data_from_file('empty_results_expected.csv')
+
+      # And with data
+      results = conversor.process(json_data_from_file('sample_tweets.json'), additional_fields)
+      results.should eq data_from_file('sample_tweets_additional_fields_expected.csv')
+    end
+
   end
 
   protected

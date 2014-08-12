@@ -87,13 +87,20 @@ module CartoDB
         ]
       }
 
-      def process(input_data)
+      # Other fields with special behaviour we want to add
+      CARTODB_FIELDS = [
+        :the_geom
+      ]
+
+      # Note: 'the_geom' will be added automatically, no need to add as additional field
+      def process(input_data, additional_fields = {})
         results = []
 
         # Headers
         results_row = INDIVIDUAL_FIELDS.map { |field|
           field_to_csv(field)
         }
+
         GROUP_FIELDS.each { |field|
           if SUBFIELDS[field].nil?
             results_row << field_to_csv(field)
@@ -103,11 +110,19 @@ module CartoDB
             }
           end
         }
+
+        CARTODB_FIELDS.each { |field|
+          results_row << field_to_csv(field)
+        }
+
+        additional_fields.each { |key, value|
+          results_row << field_to_csv(key)
+        }
+
         results << results_row.join(',')
 
         # TODO: Error checking
-
-        # Data
+        # Data rows
         input_data.each { |item|
           results_row = []
 
@@ -140,6 +155,16 @@ module CartoDB
             end
           }
 
+          CARTODB_FIELDS.each{ |field|
+            if field == :the_geom
+              results_row << field_to_csv(calculate_the_geom(item))
+            end
+          }
+
+          additional_fields.each { |key, value|
+            results_row << field_to_csv(value)
+          }
+
           results << results_row.join(',')
         }
 
@@ -149,7 +174,17 @@ module CartoDB
       private
 
       def field_to_csv(field)
-        '"' + field.to_s.gsub('"', '""') + '"'
+        '"' + field.to_s.gsub('"', '""').gsub("\n", ' ') + '"'
+      end
+
+      def calculate_the_geom(row)
+        if !row[:geo].nil?
+          ::JSON.dump(row[:geo])
+        elsif !row[:location].nil? && !row[:location][:geo].nil?
+          ::JSON.dump(row[:location][:geo])
+        else
+          nil
+        end
       end
 
     end

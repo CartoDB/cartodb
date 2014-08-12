@@ -2,6 +2,9 @@
 ------------------
 * New Features
   * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
+* Fixed bugs
+  * public map uses CORS headers to fetch user info
+  * infowindow on hover fixed on table mode
 
 3.0.1 (2014-08-07)
 ------------------

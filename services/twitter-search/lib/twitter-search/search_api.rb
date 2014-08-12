@@ -19,6 +19,8 @@ module CartoDB
       PARAM_MAXRESULTS  = :maxResults
       PARAM_NEXT_PAGE   = :next
 
+      attr_reader :params
+
       def initialize(config)
         raise TwitterConfigException.new(CONFIG_AUTH_REQUIRED) if config[CONFIG_AUTH_REQUIRED].nil?
         if config[CONFIG_AUTH_REQUIRED]
@@ -47,6 +49,7 @@ module CartoDB
         @params[PARAM_QUERY] = value unless (value.nil? || value.empty?)
       end
 
+      # @param more_results_cursor String|nil
       # @returns Hash
       # {
       #   next  (optional)
@@ -58,7 +61,6 @@ module CartoDB
         params = query_payload(more_results_cursor.nil? ? @params : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
 
         response = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))
-
         raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
 
         ::JSON.parse(response.body, symbolize_names: true) unless response.body.nil?

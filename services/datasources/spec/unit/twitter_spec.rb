@@ -12,9 +12,13 @@ describe Search::Twitter do
       'auth_required' => false,
       'username'      => '',
       'password'      => '',
-      'search_url'    => 'a'
+      'search_url'    => 'http://fakeurl.cartodb'
     }
   end #get_config
+
+  before(:each) do
+    Typhoeus::Expectation.clear
+  end
 
   describe '#filters' do
     it 'tests category filters' do
@@ -25,8 +29,14 @@ describe Search::Twitter do
       input_terms = terms_fixture
 
       expected_output_terms = [
-          { 'Category 1' => 'uno has:geo OR @dos has:geo OR #tres has:geo' },
-          { 'Category 2' => 'aaa has:geo OR bbb has:geo' }
+          {
+            Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
+            Search::Twitter::CATEGORY_TERMS_KEY => 'uno has:geo OR @dos has:geo OR #tres has:geo'
+          },
+          {
+            Search::Twitter::CATEGORY_NAME_KEY  => 'Category 2',
+            Search::Twitter::CATEGORY_TERMS_KEY => 'aaa has:geo OR bbb has:geo'
+          }
       ]
 
       output = twitter_datasource.send :build_queries_from_fields, input_terms
@@ -61,6 +71,23 @@ describe Search::Twitter do
       input_terms = terms_fixture
       input_dates = dates_fixture
 
+      Typhoeus.stub(/fakeurl\.cartodb/) do |request|
+        accept = (request.options[:headers]||{})['Accept'] || 'application/json'
+        format = accept.split(',').first
+
+        if request.options[:params][:next].nil?
+          body = data_from_file('sample_tweets.json')
+        else
+          body = data_from_file('sample_tweets_2.json')
+        end
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => format },
+          body: body
+        )
+      end
+
       output = twitter_datasource.get_resource(::JSON.dump(
         {
           categories: input_terms[:categories],
@@ -68,6 +95,8 @@ describe Search::Twitter do
         }
       ))
 
+      # 2 pages of 10 results per category search, two categories
+      output.count.should eq 40
 
     end
 
@@ -99,6 +128,10 @@ describe Search::Twitter do
         toMin:    '59'
       }
     }
+  end
+
+  def data_from_file(filename)
+    File.read(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"))
   end
 
 end

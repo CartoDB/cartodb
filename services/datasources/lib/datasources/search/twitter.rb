@@ -27,6 +27,9 @@ module CartoDB
         FILTER_CATEGORIES     = 'categories'
         FILTER_TOTAL_RESULTS  = 'totalResults'
 
+        CATEGORY_NAME_KEY  = 'name'
+        CATEGORY_TERMS_KEY = 'terms'
+
         ALLOWED_FILTERS = [
             # From twitter
             FILTER_QUERY, FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
@@ -112,8 +115,7 @@ module CartoDB
           # TODO: Change according to user soft tweets limit
           @filters[FILTER_TOTAL_RESULTS] = NO_TOTAL_RESULTS
 
-          results = do_search(@search_api, @filters, @user)
-
+          do_search(@search_api, @filters, @user)
         end
 
         # @param id string
@@ -158,13 +160,26 @@ module CartoDB
           # 3 manually concat csvs to import just one
           # 4 return data
 
+          total_results = []
 
-          # Non-rails "exclude"
-          base_filters = filters.tap { |obj| obj.delete(FILTER_CATEGORIES) }
+          base_filters = filters.select { |k, v|k != FILTER_CATEGORIES }
 
-          api.params = filters
+          filters[FILTER_CATEGORIES].each { |category|
+            api.params = base_filters
+            api.query_param = category[CATEGORY_TERMS_KEY]
 
-          nil
+            next_results_cursor = nil
+
+            begin
+              results_page = api.fetch_results(next_results_cursor)
+
+              total_results = total_results + results_page[:results]
+              next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
+              # TODO: Check quota, etc. and add to condition
+            end while !next_results_cursor.nil?
+          }
+
+          total_results
         end
 
         #TODO: Take into account timezones? or will UI inform?
@@ -205,7 +220,8 @@ module CartoDB
             raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
 
             queries << {
-                category[:category] => category[:terms].join(' has:geo OR ') + (' has:geo')
+              CATEGORY_NAME_KEY => category[:category],
+              CATEGORY_TERMS_KEY => category[:terms].join(' has:geo OR ') + (' has:geo')
             }
           }
           queries

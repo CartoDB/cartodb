@@ -15,13 +15,23 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'twitter_search'
 
-        NO_MAX_RESULTS = -1
+        NO_TOTAL_RESULTS = -1
+
+        MAX_CATEGORIES = 4
+
+        FILTER_QUERY          = 'query'
+        # Used for each query page size, not as total
+        FILTER_MAXRESULTS     = 'maxResults'
+        FILTER_FROMDATE       = 'fromDate'
+        FILTER_TODATE         = 'toDate'
+        FILTER_CATEGORIES     = 'categories'
+        FILTER_TOTAL_RESULTS  = 'totalResults'
 
         ALLOWED_FILTERS = [
             # From twitter
-            'query', 'maxResults', 'fromDate', 'toDate',
+            FILTER_QUERY, FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
             # Internal
-            'term1', 'term2', 'term3', 'term4', 'max_results'
+            FILTER_CATEGORIES, FILTER_TOTAL_RESULTS
         ]
 
         # Constructor
@@ -54,6 +64,12 @@ module CartoDB
           @user = user
         end
 
+        # Hide sensitive fields
+        def to_s
+          "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api=#{@search_api}>"
+        end
+
+
         # Factory method
         # @param config {}
         # @return CartoDB::Datasources::Search::TwitterSearch
@@ -75,39 +91,29 @@ module CartoDB
         end
 
         # Retrieves a resource and returns its contents
-        # @param id string
+        # @param id string Will contain a stringified JSON
         # @return mixed
         # @throws DataDownloadError
         def get_resource(id)
           fields = ::JSON.parse(id, symbolize_names: true)
-          # Sample contents of fields
-          <<-DOC
-          categories: [
-              {
-                  category: 'Category 1',
-                  terms:    ['uno', 'dos', '@tres', '#cuatro']
-              },
-              {
-                  category: 'Category 2',
-                  terms:    ['uno', 'dos', '@tres', '#cuatro']
-              }
-          ],
-          dates: {
-              fromDate: '2014-03-03', (year month day)
-              fromHour: '13', (24 hours)
-              fromMin:  '49',
-              toDate:   '2014-03-04',
-              toHour:   '11',
-              toDate:   '59'
-          }
-          DOC
 
-          # Will launch one query per category
-          # TODO: Threaded perform each query
-          query = build_queries_from_fields(fields)
+          @filters[FILTER_CATEGORIES] = build_queries_from_fields(fields)
 
+          if @filters[FILTER_CATEGORIES].size > MAX_CATEGORIES
+            raise ParameterError.new("Max allowed categories are #{FILTER_CATEGORIES}", DATASOURCE_NAME)
+          end
 
-          raise 'TBD'
+          @filters[FILTER_FROMDATE] = build_date_from_fields(fields, 'from')
+          @filters[FILTER_TODATE] = build_date_from_fields(fields, 'to')
+
+          # TODO: Change accordingly if user is about to hit quota
+          @filters[FILTER_MAXRESULTS] = TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+
+          # TODO: Change according to user soft tweets limit
+          @filters[FILTER_TOTAL_RESULTS] = NO_TOTAL_RESULTS
+
+          results = do_search(@search_api, @filters, @user)
+
         end
 
         # @param id string
@@ -143,12 +149,57 @@ module CartoDB
 
         private
 
+        # @param api Cartodb::TwitterSearch::SearchAPI
+        # @param filters Hash
+        # @param user User
+        def do_search(api, filters, user)
+          # 1 search using api, 1 thread per term (check typhoeus)
+          # 2 json2csv
+          # 3 manually concat csvs to import just one
+          # 4 return data
+
+
+          # Non-rails "exclude"
+          base_filters = filters.tap { |obj| obj.delete(FILTER_CATEGORIES) }
+
+          api.params = filters
+
+          nil
+        end
+
+        #TODO: Take into account timezones? or will UI inform?
+        def build_date_from_fields(fields, date_type)
+          raise ParameterError.new('missing dates', DATASOURCE_NAME) \
+              if fields[:dates].nil? || fields[:dates].empty?
+
+          case date_type
+            when 'from'
+              date_sym = :fromDate
+              hour_sym = :fromHour
+              min_sym  = :fromMin
+            when 'to'
+              date_sym = :toDate
+              hour_sym = :toHour
+              min_sym  = :toMin
+          else
+            raise ParameterError.new("unknown date type #{date_type}", DATASOURCE_NAME)
+          end
+
+          if fields[:dates][date_sym].nil? || fields[:dates][hour_sym].nil? || fields[:dates][min_sym].nil?
+            date = nil
+          else
+            # TODO: Sanitize fields
+            date = fields[:dates][date_sym].gsub('-','') + fields[:dates][hour_sym] + fields[:dates][min_sym] + '00'
+          end
+
+          date
+        end
+
         def build_queries_from_fields(fields)
           raise ParameterError.new('missing categories', DATASOURCE_NAME) \
               if fields[:categories].nil? || fields[:categories].empty?
 
           queries = []
-
           fields[:categories].each { |category|
             raise ParameterError.new('missing category', DATASOURCE_NAME) if category[:category].nil?
             raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
@@ -157,7 +208,6 @@ module CartoDB
                 category[:category] => category[:terms].join(' has:geo OR ') + (' has:geo')
             }
           }
-
           queries
         end
 

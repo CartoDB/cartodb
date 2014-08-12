@@ -7,7 +7,7 @@ describe SearchAPI do
   describe '#config_and_params' do
     it 'checks correct params sent to config and as query payload' do
       params = {
-        SearchAPI::PARAM_QUERY      => 'cartodb has:geo',
+        #SearchAPI::PARAM_QUERY      => 'cartodb has:geo',
         SearchAPI::PARAM_MAXRESULTS => 10,
         #SearchAPI::PARAM_FROMDATE   => '201408070600',
         #SearchAPI::PARAM_TODATE     => '201408132359'
@@ -25,6 +25,8 @@ describe SearchAPI do
       })
 
       api.params = params
+
+      api.query_param = 'cartodb has:geo'
 
       data = api.fetch_results
 

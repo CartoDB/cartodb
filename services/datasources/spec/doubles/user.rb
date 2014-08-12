@@ -6,7 +6,7 @@ module CartoDB
         def initialize
         end
 
-      end #User
-    end #Doubles
-  end #Datasources
-end #CartoDB
+      end
+    end
+  end
+end

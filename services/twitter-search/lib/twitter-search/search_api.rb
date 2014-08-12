@@ -5,6 +5,9 @@ module CartoDB
   module TwitterSearch
     class SearchAPI
 
+      MIN_PAGE_RESULTS = 10
+      MAX_PAGE_RESULTS = 500
+
       CONFIG_AUTH_REQUIRED = :auth_required
       CONFIG_AUTH_USERNAME = :username
       CONFIG_AUTH_PASSWORD = :password
@@ -27,12 +30,21 @@ module CartoDB
         @config = config
         @more_results_cursor = nil
         @params = {
-            PARAM_MAXRESULTS => 10
+            PARAM_MAXRESULTS => MIN_PAGE_RESULTS
         }
+      end
+
+      # Hide sensitive fields
+      def to_s
+        "<CartoDB::TwitterSearch::SearchAPI @params=#{@params}>"
       end
 
       def params=(value)
         @params = value if value.kind_of? Hash
+      end
+
+      def query_param=(value)
+        @params[PARAM_QUERY] = value unless (value.nil? || value.empty?)
       end
 
       # @returns Hash
@@ -62,7 +74,7 @@ module CartoDB
         payload[PARAM_FROMDATE] = params[PARAM_FROMDATE] unless params[PARAM_FROMDATE].nil? or params[PARAM_FROMDATE].empty?
         payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? or params[PARAM_TODATE].empty?
         if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].kind_of?(Fixnum) \
-           && params[PARAM_MAXRESULTS] >= 10 && params[PARAM_MAXRESULTS] <= 500
+           && params[PARAM_MAXRESULTS] >= MIN_PAGE_RESULTS && params[PARAM_MAXRESULTS] <= MAX_PAGE_RESULTS
         payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
         end
         payload[PARAM_NEXT_PAGE] = params[PARAM_NEXT_PAGE] unless params[PARAM_NEXT_PAGE].nil? or params[PARAM_NEXT_PAGE].empty?

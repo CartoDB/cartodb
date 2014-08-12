@@ -41,7 +41,7 @@ class Geocoding < Sequel::Model
     self.updated_at = Time.now
     cancel if state == 'cancelled'
   end # before_save
-  
+
   def geocoding_logger
     @@geocoding_logger ||= Logger.new("#{Rails.root}/log/geocodings.log")
   end
@@ -198,7 +198,8 @@ class Geocoding < Sequel::Model
     elsif exception.present?
       payload.merge!(
         success: false,
-        error: exception.message
+        error: exception.message,
+        backtrace: exception.backtrace
       )
     else
       payload.merge!(

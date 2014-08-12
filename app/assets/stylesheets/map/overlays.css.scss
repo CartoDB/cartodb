@@ -373,6 +373,10 @@
 
 }
 
+div.cartodb-timeslider {
+  z-index: 1000000;
+}
+
 div.cartodb-zoom .info {
   position:absolute;
   display:block;

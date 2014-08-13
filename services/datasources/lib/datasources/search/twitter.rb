@@ -17,13 +17,14 @@ module CartoDB
 
         MAX_CATEGORIES = 4
 
-        FILTER_QUERY          = 'query'
+        DEBUG_FLAG = false
+
         # Used for each query page size, not as total
-        FILTER_MAXRESULTS     = 'maxResults'
-        FILTER_FROMDATE       = 'fromDate'
-        FILTER_TODATE         = 'toDate'
-        FILTER_CATEGORIES     = 'categories'
-        FILTER_TOTAL_RESULTS  = 'totalResults'
+        FILTER_MAXRESULTS     = :maxResults
+        FILTER_FROMDATE       = :fromDate
+        FILTER_TODATE         = :toDate
+        FILTER_CATEGORIES     = :categories
+        FILTER_TOTAL_RESULTS  = :totalResults
 
         CATEGORY_NAME_KEY  = 'name'
         CATEGORY_TERMS_KEY = 'terms'
@@ -33,7 +34,7 @@ module CartoDB
 
         ALLOWED_FILTERS = [
             # From twitter
-            FILTER_QUERY, FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
+            FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
             # Internal
             FILTER_CATEGORIES, FILTER_TOTAL_RESULTS
         ]
@@ -63,7 +64,7 @@ module CartoDB
             TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME  => config['username'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD  => config['password'],
             TwitterSearch::SearchAPI::CONFIG_SEARCH_URL     => config['search_url'],
-          })
+          }, DEBUG_FLAG)
 
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
 
@@ -125,7 +126,8 @@ module CartoDB
               url:      nil,
               service:  DATASOURCE_NAME,
               checksum: nil,
-              size:     0
+              size:     0,
+              filename: "#{DATASOURCE_NAME}_#{@user.username}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
           }
         end
 
@@ -169,11 +171,13 @@ module CartoDB
 
           # Values will get overriden later
           additional_fields = {
-              category_name: 'sample category',
-              category_terms: 'term1 term2'
+              category_name: 'cat',
+              category_terms: 'term'
           }
 
-          total_results = @json2csv_conversor.generate_headers(additional_fields)
+          # Need trailing newlines as each process call will "need"
+
+          total_results = @json2csv_conversor.generate_headers(additional_fields) + "\n"
 
           category_results.each { |key, value|
             additional_fields[:category_name] = key
@@ -183,10 +187,11 @@ module CartoDB
                   category[CATEGORY_TERMS_KEY].gsub(geo_search_filter(true), ', ').gsub(geo_search_filter, '')
               end
             }
-            total_results = total_results + @json2csv_conversor.process(value, false, additional_fields)
+            total_results = total_results + @json2csv_conversor.process(value, false, additional_fields) + "\n"
           }
 
-          total_results
+          # Remove trailing newline from last category
+          total_results.gsub(/\n$/, '')
         end
 
         def search_by_category(api, base_filters, category, user)
@@ -202,6 +207,11 @@ module CartoDB
 
             results = results + results_page[:results]
             next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
+
+            if DEBUG_FLAG
+              puts "(#{category[CATEGORY_NAME_KEY]}) #{results_page[:results].count} Total: ##{results.count}"
+            end
+
             # TODO: Check quota, etc. and add to condition
           end while !next_results_cursor.nil?
 
@@ -234,10 +244,17 @@ module CartoDB
             date = nil
           else
             # TODO: Sanitize fields
-            date = fields[:dates][date_sym].gsub('-','') + fields[:dates][hour_sym] + fields[:dates][min_sym] + '00'
+            date = fields[:dates][date_sym].to_s.gsub('-','') + \
+            stringify_hour_minute(fields[:dates][hour_sym].to_s, fields[:dates][min_sym].to_s)
           end
 
           date
+        end
+
+        def stringify_hour_minute(hour, minute)
+          hour = "0" + hour if hour.length == 1
+          minute = "0" + minute if minute.length == 1
+          "#{hour}#{minute}"
         end
 
         def build_queries_from_fields(fields)

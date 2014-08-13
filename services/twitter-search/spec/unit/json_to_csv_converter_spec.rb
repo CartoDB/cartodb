@@ -21,14 +21,19 @@ describe JSONToCSVConverter do
       }
 
       # without data
-      results = conversor.process([], additional_fields)
+      results = conversor.process([], true, additional_fields)
       results.should eq data_from_file('empty_results_expected.csv')
 
       # And with data
-      results = conversor.process(json_data_from_file('sample_tweets.json'), additional_fields)
+      results = conversor.process(json_data_from_file('sample_tweets.json'), true, additional_fields)
       results.should eq data_from_file('sample_tweets_additional_fields_expected.csv')
     end
 
+    it 'check headers can be skiped' do
+      conversor = JSONToCSVConverter.new
+      results = conversor.process([], false)
+      results.should eq ''
+    end
   end
 
   protected
@@ -43,4 +48,3 @@ describe JSONToCSVConverter do
     File.read(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"))
   end
 end
-

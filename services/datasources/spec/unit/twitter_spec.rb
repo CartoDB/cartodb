@@ -103,9 +103,11 @@ describe Search::Twitter do
           Search::Twitter::FILTER_TOTAL_RESULTS => Search::Twitter::NO_TOTAL_RESULTS
       }
 
-      output = twitter_datasource.send :do_search, twitter_api, filters, user_mock
+      output = twitter_datasource.send :search_by_category, \
+        twitter_api, filters, input_terms[:categories].first, user_mock
 
-      output.count.should eq 40
+      # 2 pages of 10 results per category search
+      output.count.should eq 20
     end
 
     it 'tests basic full search flow' do
@@ -140,8 +142,7 @@ describe Search::Twitter do
         }
       ))
 
-      # 2 pages of 10 results per category search, two categories
-      output.count.should eq 40
+      output.should eq data_from_file('sample_tweets_expected.csv')
 
     end
 

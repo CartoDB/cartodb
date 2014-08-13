@@ -92,34 +92,40 @@ module CartoDB
         :geojson_points   # Supported as an alias for the_geom, but converting polygons to points
       ]
 
+
+      def generate_headers(additional_fields = {})
+        process([], true, additional_fields) + "\n"
+      end
+
       # Note: 'the_geom' will be added automatically, no need to add as additional field
-      def process(input_data, additional_fields = {})
+      def process(input_data, add_headers = true, additional_fields = {})
         results = []
 
-        # Headers
-        results_row = INDIVIDUAL_FIELDS.map { |field|
-          field_to_csv(field)
-        }
+        if add_headers
+          results_row = INDIVIDUAL_FIELDS.map { |field|
+            field_to_csv(field)
+          }
 
-        GROUP_FIELDS.each { |field|
-          if SUBFIELDS[field].nil?
+          GROUP_FIELDS.each { |field|
+            if SUBFIELDS[field].nil?
+              results_row << field_to_csv(field)
+            else
+              SUBFIELDS[field].each { |subfield|
+                results_row << field_to_csv("#{field.to_s}_#{subfield.to_s}")
+              }
+            end
+          }
+
+          CARTODB_FIELDS.each { |field|
             results_row << field_to_csv(field)
-          else
-            SUBFIELDS[field].each { |subfield|
-              results_row << field_to_csv("#{field.to_s}_#{subfield.to_s}")
-            }
-          end
-        }
+          }
 
-        CARTODB_FIELDS.each { |field|
-          results_row << field_to_csv(field)
-        }
+          additional_fields.each { |key, value|
+            results_row << field_to_csv(key)
+          }
 
-        additional_fields.each { |key, value|
-          results_row << field_to_csv(key)
-        }
-
-        results << results_row.join(',')
+          results << results_row.join(',')
+        end
 
         # TODO: Error checking
         # Data rows

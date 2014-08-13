@@ -28,6 +28,9 @@ module CartoDB
         CATEGORY_NAME_KEY  = 'name'
         CATEGORY_TERMS_KEY = 'terms'
 
+        GEO_SEARCH_FILTER = 'has:geo'
+        OR_SEARCH_FILTER  = 'OR'
+
         ALLOWED_FILTERS = [
             # From twitter
             FILTER_QUERY, FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
@@ -68,12 +71,6 @@ module CartoDB
         end
 
 
-        # Hide sensitive fields
-        def to_s
-          "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api=#{@search_api}>"
-        end
-
-
         # Factory method
         # @param config {}
         # @return CartoDB::Datasources::Search::TwitterSearch
@@ -91,7 +88,7 @@ module CartoDB
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
         def get_resources_list(filter=[])
-          []
+          filter
         end
 
         # Retrieves a resource and returns its contents
@@ -141,13 +138,12 @@ module CartoDB
         # Sets current filters. Unused as here there's no get_resources_list
         # @param filter_data {}
         def filter=(filter_data=[])
-          nil
+          filter_data
         end
 
-        # Just return datasource name
-        # @return string
+        # Hide sensitive fields
         def to_s
-          DATASOURCE_NAME
+          "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api=#{@search_api}>"
         end
 
         private
@@ -158,13 +154,6 @@ module CartoDB
         # @param filters Hash
         # @param user User
         def do_search(api, filters, user)
-          # 1 search using api, 1 thread per term (check typhoeus)
-          # 2 json2csv
-          # 3 manually concat csvs to import just one
-          # 4 return data
-
-          total_results = []
-
           base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
           category_results = {}
@@ -178,11 +167,24 @@ module CartoDB
             thread.join
           }
 
-          category_results.each { |k, v|
-            total_results = total_results + v
+          # Values will get overriden later
+          additional_fields = {
+              category_name: 'sample category',
+              category_terms: 'term1 term2'
           }
 
-          #test = @json2csv_conversor.process(total_results)
+          total_results = @json2csv_conversor.generate_headers(additional_fields)
+
+          category_results.each { |key, value|
+            additional_fields[:category_name] = key
+            filters[FILTER_CATEGORIES].each { |category|
+              if category[CATEGORY_NAME_KEY] == key
+                additional_fields[:category_terms] = \
+                  category[CATEGORY_TERMS_KEY].gsub(geo_search_filter(true), ', ').gsub(geo_search_filter, '')
+              end
+            }
+            total_results = total_results + @json2csv_conversor.process(value, false, additional_fields)
+          }
 
           total_results
         end
@@ -249,10 +251,18 @@ module CartoDB
 
             queries << {
               CATEGORY_NAME_KEY => category[:category],
-              CATEGORY_TERMS_KEY => category[:terms].join(' has:geo OR ') + (' has:geo')
+              CATEGORY_TERMS_KEY => category[:terms].join(geo_search_filter(true)) + geo_search_filter
             }
           }
           queries
+        end
+
+        def geo_search_filter(with_or = false)
+          if with_or
+            " #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} "
+          else
+            " #{GEO_SEARCH_FILTER}"
+          end
         end
 
       end

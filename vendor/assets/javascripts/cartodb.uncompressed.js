@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.04-dev
+// cartodb.js version: 3.11.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 88fbdb494fd1c5b684ae729b2c747bb28f39e5bd
+// sha: d4b797d8886332d3148ac8f3b93a6ea3df52759d
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.04-dev';
+    cdb.VERSION = '3.11.05-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21055,20 +21055,6 @@ if(!window.JSON) {
             _console.log.apply(_console, arguments);
         }
     });
-
-    cdb.core.wrapObj = function(o) {
-      for (var i in o) {
-        if (typeof o[i] === 'function') {
-          o[i] = (function(ii) {
-            var old = o[ii];
-            return function() {
-              console.log("---", ii);
-              return old.apply(o, arguments);
-            }
-          })(i)
-        }
-      }
-    }
 
 })();
 
@@ -21436,6 +21422,7 @@ cdb._loadJST = function() {
      * We need to override backbone save method to be able to introduce new kind of triggers that
      * for some reason are not present in the original library. Because you know, it would be nice
      * to be able to differenciate "a model has been updated" of "a model is being saved".
+     * TODO: remove jquery from here
      * @param  {object} opt1
      * @param  {object} opt2
      * @return {$.Deferred}
@@ -21443,13 +21430,13 @@ cdb._loadJST = function() {
     save: function(opt1, opt2) {
       var self = this;
       if(!opt2 || !opt2.silent) this.trigger('saving');
-      $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
-      $.when($promise).done(function() {
+      var promise = Backbone.Model.prototype.save.apply(this, arguments);
+      $.when(promise).done(function() {
         if(!opt2 || !opt2.silent) self.trigger('saved');
       }).fail(function() {
         if(!opt2 || !opt2.silent) self.trigger('errorSaving')
       })
-      return $promise;
+      return promise;
     }
   });
 })();
@@ -25482,13 +25469,6 @@ cdb.geo.ui.Header = cdb.core.View.extend({
   },
 
   render: function() {
-
-    var self = this;
-
-    this.$el.offset({
-      top:  this.model.get("y"),
-      left: this.model.get("x")
-    });
 
     this.$el.html(this.options.template(this.model.attributes));
 
@@ -30657,7 +30637,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     }, this);
     tr.bind('changeRow', this.rowChanged, this);
     tr.bind('saved', this.rowSynched, this);
-    tr.bind('errorRow', this.rowFailed, this);
+    tr.bind('errorSaving', this.rowFailed, this);
     tr.bind('saving', this.rowSaving, this);
     this.retrigger('saving', tr);
 
@@ -33917,7 +33897,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     }, this);
     tr.bind('changeRow', this.rowChanged, this);
     tr.bind('saved', this.rowSynched, this);
-    tr.bind('errorRow', this.rowFailed, this);
+    tr.bind('errorSaving', this.rowFailed, this);
     tr.bind('saving', this.rowSaving, this);
     this.retrigger('saving', tr);
 

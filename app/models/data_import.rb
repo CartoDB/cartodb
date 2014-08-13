@@ -345,7 +345,6 @@ class DataImport < Sequel::Model
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
-    log.append 'WARNING: No tables registered at Metadata DB'
 
     if synchronization_id
       log.append "synchronization_id: #{synchronization_id}"

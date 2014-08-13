@@ -45,11 +45,12 @@ module CartoDB
 
       def geometrify
         job.log 'geometrifying'
-        raise                     if empty?
-        convert_from_wkt          if wkt?
-        convert_from_kml_multi    if kml_multi?
-        convert_from_kml_point    if kml_point?
-        convert_from_geojson      if geojson?
+        raise                               if empty?
+        convert_from_wkt                    if wkt?
+        convert_from_kml_multi              if kml_multi?
+        convert_from_kml_point              if kml_point?
+        convert_from_geojson_with_transform if geojson_with_point_transform?
+        convert_from_geojson                if geojson?
         cast_to('geometry')
         convert_to_2d
         job.log 'geometrified'
@@ -71,10 +72,28 @@ module CartoDB
         self
       end
 
+      def convert_from_geojson_with_transform
+        QueryBatcher::execute(
+            db,
+            %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_Centroid(
+              public.ST_MakeValid(
+                public.ST_SetSRID(
+                  public.ST_GeomFromGeoJSON(#{column_name})
+                , #{DEFAULT_SRID})
+              )
+            )
+          },
+            qualified_table_name,
+            job,
+            'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
+            capture_exceptions=true
+        )
+        self
+      end
+
       def convert_from_geojson
-
-        # GEOJSON_RE      = /{.*\"type\".*\"coordinates\"/
-
         QueryBatcher::execute(
           db,
           %Q{
@@ -137,6 +156,12 @@ module CartoDB
 
       def wkt?
         !!(sample.to_s =~ WKT_RE)
+      end
+
+      # As PostGIS only uses geometry field contents and cannot add properties, use a special column name to mark
+      # the column for transforming polygons to points
+      def geojson_with_point_transform?
+        geojson? && column_name.to_s == 'geojson_points'
       end
 
       def geojson?

@@ -89,7 +89,7 @@ module CartoDB
 
       # Other fields with special behaviour we want to add
       CARTODB_FIELDS = [
-        :the_geom
+        :geojson_points   # Supported as an alias for the_geom, but converting polygons to points
       ]
 
       # Note: 'the_geom' will be added automatically, no need to add as additional field
@@ -156,7 +156,7 @@ module CartoDB
           }
 
           CARTODB_FIELDS.each{ |field|
-            if field == :the_geom
+            if field == :geojson_points
               results_row << field_to_csv(calculate_the_geom(item))
             end
           }

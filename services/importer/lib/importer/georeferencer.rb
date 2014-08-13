@@ -11,12 +11,11 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson geojson_points wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil,
-      geometry_columns=nil)
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil)
         @db         = db
         @job        = job || Job.new
         @table_name = table_name

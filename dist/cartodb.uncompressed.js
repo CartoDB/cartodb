@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.03
+// cartodb.js version: 3.11.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: 606c1f7870582f129425ec842d0d9c16411ad4b7
+// sha: c902fc8b27a9f336c82cb0b437511b712d8b8451
 (function() {
   var root = this;
 
@@ -1951,7 +1951,7 @@ if (typeof JSON !== 'object') {
 var oldL = window.L,
     L = {};
 
-L.version = '0.7.2';
+L.version = '0.7.3';
 
 // define Leaflet for Node module pattern loaders, including Browserify
 if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -4048,12 +4048,12 @@ L.Map = L.Class.extend({
 		var loading = !this._loaded;
 		this._loaded = true;
 
+		this.fire('viewreset', {hard: !preserveMapOffset});
+
 		if (loading) {
 			this.fire('load');
 			this.eachLayer(this._layerAdd, this);
 		}
-
-		this.fire('viewreset', {hard: !preserveMapOffset});
 
 		this.fire('move');
 
@@ -7027,7 +7027,8 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
 		}
 
 		this._requestUpdate();
-
+		
+		this.fire('remove');
 		this._map = null;
 	},
 
@@ -8549,12 +8550,12 @@ L.DomEvent = {
 		var timeStamp = (e.timeStamp || e.originalEvent.timeStamp),
 			elapsed = L.DomEvent._lastClick && (timeStamp - L.DomEvent._lastClick);
 
-		// are they closer together than 1000ms yet more than 100ms?
+		// are they closer together than 500ms yet more than 100ms?
 		// Android typically triggers them ~300ms apart while multiple listeners
 		// on the same event should be triggered far faster;
 		// or check if click is simulated on the element, and if it is, reject any non-simulated events
 
-		if ((elapsed && elapsed > 100 && elapsed < 1000) || (e.target._simulatedClick && !e._simulated)) {
+		if ((elapsed && elapsed > 100 && elapsed < 500) || (e.target._simulatedClick && !e._simulated)) {
 			L.DomEvent.stop(e);
 			return;
 		}
@@ -8652,6 +8653,7 @@ L.Draggable = L.Class.extend({
 		    offset = newPoint.subtract(this._startPoint);
 
 		if (!offset.x && !offset.y) { return; }
+		if (L.Browser.touch && Math.abs(offset.x) + Math.abs(offset.y) < 3) { return; }
 
 		L.DomEvent.preventDefault(e);
 
@@ -8662,7 +8664,8 @@ L.Draggable = L.Class.extend({
 			this._startPos = L.DomUtil.getPosition(this._element).subtract(offset);
 
 			L.DomUtil.addClass(document.body, 'leaflet-dragging');
-			L.DomUtil.addClass((e.target || e.srcElement), 'leaflet-drag-target');
+			this._lastTarget = e.target || e.srcElement;
+			L.DomUtil.addClass(this._lastTarget, 'leaflet-drag-target');
 		}
 
 		this._newPos = this._startPos.add(offset);
@@ -8678,9 +8681,13 @@ L.Draggable = L.Class.extend({
 		this.fire('drag');
 	},
 
-	_onUp: function (e) {
+	_onUp: function () {
 		L.DomUtil.removeClass(document.body, 'leaflet-dragging');
-		L.DomUtil.removeClass((e.target || e.srcElement), 'leaflet-drag-target');
+
+		if (this._lastTarget) {
+			L.DomUtil.removeClass(this._lastTarget, 'leaflet-drag-target');
+			this._lastTarget = null;
+		}
 
 		for (var i in L.Draggable.MOVE) {
 			L.DomEvent
@@ -9335,7 +9342,7 @@ L.Map.TouchZoom = L.Handler.extend({
 		    center = map.layerPointToLatLng(origin),
 		    zoom = map.getScaleZoom(this._scale);
 
-		map._animateZoom(center, zoom, this._startCenter, this._scale, this._delta);
+		map._animateZoom(center, zoom, this._startCenter, this._scale, this._delta, false, true);
 	},
 
 	_onTouchEnd: function () {
@@ -10320,8 +10327,8 @@ L.Control.Layers = L.Control.extend({
 
 	onRemove: function (map) {
 		map
-		    .off('layeradd', this._onLayerChange)
-		    .off('layerremove', this._onLayerChange);
+		    .off('layeradd', this._onLayerChange, this)
+		    .off('layerremove', this._onLayerChange, this);
 	},
 
 	addBaseLayer: function (layer, name) {
@@ -10862,9 +10869,11 @@ L.Map.include(!L.DomUtil.TRANSITION ? {} : {
 		return true;
 	},
 
-	_animateZoom: function (center, zoom, origin, scale, delta, backwards) {
+	_animateZoom: function (center, zoom, origin, scale, delta, backwards, forTouchZoom) {
 
-		this._animatingZoom = true;
+		if (!forTouchZoom) {
+			this._animatingZoom = true;
+		}
 
 		// put transform transition on all layers with leaflet-zoom-animated class
 		L.DomUtil.addClass(this._mapPane, 'leaflet-zoom-anim');
@@ -10878,14 +10887,16 @@ L.Map.include(!L.DomUtil.TRANSITION ? {} : {
 			L.Draggable._disabled = true;
 		}
 
-		this.fire('zoomanim', {
-			center: center,
-			zoom: zoom,
-			origin: origin,
-			scale: scale,
-			delta: delta,
-			backwards: backwards
-		});
+		L.Util.requestAnimFrame(function () {
+			this.fire('zoomanim', {
+				center: center,
+				zoom: zoom,
+				origin: origin,
+				scale: scale,
+				delta: delta,
+				backwards: backwards
+			});
+		}, this);
 	},
 
 	_onZoomTransitionEnd: function () {
@@ -11110,7 +11121,8 @@ L.Map.include({
 });
 
 
-}(window, document));/* wax - 7.0.0dev10 - v6.0.4-154-ge12d473 */
+}(window, document));
+/* wax - 7.0.0dev10 - v6.0.4-154-ge12d473 */
 
 
 !function (name, context, definition) {
@@ -20686,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.03';
+    cdb.VERSION = '3.11.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22170,18 +22182,18 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
   },
 
-  updateAttribution: function(old,new_) {
+  updateAttribution: function(old, new_) {
     var attributions = this.get("attribution") || [];
 
     // Remove the old one
-    if (old && old.get("attribution")) {
-      attributions = _.without(attributions, old.get("attribution"));
+    if (old) {
+      attributions = _.without(attributions, old);
     }
 
     // Save the new one
-    if (new_.get("attribution")) {
-      if (!_.contains(attributions, new_.get("attribution"))) {
-        attributions.push(new_.get("attribution"));
+    if (new_) {
+      if (!_.contains(attributions, new_)) {
+        attributions.push(new_);
       }
     }
 
@@ -25457,13 +25469,6 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
   render: function() {
 
-    var self = this;
-
-    this.$el.offset({
-      top:  this.model.get("y"),
-      left: this.model.get("x")
-    });
-
     this.$el.html(this.options.template(this.model.attributes));
 
     this.$title       = this.$el.find(".content div.title");
@@ -27744,6 +27749,11 @@ _.extend(LeafLetTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
 
   _modelUpdated: function() {
     _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
+    this.leafletLayer.options.subdomains = this.model.get('subdomains') || 'abc';
+    this.leafletLayer.options.attribution = this.model.get('attribution');
+    this.leafletLayer.options.maxZoom = this.model.get('maxZoom');
+    this.leafletLayer.options.minZoom = this.model.get('minZoom');
+    // set url and reload
     this.leafletLayer.setUrl(this.model.get('urlTemplate'));
   }
 

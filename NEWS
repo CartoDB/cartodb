@@ -1,6 +1,8 @@
-3.11.04 ()
+3.11.05 (XX//08/2014)
+
+3.11.04 (12//08/2014)
 - Fixes ugly word break in text overlays.
-- updates leaflet to 0.7.3
+- Updates leaflet to 0.7.3
 
 3.11.03 (08//08/2014)
 - Fixes rendering issues with webfonts.

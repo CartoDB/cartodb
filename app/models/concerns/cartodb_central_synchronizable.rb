@@ -60,7 +60,8 @@ module Concerns
         :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
         :user_timeout, :username, :website, :soft_geocoding_limit,
         :twitter_datasource_enabled, :twitter_datasource_block_size,
-        :twitter_datasource_block_price, :twitter_datasource_quota]
+        :twitter_datasource_block_price, :twitter_datasource_quota,
+        :soft_twitter_datasource_limit]
       end
     end
 
@@ -75,12 +76,13 @@ module Concerns
         end
       elsif self.is_a?(User)
         attrs = self.values.slice(:account_type, :admin, :crypted_password,
-          :database_host, :database_timeout, :description, :disqus_shortname, :email, :geocoding_block_price,
-          :geocoding_quota, :map_view_block_price, :map_view_quota, :max_layers,
-          :name, :notification, :organization_id, :period_end_date,
-          :private_tables_enabled, :quota_in_bytes, :salt, :sync_tables_enabled,
-          :table_quota, :twitter_username, :upgraded_at, :user_timeout, :username,
-          :website, :soft_geocoding_limit, :twitter_datasource_enabled)
+          :database_host, :database_timeout, :description, :disqus_shortname,
+          :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
+          :map_view_quota, :max_layers, :name, :notification, :organization_id,
+          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
+          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
+          :user_timeout, :username, :website, :soft_geocoding_limit,
+          :twitter_datasource_enabled, :soft_twitter_datasource_limit)
         case action
         when :create
           attrs[:remote_user_id] = self.id

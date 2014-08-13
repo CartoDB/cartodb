@@ -596,6 +596,19 @@ class User < Sequel::Model
     self[:soft_geocoding_limit] = !val
   end
 
+  def soft_twitter_datasource_limit?
+    self.soft_twitter_datasource_limit  == true
+  end
+
+  def hard_twitter_datasource_limit?
+    !self.soft_twitter_datasource_limit?
+  end
+  alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
+
+  def hard_twitter_datasource_limit=(val)
+    self[:soft_twitter_datasource_limit] = !val
+  end
+
   def private_maps_enabled
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end

@@ -29,18 +29,10 @@ module CartoDB
           hard_limit:  self.hard_geocoding_limit?
         },
         twitter: {
-          enabled:      true,
-          quota:        1000000,
-          block_price:  30,
-          block_size:   1000,
-          monthly_use:  0,
-          hard_limit:   false
-        },
-        twitter_datasource: {
           enabled:     self.twitter_datasource_enabled,
           quota:       self.twitter_datasource_quota,
-          block_size:  self.twitter_datasource_block_size,
           block_price: self.twitter_datasource_block_price,
+          block_size:  self.twitter_datasource_block_size,
           monthly_use: self.get_twitter_imports_count,
           hard_limit:  self.hard_twitter_datasource_limit?
         },

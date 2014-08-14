@@ -5,6 +5,7 @@
    */
 
   @import "compass/css3/border-radius";
+  @import "compass/css3/opacity";
   @import "compass/css3/inline-block";
   @import "compass/css3/box-shadow";
   @import "../common/mixins";
@@ -239,9 +240,11 @@
       td.datepickerDisabled a,
       td.datepickerDisabled.datepickerNotInMonth a{
         color: #333;
+        @include opacity(.5);
       }
       td.datepickerDisabled a:hover {
         color: #333;
+        @include opacity(.5);
       }
       td.datepickerSpecial a {
         background: #700;
@@ -279,7 +282,7 @@
 
       th.datepickerWeek {
         text-align:center!important;
-        a { color:#CCC }
+        a { color:#CCC; }
       }
 
       td.datepickerSelected a {

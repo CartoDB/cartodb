@@ -261,6 +261,8 @@ module CartoDB
           raise ParameterError.new('missing categories', DATASOURCE_NAME) \
               if fields[:categories].nil? || fields[:categories].empty?
 
+          # TODO: each query can support up to 30 positive clauses and 1024 characters
+
           queries = []
           fields[:categories].each { |category|
             raise ParameterError.new('missing category', DATASOURCE_NAME) if category[:category].nil?

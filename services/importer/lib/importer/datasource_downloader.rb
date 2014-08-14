@@ -55,6 +55,10 @@ module CartoDB
         false
       end
 
+      def clean_up
+        nil
+      end
+
       attr_reader  :source_file
 
       private

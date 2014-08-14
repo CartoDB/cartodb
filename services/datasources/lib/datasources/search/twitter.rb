@@ -176,7 +176,6 @@ module CartoDB
           }
 
           # Need trailing newlines as each process call will "need"
-
           total_results = @json2csv_conversor.generate_headers(additional_fields) + "\n"
 
           category_results.each { |key, value|
@@ -184,7 +183,8 @@ module CartoDB
             filters[FILTER_CATEGORIES].each { |category|
               if category[CATEGORY_NAME_KEY] == key
                 additional_fields[:category_terms] = \
-                  category[CATEGORY_TERMS_KEY].gsub(geo_search_filter(true), ', ').gsub(geo_search_filter, '')
+                  category[CATEGORY_TERMS_KEY].gsub(" #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} ", ', ')
+                                              .gsub(" #{GEO_SEARCH_FILTER}", '')
               end
             }
             total_results = total_results + @json2csv_conversor.process(value, false, additional_fields) + "\n"
@@ -261,27 +261,37 @@ module CartoDB
           raise ParameterError.new('missing categories', DATASOURCE_NAME) \
               if fields[:categories].nil? || fields[:categories].empty?
 
-          # TODO: each query can support up to 30 positive clauses and 1024 characters
-
           queries = []
           fields[:categories].each { |category|
             raise ParameterError.new('missing category', DATASOURCE_NAME) if category[:category].nil?
             raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
 
-            queries << {
+            # Gnip limitation
+            if category[:terms].count > 30
+              category[:terms] = category[:terms].slice(0, 30)
+            end
+
+            query = {
               CATEGORY_NAME_KEY => category[:category],
-              CATEGORY_TERMS_KEY => category[:terms].join(geo_search_filter(true)) + geo_search_filter
+              CATEGORY_TERMS_KEY => ''
             }
+
+            category[:terms].each_with_index { |term, index|
+              if index == 0
+                term_fragment = "#{term} #{GEO_SEARCH_FILTER}"
+              else
+                term_fragment = " #{OR_SEARCH_FILTER} #{term} #{GEO_SEARCH_FILTER}"
+              end
+
+              # Gnip limitation
+              if (query[CATEGORY_TERMS_KEY].length + term_fragment.length) < 1024
+                query[CATEGORY_TERMS_KEY] << term_fragment
+              end
+            }
+
+            queries << query
           }
           queries
-        end
-
-        def geo_search_filter(with_or = false)
-          if with_or
-            " #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} "
-          else
-            " #{GEO_SEARCH_FILTER}"
-          end
         end
 
       end

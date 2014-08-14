@@ -44,6 +44,57 @@ describe Search::Twitter do
       output.should eq expected_output_terms
     end
 
+    it 'tests search term cut if too many' do
+      user_mock = Doubles::User.new
+
+      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
+
+      input_terms = {
+          categories: [
+              {
+                  category: 'Category 1',
+                  terms:    Array(1..35)
+              }
+          ]
+      }
+
+      expected_output_terms = [
+          {
+              Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
+              Search::Twitter::CATEGORY_TERMS_KEY => '1 has:geo OR 2 has:geo OR 3 has:geo OR 4 has:geo OR 5 has:geo OR 6 has:geo OR 7 has:geo OR 8 has:geo OR 9 has:geo OR 10 has:geo OR 11 has:geo OR 12 has:geo OR 13 has:geo OR 14 has:geo OR 15 has:geo OR 16 has:geo OR 17 has:geo OR 18 has:geo OR 19 has:geo OR 20 has:geo OR 21 has:geo OR 22 has:geo OR 23 has:geo OR 24 has:geo OR 25 has:geo OR 26 has:geo OR 27 has:geo OR 28 has:geo OR 29 has:geo OR 30 has:geo'
+          },
+      ]
+
+      output = twitter_datasource.send :build_queries_from_fields, input_terms
+      output.should eq expected_output_terms
+    end
+
+    it 'tests search term cut if too big (even if amount is ok)' do
+      user_mock = Doubles::User.new
+
+      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
+
+      input_terms = {
+          categories: [
+              {
+                  category: 'Category 1',
+                  terms:    ['wadus1', 'wadus2', 'wadus3' * 500]
+              }
+          ]
+      }
+
+      expected_output_terms = [
+          {
+              Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
+              Search::Twitter::CATEGORY_TERMS_KEY => 'wadus1 has:geo OR wadus2 has:geo'
+          },
+      ]
+
+      output = twitter_datasource.send :build_queries_from_fields, input_terms
+      output.should eq expected_output_terms
+    end
+
+
     it 'tests date filters' do
       user_mock = Doubles::User.new
 
@@ -52,18 +103,17 @@ describe Search::Twitter do
       input_dates = dates_fixture
 
       output = twitter_datasource.send :build_date_from_fields, input_dates, 'from'
-      output.should eq '20140303134900'
+      output.should eq '201403031349'
 
       output = twitter_datasource.send :build_date_from_fields, input_dates, 'to'
-      output.should eq '20140304115900'
+      output.should eq '201403041159'
 
       expect {
         twitter_datasource.send :build_date_from_fields, input_dates, 'wadus'
       }.to raise_error ParameterError
-
     end
 
-    it 'tests twitter search integration (without conversion to CSV' do
+    it 'tests twitter search integration (without conversion to CSV)' do
       # This test bridges lots of internal calls to simulate only up until twitter search call and results
       user_mock = Doubles::User.new
 

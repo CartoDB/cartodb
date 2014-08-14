@@ -26,12 +26,13 @@ module CartoDB
         FILTER_CATEGORIES     = :categories
         FILTER_TOTAL_RESULTS  = :totalResults
 
-        CATEGORY_NAME_KEY  = 'name'
-        CATEGORY_TERMS_KEY = 'terms'
+        CATEGORY_NAME_KEY  = :name
+        CATEGORY_TERMS_KEY = :terms
 
         GEO_SEARCH_FILTER = 'has:geo'
         OR_SEARCH_FILTER  = 'OR'
 
+        # TODO: Check no other filters are present
         ALLOWED_FILTERS = [
             # From twitter
             FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
@@ -243,6 +244,17 @@ module CartoDB
           if fields[:dates][date_sym].nil? || fields[:dates][hour_sym].nil? || fields[:dates][min_sym].nil?
             date = nil
           else
+            # It is sent by JS in +/- minutes
+            timezone = fields[:dates][:user_timezone].nil? ? 0 : fields[:dates][:user_timezone].to_i
+
+            begin
+              year, month, day = fields[:dates][date_sym].split('-')
+              timezoned_date = Time.utc(year, month, day, fields[:dates][hour_sym], fields[:dates][min_sym])
+            rescue ArgumentError
+              raise ParameterError.new('Invalid date format', DATASOURCE_NAME)
+            end
+
+
             # TODO: Sanitize fields
             date = fields[:dates][date_sym].to_s.gsub('-','') + \
             stringify_hour_minute(fields[:dates][hour_sym].to_s, fields[:dates][min_sym].to_s)

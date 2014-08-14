@@ -30,9 +30,6 @@
       overflow: hidden;
       @include opacity(0);
       border-bottom:none;
-      // @include transform-style("linear");
-      // @include transition-property("opacity, height");
-      // @include transition-duration(350ms);
 
       i.twitter-icon {
         @include inline-block();
@@ -67,7 +64,7 @@
 
         &[readonly] {
           background:white;
-          color:#AAA;
+          color: #E0E0E0;
         }
 
         &.long { width:268px }

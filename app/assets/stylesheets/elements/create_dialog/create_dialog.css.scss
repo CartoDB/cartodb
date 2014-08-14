@@ -30,7 +30,7 @@
         letter-spacing:0;
         @include transform-style("linear");
         @include transition-property("opacity,margin");
-        @include transition-duration(450ms);
+        @include transition-duration(200ms);
 
         &.disabled {
           @include opacity(0);

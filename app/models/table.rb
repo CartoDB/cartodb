@@ -1304,7 +1304,7 @@ class Table < Sequel::Model(:user_tables)
     table_name = "#{owner.database_schema}.#{self.name}"
 
     # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
-    owner.in_database(:as => :superuser) do |user_database|
+    owner.in_database do |user_database|
       user_database.run(%Q{
         SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
       })

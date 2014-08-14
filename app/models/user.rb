@@ -1505,7 +1505,7 @@ TRIGGER
           db.run("SET statement_timeout TO '#{old_timeout}';")
         end
 
-        expected = "#{tgt_ver} #{tgt_rev}"
+        expected = "#{tgt_ver}"
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
         raise("Expected cartodb extension '#{expected}' obtained '#{obtained}'") unless expected == obtained

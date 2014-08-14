@@ -54,7 +54,9 @@ module CartoDB
 
         tracker.call('unpacking')
         unpacker.run(@downloader.source_file.fullpath)
-        unpacker.source_files.each { |source_file| import(source_file) }
+        unpacker.source_files.each { |source_file|
+          import(source_file)
+        }
         unpacker.clean_up
         @downloader.clean_up
         self

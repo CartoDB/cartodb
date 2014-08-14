@@ -196,7 +196,7 @@ class User < Sequel::Model
     Thread.new do
       in_database(as: :superuser) do |database|
         # Drop this user privileges in every schema of the DB
-        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] + 
+        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] +
           User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema).uniq
         schemas.each do |s|
           drop_user_privileges_in_schema(s)
@@ -286,7 +286,9 @@ class User < Sequel::Model
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
-        over_map_views || over_geocodings
+        limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
+        over_twitter_imports = u.get_twitter_imports_count > limit
+        over_map_views || over_geocodings || over_twitter_imports
     end
   end
 
@@ -489,7 +491,7 @@ class User < Sequel::Model
       method: :get
     )
     response = request.run
-    if response.code == 200 
+    if response.code == 200
       # First try to update the url with the user gravatar
       self.avatar_url = "//#{gravatar_user_url(128)}"
       self.this.update avatar_url: self.avatar_url
@@ -500,11 +502,11 @@ class User < Sequel::Model
         self.avatar_url = "//#{cartodb_avatar}"
         self.this.update avatar_url: self.avatar_url
       end
-    end 
+    end
   end
 
   def cartodb_avatar
-    if !Cartodb.config[:avatars].nil? && 
+    if !Cartodb.config[:avatars].nil? &&
        !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
        !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
        !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
@@ -594,6 +596,19 @@ class User < Sequel::Model
     self[:soft_geocoding_limit] = !val
   end
 
+  def soft_twitter_datasource_limit?
+    self.soft_twitter_datasource_limit  == true
+  end
+
+  def hard_twitter_datasource_limit?
+    !self.soft_twitter_datasource_limit?
+  end
+  alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
+
+  def hard_twitter_datasource_limit=(val)
+    self[:soft_twitter_datasource_limit] = !val
+  end
+
   def private_maps_enabled
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
@@ -641,6 +656,15 @@ class User < Sequel::Model
       self.save
     end
     self.auth_token
+  end
+
+  # TODO: Implement this
+  # Should return the number of tweets imported by this user for the
+  # specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    return 0
   end
 
   # Returns an array representing the last 30 days, populated with api_calls
@@ -693,6 +717,15 @@ class User < Sequel::Model
       remaining = organization.geocoding_quota - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_twitter_quota
+    if organization.present?
+      remaining = organization.twitter_datasource_quota - organization.get_twitter_imports_count
+    else
+      remaining = twitter_datasource_quota - get_twitter_imports_count
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1658,7 +1691,7 @@ TRIGGER
       end
     end
   end
- 
+
   def fix_table_permissions
     tables_queries = []
     tables.each do |table|

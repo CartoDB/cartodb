@@ -94,7 +94,7 @@ module CartoDB
 
 
       def generate_headers(additional_fields = {})
-        process([], true, additional_fields) + "\n"
+        process([], true, additional_fields)
       end
 
       # Note: 'the_geom' will be added automatically, no need to add as additional field
@@ -180,7 +180,7 @@ module CartoDB
       private
 
       def field_to_csv(field)
-        '"' + field.to_s.gsub('"', '""').gsub("\n", ' ') + '"'
+        '"' + field.to_s.gsub('"', '""').gsub("\n", ' ').gsub("\x0D", ' ') + '"'
       end
 
       def calculate_the_geom(row)

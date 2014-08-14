@@ -1437,7 +1437,7 @@ bundle exec rake cartodb:db:load_functions
 2.0.2 (21/01/13)
 -----
 * Added composite operations combo in style wizards
-* The list of public tables has been moved to a new page and is now accesible from the header
+* The list of public tables has been moved to a new page and is now accessible from the header
 * Fixed table pagination animation for new Firefox 18 version
 * User deletion now removes all the user data
 * Added a VACUUM FULL after table creation

@@ -223,7 +223,6 @@ module CartoDB
 
         end
 
-        #TODO: Take into account timezones? or will UI inform?
         def build_date_from_fields(fields, date_type)
           raise ParameterError.new('missing dates', DATASOURCE_NAME) \
               if fields[:dates].nil? || fields[:dates].empty?
@@ -244,29 +243,20 @@ module CartoDB
           if fields[:dates][date_sym].nil? || fields[:dates][hour_sym].nil? || fields[:dates][min_sym].nil?
             date = nil
           else
-            # It is sent by JS in +/- minutes
+            # Sent by JS in minutes
             timezone = fields[:dates][:user_timezone].nil? ? 0 : fields[:dates][:user_timezone].to_i
-
             begin
               year, month, day = fields[:dates][date_sym].split('-')
               timezoned_date = Time.utc(year, month, day, fields[:dates][hour_sym], fields[:dates][min_sym])
             rescue ArgumentError
               raise ParameterError.new('Invalid date format', DATASOURCE_NAME)
             end
+            timezoned_date += timezone*60
 
-
-            # TODO: Sanitize fields
-            date = fields[:dates][date_sym].to_s.gsub('-','') + \
-            stringify_hour_minute(fields[:dates][hour_sym].to_s, fields[:dates][min_sym].to_s)
+            date = timezoned_date > Time.now.utc ? nil : timezoned_date.strftime("%Y%m%d%H%M")
           end
 
           date
-        end
-
-        def stringify_hour_minute(hour, minute)
-          hour = "0" + hour if hour.length == 1
-          minute = "0" + minute if minute.length == 1
-          "#{hour}#{minute}"
         end
 
         def build_queries_from_fields(fields)

@@ -172,6 +172,9 @@ module CartoDB
           category_results = {}
           threads = {}
           filters[FILTER_CATEGORIES].each { |category|
+            # If all threads are created at the same time, redis semaphore inside search_api
+            # might not yet have new value, so introduce a small delay on each thread creation
+            sleep(0.05)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
               category_results[category[CATEGORY_NAME_KEY]] = search_by_category(api, base_filters, category, user)
             }

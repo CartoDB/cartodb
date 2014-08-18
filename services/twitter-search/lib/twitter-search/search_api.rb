@@ -23,6 +23,7 @@ module CartoDB
       REDIS_KEY = 'importer:twittersearch:rl'
       REDIS_RL_MAX_CONCURRENCY = 8
       REDIS_RL_TTL = 4
+      REDIS_RL_WAIT_SECS = 0.5
 
       attr_reader :params
 
@@ -79,11 +80,14 @@ module CartoDB
 
         unless @redis.nil?
           key = REDIS_KEY
+          rl_value = @redis.keys(key)
+
           # wait until semaphore open
-          begin
+          while !rl_value.nil? && rl_value.count >= REDIS_RL_MAX_CONCURRENCY do
+            sleep(REDIS_RL_WAIT_SECS)
             rl_value = @redis.keys(key)
-            sleep(0.5)
-          end while(!rl_value.nil? && rl_value.count >= REDIS_RL_MAX_CONCURRENCY)
+          end
+
           @redis.multi do
             @redis.set(key, 1)  # Value is not important, only number of keys
             @redis.expire(key, REDIS_RL_TTL)

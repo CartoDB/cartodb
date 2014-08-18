@@ -17,6 +17,8 @@ module CartoDB
         import_count: self.import_count,
         last_visualization_created_at: self.last_visualization_created_at,
         quota_in_bytes: self.quota_in_bytes,
+        db_size_in_bytes: self.db_size_in_bytes,
+        db_size_in_megabytes: self.db_size_in_bytes / 1024.00,
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
         api_calls: calls,
@@ -61,8 +63,7 @@ module CartoDB
       if options[:extended]
         data.merge({
           :real_table_count => self.real_tables.size,
-          :last_active_time => self.get_last_active_time,
-          :db_size_in_bytes => self.db_size_in_bytes
+          :last_active_time => self.get_last_active_time
         })
       else
         data

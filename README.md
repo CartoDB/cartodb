@@ -330,6 +330,10 @@ via the Maps API.
 sudo apt-get install varnish
 ```
 
+Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
+
+
+
 ## Install Mapnik ##
 [Mapnik](http://mapnik.org) is an API for creating beautiful maps.
 CartoDB uses Mapnik for creating and styling map tiles. 

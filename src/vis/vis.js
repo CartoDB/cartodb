@@ -433,10 +433,15 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    // Sort the overlays by its internal order
-    var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
+    if (!data.slides) {
+      // Sort the overlays by its internal order
+      var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
+      this._createOverlays(overlays, options);
+    } else {
+      this._createSlides(data.slides);
 
-    this._createOverlays(overlays, options);
+    }
+
 
     //var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
     //if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
@@ -446,6 +451,51 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  _createSlides: function(slides) {
+
+      function BackboneActions(model) {
+        var actions = {
+          set: function() {
+            var args = arguments;
+            return O.Action({
+              enter: function() {
+                model.set.apply(model, args);
+              }
+            });
+          }
+        };
+        return actions;
+      }
+
+      var seq = this.sequence = O.Sequential();
+      this.slides = O.Story();
+      
+      // transition - debug, remove
+      O.Keys().left().then(seq.prev, seq);
+      O.Keys().right().then(seq.next, seq);
+
+      this.map.actions = BackboneActions(this.map);
+
+      for (var i = 0; i < slides.length; ++i) {
+        var slide = slides[i];
+        var states = [];
+
+        // generate states
+        if (slide.map) {
+          states.push(this.map.actions.set({
+            'center': slide.map.center,
+            'zoom': slide.map.zoom
+          }));
+        }
+
+        this.slides.addState(
+          seq.step(i),
+          O.Parallel.apply(window, states)
+        );
+
+      }
   },
 
   _createOverlays: function(overlays, options) {

@@ -1,4 +1,3 @@
-
 require_relative 'thread_pool'
 
 namespace :cartodb do
@@ -703,7 +702,7 @@ namespace :cartodb do
         log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
-	file_handle.puts "[#{Time.now}] #{entry}\n"
+	      file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 
@@ -756,6 +755,29 @@ namespace :cartodb do
           log(message, :reload_users_avatars.to_s)
         end
       end
+    end
+
+    desc "Enable oracle_fdw extension in database"
+    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :table_definition_json_path] => :environment do
+      u = User.where(:username => args[:username].to_s).first
+      tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
+      u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|
+        db.transaction do
+          server_name = "oracle_#{args[:oracle_url].sanitize}_#{Time.now.to_i}"
+          db.run('CREATE EXTENSION oracle_fdw FROM unpackaged') unless db.fetch(%Q{
+              SELECT count(*) FROM pg_extension WHERE extname='oracle_fdw'
+          }).first[:count] > 0
+          db.run("CREATE SERVER #{server_name} FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '#{args[:oracle_url].to_s}')")
+          db.run("GRANT USAGE ON FOREIGN SERVER #{server_name} TO #{u.database_username}")
+          db.run("CREATE USER MAPPING FOR #{u.database_username} SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
+          table = t["tables"].first
+          table_name = t["tables"].first
+          table_columns = t["tables"].last["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
+          db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{remote_table}')")
+          db.run("")
+        end
+      end
+      
     end
 
   end

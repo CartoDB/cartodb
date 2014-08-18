@@ -199,10 +199,61 @@ describe Search::Twitter do
       }
 
       output = twitter_datasource.send :search_by_category, \
-        twitter_api, filters, input_terms[:categories].first, user_mock
+        twitter_api, filters, input_terms[:categories].first
 
       # 2 pages of 10 results per category search
       output.count.should eq 20
+    end
+
+    it 'tests stopping search if runs out of quota' do
+      # Should equal to sample_tweets_3.json number of results, and always >= 10 (because is Gnip's minimum)
+      remaining_tweets_quota = 11
+
+      user_mock = Doubles::User.new(
+        twitter_datasource_quota: remaining_tweets_quota
+      )
+
+      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
+
+      input_terms = terms_fixture
+      input_dates = dates_fixture
+
+      Typhoeus.stub(/fakeurl\.cartodb/) do |request|
+        accept = (request.options[:headers]||{})['Accept'] || 'application/json'
+        format = accept.split(',').first
+
+        if request.options[:params][:next].nil?
+          # This dataset has 11 items and a "next"
+          body = data_from_file('sample_tweets_3.json')
+        else
+          body = data_from_file('sample_tweets_2.json')
+        end
+
+        Typhoeus::Response.new(
+            code: 200,
+            headers: { 'Content-Type' => format },
+            body: body
+        )
+      end
+
+      twitter_api = twitter_datasource.send :search_api
+
+      fields = {
+          categories: input_terms[:categories],
+          dates:      input_dates[:dates]
+      }
+      filters = {
+          Search::Twitter::FILTER_CATEGORIES =>    (twitter_datasource.send :build_queries_from_fields, fields),
+          Search::Twitter::FILTER_FROMDATE =>      (twitter_datasource.send :build_date_from_fields, fields, 'from'),
+          Search::Twitter::FILTER_TODATE =>        (twitter_datasource.send :build_date_from_fields, fields, 'to'),
+          Search::Twitter::FILTER_MAXRESULTS =>    500,
+          Search::Twitter::FILTER_TOTAL_RESULTS => Search::Twitter::NO_TOTAL_RESULTS
+      }
+
+      output = twitter_datasource.send :search_by_category, \
+        twitter_api, filters, input_terms[:categories].first
+
+      output.count.should eq remaining_tweets_quota
     end
 
     it 'tests basic full search flow' do

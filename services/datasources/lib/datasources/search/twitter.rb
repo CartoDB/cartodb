@@ -78,6 +78,9 @@ module CartoDB
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
 
           @user = user
+
+          @used_quota = 0
+          @user_semaphore = Mutex.new
         end
 
 
@@ -184,7 +187,7 @@ module CartoDB
             # might not yet have new value, so introduce a small delay on each thread creation
             sleep(0.05)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
-              results = search_by_category(api, base_filters, category, user)
+              results = search_by_category(api, base_filters, category)
               semaphore.synchronize {
                 category_results[category[CATEGORY_NAME_KEY]] = results
               }
@@ -219,7 +222,8 @@ module CartoDB
           total_results.gsub(/\n$/, '')
         end
 
-        def search_by_category(api, base_filters, category, user)
+        # As Ruby is pass-by-value, we can't pass user as by-ref param
+        def search_by_category(api, base_filters, category)
           results = []
 
           api.params = base_filters
@@ -228,19 +232,37 @@ module CartoDB
           next_results_cursor = nil
 
           begin
-            results_page = api.fetch_results(next_results_cursor)
+            out_of_quota = false
 
-            results = results + results_page[:results]
-            next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
+            @user_semaphore.synchronize {
+              # TODO: Organization checks
+              if (!@user.soft_twitter_datasource_limit && @user.twitter_datasource_quota - @used_quota) <= 0
+                out_of_quota = true
+                next_results_cursor = nil
+              end
+            }
 
-            if DEBUG_FLAG
-              puts "(#{category[CATEGORY_NAME_KEY]}) #{results_page[:results].count} Total: ##{results.count}"
+            unless out_of_quota
+              results_page = api.fetch_results(next_results_cursor)
+              results = results + results_page[:results]
+              next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
+
+              @user_semaphore.synchronize {
+                @used_quota += results_page[:results].count
+
+                # TODO: Organization checks
+                # Repeat check
+                if (!@user.soft_twitter_datasource_limit && @user.twitter_datasource_quota - @used_quota) <= 0
+                  out_of_quota = true
+                  next_results_cursor = nil
+                end
+              }
+
+              if DEBUG_FLAG
+                puts "(#{category[CATEGORY_NAME_KEY]}) #{results_page[:results].count} Total: ##{results.count}"
+              end
             end
-
-            # TODO: Check quota, etc. and add to condition
-            # upon reducing quota, do a max (user_quota -1000, 0)
-            # put inside a mutex quota update
-          end while !next_results_cursor.nil?
+          end while (!next_results_cursor.nil? && !out_of_quota)
 
           results
         end

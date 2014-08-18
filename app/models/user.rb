@@ -25,6 +25,7 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: :created_at.desc
+  one_to_many :search_tweets, order: :created_at.desc
   many_to_one :organization
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
@@ -36,7 +37,6 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
-
 
   # Restrict to_json attributes
   @json_serializer_opts = {

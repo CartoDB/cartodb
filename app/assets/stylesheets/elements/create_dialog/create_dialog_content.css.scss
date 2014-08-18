@@ -47,6 +47,10 @@
       height:110px;
       border:none!important;
 
+      &.success {
+        display:none;
+      }
+
       a {
         @include display-flex();
         @include cross-browser(flex-direction,column);
@@ -212,7 +216,29 @@
         margin-top:-20px; // HA!
       }
 
-      // Error
+      .create-success {
+
+        p {
+          color: #666666;
+          text-align:center;
+          font-size:15px;
+        }
+
+        i {
+
+          &.twitter {
+            @include common-sprite(twitter_import_success);
+          }
+
+          display:block;
+          margin: 0 auto 15px auto;
+          width: 45px;
+          height: 38px;
+        }
+
+      }
+
+      // error
       .create-error {
 
         div.item_queue_id {
@@ -232,7 +258,7 @@
     }
 
     //////////////
-    // Progress //
+    // progress //
     //////////////
 
     .create-progress {
@@ -245,7 +271,7 @@
         width:160px;
         height:12px;
         margin:0 auto;
-        @include background(#DEDEDE);
+        @include background(#dedede);
         @include border-radius(2px);
       }
 
@@ -253,7 +279,7 @@
         display:block;
         height:100%;
         width:2%;
-        background-color:#5290D0;
+        background-color:#5290d0;
         @include box-sizing(border-box);
         @include background-size(12px 12px);
         @include border-radius(2px);

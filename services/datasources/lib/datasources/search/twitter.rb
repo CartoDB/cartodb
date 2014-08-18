@@ -128,24 +128,8 @@ module CartoDB
 
           @filters[FILTER_FROMDATE] = build_date_from_fields(fields, 'from')
           @filters[FILTER_TODATE] = build_date_from_fields(fields, 'to')
-
-          # user about to hit quota?
-          if @user.twitter_datasource_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
-            if @user.soft_twitter_datasource_limit
-              # But can go beyond limits
-              @filters[FILTER_MAXRESULTS] = TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
-            else
-              @filters[FILTER_MAXRESULTS] = @user.twitter_datasource_quota
-            end
-          else
-            @filters[FILTER_MAXRESULTS] = TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
-          end
-
-          if @user.soft_twitter_datasource_limit
-            @filters[FILTER_TOTAL_RESULTS] = NO_TOTAL_RESULTS
-          else
-            @filters[FILTER_TOTAL_RESULTS] = @user.twitter_datasource_quota
-          end
+          @filters[FILTER_MAXRESULTS] = build_maxresults_field(@user)
+          @filters[FILTER_TOTAL_RESULTS] = build_total_results_field(@user)
 
           do_search(@search_api, @filters, @user)
         end
@@ -183,7 +167,7 @@ module CartoDB
 
         private
 
-        attr_accessor :search_api, :filters
+        attr_accessor :search_api
 
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
@@ -333,6 +317,28 @@ module CartoDB
             queries << query
           }
           queries
+        end
+
+        def build_maxresults_field(user)
+          # user about to hit quota?
+          if user.twitter_datasource_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+            if user.soft_twitter_datasource_limit
+              # But can go beyond limits
+              TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+            else
+              user.twitter_datasource_quota
+            end
+          else
+            TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+          end
+        end
+
+        def build_total_results_field(user)
+          if user.soft_twitter_datasource_limit
+            NO_TOTAL_RESULTS
+          else
+            user.twitter_datasource_quota
+          end
         end
 
         # @param user User

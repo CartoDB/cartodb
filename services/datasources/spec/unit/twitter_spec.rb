@@ -23,31 +23,35 @@ describe Search::Twitter do
 
   describe '#filters' do
     it 'tests max and total results filters' do
-      input_terms = terms_fixture
-      # We don't care about results, just filters set
-      Typhoeus.stub(/fakeurl\.cartodb/).and_return(Typhoeus::Response.new({
-        code: 200,
-        body: ::JSON.dump({
-            results: [],
-            next: nil
-        })
-      }))
+      twitter_datasource = Search::Twitter.get_new(get_config,Doubles::User.new)
 
       big_quota = 123456
-
-      twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new({
+      user = Doubles::User.new({
         twitter_datasource_quota: big_quota
-      }))
-      twitter_datasource.get_resource(::JSON.dump(
-        {
-          categories: input_terms[:categories],
-          dates: {}
-        }
-      ))
-      filters = twitter_datasource.send :filters
-      filters[Search::Twitter::FILTER_MAXRESULTS].should eq CartoDB::TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
-      filters[Search::Twitter::FILTER_TOTAL_RESULTS].should eq big_quota
+      })
+      maxresults_filter = twitter_datasource.send :build_maxresults_field, user
+      maxresults_filter.should eq CartoDB::TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+      totalresults_filter = twitter_datasource.send :build_total_results_field, user
+      totalresults_filter.should eq big_quota
 
+      small_quota = 13
+      user = Doubles::User.new({
+        twitter_datasource_quota: small_quota,
+        soft_twitter_datasource_limit: false
+      })
+      maxresults_filter = twitter_datasource.send :build_maxresults_field, user
+      maxresults_filter.should eq small_quota
+      totalresults_filter = twitter_datasource.send :build_total_results_field, user
+      totalresults_filter.should eq small_quota
+
+      user = Doubles::User.new({
+        twitter_datasource_quota: small_quota,
+        soft_twitter_datasource_limit: true
+      })
+      maxresults_filter = twitter_datasource.send :build_maxresults_field, user
+      maxresults_filter.should eq CartoDB::TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+      totalresults_filter = twitter_datasource.send :build_total_results_field, user
+      totalresults_filter.should eq Search::Twitter::NO_TOTAL_RESULTS
     end
 
     it 'tests category filters' do

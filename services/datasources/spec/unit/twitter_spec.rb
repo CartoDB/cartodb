@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/datasources'
+require_relative '../doubles/organization'
 require_relative '../doubles/user'
 
 include CartoDB::Datasources
@@ -21,6 +22,34 @@ describe Search::Twitter do
   end
 
   describe '#filters' do
+    it 'tests max and total results filters' do
+      input_terms = terms_fixture
+      # We don't care about results, just filters set
+      Typhoeus.stub(/fakeurl\.cartodb/).and_return(Typhoeus::Response.new({
+        code: 200,
+        body: ::JSON.dump({
+            results: [],
+            next: nil
+        })
+      }))
+
+      big_quota = 123456
+
+      twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new({
+        twitter_datasource_quota: big_quota
+      }))
+      twitter_datasource.get_resource(::JSON.dump(
+        {
+          categories: input_terms[:categories],
+          dates: {}
+        }
+      ))
+      filters = twitter_datasource.send :filters
+      filters[Search::Twitter::FILTER_MAXRESULTS].should eq CartoDB::TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+      filters[Search::Twitter::FILTER_TOTAL_RESULTS].should eq big_quota
+
+    end
+
     it 'tests category filters' do
       user_mock = Doubles::User.new
 
@@ -205,7 +234,54 @@ describe Search::Twitter do
       ))
 
       output.should eq data_from_file('sample_tweets_expected.csv')
+    end
 
+    it 'tests user limits on datasource usage' do
+      twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new)
+
+      # Service enabled tests
+      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+        has_org: true,
+        twitter_datasource_enabled: true,
+        org_twitter_datasource_enabled: true
+      })
+      result.should eq true
+
+      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+        has_org: true,
+        twitter_datasource_enabled: false,
+        org_twitter_datasource_enabled: true
+      })
+      result.should eq false
+
+      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+        twitter_datasource_enabled: true,
+      })
+      result.should eq true
+
+      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+      twitter_datasource_enabled: false,
+      })
+      result.should eq false
+
+      # Quota & soft limit tests
+      result = twitter_datasource.send :has_enough_quota?, Doubles::User.new({
+        soft_twitter_datasource_limit: false,
+        twitter_datasource_quota: 10,
+      })
+      result.should eq true
+
+      result = twitter_datasource.send :has_enough_quota?, Doubles::User.new({
+        soft_twitter_datasource_limit: true,
+        twitter_datasource_quota: 0,
+      })
+      result.should eq true
+
+      result = twitter_datasource.send :has_enough_quota?, Doubles::User.new({
+        soft_twitter_datasource_limit: false,
+        twitter_datasource_quota: 0,
+      })
+      result.should eq false
     end
 
   end

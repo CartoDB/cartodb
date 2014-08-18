@@ -106,9 +106,19 @@ module CartoDB
         # Retrieves a resource and returns its contents
         # @param id string Will contain a stringified JSON
         # @return mixed
-        # @throws DataDownloadError
+        # @throws ServiceDisabledError
+        # @throws OutOfQuotaError
+        # @throws ParameterError
         def get_resource(id)
           fields = ::JSON.parse(id, symbolize_names: true)
+
+          if !is_service_enabled?(@user)
+            raise ServiceDisabledError.new("Disabled for this user and/or organization", DATASOURCE_NAME)
+          end
+
+          if !has_enough_quota?(@user)
+            raise OutOfQuotaError.new("#{@user.username}", DATASOURCE_NAME)
+          end
 
           @filters[FILTER_CATEGORIES] = build_queries_from_fields(fields)
 
@@ -119,11 +129,23 @@ module CartoDB
           @filters[FILTER_FROMDATE] = build_date_from_fields(fields, 'from')
           @filters[FILTER_TODATE] = build_date_from_fields(fields, 'to')
 
-          # TODO: Change accordingly if user is about to hit quota
-          @filters[FILTER_MAXRESULTS] = TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+          # user about to hit quota?
+          if @user.twitter_datasource_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+            if @user.soft_twitter_datasource_limit
+              # But can go beyond limits
+              @filters[FILTER_MAXRESULTS] = TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+            else
+              @filters[FILTER_MAXRESULTS] = @user.twitter_datasource_quota
+            end
+          else
+            @filters[FILTER_MAXRESULTS] = TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+          end
 
-          # TODO: Change according to user soft tweets limit
-          @filters[FILTER_TOTAL_RESULTS] = NO_TOTAL_RESULTS
+          if @user.soft_twitter_datasource_limit
+            @filters[FILTER_TOTAL_RESULTS] = NO_TOTAL_RESULTS
+          else
+            @filters[FILTER_TOTAL_RESULTS] = @user.twitter_datasource_quota
+          end
 
           do_search(@search_api, @filters, @user)
         end
@@ -161,7 +183,7 @@ module CartoDB
 
         private
 
-        attr_accessor :search_api
+        attr_accessor :search_api, :filters
 
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
@@ -171,12 +193,17 @@ module CartoDB
 
           category_results = {}
           threads = {}
+          semaphore = Mutex.new
+
           filters[FILTER_CATEGORIES].each { |category|
             # If all threads are created at the same time, redis semaphore inside search_api
             # might not yet have new value, so introduce a small delay on each thread creation
             sleep(0.05)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
-              category_results[category[CATEGORY_NAME_KEY]] = search_by_category(api, base_filters, category, user)
+              results = search_by_category(api, base_filters, category, user)
+              semaphore.synchronize {
+                category_results[category[CATEGORY_NAME_KEY]] = results
+              }
             }
           }
           threads.each {|key, thread|
@@ -227,18 +254,16 @@ module CartoDB
             end
 
             # TODO: Check quota, etc. and add to condition
+            # upon reducing quota, do a max (user_quota -1000, 0)
+            # put inside a mutex quota update
           end while !next_results_cursor.nil?
 
           results
         end
 
-        def convert_category_results_to_csv(data, conversor, category)
-
-        end
-
         def build_date_from_fields(fields, date_type)
           raise ParameterError.new('missing dates', DATASOURCE_NAME) \
-              if fields[:dates].nil? || fields[:dates].empty?
+              if fields[:dates].nil?
 
           case date_type
             when 'from'
@@ -310,6 +335,25 @@ module CartoDB
           queries
         end
 
+        # @param user User
+        def is_service_enabled?(user)
+          if !user.organization.nil?
+            enabled = user.organization.twitter_datasource_enabled
+            if enabled
+              user.twitter_datasource_enabled
+            else
+              # If disabled org-wide, disabled for everyone
+              false
+            end
+          else
+            user.twitter_datasource_enabled
+          end
+        end
+
+        # @param user User
+        def has_enough_quota?(user)
+          user.soft_twitter_datasource_limit || (user.twitter_datasource_quota > 0)
+        end
       end
     end
   end

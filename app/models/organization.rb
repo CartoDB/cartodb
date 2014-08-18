@@ -76,11 +76,11 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls
-    users.map(&:get_geocoding_calls).sum
+    users.map{ |u| u.get_geocoding_calls(options) }.sum
   end
 
   def get_twitter_imports_count(options = {})
-    users.map(&:get_twitter_imports_count).sum
+    users.map{ |u| u.get_twitter_imports_count(options) }.sum
   end
 
   def db_size_in_bytes

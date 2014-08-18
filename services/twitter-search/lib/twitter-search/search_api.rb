@@ -19,9 +19,17 @@ module CartoDB
       PARAM_MAXRESULTS  = :maxResults
       PARAM_NEXT_PAGE   = :next
 
+      # Rate limit values
+      REDIS_KEY = 'importer:twittersearch:rl'
+      REDIS_RL_MAX_CONCURRENCY = 8
+      REDIS_RL_TTL = 4
+
       attr_reader :params
 
-      def initialize(config, debug_mode = false)
+      # @param config Hash
+      # @param redis_storage Redis|nil (optional)
+      # @param debug_mode Boolean (optional)
+      def initialize(config, redis_storage = nil, debug_mode = false)
         raise TwitterConfigException.new(CONFIG_AUTH_REQUIRED) if config[CONFIG_AUTH_REQUIRED].nil?
         if config[CONFIG_AUTH_REQUIRED]
           raise TwitterConfigException.new(CONFIG_AUTH_USERNAME) if config[CONFIG_AUTH_USERNAME].nil? or config[CONFIG_AUTH_USERNAME].empty?
@@ -32,6 +40,8 @@ module CartoDB
         @debug_mode = debug_mode
 
         @config = config
+
+        @redis = redis_storage
 
         @more_results_cursor = nil
         @params = {
@@ -65,6 +75,19 @@ module CartoDB
 
         if @debug_mode
           puts "#{@config[CONFIG_SEARCH_URL]} #{http_options(params)}"
+        end
+
+        unless @redis.nil?
+          key = REDIS_KEY
+          # wait until semaphore open
+          begin
+            rl_value = @redis.keys(key)
+            sleep(0.5)
+          end while(!rl_value.nil? && rl_value.count >= REDIS_RL_MAX_CONCURRENCY)
+          @redis.multi do
+            @redis.set(key, 1)  # Value is not important, only number of keys
+            @redis.expire(key, REDIS_RL_TTL)
+          end
         end
 
         response = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))

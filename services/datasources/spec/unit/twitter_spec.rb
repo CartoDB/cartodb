@@ -111,6 +111,18 @@ describe Search::Twitter do
       expect {
         twitter_datasource.send :build_date_from_fields, input_dates, 'wadus'
       }.to raise_error ParameterError
+
+
+      current_time = Time.now
+      output = twitter_datasource.send :build_date_from_fields, {
+        dates: {
+          toDate:   current_time.strftime("%Y-%m-%d"),
+          toHour:   current_time.hour + 1,  # Set into the future
+          toMin:    current_time.min
+        }
+      }, 'to'
+      output.should eq nil
+
     end
 
     it 'tests twitter search integration (without conversion to CSV)' do

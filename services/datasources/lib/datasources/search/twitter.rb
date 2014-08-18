@@ -8,6 +8,9 @@ require_relative '../../../../twitter-search/twitter-search'
 module CartoDB
   module Datasources
     module Search
+
+      # NOTE: 'redis_storage' is only sent in normal imports, not at OAuth or Synchronizations,
+      # as this datasource is not intended to be used in such.
       class Twitter < Base
 
         # Required for all datasources
@@ -32,6 +35,10 @@ module CartoDB
         GEO_SEARCH_FILTER = 'has:geo'
         OR_SEARCH_FILTER  = 'OR'
 
+        # Seconds to substract from current time as threshold to consider a time
+        # as "now or from the future" upon date filter build
+        TIMEZONE_THRESHOLD = 60
+
         # TODO: Check no other filters are present
         ALLOWED_FILTERS = [
             # From twitter
@@ -49,8 +56,9 @@ module CartoDB
         #  'search_url'
         # ]
         # @param user User
+        # @param redis_storage Redis|nil (optional)
         # @throws UninitializedError
-        def initialize(config, user)
+        def initialize(config, user, redis_storage = nil)
           @service_name = DATASOURCE_NAME
           @filters = Hash.new
 
@@ -65,7 +73,7 @@ module CartoDB
             TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME  => config['username'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD  => config['password'],
             TwitterSearch::SearchAPI::CONFIG_SEARCH_URL     => config['search_url'],
-          }, DEBUG_FLAG)
+          }, redis_storage, DEBUG_FLAG)
 
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
 
@@ -75,9 +83,11 @@ module CartoDB
 
         # Factory method
         # @param config {}
+        # @param user User
+        # @param redis_storage Redis|nil
         # @return CartoDB::Datasources::Search::TwitterSearch
-        def self.get_new(config={}, user)
-          return new(config, user)
+        def self.get_new(config, user, redis_storage = nil)
+          return new(config, user, redis_storage)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -253,7 +263,8 @@ module CartoDB
             end
             timezoned_date += timezone*60
 
-            date = timezoned_date > Time.now.utc ? nil : timezoned_date.strftime("%Y%m%d%H%M")
+            # Gnip doesn't allows searches "in the future"
+            date = timezoned_date >= (Time.now - TIMEZONE_THRESHOLD).utc ? nil : timezoned_date.strftime("%Y%m%d%H%M")
           end
 
           date

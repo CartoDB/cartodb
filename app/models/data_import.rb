@@ -29,10 +29,14 @@ class DataImport < Sequel::Model
     error_code queue_id get_error_text tables_created_count
     synchronization_id service_name service_item_id }
 
+  STATE_SUCCESS   = 'complete'
+  STATE_UPLOADING = 'uploading'
+  STATE_FAILURE   = 'failure'
+
   def after_initialize
     instantiate_log
     self.results  = []
-    self.state    ||= 'uploading'
+    self.state    ||= STATE_UPLOADING
   end #after_initialize
 
   def before_save
@@ -47,7 +51,7 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == 'complete' || state == 'failure')
+    values.merge!(success: success) if (state == STATE_SUCCESS || state == STATE_FAILURE)
     values
   end
 
@@ -69,7 +73,7 @@ class DataImport < Sequel::Model
     log.append 'After dispatch'
     if self.results.empty?
       self.error_code = 1002
-      self.state      = 'failure'
+      self.state      = STATE_FAILURE
       save
       return self
     end
@@ -93,7 +97,7 @@ class DataImport < Sequel::Model
   def raise_over_table_quota_error
     log.append 'Over account table limit, please upgrade'
     self.error_code = 8002
-    self.state      = 'failure'
+    self.state      = STATE_FAILURE
     save
     raise CartoDB::QuotaExceeded, 'More tables required'
   end
@@ -104,7 +108,7 @@ class DataImport < Sequel::Model
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
     self.success  = false
-    self.state    = 'failure'
+    self.state    = STATE_FAILURE
     save
 
     CartoDB::notify_exception(
@@ -135,7 +139,7 @@ class DataImport < Sequel::Model
   def handle_success
     CartodbStats.increment_imports
     self.success  = true
-    self.state    = 'complete'
+    self.state    = STATE_SUCCESS
     log.append "Import finished\n"
     save
     notify(results)
@@ -144,7 +148,7 @@ class DataImport < Sequel::Model
 
   def handle_failure
     self.success    = false
-    self.state      = 'failure'
+    self.state      = STATE_FAILURE
     log.append "ERROR!\n"
     self.save
     notify(results)
@@ -269,7 +273,7 @@ class DataImport < Sequel::Model
       log.append "Over storage quota. Dropping table #{table_name}"
       current_user.in_database.run(%Q{DROP TABLE #{table_name}})
       self.error_code = 8001
-      self.state      = 'failure'
+      self.state      = STATE_FAILURE
       save
       raise CartoDB::QuotaExceeded, 'More storage required'
     end
@@ -296,7 +300,7 @@ class DataImport < Sequel::Model
       if current_user.remaining_quota < 0
         log.append 'Over storage quota, removing table'
         self.error_code = 8001
-        self.state      = 'failure'
+        self.state      = STATE_FAILURE
         save
         table.destroy
         raise CartoDB::QuotaExceeded, 'More storage required'
@@ -440,7 +444,7 @@ class DataImport < Sequel::Model
     payload.merge!(
       file_url_hostname: URI.parse(public_url).hostname
     ) if public_url rescue nil
-    payload.merge!(error_title: get_error_text) if state == 'failure'
+    payload.merge!(error_title: get_error_text) if state == STATE_FAILURE
     payload
   end
 
@@ -448,7 +452,8 @@ class DataImport < Sequel::Model
   def get_datasource(datasource_name)
     begin
       oauth = current_user.oauths.select(datasource_name)
-      datasource = DatasourcesFactory.get_datasource(datasource_name, current_user)
+      # Tables metadata DB also store resque data
+      datasource = DatasourcesFactory.get_datasource(datasource_name, current_user, $tables_metadata)
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"
@@ -466,7 +471,7 @@ class DataImport < Sequel::Model
       success: false, error_code: error_code
     )]
     self.error_code = error_code
-    self.state = 'failure'
+    self.state = STATE_FAILURE
   end
 end
 

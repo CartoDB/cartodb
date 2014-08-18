@@ -2,6 +2,7 @@
 * Fixed bugs
   * public map uses CORS headers to fetch user info
   * infowindow on hover fixed on table mode
+  * fixed table export dialog when SQL query without geometries is applied
 
 3.0.1 (2014-08-07)
 ------------------

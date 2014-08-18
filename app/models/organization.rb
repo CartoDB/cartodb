@@ -75,7 +75,7 @@ class Organization < Sequel::Model
     users.map{ |u| u.get_api_calls(options).sum }.sum
   end
 
-  def get_geocoding_calls
+  def get_geocoding_calls(options = {})
     users.map{ |u| u.get_geocoding_calls(options) }.sum
   end
 

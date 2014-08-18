@@ -1,9 +1,57 @@
+cdb.geo.ui.MobileLayer = cdb.core.View.extend({
+
+  events: {
+    'click .toggle': "_toggle"
+  },
+
+  tagName: "li",
+
+  className: "cartodb-mobile-layer",
+
+  template: cdb.core.Template.compile("<h3><%= layer_name %><a href='#' class='toggle'></a></h3>"),
+
+  initialize: function() {
+
+    _.defaults(this.options, this.default_options);
+
+  },
+
+  _toggle: function(e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+  },
+
+  _renderLegend: function() {
+
+    this.$el.addClass("has_legend");
+
+    var legend = new cdb.geo.ui.Legend(this.options.legend);
+
+    this.$el.append(legend.render().$el);
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.options));
+
+    if (this.options && !this.options.visible) this.$el.addClass("hidden");
+
+    if (this.options && this.options.legend) this._renderLegend();
+
+    return this;
+  }
+
+});
+
 cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   className: "cartodb-mobile",
 
   events: {
-    'click .open': "_open"
+    'click .toggle': "_toggle"
     /*'click .toggle': '_toggle',
     "dragstart":      "_stopPropagation",
     "mousedown":      "_stopPropagation",
@@ -15,11 +63,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     "click":          "_stopPropagation"*/
   },
 
-  _open: function(e) {
+  _toggle: function(e) {
+
     e.preventDefault();
     e.stopPropagation();
 
-    this.$el.find(".aside").animate({ right:0}, 200)
+    console.log(1, this.model.get("open"))
+    this.model.set("open", !this.model.get("open"));
+  
+  },
+
+  _open: function() {
+
+    this.$el.animate({ right: this.$el.find(".aside").width() }, 200)
+
+  },
+
+  _close: function() {
+
+    this.$el.animate({ right: 0 }, 200)
 
   },
 
@@ -61,29 +123,31 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   },
 
   initialize: function() {
-    this.map = this.model;
 
-    _.bindAll(this, "_open");
+    _.bindAll(this, "_toggle");
 
     _.defaults(this.options, this.default_options);
+    
+    this.map = this.model;
+    this.layers = [];
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
 
     this.layers   = this.options.layers;
     this.overlays = this.options.overlays;
 
+    this.model = new Backbone.Model({
+      open: false
+    });
+
+    this.model.on("change:open", this._onChangeOpen, this);
+
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
   },
 
-  _toggle: function(e) {
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (this.isOpen) this.close();
-    else this.open();
-
+  _onChangeOpen: function() {
+    this.model.get("open") ? this._open() : this._close();
   },
 
   open: function() {
@@ -124,18 +188,81 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
+  _getLayers: function() {
+    var self = this;
+    this.layers = [];
+
+    _.each(this.map.layers.models, function(layer) {
+
+      if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
+        var layerGroupView = self.mapView.getLayerByCid(layer.cid);
+        for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
+          var l = layerGroupView.getLayer(i);
+          var m = new cdb.core.Model(l);
+          m.set('order', i);
+          m.set('type', 'layergroup');
+
+          m.set('visible', !layerGroupView.getSubLayer(i).get('hidden'));
+          m.bind('change:visible', function(model) {
+            this.trigger("change:visible", model.get('visible'), model.get('order'), model);
+          }, self);
+
+          if(self.options.layer_names) {
+            m.set('layer_name', self.options.layer_names[i]);
+          } else {
+            m.set('layer_name', l.options.layer_name);
+          }
+
+          var layerView = self._createLayer('LayerViewFromLayerGroup', {
+            model: m,
+            layerView: layerGroupView,
+            layerIndex: i
+          });
+          layerView.bind('switchChanged', self._setCount, self);
+          self.layers.push(layerView);
+        }
+      } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
+        var layerView = self._createLayer('LayerView', { model: layer });
+        layerView.bind('switchChanged', self._setCount, self);
+        self.layers.push(layerView);
+        layerView.model.bind('change:visible', function(model) {
+          this.trigger("change:visible", model.get('visible'), model.get('order'), model);
+        }, self);
+      }
+
+    });
+  },
+
   render:function() {
+
+    this._getLayers();
 
     this.$el.html(this.template(this.options));
 
     _.each(this.overlays, function(overlay) {
       if (overlay.type == 'header') {
         this._addHeader(overlay);
-        console.log(overlay);
       }
     }, this);
 
+    this._renderLayers();
+
     return this;
+
+  },
+
+  _renderLayers: function() {
+
+    this.$el.find(".aside .layers").prepend("<h3>" + this.layers.length + " layers</h3>")
+
+    _.each(this.layers, this._renderLayer, this);
+
+  },
+
+  _renderLayer: function(layer_data) {
+
+    var layer = new cdb.geo.ui.MobileLayer(layer_data);
+    this.$el.find(".aside .layers ul").append(layer.render().$el);
 
   },
 

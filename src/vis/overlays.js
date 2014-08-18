@@ -8,8 +8,8 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
-    <div class="cartodb-header"><div class="content"><a href="#" class="open">open</a><div class="title"><div><div class="description"></div></div></div></div>\
-    <div class="aside"><div class="layers"></div></div>\
+    <div class="cartodb-header"><div class="content"><a href="#" class="toggle"></a><div class="title"><div><div class="description"></div></div></div></div></div>\
+    <div class="aside"><div class="layers"><ul></ul></div>\
     ',
     data.templateType || 'mustache'
   );

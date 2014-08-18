@@ -498,7 +498,6 @@ var Vis = cdb.core.View.extend({
       layers = layer.options.named_map.layers;
     }
 
-    console.log(overlays)
     this.addOverlay({
       type: 'mobile',
       layers: layers,

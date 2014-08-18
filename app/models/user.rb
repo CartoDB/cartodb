@@ -577,6 +577,16 @@ class User < Sequel::Model
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
+  def effective_twitter_datasource_quota
+    if organization.nil?
+      self.twitter_datasource_quota
+    else
+      organization.twitter_datasource_quota
+    end
+  end
+
+
+
   def soft_geocoding_limit?
     if self[:soft_geocoding_limit].nil?
       plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
@@ -658,13 +668,12 @@ class User < Sequel::Model
     self.auth_token
   end
 
-  # TODO: Implement this
-  # Should return the number of tweets imported by this user for the
-  # specified period of time, as an integer
+  # Should return the number of tweets imported by this user for the specified period of time, as an integer
   def get_twitter_imports_count(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    return 0
+    self.search_tweets_dataset.where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
+        .sum("retrieved_items".lit).to_i
   end
 
   # Returns an array representing the last 30 days, populated with api_calls

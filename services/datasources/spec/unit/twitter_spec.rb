@@ -257,7 +257,8 @@ describe Search::Twitter do
     end
 
     it 'tests basic full search flow' do
-      user_mock = Doubles::User.new
+      user_quota = 100
+      user_mock = Doubles::User.new({twitter_datasource_quota: user_quota})
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -289,6 +290,10 @@ describe Search::Twitter do
       ))
 
       output.should eq data_from_file('sample_tweets_expected.csv')
+
+      # 40 = 2 categories of 20 results each (10 per .json, one with next the other without)
+      user_mock.effective_twitter_datasource_quota.should eq (user_quota - 40)
+
     end
 
     it 'tests user limits on datasource usage' do

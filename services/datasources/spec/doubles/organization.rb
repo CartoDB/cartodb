@@ -8,6 +8,10 @@ module CartoDB
         def initialize(attrs = {})
           @twitter_datasource_enabled = attrs.fetch(:twitter_datasource_enabled, true)
         end
+
+        def save
+          self
+        end
       end
     end
   end

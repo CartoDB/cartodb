@@ -134,7 +134,7 @@ module CartoDB
           @filters[FILTER_MAXRESULTS] = build_maxresults_field(@user)
           @filters[FILTER_TOTAL_RESULTS] = build_total_results_field(@user)
 
-          do_search(@search_api, @filters, @user)
+          do_search(@search_api, @filters)
         end
 
         # @param id string
@@ -174,8 +174,7 @@ module CartoDB
 
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
-        # @param user User
-        def do_search(api, filters, user)
+        def do_search(api, filters)
           base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
           category_results = {}
@@ -219,7 +218,24 @@ module CartoDB
           }
 
           # Remove trailing newline from last category
-          total_results.gsub(/\n$/, '')
+          total_results.gsub!(/\n$/, '')
+
+          if @used_quota > 0
+            if @user.organization.nil?
+              @user.twitter_datasource_quota = [@user.twitter_datasource_quota - @used_quota, 0].max
+              @user.save
+            else
+              org = @user.organization
+              org.twitter_datasource_quota = [org.twitter_datasource_quota - @used_quota, 0].max
+              org.save
+            end
+            # If has a soft-limit on the quota, will just be kept at 0 remaining
+          end
+
+          # TODO: Store SearchTweet entry? if so, need states to not count for charging
+          # before has finished importing all ok
+
+          total_results
         end
 
         # As Ruby is pass-by-value, we can't pass user as by-ref param
@@ -235,8 +251,7 @@ module CartoDB
             out_of_quota = false
 
             @user_semaphore.synchronize {
-              # TODO: Organization checks
-              if (!@user.soft_twitter_datasource_limit && @user.twitter_datasource_quota - @used_quota) <= 0
+              if (!@user.soft_twitter_datasource_limit && @user.effective_twitter_datasource_quota - @used_quota) <= 0
                 out_of_quota = true
                 next_results_cursor = nil
               end
@@ -249,13 +264,6 @@ module CartoDB
 
               @user_semaphore.synchronize {
                 @used_quota += results_page[:results].count
-
-                # TODO: Organization checks
-                # Repeat check
-                if (!@user.soft_twitter_datasource_limit && @user.twitter_datasource_quota - @used_quota) <= 0
-                  out_of_quota = true
-                  next_results_cursor = nil
-                end
               }
 
               if DEBUG_FLAG

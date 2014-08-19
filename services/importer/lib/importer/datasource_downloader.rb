@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'fileutils'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
@@ -22,6 +23,14 @@ module CartoDB
       def run(available_quota_in_bytes=nil)
         set_downloaded_source_file(available_quota_in_bytes)
         self
+      end
+
+      def clean_up
+        if defined?(@temporary_directory) \
+           && @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ \
+           && !(@temporary_directory =~ /\.\./)
+          FileUtils.rm_rf @temporary_directory
+        end
       end
 
       def set_downloaded_source_file(available_quota_in_bytes=nil)

@@ -36,7 +36,7 @@ module CartoDB
           block_price: self.twitter_datasource_block_price,
           block_size:  self.twitter_datasource_block_size,
           monthly_use: self.get_twitter_imports_count,
-          soft_limit:  self.soft_twitter_datasource_limit
+          hard_limit:  self.hard_twitter_datasource_limit
         },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,

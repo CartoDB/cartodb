@@ -1,4 +1,5 @@
 3.11.05 (XX//08/2014)
+- Added support for query_wrapper in torque layers
 
 3.11.04 (12//08/2014)
 - Fixes ugly word break in text overlays.

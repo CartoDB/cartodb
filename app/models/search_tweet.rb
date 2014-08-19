@@ -7,6 +7,7 @@ class SearchTweet < Sequel::Model
 
   STATE_IMPORTING = 'importing'
   STATE_COMPLETE  = 'complete'
+  STATE_FAILED  = 'failed'
 
   def set_importing_state
     @state = STATE_IMPORTING
@@ -16,8 +17,16 @@ class SearchTweet < Sequel::Model
 
   def set_complete_state
     @state = STATE_COMPLETE
-    # For persisting into db
     self.state = @state
   end
 
+  def set_failed_state
+    @state = STATE_FAILED
+    self.state = @state
+  end
+
+  def before_save
+    super
+    self.updated_at = Time.now
+  end
 end

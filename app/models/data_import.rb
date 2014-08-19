@@ -56,7 +56,6 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
-    log.append 'Before dispatch'
     log.append "Running on server #{Socket.gethostname} with PID: #{Process.pid}"
     begin
       success = !!dispatch
@@ -330,7 +329,8 @@ class DataImport < Sequel::Model
   def new_importer
     log.append 'new_importer()'
 
-    downloader = get_downloader
+    datasource_provider = get_datasource_provider
+    downloader = get_downloader(datasource_provider)
 
     tracker       = lambda { |state| self.state = state; save }
     runner        = CartoDB::Importer2::Runner.new(
@@ -341,15 +341,25 @@ class DataImport < Sequel::Model
     database      = current_user.in_database
     destination_schema = current_user.database_schema
     importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
-    log.append 'Before run.'
+    log.append 'Before run'
     importer.run(tracker)
-    log.append 'After run.'
+    log.append 'After run'
 
     self.results    = importer.results
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
 
+    update_synchronization(importer)
+
+    importer.success? ? set_datasource_audit_to_complete(datasource_provider, \
+                                                         importer.success? && importer.table ? importer.table.id : nil)
+                      : set_datasource_audit_to_failed(datasource_provider)
+
+    importer.success?
+  end
+
+  def update_synchronization(importer)
     if synchronization_id
       log.append "synchronization_id: #{synchronization_id}"
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
@@ -368,29 +378,18 @@ class DataImport < Sequel::Model
       log.append "importer.success? #{synchronization.state}"
       synchronization.store
     end
-
-    importer.success?
   end
 
-  def get_downloader
+  def get_datasource_provider
     datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
     if service_item_id.nil? || service_item_id.size == 0
       self.service_item_id = data_source
     end
 
-    datasource_provider = get_datasource(datasource_name)
-    if datasource_provider.nil?
-      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
-    end
-    if service_item_id.nil?
-      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
-    end
+    get_datasource(datasource_name, service_item_id)
+  end
 
-    if datasource_provider.persists_state_via_data_import?
-      datasource_provider.data_import_item = self
-      log.append "Datasource stores state"
-    end
-
+  def get_downloader(datasource_provider)
     log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
@@ -453,8 +452,11 @@ class DataImport < Sequel::Model
     payload
   end
 
+  # @param datasource_name String
+  # @param service_item_id String|nil
   # @return mixed|nil
-  def get_datasource(datasource_name)
+  # @throws DataSourceError
+  def get_datasource(datasource_name, service_item_id)
     begin
       oauth = current_user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
@@ -464,8 +466,16 @@ class DataImport < Sequel::Model
       log.append "Exception: #{ex.message}"
       log.append ex.backtrace
       Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
-      datasource = nil
+      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end
+    if service_item_id.nil?
+      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
+    end
+
+    if datasource.persists_state_via_data_import?
+      datasource.data_import_item = self
+    end
+
     datasource
   end
 
@@ -478,5 +488,20 @@ class DataImport < Sequel::Model
     self.error_code = error_code
     self.state = STATE_FAILURE
   end
+
+  def set_datasource_audit_to_complete(datasource, table_id = nil)
+    if datasource.persists_state_via_data_import?
+      datasource.data_import_item = self
+      datasource.set_audit_to_completed(table_id)
+    end
+  end
+
+  def set_datasource_audit_to_failed(datasource)
+    if datasource.persists_state_via_data_import?
+      datasource.data_import_item = self
+      # TODO: store
+    end
+  end
+
 end
 

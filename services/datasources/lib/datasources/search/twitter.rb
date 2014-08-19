@@ -180,6 +180,27 @@ module CartoDB
           @data_import_item = value
         end
 
+        def set_audit_to_completed(table_id = nil)
+          #require_relative '../../../../../app/models/search_tweet'
+          entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
+          raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
+                                        DATASOURCE_NAME) if entry.nil?
+
+          entry.set_complete_state
+          entry.table_id = table_id unless table_id.nil?
+          entry.save
+        end
+
+        def set_audit_to_failed
+          #require_relative '../../../../../app/models/search_tweet'
+          entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
+          raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
+                                        DATASOURCE_NAME) if entry.nil?
+
+          entry.set_failed_state
+          entry.save
+        end
+
         private
 
         # Used at specs

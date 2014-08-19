@@ -230,7 +230,7 @@ module CartoDB
         end
 
         downloader
-      end #get_downloader
+      end
 
       def set_success_state_from(importer)
         self.log            << '******** synchronization succeeded ********'

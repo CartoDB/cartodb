@@ -63,10 +63,13 @@ class Organization < Sequel::Model
     Organization.all.select do |o|
         limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
         over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
+
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
+
         limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
+
         over_map_views || over_geocodings || over_twitter_imports
     end
   end

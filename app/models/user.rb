@@ -284,10 +284,13 @@ class User < Sequel::Model
     User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
+
         limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = u.get_twitter_imports_count > limit
+
         over_map_views || over_geocodings || over_twitter_imports
     end
   end

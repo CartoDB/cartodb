@@ -144,7 +144,7 @@ module CartoDB
            && !(@temporary_directory =~ /\.\./)
           FileUtils.rm_rf @temporary_directory
         end
-      end #clean_up
+      end
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)

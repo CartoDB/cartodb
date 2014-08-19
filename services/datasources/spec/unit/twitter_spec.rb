@@ -3,6 +3,8 @@
 require_relative '../../lib/datasources'
 require_relative '../doubles/organization'
 require_relative '../doubles/user'
+require_relative '../doubles/search_tweet'
+require_relative '../doubles/data_import'
 
 include CartoDB::Datasources
 
@@ -259,6 +261,7 @@ describe Search::Twitter do
     it 'tests basic full search flow' do
       user_quota = 100
       user_mock = Doubles::User.new({twitter_datasource_quota: user_quota})
+      data_import_mock = Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -282,6 +285,10 @@ describe Search::Twitter do
         )
       end
 
+      twitter_datasource.send :audit_entry, Doubles::SearchTweet
+
+      twitter_datasource.data_import_item = data_import_mock
+
       output = twitter_datasource.get_resource(::JSON.dump(
         {
           categories: input_terms[:categories],
@@ -294,6 +301,15 @@ describe Search::Twitter do
       # 40 = 2 categories of 20 results each (10 per .json, one with next the other without)
       user_mock.effective_twitter_datasource_quota.should eq (user_quota - 40)
 
+      audit_entry = twitter_datasource.send :audit_entry
+      audit_entry.retrieved_items.should eq 40
+      audit_entry.user_id.should eq user_mock.id
+      audit_entry.data_import_id.should eq data_import_mock.id
+      audit_entry.service_item_id.should eq data_import_mock.service_item_id
+      audit_entry.state.should eq 'importing'
+
+      data_import_item = twitter_datasource.send :data_import_item
+      data_import_item.id.should eq data_import_mock.id
     end
 
     it 'tests user limits on datasource usage' do

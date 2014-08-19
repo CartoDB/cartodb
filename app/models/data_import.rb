@@ -386,6 +386,11 @@ class DataImport < Sequel::Model
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
     end
 
+    if datasource_provider.persists_state_via_data_import?
+      datasource_provider.data_import_item = self
+      log.append "Datasource stores state"
+    end
+
     log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 

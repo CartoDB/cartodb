@@ -78,11 +78,11 @@ module CartoDB
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
 
           @user = user
+          @data_import_item = nil
 
           @used_quota = 0
           @user_semaphore = Mutex.new
         end
-
 
         # Factory method
         # @param config {}
@@ -147,7 +147,7 @@ module CartoDB
               service:  DATASOURCE_NAME,
               checksum: nil,
               size:     0,
-              filename: "#{DATASOURCE_NAME}_#{@user.username}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
+              filename: "#{DATASOURCE_NAME}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
           }
         end
 
@@ -168,9 +168,23 @@ module CartoDB
           "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api=#{@search_api}>"
         end
 
+        # If this datasource accepts a data import instance
+        # @return Boolean
+        def persists_state_via_data_import?
+          true
+        end
+
+        # Stores the data import item instance to use/manipulate it
+        # @param value DataImport
+        def data_import_item=(value)
+          @data_import_item = value
+        end
+
         private
 
+        # Used at specs
         attr_accessor :search_api
+        attr_reader   :data_import_item
 
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
@@ -197,10 +211,7 @@ module CartoDB
           }
 
           # Values will get overriden later
-          additional_fields = {
-              category_name: 'cat',
-              category_terms: 'term'
-          }
+          additional_fields = { category_name: 'cat', category_terms: 'term' }
 
           # Need trailing newlines as each process call will "need"
           total_results = @json2csv_conversor.generate_headers(additional_fields) + "\n"
@@ -214,7 +225,7 @@ module CartoDB
                                               .gsub(" #{GEO_SEARCH_FILTER}", '')
               end
             }
-            total_results = total_results + @json2csv_conversor.process(value, false, additional_fields) + "\n"
+            total_results += (@json2csv_conversor.process(value, false, additional_fields) + "\n")
           }
 
           # Remove trailing newline from last category
@@ -232,8 +243,7 @@ module CartoDB
             # If has a soft-limit on the quota, will just be kept at 0 remaining
           end
 
-          # TODO: Store SearchTweet entry? if so, need states to not count for charging
-          # before has finished importing all ok
+          save_audit(@user, @data_import_item, @used_quota)
 
           total_results
         end
@@ -251,7 +261,7 @@ module CartoDB
             out_of_quota = false
 
             @user_semaphore.synchronize {
-              if (!@user.soft_twitter_datasource_limit && @user.effective_twitter_datasource_quota - @used_quota) <= 0
+              if !@user.soft_twitter_datasource_limit && (@user.effective_twitter_datasource_quota - @used_quota) <= 0
                 out_of_quota = true
                 next_results_cursor = nil
               end
@@ -387,8 +397,37 @@ module CartoDB
         end
 
         # @param user User
+        # @return boolean
         def has_enough_quota?(user)
           user.soft_twitter_datasource_limit || (user.twitter_datasource_quota > 0)
+        end
+
+        # @param user User
+        # @param data_import_item DataImport
+        # @param retrieved_items_count Integer
+        def save_audit(user, data_import_item, retrieved_items_count)
+          entry = audit_entry
+          entry.set_importing_state
+          entry.user_id = user.id
+          entry.data_import_id = data_import_item.id
+          entry.service_item_id = data_import_item.service_item_id
+          entry.retrieved_items = retrieved_items_count
+          entry.save
+        end
+
+        # Call this inside specs to override returned class
+        # @param override_class SearchTweet|nil (optional)
+        # @return SearchTweet
+        def audit_entry(override_class = nil)
+          if @audit_entry.nil?
+            if override_class.nil?
+              require_relative '../../../../../app/models/search_tweet'
+              @audit_entry = ::SearchTweet.new
+            else
+              @audit_entry = override_class.new
+            end
+          end
+          @audit_entry
         end
       end
     end

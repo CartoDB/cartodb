@@ -235,6 +235,18 @@ module CartoDB
           DATASOURCE_NAME
         end
 
+        # If this datasource accepts a data import instance
+        # @return Boolean
+        def persists_state_via_data_import?
+          false
+        end
+
+        # Stores the data import item instance to use/manipulate it
+        # @param value DataImport
+        def data_import_item=(value)
+          nil
+        end
+
         # Checks if token is still valid or has been revoked
         # @return bool
         # @throws AuthError

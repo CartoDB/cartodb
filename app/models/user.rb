@@ -672,7 +672,9 @@ class User < Sequel::Model
   def get_twitter_imports_count(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    self.search_tweets_dataset.where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
+    self.search_tweets_dataset
+        .where(state: ::SearchTweet::STATE_COMPLETE)
+        .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
         .sum("retrieved_items".lit).to_i
   end
 

@@ -365,13 +365,13 @@ module CartoDB
           datasource = nil
         end
         datasource
-      end #get_datasource
+      end
 
       attr_reader :repository
 
       attr_accessor :log_trace, :service_name, :service_item_id
 
-    end # Member
-  end # Synchronization
-end # CartoDB
+    end
+  end
+end
 

@@ -64,14 +64,6 @@ module CartoDB
         false
       end
 
-      def clean_up
-        if defined?(@temporary_directory) \
-           && @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ \
-           && !(@temporary_directory =~ /\.\./)
-          FileUtils.rm_rf @temporary_directory
-        end
-      end
-
       attr_reader  :source_file
 
       private

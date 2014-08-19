@@ -758,7 +758,7 @@ namespace :cartodb do
     end
 
     desc "Enable oracle_fdw extension in database"
-    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :table_definition_json_path] => :environment do
+    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :remote_table, :table_definition_json_path] => :environment do
       u = User.where(:username => args[:username].to_s).first
       tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
       u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|

@@ -115,6 +115,23 @@ module CartoDB
         def get_resource(id)
           fields = ::JSON.parse(id, symbolize_names: true)
 
+          ####################################
+          Typhoeus.stub(/search\.gnip\.com/) do |request|
+            accept = (request.options[:headers]||{})['Accept'] || 'application/json'
+            format = accept.split(',').first
+            if request.options[:params][:next].nil?
+              body = File.read(File.join(File.dirname(__FILE__), "../../../spec/fixtures/#{'sample_tweets.json'}"))
+            else
+              body = File.read(File.join(File.dirname(__FILE__), "../../../spec/fixtures/#{'sample_tweets_2.json'}"))
+            end
+            Typhoeus::Response.new(
+                code: 200,
+                headers: { 'Content-Type' => format },
+                body: body
+            )
+          end
+          ####################################
+
           raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
 
           raise OutOfQuotaError.new("#{@user.username}", DATASOURCE_NAME) unless has_enough_quota?(@user)

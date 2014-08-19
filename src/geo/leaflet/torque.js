@@ -12,6 +12,13 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
     layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+
+    var query = layerModel.get('sql');
+    var qw = layerModel.get('query_wrapper');
+    if(qw) {
+      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+    }
+
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
       table: layerModel.get('table_name'),
@@ -30,7 +37,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
-      sql: layerModel.get('query'),
+      sql: query,
       visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''

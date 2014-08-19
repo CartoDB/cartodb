@@ -9,6 +9,12 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
   var extra = layerModel.get('extra_params');
   layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+
+  var query = layerModel.get('sql');
+  var qw = layerModel.get('query_wrapper');
+  if(qw) {
+    query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+  }
   torque.GMapsTorqueLayer.call(this, {
       table: layerModel.get('table_name'),
       user: layerModel.get('user_name'),
@@ -26,7 +32,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
-      sql: layerModel.get('query'),
+      sql: query,
       visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''

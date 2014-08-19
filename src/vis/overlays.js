@@ -16,6 +16,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var mobile = new cdb.geo.ui.Mobile({
     template: template,
+    mapView: vis.mapView,
     layers: data.layers,
     overlays: data.overlays,
     torqueLayer: data.torqueLayer,

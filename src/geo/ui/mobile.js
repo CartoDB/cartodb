@@ -128,7 +128,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.defaults(this.options, this.default_options);
     
-    this.map = this.model;
+    this.map = this.options.mapView.map;
     this.layers = [];
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');

@@ -24,12 +24,17 @@ class Api::Json::ImportsController < Api::ApplicationController
     data_import = DataImport[params[:id]]
     data_import.mark_as_failed_if_stuck!
 
-    # TODO: Proper decoration of public_values
     data = data_import.reload.public_values
     if data_import.state == DataImport::STATE_SUCCESS && \
        data_import.service_name == CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
-      data[:tweets_georeferenced] = 666
-      data[:tweets_cost] = 69
+
+      audit_entry = ::SearchTweet.where(data_import_id: data_import.id).first
+
+      user = ::User.where(id: audit_entry.user_id).first
+
+      data[:tweets_georeferenced] = audit_entry.retrieved_items
+      data[:tweets_cost] = (audit_entry.retrieved_items.to_f / user.effective_twitter_datasource_block_size.to_f).ceil
+      data[:tweets_cost] = data[:tweets_cost] * user.effective_twitter_block_price
     end
 
     render json: data

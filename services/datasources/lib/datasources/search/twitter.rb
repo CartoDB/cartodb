@@ -115,13 +115,9 @@ module CartoDB
         def get_resource(id)
           fields = ::JSON.parse(id, symbolize_names: true)
 
-          if !is_service_enabled?(@user)
-            raise ServiceDisabledError.new("Disabled for this user and/or organization", DATASOURCE_NAME)
-          end
+          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
 
-          if !has_enough_quota?(@user)
-            raise OutOfQuotaError.new("#{@user.username}", DATASOURCE_NAME)
-          end
+          raise OutOfQuotaError.new("#{@user.username}", DATASOURCE_NAME) unless has_enough_quota?(@user)
 
           @filters[FILTER_CATEGORIES] = build_queries_from_fields(fields)
 
@@ -252,18 +248,7 @@ module CartoDB
           # Remove trailing newline from last category
           total_results.gsub!(/\n$/, '')
 
-          if @used_quota > 0
-            if @user.organization.nil?
-              @user.twitter_datasource_quota = [@user.twitter_datasource_quota - @used_quota, 0].max
-              @user.save
-            else
-              org = @user.organization
-              org.twitter_datasource_quota = [org.twitter_datasource_quota - @used_quota, 0].max
-              org.save
-            end
-            # If has a soft-limit on the quota, will just be kept at 0 remaining
-          end
-
+          # remaining quota is calc. on the fly based on audits/imports
           save_audit(@user, @data_import_item, @used_quota)
 
           total_results
@@ -282,7 +267,7 @@ module CartoDB
             out_of_quota = false
 
             @user_semaphore.synchronize {
-              if !@user.soft_twitter_datasource_limit && (@user.effective_twitter_datasource_quota - @used_quota) <= 0
+              if !@user.soft_twitter_datasource_limit && (@user.remaining_twitter_quota - @used_quota) <= 0
                 out_of_quota = true
                 next_results_cursor = nil
               end

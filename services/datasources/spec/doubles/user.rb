@@ -31,7 +31,7 @@ module CartoDB
           self
         end
 
-        def effective_twitter_datasource_quota
+        def remaining_twitter_quota
           if @organization.nil?
             @twitter_datasource_quota
           else

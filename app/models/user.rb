@@ -577,16 +577,6 @@ class User < Sequel::Model
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
-  def effective_twitter_datasource_quota
-    if organization.nil?
-      self.twitter_datasource_quota
-    else
-      organization.twitter_datasource_quota
-    end
-  end
-
-
-
   def soft_geocoding_limit?
     if self[:soft_geocoding_limit].nil?
       plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
@@ -721,6 +711,14 @@ class User < Sequel::Model
       end
     end.map &:to_i
     return es_calls
+  end
+
+  def effective_twitter_block_price
+    organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
+  end
+
+  def effective_twitter_datasource_block_size
+    organization.present? ? organization.twitter_datasource_block_size : self.twitter_datasource_block_size
   end
 
   def remaining_geocoding_quota

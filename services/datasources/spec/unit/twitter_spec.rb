@@ -298,10 +298,8 @@ describe Search::Twitter do
 
       output.should eq data_from_file('sample_tweets_expected.csv')
 
-      # 40 = 2 categories of 20 results each (10 per .json, one with next the other without)
-      user_mock.effective_twitter_datasource_quota.should eq (user_quota - 40)
-
       audit_entry = twitter_datasource.send :audit_entry
+      # 40 = 2 categories of 20 results each (10 per .json, one with next the other without)
       audit_entry.retrieved_items.should eq 40
       audit_entry.user_id.should eq user_mock.id
       audit_entry.data_import_id.should eq data_import_mock.id

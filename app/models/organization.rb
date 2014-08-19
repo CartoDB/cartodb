@@ -65,7 +65,7 @@ class Organization < Sequel::Model
         over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
-        limt =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+        limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
         over_map_views || over_geocodings || over_twitter_imports
     end

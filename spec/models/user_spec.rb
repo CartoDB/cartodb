@@ -162,6 +162,18 @@ describe User do
       organization.destroy
     end
 
+    describe 'when updating user quota', focus: true do
+      it 'should be valid if his organization has enough disk space' do
+        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+        organization.assigned_quota.should == 70.megabytes
+        user = organization.owner
+        user.quota_in_bytes = 1.megabyte
+        user.valid?
+        user.errors.keys.should_not include(:quota_in_bytes)
+        organization.destroy
+      end
+    end
+
     it 'should set account_type properly' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
@@ -357,7 +369,7 @@ describe User do
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png" 
+      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
       user1.destroy
     end
     it "should load a the user gravatar url" do
@@ -369,7 +381,7 @@ describe User do
       user1.destroy
     end
   end
-  
+
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
       User.overquota.should be_empty
@@ -1035,7 +1047,7 @@ describe User do
   end
 
   it "should notify a new user created from a organization" do
-   
+
     ::Resque.stubs(:enqueue).returns(nil)
 
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
@@ -1043,7 +1055,7 @@ describe User do
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
-    
+
     user1.save
 
     organization.destroy

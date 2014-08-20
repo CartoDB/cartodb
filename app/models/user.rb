@@ -72,10 +72,15 @@ class User < Sequel::Model
     if new? || password.present?
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
-
     if organization.present?
-      errors.add(:organization, "not enough seats") if new? && organization.users.count >= organization.seats
-      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+      if new?
+        errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
+        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+      else
+        # Organization#assigned_quota includes the OLD quota for this user,
+        # so we have to ammend that in the calculation:
+        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+      end
     end
   end
 
@@ -196,7 +201,7 @@ class User < Sequel::Model
     Thread.new do
       in_database(as: :superuser) do |database|
         # Drop this user privileges in every schema of the DB
-        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] + 
+        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] +
           User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema).uniq
         schemas.each do |s|
           drop_user_privileges_in_schema(s)
@@ -489,7 +494,7 @@ class User < Sequel::Model
       method: :get
     )
     response = request.run
-    if response.code == 200 
+    if response.code == 200
       # First try to update the url with the user gravatar
       self.avatar_url = "//#{gravatar_user_url(128)}"
       self.this.update avatar_url: self.avatar_url
@@ -500,11 +505,11 @@ class User < Sequel::Model
         self.avatar_url = "//#{cartodb_avatar}"
         self.this.update avatar_url: self.avatar_url
       end
-    end 
+    end
   end
 
   def cartodb_avatar
-    if !Cartodb.config[:avatars].nil? && 
+    if !Cartodb.config[:avatars].nil? &&
        !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
        !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
        !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
@@ -1658,7 +1663,7 @@ TRIGGER
       end
     end
   end
- 
+
   def fix_table_permissions
     tables_queries = []
     tables.each do |table|

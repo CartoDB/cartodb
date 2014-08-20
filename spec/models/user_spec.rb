@@ -172,6 +172,15 @@ describe User do
         user.errors.keys.should_not include(:quota_in_bytes)
         organization.destroy
       end
+      it "should not be valid if his organization doesn't have enough disk space" do
+        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+        organization.assigned_quota.should == 70.megabytes
+        user = organization.owner
+        user.quota_in_bytes = 71.megabytes
+        user.valid?.should be_false
+        user.errors.keys.should include(:quota_in_bytes)
+        organization.destroy
+      end
     end
 
     it 'should set account_type properly' do

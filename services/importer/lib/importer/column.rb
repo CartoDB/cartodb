@@ -49,7 +49,7 @@ module CartoDB
         convert_from_wkt                    if wkt?
         convert_from_kml_multi              if kml_multi?
         convert_from_kml_point              if kml_point?
-        convert_from_geojson_with_transform if geojson_with_point_transform?
+        convert_from_geojson_with_transform if geojson_from_twitter_search?
         convert_from_geojson                if geojson?
         cast_to('geometry')
         convert_to_2d
@@ -62,7 +62,7 @@ module CartoDB
           db,
           %Q{
             UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+            SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
           },
           qualified_table_name,
           job,
@@ -73,23 +73,103 @@ module CartoDB
       end
 
       def convert_from_geojson_with_transform
+        temp_col = 'the_geom_from_twitter_geojson'
+        threshold = 150000
+
+        # 1) Add temp column for storing bbox
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} ADD #{temp_col} geometry DEFAULT NULL;
+        })
+
+        # 2) Create bounding box from given geometries
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{temp_col} = ST_Envelope(
+              ST_SetSRID(
+                ST_GeomFromGeoJSON(#{column_name})
+              , #{DEFAULT_SRID})
+            )
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE
+              #{column_name} IS NOT NULL
+              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Creating temporally geometry to convert from GeoJSON',
+          capture_exceptions=true
+        )
+
+        # 3) delete those geoms with bounding boxes greater than allowed hectares
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET
+              #{column_name} = NULL,
+              #{temp_col} = NULL
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE
+              #{column_name} IS NOT NULL
+              AND ST_area(#{temp_col}::geography)/10000 > #{threshold}
+              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Removing too big bounding boxes',
+          capture_exceptions=false
+        )
+
+        # 4) random point inside valid bounding boxes
         QueryBatcher::execute(
             db,
             %Q{
             UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_Centroid(
-              public.ST_MakeValid(
-                public.ST_SetSRID(
-                  public.ST_GeomFromGeoJSON(#{column_name})
-                , #{DEFAULT_SRID})
-              )
-            )
+            SET #{column_name} =
+              ST_SetSRID(
+                ST_MakePoint(
+                  ST_XMin(#{temp_col}) + (ST_XMax(#{temp_col}) - ST_XMin(#{temp_col})) * random(),
+                  ST_YMin(#{temp_col}) + (ST_YMax(#{temp_col}) - ST_YMin(#{temp_col})) * random()
+                )
+              , #{DEFAULT_SRID})
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE
+              ST_GeometryType(#{temp_col}) = 'ST_Polygon'
+              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
           },
             qualified_table_name,
             job,
             'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
-            capture_exceptions=true
+            capture_exceptions=false
         )
+
+        # 5) random point inside valid bounding boxes
+        QueryBatcher::execute(
+            db,
+            %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} =
+              ST_SetSRID(
+                ST_GeomFromGeoJSON(#{column_name})
+              , #{DEFAULT_SRID})
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE
+              ST_GeometryType(#{temp_col}) = 'ST_Point'
+              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            },
+            qualified_table_name,
+            job,
+            'Converting geometry from GeoJSON (transforming points) to WKB',
+            capture_exceptions=false
+        )
+
+        # 6) Remove temp column
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} DROP #{temp_col};
+        })
+
         self
       end
 
@@ -160,8 +240,8 @@ module CartoDB
 
       # As PostGIS only uses geometry field contents and cannot add properties, use a special column name to mark
       # the column for transforming polygons to points
-      def geojson_with_point_transform?
-        geojson? && column_name.to_s == 'geojson_points'
+      def geojson_from_twitter_search?
+        geojson? && column_name.to_s == 'the_geom_from_twitter_geojson'
       end
 
       def geojson?

@@ -89,7 +89,7 @@ module CartoDB
 
       # Other fields with special behaviour we want to add
       CARTODB_FIELDS = [
-        :geojson_points   # Supported as an alias for the_geom, but converting polygons to points
+        :the_geom_from_twitter_geojson   # Supported as an alias for the_geom, but converting polygons to points
       ]
 
 
@@ -127,7 +127,6 @@ module CartoDB
           results << results_row.join(',')
         end
 
-        # TODO: Error checking
         # Data rows
         input_data.each { |item|
           results_row = []
@@ -137,7 +136,7 @@ module CartoDB
           }
 
           GROUP_FIELDS.each { |field|
-            # Group field empty? then must be dumped
+            # Group field has no subfields "defined"? then must be dumped
             if SUBFIELDS[field].nil?
               if !item[field].nil?
                 results_row << field_to_csv(::JSON.dump(item[field]))
@@ -145,7 +144,7 @@ module CartoDB
                 results_row << nil
               end
             else
-              # Go inside fields
+              # Go inside fields, repeat similar logic
               SUBFIELDS[field].each { |subfield|
                 if !item[field].nil? && !item[field][subfield].nil?
                   # Subitems will either get written as they are or dumped
@@ -162,7 +161,7 @@ module CartoDB
           }
 
           CARTODB_FIELDS.each{ |field|
-            if field == :geojson_points
+            if field == :the_geom_from_twitter_geojson
               results_row << field_to_csv(calculate_the_geom(item))
             end
           }
@@ -184,9 +183,10 @@ module CartoDB
       end
 
       def calculate_the_geom(row)
-        if !row[:geo].nil?
+        if !row[:geo].nil? && !row[:geo].empty?
           ::JSON.dump(row[:geo])
-        elsif !row[:location].nil? && !row[:location][:geo].nil?
+        elsif !row[:location].nil? && !row[:location].empty? \
+           && !row[:location][:geo].nil?  && !row[:location][:geo].empty?
           ::JSON.dump(row[:location][:geo])
         else
           nil

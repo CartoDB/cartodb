@@ -9731,11 +9731,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
   layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
 
-  var query = layerModel.get('sql');
-  var qw = layerModel.get('query_wrapper');
-  if(qw) {
-    query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
-  }
+  var query = this._getQuery(layerModel);
   torque.GMapsTorqueLayer.call(this, {
       table: layerModel.get('table_name'),
       user: layerModel.get('user_name'),
@@ -9785,9 +9781,20 @@ _.extend(
     var changed = this.model.changedAttributes();
     if(changed === false) return;
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
-    'query' in changed && this.setSQL(this.model.get('query'));
+    if ('query' in changed || 'query_wrapper' in changed) {
+      this.setSQL(this._getQuery(this.model));
+    }
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();
+  },
+
+  _getQuery: function(layerModel) {
+    var query = layerModel.get('query');
+    var qw = layerModel.get('query_wrapper');
+    if(qw) {
+      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+    }
+    return query;
   },
 
   refreshView: function() {
@@ -9832,11 +9839,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     var extra = layerModel.get('extra_params');
     layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
-    var query = layerModel.get('sql');
-    var qw = layerModel.get('query_wrapper');
-    if(qw) {
-      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
-    }
+    var query = this._getQuery(layerModel);
 
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
@@ -9897,11 +9900,22 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
   },
 
+  _getQuery: function(layerModel) {
+    var query = layerModel.get('query');
+    var qw = layerModel.get('query_wrapper');
+    if(qw) {
+      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+    }
+    return query;
+  },
+
   _modelUpdated: function(model) {
     var changed = this.model.changedAttributes();
     if(changed === false) return;
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
-    'query' in changed && this.setSQL(this.model.get('query'));
+    if ('query' in changed || 'query_wrapper' in changed) {
+      this.setSQL(this._getQuery(this.model));
+    }
 
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();

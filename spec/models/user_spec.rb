@@ -162,7 +162,7 @@ describe User do
       organization.destroy
     end
 
-    describe 'when updating user quota', focus: true do
+    describe 'when updating user quota' do
       it 'should be valid if his organization has enough disk space' do
         organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
         organization.assigned_quota.should == 70.megabytes

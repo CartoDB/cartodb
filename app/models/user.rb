@@ -140,8 +140,7 @@ class User < Sequel::Model
   def before_destroy
     error_happened = false
     has_organization = false
-
-    unless self.organization_id.nil?
+    unless self.organization_id.nil? || self.organization.nil?
       if self.organization.owner.id == self.id && self.organization.users.count > 1
         msg = 'Attempted to delete owner from organization with other users'
         CartoDB::Logger.info msg

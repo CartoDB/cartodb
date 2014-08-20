@@ -398,8 +398,8 @@ module CartoDB
             if sanitized.include?(' ')
               sanitized = '"' + sanitized + '"'
             end
-            sanitized
-          }
+            sanitized.length == 0 ? nil : sanitized
+          }.compact
         end
 
         def build_maxresults_field(user)

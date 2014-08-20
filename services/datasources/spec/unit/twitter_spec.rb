@@ -361,7 +361,7 @@ describe Search::Twitter do
     it 'checks terms sanitize method' do
       twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new)
 
-      terms = [ 'a', ' b', 'c ', ' d ', ' e f', 'g h ', ' i j ', ' 1 2 3 4 ' ]
+      terms = [ 'a', ' b', 'c ', ' d ', ' e f', 'g h ', ' i j ', ' 1 2 3 4 ', ' ' ]
       terms_expected = [ 'a', 'b', 'c', 'd', '"e f"', '"g h"', '"i j"', '"1 2 3 4"' ]
 
       result = twitter_datasource.send :sanitize_terms, terms

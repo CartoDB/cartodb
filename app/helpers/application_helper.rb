@@ -72,11 +72,15 @@ module ApplicationHelper
       gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
       oauth_dropbox:              Cartodb.config[:oauth]['dropbox']['app_key'],
       oauth_gdrive:               Cartodb.config[:oauth]['gdrive']['client_id'],
-      datasource_search_twitter:  Cartodb.config[:datasource_search]['twitter_search']['search_url'],
+      datasource_search_twitter:  nil,
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
     }
+
+    if Cartodb.config[:datasource_search].present?
+      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['search_url']
+    end
 
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']

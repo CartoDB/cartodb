@@ -81,13 +81,11 @@ module CartoDB
         unless @redis.nil?
           key = REDIS_KEY
           rl_value = @redis.keys(key)
-
           # wait until semaphore open
           while !rl_value.nil? && rl_value.count >= REDIS_RL_MAX_CONCURRENCY do
             sleep(REDIS_RL_WAIT_SECS)
             rl_value = @redis.keys(key)
           end
-
           @redis.multi do
             @redis.set(key, 1)  # Value is not important, only number of keys
             @redis.expire(key, REDIS_RL_TTL)
@@ -95,6 +93,7 @@ module CartoDB
         end
 
         response = Typhoeus.get(@config[CONFIG_SEARCH_URL], http_options(params))
+
         raise TwitterHTTPException.new(response.code, response.effective_url, response.body) unless response.code == 200
 
         ::JSON.parse(response.body, symbolize_names: true) unless response.body.nil?

@@ -39,13 +39,6 @@ module CartoDB
         # as "now or from the future" upon date filter build
         TIMEZONE_THRESHOLD = 60
 
-        # TODO: Check no other filters are present
-        ALLOWED_FILTERS = [
-            # From twitter
-            FILTER_MAXRESULTS, FILTER_FROMDATE, FILTER_TODATE,
-            # Internal
-            FILTER_CATEGORIES, FILTER_TOTAL_RESULTS
-        ]
 
         # Constructor
         # @param config Array
@@ -82,6 +75,7 @@ module CartoDB
 
           @used_quota = 0
           @user_semaphore = Mutex.new
+          @error_report_component = nil
         end
 
         # Factory method
@@ -197,11 +191,31 @@ module CartoDB
           entry.save
         end
 
+        # Sets an error reporting component
+        # @param component mixed
+        # @throws DatasourceBaseError
+        def report_component=(component)
+          if component.respond_to?(:report_message)
+            @error_report_component = component
+          else
+            raise DatasourceBaseError.new('Attempted to set invalid report component', DATASOURCE_NAME)
+          end
+        end
+
         private
 
         # Used at specs
         attr_accessor :search_api
         attr_reader   :data_import_item
+
+        # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
+        def report_error(message, additional_data)
+          if @error_report_component.nil?
+            puts "Error: #{message} Additional Info: #{additional_data}"
+          else
+            @error_report_component.report_message(message, 'error', error_info: additional_data)
+          end
+        end
 
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
@@ -274,7 +288,16 @@ module CartoDB
             }
 
             unless out_of_quota
-              results_page = api.fetch_results(next_results_cursor)
+              begin
+                results_page = api.fetch_results(next_results_cursor)
+              rescue TwitterSearch::TwitterHTTPException => e
+                report_error(e.to_s, e.backtrace)
+                # Stop gracefully to not break whole import process
+                results_page = {
+                    results: [],
+                    next: nil
+                }
+              end
               results = results + results_page[:results]
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 

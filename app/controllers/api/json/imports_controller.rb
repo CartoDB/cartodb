@@ -32,6 +32,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
       data[:tweets_georeferenced] = audit_entry.retrieved_items
       data[:tweets_cost] = audit_entry.price
+      data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0
     end
 
     render json: data

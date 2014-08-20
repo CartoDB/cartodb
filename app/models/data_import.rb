@@ -330,6 +330,7 @@ class DataImport < Sequel::Model
     log.append 'new_importer()'
 
     datasource_provider = get_datasource_provider
+
     downloader = get_downloader(datasource_provider)
 
     tracker       = lambda { |state| self.state = state; save }
@@ -461,6 +462,7 @@ class DataImport < Sequel::Model
       oauth = current_user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
       datasource = DatasourcesFactory.get_datasource(datasource_name, current_user, $tables_metadata)
+      datasource.report_component = Rollbar
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"

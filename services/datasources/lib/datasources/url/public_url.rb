@@ -123,6 +123,12 @@ module CartoDB
           nil
         end
 
+        # Sets an error reporting component
+        # @param component mixed
+        def report_component=(component)
+          nil
+        end
+
         private
 
         # Calculates a checksum of given url

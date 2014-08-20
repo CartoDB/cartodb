@@ -355,6 +355,7 @@ module CartoDB
       def get_datasource(datasource_name)
         begin
           datasource = DatasourcesFactory.get_datasource(datasource_name, user)
+          datasource.report_component = Rollbar
           if datasource.kind_of? BaseOAuth
             oauth = user.oauths.select(datasource_name)
             datasource.token = oauth.token unless oauth.nil?

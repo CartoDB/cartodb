@@ -113,7 +113,6 @@ module CartoDB
         payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
         end
         payload[PARAM_NEXT_PAGE] = params[PARAM_NEXT_PAGE] unless params[PARAM_NEXT_PAGE].nil? or params[PARAM_NEXT_PAGE].empty?
-
         payload
       end
 

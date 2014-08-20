@@ -365,6 +365,8 @@ module CartoDB
               category[:terms] = category[:terms].slice(0, 30)
             end
 
+            category[:terms] = sanitize_terms(category[:terms])
+
             query = {
               CATEGORY_NAME_KEY => category[:category],
               CATEGORY_TERMS_KEY => ''
@@ -386,6 +388,18 @@ module CartoDB
             queries << query
           }
           queries
+        end
+
+        # @param terms_list Array
+        def sanitize_terms(terms_list)
+          terms_list.map{ |term|
+            sanitized = term.to_s.gsub(/^ /, '').gsub(/ $/, '')
+            # Remove unwanted stuff too
+            if sanitized.include?(' ')
+              sanitized = '"' + sanitized + '"'
+            end
+            sanitized
+          }
         end
 
         def build_maxresults_field(user)

@@ -18,7 +18,7 @@ module CartoDB
         last_visualization_created_at: self.last_visualization_created_at,
         quota_in_bytes: self.quota_in_bytes,
         db_size_in_bytes: self.db_size_in_bytes,
-        db_size_in_megabytes: (self.db_size_in_bytes / (1024.0 * 1024.0)).round(2),
+        db_size_in_megabytes: self.db_size_in_bytes.present? ? (self.db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
         api_calls: calls,

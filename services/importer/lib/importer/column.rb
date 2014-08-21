@@ -73,7 +73,7 @@ module CartoDB
       end
 
       def convert_from_geojson_with_transform
-        temp_col = 'the_geom_from_twitter_geojson'
+        temp_col = 'temporal_the_geom'
         threshold = 150000
 
         # 1) Add temp column for storing bbox

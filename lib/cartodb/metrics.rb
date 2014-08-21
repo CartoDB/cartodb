@@ -116,6 +116,12 @@ module CartoDB
           ducksboard_increment Cartodb.config[:ducksboard]["geocoding"]["kinds"][kind]["cache_hits"], payload[:cache_hits]
         end
       end
+      if payload[:cost] > 0 && Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["cost"].present?
+        ducksboard_increment Cartodb.config[:ducksboard]["geocoding"]["totals"]["cost"], payload[:cost]
+      end
+      if payload[:price] > 0 && Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["revenue"].present?
+        ducksboard_increment Cartodb.config[:ducksboard]["geocoding"]["totals"]["revenue"], payload[:price]
+      end
     end # ducksboard_report_geocoding
 
     def ducksboard_set(id, num)

@@ -122,6 +122,11 @@ class Geocoding < Sequel::Model
     (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
   end # price
 
+  def cost
+    return 0 unless kind == 'high-resolution'
+    processed_rows.to_i * Cartodb.config[:geocoder]['cost_per_hit_in_cents'] rescue 0
+  end
+
   def remaining_quota
     user.remaining_geocoding_quota
   end # remaining_quota
@@ -177,6 +182,7 @@ class Geocoding < Sequel::Model
       successful_rows:  successful_rows,
       failed_rows:      failed_rows,
       price:            price,
+      cost:             cost,
       used_credits:     used_credits,
       remaining_quota:  remaining_quota
     }

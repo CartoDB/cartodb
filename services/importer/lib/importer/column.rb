@@ -145,29 +145,35 @@ module CartoDB
             capture_exceptions=false
         )
 
+        # NOTE: If Gnip fixes the issue with point coordinates, remove ST_MakePoint below and replace by:
+        # ST_GeomFromGeoJSON(#{column_name})
+
         # 5) random point inside valid bounding boxes
         QueryBatcher::execute(
-            db,
-            %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} =
-              ST_SetSRID(
-                ST_GeomFromGeoJSON(#{column_name})
-              , #{DEFAULT_SRID})
-            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE
-              ST_GeometryType(#{temp_col}) = 'ST_Point'
-              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-            },
-            qualified_table_name,
-            job,
-            'Converting geometry from GeoJSON (transforming points) to WKB',
-            capture_exceptions=false
+          db,
+          %Q{
+          UPDATE #{qualified_table_name}
+          SET #{column_name} =
+            ST_SetSRID(
+              ST_MakePoint(
+                ST_Y(ST_GeomFromGeoJSON(#{column_name})),
+                ST_X(ST_GeomFromGeoJSON(#{column_name}))
+              )
+            , #{DEFAULT_SRID})
+          #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+          WHERE
+            ST_GeometryType(#{temp_col}) = 'ST_Point'
+            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from GeoJSON (transforming points) to WKB',
+          capture_exceptions=false
         )
 
         # 6) Remove temp column
         db.run(%Q{
-         ALTER TABLE #{qualified_table_name} DROP #{temp_col};
+          ALTER TABLE #{qualified_table_name} DROP #{temp_col};
         })
 
         self

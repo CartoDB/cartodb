@@ -3,6 +3,8 @@
 require 'typhoeus'
 require 'json'
 
+require_relative '../util/csv_file_dumper'
+
 require_relative '../../../../twitter-search/twitter-search'
 
 module CartoDB
@@ -69,6 +71,8 @@ module CartoDB
           }, redis_storage, DEBUG_FLAG)
 
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
+
+          @csv_dumper = CSVFileDumper.new(TwitterSearch::JSONToCSVConverter.new)
 
           @user = user
           @data_import_item = nil
@@ -205,7 +209,7 @@ module CartoDB
         private
 
         # Used at specs
-        attr_accessor :search_api
+        attr_accessor :search_api, :csv_dumper
         attr_reader   :data_import_item
 
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
@@ -220,62 +224,53 @@ module CartoDB
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
         def do_search(api, filters)
+          threads = {}
           base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
-          category_results = {}
-          threads = {}
-          semaphore = Mutex.new
+          dumper_additional_fields = {}
+          filters[FILTER_CATEGORIES].each { |category|
+            dumper_additional_fields[category[CATEGORY_NAME_KEY]] = {
+              category_name:  category[CATEGORY_NAME_KEY],
+              category_terms: category[CATEGORY_TERMS_KEY]
+                                .gsub(" #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} ", ', ')
+                                .gsub(" #{GEO_SEARCH_FILTER}", '')
+            }
+            @csv_dumper.begin_dump(category[CATEGORY_NAME_KEY])
+          }
+          @csv_dumper.additional_fields = dumper_additional_fields
 
           filters[FILTER_CATEGORIES].each { |category|
             # If all threads are created at the same time, redis semaphore inside search_api
             # might not yet have new value, so introduce a small delay on each thread creation
-            sleep(0.05)
+            sleep(0.1)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
-              results = search_by_category(api, base_filters, category)
-              semaphore.synchronize {
-                category_results[category[CATEGORY_NAME_KEY]] = results
-              }
+              # Dumps inside upon each block response
+              search_by_category(api, base_filters, category, @csv_dumper)
             }
           }
           threads.each {|key, thread|
             thread.join
           }
 
-          # Values will get overriden later
-          additional_fields = { category_name: 'cat', category_terms: 'term' }
-
-          # Need trailing newlines as each process call will "need"
-          total_results = @json2csv_conversor.generate_headers(additional_fields) + "\n"
-
-          category_results.each { |key, value|
-            additional_fields[:category_name] = key
-            filters[FILTER_CATEGORIES].each { |category|
-              if category[CATEGORY_NAME_KEY] == key
-                additional_fields[:category_terms] = \
-                  category[CATEGORY_TERMS_KEY].gsub(" #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} ", ', ')
-                                              .gsub(" #{GEO_SEARCH_FILTER}", '')
-              end
-            }
-            total_results += (@json2csv_conversor.process(value, false, additional_fields) + "\n")
+          filters[FILTER_CATEGORIES].each { |category|
+            @csv_dumper.end_dump(category[CATEGORY_NAME_KEY])
           }
-
-          # Remove trailing newline from last category
-          total_results.gsub!(/\n$/, '')
+          merged_data = @csv_dumper.merge_dumps(dumper_additional_fields.keys)
 
           # remaining quota is calc. on the fly based on audits/imports
           save_audit(@user, @data_import_item, @used_quota)
 
-          total_results
+          merged_data
         end
 
         # As Ruby is pass-by-value, we can't pass user as by-ref param
-        def search_by_category(api, base_filters, category)
-          results = []
-
+        def search_by_category(api, base_filters, category, csv_dumper=nil)
           api.params = base_filters
           api.query_param = category[CATEGORY_TERMS_KEY]
 
           next_results_cursor = nil
+
+          total_results = 0
 
           begin
             out_of_quota = false
@@ -298,20 +293,22 @@ module CartoDB
                     next: nil
                 }
               end
-              results = results + results_page[:results]
+              dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 
               @user_semaphore.synchronize {
-                @used_quota += results_page[:results].count
+                @used_quota += dumped_items_count
               }
 
+              total_results += dumped_items_count
+
               if DEBUG_FLAG
-                puts "(#{category[CATEGORY_NAME_KEY]}) #{results_page[:results].count} Total: ##{results.count}"
+                puts "(#{category[CATEGORY_NAME_KEY]}) #{dumped_items_count} Total:#{total_results}"
               end
             end
           end while (!next_results_cursor.nil? && !out_of_quota)
 
-          results
+          total_results
         end
 
         def build_date_from_fields(fields, date_type)

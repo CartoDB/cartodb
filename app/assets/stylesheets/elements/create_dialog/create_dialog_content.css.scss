@@ -193,6 +193,12 @@
       &.fixed {
         overflow:hidden;
       }
+
+      // When compressed class is set, top and bottom
+      // element padding is not 40px
+      &.compressed {
+        padding:20px 40px;
+      }
     }
 
 
@@ -208,7 +214,14 @@
         padding:0!important;
         margin:0!important;
 
-        form.upload .upload { margin-top:0; }
+        form.upload {
+
+          .upload { margin-top:0 }
+
+          .infobox {
+            div.info.active { margin-top:-18px }
+          }
+        }
       }
 
       // Scratch
@@ -293,7 +306,7 @@
 
       p.message {
         display:block;
-        margin-top:20px;
+        margin-top:15px;
         text-align:center;
         font-size:15px;
         color:#666666;

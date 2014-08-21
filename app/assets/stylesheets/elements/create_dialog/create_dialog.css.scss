@@ -46,7 +46,7 @@
     div.foot {
       @include display-flex();
       @include justify-content(flex-end, end);
-      padding:0 40px 35px;
+      padding:0 40px 40px;
       background:#F6F6F6;
       border-top:none;
       @include border-bottom-radius(3px);

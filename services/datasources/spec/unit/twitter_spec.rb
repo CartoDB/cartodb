@@ -200,11 +200,21 @@ describe Search::Twitter do
           Search::Twitter::FILTER_TOTAL_RESULTS => Search::Twitter::NO_TOTAL_RESULTS
       }
 
-      output = twitter_datasource.send :search_by_category, \
-        twitter_api, filters, input_terms[:categories].first
+      category = {
+          name:  input_terms[:categories].first[:category],
+          terms: input_terms[:categories].first[:terms],
+      }
+      csv_dumper = twitter_datasource.send :csv_dumper
+      csv_dumper.begin_dump(input_terms[:categories][0][:category])
+      csv_dumper.begin_dump(input_terms[:categories][1][:category])
+      csv_dumper.additional_fields = { category[:name] => category }
+
+      output = twitter_datasource.send :search_by_category, twitter_api, filters, category, csv_dumper
 
       # 2 pages of 10 results per category search
-      output.count.should eq 20
+      output.should eq 20
+
+      csv_dumper.send :destroy_files
     end
 
     it 'tests stopping search if runs out of quota' do
@@ -252,10 +262,20 @@ describe Search::Twitter do
           Search::Twitter::FILTER_TOTAL_RESULTS => Search::Twitter::NO_TOTAL_RESULTS
       }
 
-      output = twitter_datasource.send :search_by_category, \
-        twitter_api, filters, input_terms[:categories].first
+      category = {
+          name:  input_terms[:categories].first[:category],
+          terms: input_terms[:categories].first[:terms],
+      }
+      csv_dumper = twitter_datasource.send :csv_dumper
+      csv_dumper.begin_dump(input_terms[:categories][0][:category])
+      csv_dumper.begin_dump(input_terms[:categories][1][:category])
+      csv_dumper.additional_fields = { category[:name] => category }
 
-      output.count.should eq remaining_tweets_quota
+      output = twitter_datasource.send :search_by_category, twitter_api, filters, category, csv_dumper
+
+      output.should eq remaining_tweets_quota
+
+      csv_dumper.send :destroy_files
     end
 
     it 'tests basic full search flow' do

@@ -116,11 +116,25 @@ module CartoDB
           ducksboard_increment Cartodb.config[:ducksboard]["geocoding"]["kinds"][kind]["cache_hits"], payload[:cache_hits]
         end
       end
-      if payload[:cost] > 0 && Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["cost"].present?
+      if payload[:cost] && payload[:cost] > 0 && Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["cost"].present?
         ducksboard_increment Cartodb.config[:ducksboard]["geocoding"]["totals"]["cost"], payload[:cost]
       end
-      if payload[:price] > 0 && Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["revenue"].present?
+      if payload[:price] && payload[:price] > 0 && Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["revenue"].present?
         ducksboard_increment Cartodb.config[:ducksboard]["geocoding"]["totals"]["revenue"], payload[:price]
+      end
+      if Cartodb.config.fetch(:ducksboard, {}).fetch("geocoding", {}).fetch("totals", {})["timeline"].present?
+        if payload[:success]
+          timeline_entry = {
+            title: "#{payload[:username]}: #{payload[:kind]}",
+            content: "Geocoded #{ payload[:successful_rows] } of #{ payload[:processable_rows] } rows in table #{ payload[:table_id] }"
+          }
+        else
+          timeline_entry = {
+            title: "#{payload[:username]}: #{payload[:kind]}",
+            content: "Error: #{ payload[:error] }"
+          }
+        end
+        ducksboard_timeline_entry Cartodb.config[:ducksboard]["geocoding"]["totals"]["timeline"], timeline_entry
       end
     end # ducksboard_report_geocoding
 
@@ -133,6 +147,12 @@ module CartoDB
     	ducksboard_post(id, { delta: num })
       self
     end #ducksboard_increment
+
+    def ducksboard_timeline_entry(id, options = {})
+      return self unless options[:title].present? && options[:content].present?
+      ducksboard_post(id, { value: options })
+      self
+    end # ducksboard_timeline_entry
 
     def ducksboard_post(id, body)
     	return self unless Cartodb.config[:ducksboard].present?

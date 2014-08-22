@@ -443,7 +443,7 @@ module CartoDB
         # @param user User
         # @return boolean
         def has_enough_quota?(user)
-          user.soft_twitter_datasource_limit || (user.twitter_datasource_quota > 0)
+          user.soft_twitter_datasource_limit || (user.remaining_twitter_quota > 0)
         end
 
         # @param user User

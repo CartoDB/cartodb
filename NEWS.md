@@ -3,6 +3,7 @@
   * public map uses CORS headers to fetch user info
   * infowindow on hover fixed on table mode
   * fixed table export dialog when SQL query without geometries is applied
+  * fixed wrong replace executing SQL on multiuser accounts
 
 3.0.1 (2014-08-07)
 ------------------

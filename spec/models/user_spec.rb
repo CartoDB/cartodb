@@ -1055,6 +1055,57 @@ describe User do
     end
   end
 
+  describe '#cartodb_postgresql_extension_versioning' do
+    it 'should report pre multi user for known <0.3.0 versions' do
+      before_mu_known_versions = [
+        [0,1,0],
+        [0,1,1],
+        [0,2,0],
+        [0,2,1]
+      ]
+      before_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report post multi user for >=0.3.0 versions' do
+      after_mu_known_versions = [
+        [0,3,0],
+        [0,3,1],
+        [0,3,2],
+        [0,3,3],
+        [0,3,4],
+        [0,3,5],
+        [0,4,0],
+        [0,5,5],
+        [0,10,0]
+      ]
+      after_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report post multi user for versions with minor<3 but major>0' do
+      minor_version_edge_cases = [
+        [1,0,0],
+        [1,0,1],
+        [1,2,0],
+        [1,2,1],
+        [1,3,0],
+        [1,4,4]
+      ]
+      minor_version_edge_cases.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    def stub_and_check_version_pre_mu(version, is_pre_mu)
+      @user.stubs(:cartodb_extension_version).returns(version)
+      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+    end
+
+  end
+
   it "should notify a new user created from a organization" do
 
     ::Resque.stubs(:enqueue).returns(nil)

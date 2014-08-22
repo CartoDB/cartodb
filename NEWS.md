@@ -1,9 +1,14 @@
-
+3.y.z (2014-mm-dd)
+------------------
 * Fixed bugs
   * public map uses CORS headers to fetch user info
   * infowindow on hover fixed on table mode
   * fixed table export dialog when SQL query without geometries is applied
   * fixed wrong replace executing SQL on multiuser accounts
+
+* Enhancements
+  * CartoDB PostgreSQL extension versioning more flexible based on semver
+    * Upgrades extension to version x.y.z
 
 3.0.1 (2014-08-07)
 ------------------

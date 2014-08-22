@@ -1433,25 +1433,26 @@ TRIGGER
     )
   end
 
+  # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
   def cartodb_extension_version
-    version, revision = self.in_database(:as => :superuser).fetch("select cartodb.cdb_version() as v").first[:v].split(" ")
-    return [version, revision]
+    cdb_version = self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
+    cdb_version.split('.').take(3).map(&:to_i)
   end
 
   def cartodb_extension_version_pre_mu?
-    current_version_match = /(\d\.\d\.\d).*/.match(self.cartodb_extension_version.first)
-    if current_version_match.nil?
-      raise "Current cartodb extension version does not match standard x.y.z format"
+    current_version = self.cartodb_extension_version
+    if current_version.size == 3
+      major, minor, _ = current_version
+      major == 0 and minor < 3
     else
-      current_version_match[1] < '0.3.0'
+      raise 'Current cartodb extension version does not match standard x.y.z format'
     end
   end
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.6' # TODO: optionally take as parameter?
-    tgt_rev = '0.3.6'  # from 'git describe'
+    cdb_extension_target_version = '0.3.6' # TODO: optionally take as parameter?
 
     add_python
 
@@ -1486,15 +1487,15 @@ TRIGGER
       EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
         RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
         BEGIN
-          CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
+          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
         EXCEPTION WHEN undefined_table THEN
           RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-          CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
+          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
           RETURN;
         END;
         RETURN;
       END;
-      ver := '#{tgt_ver}';
+      ver := '#{cdb_extension_target_version}';
       IF position('dev' in ver) > 0 THEN
         EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
         EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
@@ -1509,10 +1510,11 @@ TRIGGER
           db.run("SET statement_timeout TO '#{old_timeout}';")
         end
 
-        expected = "#{tgt_ver} #{tgt_rev}"
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
-        raise("Expected cartodb extension '#{expected}' obtained '#{obtained}'") unless expected == obtained
+        unless cdb_extension_target_version == obtained
+          raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
+        end
 
 #       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end

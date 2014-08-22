@@ -209,7 +209,7 @@ module CartoDB
         is_multipoint
       rescue
         false
-      end #multipoint?
+      end
 
       private
 
@@ -217,8 +217,8 @@ module CartoDB
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")
-      end #qualified_table_name
-    end # Georeferencer
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

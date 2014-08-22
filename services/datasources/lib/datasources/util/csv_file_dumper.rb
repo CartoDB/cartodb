@@ -10,7 +10,8 @@ module CartoDB
 
       FILE_DUMPER_TMP_SUBFOLDER = '/tmp/csv_file_dumper/'
 
-      def initialize(json_to_csv_conversor)
+      def initialize(json_to_csv_conversor, debug_mode = false)
+        @debug_mode = debug_mode
         @json2csv_conversor = json_to_csv_conversor
         @temporary_directory = nil
 
@@ -51,7 +52,7 @@ module CartoDB
 
         names_list.each { |name|
           return_data += File.read(@files[name].path)
-          @files[name].unlink
+          @files[name].unlink unless @debug_mode
         }
 
         # Remove final trailing newline before returning
@@ -64,6 +65,14 @@ module CartoDB
         FileUtils.mkdir_p(FILE_DUMPER_TMP_SUBFOLDER) unless File.directory?(FILE_DUMPER_TMP_SUBFOLDER)
         Tempfile.new([base_name, '.csv'], FILE_DUMPER_TMP_SUBFOLDER)
       end
+
+      def file_paths
+        @files.values.map { |file|
+          file.path
+        }
+      end
+
+      private
 
       # Intended for tests
       def destroy_files

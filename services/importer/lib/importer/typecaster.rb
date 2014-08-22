@@ -7,8 +7,7 @@ module CartoDB
       DATE_POSSIBLE_NAMES = %w{ created_at updated_at }
       DEFAULT_SCHEMA      = 'cdb_importer'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil,
-      date_columns=[])
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, date_columns=[])
         @db           = db
         @job          = job || Job.new
         @table_name   = table_name
@@ -38,24 +37,24 @@ module CartoDB
           ALTER TABLE "#{schema}"."#{table_name}"
           ALTER COLUMN #{column_name}
           TYPE timestamptz
-          USING public.CDB_StringToDate(#{column_name})
+          USING CDB_StringToDate(#{column_name})
         ))
       end
 
       def castable?(column_name)
         !db[table_name.to_sym].with_sql(%Q(
-          SELECT public.CDB_StringToDate(#{column_name})
+          SELECT CDB_StringToDate(#{column_name})
           FROM "#{schema}"."#{table_name}"
           AS convertible
         )).empty?
-      rescue => exception
+      rescue
         false
       end
 
       private
 
       attr_reader :db, :job, :table_name, :schema, :date_columns
-    end # Typecaster
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

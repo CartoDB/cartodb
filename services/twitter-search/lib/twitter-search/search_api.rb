@@ -29,16 +29,13 @@ module CartoDB
 
       # @param config Hash
       # @param redis_storage Redis|nil (optional)
-      # @param debug_mode Boolean (optional)
-      def initialize(config, redis_storage = nil, debug_mode = false)
+      def initialize(config, redis_storage = nil)
         raise TwitterConfigException.new(CONFIG_AUTH_REQUIRED) if config[CONFIG_AUTH_REQUIRED].nil?
         if config[CONFIG_AUTH_REQUIRED]
           raise TwitterConfigException.new(CONFIG_AUTH_USERNAME) if config[CONFIG_AUTH_USERNAME].nil? or config[CONFIG_AUTH_USERNAME].empty?
           raise TwitterConfigException.new(CONFIG_AUTH_PASSWORD) if config[CONFIG_AUTH_PASSWORD].nil? or config[CONFIG_AUTH_PASSWORD].empty?
         end
         raise TwitterConfigException.new(CONFIG_SEARCH_URL) if config[CONFIG_SEARCH_URL].nil? or config[CONFIG_SEARCH_URL].empty?
-
-        @debug_mode = debug_mode
 
         @config = config
 
@@ -73,10 +70,6 @@ module CartoDB
       # }
       def fetch_results(more_results_cursor = nil)
         params = query_payload(more_results_cursor.nil? ? @params : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
-
-        if @debug_mode
-          puts "#{@config[CONFIG_SEARCH_URL]} #{http_options(params)}"
-        end
 
         unless @redis.nil?
           key = REDIS_KEY

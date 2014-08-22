@@ -21,8 +21,11 @@
       color:#898989;
     }
 
+    p.message,
+    .combo_wrapper,
+    p.warning { display:none }
+
     .combo_wrapper {
-      display:none;
       padding:12px;
       background:white;
       @include border-radius(3px);
@@ -30,7 +33,6 @@
     }
 
     p.warning {
-      display:none;
       padding:0 14px;
       margin:4px 0 0;
       line-height:44px;

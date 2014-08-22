@@ -133,7 +133,7 @@
       .create-icon {
         @include inline-block();     
         width:29px;
-        height:37px;
+        height:38px;
         margin-bottom:18px;
 
         &.file { @include elements-sprite(create-tabs-icons) }
@@ -159,13 +159,13 @@
         }
 
         &.layer {
-          width:29px;
+          width:32px;
           @include elements-sprite(create-tabs-icons, $offset-x:-179px);
         }
 
         &.error {
           width:42px;
-          @include elements-sprite(create-tabs-icons, $offset-x:-208px); 
+          @include elements-sprite(create-tabs-icons, $offset-x:-211px); 
         }
         
       }
@@ -228,6 +228,7 @@
         margin-top:-20px; // HA!
       }
 
+      // Success
       .create-success {
 
         p {

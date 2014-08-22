@@ -68,6 +68,16 @@
         }
       }
     }
+
+    .twitter-terms {
+      position:absolute;
+      bottom:-73px;
+      left:0;
+      width:242px;
+      font-size:11px;
+      p { color:#999999 }
+      a { text-decoration:underline }
+    }
     
     
     div.infobox {

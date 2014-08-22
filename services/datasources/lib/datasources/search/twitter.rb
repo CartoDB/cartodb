@@ -22,7 +22,7 @@ module CartoDB
 
         MAX_CATEGORIES = 4
 
-        DEBUG_FLAG = false
+        DEBUG_FLAG = true
 
         # Used for each query page size, not as total
         FILTER_MAXRESULTS     = :maxResults
@@ -68,11 +68,11 @@ module CartoDB
             TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME  => config['username'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD  => config['password'],
             TwitterSearch::SearchAPI::CONFIG_SEARCH_URL     => config['search_url'],
-          }, redis_storage, DEBUG_FLAG)
+          }, redis_storage)
 
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
 
-          @csv_dumper = CSVFileDumper.new(TwitterSearch::JSONToCSVConverter.new)
+          @csv_dumper = CSVFileDumper.new(TwitterSearch::JSONToCSVConverter.new, DEBUG_FLAG)
 
           @user = user
           @data_import_item = nil
@@ -257,6 +257,10 @@ module CartoDB
           }
           merged_data = @csv_dumper.merge_dumps(dumper_additional_fields.keys)
 
+          if DEBUG_FLAG
+            puts "Temp folders with results: #{@csv_dumper.file_paths}"
+          end
+
           # remaining quota is calc. on the fly based on audits/imports
           save_audit(@user, @data_import_item, @used_quota)
 
@@ -269,7 +273,6 @@ module CartoDB
           api.query_param = category[CATEGORY_TERMS_KEY]
 
           next_results_cursor = nil
-
           total_results = 0
 
           begin
@@ -302,11 +305,12 @@ module CartoDB
 
               total_results += dumped_items_count
 
-              if DEBUG_FLAG
-                puts "(#{category[CATEGORY_NAME_KEY]}) #{dumped_items_count} Total:#{total_results}"
-              end
             end
           end while (!next_results_cursor.nil? && !out_of_quota)
+
+          if DEBUG_FLAG
+            puts "'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results"
+          end
 
           total_results
         end

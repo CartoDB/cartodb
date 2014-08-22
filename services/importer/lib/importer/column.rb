@@ -74,14 +74,14 @@ module CartoDB
 
       def convert_from_geojson_with_transform
         temp_col = 'temporal_the_geom'
-        threshold = 150000
+        threshold = 150000              #hectares
 
-        # 1) Add temp column for storing bbox
+        # 1) Add temp column for storing temporal geometries
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} ADD #{temp_col} geometry DEFAULT NULL;
         })
 
-        # 2) Create bounding box from given geometries
+        # 2) Populate temp column, empty the_geom
         QueryBatcher::execute(
           db,
           %Q{
@@ -90,7 +90,8 @@ module CartoDB
               ST_SetSRID(
                 ST_GeomFromGeoJSON(#{column_name})
               , #{DEFAULT_SRID})
-            )
+            ),
+            #{column_name} = NULL
             #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
             WHERE
               #{column_name} IS NOT NULL
@@ -102,17 +103,16 @@ module CartoDB
           capture_exceptions=true
         )
 
-        # 3) delete those geoms with bounding boxes greater than allowed hectares
+        # 3) delete geometries with bounding boxes greater than allowed threshold
         QueryBatcher::execute(
           db,
           %Q{
             UPDATE #{qualified_table_name}
             SET
-              #{column_name} = NULL,
               #{temp_col} = NULL
             #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
             WHERE
-              #{column_name} IS NOT NULL
+              #{temp_col} IS NOT NULL
               AND ST_area(#{temp_col}::geography)/10000 > #{threshold}
               #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
           },
@@ -122,44 +122,40 @@ module CartoDB
           capture_exceptions=false
         )
 
-        # 4) random point inside valid bounding boxes
-        QueryBatcher::execute(
-            db,
-            %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} =
-              ST_SetSRID(
-                ST_MakePoint(
-                  ST_XMin(#{temp_col}) + (ST_XMax(#{temp_col}) - ST_XMin(#{temp_col})) * random(),
-                  ST_YMin(#{temp_col}) + (ST_YMax(#{temp_col}) - ST_YMin(#{temp_col})) * random()
-                )
-              , #{DEFAULT_SRID})
-            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE
-              ST_GeometryType(#{temp_col}) = 'ST_Polygon'
-              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-          },
-            qualified_table_name,
-            job,
-            'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
-            capture_exceptions=false
-        )
+        # 4) grab random point inside valid bounding boxes and store into the_geom
+        begin
+          QueryBatcher::execute(
+              db,
+              %Q{
+              UPDATE #{qualified_table_name}
+              SET #{column_name} =
+                ST_SetSRID(
+                  ST_MakePoint(
+                    ST_XMin(#{temp_col}) + (ST_XMax(#{temp_col}) - ST_XMin(#{temp_col})) * random(),
+                    ST_YMin(#{temp_col}) + (ST_YMax(#{temp_col}) - ST_YMin(#{temp_col})) * random()
+                  )
+                , #{DEFAULT_SRID})
+              #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+              WHERE
+                ST_GeometryType(#{temp_col}) = 'ST_Polygon'
+                #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            },
+              qualified_table_name,
+              job,
+              'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
+              capture_exceptions=false
+          )
+        rescue => exception
+          job.log "Error generating points inside bounding boxes: #{exception.to_s}"
+        end
 
-        # NOTE: If Gnip fixes the issue with point coordinates, remove ST_MakePoint below and replace by:
-        # ST_GeomFromGeoJSON(#{column_name})
-
-        # 5) random point inside valid bounding boxes
+        # 5) copy normal points into the_geom
         QueryBatcher::execute(
           db,
           %Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} =
-            ST_SetSRID(
-              ST_MakePoint(
-                ST_Y(ST_GeomFromGeoJSON(#{column_name})),
-                ST_X(ST_GeomFromGeoJSON(#{column_name}))
-              )
-            , #{DEFAULT_SRID})
+            ST_SetSRID(#{temp_col}, #{DEFAULT_SRID})
           #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
           WHERE
             ST_GeometryType(#{temp_col}) = 'ST_Point'
@@ -168,7 +164,7 @@ module CartoDB
           qualified_table_name,
           job,
           'Converting geometry from GeoJSON (transforming points) to WKB',
-          capture_exceptions=false
+          capture_exceptions=true
         )
 
         # 6) Remove temp column

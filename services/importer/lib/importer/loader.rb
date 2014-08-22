@@ -46,9 +46,9 @@ module CartoDB
               (ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/)
             raise FileTooBigError.new(job.logger.fetch)
           end
-	  if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
-		raise UnsupportedFormatError.new
-	  end
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
+            raise UnsupportedFormatError.new
+          end
           raise LoadError.new(job.logger.fetch)
         end
         job.log 'Georeferencing...'

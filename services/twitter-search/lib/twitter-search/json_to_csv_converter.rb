@@ -184,6 +184,11 @@ module CartoDB
 
       def calculate_the_geom(row)
         if !row[:geo].nil? && !row[:geo].empty?
+          # Twitter/Gnip 'bug': They give GeoJSON-like with (lat,lon) point,
+          # so transform to proper GeoJSON (lon,lat)
+          lat = row[:geo][:coordinates][0]
+          row[:geo][:coordinates][0] = row[:geo][:coordinates][1]
+          row[:geo][:coordinates][1] = lat
           ::JSON.dump(row[:geo])
         elsif !row[:location].nil? && !row[:location].empty? \
            && !row[:location][:geo].nil?  && !row[:location][:geo].empty?

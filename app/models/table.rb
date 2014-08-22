@@ -1063,7 +1063,7 @@ class Table < Sequel::Model(:user_tables)
       column_name:    column_name,
       new_type:       new_type
     ).run
-  end #convert_column_datatype
+  end
 
   def records(options = {})
     rows = []

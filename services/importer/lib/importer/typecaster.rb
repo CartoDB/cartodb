@@ -34,16 +34,18 @@ module CartoDB
       end
 
       def cast(column_name) 
-        job.log "Casting #{column_name} to timestamp with time zone"
+        job.log "Casting '#{column_name}' to timestamp with time zone"
+
+        # TODO: Use CDB_StringToDate() instead whenever generalizing typecasting
         db.run(%Q(
           ALTER TABLE "#{schema}"."#{table_name}"
-          ALTER COLUMN #{column_name}
-          TYPE timestamptz
-          USING CDB_StringToDate(#{column_name})
+          ALTER COLUMN #{column_name} TYPE timestamptz
+          USING #{column_name}::timestamp
         ))
       end
 
       def castable?(column_name)
+        # TODO: CDB_StringToDate() is faulty as by default casts discarding hour/min/secs, but for checks is enough
         !db[table_name.to_sym].with_sql(%Q(
           SELECT CDB_StringToDate(#{column_name})
           FROM "#{schema}"."#{table_name}"

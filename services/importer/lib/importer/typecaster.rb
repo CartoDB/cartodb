@@ -4,7 +4,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Typecaster
-      DATE_POSSIBLE_NAMES = %w{ created_at updated_at }
+
       DEFAULT_SCHEMA      = 'cdb_importer'
 
       def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, date_columns=[])
@@ -15,8 +15,10 @@ module CartoDB
         @date_columns = date_columns.map(&:to_sym)
       end #initialize
 
+      # For now, only specific columns sent
       def run
-        (date_columns + candidate_columns).uniq
+        #(date_columns + candidate_columns).uniq
+        (date_columns).uniq
           .select { |column_name| castable?(column_name) }
           .each { |column_name| cast(column_name) }
       end

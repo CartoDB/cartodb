@@ -37,7 +37,15 @@ module CartoDB
         @checksum = @item_metadata[:checksum]
         return self unless modified?
 
-        resource_data = @datasource.get_resource(@item_metadata[:id])
+        begin
+          resource_data = @datasource.get_resource(@item_metadata[:id])
+        rescue => exception
+          if exception.message =~ /quota/i
+            raise StorageQuotaExceededError
+          else
+            raise
+          end
+        end
 
         data = StringIO.new(resource_data)
         name = @item_metadata[:filename]

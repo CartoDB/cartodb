@@ -13,15 +13,20 @@ module CartoDB
       CONFIG_AUTH_PASSWORD = :password
       CONFIG_SEARCH_URL    = :search_url
 
+      CONFIG_REDIS_RL_ACTIVE          = :ratelimit_active
+      CONFIG_REDIS_RL_MAX_CONCURRENCY = :ratelimit_concurrency
+      CONFIG_REDIS_RL_TTL             = :ratelimit_ttl
+      CONFIG_REDIS_RL_WAIT_SECS       = :ratelimit_wait_secs
+
       PARAM_QUERY       = :query
       PARAM_FROMDATE    = :fromDate
       PARAM_TODATE      = :toDate
       PARAM_MAXRESULTS  = :maxResults
       PARAM_NEXT_PAGE   = :next
 
-      # Rate limit values
       REDIS_KEY = 'importer:twittersearch:rl'
-      REDIS_RL_MAX_CONCURRENCY = 8
+      # default values
+      REDIS_RL_CONCURRENCY = 8
       REDIS_RL_TTL = 4
       REDIS_RL_WAIT_SECS = 0.5
 
@@ -39,7 +44,15 @@ module CartoDB
 
         @config = config
 
+        # Defaults for ratelimit (not critical if not present)
+        @config[CONFIG_REDIS_RL_ACTIVE] = true if config[CONFIG_REDIS_RL_ACTIVE].nil?
+        @config[CONFIG_REDIS_RL_MAX_CONCURRENCY] = REDIS_RL_CONCURRENCY if config[CONFIG_REDIS_RL_MAX_CONCURRENCY].nil?
+        @config[CONFIG_REDIS_RL_TTL] = REDIS_RL_TTL if config[CONFIG_REDIS_RL_TTL].nil?
+        @config[CONFIG_REDIS_RL_WAIT_SECS] = REDIS_RL_WAIT_SECS if config[CONFIG_REDIS_RL_WAIT_SECS].nil?
+
         @redis = redis_storage
+
+        @config[CONFIG_REDIS_RL_ACTIVE] = false if @redis.nil?
 
         @more_results_cursor = nil
         @params = {
@@ -69,19 +82,20 @@ module CartoDB
       #   ]
       # }
       def fetch_results(more_results_cursor = nil)
-        params = query_payload(more_results_cursor.nil? ? @params : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
+        params = query_payload(more_results_cursor.nil? ? @params \
+                                                        : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
 
-        unless @redis.nil?
+        if @config[CONFIG_REDIS_RL_ACTIVE]
           key = REDIS_KEY
           rl_value = @redis.keys(key)
           # wait until semaphore open
-          while !rl_value.nil? && rl_value.count >= REDIS_RL_MAX_CONCURRENCY do
-            sleep(REDIS_RL_WAIT_SECS)
+          while !rl_value.nil? && rl_value.count >= @config[CONFIG_REDIS_RL_MAX_CONCURRENCY] do
+            sleep(@config[CONFIG_REDIS_RL_WAIT_SECS])
             rl_value = @redis.keys(key)
           end
           @redis.multi do
             @redis.set(key, 1)  # Value is not important, only number of keys
-            @redis.expire(key, REDIS_RL_TTL)
+            @redis.expire(key, @config[CONFIG_REDIS_RL_TTL])
           end
         end
 

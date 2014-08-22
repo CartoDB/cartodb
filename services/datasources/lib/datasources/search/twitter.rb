@@ -64,10 +64,14 @@ module CartoDB
           raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
 
           @search_api = TwitterSearch::SearchAPI.new({
-            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED  => config['auth_required'],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME  => config['username'],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD  => config['password'],
-            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL     => config['search_url'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED              => config['auth_required'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME              => config['username'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD              => config['password'],
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL                 => config['search_url'],
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_ACTIVE            => config.fetch('ratelimit_active', nil),
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_MAX_CONCURRENCY   => config.fetch('ratelimit_concurrency', nil),
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_TTL               => config.fetch('ratelimit_ttl', nil),
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_WAIT_SECS         => config.fetch('ratelimit_wait_secs', nil)
           }, redis_storage)
 
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
@@ -115,7 +119,9 @@ module CartoDB
 
           raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
 
-          raise OutOfQuotaError.new("#{@user.username}", DATASOURCE_NAME) unless has_enough_quota?(@user)
+          unless has_enough_quota?(@user)
+            raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
+          end
 
           @filters[FILTER_CATEGORIES] = build_queries_from_fields(fields)
 

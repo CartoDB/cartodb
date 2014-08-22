@@ -222,12 +222,12 @@
                       <label class="bottom-border">EXTRAS</label>
                       <ul class="extras">
                         <li>
-                          <span class="light">Allow geocoding</span>
+                          <span class="light">Allow extra geocodings</span>
                           <div><%= form.check_box :soft_geocoding_limit %></div>
                         </li>
                         <% if (Cartodb.config[:datasource_search].present?) %>
                           <li>
-                            <span class="light">Allow tweets</span>
+                            <span class="light">Allow extra tweets</span>
                             <div><%= form.check_box :soft_twitter_datasource_limit %></div>
                           </li>
                         <% end %>

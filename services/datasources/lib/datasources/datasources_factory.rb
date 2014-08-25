@@ -56,7 +56,7 @@ module CartoDB
           end
 
           if includes_customized_config
-            custom_config_users = config[datasource_name][:customized_users_list.to_s]
+            custom_config_users = config[datasource_name][:customized_user_list.to_s]
             if custom_config_users.include?(user.username)
               config[datasource_name][:customized.to_s]
             else

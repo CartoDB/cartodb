@@ -185,7 +185,7 @@ defaults: &defaults
         ratelimit_concurrency:  8
         ratelimit_ttl:          4
         ratelimit_wait_secs:    0.5
-      customized_users_list:  []
+      customized_user_list:  []
       customized:
         auth_required:          false
         username:               ''

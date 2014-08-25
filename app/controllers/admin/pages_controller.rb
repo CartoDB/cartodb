@@ -106,7 +106,7 @@ class Admin::PagesController < ApplicationController
         }
       elsif vis.type == Visualization::Member::CANONICAL_TYPE
         {
-          loc: public_table_url(user_domain: vis.user.username, id: vis.name),
+          loc: public_table_url(user_domain: params[:user_domain], id: vis.name),
           lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
         }
       end

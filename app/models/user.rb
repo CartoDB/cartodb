@@ -1417,10 +1417,6 @@ class User < Sequel::Model
             # NOTE: every table change also changed CDB_TableMetadata, so
             #       we purge those entries too
             #
-            # TODO: check if any server is ever setting "table" as the
-            #       surrogate key, as that looks redundant to me
-            #       --strk-20131203;
-            #
             # TODO: do not invalidate responses with surrogate key
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
@@ -1471,10 +1467,6 @@ TRIGGER
           try:
             # NOTE: every table change also changed CDB_TableMetadata, so
             #       we purge those entries too
-            #
-            # TODO: check if any server is ever setting "table" as the
-            #       surrogate key, as that looks redundant to me
-            #       --strk-20131203;
             #
             # TODO: do not invalidate responses with surrogate key
             #       "not_this_one" when table "this" changes :/

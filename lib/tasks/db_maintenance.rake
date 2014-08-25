@@ -1,4 +1,3 @@
-
 require_relative 'thread_pool'
 
 namespace :cartodb do
@@ -231,19 +230,28 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
-    desc 'Load varnish invalidation function'
-    task :load_varnish_invalidation_function => :environment do
-      count = User.count
-      printf "Starting cartodb:db:load_varnish_invalidation_function task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.create_function_invalidate_varnish
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
-        end
-        #sleep(1.0/5.0)
+    desc 'Install/upgrade Varnish invalidation trigger'
+    task :load_varnish_trigger, [:num_threads, :thread_sleep, :database_host, :sleep] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 5 : args[:sleep].to_i
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
       end
+      execute_on_users_with_index(:load_varnish_trigger.to_s, Proc.new { |user, i|
+          begin
+            user.create_function_invalidate_varnish
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_varnish_trigger.to_s, database_host)
+            sleep(sleep)
+          rescue => e
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_varnish_trigger.to_s, database_host)
+            puts "FAIL:#{i} #{e.message}"
+          end
+      }, threads, thread_sleep, database_host)
     end
 
 
@@ -703,7 +711,7 @@ namespace :cartodb do
         log_path = Rails.root.join('log', "rake_db_maintenance_#{task_name}_#{filename_suffix}.log")
       end
       File.open(log_path, 'a') do |file_handle|
-	file_handle.puts "[#{Time.now}] #{entry}\n"
+	      file_handle.puts "[#{Time.now}] #{entry}\n"
       end
     end
 
@@ -754,6 +762,29 @@ namespace :cartodb do
           message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
           print message
           log(message, :reload_users_avatars.to_s)
+        end
+      end
+    end
+
+    desc "Enable oracle_fdw extension in database"
+    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :remote_table, :table_definition_json_path] => :environment do
+      u = User.where(:username => args[:username].to_s).first
+      tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
+      u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|
+        db.transaction do
+          server_name = "oracle_#{args[:oracle_url].sanitize}_#{Time.now.to_i}"
+          db.run('CREATE EXTENSION oracle_fdw') unless db.fetch(%Q{
+              SELECT count(*) FROM pg_extension WHERE extname='oracle_fdw'
+          }).first[:count] > 0
+          db.run("CREATE SERVER #{server_name} FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '#{args[:oracle_url].to_s}')")
+          db.run("GRANT USAGE ON FOREIGN SERVER #{server_name} TO \"#{u.database_username}\"")
+          db.run("CREATE USER MAPPING FOR \"#{u.database_username}\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
+          debugger
+          table = tables["tables"].first
+          table_name = table.first
+          table_columns = table.last["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
+          db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{args[:remote_table]}')")
+          db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
         end
       end
     end

@@ -162,6 +162,27 @@ describe User do
       organization.destroy
     end
 
+    describe 'when updating user quota' do
+      it 'should be valid if his organization has enough disk space' do
+        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+        organization.assigned_quota.should == 70.megabytes
+        user = organization.owner
+        user.quota_in_bytes = 1.megabyte
+        user.valid?
+        user.errors.keys.should_not include(:quota_in_bytes)
+        organization.destroy
+      end
+      it "should not be valid if his organization doesn't have enough disk space" do
+        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+        organization.assigned_quota.should == 70.megabytes
+        user = organization.owner
+        user.quota_in_bytes = 71.megabytes
+        user.valid?.should be_false
+        user.errors.keys.should include(:quota_in_bytes)
+        organization.destroy
+      end
+    end
+
     it 'should set account_type properly' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
@@ -1047,8 +1068,79 @@ describe User do
     end
   end
 
+  describe '#cartodb_postgresql_extension_versioning' do
+    it 'should report pre multi user for known <0.3.0 versions' do
+      before_mu_known_versions = %w(0.1.0 0.1.1 0.2.0 0.2.1)
+      before_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report post multi user for >=0.3.0 versions' do
+      after_mu_known_versions = %w(0.3.0 0.3.1 0.3.2 0.3.3 0.3.4 0.3.5 0.4.0 0.5.5 0.10.0)
+      after_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report post multi user for versions with minor<3 but major>0' do
+      minor_version_edge_cases = %w(1.0.0 1.0.1 1.2.0 1.2.1 1.3.0 1.4.4)
+      minor_version_edge_cases.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      before_mu_old_known_versions = [
+        '0.1.0 0.1.0',
+        '0.1.1 0.1.1',
+        '0.2.0 0.2.0',
+        '0.2.1 0.2.1'
+      ]
+      before_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      after_mu_old_known_versions = [
+        '0.3.0 0.3.0',
+        '0.3.1 0.3.1',
+        '0.3.2 0.3.2',
+        '0.3.3 0.3.3',
+        '0.3.4 0.3.4',
+        '0.3.5 0.3.5',
+        '0.4.0 0.4.0',
+        '0.5.5 0.5.5',
+        '0.10.0 0.10.0'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with `git describe` not being a tag' do
+
+      stub_and_check_version_pre_mu('0.2.1 0.2.0-8-g7840e7c', true)
+
+      after_mu_old_known_versions = [
+          '0.3.6 0.3.5-8-g7840e7c',
+          '0.4.0 0.3.6-8-g7840e7c'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    def stub_and_check_version_pre_mu(version, is_pre_mu)
+      @user.stubs(:cartodb_extension_version).returns(version)
+      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+    end
+
+  end
+
   it "should notify a new user created from a organization" do
-   
+
     ::Resque.stubs(:enqueue).returns(nil)
 
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
@@ -1056,7 +1148,7 @@ describe User do
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
-    
+
     user1.save
 
     organization.destroy

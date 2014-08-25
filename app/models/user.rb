@@ -72,10 +72,15 @@ class User < Sequel::Model
     if new? || password.present?
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
-
     if organization.present?
-      errors.add(:organization, "not enough seats") if new? && organization.users.count >= organization.seats
-      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+      if new?
+        errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
+        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
+      else
+        # Organization#assigned_quota includes the OLD quota for this user,
+        # so we have to ammend that in the calculation:
+        errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+      end
     end
   end
 
@@ -135,8 +140,7 @@ class User < Sequel::Model
   def before_destroy
     error_happened = false
     has_organization = false
-
-    unless self.organization_id.nil?
+    unless self.organization_id.nil? || self.organization.nil?
       if self.organization.owner.id == self.id && self.organization.users.count > 1
         msg = 'Attempted to delete owner from organization with other users'
         CartoDB::Logger.info msg
@@ -1409,7 +1413,17 @@ class User < Sequel::Model
   # Being unable to communicate with Varnish may or may not be critical
   # depending on CartoDB configuration at time of function definition.
   #
+
   def create_function_invalidate_varnish
+    if Cartodb.config[:varnish_management].fetch('http_port', false)
+      create_function_invalidate_varnish_http
+    else
+      create_function_invalidate_varnish_telnet
+    end
+  end
+
+  # Telnet invalidation works only for Varnish 2.x.
+  def create_function_invalidate_varnish_telnet
 
     add_python
 
@@ -1448,10 +1462,6 @@ class User < Sequel::Model
             # NOTE: every table change also changed CDB_TableMetadata, so
             #       we purge those entries too
             #
-            # TODO: check if any server is ever setting "table" as the
-            #       surrogate key, as that looks redundant to me
-            #       --strk-20131203;
-            #
             # TODO: do not invalidate responses with surrogate key
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
@@ -1474,25 +1484,82 @@ TRIGGER
     )
   end
 
+  def create_function_invalidate_varnish_http
+
+    add_python
+
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'http_port') || 6081
+    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
+    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
+    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+    $$
+        critical = #{varnish_critical}
+        timeout = #{varnish_timeout}
+        retry = #{varnish_retry}
+
+        import httplib
+
+        while True:
+
+          try:
+            # NOTE: every table change also changed CDB_TableMetadata, so
+            #       we purge those entries too
+            #
+            # TODO: do not invalidate responses with surrogate key
+            #       "not_this_one" when table "this" changes :/
+            #       --strk-20131203;
+            #
+            client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+            client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+            response = client.getresponse()
+            assert response.status == 204
+            break
+          except Exception as err:
+            plpy.warning('Varnish purge error: ' + str(err))
+            if not retry:
+              if critical:
+                plpy.error('Varnish purge error: ' +  str(err))
+              break
+            retry -= 1 # try reconnecting
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    COMMIT;
+TRIGGER
+    )
+  end
+
+  # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
+  def cartodb_extension_semver(extension_version)
+    extension_version.split('.').take(3).map(&:to_i)
+  end
+
   def cartodb_extension_version
-    version, revision = self.in_database(:as => :superuser).fetch("select cartodb.cdb_version() as v").first[:v].split(" ")
-    return [version, revision]
+    self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
   end
 
   def cartodb_extension_version_pre_mu?
-    current_version_match = /(\d\.\d\.\d).*/.match(self.cartodb_extension_version.first)
-    if current_version_match.nil?
-      raise "Current cartodb extension version does not match standard x.y.z format"
+    current_version = self.cartodb_extension_semver(self.cartodb_extension_version)
+    if current_version.size == 3
+      major, minor, _ = current_version
+      major == 0 and minor < 3
     else
-      current_version_match[1] < '0.3.0'
+      raise 'Current cartodb extension version does not match standard x.y.z format'
     end
   end
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.6' # TODO: optionally take as parameter?
-    tgt_rev = '0.3.6'  # from 'git describe'
+    cdb_extension_target_version = '0.3.6' # TODO: optionally take as parameter?
 
     add_python
 
@@ -1527,15 +1594,15 @@ TRIGGER
       EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
         RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
         BEGIN
-          CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
+          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
         EXCEPTION WHEN undefined_table THEN
           RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-          CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
+          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
           RETURN;
         END;
         RETURN;
       END;
-      ver := '#{tgt_ver}';
+      ver := '#{cdb_extension_target_version}';
       IF position('dev' in ver) > 0 THEN
         EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
         EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
@@ -1550,10 +1617,12 @@ TRIGGER
           db.run("SET statement_timeout TO '#{old_timeout}';")
         end
 
-        expected = "#{tgt_ver} #{tgt_rev}"
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
-        raise("Expected cartodb extension '#{expected}' obtained '#{obtained}'") unless expected == obtained
+
+        unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
+          raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
+        end
 
 #       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end

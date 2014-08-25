@@ -1,11 +1,21 @@
-3.1.X
+3.2.0 (2014-08-27)
 ------------------
 * New Features
   * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
+
+3.0.1 (2014-mm-dd)
+------------------
+* New features
+  * Varnish HTTP invalidation support
+  * Dynamic generation of sitemap.xml with public visualizations/tables for users
 * Fixed bugs
   * public map uses CORS headers to fetch user info
   * infowindow on hover fixed on table mode
   * fixed table export dialog when SQL query without geometries is applied
+  * fixed wrong replace executing SQL on multiuser accounts
+
+* Enhancements
+  * CartoDB PostgreSQL extension versioning more flexible based on semver
 
 3.0.1 (2014-08-07)
 ------------------

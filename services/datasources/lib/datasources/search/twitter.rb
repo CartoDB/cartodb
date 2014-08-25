@@ -41,6 +41,9 @@ module CartoDB
         # as "now or from the future" upon date filter build
         TIMEZONE_THRESHOLD = 60
 
+        # Gnip's 30 limit minus
+        MAX_SEARCH_TERMS = 30 - 1
+        MAX_QUERY_SIZE   = 1024
 
         # Constructor
         # @param config Array
@@ -238,8 +241,10 @@ module CartoDB
             dumper_additional_fields[category[CATEGORY_NAME_KEY]] = {
               category_name:  category[CATEGORY_NAME_KEY],
               category_terms: category[CATEGORY_TERMS_KEY]
-                                .gsub(" #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} ", ', ')
+                                .gsub(" #{OR_SEARCH_FILTER} ", ', ')
                                 .gsub(" #{GEO_SEARCH_FILTER}", '')
+                                .gsub(/^\(/, '')
+                                .gsub(/\)$/, '')
             }
             @csv_dumper.begin_dump(category[CATEGORY_NAME_KEY])
           }
@@ -368,8 +373,8 @@ module CartoDB
             raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
 
             # Gnip limitation
-            if category[:terms].count > 30
-              category[:terms] = category[:terms].slice(0, 30)
+            if category[:terms].count > MAX_SEARCH_TERMS
+              category[:terms] = category[:terms].slice(0, MAX_SEARCH_TERMS)
             end
 
             category[:terms] = sanitize_terms(category[:terms])
@@ -379,18 +384,15 @@ module CartoDB
               CATEGORY_TERMS_KEY => ''
             }
 
-            category[:terms].each_with_index { |term, index|
-              if index == 0
-                term_fragment = "#{term} #{GEO_SEARCH_FILTER}"
-              else
-                term_fragment = " #{OR_SEARCH_FILTER} #{term} #{GEO_SEARCH_FILTER}"
-              end
+            unless category[:terms].count == 0
+              query[CATEGORY_TERMS_KEY] << '('
+              query[CATEGORY_TERMS_KEY] << category[:terms].join(' OR ')
+              query[CATEGORY_TERMS_KEY] << ") #{GEO_SEARCH_FILTER}"
+            end
 
-              # Gnip limitation
-              if (query[CATEGORY_TERMS_KEY].length + term_fragment.length) < 1024
-                query[CATEGORY_TERMS_KEY] << term_fragment
-              end
-            }
+            if query[CATEGORY_TERMS_KEY].length > MAX_QUERY_SIZE
+              raise ParameterError.new("Obtained search query is bigger than #{MAX_QUERY_SIZE} chars", DATASOURCE_NAME)
+            end
 
             queries << query
           }
@@ -402,7 +404,8 @@ module CartoDB
           terms_list.map{ |term|
             sanitized = term.to_s.gsub(/^ /, '').gsub(/ $/, '')
             # Remove unwanted stuff too
-            if sanitized.include?(' ')
+            if sanitized.include?(' ') || sanitized.include?('-') || sanitized.include?('_') || sanitized.include?('.') \
+               || sanitized.include?(':')
               sanitized = '"' + sanitized + '"'
             end
             sanitized.length == 0 ? nil : sanitized
@@ -433,7 +436,17 @@ module CartoDB
 
         # @param user User
         def is_service_enabled?(user)
-          user.organization.nil? ? user.twitter_datasource_enabled : user.organization.twitter_datasource_enabled
+          if !user.organization.nil?
+            enabled = user.organization.twitter_datasource_enabled
+            if enabled
+              user.twitter_datasource_enabled
+            else
+              # If disabled org-wide, disabled for everyone
+              false
+            end
+          else
+            user.twitter_datasource_enabled
+          end
         end
 
         # @param user User

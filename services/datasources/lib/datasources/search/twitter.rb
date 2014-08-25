@@ -264,7 +264,7 @@ module CartoDB
           merged_data = @csv_dumper.merge_dumps(dumper_additional_fields.keys)
 
           if DEBUG_FLAG
-            puts "Temp folders with results: #{@csv_dumper.file_paths}"
+            puts "Temp folders with results:\n#{@csv_dumper.file_paths}\n#{@csv_dumper.original_file_paths}"
           end
 
           # remaining quota is calc. on the fly based on audits/imports
@@ -345,7 +345,7 @@ module CartoDB
             timezone = fields[:dates][:user_timezone].nil? ? 0 : fields[:dates][:user_timezone].to_i
             begin
               year, month, day = fields[:dates][date_sym].split('-')
-              timezoned_date = Time.utc(year, month, day, fields[:dates][hour_sym], fields[:dates][min_sym])
+              timezoned_date = Time.gm(year, month, day, fields[:dates][hour_sym], fields[:dates][min_sym])
             rescue ArgumentError
               raise ParameterError.new('Invalid date format', DATASOURCE_NAME)
             end

@@ -66,11 +66,11 @@ describe Search::Twitter do
       expected_output_terms = [
           {
             Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-            Search::Twitter::CATEGORY_TERMS_KEY => 'uno has:geo OR @dos has:geo OR #tres has:geo'
+            Search::Twitter::CATEGORY_TERMS_KEY => '(uno OR @dos OR #tres) has:geo'
           },
           {
             Search::Twitter::CATEGORY_NAME_KEY  => 'Category 2',
-            Search::Twitter::CATEGORY_TERMS_KEY => 'aaa has:geo OR bbb has:geo'
+            Search::Twitter::CATEGORY_TERMS_KEY => '(aaa OR bbb) has:geo'
           }
       ]
 
@@ -96,7 +96,7 @@ describe Search::Twitter do
       expected_output_terms = [
           {
               Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-              Search::Twitter::CATEGORY_TERMS_KEY => '1 has:geo OR 2 has:geo OR 3 has:geo OR 4 has:geo OR 5 has:geo OR 6 has:geo OR 7 has:geo OR 8 has:geo OR 9 has:geo OR 10 has:geo OR 11 has:geo OR 12 has:geo OR 13 has:geo OR 14 has:geo OR 15 has:geo OR 16 has:geo OR 17 has:geo OR 18 has:geo OR 19 has:geo OR 20 has:geo OR 21 has:geo OR 22 has:geo OR 23 has:geo OR 24 has:geo OR 25 has:geo OR 26 has:geo OR 27 has:geo OR 28 has:geo OR 29 has:geo OR 30 has:geo'
+              Search::Twitter::CATEGORY_TERMS_KEY => '(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12 OR 13 OR 14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24 OR 25 OR 26 OR 27 OR 28 OR 29) has:geo'
           },
       ]
 
@@ -118,15 +118,10 @@ describe Search::Twitter do
           ]
       }
 
-      expected_output_terms = [
-          {
-              Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-              Search::Twitter::CATEGORY_TERMS_KEY => 'wadus1 has:geo OR wadus2 has:geo'
-          },
-      ]
+      expect {
+        output = twitter_datasource.send :build_queries_from_fields, input_terms
 
-      output = twitter_datasource.send :build_queries_from_fields, input_terms
-      output.should eq expected_output_terms
+      }.to raise_error ParameterError
     end
 
 

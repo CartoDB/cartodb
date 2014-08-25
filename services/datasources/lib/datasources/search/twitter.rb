@@ -433,7 +433,17 @@ module CartoDB
 
         # @param user User
         def is_service_enabled?(user)
-          user.organization.nil? ? user.twitter_datasource_enabled : user.organization.twitter_datasource_enabled
+          if !user.organization.nil?
+            enabled = user.organization.twitter_datasource_enabled
+            if enabled
+              user.twitter_datasource_enabled
+            else
+              # If disabled org-wide, disabled for everyone
+              false
+            end
+          else
+            user.twitter_datasource_enabled
+          end
         end
 
         # @param user User

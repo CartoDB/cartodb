@@ -47,6 +47,9 @@ defaults: &defaults
     api_key: ''
   trackjs:
     customer: ''
+  common_data:
+    username: ''
+    api_key: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

@@ -271,6 +271,9 @@ CartoDB::Application.routes.draw do
     # Tags
     get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
 
+    # Common data
+    get '(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
+
     # Synchronizations
     get    '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index
     post   '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create

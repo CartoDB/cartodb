@@ -1,5 +1,10 @@
 3.y.z (2014-mm-dd)
 ------------------
+* New common data section
+
+
+3.y.z (2014-mm-dd)
+------------------
 * Fixed bugs
   * public map uses CORS headers to fetch user info
   * infowindow on hover fixed on table mode

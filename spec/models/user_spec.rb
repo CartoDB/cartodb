@@ -1057,44 +1057,64 @@ describe User do
 
   describe '#cartodb_postgresql_extension_versioning' do
     it 'should report pre multi user for known <0.3.0 versions' do
-      before_mu_known_versions = [
-        [0,1,0],
-        [0,1,1],
-        [0,2,0],
-        [0,2,1]
-      ]
+      before_mu_known_versions = %w(0.1.0 0.1.1 0.2.0 0.2.1)
       before_mu_known_versions.each { |version|
         stub_and_check_version_pre_mu(version, true)
       }
     end
 
     it 'should report post multi user for >=0.3.0 versions' do
-      after_mu_known_versions = [
-        [0,3,0],
-        [0,3,1],
-        [0,3,2],
-        [0,3,3],
-        [0,3,4],
-        [0,3,5],
-        [0,4,0],
-        [0,5,5],
-        [0,10,0]
-      ]
+      after_mu_known_versions = %w(0.3.0 0.3.1 0.3.2 0.3.3 0.3.4 0.3.5 0.4.0 0.5.5 0.10.0)
       after_mu_known_versions.each { |version|
         stub_and_check_version_pre_mu(version, false)
       }
     end
 
     it 'should report post multi user for versions with minor<3 but major>0' do
-      minor_version_edge_cases = [
-        [1,0,0],
-        [1,0,1],
-        [1,2,0],
-        [1,2,1],
-        [1,3,0],
-        [1,4,4]
-      ]
+      minor_version_edge_cases = %w(1.0.0 1.0.1 1.2.0 1.2.1 1.3.0 1.4.4)
       minor_version_edge_cases.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      before_mu_old_known_versions = [
+        '0.1.0 0.1.0',
+        '0.1.1 0.1.1',
+        '0.2.0 0.2.0',
+        '0.2.1 0.2.1'
+      ]
+      before_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      after_mu_old_known_versions = [
+        '0.3.0 0.3.0',
+        '0.3.1 0.3.1',
+        '0.3.2 0.3.2',
+        '0.3.3 0.3.3',
+        '0.3.4 0.3.4',
+        '0.3.5 0.3.5',
+        '0.4.0 0.4.0',
+        '0.5.5 0.5.5',
+        '0.10.0 0.10.0'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with `git describe` not being a tag' do
+
+      stub_and_check_version_pre_mu('0.2.1 0.2.0-8-g7840e7c', true)
+
+      after_mu_old_known_versions = [
+          '0.3.6 0.3.5-8-g7840e7c',
+          '0.4.0 0.3.6-8-g7840e7c'
+      ]
+      after_mu_old_known_versions.each { |version|
         stub_and_check_version_pre_mu(version, false)
       }
     end

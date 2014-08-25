@@ -78,8 +78,9 @@ module ApplicationHelper
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
     }
 
-    if Cartodb.config[:datasource_search].present?
-      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['search_url']
+    if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
+      && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
+      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
     end
 
     if Cartodb.config[:graphite_public].present?

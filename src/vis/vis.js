@@ -345,7 +345,7 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData, options);
     }
 
-    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var device = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (device) {
       $(".cartodb-map-wrapper").addClass("device");
@@ -628,7 +628,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    var device = this.device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var device = this.device = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!opt.title) {
       vizjson.title = null;

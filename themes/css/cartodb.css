@@ -1166,8 +1166,10 @@ div.cartodb-popup.v2.header.yellow a.cartodb-popup-close-button:after {
  */
 
 * {
-  -webkit-margin-after:0em;
-  -webkit-margin-before:0em;
+  -webkit-margin-after:0;
+  -webkit-margin-before:0;
+  -webkit-padding-start:0;
+  -webkit-padding-end:0;
 }
 
 div.cartodb-share {
@@ -1570,6 +1572,16 @@ only screen and (                min-resolution: 2dppx) {
   position:relative;
 }
 
+.cartodb-mobile .cartodb-header .content .button {
+
+  height: 58px;
+  width: 58px;
+  background-color: rgba(0, 0, 0, 0.5);
+  line-height: normal;
+  z-index: 99999;
+
+}
+
 .cartodb-mobile .cartodb-header .content .toggle {
   display: block;
   position:absolute;
@@ -1614,6 +1626,13 @@ only screen and (                min-resolution: 2dppx) {
   padding: 10px 0;
   color: #fff;
   list-style: none;
+  border-bottom: 1px solid #585858;
+
+}
+
+.cartodb-mobile .aside .layers > ul > li:last-child {
+
+  border-bottom: none;
 
 }
 
@@ -1631,6 +1650,11 @@ only screen and (                min-resolution: 2dppx) {
   -o-border-radius: 4px;
   border-radius: 4px;
 
+}
+
+.cartodb-mobile .aside .layers > ul > li.hidden a.toggle:before {
+  right: 0;
+  left: auto;
 }
 
 .cartodb-mobile .aside .layers > ul > li a.toggle:before {
@@ -1669,10 +1693,15 @@ only screen and (                min-resolution: 2dppx) {
 
 }
 
+.cartodb-mobile .aside .layers > ul > li.hidden {
+
+  border:none;
+
+}
+
 .cartodb-mobile .aside .layers > ul > li.hidden h3 {
 
   color: #666666;
-  border:none;
 
 }
 
@@ -1716,6 +1745,65 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile .aside .layers > ul > li div.cartodb-legend ul li.max,
 .cartodb-mobile .aside .layers > ul > li div.cartodb-legend ul li.min {
   font-size: 10px;
+}
+
+.cartodb-mobile div.cartodb-timeslider {
+  height:40px;
+  width:100%!important;
+  margin-bottom:0;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+
+  border:none;
+  border-top: 1px solid #999999;
+}
+
+.cartodb-mobile div.cartodb-timeslider .slider-wrapper {
+  display:block;
+  width:100%;
+  height:4px;
+  padding:0;
+  background:blue;
+}
+
+.cartodb-mobile div.cartodb-timeslider .slider {
+  width:100%;
+}
+
+.cartodb-mobile div.cartodb-timeslider ul {
+  width:auto;
+  position:relative;
+  clear:both;
+  overflow:hidden;
+}
+
+.cartodb-mobile div.cartodb-timeslider ul li {
+  display: block;
+  background:#fff;
+  float:left;
+}
+
+.cartodb-mobile div.cartodb-timeslider ul li.controls {
+  width: 100px;
+}
+
+.cartodb-mobile div.cartodb-timeslider ul li.time {
+  width: 100px;
+}
+
+.cartodb-mobile div.cartodb-timeslider ul li.last {
+  position:absolute;
+  left:200px;
+  width: 100%;
+  background:red;
 }
 
 /* LEGENDS */
@@ -2934,7 +3022,6 @@ div.cartodb-timeslider p {
 /* OPEN SANS */
 .cartodb-overlay.overlay-text.open_sans .content > .text { font-family: 'Open Sans', sans-serif; font-weight: 400; }
 .cartodb-overlay.overlay-text.open_sans .content > .text strong { font-family: 'Open Sans', sans-serif; font-weight: 700; }
-
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
@@ -2943,7 +3030,7 @@ only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) { 
   
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px!Important;
     padding: 9px 3px;
     background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
@@ -2963,7 +3050,7 @@ only screen and (                min-resolution: 2dppx) {
 
     background: url('../img/burguer@2x.png') no-repeat center center white;
     background-size: 18px 11px;
-  }
+  }*/
 
 }
 
@@ -2976,14 +3063,14 @@ and (max-device-width : 480px) {
     display: none;
   }
 
-  div.cartodb-map-wrapper div.cartodb-timeslider .ui-slider .ui-slider-handle {
+  /*div.cartodb-map-wrapper div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px;
     padding: 9px 3px;
     background:transparent url('../img/handle@2x.png') center center no-repeat;
     border:none;
     background-size: 11px 12px;
   }
-
+*/
 }
 
 /* iPhone portrait */
@@ -3006,24 +3093,24 @@ and (orientation : landscape) {
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
 
-  .torque div.cartodb-timeslider .slider-wrapper {
-    width:98px!important;
-  }
+  /*.torque div.cartodb-timeslider .slider-wrapper {*/
+    /*width:98px!important;*/
+  /*}*/
 
-  .torque div.cartodb-timeslider .slider {
-    width:98px!important;
-  }
+  /*.torque div.cartodb-timeslider .slider {*/
+    /*width:98px!important;*/
+  /*}*/
 }
 
 @media only screen and (min-width: 360px) and (max-width: 490px) {
 
-  div.cartodb-timeslider .slider-wrapper {
-    width:198px!important;
-  }
+  /*div.cartodb-timeslider .slider-wrapper {*/
+    /*width:198px!important;*/
+  /*}*/
 
-  div.cartodb-timeslider .slider {
-    width:198px!important;
-  }
+  /*div.cartodb-timeslider .slider {*/
+    /*width:198px!important;*/
+  /*}*/
 
 }
 
@@ -3032,13 +3119,13 @@ and (orientation : landscape) {
 and (orientation : portrait) { 
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    top: -12px!Important;
-    padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
-    border:none!Important;
-    background-size: 11px 12px!Important;
-  }
+  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
+    /*top: -12px!Important;*/
+    /*padding: 9px 3px;*/
+    /*background:transparent url('../img/handle@2x.png') center center no-repeat!Important;*/
+    /*border:none!Important;*/
+    /*background-size: 11px 12px!Important;*/
+  /*}*/
 }
 
 /* iPhone 5 landscape */
@@ -3047,13 +3134,13 @@ and (orientation : landscape) {
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
 
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    top: -12px!Important;
-    padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
-    border:none!Important;
-    background-size: 11px 12px!Important;
-  }
+  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
+    /*top: -12px!Important;*/
+    /*padding: 9px 3px;*/
+    /*background:transparent url('../img/handle@2x.png') center center no-repeat!Important;*/
+    /*border:none!Important;*/
+    /*background-size: 11px 12px!Important;*/
+  /*}*/
 
 }
 
@@ -3066,13 +3153,13 @@ and (orientation : portrait) {
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
 
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    top: -12px!Important;
-    padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
-    border:none!Important;
-    background-size: 11px 12px!Important;
-  }
+  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
+    /*top: -12px!Important;*/
+    /*padding: 9px 3px;*/
+    /*background:transparent url('../img/handle@2x.png') center center no-repeat!Important;*/
+    /*border:none!Important;*/
+    /*background-size: 11px 12px!Important;*/
+  /*}*/
 
 
 }
@@ -3085,13 +3172,13 @@ and (orientation : landscape) {
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
 
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    top: -12px!Important;
-    padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
-    border:none!Important;
-    background-size: 11px 12px!Important;
-  }
+  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
+    /*top: -12px!Important;*/
+    /*padding: 9px 3px;*/
+    /*background:transparent url('../img/handle@2x.png') center center no-repeat!Important;*/
+    /*border:none!Important;*/
+    /*background-size: 11px 12px!Important;*/
+  /*}*/
 
 
 

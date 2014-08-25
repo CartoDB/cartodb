@@ -1,26 +1,52 @@
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
-    'click .toggle': "_toggle",
-    'dblclick .toggle': "_toggle"
+    'click .toggle':        "_toggle",
+    // Rest infowindow bindings
+    "dragstart":            "_stopPropagation",
+    //"mousedown":            "_stopPropagation",
+    "touchstart":           "_stopPropagation",
+    "MSPointerDown":        "_stopPropagation",
+    "dblclick":             "_stopPropagation",
+    "DOMMouseScroll":       "_stopBubbling",
+    'MozMousePixelScroll':  "_stopBubbling",
+    "mousewheel":           "_stopBubbling",
+    "dbclick":              "_stopPropagation"
   },
 
   tagName: "li",
 
   className: "cartodb-mobile-layer",
 
-  template: cdb.core.Template.compile("<h3><%= layer_name %><a href='#' class='toggle'></a></h3>"),
+  template: cdb.core.Template.compile("<h3><%= layer_name %><div class='button'><a href='#' class='toggle'></a></div></h3>"),
+
+  /**
+   *  Stop event bubbling
+   */
+  _stopBubbling: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  /**
+   *  Stop event propagation
+   */
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
 
   initialize: function() {
 
     _.defaults(this.options, this.default_options);
+
     this.model.bind("change:visible", this._onChangeVisible, this);
 
   },
 
   _onChangeVisible: function() {
 
-    this.$el.find(".toggle")[ this.model.get("visible") ? "addClass":"removeClass"]("active");
+    this.$el.find(".legend")[ this.model.get("visible") ? "fadeIn":"fadeOut"](150);
+    this.$el[ this.model.get("visible") ? "removeClass":"addClass"]("hidden");
   
   },
 
@@ -49,6 +75,8 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     if (!this.model.get("visible")) this.$el.addClass("hidden");
     if (this.model.get("legend"))   this._renderLegend();
+
+    this._onChangeVisible();
 
     return this;
   }
@@ -261,8 +289,29 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       }
     }, this);
 
+
+    this.$header = this.$el.find(".cartodb-header");
+    this.$header.show();
+
     this._getLayers();
     this._renderLayers();
+
+    if (this.options.torqueLayer) {
+
+      this.hasTorque = true;
+
+      this.slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none", width: "auto" });
+
+      this.slider.bind("time_clicked", function() {
+        this.slider.toggleTime();
+      }, this);
+
+      this.$el.find(".torque").append(this.slider.render().$el);
+      this.$el.addClass("torque");
+      //this.$el.find(".slider-wrapper").hide();
+
+    }
+
 
 
     return this;
@@ -289,10 +338,16 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addHeader: function(overlay) {
 
     this.$header = this.$el.find(".cartodb-header");
-    this.$title  = this.$header.find(".title").html("hola");
+    var extra = overlay.options.extra;
 
-    this.$header.show();
-    this.$title.show();
+    if (extra) {
+      this.$title  = this.$header.find(".title").html(extra.title);
+      this.$description  = this.$header.find(".description").html(extra.description);
+
+      if (extra.show_title) this.$title.show();
+      if (extra.show_description) this.$description.show();
+    }
+
   },
 
   render_old: function() {

@@ -241,7 +241,7 @@ module CartoDB
                                 .gsub(" #{GEO_SEARCH_FILTER} #{OR_SEARCH_FILTER} ", ', ')
                                 .gsub(" #{GEO_SEARCH_FILTER}", '')
             }
-            @csv_dumper.begin_dump(category[CATEGORY_NAME_KEY])
+            @csv_dumper.begin_dump(category[CATEGORY_NAME_KEY].gsub(' ','_'))
           }
           @csv_dumper.additional_fields = dumper_additional_fields
 
@@ -259,7 +259,7 @@ module CartoDB
           }
 
           filters[FILTER_CATEGORIES].each { |category|
-            @csv_dumper.end_dump(category[CATEGORY_NAME_KEY])
+            @csv_dumper.end_dump(category[CATEGORY_NAME_KEY].gsub(' ','_'))
           }
           merged_data = @csv_dumper.merge_dumps(dumper_additional_fields.keys)
 
@@ -302,7 +302,7 @@ module CartoDB
                     next: nil
                 }
               end
-              dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
+              dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY].gsub(' ','_'), results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 
               @user_semaphore.synchronize {

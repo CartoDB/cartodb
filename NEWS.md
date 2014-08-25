@@ -1,5 +1,8 @@
 3.y.z (2014-mm-dd)
 ------------------
+* New features
+  * Varnish HTTP invalidation support
+  * Dynamic generation of sitemap.xml with public visualizations/tables for users
 * Fixed bugs
   * public map uses CORS headers to fetch user info
   * infowindow on hover fixed on table mode

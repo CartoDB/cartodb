@@ -1368,7 +1368,17 @@ class User < Sequel::Model
   # Being unable to communicate with Varnish may or may not be critical
   # depending on CartoDB configuration at time of function definition.
   #
+
   def create_function_invalidate_varnish
+    if Cartodb.config[:varnish_management].fetch('http_port', false)
+      create_function_invalidate_varnish_http
+    else
+      create_function_invalidate_varnish_telnet
+    end
+  end
+
+  # Telnet invalidation works only for Varnish 2.x.
+  def create_function_invalidate_varnish_telnet
 
     add_python
 
@@ -1407,10 +1417,6 @@ class User < Sequel::Model
             # NOTE: every table change also changed CDB_TableMetadata, so
             #       we purge those entries too
             #
-            # TODO: check if any server is ever setting "table" as the
-            #       surrogate key, as that looks redundant to me
-            #       --strk-20131203;
-            #
             # TODO: do not invalidate responses with surrogate key
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
@@ -1423,6 +1429,59 @@ class User < Sequel::Model
             if not retry:
               if critical:
                 plpy.error('Varnish fetch error: ' +  str(err))
+              break
+            retry -= 1 # try reconnecting
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    COMMIT;
+TRIGGER
+    )
+  end
+
+  def create_function_invalidate_varnish_http
+
+    add_python
+
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'http_port') || 6081
+    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
+    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
+    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+    $$
+        critical = #{varnish_critical}
+        timeout = #{varnish_timeout}
+        retry = #{varnish_retry}
+
+        import httplib
+
+        while True:
+
+          try:
+            # NOTE: every table change also changed CDB_TableMetadata, so
+            #       we purge those entries too
+            #
+            # TODO: do not invalidate responses with surrogate key
+            #       "not_this_one" when table "this" changes :/
+            #       --strk-20131203;
+            #
+            client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+            client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+            response = client.getresponse()
+            assert response.status == 204
+            break
+          except Exception as err:
+            plpy.warning('Varnish purge error: ' + str(err))
+            if not retry:
+              if critical:
+                plpy.error('Varnish purge error: ' +  str(err))
               break
             retry -= 1 # try reconnecting
     $$

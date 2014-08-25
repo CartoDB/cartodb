@@ -177,15 +177,15 @@ defaults: &defaults
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
     twitter_search:
       standard:
-        auth_required:  false
-        username:       ''
-        password:       ''
-        search_url:     'http://fake.url.nil'
+        auth_required:          false
+        username:               ''
+        password:               ''
+        search_url:             'http://fake.url.nil'
         ratelimit_active:       true
         ratelimit_concurrency:  8
         ratelimit_ttl:          4
         ratelimit_wait_secs:    0.5
-      customized_user_list:  []
+      customized_user_list:     []
       customized:
         auth_required:          false
         username:               ''

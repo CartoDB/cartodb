@@ -1514,7 +1514,7 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    cdb_extension_target_version = '0.4.0' # TODO: optionally take as parameter?
+    cdb_extension_target_version = '0.3.6' # TODO: optionally take as parameter?
 
     add_python
 

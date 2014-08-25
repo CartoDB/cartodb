@@ -8,7 +8,6 @@
 
 * Enhancements
   * CartoDB PostgreSQL extension versioning more flexible based on semver
-    * Upgrades extension to version 0.4.0
 
 3.0.1 (2014-08-07)
 ------------------

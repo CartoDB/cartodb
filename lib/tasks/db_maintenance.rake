@@ -230,19 +230,28 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
-    desc 'Load varnish invalidation function'
-    task :load_varnish_invalidation_function => :environment do
-      count = User.count
-      printf "Starting cartodb:db:load_varnish_invalidation_function task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          user.create_function_invalidate_varnish
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
-        end
-        #sleep(1.0/5.0)
+    desc 'Install/upgrade Varnish invalidation trigger'
+    task :load_varnish_trigger, [:num_threads, :thread_sleep, :database_host, :sleep] => :environment do |t, args|
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
+      database_host = args[:database_host].blank? ? nil : args[:database_host]
+      sleep = args[:sleep].blank? ? 5 : args[:sleep].to_i
+
+      if database_host.nil?
+        count = User.count
+      else
+        count = User.where(database_host: database_host).count
       end
+      execute_on_users_with_index(:load_varnish_trigger.to_s, Proc.new { |user, i|
+          begin
+            user.create_function_invalidate_varnish
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_varnish_trigger.to_s, database_host)
+            sleep(sleep)
+          rescue => e
+            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_varnish_trigger.to_s, database_host)
+            puts "FAIL:#{i} #{e.message}"
+          end
+      }, threads, thread_sleep, database_host)
     end
 
 

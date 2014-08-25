@@ -12,7 +12,7 @@ describe CartoDB::Metrics do
         },
         "geocoding" => {
           "kinds" => { "high_resolution" => { "success" =>  5, "failed" => 6, "nokia_hits" => 7, "cache_hits" => 8 } },
-          "totals" => { "success" => 9, "failed" => 10 }
+          "totals" => { "success" => 9, "failed" => 10, "revenue" => 11, "cost" => 12, "timeline" => 13 }
         }
       }
     end
@@ -60,13 +60,19 @@ describe CartoDB::Metrics do
           .with(Cartodb.config[:ducksboard]['geocoding']['kinds']['high_resolution']['nokia_hits'], 100).returns(true)
         metrics.expects(:ducksboard_increment)
           .with(Cartodb.config[:ducksboard]['geocoding']['kinds']['high_resolution']['cache_hits'], 50).returns(true)
+        metrics.expects(:ducksboard_increment)
+          .with(Cartodb.config[:ducksboard]['geocoding']['totals']['cost'], 5).returns(true)
+        metrics.expects(:ducksboard_increment)
+          .with(Cartodb.config[:ducksboard]['geocoding']['totals']['revenue'], 10).returns(true)
 
         metrics.ducksboard_report_geocoding({
           kind: 'high-resolution',
           successful_rows: 100,
           failed_rows: 50,
           cache_hits: 50,
-          processed_rows: 100
+          processed_rows: 100,
+          cost: 5,
+          price: 10
         })
       end
     end

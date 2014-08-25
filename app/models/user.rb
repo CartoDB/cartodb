@@ -1493,8 +1493,8 @@ TRIGGER
   end
 
   # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
-  def cartodb_extension_semver
-    cartodb_extension_version.split('.').take(3).map(&:to_i)
+  def cartodb_extension_semver(extension_version)
+    extension_version.split('.').take(3).map(&:to_i)
   end
 
   def cartodb_extension_version
@@ -1502,7 +1502,7 @@ TRIGGER
   end
 
   def cartodb_extension_version_pre_mu?
-    current_version = self.cartodb_extension_semver
+    current_version = self.cartodb_extension_semver(self.cartodb_extension_version)
     if current_version.size == 3
       major, minor, _ = current_version
       major == 0 and minor < 3
@@ -1574,7 +1574,8 @@ TRIGGER
 
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
-        unless cdb_extension_target_version == obtained
+
+        unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
           raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
         end
 

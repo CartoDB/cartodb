@@ -179,7 +179,8 @@ module CartoDB
       private
 
       def field_to_csv(field)
-        '"' + field.to_s.gsub('"', '""').gsub("\n", ' ').gsub("\x0D", ' ') + '"'
+        # RFC4180
+        '"' + field.to_s.gsub('"', '""').gsub("\n", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ') + '"'
       end
 
       def calculate_the_geom(row)

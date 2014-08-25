@@ -79,7 +79,7 @@ module ApplicationHelper
     }
 
     if Cartodb.config[:datasource_search].present?
-      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['search_url']
+      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
     end
 
     if Cartodb.config[:graphite_public].present?

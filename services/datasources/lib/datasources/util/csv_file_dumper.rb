@@ -73,7 +73,7 @@ module CartoDB
       # @param base_name String|nil (optional)
       def temporary_file(base_name = '', extension = CONVERTED_FILE_EXTENSION)
         FileUtils.mkdir_p(FILE_DUMPER_TMP_SUBFOLDER) unless File.directory?(FILE_DUMPER_TMP_SUBFOLDER)
-        Tempfile.new([base_name, extension], FILE_DUMPER_TMP_SUBFOLDER)
+        Tempfile.new([base_name.gsub(' ','_'), extension], FILE_DUMPER_TMP_SUBFOLDER)
       end
 
       def file_paths

@@ -196,7 +196,7 @@ defaults: &defaults
         auth_required:          false
         username:               ''
         password:               ''
-        search_url:             ''http://fake.url.nil'
+        search_url:             'http://fake.url.nil'
         ratelimit_active:       false
         ratelimit_concurrency:  3
         ratelimit_ttl:          4

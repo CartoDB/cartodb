@@ -34,7 +34,7 @@ module CartoDB
           enabled:     self.organization_user? ? self.organization.twitter_datasource_enabled         : self.twitter_datasource_enabled,
           quota:       self.organization_user? ? self.organization.twitter_datasource_quota           :  self.twitter_datasource_quota,
           block_price: self.organization_user? ? self.organization.twitter_datasource_block_price     : self.twitter_datasource_block_price,
-          block_size:  self.organization_user? ? self.organization.self.twitter_datasource_block_size : self.twitter_datasource_block_size,
+          block_size:  self.organization_user? ? self.organization.twitter_datasource_block_size      : self.twitter_datasource_block_size,
           monthly_use: self.organization_user? ? self.organization.get_twitter_imports_count          : self.get_twitter_imports_count,
           hard_limit:  self.hard_twitter_datasource_limit
         },

@@ -229,6 +229,32 @@
         }
       }
 
+      // Import twitter disabled
+      .twitter-message-pane {
+
+        div.canvas {
+          position:absolute;
+          top:0;
+          left:0;
+          right:0;
+          bottom:0;
+          @include background(image-url("layout/twitter_disabled.png") no-repeat -15px 5px);
+          z-index:0;
+        }
+
+        div.message {
+          position:relative;
+          display:block;
+          padding-left:285px;
+          z-index:0;
+
+          p {
+            font-size:14px;
+            line-height:18px;
+          }
+        }
+      }
+
       // Scratch
       .create-empty {
         margin-top:-20px; // HA!

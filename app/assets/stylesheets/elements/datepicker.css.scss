@@ -119,7 +119,7 @@
       bottom:54px;
       left:0;
       right:0;
-      padding:30px;
+      padding:40px;
       border:1px solid #9E9E9E;
       background:white;
       @include border-radius($border-radius);
@@ -265,6 +265,10 @@
           height:30px;
           text-align:center!important;
 
+          &:first-child {
+            display:none;
+          }
+
           span {
             font-size:9px;
             color:#CCCCCC;
@@ -322,11 +326,35 @@
         a { border-color:#E7EAEC }
       }
 
+      // Margin for a calendar
+      table.datepickerViewDays {
+        margin:0 10px;
+      }
+
       // Hide week links
-      // thead > tr.datepickerDoW > th:first-child,
-      // .datepickerWeek {
-      //   display:none
-      // }
+      thead > tr.datepickerDoW > th:first-child,
+      .datepickerWeek {
+        display:none
+      }
+
+      // Remove data picker 'inside' arrows
+      .datepickerContainer > table > tbody > tr td {
+        // &:first-child thead th.datepickerGoNext a {
+        //   display:none
+        // }
+        // &:last-child thead th.datepickerGoPrev a {
+        //   display:none
+        // }
+        thead th.datepickerGoNext a,
+        thead th.datepickerGoPrev a {
+          display:none
+        }
+      }
+
+      // Remove hover style for month title
+      .datepickerMonth a:hover {
+        cursor:default;
+      }
 
       .datepickerSpace {
         position:relative;
@@ -334,13 +362,13 @@
         div {
           @include inline-block();
           height:100%;  
-          width: 70px;
+          width: 74px;
 
           &:before {
             content:'';
             position:absolute;
             top:0;
-            left:34px;
+            left:38px;
             width:1px;
             height:100%;
             background:#CCCCCC;

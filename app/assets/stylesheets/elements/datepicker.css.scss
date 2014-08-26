@@ -17,7 +17,6 @@
   div.custom-datepicker {
     position:relative;
     margin-top:5px;
-    background:white;
     z-index:3;
 
     // Button
@@ -28,6 +27,7 @@
       @include justify-content(flex-start, start);
       height:46px;
       padding:0 14px;
+      background:white;
       border:1px solid #CCC;
       @include border-radius($border-radius);
 

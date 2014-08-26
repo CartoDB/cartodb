@@ -269,7 +269,8 @@ module CartoDB
           merged_data = @csv_dumper.merge_dumps(dumper_additional_fields.keys)
 
           if DEBUG_FLAG
-            puts "Temp folders with results:\n#{@csv_dumper.file_paths}\n#{@csv_dumper.original_file_paths}"
+            puts "Temp files:\n#{@csv_dumper.file_paths}"
+            puts "#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}"
           end
 
           # remaining quota is calc. on the fly based on audits/imports

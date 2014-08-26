@@ -24,7 +24,7 @@ module CartoDB
         :inReplyTo,
         :geo,
         :twitter_entities,  # Save json string,
-        :object,            # Save json string
+        :object,
         :location,
         :gnip
       ]
@@ -43,7 +43,7 @@ module CartoDB
         # same as location->geo, but as a point, so should have higher priority
       }
 
-      # This fields will get dumped as field_subfield. If not preent here will be saved as a stringified json
+      # This fields will get dumped as field_subfield. If not present here will be saved as a stringified json
       SUBFIELDS = {
         :actor => [
           :objectType,
@@ -84,6 +84,13 @@ module CartoDB
           :geo,
           :streetAddress,
           :name
+        ],
+        :object => [
+          :objectType,
+          :id,
+          :summary,
+          :postedTime,
+          :link
         ]
       }
 

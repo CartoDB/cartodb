@@ -27,7 +27,7 @@
       @include align-items(center, center);
 
       .message {
-        width:310px;
+        width:360px;
         color:#999;
         font-size:13px;
         line-height:16px;
@@ -38,7 +38,7 @@
         @include cross-browser(flex-direction,column);
         @include justify-content(center,center);
         width:144px;
-        height:35px;
+        height:52px;
         padding-left:10px;
         border-left: 1px solid #CCCCCC;
 

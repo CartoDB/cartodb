@@ -342,14 +342,17 @@ class DataImport < Sequel::Model
     database      = current_user.in_database
     destination_schema = current_user.database_schema
     importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
-    log.append 'Before run'
+    log.append 'Before importer run'
     importer.run(tracker)
-    log.append 'After run'
+    log.append 'After importer run'
 
     self.results    = importer.results
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
+
+    # TODO: WIP for CDB-3936
+    #puts runner.loader_classname
 
     update_synchronization(importer)
 

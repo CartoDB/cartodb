@@ -45,6 +45,8 @@ module CartoDB
         MAX_SEARCH_TERMS = 30 - 1
         MAX_QUERY_SIZE   = 1024
 
+        MAX_TABLE_NAME_SIZE = 30
+
         # Constructor
         # @param config Array
         # [
@@ -118,24 +120,12 @@ module CartoDB
         # @throws OutOfQuotaError
         # @throws ParameterError
         def get_resource(id)
-          fields = ::JSON.parse(id, symbolize_names: true)
-
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
-
           unless has_enough_quota?(@user)
             raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
           end
+          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
 
-          @filters[FILTER_CATEGORIES] = build_queries_from_fields(fields)
-
-          if @filters[FILTER_CATEGORIES].size > MAX_CATEGORIES
-            raise ParameterError.new("Max allowed categories are #{FILTER_CATEGORIES}", DATASOURCE_NAME)
-          end
-
-          @filters[FILTER_FROMDATE] = build_date_from_fields(fields, 'from')
-          @filters[FILTER_TODATE] = build_date_from_fields(fields, 'to')
-          @filters[FILTER_MAXRESULTS] = build_maxresults_field(@user)
-          @filters[FILTER_TOTAL_RESULTS] = build_total_results_field(@user)
+          fields_from(id)
 
           do_search(@search_api, @filters)
         end
@@ -143,6 +133,7 @@ module CartoDB
         # @param id string
         # @return Hash
         def get_resource_metadata(id)
+          fields_from(id)
           {
               id:       id,
               title:    DATASOURCE_NAME,
@@ -150,7 +141,7 @@ module CartoDB
               service:  DATASOURCE_NAME,
               checksum: nil,
               size:     0,
-              filename: "#{DATASOURCE_NAME}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
+              filename: "#{table_name}.csv"
           }
         end
 
@@ -221,6 +212,38 @@ module CartoDB
         attr_accessor :search_api, :csv_dumper
         attr_reader   :data_import_item
 
+        def table_name
+          terms_fragment = @filters[FILTER_CATEGORIES].map { |category|
+            clean_category(category[CATEGORY_TERMS_KEY]).gsub(/[^0-9a-z,]/i, '').gsub(/[,]/i, '_')
+          }.join('_').slice(0,MAX_TABLE_NAME_SIZE)
+
+          "twitter_#{terms_fragment}"
+        end
+
+        def clean_category(category)
+          category.gsub(" #{OR_SEARCH_FILTER} ", ', ')
+                  .gsub(" #{GEO_SEARCH_FILTER}", '')
+                  .gsub(/^\(/, '')
+                  .gsub(/\)$/, '')
+        end
+
+        def fields_from(id)
+          return unless @filters.count == 0
+
+          fields = ::JSON.parse(id, symbolize_names: true)
+
+          @filters[FILTER_CATEGORIES] = build_queries_from_fields(fields)
+
+          if @filters[FILTER_CATEGORIES].size > MAX_CATEGORIES
+            raise ParameterError.new("Max allowed categories are #{FILTER_CATEGORIES}", DATASOURCE_NAME)
+          end
+
+          @filters[FILTER_FROMDATE] = build_date_from_fields(fields, 'from')
+          @filters[FILTER_TODATE] = build_date_from_fields(fields, 'to')
+          @filters[FILTER_MAXRESULTS] = build_maxresults_field(@user)
+          @filters[FILTER_TOTAL_RESULTS] = build_total_results_field(@user)
+        end
+
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
         def report_error(message, additional_data)
           if @error_report_component.nil?
@@ -240,11 +263,7 @@ module CartoDB
           filters[FILTER_CATEGORIES].each { |category|
             dumper_additional_fields[category[CATEGORY_NAME_KEY]] = {
               category_name:  category[CATEGORY_NAME_KEY],
-              category_terms: category[CATEGORY_TERMS_KEY]
-                                .gsub(" #{OR_SEARCH_FILTER} ", ', ')
-                                .gsub(" #{GEO_SEARCH_FILTER}", '')
-                                .gsub(/^\(/, '')
-                                .gsub(/\)$/, '')
+              category_terms: clean_category(category[CATEGORY_TERMS_KEY])
             }
             @csv_dumper.begin_dump(category[CATEGORY_NAME_KEY])
           }

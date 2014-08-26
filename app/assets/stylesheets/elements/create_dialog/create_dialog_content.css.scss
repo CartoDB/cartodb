@@ -215,7 +215,13 @@
 
         form.upload {
 
-          .upload { margin-top:0 }
+          .upload {
+            margin-top:0;
+
+            input.url-input {
+              width:465px;
+            }
+          }
 
           .infobox {
             div.info.active { margin-top:-18px }

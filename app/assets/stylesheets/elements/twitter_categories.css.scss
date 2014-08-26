@@ -71,14 +71,36 @@
         &.short { width:120px }
       }
 
-      // Enabled
+      // Character counter
+      div.counter {
+        @include display-flex();
+        @include justify-content(flex-end, end);
+        @include align-items(center, center);
+        width:32px;
+        height:12px;
+        margin:0 9px 0 0;
+        text-align:center;
+
+        span.counter-label {
+          display:none;
+          width:auto;
+          padding:0 5px;
+          @include border-radius(2px);
+          background:#CCC;
+          color:white;
+          font:normal 11px $text-fonts;
+          line-height:14px;
+        }
+      }
+
+      // Category enabled
       &.enabled {
         border-bottom:1px solid #CCC;
         height:46px;
         @include opacity(1);
       }
 
-      // Last child!
+      // Last category child!
       &:last-child {
         border-bottom:none
       }

@@ -27,7 +27,7 @@
           <% if !@user.new? && @user.avatar_url.present? %>
             <img src="<%= @user.avatar_url %>" alt="<%= @user.username %>" title="<%= @user.username %>" />
           <% end %>
-          <h2>You public dashboard</h2>
+          <h2>Your public dashboard</h2>
         </div>
 
         <% if @show_dashboard_details_flash %>

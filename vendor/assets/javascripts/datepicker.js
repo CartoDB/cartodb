@@ -22,7 +22,7 @@
 						'<thead>',
 							'<tr>',
 								'<th class="datepickerGoPrev"><a href="#"><span><%=prev%></span></a></th>',
-								'<th colspan="6" class="datepickerMonth"><a href="#"><span></span></a></th>',
+								'<th colspan="5" class="datepickerMonth"><a href="#"><span></span></a></th>',
 								'<th class="datepickerGoNext"><a href="#"><span><%=next%></span></a></th>',
 							'</tr>',
 							'<tr class="datepickerDoW">',
@@ -498,21 +498,22 @@
 							changed = true;
 							options.lastSel = false;
 						} else if (parentEl.hasClass('datepickerMonth')) {
-							tmp.addMonths(tblIndex - Math.floor(options.calendars/2));
-							switch (tblEl.get(0).className) {
-								case 'datepickerViewDays':
-									tblEl.get(0).className = 'datepickerViewMonths';
-									el.find('span').text(tmp.getFullYear());
-									break;
-								case 'datepickerViewMonths':
-									tblEl.get(0).className = 'datepickerViewYears';
-									el.find('span').text((tmp.getFullYear()-6) + ' - ' + (tmp.getFullYear()+5));
-									break;
-								case 'datepickerViewYears':
-									tblEl.get(0).className = 'datepickerViewDays';
-									el.find('span').text(formatDate(tmp, 'B, Y'));
-									break;
-							}
+							return false;
+							// tmp.addMonths(tblIndex - Math.floor(options.calendars/2));
+							// switch (tblEl.get(0).className) {
+							// 	case 'datepickerViewDays':
+							// 		tblEl.get(0).className = 'datepickerViewMonths';
+							// 		el.find('span').text(tmp.getFullYear());
+							// 		break;
+							// 	case 'datepickerViewMonths':
+							// 		tblEl.get(0).className = 'datepickerViewYears';
+							// 		el.find('span').text((tmp.getFullYear()-6) + ' - ' + (tmp.getFullYear()+5));
+							// 		break;
+							// 	case 'datepickerViewYears':
+							// 		tblEl.get(0).className = 'datepickerViewDays';
+							// 		el.find('span').text(formatDate(tmp, 'B, Y'));
+							// 		break;
+							// }
 						} else if (parentEl.parent().parent().is('thead')) {
 							switch (tblEl.get(0).className) {
 								case 'datepickerViewDays':

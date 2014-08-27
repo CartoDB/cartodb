@@ -30,6 +30,7 @@
       background:white;
       border:1px solid #CCC;
       @include border-radius($border-radius);
+      outline:none;
 
       // Icon
       .calendar.icon {
@@ -64,8 +65,9 @@
         border-top:4px solid #999;
       }
 
-      // Hover?
-      &:hover {
+      // Hover and focus?
+      &:hover,
+      &:focus {
         text-decoration:none;
         border-color:#AAA;
 

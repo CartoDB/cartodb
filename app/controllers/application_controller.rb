@@ -90,7 +90,7 @@ class ApplicationController < ActionController::Base
   end
 
   def table_privacy_text(table)
-    if table.is_a?(Table)
+    if table.is_a?(::Table)
       table.privacy_text
     elsif table.is_a?(Hash)
       table['privacy']

@@ -191,7 +191,7 @@ describe User do
       organization.destroy
     end
 
-    it 'should set default settings properly unless overriden' do
+    it 'should set default settings properly unless overriden', focus: true do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.max_layers.should == 6
@@ -206,6 +206,19 @@ describe User do
       user.max_layers.should == 3
       user.private_tables_enabled.should be_false
       user.sync_tables_enabled.should be_false
+      organization.destroy
+    end
+
+    it 'should inherit twitter_datasource_enabled from organization on creation' do
+      organization = create_organization_with_users(twitter_datasource_enabled: true)
+      organization.save
+      organization.twitter_datasource_enabled.should be_true
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.twitter_datasource_enabled.should be_true
+      end
+      user = create_user(organization: organization)
+      user.save
+      user.twitter_datasource_enabled.should be_true
       organization.destroy
     end
 
@@ -414,6 +427,19 @@ describe User do
       User.any_instance.stubs(:map_view_quota).returns(120)
       User.any_instance.stubs(:get_geocoding_calls).returns(81)
       User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.overquota.should be_empty
+      User.overquota(0.20).map(&:id).should include(@user.id)
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
+      User.overquota(0.10).should be_empty
+    end
+
+    it "should return users near their twitter quota" do
+      User.any_instance.stubs(:get_api_calls).returns([0])
+      User.any_instance.stubs(:map_view_quota).returns(120)
+      User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+      User.any_instance.stubs(:twitter_datasource_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
       User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count

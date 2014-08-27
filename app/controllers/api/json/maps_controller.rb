@@ -13,7 +13,7 @@ class Api::Json::MapsController < Api::ApplicationController
   end
 
   def create
-    @map = Map.new(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id, \
+    @map = ::Map.new(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id, \
                                 :view_bounds_sw, :view_bounds_ne, :legends, :scrollwheel))
     @map.user_id = current_user.id
 
@@ -66,7 +66,7 @@ class Api::Json::MapsController < Api::ApplicationController
     )
     raise RecordNotFound if vis.nil?
 
-    @map = Map.filter(id: params[:id]).first
+    @map = ::Map.filter(id: params[:id]).first
     raise RecordNotFound if @map.nil?
   end
 end

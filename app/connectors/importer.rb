@@ -34,7 +34,9 @@ module CartoDB
           }
         else
           runner.log.append('Proceeding to register')
-          results.select(&:success?).each { |result| register(result) }
+          results.select(&:success?).each { |result|
+            register(result)
+          }
         end
 
         self

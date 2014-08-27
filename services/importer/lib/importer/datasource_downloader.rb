@@ -18,12 +18,12 @@ module CartoDB
         raise UploadError if datasource.nil?
 
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
-      end #initialize
+      end
 
       def run(available_quota_in_bytes=nil)
         set_downloaded_source_file(available_quota_in_bytes)
         self
-      end #run
+      end
 
       def clean_up
         if defined?(@temporary_directory) \
@@ -37,7 +37,15 @@ module CartoDB
         @checksum = @item_metadata[:checksum]
         return self unless modified?
 
-        resource_data = @datasource.get_resource(@item_metadata[:id])
+        begin
+          resource_data = @datasource.get_resource(@item_metadata[:id])
+        rescue => exception
+          if exception.message =~ /quota/i
+            raise StorageQuotaExceededError
+          else
+            raise
+          end
+        end
 
         data = StringIO.new(resource_data)
         name = @item_metadata[:filename]
@@ -48,12 +56,12 @@ module CartoDB
 
         repository.store(source_file.path, data)
         self
-      end #set_downloaded_source_file
+      end
 
       def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
         return self unless available_quota_in_bytes
         raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
-      end #raise_if_over_storage_quota
+      end
 
       def modified?
         previous_checksum = @options.fetch(:checksum, false)
@@ -62,7 +70,7 @@ module CartoDB
         return true unless (previous_checksum)
         return true if previous_checksum && checksum && previous_checksum != checksum
         false
-      end #modified?
+      end
 
       attr_reader  :source_file
 
@@ -73,13 +81,13 @@ module CartoDB
 
       def filepath(name)
         repository.fullpath_for(name )
-      end #filepath
+      end
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
         @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
-      end #temporary_directory
-    end # DatasourceDownloader
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

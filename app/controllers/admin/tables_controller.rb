@@ -17,7 +17,7 @@ class Admin::TablesController < ApplicationController
   # if the user is not logged in, we redirect them to the public page
   def show
     if current_user.present?
-      @table = Table.get_by_id(params[:id], current_user)
+      @table = ::Table.get_by_id(params[:id], current_user)
       respond_to do |format|
         format.html
         download_formats @table, format
@@ -30,7 +30,7 @@ class Admin::TablesController < ApplicationController
   def public
     @table = nil
     @subdomain = CartoDB.extract_subdomain(request)
-    @table = Table.get_by_id(params[:id], User.find(:username => @subdomain))
+    @table = ::Table.get_by_id(params[:id], User.find(:username => @subdomain))
 
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)

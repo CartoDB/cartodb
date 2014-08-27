@@ -60,14 +60,14 @@ module CartoDB
 
       def single_data_layer?
         layers(:cartodb).to_a.length == 1 || related_tables.length == 1
-      end #single_data_layer?
+      end
 
       def permission
         @permission ||= CartoDB::Permission.where(id: @permission_id).first unless @permission_id.nil?
       end
 
       attr_reader :id, :map_id
-    end # Relator
-  end # Visualization
-end # CartoDB
+    end
+  end
+end
 

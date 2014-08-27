@@ -72,7 +72,7 @@ module CartoDB
     private
     
     def connection_id(configuration)
-      "#{configuration['database']}:#{configuration['username']}"
+      "#{configuration['host']}:#{configuration['database']}:#{configuration['username']}"
     end
   end
 end

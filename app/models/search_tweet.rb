@@ -55,7 +55,15 @@ class SearchTweet < Sequel::Model
 
   def price
     return 0 unless self.retrieved_items > 0
-    (user.effective_twitter_block_price * calculate_used_credits) / user.effective_twitter_datasource_block_size.to_f
+
+    if user.effective_twitter_block_price.nil? || calculate_used_credits.nil? \
+       || user.effective_twitter_datasource_block_size.nil?
+      Rollbar.report_message('Twitter datasource ', 'error', error_info: stacktrace)
+      # As the import itself went well don't break execution, just return something
+      0
+    else
+      (user.effective_twitter_block_price * calculate_used_credits) / user.effective_twitter_datasource_block_size.to_f
+    end
   end
 
 end

@@ -290,6 +290,12 @@ module CartoDB
             puts "#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}"
           end
 
+          # Make sure we don't charge extra tweets if the user cannot go overquota
+          # (even if we "lose" charging a block or two of tweets)
+          if !@user.soft_twitter_datasource_limit && (@user.remaining_twitter_quota - @used_quota) < 0
+            @used_quota = @user.remaining_twitter_quota
+          end
+
           # remaining quota is calc. on the fly based on audits/imports
           save_audit(@user, @data_import_item, @used_quota)
 

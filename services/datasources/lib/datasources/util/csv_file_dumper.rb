@@ -1,0 +1,133 @@
+# encoding: utf-8
+
+require 'tempfile'
+require 'fileutils'
+require 'json'
+
+module CartoDB
+  module Datasources
+    # TODO: Error handling, now assumes all done ok
+    class CSVFileDumper
+
+      ORIGINAL_FILE_EXTENSION = '.json'
+      CONVERTED_FILE_EXTENSION = '.csv'
+      HEADERS_FILE_EXTENSION = '_headers.csv'
+
+      FILE_DUMPER_TMP_SUBFOLDER = '/tmp/csv_file_dumper/'
+
+      OUTPUT_ENCODING = 'utf-8'
+
+      def initialize(json_to_csv_conversor, debug_mode = false)
+        @debug_mode = debug_mode
+        @json2csv_conversor = json_to_csv_conversor
+        @temporary_directory = nil
+
+        @additional_fields = {}
+
+        @files = {}
+        @original_files = {}
+        @headers_file = nil
+      end
+
+      def additional_fields=(data = {})
+        @additional_fields = data
+      end
+
+      # @param name String
+      def begin_dump(name)
+        # Create temp file & open
+        @files[name] = temporary_file(name)
+        @original_files[name] = temporary_file(name, ORIGINAL_FILE_EXTENSION) if @debug_mode
+        @headers_file = temporary_file('', HEADERS_FILE_EXTENSION) if @debug_mode
+      end
+
+      # @param name String
+      # @param data Array
+      # @return Integer number of items dumped
+      def dump(name, data = [])
+        processed_data = @json2csv_conversor.process(data, false, @additional_fields[name]) + "\n"
+        processed_data.encode!(OUTPUT_ENCODING, :replace => '')
+        @files[name].write(processed_data)
+        @original_files[name].write(::JSON.dump(data) + "\n") if @debug_mode
+        data.count
+      end
+
+      # @param name String
+      def end_dump(name)
+        if @files[name]
+          @files[name].close
+        end
+        if @original_files[name]
+          @original_files[name].close
+        end
+      end
+
+      # @param names_list Array
+      # @return String
+      def merge_dumps(names_list = [])
+        headers = @json2csv_conversor.generate_headers(@additional_fields[names_list.first]) + "\n"
+        return_data = headers
+
+        return_data.encode!(OUTPUT_ENCODING, :replace => '')
+
+        if @debug_mode && !@headers_file.nil?
+          @headers_file.write(headers)
+          @headers_file.close
+        end
+
+        names_list.each { |name|
+          return_data << File.read(@files[name].path)
+          @files[name].unlink unless @debug_mode
+        }
+
+        # Remove final trailing newline before returning
+        return_data.gsub(/\n$/, '')
+      end
+
+      # Return a new temporary file contained inside a tmp subfolder
+      # @param base_name String|nil (optional)
+      def temporary_file(base_name = '', extension = CONVERTED_FILE_EXTENSION)
+        FileUtils.mkdir_p(FILE_DUMPER_TMP_SUBFOLDER) unless File.directory?(FILE_DUMPER_TMP_SUBFOLDER)
+
+        # For the default scenario force encoding, for original files don't touch anything
+        if extension == CONVERTED_FILE_EXTENSION
+          Tempfile.new([base_name.gsub(' ','_'), extension], FILE_DUMPER_TMP_SUBFOLDER, :encoding => OUTPUT_ENCODING)
+        else
+          Tempfile.new([base_name.gsub(' ','_'), extension], FILE_DUMPER_TMP_SUBFOLDER)
+        end
+      end
+
+      def file_paths
+        @files.values.map { |file|
+          file.path
+        }
+      end
+
+      def original_file_paths
+        @original_files.values.map { |file|
+          file.path
+        }
+      end
+
+      def headers_path
+        @headers_file.path unless @headers_file.nil?
+      end
+
+      private
+
+      # Intended for tests
+      def destroy_files
+        @files.keys.each { |key|
+          @files[key].close!
+        }
+        @original_files.keys.each { |key|
+          @original_files[key].close!
+        }
+        unless @headers_file.nil?
+          @headers_file.close!
+        end
+      end
+
+    end
+  end
+end

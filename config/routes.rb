@@ -16,6 +16,8 @@ CartoDB::Application.routes.draw do
   match '/limits' => 'home#limits', as: :limits
   match '/status' => 'home#app_status'
 
+  get   '/sitemap.xml' => 'admin/pages#sitemap'
+
   # OAuth
   match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
   match '(/u/:user_domain)/oauth/request_token'  => 'oauth#request_token', as: :request_token

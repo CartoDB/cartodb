@@ -68,9 +68,11 @@ module CartoDB
       begin
         count = count + 1 rescue 0
         search_terms = get_search_terms(count)
-        sql = generate_sql(search_terms)
-        response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-        File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
+        unless search_terms.size == 0
+          sql = generate_sql(search_terms)
+          response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+          File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
+        end
       end while search_terms.size >= @batch_size
       @processed_rows = `wc -l #{geocoding_results} 2>&1`.to_i
       geocoding_results

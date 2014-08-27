@@ -27,7 +27,7 @@ describe Visualization::Member do
     CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
 
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
-    CartoDB::Table::PrivacyManager.any_instance.stubs(
+    CartoDB::TablePrivacyManager.any_instance.stubs(
         :set_from_table_privacy => nil,
         :propagate_to_redis_and_varnish => nil
     )
@@ -192,13 +192,13 @@ describe Visualization::Member do
 
   def prepare_organization
     org = create_organization
-    user_a = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+    user_a = create_user(:quota_in_bytes => 1.megabyte, :table_quota => 400)
     user_org = UserOrganization.new(org.id, user_a.id)
     user_org.promote_user_to_admin
     org.reload
 
     user_b = create_user(
-      :quota_in_bytes => 12345678, :table_quota => 400,
+      :quota_in_bytes => 1.megabyte, :table_quota => 400,
       :organization => org
     )
     org.reload
@@ -214,7 +214,7 @@ describe Visualization::Member do
     organization = Organization.new
 
     organization.name = 'wadus-org'
-    organization.quota_in_bytes = 1024 ** 3
+    organization.quota_in_bytes = 3.megabytes
     organization.seats = 10
     organization.save
 

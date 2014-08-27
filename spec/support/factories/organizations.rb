@@ -1,9 +1,9 @@
 module CartoDB
   module Factories
-    
+
     def new_organization(attributes = {})
       organization = Organization.new
-      
+
       organization.name =             attributes[:name] || 'vizzuality'
       organization.seats =            attributes[:seats] || 10
       organization.quota_in_bytes =   attributes[:quota_in_bytes] || 100.megabytes
@@ -14,8 +14,9 @@ module CartoDB
       organization.display_name =     attributes[:display_name] || 'Vizzuality Inc'
       organization.discus_shortname = attributes[:discus_shortname] || 'cartodb'
       organization.twitter_username = attributes[:twitter_username] || 'cartodb'
-      
-      organization 
+      organization.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
+
+      organization
     end
 
     def create_organization(attributes = {})

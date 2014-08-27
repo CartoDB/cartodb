@@ -11,12 +11,11 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson the_geom_from_twitter_geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil,
-      geometry_columns=nil)
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil)
         @db         = db
         @job        = job || Job.new
         @table_name = table_name
@@ -210,7 +209,7 @@ module CartoDB
         is_multipoint
       rescue
         false
-      end #multipoint?
+      end
 
       private
 
@@ -218,8 +217,8 @@ module CartoDB
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")
-      end #qualified_table_name
-    end # Georeferencer
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

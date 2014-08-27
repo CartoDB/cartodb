@@ -82,7 +82,7 @@ module CartoDB
           end
           layer_index += 1
           #noinspection RubyArgCount
-          Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
+          CartoDB::Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end
       end #other_layers_for
 
@@ -118,7 +118,7 @@ module CartoDB
 
       def base_layers_for(visualization)
         visualization.layers(:base).map do |layer|
-          Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+          CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end #base_layers_for
 

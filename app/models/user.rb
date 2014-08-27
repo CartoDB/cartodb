@@ -730,6 +730,14 @@ class User < Sequel::Model
     organization.present? ? organization.twitter_datasource_block_size : self.twitter_datasource_block_size
   end
 
+  def effective_twitter_total_quota
+    organization.present? ? organization.twitter_datasource_quota : self.twitter_datasource_quota
+  end
+
+  def effective_get_twitter_imports_count
+    organization.present? ? organization.get_twitter_imports_count : self.get_twitter_imports_count
+  end
+
   def remaining_geocoding_quota
     if organization.present?
       remaining = organization.geocoding_quota - organization.get_geocoding_calls
@@ -743,7 +751,7 @@ class User < Sequel::Model
     if organization.present?
       remaining = organization.twitter_datasource_quota - organization.get_twitter_imports_count
     else
-      remaining = twitter_datasource_quota - get_twitter_imports_count
+      remaining = self.twitter_datasource_quota - get_twitter_imports_count
     end
     (remaining > 0 ? remaining : 0)
   end

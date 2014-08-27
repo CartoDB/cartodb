@@ -175,7 +175,6 @@ module CartoDB
         end
 
         def set_audit_to_completed(table_id = nil)
-          #require_relative '../../../../../app/models/search_tweet'
           entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
           raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
                                         DATASOURCE_NAME) if entry.nil?
@@ -186,7 +185,6 @@ module CartoDB
         end
 
         def set_audit_to_failed
-          #require_relative '../../../../../app/models/search_tweet'
           entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
           raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
                                         DATASOURCE_NAME) if entry.nil?
@@ -400,7 +398,7 @@ module CartoDB
             category[:terms] = sanitize_terms(category[:terms])
 
             query = {
-              CATEGORY_NAME_KEY => category[:category],
+              CATEGORY_NAME_KEY => category[:category].to_s,
               CATEGORY_TERMS_KEY => ''
             }
 

@@ -1719,7 +1719,7 @@ class Table < Sequel::Model(:user_tables)
       else
         http_res = nil
     end
-    raise "#{http_res.inspect}" unless http_res.is_a?(Net::HTTPOK)
+    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
     http_res
   end
 

@@ -4,9 +4,11 @@ require_relative '../map'
 module CartoDB
   module Map
     class Copier
-      def copy(map)
+      def copy(map, layers=true)
         new_map = new_map_from(map).save
-        copy_layers(map, new_map)
+        if layers
+          copy_layers(map, new_map)
+        end
 
         new_map
       end #copy

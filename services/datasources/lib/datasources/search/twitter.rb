@@ -438,12 +438,12 @@ module CartoDB
 
         def build_maxresults_field(user)
           # user about to hit quota?
-          if user.twitter_datasource_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+          if user.remaining_twitter_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
             if user.soft_twitter_datasource_limit
               # But can go beyond limits
               TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
             else
-              user.twitter_datasource_quota
+              user.remaining_twitter_quota
             end
           else
             TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
@@ -454,7 +454,7 @@ module CartoDB
           if user.soft_twitter_datasource_limit
             NO_TOTAL_RESULTS
           else
-            user.twitter_datasource_quota
+            user.remaining_twitter_quota
           end
         end
 

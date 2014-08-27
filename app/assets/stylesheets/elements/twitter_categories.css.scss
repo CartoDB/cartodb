@@ -62,6 +62,11 @@
           font-style:italic;
         }
 
+        &:-ms-input-placeholder {
+          color:#CCCCCC;
+          font-style:italic; 
+        }
+
         &[readonly] {
           background:white;
           color: #E0E0E0;

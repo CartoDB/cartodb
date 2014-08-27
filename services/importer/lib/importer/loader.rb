@@ -130,10 +130,12 @@ module CartoDB
         source_file.extension =~ /\.osm/
       end
 
+      attr_accessor   :source_file
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :source_file, :layer
+      attr_accessor   :job, :layer
     end
   end
 end

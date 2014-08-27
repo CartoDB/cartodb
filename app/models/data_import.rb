@@ -351,8 +351,9 @@ class DataImport < Sequel::Model
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
 
-    # TODO: WIP for CDB-3936
-    #puts runner.loader_classname
+    # TODO: WIP for CDB-3936 (store)
+    #puts runner.loader.class.to_s
+    #puts runner.loader.source_file.extension
 
     update_synchronization(importer)
 
@@ -504,7 +505,7 @@ class DataImport < Sequel::Model
   def set_datasource_audit_to_failed(datasource)
     if datasource.persists_state_via_data_import?
       datasource.data_import_item = self
-      # TODO: store
+      datasource.set_audit_to_failed
     end
   end
 

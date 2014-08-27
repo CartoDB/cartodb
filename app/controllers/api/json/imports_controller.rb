@@ -23,7 +23,19 @@ class Api::Json::ImportsController < Api::ApplicationController
   def show
     data_import = DataImport[params[:id]]
     data_import.mark_as_failed_if_stuck!
-    render json: data_import.reload.public_values
+
+    data = data_import.reload.public_values
+    if data_import.state == DataImport::STATE_SUCCESS && \
+       data_import.service_name == CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
+
+      audit_entry = ::SearchTweet.where(data_import_id: data_import.id).first
+
+      data[:tweets_georeferenced] = audit_entry.retrieved_items
+      data[:tweets_cost] = audit_entry.price
+      data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0
+    end
+
+    render json: data
   end
 
   def create
@@ -118,7 +130,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     oauth = current_user.oauths.select(params[:id])
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
-    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user, $tables_metadata)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -143,7 +155,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     oauth = current_user.oauths.select(params[:id])
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
-    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user, $tables_metadata)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")
@@ -194,7 +206,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     oauth = current_user.oauths.select(params[:id])
     raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
 
-    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user, $tables_metadata)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
       raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth")

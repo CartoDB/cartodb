@@ -25,6 +25,7 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: :created_at.desc
+  one_to_many :search_tweets, order: :created_at.desc
   many_to_one :organization
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
@@ -36,7 +37,6 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
-
 
   # Restrict to_json attributes
   @json_serializer_opts = {
@@ -94,11 +94,13 @@ class User < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-
     # Set account_type and default values for organization users
     # TODO: Abstract this
     self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
     if self.organization_user?
+      if new? || column_changed?(:organization_id)
+        self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
+      end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
       self.sync_tables_enabled ||= true
@@ -288,9 +290,14 @@ class User < Sequel::Model
     User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
-        over_map_views || over_geocodings
+
+        limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
+        over_twitter_imports = u.get_twitter_imports_count > limit
+
+        over_map_views || over_geocodings || over_twitter_imports
     end
   end
 
@@ -598,6 +605,19 @@ class User < Sequel::Model
     self[:soft_geocoding_limit] = !val
   end
 
+  def soft_twitter_datasource_limit?
+    self.soft_twitter_datasource_limit  == true
+  end
+
+  def hard_twitter_datasource_limit?
+    !self.soft_twitter_datasource_limit?
+  end
+  alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
+
+  def hard_twitter_datasource_limit=(val)
+    self[:soft_twitter_datasource_limit] = !val
+  end
+
   def private_maps_enabled
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
@@ -647,6 +667,16 @@ class User < Sequel::Model
     self.auth_token
   end
 
+  # Should return the number of tweets imported by this user for the specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    self.search_tweets_dataset
+        .where(state: ::SearchTweet::STATE_COMPLETE)
+        .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
+        .sum("retrieved_items".lit).to_i
+  end
+
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
@@ -692,11 +722,28 @@ class User < Sequel::Model
     return es_calls
   end
 
+  def effective_twitter_block_price
+    organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
+  end
+
+  def effective_twitter_datasource_block_size
+    organization.present? ? organization.twitter_datasource_block_size : self.twitter_datasource_block_size
+  end
+
   def remaining_geocoding_quota
     if organization.present?
       remaining = organization.geocoding_quota - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_twitter_quota
+    if organization.present?
+      remaining = organization.twitter_datasource_quota - organization.get_twitter_imports_count
+    else
+      remaining = twitter_datasource_quota - get_twitter_imports_count
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -876,7 +923,7 @@ class User < Sequel::Model
   def link_created_tables
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
-      table = Table.new
+      table = ::Table.new
       table.user_id  = self.id
       table.name     = t[:relname]
       table.table_id = t[:oid]
@@ -893,7 +940,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.find(:table_id => t[:oid])
+      table = ::Table.find(:table_id => t[:oid])
       begin
         table.synchronize_name(t[:relname])
       rescue Sequel::DatabaseError => e
@@ -960,7 +1007,7 @@ class User < Sequel::Model
         user_id: self.id
     }
     filter[:privacy] = privacy_filter unless privacy_filter.nil?
-    Table.filter(filter).count
+    ::Table.filter(filter).count
   end #table_count
 
   def failed_import_count

@@ -15,8 +15,8 @@ module CartoDB
           message = "#{message}"
           message << " @ #{@service_name}" if @service_name != UNKNOWN_SERVICE
           super(message)
-        end #initialize
-      end #DatasourceBaseError
+        end
+      end
 
       class AuthError                   < DatasourceBaseError; end
       # This exception is ONLY throwed if oauth token is wrong or expired, and should be deleted if exists
@@ -25,7 +25,9 @@ module CartoDB
       class DataDownloadError           < DatasourceBaseError; end
       class MissingConfigurationError   < DatasourceBaseError; end
       class UninitializedError          < DatasourceBaseError; end
+      class ParameterError              < DatasourceBaseError; end
+      class ServiceDisabledError        < DatasourceBaseError; end
+      class OutOfQuotaError             < DatasourceBaseError; end
 
-
-  end #Datasources
-end #CartoDB
+  end
+end

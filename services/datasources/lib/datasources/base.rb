@@ -52,7 +52,7 @@ module CartoDB
       # @return Hash
       def get_resource_metadata(id)
         raise 'To be implemented in child classes'
-      end #get_resource_metadata
+      end
 
       # Retrieves current filters
       # @return {}
@@ -72,8 +72,26 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
+      # If this datasource accepts a data import instance
+      # @return Boolean
+      def persists_state_via_data_import?
+        raise 'To be implemented in child classes'
+      end
+
+      # Stores the data import item instance to use/manipulate it
+      # @param value DataImport
+      def data_import_item=(value)
+        raise 'To be implemented in child classes'
+      end
+
+      # Sets an error reporting component
+      # @param component mixed
+      def report_component=(component)
+        raise 'To be implemented in child classes'
+      end
+
       private_class_method :new
 
-    end #Base
-  end #Datasources
-end #CartoDB
+    end
+  end
+end

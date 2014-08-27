@@ -26,7 +26,7 @@ module CartoDB
         )
         overlays_copy(member)
         member
-      end #copy
+      end
 
       private
 
@@ -41,13 +41,13 @@ module CartoDB
       end
 
       def map_copy
-        @map_copy ||= Map::Copier.new.copy(visualization.map)
-      end #map
+        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map)
+      end
 
       def new_name
         @new_name ||= NameGenerator.new(user).name(name || visualization.name)
-      end #name
-    end # Copier
-  end # Visualization
-end # CartoDB
+      end
+    end
+  end
+end
 

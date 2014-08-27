@@ -40,10 +40,6 @@ module CartoDB
         @additional_errors.nil? ? ERRORS_MAP : ERRORS_MAP.merge(@additional_errors)
       end
 
-      def loader_classname
-        @loader.class.to_s
-      end
-
       def run(&tracker_block)
         @tracker = tracker_block
         tracker.call('uploading')
@@ -141,7 +137,7 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results, :log
+      attr_reader :results, :log, :loader
 
       private
  

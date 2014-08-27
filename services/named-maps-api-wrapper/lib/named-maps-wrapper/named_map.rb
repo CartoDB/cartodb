@@ -170,6 +170,8 @@ module CartoDB
 
         template_data[:layergroup][:layers] = layers_data.compact.flatten
 
+        template_data[:layergroup][:stat_tag] = visualization.id
+
 				template_data
 			end #get_template_data
 

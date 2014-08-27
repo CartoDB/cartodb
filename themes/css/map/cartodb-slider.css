@@ -55,8 +55,8 @@ and (min-device-width : 320px)
 and (max-device-width : 480px) 
 and (orientation : portrait) { 
 
-  .cartodb-text {display:none}
-  .cartodb-map-wrapper { bottom: 0!Important;}
+  /*.cartodb-text {display:none}*/
+  /*.cartodb-map-wrapper { bottom: 0!Important;}*/
 
 }
 
@@ -66,8 +66,8 @@ and (min-device-width : 320px)
 and (max-device-width : 480px) 
 and (orientation : landscape) { 
 
-  .cartodb-text {display:none}
-  .cartodb-map-wrapper { bottom: 0!Important;}
+  /*.cartodb-text {display:none}*/
+  /*.cartodb-map-wrapper { bottom: 0!Important;}*/
 
   /*.torque div.cartodb-timeslider .slider-wrapper {*/
     /*width:98px!important;*/
@@ -93,8 +93,8 @@ and (orientation : landscape) {
 /* iPhone 5 portrait */
 @media screen and (device-aspect-ratio: 40/71)
 and (orientation : portrait) { 
-  .cartodb-text {display:none}
-  .cartodb-map-wrapper { bottom: 0!Important;}
+  /*.cartodb-text {display:none}*/
+  /*.cartodb-map-wrapper { bottom: 0!Important;}*/
   /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
     /*top: -12px!Important;*/
     /*padding: 9px 3px;*/
@@ -107,8 +107,8 @@ and (orientation : portrait) {
 /* iPhone 5 landscape */
 @media screen and (device-aspect-ratio: 40/71)
 and (orientation : landscape) { 
-  .cartodb-text {display:none}
-  .cartodb-map-wrapper { bottom: 0!Important;}
+  /*.cartodb-text {display:none}*/
+  /*.cartodb-map-wrapper { bottom: 0!Important;}*/
 
   /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
     /*top: -12px!Important;*/
@@ -126,8 +126,8 @@ and (min-device-width : 340px)
 and (max-device-width: 768px) 
 and (orientation : portrait) { 
 
-  .cartodb-text {display:none}
-  .cartodb-map-wrapper { bottom: 0!Important;}
+  /*.cartodb-text {display:none}*/
+  /*.cartodb-map-wrapper { bottom: 0!Important;}*/
 
   /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
     /*top: -12px!Important;*/
@@ -145,9 +145,8 @@ and (orientation : portrait) {
 and (max-device-width : 768px) 
 and (orientation : landscape) { 
 
-  .cartodb-text {display:none}
-  .cartodb-map-wrapper { bottom: 0!Important;}
-
+  /*.cartodb-text {display:none}*/
+  /*.cartodb-map-wrapper { bottom: 0!Important;}*/
   /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
     /*top: -12px!Important;*/
     /*padding: 9px 3px;*/

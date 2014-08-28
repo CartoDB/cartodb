@@ -13,7 +13,7 @@ module CartoDB
 
       # NOTE: 'redis_storage' is only sent in normal imports, not at OAuth or Synchronizations,
       # as this datasource is not intended to be used in such.
-      class Twitter < Base
+      class Twitter < BaseFileStream
 
         # Required for all datasources
         DATASOURCE_NAME = 'twitter_search'

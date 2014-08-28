@@ -3,6 +3,7 @@
 require 'zlib'
 require_relative './datasources/base'
 require_relative './datasources/base_oauth'
+require_relative './datasources/base_file_stream'
 require_relative './datasources/exceptions'
 require_relative './datasources/url/public_url'
 require_relative './datasources/url/dropbox'

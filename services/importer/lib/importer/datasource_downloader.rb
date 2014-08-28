@@ -37,8 +37,14 @@ module CartoDB
         @checksum = @item_metadata[:checksum]
         return self unless modified?
 
+        stream_data = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
+
         begin
-          resource_data = @datasource.get_resource(@item_metadata[:id])
+          if stream_data
+            resource_data = @datasource.get_resource(@item_metadata[:id])
+          else
+            resource_data = @datasource.get_resource(@item_metadata[:id])
+          end
         rescue => exception
           if exception.message =~ /quota/i
             raise StorageQuotaExceededError
@@ -47,14 +53,12 @@ module CartoDB
           end
         end
 
-        data = StringIO.new(resource_data)
-        name = @item_metadata[:filename]
+        if stream_data
+          store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
+        else
+          store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
+        end
 
-        raise_if_over_storage_quota(data.size, available_quota_in_bytes)
-
-        self.source_file = SourceFile.new(filepath(name), name)
-
-        repository.store(source_file.path, data)
         self
       end
 
@@ -78,6 +82,15 @@ module CartoDB
       
       attr_reader :repository
       attr_writer :source_file
+
+      def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
+        data = StringIO.new(resource_data)
+        name = filename
+        raise_if_over_storage_quota(data.size, available_quota_in_bytes)
+        self.source_file = SourceFile.new(filepath(name), name)
+        repository.store(source_file.path, data)
+      end
+
 
       def filepath(name)
         repository.fullpath_for(name )

@@ -51,6 +51,9 @@ module CartoDB
       attribute :privacy,             String
       attribute :tags,                Array[String], default: []
       attribute :description,         String
+      attribute :license,             String
+      attribute :source,              String
+      attribute :title,               String
       attribute :created_at,          Time
       attribute :updated_at,          Time
       attribute :encrypted_password,  String, default: nil
@@ -171,6 +174,18 @@ module CartoDB
         self.description_changed = true if description != @description && !@description.nil?
         super(description)
       end #description=
+
+      def source=(source)
+        super(source)
+      end
+
+      def title=(title)
+        super(title)
+      end
+
+      def license=(license)
+        super(license)
+      end
 
       def description_clean
         if description.present?

@@ -10,6 +10,64 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
+.slides_panel {
+
+  width: 134px;
+  position:absolute;
+  top: 54px;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  background: #333 image-url('layout/noise.png') repeat 0 0;
+  padding-top: 16px;
+
+  .slide_view {
+
+    &.active { 
+      .count { background: #BECFDE; }
+    }
+
+    .count {
+      @include box-sizing(border-box);
+      margin: auto;
+      width: 43px;
+      height: 43px;
+      @include border-radius(200px);
+      background: #D1D1D1;
+      line-height: normal;
+      vertical-align: middle;
+      padding: 3px;
+      text-align: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 31px;
+      @include simple-transition(background, 100ms);
+    }
+
+
+    display: block;
+    width: 104px;
+    height: 64px;
+    margin: 0 auto 20px auto;
+    @include box-sizing(border-box);
+    padding: 11px;
+    text-decoration:none;
+
+    @include border-radius(2px);
+
+    background: #eeeeee;
+    background: -moz-linear-gradient(top, #eeeeee 0%, #e5e5e5 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#e5e5e5));
+    background: -webkit-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
+    background: -o-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
+    background: -ms-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
+    background: linear-gradient(to bottom, #eeeeee 0%,#e5e5e5 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
+
+  }
+
+}
+
 .overlay.text {
 
   .content > .text { 

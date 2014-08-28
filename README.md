@@ -451,7 +451,7 @@ rvm use 1.9.3@cartodb --create && bundle install
 sudo bundle install
 
 # Make the created gemset your default one
-rvm use 1.9.3@carto --default
+rvm use 1.9.3@cartodb --default
 
 # Configure the application constants
 mv config/app_config.yml.sample config/app_config.yml
@@ -558,3 +558,4 @@ See TESTING
   - Carlos Matallín (@matallo)
   - Rafa Casado (@rafacas)
   - Diego Muñoz (@kartones)
+  - Nicolás M. Jaremek (@NickJaremek)

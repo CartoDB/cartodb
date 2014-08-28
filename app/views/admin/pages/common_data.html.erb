@@ -16,10 +16,21 @@
     <%= stylesheet_link_tag 'common.css', 'dashboard.css', 'pages.css', :media => 'all' %>
   <% end %>
 
+  <div class="subheader active">
+    <div class="inner">
+      <h2>Enhance your maps by importing any of these free-to-use useful datasets</h2>
+    </div>
+  </div>
+
+  <div class="main_loader">
+    <span class="loader"></span>
+    <p>Getting tables...</p>
+  </div>
+
   <div class="content">
     <article class="public_tables">
       <div class="inner">
-        <aside class="filters"></aside>
+        <aside class="options"></aside>
         <section class="tables"></section>
       </div>
     </article>

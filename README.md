@@ -241,7 +241,7 @@ sudo su - postgres
 ./template_postgis.sh
 ```
 
-Alternatively, you may run the lines of the `template_postgis.sh` script one by one by logging in the Postgres as follows:
+Alternatively, you may run the lines of the `template_postgis.sh` script one by one by entering Postgres as follows:
 ```bash
 sudo su - postgres
 POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
@@ -257,20 +257,20 @@ exit
 
 ## Install cartodb-postgresql ##
 
-Download from https://github.com/cartodb/cartodb-postgresql/,
-read install instructions there
+```bash
+git clone --recursive https://github.com/CartoDB/pg_schema_triggers.git
+cd pg_schema_triggers
+sudo make install PGUSER=postgres
+ sudo make installcheck PGUSER=postgres
+cd ..
+git clone --recursive https://github.com/CartoDB/cartodb-postgresql.git
+cd cartodb-postgresql
+git checkout cdb
+sudo make install
+sudo PGUSER=postgres make installcheck 
+```
 
-## Configure PostgreSQL ##
-
-1) Clone the CartoDB-PostgreSQL repository: `git clone --recursive https://github.com/CartoDB/cartodb-postgresql.git`
-2) Clone the following repository: `git clone --recursive https://github.com/CartoDB/pg_schema_triggers.git`
-3) Move to the newly created repository: `cd pg_schema_triggers`
-4) Install the repository: `sudo make install PGUSER=postgres`
-5) Test the installation: `sudo make installcheck PGUSER=postgres`
-6) Go to the cartodb-postgresql folder: `cd ../cartodb-postgresql`
-7) Switch to the cdb branch: `git checkout cdb`
-8) Install the repository: `sudo make install`
-9) Test the installation: `sudo PGUSER=postgres make installcheck` 
+Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
 ## Install Ruby ##
 

@@ -329,7 +329,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       table[:name]
       ).first
       if row.nil?
-        CartoDB.notify_error("Table table[:schema].table[:name] not found at pg_class", {
+        CartoDB.notify_error("Table #{table[:schema]}.#{table[:name]} not found at pg_class", {
           user: current_user.username,
           action: 'Api::Json::VisualizationsController.rows_and_sizes_for()'
         })

@@ -117,9 +117,10 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
 
     # Private dashboard
-    get '(/u/:user_domain)/dashboard/'            => 'visualizations#index', as: :dashboard
-    get '(/u/:user_domain)/dashboard'             => 'visualizations#index', as: :dashboard_bis
-    get '(/u/:user_domain)/dashboard/common_data' => 'pages#common_data',    as: :dashboard_common_data
+    get '(/u/:user_domain)/dashboard/'                  => 'visualizations#index', as: :dashboard
+    get '(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
+    get '(/u/:user_domain)/dashboard/common_data'       => 'pages#common_data',    as: :dashboard_common_data
+    get '(/u/:user_domain)/dashboard/common_data/:tag'  => 'pages#common_data',    as: :dashboard_common_data_tag
 
     # Public dashboard
     # root goes to 'pages#public'

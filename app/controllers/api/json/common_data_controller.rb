@@ -12,7 +12,7 @@ class Api::Json::CommonDataController < Api::ApplicationController
       raise URI::InvalidURIError unless [200, 201].include?(response.code)
       render_jsonp(response.response_body)
     else 
-      render_jsonp([]);
+      render_jsonp({ visualizations: [], total_entries: 0 });
     end
   end
 

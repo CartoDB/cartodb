@@ -334,7 +334,7 @@ You need to have some dependencies installed before using pip:
 sudo apt-get install python2.7-dev
 sudo apt-get install build-essential
 sudo su
-sudo apt-get install python-setuptools
+apt-get install python-setuptools
 ```
 
 ```bash

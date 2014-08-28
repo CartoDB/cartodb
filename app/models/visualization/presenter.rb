@@ -30,7 +30,10 @@ module CartoDB
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
           permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
-          locked:           visualization.locked
+          locked:           visualization.locked,
+          source:           visualization.source,
+          title:            visualization.title,
+          license:          visualization.license
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)

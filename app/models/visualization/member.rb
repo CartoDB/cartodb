@@ -175,18 +175,6 @@ module CartoDB
         super(description)
       end #description=
 
-      def source=(source)
-        super(source)
-      end
-
-      def title=(title)
-        super(title)
-      end
-
-      def license=(license)
-        super(license)
-      end
-
       def description_clean
         if description.present?
           description_md.strip_tags

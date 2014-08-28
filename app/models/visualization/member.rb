@@ -207,7 +207,7 @@ module CartoDB
 
       def private?
         privacy == PRIVACY_PRIVATE and not organization?
-      end #private?
+      end
 
       def organization?
         privacy == PRIVACY_PRIVATE and permission.acl.size > 0
@@ -215,11 +215,11 @@ module CartoDB
 
       def password_protected?
         privacy == PRIVACY_PROTECTED
-      end #password_protected?
+      end
 
       def to_hash(options={})
         Presenter.new(self, options.merge(real_privacy: true)).to_poro
-      end #to_hash
+      end
 
       def to_vizjson
         options = {
@@ -230,7 +230,7 @@ module CartoDB
           viewer_user: user
         }
         VizJSON.new(self, options, configuration).to_poro
-      end #to_hash
+      end
 
       def is_owner?(user)
         user.id == user_id

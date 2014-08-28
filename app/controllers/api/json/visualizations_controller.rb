@@ -328,12 +328,22 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       table[:schema],
       table[:name]
       ).first
-      data[row[:table_name]] = {
-        size: row[:total_relation_size].to_i / 2,
-        rows: row[:reltuples]
-      }
+      if row.nil?
+        CartoDB.notify_error("Table table[:schema].table[:name] not found at pg_class", \
+          "User:#{current_user.username} Action: Api::Json::VisualizationsController.rows_and_sizes_for()")
+        # don't break whole dashboard
+        data[table[:name]] = {
+            size: nil,
+            rows: nil
+        }
+      else
+        data[row[:table_name]] = {
+            size: row[:total_relation_size].to_i / 2,
+            rows: row[:reltuples]
+        }
+      end
     }
     data
   end
-end # Api::Json::VisualizationsController
+end
 

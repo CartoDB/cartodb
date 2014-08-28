@@ -61,7 +61,9 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   _renderLegend: function() {
 
-    this.$el.addClass("has_legend");
+    if (this.model.get("legend") && this.model.get("legend").type == "none") return;
+
+    this.$el.addClass("has-legend");
 
     var legend = new cdb.geo.ui.Legend(this.model.get("legend"));
 
@@ -69,9 +71,19 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   },
 
+  _truncate: function(input, length) {
+    return input.substr(0, length-1) + (input.length > length ? '&hellip;' : '');
+  },
+
   render: function() {
 
-    this.$el.html(this.template(this.model.attributes));
+
+    var layer_name = this.model.get("layer_name");
+
+    layer_name = this._truncate(layer_name, 23);
+
+    var attributes = _.extend(this.model.attributes, { layer_name: layer_name });
+    this.$el.html(this.template(attributes));
 
     if (!this.model.get("visible")) this.$el.addClass("hidden");
     if (this.model.get("legend"))   this._renderLegend();
@@ -348,7 +360,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       }, this);
 
       this.$el.find(".torque").append(this.slider.render().$el);
-      this.$el.addClass("torque");
+      this.$el.addClass("with-torque");
     }
 
   },

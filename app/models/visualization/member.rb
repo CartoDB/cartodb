@@ -43,6 +43,8 @@ module CartoDB
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
+      # spec/models/visualization/collection_spec.rb -> random_attributes
+      # spec/models/visualization/member_spec.rb -> random_attributes
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -51,6 +53,9 @@ module CartoDB
       attribute :privacy,             String
       attribute :tags,                Array[String], default: []
       attribute :description,         String
+      attribute :license,             String
+      attribute :source,              String
+      attribute :title,               String
       attribute :created_at,          Time
       attribute :updated_at,          Time
       attribute :encrypted_password,  String, default: nil

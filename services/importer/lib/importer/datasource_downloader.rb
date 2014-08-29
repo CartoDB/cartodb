@@ -9,7 +9,7 @@ module CartoDB
   module Importer2
     class DatasourceDownloader
 
-      def initialize(datasource, item_metadata, options={}, repository=nil)
+      def initialize(datasource, item_metadata, options={}, logger = nil, repository=nil)
         @checksum = nil
 
         @datasource     = datasource
@@ -17,10 +17,13 @@ module CartoDB
         @options = options
         raise UploadError if datasource.nil?
 
+        @logger = logger
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
       def run(available_quota_in_bytes=nil)
+        @datasource.logger=@logger unless @logger.nil?
+
         set_downloaded_source_file(available_quota_in_bytes)
         self
       end
@@ -39,23 +42,26 @@ module CartoDB
 
         stream_data = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
 
-        begin
-          if stream_data
-            resource_data = @datasource.get_resource(@item_metadata[:id])
-          else
-            resource_data = @datasource.get_resource(@item_metadata[:id])
-          end
-        rescue => exception
-          if exception.message =~ /quota/i
-            raise StorageQuotaExceededError
-          else
-            raise
-          end
-        end
-
         if stream_data
-          store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
+          self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
+
+          # TODO: Move inside SourceFile and/or Filesystem::Local
+          full_path = File.join(temporary_directory, self.source_file.path)
+          output_stream = File.open(full_path, 'wb')
+
+          @datasource.stream_resource(@item_metadata[:id], output_stream)
+
+          output_stream.close
         else
+          begin
+            resource_data = @datasource.get_resource(@item_metadata[:id])
+          rescue => exception
+            if exception.message =~ /quota/i
+              raise StorageQuotaExceededError
+            else
+              raise
+            end
+          end
           store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
         end
 

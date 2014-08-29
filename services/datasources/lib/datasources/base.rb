@@ -66,6 +66,17 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
+      # Log a message
+      # @param message String
+      def log(message)
+        puts message
+      end
+
+      # @param logger Mixed|nil Set or unset the logger
+      def logger=(logger=nil)
+        # Do nothing but not break
+      end
+
       # Just return datasource name
       # @return string
       def to_s

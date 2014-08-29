@@ -531,7 +531,10 @@ describe Visualization::Member do
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
       user_id:      attributes.fetch(:user_id, @user_mock.id),
-      active_layer_id: random
+      active_layer_id: random,
+      title:        attributes.fetch(:title, ''),
+      source:       attributes.fetch(:source, ''),
+      license:      attributes.fetch(:license, '')
     }
   end #random_attributes
 end # Visualization

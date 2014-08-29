@@ -44,10 +44,10 @@ class SearchTweet < Sequel::Model
     return 0 unless self.state == STATE_COMPLETE
 
     total_rows = self.retrieved_items
-    quota = user.organization.present? ? user.organization.twitter_datasource_quota : user.twitter_datasource_quota
+    quota = user.effective_twitter_total_quota
 
     # User#get_twitter_imports_count includes this run, so we discount it
-    remaining_quota  = quota + total_rows - user.get_twitter_imports_count
+    remaining_quota  = quota + total_rows - user.effective_get_twitter_imports_count
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
     (used_credits > 0 ? used_credits : 0)
@@ -58,7 +58,8 @@ class SearchTweet < Sequel::Model
 
     if user.effective_twitter_block_price.nil? || calculate_used_credits.nil? \
        || user.effective_twitter_datasource_block_size.nil?
-      Rollbar.report_message('Twitter datasource ', 'error', error_info: stacktrace)
+      Rollbar.report_message('Twitter datasource ', 'error', \
+        error_info: 'Looks like user/org has not set all twitter block or price params')
       # As the import itself went well don't break execution, just return something
       0
     else

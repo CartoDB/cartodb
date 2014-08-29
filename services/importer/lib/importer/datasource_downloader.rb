@@ -45,9 +45,7 @@ module CartoDB
         if stream_data
           self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
 
-          # TODO: Move inside SourceFile and/or Filesystem::Local
-          full_path = File.join(temporary_directory, self.source_file.path)
-          output_stream = File.open(full_path, 'wb')
+          output_stream = File.open(self.source_file.fullpath, 'wb')
 
           @datasource.stream_resource(@item_metadata[:id], output_stream)
 

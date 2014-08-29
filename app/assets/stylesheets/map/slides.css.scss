@@ -25,6 +25,26 @@
 
     &.active { 
       .count { background: #BECFDE; }
+
+      &:before {
+        content: '';
+        position:absolute;
+        top: -3px;
+        left: -3px;
+        width: 109px;
+        height: 69px;
+        background: transparent image-url('sprites/map/slide_frame.png') repeat 0 0;
+      }
+    }
+
+    &.add {
+      background: rgba(#E8E8E8, .1);
+
+      .count {
+        padding: 0;
+        background: rgba(#000, .1);
+      }
+
     }
 
     .count {
@@ -43,12 +63,14 @@
       font-weight: bold;
       font-size: 31px;
       @include simple-transition(background, 150ms);
+
     }
 
     display: block;
     width: 104px;
-    height: 64px;
-    margin: 0 auto 20px auto;
+    height: 63px;
+    margin: 0 auto 25px auto;
+    position: relative;
     padding: 11px;
 
     @include box-sizing(border-box);
@@ -63,7 +85,6 @@
     background: -ms-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
     background: linear-gradient(to bottom, #eeeeee 0%,#e5e5e5 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
-
   }
 
 }

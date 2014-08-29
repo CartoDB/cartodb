@@ -1,3 +1,8 @@
+3.y.z (2014-mm-dd)
+------------------
+* New features
+  * Upgrades to 0.4.0 cartodb postgresql extension version
+
 3.2.0 (2014-08-27)
 ------------------
 * New Features

@@ -18,7 +18,10 @@ $map-sprites: sprite-map("sprites/map/*.png",
   $map-wms-spacing:                 5px,
   $map-cog-spacing:                 10px,
   $map-gmaps_gray_roadmap-spacing:  5px,
-  $map-plus-spacing:                11px
+  $map-plus-spacing:                11px,
+  $map-toggle-slides-spacing:       11px,
+  $map-toggle-slides_on-spacing:    11px,
+  $map-slide_frame-spacing:         11px
 );
  
 // All sprites should extend this class

@@ -119,7 +119,7 @@ div.map {
 
     & > li.button {
 
-      &.canvas_setup, &.add_overlay {
+      &.canvas_setup, &.add_overlay, &.toggle_slides {
 
         position:relative;
 
@@ -129,8 +129,9 @@ div.map {
 
       }
 
-      &.canvas_setup > .thumb { @include map-sprite(setup_canvas); }
-      &.add_overlay  > .thumb { @include map-sprite(add_element);  }
+      &.canvas_setup  > .thumb { @include map-sprite(setup_canvas); }
+      &.add_overlay   > .thumb { @include map-sprite(add_element);  }
+      &.toggle_slides > .thumb { @include map-sprite(toggle_slides); }
 
     }
 

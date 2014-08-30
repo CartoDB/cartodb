@@ -767,7 +767,7 @@ namespace :cartodb do
     end
 
     desc "Enable oracle_fdw extension in database"
-    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :remote_table, :table_definition_json_path] => :environment do
+    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :table_definition_json_path] => :environment do
       u = User.where(:username => args[:username].to_s).first
       tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
       u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|
@@ -782,7 +782,7 @@ namespace :cartodb do
           tables["tables"].each do |table_name, th|
             table_readonly = th["read_only"] ? "true" : "false"
             table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
-            db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{args[:remote_table]}', readonly '#{table_readonly}')")
+            db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{th["remote_table"]}', readonly '#{table_readonly}')")
             db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
           end
         end

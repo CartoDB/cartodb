@@ -779,6 +779,7 @@ namespace :cartodb do
           db.run("CREATE SERVER #{server_name} FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '#{args[:oracle_url].to_s}')")
           db.run("GRANT USAGE ON FOREIGN SERVER #{server_name} TO \"#{u.database_username}\"")
           db.run("CREATE USER MAPPING FOR \"#{u.database_username}\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
+          db.run("CREATE USER MAPPING FOR \"publicuser\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
           tables["tables"].each do |table_name, th|
             table_readonly = th["read_only"] ? "true" : "false"
             table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}

@@ -30,6 +30,10 @@
 
   .slide_view {
 
+    &:hover .close {
+      @include opacity(1);
+    }
+
     &.active { 
       .count { background: #BECFDE; }
 
@@ -51,6 +55,39 @@
         padding: 0;
         background: rgba(#000, .1);
       }
+
+    }
+
+    .close {
+
+      cursor: pointer;
+
+      position: absolute;
+      top: -12px;
+      right: -11px;
+
+      height: 16px;
+      width: 17px;
+      padding: 3px;
+
+      line-height: 16px;
+
+      @include box-shadow(1px 1px 5px rgba(#000, .5));
+
+      color: #fff;
+      border: 1px solid #fff;
+      background: #333;
+      font-size: 10px;
+      font-family: "helvetica neue", "helvetica", arial;
+      text-align: center;
+      text-transform: uppercase;
+
+      @include opacity(0);
+      @include simple-transition(opacity, .10s, ease-in-out);
+
+      @include border-radius(90px);
+
+      &:hover { text-decoration:none; }
 
     }
 

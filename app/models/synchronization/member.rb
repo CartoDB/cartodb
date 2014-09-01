@@ -224,9 +224,8 @@ module CartoDB
           self.log << "File will be downloaded from #{downloader.url}"
         else
           self.log << 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
-            checksum: checksum,
-          )
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, \
+            {checksum: checksum}, self.log)
         end
 
         downloader

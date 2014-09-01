@@ -29,11 +29,11 @@ module CartoDB
         @job      = job || Job.new
         @delimiter = nil
         @force_normalize = false
-      end #initialize
+      end
 
       def force_normalize
         @force_normalize = true
-      end #force_normalize
+      end
 
       # @throws MalformedCSVException
       def run
@@ -53,7 +53,7 @@ module CartoDB
         FileUtils.rm_rf(temporary_directory)
         self.temporary_directory = nil
         self
-      end #run
+      end
 
       def detect_delimiter
 
@@ -115,17 +115,17 @@ module CartoDB
         end
 
         @delimiter
-      end #detect_delimiter
+      end
 
       def self.supported?(extension)
         %w(.csv .tsv .txt).include?(extension)
-      end #self.supported?
+      end
 
       def normalize(temporary_filepath)
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER)
 
         File.open(filepath, 'rb', external_encoding: encoding)
-        .each_line(line_delimiter) { |line| 
+        .each_line(line_delimiter) { |line|
           row = parsed_line(line)
           next unless row
           temporary_csv << multiple_column(row)
@@ -146,42 +146,42 @@ module CartoDB
 
       def temporary_filepath(filename_prefix = '')
         File.join(temporary_directory, filename_prefix + File.basename(filepath))
-      end #temporary_path
+      end
 
       def csv_options
         {
           col_sep:            delimiter,
           quote_char:         DEFAULT_QUOTE
         }
-      end #csv_options
+      end
 
       def line_delimiter
         windows_eol? ? "\r" : $/
-      end #line_delimiter
+      end
 
       def windows_eol?
         return false if first_line =~ /\n/
         !!(first_line =~ %r{\r})
-      end #windows_eol?
+      end
 
       def needs_normalization?
         (!ACCEPTABLE_ENCODINGS.include?(encoding))  ||
         (delimiter != DEFAULT_DELIMITER)            ||
         single_column?                              
-      end #needs_normalization?
+      end
 
       def single_column?
         ::CSV.parse(first_line, csv_options).first.length < 2
-      end #single_column?
+      end
 
       def multiple_column(row)
         return row if row.length > 1
         row << nil
-      end #multiple_column
+      end
 
       def delimiter
         @delimiter
-      end #delimiter
+      end
 
       def encoding
         source_file = SourceFile.new(filepath)
@@ -198,25 +198,25 @@ module CartoDB
         result.fetch(:encoding, DEFAULT_ENCODING)
       rescue
         DEFAULT_ENCODING
-      end #encoding
+      end
 
       def first_line
         return @first_line if @first_line
         stream.rewind
         @first_line ||= stream.gets
         stream.rewind
-      end #first_line
+      end
 
       def release
         @stream.close
         @stream = nil
         @first_line = nil
         self
-      end #release
+      end
 
       def stream
         @stream ||= File.open(filepath, 'rb')
-      end #stream
+      end
 
       attr_reader   :filepath
       alias_method  :converted_filepath, :filepath
@@ -226,30 +226,30 @@ module CartoDB
       def generate_temporary_directory
         self.temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
         self
-      end #generate_temporary_directory
+      end
 
       def temporary_directory
         generate_temporary_directory unless @temporary_directory
         @temporary_directory
-      end #temporary_directory
+      end
 
       def sum(items_list)
         items_list.inject(0){|accum, i| accum + i }
-      end #sum
+      end
 
       def mean(items_list)
         sum(items_list) / items_list.length.to_f
-      end #mean
+      end
 
       def sample_variance(items_list)
         m = mean(items_list)
         sum = items_list.inject(0){|accum, i| accum + (i-m)**2 }
         sum / (items_list.length - 1).to_f
-      end #sample_variance
+      end
 
       attr_writer :temporary_directory
 
-    end # CsvNormalizer
-  end #Importer2
-end # CartoDB
+    end
+  end
+end
 

@@ -27,6 +27,10 @@ module CartoDB
           String    :user_id
           String    :permission_id
           Boolean   :locked
+          String    :license
+          String    :source
+          String    :title
+
         end
 
         @db.run(%Q{

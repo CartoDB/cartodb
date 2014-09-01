@@ -17,6 +17,12 @@ module CartoDB
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
       NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
+
+      # Files matching any of this regexps will be forcibly normalized
+      # @see services/datasources/lib/datasources/search/twitter.rb -> table_name
+      FORCE_NORMALIZER_REGEX = [
+        /^twitter_(.*)\.csv/
+      ]
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
@@ -65,7 +71,14 @@ module CartoDB
       def normalize
         converted_filepath = normalizers_for(source_file.extension)
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
-            normalizer_klass.new(filepath, job).run.converted_filepath
+            normalizer = normalizer_klass.new(filepath, job)
+
+            FORCE_NORMALIZER_REGEX.each { |regex|
+              normalizer.force_normalize if regex =~ source_file.path
+            }
+
+            normalizer.run
+                      .converted_filepath
           }
         layer = source_file.layer
         @source_file = SourceFile.new(converted_filepath)

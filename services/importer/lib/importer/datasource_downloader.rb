@@ -9,7 +9,7 @@ module CartoDB
   module Importer2
     class DatasourceDownloader
 
-      def initialize(datasource, item_metadata, options={}, repository=nil)
+      def initialize(datasource, item_metadata, options={}, logger = nil, repository=nil)
         @checksum = nil
 
         @datasource     = datasource
@@ -17,10 +17,13 @@ module CartoDB
         @options = options
         raise UploadError if datasource.nil?
 
+        @logger = logger
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
       def run(available_quota_in_bytes=nil)
+        @datasource.logger=@logger unless @logger.nil?
+
         set_downloaded_source_file(available_quota_in_bytes)
         self
       end
@@ -37,24 +40,29 @@ module CartoDB
         @checksum = @item_metadata[:checksum]
         return self unless modified?
 
-        begin
-          resource_data = @datasource.get_resource(@item_metadata[:id])
-        rescue => exception
-          if exception.message =~ /quota/i
-            raise StorageQuotaExceededError
-          else
-            raise
+        stream_data = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
+
+        if stream_data
+          self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
+
+          output_stream = File.open(self.source_file.fullpath, 'wb')
+
+          @datasource.stream_resource(@item_metadata[:id], output_stream)
+
+          output_stream.close
+        else
+          begin
+            resource_data = @datasource.get_resource(@item_metadata[:id])
+          rescue => exception
+            if exception.message =~ /quota/i
+              raise StorageQuotaExceededError
+            else
+              raise
+            end
           end
+          store_retrieved_data(@item_metadata[:filename], resource_data, available_quota_in_bytes)
         end
 
-        data = StringIO.new(resource_data)
-        name = @item_metadata[:filename]
-
-        raise_if_over_storage_quota(data.size, available_quota_in_bytes)
-
-        self.source_file = SourceFile.new(filepath(name), name)
-
-        repository.store(source_file.path, data)
         self
       end
 
@@ -78,6 +86,15 @@ module CartoDB
       
       attr_reader :repository
       attr_writer :source_file
+
+      def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
+        data = StringIO.new(resource_data)
+        name = filename
+        raise_if_over_storage_quota(data.size, available_quota_in_bytes)
+        self.source_file = SourceFile.new(filepath(name), name)
+        repository.store(source_file.path, data)
+      end
+
 
       def filepath(name)
         repository.fullpath_for(name )

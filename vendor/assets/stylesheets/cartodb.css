@@ -2943,10 +2943,7 @@ div.cartodb-timeslider p {
   line-height: normal;
   color: #fff;
 
-  -ms-word-break: break-all;
-  word-break: break-all;
-
-  // Non standard for webkit
+  -ms-word-break: break-word;
   word-break: break-word;
 
   -webkit-hyphens: auto;
@@ -2966,10 +2963,7 @@ div.cartodb-timeslider p {
   line-height: normal;
   color: #fff;
 
-  -ms-word-break: break-all;
-  word-break: break-all;
-
-  // Non standard for webkit
+  -ms-word-break: break-word;
   word-break: break-word;
 
   -webkit-hyphens: auto;
@@ -2977,6 +2971,7 @@ div.cartodb-timeslider p {
   hyphens: auto;
 
 }
+
 .cartodb-overlay.overlay-text .text strong {
   font-weight: bold;
 }
@@ -3019,73 +3014,84 @@ div.cartodb-timeslider p {
   font-family: 'Droid Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Droid Sans'), local('DroidSans'), url(http://themes.googleusercontent.com/static/fonts/droidsans/v4/s-BiyweUPV0v-yRb-cjciL3hpw3pgy2gAi-Ip7WPMi0.woff) format('woff');
+  src: local('Droid Sans'), local('DroidSans'), url(//themes.googleusercontent.com/static/fonts/droidsans/v4/s-BiyweUPV0v-yRb-cjciL3hpw3pgy2gAi-Ip7WPMi0.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Droid Sans';
-  font-style: normal;
+  font-style: bold;
   font-weight: 700;
-  src: local('Droid Sans Bold'), local('DroidSans-Bold'), url(http://themes.googleusercontent.com/static/fonts/droidsans/v4/EFpQQyG9GqCrobXxL-KRMXbFhgvWbfSbdVg11QabG8w.woff) format('woff');
+  src: local('Droid Sans Bold'), local('DroidSans-Bold'), url(//themes.googleusercontent.com/static/fonts/droidsans/v4/EFpQQyG9GqCrobXxL-KRMXbFhgvWbfSbdVg11QabG8w.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Vollkorn';
   font-style: normal;
   font-weight: 400;
-  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), url(http://themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff');
+  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Vollkorn';
   font-style: normal;
   font-weight: 400;
-  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), url(http://themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff');
+  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Vollkorn';
-  font-style: normal;
+  font-style: bold;
   font-weight: 700;
-  src: local('Vollkorn Bold'), local('Vollkorn-Bold'), url(http://themes.googleusercontent.com/static/fonts/vollkorn/v4/wMZpbUtcCo9GUabw9JODerrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+  src: local('Vollkorn Bold'), local('Vollkorn-Bold'), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/wMZpbUtcCo9GUabw9JODerrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Open Sans';
-  font-style: normal;
+  font-style: bold;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+  src: local('Open Sans'), local('OpenSans'), url(//themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Open Sans';
-  font-style: normal;
+  font-style: bold;
   font-weight: 600;
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(//themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Roboto Slab';
   font-style: normal;
   font-weight: 400;
-  src: local('Roboto Slab Regular'), local('RobotoSlab-Regular'), url(http://themes.googleusercontent.com/static/fonts/robotoslab/v3/y7lebkjgREBJK96VQi37ZrrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+  src: local('Roboto Slab Regular'), local('RobotoSlab-Regular'), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/y7lebkjgREBJK96VQi37ZrrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
 }
 
 @font-face {
   font-family: 'Roboto Slab';
-  font-style: normal;
+  font-style: bold;
   font-weight: 700;
-  src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(http://themes.googleusercontent.com/static/fonts/robotoslab/v3/dazS1PrQQuCxC3iOAJFEJRbnBKKEOwRKgsHDreGcocg.woff) format('woff');
+  src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/dazS1PrQQuCxC3iOAJFEJRbnBKKEOwRKgsHDreGcocg.woff) format('woff');
 }
 
+/* HELVETICA */
 .cartodb-overlay.overlay-text .content > .text { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400; }
 .cartodb-overlay.overlay-text .content > .text strong { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 700; }
+
+/* DROID */
 .cartodb-overlay.overlay-text.droid .content > .text { font-family: 'Droid Sans', serif; font-weight: 400; }
-.cartodb-overlay.overlay-text.droid .content > .text strong { font-family: 'Droid Sans', serif; font-weight: 700; }
+.cartodb-overlay.overlay-text.droid .content > .text strong { font-family: 'Droid Sans', Helvetica, sans-serif; font-weight: 700; }
+
+/* ROBOTO */
 .cartodb-overlay.overlay-text.roboto .content > .text { font-family: 'Roboto Slab', serif; font-weight: 400; }
-.cartodb-overlay.overlay-text.vollkorn .content > .text { font-family: 'Vollkorn', serif!important; font-weight: 400; }
-.cartodb-overlay.overlay-text.open_sans .content > .text { font-family: 'Open Sans', sans-serif; }
-.cartodb-overlay.overlay-text.open_sans .content > .text strong { font-family: 'Open Sans Bold', sans-serif; }
+.cartodb-overlay.overlay-text.roboto .content > .text strong { font-family: 'Roboto Slab', serif; font-weight: 700; }
+
+/* VOLLKORN */
+.cartodb-overlay.overlay-text.vollkorn .content > .text { font-family: 'Vollkorn', serif; font-weight: 400; }
+.cartodb-overlay.overlay-text.vollkorn .content > .text strong { font-family: 'Vollkorn', serif; font-weight: 700; }
+
+/* OPEN SANS */
+.cartodb-overlay.overlay-text.open_sans .content > .text { font-family: 'Open Sans', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-text.open_sans .content > .text strong { font-family: 'Open Sans', sans-serif; font-weight: 700; }
 
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),

@@ -13,13 +13,18 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats
-                      single_data_layer? synchronization permission }
+                      single_data_layer? synchronization permission parent }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
         @map_id         = attributes.fetch(:map_id)
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
+        @parent_id      = attributes.fetch(:parent_id)
+      end
+
+      def parent
+        @parent ||= Visualization::Member.new(id: @parent_id).fetch unless @parent_id.nil?
       end
 
       def overlays

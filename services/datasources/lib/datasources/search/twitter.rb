@@ -13,7 +13,7 @@ module CartoDB
 
       # NOTE: 'redis_storage' is only sent in normal imports, not at OAuth or Synchronizations,
       # as this datasource is not intended to be used in such.
-      class Twitter < Base
+      class Twitter < BaseFileStream
 
         # Required for all datasources
         DATASOURCE_NAME = 'twitter_search'
@@ -86,6 +86,7 @@ module CartoDB
           @user = user
           @data_import_item = nil
 
+          @logger = 0
           @used_quota = 0
           @user_semaphore = Mutex.new
           @error_report_component = nil
@@ -113,12 +114,27 @@ module CartoDB
           filter
         end
 
+        # @param id string
+        # @param stream Stream
+        # @return Integer bytes streamed
+        def stream_resource(id, stream)
+          unless has_enough_quota?(@user)
+            raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
+          end
+          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
+
+          fields_from(id)
+
+          do_search(@search_api, @filters, stream)
+        end
+
         # Retrieves a resource and returns its contents
         # @param id string Will contain a stringified JSON
         # @return mixed
         # @throws ServiceDisabledError
         # @throws OutOfQuotaError
         # @throws ParameterError
+        # @deprecated Use stream_resource instead
         def get_resource(id)
           unless has_enough_quota?(@user)
             raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
@@ -127,7 +143,7 @@ module CartoDB
 
           fields_from(id)
 
-          do_search(@search_api, @filters)
+          do_search(@search_api, @filters, stream = nil)
         end
 
         # @param id string
@@ -155,6 +171,18 @@ module CartoDB
         # @param filter_data {}
         def filter=(filter_data=[])
           filter_data
+        end
+
+        # Log a message
+        # @param message String
+        def log(message)
+          puts message if @logger.nil?
+          @logger.append(message) unless @logger.nil?
+        end
+
+        # @param logger Mixed|nil Set or unset the logger
+        def logger=(logger=nil)
+          @logger = logger
         end
 
         # Hide sensitive fields
@@ -245,7 +273,7 @@ module CartoDB
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
         def report_error(message, additional_data)
           if @error_report_component.nil?
-            puts "Error: #{message} Additional Info: #{additional_data}"
+            log("Error: #{message} Additional Info: #{additional_data}")
           else
             @error_report_component.report_message(message, 'error', error_info: additional_data)
           end
@@ -253,7 +281,9 @@ module CartoDB
 
         # @param api Cartodb::TwitterSearch::SearchAPI
         # @param filters Hash
-        def do_search(api, filters)
+        # @param stream IO
+        # @return Mixed The data
+        def do_search(api, filters, stream)
           threads = {}
           base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
@@ -283,11 +313,11 @@ module CartoDB
           filters[FILTER_CATEGORIES].each { |category|
             @csv_dumper.end_dump(category[CATEGORY_NAME_KEY])
           }
-          merged_data = @csv_dumper.merge_dumps(dumper_additional_fields.keys)
+          streamed_size = @csv_dumper.merge_dumps_into_stream(dumper_additional_fields.keys, stream)
 
           if DEBUG_FLAG
-            puts "Temp files:\n#{@csv_dumper.file_paths}"
-            puts "#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}"
+            log("Temp files:\n#{@csv_dumper.file_paths}")
+            log("#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}")
           end
 
           # Make sure we don't charge extra tweets if the user cannot go overquota
@@ -299,7 +329,7 @@ module CartoDB
           # remaining quota is calc. on the fly based on audits/imports
           save_audit(@user, @data_import_item, @used_quota)
 
-          merged_data
+          streamed_size
         end
 
         # As Ruby is pass-by-value, we can't pass user as by-ref param
@@ -344,7 +374,7 @@ module CartoDB
           end while (!next_results_cursor.nil? && !out_of_quota)
 
           if DEBUG_FLAG
-            puts "'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results"
+            log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
           end
 
           total_results

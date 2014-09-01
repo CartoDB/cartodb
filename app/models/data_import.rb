@@ -405,7 +405,7 @@ class DataImport < Sequel::Model
       log.append "File will be downloaded from #{downloader.url}"
     else
       log.append 'Downloading file data from datasource'
-      downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata)
+      downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, {}, log)
     end
 
     downloader

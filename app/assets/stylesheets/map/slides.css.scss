@@ -12,10 +12,17 @@
 
 .slides_panel {
 
-  width: 134px;
+  &.active {
+    left: 0;
+  }
+
+  @include simple-transition(left, 100ms);
+
+  $width: 134px;
+  width: $width;
   position:absolute;
   top: 54px;
-  left: 0;
+  left: -$width;
   bottom: 0;
   z-index: 1;
   background: #333 image-url('layout/noise.png') repeat 0 0;

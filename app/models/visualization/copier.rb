@@ -19,7 +19,7 @@ module CartoDB
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         Member::DERIVED_TYPE,
+          type:         Member::TYPE_DERIVED,
           map_id:       map_copy.id,
           privacy:      visualization.privacy,
           user_id:      @user.id

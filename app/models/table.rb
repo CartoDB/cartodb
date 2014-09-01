@@ -138,7 +138,7 @@ class Table < Sequel::Model(:user_tables)
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
           map_id: table_temp.map_id,
-          type: CartoDB::Visualization::Member::CANONICAL_TYPE
+          type: CartoDB::Visualization::Member::TYPE_CANONICAL
       ).first
       table = vis.table unless vis.nil?
     end
@@ -177,7 +177,7 @@ class Table < Sequel::Model(:user_tables)
     query_filters = {
         user_id: viewer_user.id,
         name: table_name,
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        type: CartoDB::Visualization::Member::TYPE_CANONICAL
     }
 
     unless table_schema.nil?
@@ -199,7 +199,7 @@ class Table < Sequel::Model(:user_tables)
         vis = CartoDB::Visualization::Collection.new.fetch(
             user_id: viewer_user.id,
             map_id: table_temp.map_id,
-            type: CartoDB::Visualization::Member::CANONICAL_TYPE
+            type: CartoDB::Visualization::Member::TYPE_CANONICAL
         ).first
         table = vis.table unless vis.nil?
       end
@@ -610,7 +610,7 @@ class Table < Sequel::Model(:user_tables)
     member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
-      type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
+      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  self.description,
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],

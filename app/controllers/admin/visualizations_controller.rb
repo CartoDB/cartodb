@@ -3,6 +3,9 @@ require_relative '../../models/map/presenter'
 require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
+
+  include CartoDB
+
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
@@ -34,7 +37,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
 
-    unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+    unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
         return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
       else
@@ -63,7 +66,7 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     if @visualization.organization?
-      unless current_user and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      unless current_user and @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
         return(embed_forbidden)
       end
     end
@@ -76,7 +79,7 @@ class Admin::VisualizationsController < ApplicationController
     @api_key = nil
     @can_copy = false
 
-    if current_user && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       if @visualization.organization?
         @auth_tokens = current_user.get_auth_tokens
         @use_https = true
@@ -104,19 +107,19 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
     @non_dependent_visualizations = @table.non_dependent_visualizations.select{
-        |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
     }
 
     @dependent_visualizations = @table.dependent_visualizations.select{
-        |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
     }
 
     @total_visualizations  = @non_dependent_visualizations + @dependent_visualizations
     
     @total_nonpublic_total_vis_count = @table.non_dependent_visualizations.select{
-        |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count + @table.dependent_visualizations.select{
-        |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count
 
     respond_to do |format|
@@ -139,7 +142,8 @@ class Admin::VisualizationsController < ApplicationController
 
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
-    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.organization? \
+       && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       return(show_organization_public_map)
     end
 
@@ -181,10 +185,11 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_public_map
     @visualization, @table = resolve_visualization_and_table(request)
 
-    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    return(embed_forbidden) unless (current_user && @visualization && @visualization.organization? \
+      && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY))
 
     @can_fork = @visualization.related_tables.map { |t|
-      t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     }.all?
 
     response.headers['Cache-Control'] = "no-cache,private"
@@ -208,7 +213,8 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_embed_map
     @visualization, @table = resolve_visualization_and_table(request)
 
-    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    return(embed_forbidden) unless (current_user && @visualization && @visualization.organization? \
+      && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY))
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -284,7 +290,8 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
-    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.organization? \
+       && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       return(show_organization_embed_map)
     end
 
@@ -417,5 +424,5 @@ class Admin::VisualizationsController < ApplicationController
 
   def locator
     CartoDB::Visualization::Locator.new
-  end #locator
-end # VisualizationsController
+  end
+end

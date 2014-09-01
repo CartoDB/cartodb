@@ -6,7 +6,7 @@ module CartoDB
       def initialize(visualization, user=nil)
         @visualization  = visualization
         @user           = user || visualization.user
-      end #initialize
+      end
       
       def to_poro
         data_points = (0..29).map do |t|
@@ -15,7 +15,7 @@ module CartoDB
             $users_metadata.ZSCORE(visualization_stats_key, date.strftime("%Y%m%d")).to_i ]
         end
         Hash[data_points]
-      end #to_poro
+      end
 
       # Specifications here:
       # https://github.com/Vizzuality/Windshaft-cartodb/wiki/Redis-stats-format

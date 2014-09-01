@@ -56,11 +56,13 @@ module CartoDB
             Member::PRIVACY_PRIVATE
           when Member::PRIVACY_PROTECTED
             Member::PRIVACY_PROTECTED
+          else
+            Member::PRIVACY_PRIVATE
         end
       end
 
       def related
-        { related_tables:   related_tables }
+        { related_tables: related_tables }
       end
 
       def table_data_for(table=nil)

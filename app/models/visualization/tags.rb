@@ -139,7 +139,7 @@ module CartoDB
 
       def types_from(params={})
         type = params.fetch(:type, nil)
-        (type.nil? || type.empty?) ? [Member::CANONICAL_TYPE, Member::DERIVED_TYPE] : [type]
+        (type.nil? || type.empty?) ? [Member::TYPE_CANONICAL, Member::TYPE_DERIVED] : [type]
       end
 
       def limit_from(params={})

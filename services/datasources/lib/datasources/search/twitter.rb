@@ -86,7 +86,7 @@ module CartoDB
           @user = user
           @data_import_item = nil
 
-          @logger = 0
+          @logger = nil
           @used_quota = 0
           @user_semaphore = Mutex.new
           @error_report_component = nil
@@ -315,10 +315,8 @@ module CartoDB
           }
           streamed_size = @csv_dumper.merge_dumps_into_stream(dumper_additional_fields.keys, stream)
 
-          if DEBUG_FLAG
-            log("Temp files:\n#{@csv_dumper.file_paths}")
-            log("#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}")
-          end
+          log("Temp files:\n#{@csv_dumper.file_paths}")
+          log("#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}")
 
           # Make sure we don't charge extra tweets if the user cannot go overquota
           # (even if we "lose" charging a block or two of tweets)
@@ -373,9 +371,7 @@ module CartoDB
             end
           end while (!next_results_cursor.nil? && !out_of_quota)
 
-          if DEBUG_FLAG
-            log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
-          end
+          log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
 
           total_results
         end
@@ -456,10 +452,10 @@ module CartoDB
         # @param terms_list Array
         def sanitize_terms(terms_list)
           terms_list.map{ |term|
-            sanitized = term.to_s.gsub(/^ /, '').gsub(/ $/, '')
-            # Remove unwanted stuff too
-            if sanitized.include?(' ') || sanitized.include?('-') || sanitized.include?('_') || sanitized.include?('.') \
-               || sanitized.include?(':')
+            # Remove unwanted stuff
+            sanitized = term.to_s.gsub(/^ /, '').gsub(/ $/, '').gsub('"', '')
+            # Quote if needed
+            if sanitized.gsub(/[a-z0-9@#]/i,'') != ''
               sanitized = '"' + sanitized + '"'
             end
             sanitized.length == 0 ? nil : sanitized

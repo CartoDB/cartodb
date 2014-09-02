@@ -45,10 +45,10 @@ module CartoDB
 
     def real_entity_type
       if self.entity_type == ENTITY_TYPE_VISUALIZATION
-        if self.entity.type == CartoDB::Visualization::Member::CANONICAL_TYPE
-          return CartoDB::Visualization::Member::CANONICAL_TYPE
+        if self.entity.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+          return CartoDB::Visualization::Member::TYPE_CANONICAL
         else
-          return CartoDB::Visualization::Member::DERIVED_TYPE
+          return CartoDB::Visualization::Member::TYPE_DERIVED
         end
       else
         return self.entity_type
@@ -65,7 +65,7 @@ module CartoDB
               # be applied to a type of object. But with an array this is open
               # to more than one permission change at a time
               perm.each do |p|
-                if self.real_entity_type == CartoDB::Visualization::Member::DERIVED_TYPE
+                if self.real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
                     if p['type'].include?('r')
@@ -76,7 +76,7 @@ module CartoDB
                       ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization, self.entity.name, self.owner_username, affected_id)
                     end
                   end
-                elsif self.real_entity_type == CartoDB::Visualization::Member::CANONICAL_TYPE
+                elsif self.real_entity_type == CartoDB::Visualization::Member::TYPE_CANONICAL
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
                     if p['type'].include?('r')

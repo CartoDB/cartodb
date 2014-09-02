@@ -14,17 +14,19 @@ module CartoDB
         @name           = name
       end #initialize
 
-      def copy
+      def copy(overlays=true, layers=true)
         member = Member.new(
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         Member::DERIVED_TYPE,
-          map_id:       map_copy.id,
+          type:         Member::TYPE_DERIVED,
+          map_id:       map_copy(layers).id,
           privacy:      visualization.privacy,
           user_id:      @user.id
         )
-        overlays_copy(member)
+        if overlays
+          overlays_copy(member)
+        end
         member
       end
 
@@ -40,8 +42,8 @@ module CartoDB
         }
       end
 
-      def map_copy
-        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map)
+      def map_copy(layers)
+        @map_copy ||= CartoDBMap::Copier.new.copy(visualization.map, layers)
       end
 
       def new_name

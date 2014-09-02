@@ -21,7 +21,7 @@ module CartoDB
 				@parent = parent
 
 				@template = template_data
-			end #initialize
+			end
 
 			# Create a new named map
       # @throws HTTPResponseError
@@ -42,7 +42,7 @@ module CartoDB
         raise HTTPResponseError, "Missing template_id: #{response.response_body}" unless body['template_id'].present?
 
 				self.new( body['template_id'], template_data, parent )
-			end #self.create_new
+			end
 
 			# Update a named map's template data (full replace update)
 			def update( visualization )
@@ -58,7 +58,7 @@ module CartoDB
 
         raise HTTPResponseError, "#{response.code} #{response.request.url} (PUT)" unless response.code == 200
         @template
-			end #update
+			end
 
 			# Delete existing named map
 			def delete
@@ -70,17 +70,17 @@ module CartoDB
             followlocation: true
           } )
         raise HTTPResponseError, "#{response.code} #{response.request.url} (DELETE)" unless response.code == 204
-			end #delete
+			end
 
 			# Url to access a named map's tiles
 			def url
 				[ @parent.url, @name ].join('/')
-			end # url
+			end
 
 			# Normalize a name to make it "named map valid"
 			def self.normalize_name( raw_name )
 				( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
-			end # self.normalize_name
+			end
 
       def self.get_template_data( visualization, parent )
         presenter_options = {
@@ -169,19 +169,17 @@ module CartoDB
         end
 
         template_data[:layergroup][:layers] = layers_data.compact.flatten
-
         template_data[:layergroup][:stat_tag] = visualization.id
 
 				template_data
-			end #get_template_data
+			end
 
       def self.css_from(options)
         options.fetch('tile_style').strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
-      end #css_from
+      end
 
 			attr_reader	:template
 
-		end #NamedMap
-
-  end #NamedMapsWrapper
-end #CartoDB
+		end
+  end
+end

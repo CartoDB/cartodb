@@ -127,6 +127,7 @@ module CartoDB
       end
 
       # Loads the data of a given named map
+      # It completes/overrides data from the children if visualization has a parent_id
       def load_named_map_data
       	named_maps = NamedMaps.new(
             {
@@ -141,7 +142,14 @@ module CartoDB
             }
           )
       	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
-        @named_map_template = @named_map.template.fetch(:template) unless @named_map.nil?
+        unless @named_map.nil?
+          if @visualization.parent_id.nil?
+            @named_map_template = @named_map.template.fetch(:template)
+          else
+            parent_named_map = named_maps.get(NamedMap.normalize_name(@visualization.parent_id))
+            @named_map_template = parent_named_map.template.fetch(:template).merge(@named_map.template.fetch(:template))
+          end
+        end
       	@loaded = true
       end
 

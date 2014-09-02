@@ -219,6 +219,8 @@ describe Visualization::Collection do
     end
   end
 
+  # Slide visualization types specs
+
   # This should be a member_spec test, but as those specs have no collection support...
   it 'checks the .children method' do
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
@@ -254,6 +256,56 @@ describe Visualization::Collection do
     })).store
 
     member2.children.count.should eq 1
+  end
+
+  it 'checks that upon retrieving slides from the collection, does not show children' do
+    userid = UUIDTools::UUID.timestamp_create.to_s
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+    member = Visualization::Member.new(random_attributes({
+      type:     Visualization::Member::TYPE_SLIDE,
+      user_id:  userid
+    })).store
+
+    Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id,
+      user_id:    userid
+    })).store
+    Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id,
+      user_id:    userid
+    })).store
+
+    collection = Visualization::Collection.new.fetch({
+       user_id: userid,
+       type:    Visualization::Member::TYPE_SLIDE
+    })
+    collection.count.should eq 1
+    items = collection.select{ |vis| vis }
+    items.first.id.should eq member.id
+  end
+
+  it 'checks that upon destruction children are destroyed too' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    member = Visualization::Member.new(random_attributes({
+        type:     Visualization::Member::TYPE_SLIDE
+    })).store
+
+    Visualization::Member.new(random_attributes({
+        type:       Visualization::Member::TYPE_SLIDE,
+        parent_id:  member.id
+    })).store
+    Visualization::Member.new(random_attributes({
+        type:       Visualization::Member::TYPE_SLIDE,
+        parent_id:  member.id
+    })).store
+
+    member.delete
+
+    collection = Visualization::Collection.new.fetch
+    collection.count.should eq 0
   end
 
   protected

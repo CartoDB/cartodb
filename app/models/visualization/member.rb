@@ -154,9 +154,7 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         map.destroy if map
         table.destroy if (type == TYPE_CANONICAL && table && !from_table_deletion)
-
-        # Search for children, delete those whose parent_id is this
-
+        children.map(&:delete) if type == TYPE_SLIDE
 
         permission.destroy if permission
         repository.delete(id)

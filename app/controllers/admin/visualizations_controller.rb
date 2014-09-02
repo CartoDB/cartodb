@@ -337,7 +337,7 @@ class Admin::VisualizationsController < ApplicationController
   # @param visualization CartoDB::Visualization::Member
   def disallowed_type?(visualization)
     return false if visualization.nil?
-    visualization.type == Visualization::Member::TYPE_SLIDE
+    visualization.type_slide?
   end
 
   private

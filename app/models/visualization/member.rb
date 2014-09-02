@@ -119,7 +119,7 @@ module CartoDB
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
-        if type != TYPE_SLIDE
+        unless type_slide?
           validator.validate_expected_value(:parent_id, nil, parent_id)
         end
 
@@ -154,7 +154,7 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         map.destroy if map
         table.destroy if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        children.map(&:delete) if type == TYPE_SLIDE
+        children.map(&:delete) if type_slide?
 
         permission.destroy if permission
         repository.delete(id)

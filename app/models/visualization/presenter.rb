@@ -103,7 +103,7 @@ module CartoDB
 
       def children
         children_data = []
-        return children_data unless @visualization.type == Member::TYPE_SLIDE
+        return children_data unless @visualization.type_slide?
         @visualization.children.map { |vis| { id: vis.id } }
       end
 

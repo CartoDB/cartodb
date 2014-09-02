@@ -19,7 +19,7 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new
-    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation])
+    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
     copy_account_features(current_user, @user)
@@ -47,6 +47,8 @@ class Admin::UsersController < ApplicationController
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
+    @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
+    @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
     @user.update_in_central
 
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
@@ -87,7 +89,9 @@ class Admin::UsersController < ApplicationController
     to.set_fields(from, [
       :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
       :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
-      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type
+      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
+      :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
+      :twitter_datasource_block_price, :twitter_datasource_block_size
     ])
     to.invite_token = User.make_token
   end

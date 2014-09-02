@@ -11,7 +11,7 @@ module CartoDB
         @options        = { full: true }.merge(options)
         @configuration  = configuration
         logger.info(map.inspect) if logger
-      end #initialize
+      end
     
       def to_poro
 
@@ -37,7 +37,7 @@ module CartoDB
             ).to_vizjson_v1
           ]
         }
-      end #to_poro
+      end
 
       private
 
@@ -45,10 +45,10 @@ module CartoDB
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
-      rescue => exception
+      rescue #=> exception
         nil
-      end #bounds_from
-    end # Presenter
-  end # Map
-end # CartoDB
+      end
+    end
+  end
+end
 

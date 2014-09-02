@@ -14,12 +14,12 @@ class Api::Json::TablesController < Api::ApplicationController
   # Very basic controller method to simply make blank tables
   # All other table creation things are controlled via the imports_controller#create
   def create
-    @table = Table.new
+    @table = ::Table.new
     @table.user_id = current_user.id
     if params[:name]
       @table.name = params[:name]
     else
-      @table.name = Table.get_valid_table_name('', {
+      @table.name = ::Table.get_valid_table_name('', {
           connection:       current_user.in_database,
           database_schema:  current_user.database_schema
       })
@@ -31,7 +31,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = Table.where(id: @table.id).first
+      @table = ::Table.where(id: @table.id).first
       render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
@@ -98,7 +98,7 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = Table.where(id: @table.id).first
+      @table = ::Table.where(id: @table.id).first
 
       render_jsonp(@table.public_values.merge(warnings: warnings))
     else
@@ -128,7 +128,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def vizzjson
-    table = Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
+    table = ::Table.table_by_id_and_user(params.fetch('id'), CartoDB.extract_subdomain(request))
     if table.present?
       allowed = table.public?
 
@@ -154,7 +154,7 @@ class Api::Json::TablesController < Api::ApplicationController
   protected
 
   def load_table
-    @table = Table.get_by_id_or_name(params.fetch('id'), current_user)
+    @table = ::Table.get_by_id_or_name(params.fetch('id'), current_user)
   end
 end
 

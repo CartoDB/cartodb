@@ -20,6 +20,13 @@ module CartoDB
           quota:       self.geocoding_quota,
           monthly_use: self.get_geocoding_calls
         },
+        twitter: {
+          enabled:     self.twitter_datasource_enabled,
+          quota:       self.twitter_datasource_quota,
+          block_price: self.twitter_datasource_block_price,
+          block_size:  self.twitter_datasource_block_size,
+          monthly_use: self.get_twitter_imports_count
+        },
         seats:             self.seats,
         twitter_username:  self.twitter_username,
         updated_at:        self.updated_at,

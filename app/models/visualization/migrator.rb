@@ -8,7 +8,7 @@ module CartoDB
     class Migrator
       def initialize(db)
         @db = db
-      end #initialize
+      end
 
       def migrate(relation=:visualizations)
         @db.create_table(relation.to_sym) do
@@ -27,18 +27,23 @@ module CartoDB
           String    :user_id
           String    :permission_id
           Boolean   :locked
+          String    :license
+          String    :source
+          String    :title
+          String    :parent_id
+
         end
 
         @db.run(%Q{
           ALTER TABLE "#{relation}"
           ADD COLUMN tags text[]
         })
-      end #migrate
+      end
 
       def drop(relation=:visualizations)
         @db.drop_table(relation.to_sym)
-      end #drop
+      end
     end
-  end # Visualization
-end # CartoDB
+  end
+end
 

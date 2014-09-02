@@ -30,11 +30,15 @@ module CartoDB
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
           permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
-          locked:           visualization.locked
+          locked:           visualization.locked,
+          source:           visualization.source,
+          title:            visualization.title,
+          parent_id:        visualization.parent_id
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
+        poro.merge!(children: children)
         poro
       end
 
@@ -53,11 +57,13 @@ module CartoDB
             Member::PRIVACY_PRIVATE
           when Member::PRIVACY_PROTECTED
             Member::PRIVACY_PROTECTED
+          else
+            Member::PRIVACY_PRIVATE
         end
       end
 
       def related
-        { related_tables:   related_tables }
+        { related_tables: related_tables }
       end
 
       def table_data_for(table=nil)
@@ -81,11 +87,24 @@ module CartoDB
           updated_at:   table.updated_at
         )
 
-        table_data.merge!(
-          size:         rows_and_sizes[table.name][:size],
-          row_count:    rows_and_sizes[table.name][:rows]
-        ) unless rows_and_sizes.nil? || rows_and_sizes.empty?
+        unless rows_and_sizes.nil? || rows_and_sizes.empty?
+          if rows_and_sizes[table.name][:size].nil? || rows_and_sizes[table.name][:rows].nil?
+            # don't add anything but don't break, UI supports detection of missing rows/size
+          else
+            table_data.merge!(
+                size:         rows_and_sizes[table.name][:size],
+                row_count:    rows_and_sizes[table.name][:rows]
+            )
+          end
+        end
+
         table_data
+      end
+
+      def children
+        children_data = []
+        return children_data unless @visualization.type == Member::TYPE_SLIDE
+        @visualization.children.map { |vis| { id: vis.id } }
       end
 
       def synchronization_data_for(table=nil)

@@ -219,6 +219,97 @@ describe Visualization::Collection do
     end
   end
 
+  # Slide visualization types specs
+
+  # This should be a member_spec test, but as those specs have no collection support...
+  it 'checks the .children method' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+
+    member.children.count.should eq 0
+
+    Visualization::Member.new(random_attributes({
+      type:      Visualization::Member::TYPE_SLIDE,
+      parent_id: member.id
+    })).store
+
+    member.children.count.should eq 1
+
+    Visualization::Member.new(random_attributes({
+      type:      Visualization::Member::TYPE_SLIDE,
+      parent_id: member.id
+    })).store
+
+    member.children.count.should eq 2
+
+    canonical = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_CANONICAL })).store
+
+    member.children.count.should eq 2
+    canonical.children.should eq nil
+
+    member2 = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+
+    Visualization::Member.new(random_attributes({
+      type:      Visualization::Member::TYPE_SLIDE,
+      parent_id: member2.id
+    })).store
+
+    member2.children.count.should eq 1
+  end
+
+  it 'checks that upon retrieving slides from the collection, does not show children' do
+    userid = UUIDTools::UUID.timestamp_create.to_s
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+    member = Visualization::Member.new(random_attributes({
+      type:     Visualization::Member::TYPE_SLIDE,
+      user_id:  userid
+    })).store
+
+    Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id,
+      user_id:    userid
+    })).store
+    Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id,
+      user_id:    userid
+    })).store
+
+    collection = Visualization::Collection.new.fetch({
+       user_id: userid,
+       type:    Visualization::Member::TYPE_SLIDE
+    })
+    collection.count.should eq 1
+    items = collection.select{ |vis| vis }
+    items.first.id.should eq member.id
+  end
+
+  it 'checks that upon destruction children are destroyed too' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    member = Visualization::Member.new(random_attributes({
+        type:     Visualization::Member::TYPE_SLIDE
+    })).store
+
+    Visualization::Member.new(random_attributes({
+        type:       Visualization::Member::TYPE_SLIDE,
+        parent_id:  member.id
+    })).store
+    Visualization::Member.new(random_attributes({
+        type:       Visualization::Member::TYPE_SLIDE,
+        parent_id:  member.id
+    })).store
+
+    member.delete
+
+    collection = Visualization::Collection.new.fetch
+    collection.count.should eq 0
+  end
+
+  protected
+
   def random_attributes(attributes={})
     random = rand(999)
     {
@@ -226,9 +317,13 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
+      type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
       user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
-      locked:       attributes.fetch(:locked, false)
+      locked:       attributes.fetch(:locked, false),
+      title:        attributes.fetch(:title, ''),
+      source:       attributes.fetch(:source, ''),
+      license:      attributes.fetch(:license, ''),
+      parent_id:    attributes.fetch(:parent_id, nil)
     }
   end #random_attributes
 end # Visualization::Collection

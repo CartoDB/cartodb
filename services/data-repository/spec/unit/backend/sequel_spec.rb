@@ -11,7 +11,10 @@ describe DataRepository::Backend::Sequel do
     db.create_table :visualizations do
       String    :id, primary_key: true
       String    :name
+      String    :title
       String    :description
+      String    :license
+      String    :source
       String    :tags
       String    :map_id
       String    :active_layer_id
@@ -22,6 +25,7 @@ describe DataRepository::Backend::Sequel do
       String    :url_options
       String    :permission_id
       Boolean   :locked
+      String    :parent_id
     end
 
     db.create_table :overlays do

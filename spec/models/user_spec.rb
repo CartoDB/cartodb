@@ -162,6 +162,27 @@ describe User do
       organization.destroy
     end
 
+    describe 'when updating user quota' do
+      it 'should be valid if his organization has enough disk space' do
+        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+        organization.assigned_quota.should == 70.megabytes
+        user = organization.owner
+        user.quota_in_bytes = 1.megabyte
+        user.valid?
+        user.errors.keys.should_not include(:quota_in_bytes)
+        organization.destroy
+      end
+      it "should not be valid if his organization doesn't have enough disk space" do
+        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
+        organization.assigned_quota.should == 70.megabytes
+        user = organization.owner
+        user.quota_in_bytes = 71.megabytes
+        user.valid?.should be_false
+        user.errors.keys.should include(:quota_in_bytes)
+        organization.destroy
+      end
+    end
+
     it 'should set account_type properly' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
@@ -170,7 +191,7 @@ describe User do
       organization.destroy
     end
 
-    it 'should set default settings properly unless overriden' do
+    it 'should set default settings properly unless overriden', focus: true do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.max_layers.should == 6
@@ -185,6 +206,19 @@ describe User do
       user.max_layers.should == 3
       user.private_tables_enabled.should be_false
       user.sync_tables_enabled.should be_false
+      organization.destroy
+    end
+
+    it 'should inherit twitter_datasource_enabled from organization on creation' do
+      organization = create_organization_with_users(twitter_datasource_enabled: true)
+      organization.save
+      organization.twitter_datasource_enabled.should be_true
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.twitter_datasource_enabled.should be_true
+      end
+      user = create_user(organization: organization)
+      user.save
+      user.twitter_datasource_enabled.should be_true
       organization.destroy
     end
 
@@ -357,7 +391,7 @@ describe User do
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png" 
+      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
       user1.destroy
     end
     it "should load a the user gravatar url" do
@@ -369,7 +403,7 @@ describe User do
       user1.destroy
     end
   end
-  
+
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
       User.overquota.should be_empty
@@ -393,6 +427,19 @@ describe User do
       User.any_instance.stubs(:map_view_quota).returns(120)
       User.any_instance.stubs(:get_geocoding_calls).returns(81)
       User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.overquota.should be_empty
+      User.overquota(0.20).map(&:id).should include(@user.id)
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
+      User.overquota(0.10).should be_empty
+    end
+
+    it "should return users near their twitter quota" do
+      User.any_instance.stubs(:get_api_calls).returns([0])
+      User.any_instance.stubs(:map_view_quota).returns(120)
+      User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+      User.any_instance.stubs(:twitter_datasource_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
       User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
@@ -1034,8 +1081,79 @@ describe User do
     end
   end
 
+  describe '#cartodb_postgresql_extension_versioning' do
+    it 'should report pre multi user for known <0.3.0 versions' do
+      before_mu_known_versions = %w(0.1.0 0.1.1 0.2.0 0.2.1)
+      before_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report post multi user for >=0.3.0 versions' do
+      after_mu_known_versions = %w(0.3.0 0.3.1 0.3.2 0.3.3 0.3.4 0.3.5 0.4.0 0.5.5 0.10.0)
+      after_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report post multi user for versions with minor<3 but major>0' do
+      minor_version_edge_cases = %w(1.0.0 1.0.1 1.2.0 1.2.1 1.3.0 1.4.4)
+      minor_version_edge_cases.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      before_mu_old_known_versions = [
+        '0.1.0 0.1.0',
+        '0.1.1 0.1.1',
+        '0.2.0 0.2.0',
+        '0.2.1 0.2.1'
+      ]
+      before_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      after_mu_old_known_versions = [
+        '0.3.0 0.3.0',
+        '0.3.1 0.3.1',
+        '0.3.2 0.3.2',
+        '0.3.3 0.3.3',
+        '0.3.4 0.3.4',
+        '0.3.5 0.3.5',
+        '0.4.0 0.4.0',
+        '0.5.5 0.5.5',
+        '0.10.0 0.10.0'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with `git describe` not being a tag' do
+
+      stub_and_check_version_pre_mu('0.2.1 0.2.0-8-g7840e7c', true)
+
+      after_mu_old_known_versions = [
+          '0.3.6 0.3.5-8-g7840e7c',
+          '0.4.0 0.3.6-8-g7840e7c'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    def stub_and_check_version_pre_mu(version, is_pre_mu)
+      @user.stubs(:cartodb_extension_version).returns(version)
+      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+    end
+
+  end
+
   it "should notify a new user created from a organization" do
-   
+
     ::Resque.stubs(:enqueue).returns(nil)
 
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
@@ -1043,7 +1161,7 @@ describe User do
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
-    
+
     user1.save
 
     organization.destroy

@@ -27,6 +27,11 @@ module CartoDB
         @files = {}
         @original_files = {}
         @headers_file = nil
+        @buffer_size = 8192
+      end
+
+      def buffer_size=(value)
+        @buffer_size = value.to_i if value.to_i > 0
       end
 
       def additional_fields=(data = {})
@@ -61,6 +66,40 @@ module CartoDB
           @original_files[name].close
         end
       end
+
+      # @param names_list Array
+      # @param stream IO
+      def merge_dumps_into_stream(names_list = [], stream)
+        headers = @json2csv_conversor.generate_headers(@additional_fields[names_list.first]) + "\n"
+
+        streamed_size = headers.length
+
+        stream.write(headers)
+
+        names_list.each { |name|
+          input_stream = File.open(@files[name].path)
+
+          begin
+            buffer = input_stream.read(@buffer_size)
+            if buffer
+              stream.write(buffer)
+              streamed_size += buffer.length
+            end
+          end while buffer
+
+          input_stream.close
+
+          @files[name].unlink unless @debug_mode
+        }
+
+        if @debug_mode && !@headers_file.nil?
+          @headers_file.write(headers)
+          @headers_file.close
+        end
+
+        streamed_size
+      end
+
 
       # @param names_list Array
       # @return String

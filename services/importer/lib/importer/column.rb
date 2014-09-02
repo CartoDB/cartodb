@@ -81,7 +81,14 @@ module CartoDB
          ALTER TABLE #{qualified_table_name} ADD #{temp_col} geometry DEFAULT NULL;
         })
 
-        # 2) Populate temp column, empty the_geom
+        # 2) Cast to proper null the geom column
+        db.run(%Q{
+          UPDATE #{qualified_table_name}
+          SET #{column_name} = NULL
+          WHERE #{column_name} = ''
+        })
+
+        # 3) Populate temp column, empty the_geom
         QueryBatcher::execute(
           db,
           %Q{
@@ -103,7 +110,7 @@ module CartoDB
           capture_exceptions=true
         )
 
-        # 3) delete geometries with bounding boxes greater than allowed threshold
+        # 4) delete geometries with bounding boxes greater than allowed threshold
         QueryBatcher::execute(
           db,
           %Q{
@@ -122,7 +129,7 @@ module CartoDB
           capture_exceptions=false
         )
 
-        # 4) grab random point inside valid bounding boxes and store into the_geom
+        # 5) grab random point inside valid bounding boxes and store into the_geom
         begin
           QueryBatcher::execute(
               db,
@@ -149,7 +156,7 @@ module CartoDB
           job.log "Error generating points inside bounding boxes: #{exception.to_s}"
         end
 
-        # 5) copy normal points into the_geom
+        # 6) copy normal points into the_geom
         QueryBatcher::execute(
           db,
           %Q{
@@ -167,7 +174,7 @@ module CartoDB
           capture_exceptions=true
         )
 
-        # 6) Remove temp column
+        # 7) Remove temp column
         db.run(%Q{
           ALTER TABLE #{qualified_table_name} DROP #{temp_col};
         })

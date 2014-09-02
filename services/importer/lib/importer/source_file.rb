@@ -10,38 +10,38 @@ module CartoDB
         @etag           = http_opts.fetch(:etag, nil)
         @last_modified  = http_opts.fetch(:last_modified, nil)
         @checksum       = nil
-      end #initialize
+      end
 
       def name
         File.basename(filename || filepath, extension)
-      end #name
+      end
 
       def extension
         File.extname(filename || filepath)
-      end #extension
+      end
 
       def fullpath
         File.join(
           File.dirname(filepath),
           File.basename(filepath, extension) +  extension
         )
-      end #fullpath
+      end
 
       def path
         File.basename(fullpath)
-      end #path
+      end
 
       def target_schema
         'cdb_importer'
-      end #target_schema
+      end
 
       def empty?
         File.size(fullpath) == 0
-      end #empty?
+      end
 
       def encoding
         return nil unless filepath =~ ENCODING_RE
-        return filepath.match(ENCODING_RE)[1].upcase
+        filepath.match(ENCODING_RE)[1].upcase
       end
 
       attr_accessor :layer
@@ -50,7 +50,7 @@ module CartoDB
       private
 
       attr_reader :filepath
-    end # SourceFile
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

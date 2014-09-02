@@ -20,7 +20,7 @@ module CartoDB
         @configuration    = configuration
         @user             = options.fetch(:user, nil)
         logger.info(map.inspect) if logger
-      end #initialize
+      end
 
       # Return a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
@@ -39,9 +39,10 @@ module CartoDB
           zoom:           map.zoom,
           updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
-          overlays:       overlays_for(visualization)
+          overlays:       overlays_for(visualization),
+          children:       children_for(visualization)
         }
-      end #to_poro
+      end
 
       # Return the layer group data for a named map
       def layer_group_for_named_map
@@ -62,14 +63,13 @@ module CartoDB
           version:  layer_group_poro[:options][:layer_definition][:version],
           layers:   layers_data
         }
-      end #layer_group_for_named_map
+      end
 
       def layer_group_for(visualization)
         LayerGroup::Presenter.new(
           visualization.layers(:cartodb), options, configuration
         ).to_poro
-      end #layer_group_for
-
+      end
 
       def other_layers_for(visualization, named_maps_presenter = nil)
         layer_index = visualization.layers(:cartodb).size
@@ -84,7 +84,7 @@ module CartoDB
           #noinspection RubyArgCount
           CartoDB::Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end
-      end #other_layers_for
+      end
 
       private
 
@@ -94,7 +94,7 @@ module CartoDB
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue
         # Do nothing
-      end #bounds_from
+      end
 
       def layers_for(visualization)
         layers_data = [
@@ -114,27 +114,34 @@ module CartoDB
         end
         layers_data.push( other_layers_for( visualization, named_maps_presenter ) )
         layers_data.compact.flatten
-      end #layers_for
+      end
 
       def base_layers_for(visualization)
         visualization.layers(:base).map do |layer|
           CartoDB::Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
-      end #base_layers_for
+      end
 
       def overlays_for(visualization)
         ordered_overlays_for(visualization).map do |overlay|
           Overlay::Presenter.new(overlay).to_poro
         end
-      end #overlays_for
+      end
+
+      def children_for(visualization)
+        return [] unless visualization.type_slide?
+        visualization.children.map do |vis|
+          vis.to_vizjson
+        end
+      end
 
       def ordered_overlays_for(visualization)
         visualization.overlays.to_a
-      end #ordered_overlays_for
+      end
 
       def default_options
         { full: true, visualization_id: visualization.id }
-      end #default_options
+      end
 
       def qualify_vis_name
         if @user.nil? || @visualization.is_owner?(@user)
@@ -144,6 +151,6 @@ module CartoDB
         end
       end
 
-    end # VizJSON
-  end # Visualization
-end # CartoDB
+    end
+  end
+end

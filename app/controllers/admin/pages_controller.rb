@@ -5,6 +5,7 @@ require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
 class Admin::PagesController < ApplicationController
+
   include CartoDB
 
   DATASETS_PER_PAGE = 10
@@ -32,7 +33,7 @@ class Admin::PagesController < ApplicationController
 
     return render_404 if viewed_user.nil?
 
-    @tags             = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
+    @tags             = viewed_user.tags(true, Visualization::Member::TYPE_CANONICAL)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
@@ -46,7 +47,7 @@ class Admin::PagesController < ApplicationController
 
     datasets = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
-      type:     Visualization::Member::CANONICAL_TYPE,
+      type:     Visualization::Member::TYPE_CANONICAL,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
       per_page: DATASETS_PER_PAGE,
@@ -98,19 +99,22 @@ class Admin::PagesController < ApplicationController
       })
     end
 
-    @urls = visualizations.collect{|vis|
-      if vis.type == Visualization::Member::DERIVED_TYPE
-        {
-          loc: public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]),
-          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
-        }
-      elsif vis.type == Visualization::Member::CANONICAL_TYPE
-        {
-          loc: public_table_url(user_domain: params[:user_domain], id: vis.name),
-          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
-        }
+    @urls = visualizations.collect{ |vis|
+      case vis.type
+        when Visualization::Member::TYPE_DERIVED
+          {
+            loc: public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]),
+            lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+          }
+        when Visualization::Member::TYPE_CANONICAL
+          {
+            loc: public_table_url(user_domain: params[:user_domain], id: vis.name),
+            lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+          }
+        else
+          nil
       end
-    }
+    }.compact
     render :formats => [:xml]
   end #sitemap
 
@@ -125,7 +129,7 @@ class Admin::PagesController < ApplicationController
 
     return render_404 if viewed_user.nil?
 
-    @tags             = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
+    @tags             = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description
@@ -139,7 +143,7 @@ class Admin::PagesController < ApplicationController
 
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
-      type:     Visualization::Member::DERIVED_TYPE,
+      type:     Visualization::Member::TYPE_DERIVED,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
       per_page: VISUALIZATIONS_PER_PAGE,
@@ -200,7 +204,7 @@ class Admin::PagesController < ApplicationController
       )
     end
 
-    @tags = @organization.tags(Visualization::Member::DERIVED_TYPE)
+    @tags = @organization.tags(Visualization::Member::TYPE_DERIVED)
 
     respond_to do |format|
       format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
@@ -231,7 +235,7 @@ class Admin::PagesController < ApplicationController
       )
     end
 
-    @tags = @organization.tags(Visualization::Member::CANONICAL_TYPE)
+    @tags = @organization.tags(Visualization::Member::TYPE_CANONICAL)
 
     respond_to do |format|
       format.html { render 'datasets_organization', layout: 'application_public_organization_dashboard' }

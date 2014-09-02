@@ -72,9 +72,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       ).first
       return(head 403) if source.nil?
 
+      copy_overlays = params.fetch(:copy_overlays, true)
+      copy_layers = params.fetch(:copy_layers, true)
+
       vis = Visualization::Copier.new(
         current_user, source, name_candidate
-      ).copy
+      ).copy(copy_overlays, copy_layers)
+
     elsif params[:tables]
       viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
       tables = params[:tables].map { |table_name|

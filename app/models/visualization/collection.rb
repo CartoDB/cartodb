@@ -10,7 +10,7 @@ module CartoDB
     SIGNATURE           = 'visualizations'
     # 'user_id' filtered by default if present upon fetch()
     # 'locked' is filtered but before the rest
-    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id }
+    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id parent_id }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -74,6 +74,7 @@ module CartoDB
         else
           # 2) Filter
           dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
+          dataset = extend_filters(dataset, filters)
           dataset = filter_by_tags(dataset, tags_from(filters))
           dataset = filter_by_partial_match(dataset, filters.delete(:q))
           dataset = order(dataset, filters.delete(:o))
@@ -90,7 +91,6 @@ module CartoDB
       end
 
       def store
-        #map { |member| member.fetch.store }
         self
       end
 
@@ -112,6 +112,15 @@ module CartoDB
       def order(dataset, criteria={})
         return dataset if criteria.nil? || criteria.empty?
         dataset.order(*order_params_from(criteria))
+      end
+
+      def extend_filters(dataset, filters={})
+        # Convert into rules IF more logic needs to be added
+        if !filters[:type].nil? && filters[:type] == Visualization::Member::TYPE_SLIDE
+          dataset.where(parent_id: nil)
+        else
+          dataset
+        end
       end
 
       def filter_by_tags(dataset, tags=[])

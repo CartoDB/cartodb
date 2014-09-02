@@ -9,7 +9,7 @@ module CartoDB
     class Locator
       def initialize(user_model=nil)
         @user_model   = user_model  || ::User
-      end #initialize
+      end
 
       def get(id_or_name, subdomain)
         user = user_from(subdomain)
@@ -17,7 +17,7 @@ module CartoDB
         visualization_from(id_or_name, user) || 
         table_from(id_or_name, user)         ||
         [nil, nil]
-      end #get
+      end
 
       private
 
@@ -25,12 +25,15 @@ module CartoDB
 
       def user_from(subdomain)
         @user ||= user_model.where(username: subdomain).first
-      end #user_from
+      end
 
       def visualization_from(id_or_name, user)
         if user
           visualization = get_by_name(id_or_name, user)
+        else
+          visualization = nil
         end
+
         unless visualization
           visualization = get_by_id(id_or_name)
         end
@@ -38,7 +41,7 @@ module CartoDB
         return false if visualization.nil?
 
         [visualization, visualization.table]
-      end # visualization_from
+      end
 
       def table_from(id_or_name, user)
         table = ::Table.get_by_id(id_or_name, user)
@@ -46,7 +49,7 @@ module CartoDB
         [table.table_visualization, table]
       rescue
         false
-      end #table_from
+      end
         
       def get_by_id(uuid)
         Visualization::Collection.new.fetch(
@@ -54,19 +57,21 @@ module CartoDB
         ).first
       rescue KeyError
         nil
-      end #get_by_id
+      end
 
       def get_by_name(name, user)
         # when looking for a visualization using name return
         # the ones that user owns. Collection returns
-        Visualization::Collection.new.fetch(
-            name:   name,
-            user_id: user.id
-        ).select { |u| u.user_id == user.id }.first
+        Visualization::Collection.new.fetch({
+          name:   name,
+          user_id: user.id
+        }).select { |u|
+          u.user_id == user.id
+        }.first
       rescue KeyError
         nil
-      end #get_by_name
-    end # Locator
-  end # Visualization
-end # CartoDB
+      end
+    end
+  end
+end
 

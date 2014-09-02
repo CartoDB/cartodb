@@ -27,8 +27,9 @@ module CartoDB
       PRIVACY_LINK         = 'link'          # published but not listen in public profile
       PRIVACY_PROTECTED    = 'password'      # published but password protected
 
-      CANONICAL_TYPE  = 'table'
-      DERIVED_TYPE    =  'derived'
+      TYPE_CANONICAL  = 'table'
+      TYPE_DERIVED    = 'derived'
+      TYPE_SLIDE      = 'slide'
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -64,6 +65,7 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :parent_id,           String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -90,7 +92,7 @@ module CartoDB
       end #store
 
       def store_using_table(fields)
-        if type == CANONICAL_TYPE
+        if type == TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = fields[:privacy_text]
           self.map_id = fields[:map_id]
@@ -115,6 +117,10 @@ module CartoDB
         # Allow only "maintaining" privacy link for everyone but not setting it
         if privacy == PRIVACY_LINK && privacy_changed
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+        end
+
+        unless type_slide?
+          validator.validate_expected_value(:parent_id, nil, parent_id)
         end
 
         unless permission_id.nil?
@@ -147,7 +153,9 @@ module CartoDB
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         map.destroy if map
-        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        table.destroy if (type == TYPE_CANONICAL && table && !from_table_deletion)
+        children.map(&:delete) if type_slide?
+
         permission.destroy if permission
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
@@ -254,7 +262,8 @@ module CartoDB
       end
 
       def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
+        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, \
+                                CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
       end
 
       def varnish_key
@@ -264,23 +273,29 @@ module CartoDB
           i <=> j
         }.join(',')
         "#{user.database_name}:#{sorted_table_names},#{id}"
-      end #varnish_key
+      end
 
       def derived?
-        type == DERIVED_TYPE
-      end #derived?
+        type == TYPE_DERIVED
+      end
 
       def table?
-        type == CANONICAL_TYPE
-      end #table?
+        type == TYPE_CANONICAL
+      end
 
+      def type_slide?
+        type == TYPE_SLIDE
+      end
+
+      # TODO: Check if for type slide should return true also
       def dependent?
         derived? && single_data_layer?
-      end #dependent?
+      end
 
+      # TODO: Check if for type slide should return true also
       def non_dependent?
         derived? && !single_data_layer?
-      end #non_dependent?
+      end
 
       def varnish_vizzjson_key
         ".*#{id}:vizjson"
@@ -292,10 +307,10 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-        if type != CANONICAL_TYPE or organization?
+        if type != TYPE_CANONICAL or organization?
           save_named_map
         end
-      end #invalidate_cache_and_refresh_named_map
+      end
 
       def has_private_tables?
         has_private_tables = false
@@ -303,11 +318,11 @@ module CartoDB
           has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
         }
         has_private_tables
-      end #has_private_tables
+      end
 
       def retrieve_named_map?
         password_protected? || has_private_tables?
-      end #retrieve_named_map?
+      end
 
       def has_named_map?
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
@@ -316,7 +331,7 @@ module CartoDB
         else
           data
         end
-      end #has_named_map?
+      end
 
       def password=(value)
         if value && value.size > 0
@@ -378,7 +393,7 @@ module CartoDB
         end
 
         # Warning: imports create by default private canonical visualizations
-        if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
+        if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
         end
 
@@ -403,7 +418,7 @@ module CartoDB
           permission.clear
         end
 
-        if type == CANONICAL_TYPE
+        if type == TYPE_CANONICAL
           if organization?
             save_named_map
           end
@@ -471,7 +486,7 @@ module CartoDB
       end #propagate_privacy_and_name_to
 
       def propagate_privacy_to(table)
-        if type == CANONICAL_TYPE
+        if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
             .set_from(self)
             .propagate_to_redis_and_varnish

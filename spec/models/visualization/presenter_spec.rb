@@ -21,7 +21,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE
+          type: Visualization::Member::TYPE_CANONICAL
       )
       visualization.user_data = { actions: { private_maps: true } }
       # Careful, do a user mock after touching user_data as it does some checks about user too
@@ -54,7 +54,7 @@ describe Visualization::Member do
       vis_mock.stubs(:name).returns('vis1')
       vis_mock.stubs(:map_id).returns(UUIDTools::UUID.timestamp_create.to_s)
       vis_mock.stubs(:active_layer_id).returns(1)
-      vis_mock.stubs(:type).returns(Visualization::Member::CANONICAL_TYPE)
+      vis_mock.stubs(:type).returns(Visualization::Member::TYPE_CANONICAL)
       vis_mock.stubs(:tags).returns(['tag1'])
       vis_mock.stubs(:description).returns('desc')
       vis_mock.stubs(:privacy).returns(Visualization::Member::PRIVACY_PUBLIC)
@@ -66,6 +66,7 @@ describe Visualization::Member do
       vis_mock.stubs(:source).returns('')
       vis_mock.stubs(:license).returns('')
       vis_mock.stubs(:title).returns('')
+      vis_mock.stubs(:parent_id).returns(nil)
 
       vis_mock.stubs(:table).returns(nil)
       vis_mock.stubs(:related_tables).returns([])
@@ -88,6 +89,7 @@ describe Visualization::Member do
       data[:locked].present?.should eq true
       data[:related_tables].should eq Array.new
       data[:table].should eq Hash.new
+      data[:parent_id].should eq nil
     end
   end
 

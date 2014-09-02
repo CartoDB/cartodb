@@ -231,7 +231,8 @@ describe Visualization::Collection do
       locked:       attributes.fetch(:locked, false),
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      parent_id:    attributes.fetch(:parent_id, nil)
     }
   end #random_attributes
 end # Visualization::Collection

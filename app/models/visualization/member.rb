@@ -65,6 +65,7 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :parent_id,           String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -118,6 +119,10 @@ module CartoDB
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
+        if type != TYPE_SLIDE
+          validator.validate_expected_value(:parent_id, nil, parent_id)
+        end
+
         unless permission_id.nil?
           validator.errors.store(:permission_id, 'Cannot modify permission') unless permission_change_valid
         end
@@ -149,6 +154,9 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         map.destroy if map
         table.destroy if (type == TYPE_CANONICAL && table && !from_table_deletion)
+
+        # Search for children, delete those whose parent_id is this
+
         permission.destroy if permission
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }

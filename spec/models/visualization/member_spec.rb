@@ -527,7 +527,7 @@ describe Visualization::Member do
       user_mock.stubs(:private_tables_enabled).returns(false)
       visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_PUBLIC
     end
-  end #default_privacy_values
+  end
 
   it 'should not allow to change permission from the outside' do
     @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
@@ -538,6 +538,49 @@ describe Visualization::Member do
     member.permission_id = UUIDTools::UUID.timestamp_create.to_s
     member.valid?.should eq false
     @user.destroy
+  end
+
+  it 'checks that slides can have a parent_id' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE }))
+    member.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.type.should eq Visualization::Member::TYPE_SLIDE
+    member.parent_id.should be nil
+    member.parent.should be nil
+
+    child_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE }))
+    child_member.store
+
+    child_member.parent_id = member.id
+    child_member.store
+
+    child_member = Visualization::Member.new(id: child_member.id).fetch
+    child_member.type.should eq Visualization::Member::TYPE_SLIDE
+    child_member.parent_id.should eq member.id
+    child_member.parent.id.should eq member.id
+
+    expected_errors = { parent_id: 'has invalid value' }
+
+    table_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_CANONICAL }))
+    table_member.store
+    table_member.parent_id = member.id
+    expect {
+      table_member.store
+    }.to raise_exception InvalidMember
+    table_member.valid?.should eq false
+    table_member.errors.should eq expected_errors
+
+    vis_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED }))
+    vis_member.store
+    vis_member.parent_id = member.id
+    expect {
+      vis_member.store
+    }.to raise_exception InvalidMember
+    vis_member.valid?.should eq false
+    vis_member.errors.should eq expected_errors
   end
 
   def random_attributes(attributes={})
@@ -552,8 +595,9 @@ describe Visualization::Member do
       active_layer_id: random,
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      parent_id:    attributes.fetch(:parent_id, nil)
     }
-  end #random_attributes
-end # Visualization
+  end
+end
 

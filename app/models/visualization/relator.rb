@@ -13,7 +13,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats
-                      single_data_layer? synchronization permission parent }
+                      single_data_layer? synchronization permission parent children }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -21,6 +21,10 @@ module CartoDB
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
         @parent_id      = attributes.fetch(:parent_id)
+      end
+
+      def children
+
       end
 
       def parent

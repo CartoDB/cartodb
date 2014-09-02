@@ -72,7 +72,6 @@ WORKING_SPECS_8 = \
 
 WORKING_SPECS_9 = \
   services/twitter-search/spec/unit/ \
-  services/twitter-search/spec/integration/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
   $(NULL)

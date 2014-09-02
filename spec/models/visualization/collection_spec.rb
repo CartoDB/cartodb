@@ -219,6 +219,41 @@ describe Visualization::Collection do
     end
   end
 
+  # This should be a member_spec test, but as those specs have no collection support...
+  it 'checks the .children method' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 0
+
+    child_member = Visualization::Member.new(random_attributes({
+                                                                   type:      Visualization::Member::TYPE_SLIDE,
+                                                                   parent_id: member.id
+                                                               })).store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 1
+
+    child_member2 = Visualization::Member.new(random_attributes({
+                                                                    type:      Visualization::Member::TYPE_SLIDE,
+                                                                    parent_id: member.id
+                                                                }))
+    child_member2.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 2
+
+    Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_TABLE })).store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 2
+
+  end
+
+  protected
+
   def random_attributes(attributes={})
     random = rand(999)
     {

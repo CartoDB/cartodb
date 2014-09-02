@@ -157,6 +157,7 @@ module CartoDB
 
         # Search for children, delete those whose parent_id is this
 
+
         permission.destroy if permission
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }

@@ -583,6 +583,8 @@ describe Visualization::Member do
     vis_member.errors.should eq expected_errors
   end
 
+  protected
+
   def random_attributes(attributes={})
     random = UUIDTools::UUID.timestamp_create.to_s
     {

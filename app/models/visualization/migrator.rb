@@ -30,6 +30,7 @@ module CartoDB
           String    :license
           String    :source
           String    :title
+          String    :parent_id
 
         end
 

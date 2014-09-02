@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './stats'
+require_relative '../visualization/collection'
 require_relative '../overlay/collection'
 
 module CartoDB
@@ -21,10 +22,16 @@ module CartoDB
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
         @parent_id      = attributes.fetch(:parent_id)
+        @type           = attributes.fetch(:type)
       end
 
+      # @return CartoDB::Visualization::Collection Use .count for number of children or .each to cycle through them
       def children
-
+        if @type != Visualization::Member::TYPE_SLIDE
+          nil
+        else
+          Visualization::Collection.new(parent_id: @id).fetch
+        end
       end
 
       def parent

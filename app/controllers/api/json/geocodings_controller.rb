@@ -53,6 +53,16 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render json: response
   end
 
+  def all_country_data
+    response = { admin1: ["polygon"], namedplace: ["point"] }
+    rows     = CartoDB::SQLApi.new(username: 'geocoding')
+                 .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = 'Spain')")
+                 .map { |i| i['service'] }
+    response[:postalcode] = rows if rows.size > 0
+
+    render json: response
+  end
+
   def get_countries
     rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder]["internal"].symbolize_keys)
             .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")

@@ -246,6 +246,7 @@ CartoDB::Application.routes.draw do
 
     # Geocodings
     get  '(/u/:user_domain)/api/v1/geocodings/country_data_for/:country_code' => 'geocodings#country_data_for', as: :api_v1_geocodings_country_data
+    get  '(/u/:user_domain)/api/v1/geocodings/all_country_data'               => 'geocodings#all_country_data', as: :api_v1_geocodings_all_country_data
     get  '(/u/:user_domain)/api/v1/geocodings/estimation_for/:table_name'     => 'geocodings#estimation_for',   as: :api_v1_geocodings_estimation
     get  '(/u/:user_domain)/api/v1/geocodings/get_countries'                  => 'geocodings#get_countries',    as: :api_v1_geocodings_get_countries
     get  '(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#index',            as: :api_v1_geocodings_index

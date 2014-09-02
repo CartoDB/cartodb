@@ -1,0 +1,56 @@
+
+  /**
+   *  Default styles for a geocoding dialog pane
+   *
+   *  - A box with a title and a list of options.
+   */
+
+  @import "compass/css3/border-radius";
+  @import "../../common/vars";
+  @import "../../common/mixins";
+
+  section.block div.content {
+
+    $br: 3px; // Default border radius for any pane
+
+    .geocoding-pane-default {
+
+      // Title
+      .geocoding-pane-title {
+        @include display-flex();
+        @include align-items(center, center);
+        height:26px;
+        padding:0 15px;
+        background:#394046;
+        @include border-top-radius($br);
+
+        h4 {
+          font:500 12px $text-fonts;
+          color:white;
+        }
+      }
+
+      // Options content
+      .geocoding-pane-options {
+        display:block;
+        border:1px solid #BBBBBB;
+        @include border-bottom-radius($br);
+        background:white;
+
+        li {
+          @include display-flex();
+          @include justify-content(space-between, justify);
+          @include align-items(center, center);
+          height:49px;
+          padding:0 15px;
+        }
+
+        .geocoding-pane-label {
+          font:400 13px $text-fonts2;
+          color:#666666;
+        }
+      }
+
+    }
+  }
+  

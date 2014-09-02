@@ -331,7 +331,7 @@ module CartoDB
         else
           data
         end
-      end #has_named_map?
+      end
 
       def password=(value)
         if value && value.size > 0

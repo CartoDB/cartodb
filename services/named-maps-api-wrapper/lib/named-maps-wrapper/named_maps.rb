@@ -2,7 +2,6 @@
 
 module CartoDB
   module NamedMapsWrapper
-
 		class NamedMaps
 
 			def initialize(user_config, tiler_config, vizjson_config = {})
@@ -22,7 +21,7 @@ module CartoDB
           'content-type' => 'application/json',
           'host' => "#{@username}.#{tiler_config[:domain]}"
         }
-			end #initialize
+			end
 
 			# Create a new named map and return its instance (or nil if couldn't create)
 			def create(visualization)
@@ -40,7 +39,7 @@ module CartoDB
 				raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)" if response.code != 200
 
 				::JSON.parse(response.response_body)
-			end #all
+			end
 
 			# Get a specific named map given it's name
 			def get(name)
@@ -65,11 +64,10 @@ module CartoDB
 				else
 					raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)"
 				end
-			end #get
+			end
 
 			attr_reader	:url, :api_key, :username, :headers, :host, :vizjson_config, :verify_cert, :verify_host
 
-		end #NamedMaps
-
-	end #NamedMapsWrapper
-end #CartoDB
+		end
+	end
+end

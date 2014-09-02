@@ -225,31 +225,35 @@ describe Visualization::Collection do
 
     member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
 
-    member = Visualization::Member.new(id: member.id).fetch
     member.children.count.should eq 0
 
-    child_member = Visualization::Member.new(random_attributes({
-                                                                   type:      Visualization::Member::TYPE_SLIDE,
-                                                                   parent_id: member.id
-                                                               })).store
+    Visualization::Member.new(random_attributes({
+      type:      Visualization::Member::TYPE_SLIDE,
+      parent_id: member.id
+    })).store
 
-    member = Visualization::Member.new(id: member.id).fetch
     member.children.count.should eq 1
 
-    child_member2 = Visualization::Member.new(random_attributes({
-                                                                    type:      Visualization::Member::TYPE_SLIDE,
-                                                                    parent_id: member.id
-                                                                }))
-    child_member2.store
+    Visualization::Member.new(random_attributes({
+      type:      Visualization::Member::TYPE_SLIDE,
+      parent_id: member.id
+    })).store
 
-    member = Visualization::Member.new(id: member.id).fetch
     member.children.count.should eq 2
 
-    Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_TABLE })).store
+    canonical = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_CANONICAL })).store
 
-    member = Visualization::Member.new(id: member.id).fetch
     member.children.count.should eq 2
+    canonical.children.should eq nil
 
+    member2 = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+
+    Visualization::Member.new(random_attributes({
+      type:      Visualization::Member::TYPE_SLIDE,
+      parent_id: member2.id
+    })).store
+
+    member2.children.count.should eq 1
   end
 
   protected

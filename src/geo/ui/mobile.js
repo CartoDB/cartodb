@@ -343,6 +343,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this._renderTorque();
 
+    //this.$el.find(".layers").jScrollPane();
+
     return this;
 
   },
@@ -375,7 +377,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var msg = this.layers.length + " layer" + (this.layers.length != 1 ? "s" : "");
 
-    if (!this.hasSearch) this.$el.find(".aside .layers").prepend("<h3>" + msg + "</h3>");
+    if (!this.hasSearch) this.$el.find(".aside .layer-container").prepend("<h3>" + msg + "</h3>");
 
     _.each(this.layers, this._renderLayer, this);
 
@@ -384,7 +386,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _renderLayer: function(layer_data) {
 
     var layer = new cdb.geo.ui.MobileLayer({ model: layer_data });
-    this.$el.find(".aside .layers > ul").append(layer.render().$el);
+    this.$el.find(".aside .layers").append(layer.render().$el);
 
   },
 

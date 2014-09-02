@@ -18,8 +18,8 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     </div>\
     <div class="aside">\
     <div class="search"></div>\
-    <div class="layers">\
-      <ul></ul>\
+    <div class="layer-container">\
+      <ul class="layers"></ul>\
     </div>\
     </div>\
     <div class="cartodb-attribution"></div>\

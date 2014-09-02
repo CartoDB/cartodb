@@ -6,6 +6,7 @@
    */
 
   @import "compass/css3/border-radius";
+  @import "compass/css3/inline-block";
   @import "../../common/vars";
   @import "../../common/mixins";
 
@@ -51,6 +52,16 @@
         }
       }
 
+    }
+
+    .geocoding-pane-foot {
+      display:block;
+      margin-top:40px;
+      text-align:right;
+
+      .ok.button {
+        @include inline-block();
+      }
     }
   }
   

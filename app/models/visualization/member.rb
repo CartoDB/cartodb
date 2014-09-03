@@ -79,17 +79,17 @@ module CartoDB
         @named_maps     = nil
         @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
-      end #initialize
+      end
 
       def default_privacy(owner)
         owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
-      end #default_privacy
+      end
 
       def store
         raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
         do_store
         self
-      end #store
+      end
 
       def store_using_table(fields)
         if type == TYPE_CANONICAL
@@ -119,8 +119,8 @@ module CartoDB
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
-        unless type_slide?
-          validator.validate_expected_value(:parent_id, nil, parent_id)
+        if type_slide?
+          validator.errors.store(:parent_id, 'Slides must have a parent') if parent_id.nil?
         end
 
         unless permission_id.nil?
@@ -128,14 +128,14 @@ module CartoDB
         end
 
         validator.valid?
-      end #valid?
+      end
 
       def fetch
         data = repository.fetch(id)
         raise KeyError if data.nil?
         self.attributes = data
         self
-      end #fetch
+      end
 
       def delete(from_table_deletion=false)
         # Named map must be deleted before the map, or we lose the reference to it
@@ -154,7 +154,7 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         map.destroy if map
         table.destroy if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        children.map(&:delete) if type_slide?
+        children.map(&:delete)
 
         permission.destroy if permission
         repository.delete(id)

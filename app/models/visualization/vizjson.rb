@@ -129,7 +129,6 @@ module CartoDB
       end
 
       def children_for(visualization)
-        return [] unless visualization.type_slide?
         visualization.children.map do |vis|
           vis.to_vizjson
         end

@@ -225,7 +225,7 @@ describe Visualization::Collection do
   it 'checks the .children method' do
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED })).store
 
     member.children.count.should eq 0
 
@@ -246,9 +246,10 @@ describe Visualization::Collection do
     canonical = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_CANONICAL })).store
 
     member.children.count.should eq 2
-    canonical.children.should eq nil
+    
+    canonical.children.count.should eq 0
 
-    member2 = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+    member2 = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED })).store
 
     Visualization::Member.new(random_attributes({
       type:      Visualization::Member::TYPE_SLIDE,
@@ -258,11 +259,11 @@ describe Visualization::Collection do
     member2.children.count.should eq 1
   end
 
-  it 'checks that upon retrieving slides from the collection, does not show children' do
+  it 'checks retrieving slide type items' do
     userid = UUIDTools::UUID.timestamp_create.to_s
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
     member = Visualization::Member.new(random_attributes({
-      type:     Visualization::Member::TYPE_SLIDE,
+      type:     Visualization::Member::TYPE_DERIVED,
       user_id:  userid
     })).store
 
@@ -281,16 +282,14 @@ describe Visualization::Collection do
        user_id: userid,
        type:    Visualization::Member::TYPE_SLIDE
     })
-    collection.count.should eq 1
-    items = collection.select{ |vis| vis }
-    items.first.id.should eq member.id
+    collection.count.should eq 2
   end
 
   it 'checks that upon destruction children are destroyed too' do
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
     member = Visualization::Member.new(random_attributes({
-        type:     Visualization::Member::TYPE_SLIDE
+        type:     Visualization::Member::TYPE_DERIVED
     })).store
 
     Visualization::Member.new(random_attributes({

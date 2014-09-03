@@ -130,7 +130,8 @@ module CartoDB
           followlocation:   true,
           ssl_verifypeer:   false,
           accept_encoding:  'gzip',
-          ssl_verifyhost:   0,
+          headers:          { 'Accept-Charset' => 'utf-8' },
+          ssl_verifyhost:     0,
           nosignal: true
         }
         if @config[CONFIG_AUTH_REQUIRED]

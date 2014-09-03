@@ -30,7 +30,7 @@ module CartoDB
         if @type != Visualization::Member::TYPE_SLIDE
           nil
         else
-          Visualization::Collection.new(parent_id: @id).fetch
+          Visualization::Collection.new.fetch(parent_id: @id)
         end
       end
 

@@ -19,10 +19,6 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
-  end #index
-
-  def resolve_visualization_and_table(request)
-    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request))
   end
 
   def show
@@ -36,6 +32,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
+    return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
@@ -48,12 +45,12 @@ class Admin::VisualizationsController < ApplicationController
     respond_to { |format| format.html }
 
     update_user_last_activity
-  end #show
+  end
 
   def public_table
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) if @visualization.nil? || @visualization.private?
+    return(pretty_404) if disallowed_type?(@visualization)
 
     return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
       if @visualization.derived?
@@ -130,8 +127,8 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization
+    return(pretty_404) if disallowed_type?(@visualization)
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
@@ -180,13 +177,14 @@ class Admin::VisualizationsController < ApplicationController
     end
   rescue
     embed_forbidden
-  end #public_map
+  end
 
   def show_organization_public_map
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(embed_forbidden) unless (current_user && @visualization && @visualization.organization? \
       && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY))
+    return(pretty_404) if disallowed_type?(@visualization)
 
     @can_fork = @visualization.related_tables.map { |t|
       t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
@@ -215,6 +213,7 @@ class Admin::VisualizationsController < ApplicationController
 
     return(embed_forbidden) unless (current_user && @visualization && @visualization.organization? \
       && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY))
+    return(pretty_404) if disallowed_type?(@visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -231,6 +230,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+    return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
       flash[:placeholder] = '*' * submitted_password.size
@@ -259,13 +259,14 @@ class Admin::VisualizationsController < ApplicationController
     end    
   rescue
     public_map_protected
-  end #show_protected_public_map
+  end
 
   def show_protected_embed_map
     submitted_password = params.fetch(:password)
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+    return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
       flash[:placeholder] = '*' * submitted_password.size
@@ -282,12 +283,14 @@ class Admin::VisualizationsController < ApplicationController
     end    
   rescue
     embed_protected
-  end #show_protected_embed_map
+  end
 
   def embed_map
     @visualization, @table = resolve_visualization_and_table(request)
     
     return(pretty_404) unless @visualization
+    return(pretty_404) if disallowed_type?(@visualization)
+
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
     if current_user && @visualization.organization? \
@@ -304,26 +307,38 @@ class Admin::VisualizationsController < ApplicationController
     end
   rescue
     embed_forbidden
-  end #embed_map
+  end
 
   # Renders input password view
   def embed_protected
     render 'embed_map_password', :layout => false
-  end #embed_protected
+  end
 
   def public_map_protected
     render 'public_map_password', :layout => false
-  end #public_map_protected
+  end
 
   def embed_forbidden
     render 'embed_map_error', layout: false, status: :forbidden
-  end #embed_forbidden
+  end
 
   def track_embed
     response.headers['X-Cache-Channel'] = "embeds_google_analytics"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render 'track', layout: false
-  end #track_embed
+  end
+
+  protected
+
+  def resolve_visualization_and_table(request)
+    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request))
+  end
+
+  # @param visualization CartoDB::Visualization::Member
+  def disallowed_type?(visualization)
+    return false if visualization.nil?
+    visualization.type_slide?
+  end
 
   private
 
@@ -366,7 +381,7 @@ class Admin::VisualizationsController < ApplicationController
     id
   end
 
-  def public_url()
+  def public_url
     if request.path_info =~ %r{/tables/}
       public_table_path(user_domain: params[:user_domain], id: full_table_id)
     else
@@ -374,7 +389,7 @@ class Admin::VisualizationsController < ApplicationController
     end
   end #public_url_for
 
-  def public_map_url()
+  def public_map_url
     if request.path_info =~ %r{/tables/}
       public_table_map_path(user_domain: params[:user_domain], id: full_table_id)
     else

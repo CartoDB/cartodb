@@ -66,6 +66,7 @@ describe Visualization::Member do
       vis_mock.stubs(:source).returns('')
       vis_mock.stubs(:license).returns('')
       vis_mock.stubs(:title).returns('')
+      vis_mock.stubs(:parent_id).returns(nil)
 
       vis_mock.stubs(:table).returns(nil)
       vis_mock.stubs(:related_tables).returns([])
@@ -88,6 +89,7 @@ describe Visualization::Member do
       data[:locked].present?.should eq true
       data[:related_tables].should eq Array.new
       data[:table].should eq Hash.new
+      data[:parent_id].should eq nil
     end
   end
 

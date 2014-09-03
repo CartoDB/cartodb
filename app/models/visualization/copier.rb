@@ -43,7 +43,7 @@ module CartoDB
       end
 
       def map_copy(layers)
-        @map_copy ||= CartoDBMap::Copier.new.copy(visualization.map, layers)
+        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers)
       end
 
       def new_name

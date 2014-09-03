@@ -54,13 +54,13 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def all_country_data
-    response = { admin1: ["polygon"], namedplace: ["point"] }
-    rows     = CartoDB::SQLApi.new(username: 'geocoding')
-                 .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = 'Spain')")
-                 .map { |i| i['service'] }
-    response[:postalcode] = rows if rows.size > 0
-
-    render json: response
+    rows = CartoDB::SQLApi.new(username: 'geocoding')
+            .fetch("SELECT country_decoder.name,ARRAY_AGG(postal_code_coverage.service) AS services
+                    FROM postal_code_coverage
+                    INNER JOIN country_decoder
+                    ON postal_code_coverage.iso3 = country_decoder.iso3 GROUP BY country_decoder.name")
+            .map { |i| { i['name'] => { admin1: ["polygon"], namedplace: ["point"], postalcode: i['services'] } } }.reduce Hash.new, :merge
+    render json: rows
   end
 
   def get_countries
@@ -76,7 +76,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
     used_credits     = (used_credits > 0 ? used_credits : 0)
-    render json: { 
+    render json: {
       rows:       total_rows,
       estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
     }

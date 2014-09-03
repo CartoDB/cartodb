@@ -767,7 +767,7 @@ namespace :cartodb do
     end
 
     desc "Enable oracle_fdw extension in database"
-    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :remote_table, :table_definition_json_path] => :environment do
+    task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :table_definition_json_path] => :environment do |t, args|
       u = User.where(:username => args[:username].to_s).first
       tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
       u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|
@@ -779,12 +779,13 @@ namespace :cartodb do
           db.run("CREATE SERVER #{server_name} FOREIGN DATA WRAPPER oracle_fdw OPTIONS (dbserver '#{args[:oracle_url].to_s}')")
           db.run("GRANT USAGE ON FOREIGN SERVER #{server_name} TO \"#{u.database_username}\"")
           db.run("CREATE USER MAPPING FOR \"#{u.database_username}\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
-          debugger
-          table = tables["tables"].first
-          table_name = table.first
-          table_columns = table.last["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
-          db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{args[:remote_table]}')")
-          db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
+          db.run("CREATE USER MAPPING FOR \"publicuser\" SERVER #{server_name} OPTIONS (user '#{args[:remote_user].to_s}', password '#{args[:remote_password].to_s}');")
+          tables["tables"].each do |table_name, th|
+            table_readonly = th["read_only"] ? "true" : "false"
+            table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
+            db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{th["remote_table"]}', readonly '#{table_readonly}')")
+            db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
+          end
         end
       end
     end

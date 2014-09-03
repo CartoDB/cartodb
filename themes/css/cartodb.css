@@ -1566,60 +1566,44 @@ only screen and (                min-resolution: 2dppx) {
   position:relative;
   z-index: 100000000;
 }
-
 .cartodb-mobile .cartodb-header {
+  background: none;
 }
-
 .cartodb-mobile .cartodb-header .content  {
   position:relative;
   height: 40px;
 }
-
 .cartodb-mobile.with-layers .cartodb-header .content .title ,
 .cartodb-mobile.with-layers .cartodb-header .content .description {
   padding-right: 40px;
 }
-
 .cartodb-mobile .cartodb-header .content .title ,
 .cartodb-mobile .cartodb-header .content .description  {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .cartodb-mobile .cartodb-header .content .button {
-
   height: 58px;
   width: 58px;
   background-color: rgba(0, 0, 0, 0.5);
   line-height: normal;
   z-index: 99999;
-
 }
-
 .cartodb-mobile.with-header .cartodb-header {
-
   background-color: rgba(0, 0, 0, 0.5);
-
 }
-
 .cartodb-mobile.with-header .cartodb-header .content .toggle {
-
   background: none;
-
 }
-
 .cartodb-mobile .cartodb-header .content .toggle:before {
-
   content: '';
   width: 70px;
   height: 60px;
   background:url('../img/toggle_aside.png') no-repeat 50% 50%;
   background-size: 30px 30px;
   position: absolute;
-
 }
-
 .cartodb-mobile .cartodb-header .content .toggle {
   display: block;
   position:absolute;
@@ -1661,7 +1645,6 @@ only screen and (                min-resolution: 2dppx) {
   border-bottom: 1px solid #505050;
   z-index: 5;
 }
-
 .cartodb-mobile .aside .cartodb-searchbox input.text {
   border: none;
   position: initial;
@@ -1676,10 +1659,12 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile .aside .cartodb-searchbox input.text::-webkit-input-placeholder {
   font-style: italic;
 }
-.cartodb-mobile .aside .cartodb-searchbox input.text:-moz-placeholder { /* Firefox 18- */
+.cartodb-mobile .aside .cartodb-searchbox input.text:-moz-placeholder { 
+  /* Firefox 18- */
   font-style: italic;
 }
-.cartodb-mobile .aside .cartodb-searchbox input.text::-moz-placeholder {  /* Firefox 19+ */
+.cartodb-mobile .aside .cartodb-searchbox input.text::-moz-placeholder {  
+  /* Firefox 19+ */
   font-style: italic;
 }
 .cartodb-mobile .aside .cartodb-searchbox input.text:-ms-input-placeholder {  
@@ -1702,16 +1687,35 @@ only screen and (                min-resolution: 2dppx) {
   cursor:pointer;
   background:url('../img/mobile_zoom.png') no-repeat 0 0;
 }
-.cartodb-mobile .aside .layers {
-  overflow:auto;
-  width: 250px;
-  height: 500px;
+.cartodb-mobile .aside .layer-container {
+  position:relative;
+  height: 100%;
 }
+.cartodb-mobile .aside .scrollpane {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline:none;
+    padding-bottom: 25px;
+}
+.cartodb-mobile .aside .scrollpane .jspContainer { overflow: hidden; position: relative; }
+.cartodb-mobile .aside .scrollpane .jspPane { position: absolute; }
+.cartodb-mobile .aside .scrollpane .jspVerticalBar   { position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
+.cartodb-mobile .aside .scrollpane .jspVerticalBar * { margin: 0; padding: 0; }
+.cartodb-mobile .aside .scrollpane .jspCap { display: none; }
+.cartodb-mobile .aside .scrollpane .jspTrack { background: none; position: relative; }
+.cartodb-mobile .aside .scrollpane .jspDrag { background: rgba(#BBB, .5); border-radius:5px; position: relative; top: 0; left: 0; cursor: pointer; }
+.cartodb-mobile .aside .scrollpane .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+.cartodb-mobile .aside .scrollpane .jspVerticalBar .jspArrow { height: 10px; }
+.cartodb-mobile .aside .scrollpane .jspVerticalBar .jspArrow:focus { outline: none; }
+.cartodb-mobile .aside .scrollpane .jspCorner { background: #eeeef4; float: left; height: 100%; }
 .cartodb-mobile .aside .layer-container > h3 {
-  padding: 10px 20px;
+  padding: 23px 20px;
   color: #999999;
   font: bold 12px "Helvetica", Arial, sans-serif;
   text-transform: uppercase;
+  background: #292929;
+  border-bottom: 1px solid #585858;
 }
 .cartodb-mobile .aside .layer-container .layers {
   margin: 0;
@@ -1763,22 +1767,6 @@ only screen and (                min-resolution: 2dppx) {
   background: #fff;
 
 }
-
-.cartodb-mobile .aside .layer-container .layers {
-}
-
-.cartodb-mobile .aside .layer-container .layers .jspContainer { overflow: hidden; position: relative; }
-.cartodb-mobile .aside .layer-container .layers .jspPane { position: absolute; }
-.cartodb-mobile .aside .layer-container .layers .jspVerticalBar   { opacity:0; position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
-.cartodb-mobile .aside .layer-container .layers .jspVerticalBar * { margin: 0; padding: 0; }
-.cartodb-mobile .aside .layer-container .layers .jspCap { display: none; }
-.cartodb-mobile .aside .layer-container .layers .jspTrack { background: none; position: relative; }
-.cartodb-mobile .aside .layer-container .layers .jspDrag { background: rgba(#BBB, .5); border-radius:5px; position: relative; top: 0; left: 0; cursor: pointer; }
-.cartodb-mobile .aside .layer-container .layers .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
-.cartodb-mobile .aside .layer-container .layers .jspVerticalBar .jspArrow { height: 10px; }
-.cartodb-mobile .aside .layer-container .layers .jspVerticalBar .jspArrow:focus { outline: none; }
-.cartodb-mobile .aside .layer-container .layers .jspCorner { background: #eeeef4; float: left; height: 100%; }
-
 .cartodb-mobile .aside .layer-container .layers > li h3 {
 
   font: bold 12px "Helvetica", Arial, sans-serif;
@@ -2976,23 +2964,20 @@ div.cartodb-timeslider p {
   display:none;
   position:relative;
   width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   line-height: normal;
   z-index: 99999;
 }
-
 .cartodb-header .content {
   padding: 10px;
 }
-
 .cartodb-header .content a {
   color: #fff;
 }
-
 .cartodb-header .content a:hover {
   color: #ccc;
 }
-
 .cartodb-header .content .title {
   display:none;
   margin: 0 0 5px 0;
@@ -3002,7 +2987,6 @@ div.cartodb-timeslider p {
   font-size:15px;
   color: #fff;
 }
-
 .cartodb-header .content .description {
   display:none;
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
@@ -3010,7 +2994,6 @@ div.cartodb-timeslider p {
   color: #fff;
   font-size:13px;
 }
-
 .cartodb-overlay.overlay-text{
   position:absolute;
 

@@ -3,14 +3,14 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
   events: {
     'click .toggle':        "_toggle",
     // Rest infowindow bindings
-    "dragstart":            "_stopPropagation",
+    //"dragstart":            "_stopPropagation",
     //"mousedown":            "_stopPropagation",
-    "touchstart":           "_stopPropagation",
-    "MSPointerDown":        "_stopPropagation",
-    "dblclick":             "_stopPropagation",
-    "DOMMouseScroll":       "_stopBubbling",
-    'MozMousePixelScroll':  "_stopBubbling",
-    "mousewheel":           "_stopBubbling",
+    //"touchstart":           "_stopPropagation",
+    //"MSPointerDown":        "_stopPropagation",
+    //"dblclick":             "_stopPropagation",
+    //"DOMMouseScroll":       "_stopBubbling",
+    //'MozMousePixelScroll':  "_stopBubbling",
+    //"mousewheel":           "_stopBubbling",
     "dbclick":              "_stopPropagation"
   },
 
@@ -66,6 +66,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
     this.$el.addClass("has-legend");
 
     var legend = new cdb.geo.ui.Legend(this.model.get("legend"));
+    legend.undelegateEvents();
 
     this.$el.append(legend.render().$el);
 
@@ -103,9 +104,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     'click .toggle': "_toggle",
     'click .cartodb-attribution-button': '_onAttributionClick',
     'click .backdrop': '_onBackdropClick',
-    "dragstart .backdrop":  '_onBackdropClick',
-    "mousedown .backdrop":  '_onBackdropClick',
-    "touchstart .backdrop": '_onBackdropClick'
+    //"dragstart .backdrop":  '_onBackdropClick',
+    //"mousedown .backdrop":  '_onBackdropClick',
+    //"touchstart .backdrop": '_onBackdropClick'
     
     //"dragstart":      "_stopPropagation",
     //"mousedown":      "_stopPropagation",
@@ -296,8 +297,6 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
           m.set('layer_name', l.options.layer_name);
 
-          console.log(l.options.layer_name);
-
           layerView = this._createLayer('LayerViewFromLayerGroup', {
             model: m,
             layerView: layerGroupView,
@@ -343,7 +342,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this._renderTorque();
 
-    //this.$el.find(".layers").jScrollPane();
+    var self = this;
+    setTimeout(function() {
+      self.$el.find(".scrollpane").css("max-height", self.$el.height() - 60);
+      self.$el.find(".scrollpane").jScrollPane({ showArrows: true });
+    }, 500);
 
     return this;
 

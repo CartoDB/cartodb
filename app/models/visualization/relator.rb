@@ -22,16 +22,11 @@ module CartoDB
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
         @parent_id      = attributes.fetch(:parent_id)
-        @type           = attributes.fetch(:type)
       end
 
       # @return CartoDB::Visualization::Collection Use .count for number of children or .each to cycle through them
       def children
-        if @type != Visualization::Member::TYPE_SLIDE
-          nil
-        else
-          Visualization::Collection.new.fetch(parent_id: @id)
-        end
+        Visualization::Collection.new.fetch(parent_id: @id)
       end
 
       def parent

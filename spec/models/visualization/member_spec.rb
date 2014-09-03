@@ -154,6 +154,8 @@ describe Visualization::Member do
 
   describe '#delete' do
     it 'deletes this member data from the data repository' do
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
+
       member = Visualization::Member.new(random_attributes).store
       member.fetch
       member.name.should_not be_nil
@@ -165,6 +167,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache' do
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
       member      = Visualization::Member.new(random_attributes)
       member.store
 
@@ -543,18 +546,27 @@ describe Visualization::Member do
   it 'checks that slides can have a parent_id' do
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE }))
+    expected_errors = { parent_id: 'Slides must have a parent' }
+
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED }))
     member.store
 
     member = Visualization::Member.new(id: member.id).fetch
-    member.type.should eq Visualization::Member::TYPE_SLIDE
     member.parent_id.should be nil
     member.parent.should be nil
 
     child_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE }))
-    child_member.store
+    # Can't save a children of type slide without parent_id
+    expect {
+      child_member.store
+    }.to raise_exception InvalidMember
+    child_member.valid?.should eq false
+    child_member.errors.should eq expected_errors
 
-    child_member.parent_id = member.id
+    child_member = Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id
+    }))
     child_member.store
 
     child_member = Visualization::Member.new(id: child_member.id).fetch
@@ -562,25 +574,17 @@ describe Visualization::Member do
     child_member.parent_id.should eq member.id
     child_member.parent.id.should eq member.id
 
-    expected_errors = { parent_id: 'has invalid value' }
-
-    table_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_CANONICAL }))
+    # Allowed but unused
+    table_member = Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_CANONICAL,
+      parent_id:  member.id
+    }))
     table_member.store
-    table_member.parent_id = member.id
-    expect {
-      table_member.store
-    }.to raise_exception InvalidMember
-    table_member.valid?.should eq false
-    table_member.errors.should eq expected_errors
-
-    vis_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED }))
-    vis_member.store
-    vis_member.parent_id = member.id
-    expect {
-      vis_member.store
-    }.to raise_exception InvalidMember
-    vis_member.valid?.should eq false
-    vis_member.errors.should eq expected_errors
+    table_member = Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_CANONICAL,
+      parent_id:  member.id
+    }))
+    table_member.store
   end
 
   protected

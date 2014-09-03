@@ -65,7 +65,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     payload.delete[:permission_id] if payload[:permission_id].present?
 
     if params[:source_visualization_id]
-      #TODO: check permissions to read
       source = Visualization::Collection.new.fetch(
         id: params.fetch(:source_visualization_id),
         user_id: current_user.id
@@ -75,9 +74,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       copy_overlays = params.fetch(:copy_overlays, true)
       copy_layers = params.fetch(:copy_layers, true)
 
+      additional_fields = {
+        type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
+        parent_id:  params.fetch(:parent_id, nil)
+      }
+
       vis = Visualization::Copier.new(
         current_user, source, name_candidate
-      ).copy(copy_overlays, copy_layers)
+      ).copy(copy_overlays, copy_layers, additional_fields)
 
     elsif params[:tables]
       viewed_user = User.find(:username => CartoDB.extract_subdomain(request))

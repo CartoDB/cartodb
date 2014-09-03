@@ -14,12 +14,13 @@ module CartoDB
         @name           = name
       end #initialize
 
-      def copy(overlays=true, layers=true)
+      def copy(overlays=true, layers=true, additional_fields = {})
         member = Member.new(
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         Member::TYPE_DERIVED,
+          type:         additional_fields.fetch(:type, Member::TYPE_DERIVED),
+          parent_id:    additional_fields.fetch(:parent_id, nil),
           map_id:       map_copy(layers).id,
           privacy:      visualization.privacy,
           user_id:      @user.id

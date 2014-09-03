@@ -12,7 +12,7 @@ module CartoDB
         @user           = user
         @visualization  = visualization
         @name           = name
-      end #initialize
+      end
 
       def copy(overlays=true, layers=true, additional_fields = {})
         member = Member.new(

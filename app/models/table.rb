@@ -187,7 +187,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
-    vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
+    vis = CartoDB::Visualization::Collection.new.fetch({query_filters}).select { |u|
       u.user_id == query_filters[:user_id]
     }.first
     table = vis.nil? ? nil : vis.table

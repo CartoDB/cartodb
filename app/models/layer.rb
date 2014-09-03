@@ -8,7 +8,9 @@ class Layer < Sequel::Model
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
   DATA_LAYER_KINDS = ALLOWED_KINDS - BASE_LAYER_KINDS
-  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
+
+  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order parent_id }
+
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
     'table/views/infowindow_dark' =>                'infowindow_dark',
@@ -19,9 +21,7 @@ class Layer < Sequel::Model
     'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
   }
   
-  ##
-  # Sets default order to the maximum order of the sibling layers + 1  
-  #
+  # Sets default order to the maximum order of the sibling layers + 1
   def set_default_order(parent)
     max_order = parent.layers_dataset.select(:order).map(&:order).compact.max
     order = (max_order == nil ? 0 : max_order + 1)
@@ -34,13 +34,15 @@ class Layer < Sequel::Model
                 join_table: :layers_user_tables,
                 left_key: :layer_id, right_key: :user_table_id,
                 reciprocal: :layers, class: ::Table
-  
-  plugin  :association_dependencies, :maps => :nullify, :users => :nullify,
-          :user_tables => :nullify
+
+  many_to_one :parent, :class => self
+  one_to_many :children, :key=>:parent_id, :class => self
+
+  plugin  :association_dependencies, :maps => :nullify, :users => :nullify, :user_tables => :nullify
 
   def public_values
     Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
-  end #public_values
+  end
 
   def validate
     super
@@ -54,7 +56,7 @@ class Layer < Sequel::Model
         Statsd.increment('cartodb-com.errors.total')
       end
     end
-  end #validate
+  end
 
   def before_save
     super  
@@ -79,16 +81,15 @@ class Layer < Sequel::Model
 
   def before_destroy
     maps.each(&:invalidate_vizjson_varnish_cache)
+    children.each(&:destroy)
     super
-  end #before_destroy
+  end
 
-  ##
   # Returns an array of tables used on the layer
-  #
   def affected_tables
     return [] unless maps.first.present? && options.present?
     (tables_from_query_option + tables_from_table_name_option).compact.uniq
-  end #affected_tables
+  end
 
   def key
     "rails:layer_styles:#{self.id}"
@@ -101,7 +102,7 @@ class Layer < Sequel::Model
     else
       nil
     end
-  end #infowindow_template_path
+  end
 
   def tooltip_template_path 
     if self.tooltip.present? && self.tooltip['template_name'].present?
@@ -110,24 +111,24 @@ class Layer < Sequel::Model
     else
       nil
     end
-  end #tooltip_template_path
+  end
 
   def copy
     attributes = public_values.select { |k, v| k != 'id' }
     ::Layer.new(attributes)
-  end #copy
+  end
 
   def data_layer?
     kind == 'carto'
-  end #data_layer?
+  end
 
   def torque_layer?
     kind == 'torque'
-  end #data_layer?
+  end
 
   def base_layer?
     BASE_LAYER_KINDS.include?(kind)
-  end #base_layer?
+  end
 
   def register_table_dependencies(db=Rails::Sequel.connection)
     db.transaction do
@@ -148,19 +149,19 @@ class Layer < Sequel::Model
 
     self.options = options.merge(Hash[renamed])
     self
-  end #rename_table
+  end
 
   def uses_private_tables?
     !(affected_tables.select(&:private?).empty?)
-  end #uses_private_tables?
+  end
 
   def legend
     options['legend']
-  end #legend
+  end
 
   def get_presenter(options, configuration)
     CartoDB::Layer::Presenter.new(self, options, configuration)
-  end #get_presenter
+  end
 
   private
 
@@ -168,15 +169,17 @@ class Layer < Sequel::Model
     return if target.nil? || target.empty?
     regex = /(\A|\W+)(#{anchor})(\W+|\z)/
     target.gsub(regex) { |match| match.gsub(anchor, substitution) }
-  end #rename_in
+  end
 
   def delete_table_dependencies
+    # remove_* and remove_all_* do not delete the object from the database
+    # only disassociate the associated object from the receiver
     user_tables.map { |table| remove_user_table(table) }
-  end #delete_table_dependencies
+  end
 
   def insert_table_dependencies
     affected_tables.map { |table| add_user_table(table) }
-  end #insert_table_dependencies
+  end
 
   def tables_from_query_option
     return [] unless query.present?
@@ -187,17 +190,17 @@ class Layer < Sequel::Model
 
   def tables_from_table_name_option
     ::Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
-  end #tables_from_table_name_option
+  end
 
   def affected_table_names
     CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
-  end #affected_table_names
+  end
 
   def user
     maps.first.user
-  end #user
+  end
 
   def query
     options.symbolize_keys[:query]
-  end #query
+  end
 end

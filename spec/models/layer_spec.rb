@@ -295,4 +295,53 @@ describe Layer do
       derived.layers(:cartodb).first.uses_private_tables?.should be_false
     end
   end
+
+  describe '#parent_id' do
+    it 'checks parent_id works as expected' do
+      parent_layer = Layer.create(kind: 'carto')
+
+      parent_layer.parent_id.nil?.should eq true
+      parent_layer.children.should eq Array.new
+
+      child_layer = Layer.create(kind: 'carto')
+
+      child_layer.parent_id = parent_layer.id
+      child_layer.save
+
+      child_layer = Layer.where(id:child_layer.id).first
+      child_layer.parent_id.nil?.should eq false
+      child_layer.parent_id.should eq parent_layer.id
+
+      child_layer.parent.nil?.should eq false
+      child_layer.parent.id.should eq parent_layer.id
+
+      parent_layer = Layer.where(id: parent_layer.id).first
+      parent_layer.children.count.should eq 1
+      parent_layer.children.first.id.should eq child_layer.id
+    end
+
+    it 'checks deletion removes also children' do
+      Layer.all.each do |layer|
+        begin
+        layer.destroy
+        rescue
+          # just keep going, some layers might not have been saved to DB
+        end
+      end
+
+      parent_layer = Layer.create(kind: 'carto')
+      child_layer_1 = Layer.create(kind: 'carto', parent_id: parent_layer.id)
+      child_layer_2 = Layer.create(kind: 'carto', parent_id: parent_layer.id)
+      child_layer_3 = Layer.create(kind: 'carto', parent_id: parent_layer.id)
+
+      other_parent_layer = Layer.create(kind: 'carto')
+
+      Layer.all.count.should eq 5
+
+      parent_layer.destroy
+
+      Layer.all.count.should eq 1
+      Layer.all.first.id.should eq other_parent_layer.id
+    end
+  end
 end

@@ -219,6 +219,41 @@ describe Visualization::Collection do
     end
   end
 
+  # This should be a member_spec test, but as those specs have no collection support...
+  it 'checks the .children method' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE })).store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 0
+
+    child_member = Visualization::Member.new(random_attributes({
+                                                                   type:      Visualization::Member::TYPE_SLIDE,
+                                                                   parent_id: member.id
+                                                               })).store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 1
+
+    child_member2 = Visualization::Member.new(random_attributes({
+                                                                    type:      Visualization::Member::TYPE_SLIDE,
+                                                                    parent_id: member.id
+                                                                }))
+    child_member2.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 2
+
+    Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_TABLE })).store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.children.count.should eq 2
+
+  end
+
+  protected
+
   def random_attributes(attributes={})
     random = rand(999)
     {
@@ -226,9 +261,13 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
+      type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
       user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
-      locked:       attributes.fetch(:locked, false)
+      locked:       attributes.fetch(:locked, false),
+      title:        attributes.fetch(:title, ''),
+      source:       attributes.fetch(:source, ''),
+      license:      attributes.fetch(:license, ''),
+      parent_id:    attributes.fetch(:parent_id, nil)
     }
   end #random_attributes
 end # Visualization::Collection

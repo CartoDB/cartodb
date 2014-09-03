@@ -1,7 +1,5 @@
 # encoding: utf-8
-require_relative './map/copier'
 require_relative '../models/visualization/collection'
-
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -97,10 +95,6 @@ class Map < Sequel::Model
     end
   end
 
-  def copy_for(user)
-    CartoDB::Map::Copier.new(self, user).copy
-  end #copy
-
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
@@ -145,7 +139,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = Table.filter(
+    related_table = ::Table.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id
@@ -201,7 +195,7 @@ class Map < Sequel::Model
 
   def table_visualization
     CartoDB::Visualization::Collection.new
-      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::CANONICAL_TYPE)
+      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       .first
   end #table_visualization
 

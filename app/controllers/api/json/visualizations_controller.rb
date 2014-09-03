@@ -58,7 +58,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     }
     current_user.update_visualization_metrics
     render_jsonp(response)
-  end #index
+  end
 
   def create
     payload.delete(:permission) if payload[:permission].present?
@@ -122,7 +122,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  end #create
+  end
 
   def show
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -130,7 +130,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(vis)
   rescue KeyError
     head(404)
-  end #show
+  end
   
   def update
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -169,7 +169,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  end #update
+  end
 
   def destroy
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -185,7 +185,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
-  end #destroy
+  end
 
   def stats
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -193,7 +193,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(vis.stats)
   rescue KeyError
     head(404)
-  end #stats
+  end
 
   def vizjson1
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
@@ -209,7 +209,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue => exception
     CartoDB.notify_exception(exception)
     raise exception
-  end #vizjson1
+  end
 
   def vizjson2
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
@@ -231,7 +231,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue => exception
     CartoDB.notify_exception(exception)
     raise exception
-  end #vizjson
+  end
 
   def notify_watching
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -260,11 +260,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def locator
     CartoDB::Visualization::Locator.new
-  end #locator
+  end
 
   def scope_for(current_user)
     { user_id: current_user.id }
-  end #scope_for
+  end
 
   def allow_vizjson_v1_for?(table)
     table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
@@ -272,34 +272,34 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def allow_vizjson_v2_for?(visualization)
     visualization && (visualization.public? || visualization.public_with_link?)
-  end #allow_vizjson_v2_for?
+  end
 
   def current_user_is_owner?(table)
     current_user.present? && (table.owner.id == current_user.id)
-  end #current_user_is_owner?
+  end
 
   def set_vizjson_response_headers_for(visualization)
     response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
-  end #set_vizjson_response_headers
+  end
 
   def payload
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new)
-  end #payload
+  end
 
   def payload_with_default_privacy
     { privacy: default_privacy }.merge(payload)
-  end #payload_with_default_privacy
+  end
 
   def default_privacy
     current_user.private_tables_enabled ? Visualization::Member::PRIVACY_PRIVATE : Visualization::Member::PRIVACY_PUBLIC
-  end #default_privacy
+  end
 
   def name_candidate
     Visualization::NameGenerator.new(current_user)
                                 .name(params[:name])
-  end #name_candidate
+  end
 
   def tables_by_map_id(map_ids)
     Hash[ ::Table.where(map_id: map_ids).map { |table| [table.map_id, table] } ]
@@ -332,12 +332,24 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       table[:schema],
       table[:name]
       ).first
-      data[row[:table_name]] = {
-        size: row[:total_relation_size].to_i / 2,
-        rows: row[:reltuples]
-      }
+      if row.nil?
+        CartoDB.notify_error("Table #{table[:schema]}.#{table[:name]} not found at pg_class", {
+          user: current_user.username,
+          action: 'Api::Json::VisualizationsController.rows_and_sizes_for()'
+        })
+        # don't break whole dashboard
+        data[table[:name]] = {
+          size: nil,
+          rows: nil
+        }
+      else
+        data[row[:table_name]] = {
+          size: row[:total_relation_size].to_i / 2,
+          rows: row[:reltuples]
+        }
+      end
     }
     data
   end
-end # Api::Json::VisualizationsController
+end
 

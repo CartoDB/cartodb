@@ -68,7 +68,12 @@ WORKING_SPECS_8 = \
   spec/requests/superadmin/organizations_spec.rb \
   # Warning, run only 'uses locked filter' as the others fail
   spec/requests/api/visualizations_spec.rb:630 \
-  spec/requests/superadmin/users_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_9 = \
+  services/twitter-search/spec/unit/ \
+  services/datasources/spec/acceptance/datasources_factory_spec.rb \
+  services/datasources/spec/integration/ \
   $(NULL)
 
 
@@ -100,8 +105,10 @@ check-7:
 	bundle exec rspec $(WORKING_SPECS_7)
 check-8:
 	bundle exec rspec $(WORKING_SPECS_8)
+check-9:
+	bundle exec rspec $(WORKING_SPECS_9)
 
-check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8
+check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9
 
 check: prepare-test-db check-prepared
 check-frontend:

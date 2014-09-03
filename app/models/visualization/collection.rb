@@ -10,7 +10,7 @@ module CartoDB
     SIGNATURE           = 'visualizations'
     # 'user_id' filtered by default if present upon fetch()
     # 'locked' is filtered but before the rest
-    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id }
+    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id parent_id }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 

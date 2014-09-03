@@ -3,7 +3,7 @@ require 'json'
 require 'ejs'
 
 module CartoDB
-  class Layer
+  module Layer
     class Presenter
       EMPTY_CSS = '#dummy{}'
 
@@ -235,7 +235,7 @@ module CartoDB
           INFOWINDOW_KEYS.include?(key.to_s)
         }
       end
-    end # Presenter
-  end # Layer
-end # CartoDB
+    end
+  end
+end
 

@@ -191,7 +191,8 @@
   .metadata_list {
     position:relative;
     width: 100%!important;
-    height: 350px;
+    min-height: 310px;
+    max-height: 350px;
     overflow-y: hidden;
     overflow-x: visible;
     outline:none;

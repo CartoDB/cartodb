@@ -26,7 +26,7 @@ module CartoDB
 
       def initialize
         @source_files = []
-      end #initialize
+      end
 
       def run(path)
         return without_unpacking(path) unless compressed?(path)
@@ -38,7 +38,7 @@ module CartoDB
         puts exception.to_s
         puts exception.backtrace
         raise exception #ExtractionError
-      end #run
+      end
 
       def without_unpacking(path)
         local_path = "#{temporary_directory}/#{File.basename(path)}"
@@ -46,15 +46,15 @@ module CartoDB
         self.source_files.push(source_file_for(normalize(local_path)))
         @source_files = split(source_files)
         self
-      end #without_unpacking
+      end
 
       def compressed?(path)
         COMPRESSED_EXTENSIONS.include?(File.extname(path))
-      end #compressed?
+      end
 
       def process(path)
         source_files.push(source_file_for(path)) if supported?(path)
-      end #process
+      end
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
@@ -67,7 +67,7 @@ module CartoDB
         end # foreach
 
         files
-      end #crawl
+      end
 
       def extract(path)
         raise ExtractionError unless File.exists?(path)
@@ -89,13 +89,13 @@ module CartoDB
         end
         FileUtils.rm(path)
         self
-      end #extract
+      end
 
       def source_file_for(path)
         source_file = SourceFile.new(path)
         source_file.layer = 'track_points' if source_file.extension =~ /\.gpx/
         source_file
-      end #source_file_for
+      end
 
       def command_for(path)
         stdout, stderr, status  = Open3.capture3('which unp')
@@ -106,17 +106,17 @@ module CartoDB
         unp_path = stdout.chop
         puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}"
         "#{unp_path} #{path} -- -o"
-      end #command_for
+      end
 
      def supported?(filename)
         SUPPORTED_FORMATS.include?(File.extname(filename))
-      end #supported?
+      end
 
       def normalize(filename)
         normalized = underscore(filename)
         rename(filename, normalized)
         normalized
-      end #normalize
+      end
 
       def underscore(filename)
         filename.encode('UTF-8')
@@ -129,17 +129,17 @@ module CartoDB
           .downcase
           .gsub(/\.txt/, '.csv')
           .gsub(/\.tsv/, '.csv')
-      end #underscore
+      end
 
       def rename(origin, destination)
         return self if origin == destination
         File.rename(origin, destination)
         self
-      end #rename
+      end
 
       def clean_up
         FileUtils.rm_rf temporary_directory
-      end #clean_up
+      end
 
       def generate_temporary_directory
         tempfile                  = temporary_file
@@ -148,26 +148,26 @@ module CartoDB
         tempfile.close!
         Dir.mkdir(temporary_directory)
         self
-      end #generate_temporary_directory
+      end
 
       def hidden?(name)
         !!(name =~ HIDDEN_FILE_REGEX)
-      end #hidden?
+      end
 
       def unp_failure?(output, exit_code)
         !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
-      end #unp_failure?
+      end
 
       # Return a new temporary file contained inside a tmp subfolder
       def temporary_file
         FileUtils.mkdir_p(IMPORTER_TMP_SUBFOLDER) unless File.directory?(IMPORTER_TMP_SUBFOLDER)
         Tempfile.new('', IMPORTER_TMP_SUBFOLDER)
-      end #temporary_file
+      end
 
       def temporary_directory
         generate_temporary_directory unless @temporary_directory
         @temporary_directory
-      end #temporary_directory
+      end
 
       def split(source_files)
         source_files.flat_map { |source_file|
@@ -190,7 +190,7 @@ module CartoDB
 
       attr_reader :job
       attr_writer :temporary_directory
-    end # Unp
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

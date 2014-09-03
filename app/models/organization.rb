@@ -63,9 +63,14 @@ class Organization < Sequel::Model
     Organization.all.select do |o|
         limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
         over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
+
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
-        over_map_views || over_geocodings
+
+        limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+        over_twitter_imports = o.get_twitter_imports_count > limit
+
+        over_map_views || over_geocodings || over_twitter_imports
     end
   end
 
@@ -73,8 +78,12 @@ class Organization < Sequel::Model
     users.map{ |u| u.get_api_calls(options).sum }.sum
   end
 
-  def get_geocoding_calls
-    users.map(&:get_geocoding_calls).sum
+  def get_geocoding_calls(options = {})
+    users.map{ |u| u.get_geocoding_calls(options) }.sum
+  end
+
+  def get_twitter_imports_count(options = {})
+    users.map{ |u| u.get_twitter_imports_count(options) }.sum
   end
 
   def db_size_in_bytes
@@ -104,15 +113,16 @@ class Organization < Sequel::Model
         :avatar_url => self.owner ? self.owner.avatar_url : nil,
         :email      => self.owner ? self.owner.email : nil
       },
-      :quota_in_bytes        => self.quota_in_bytes,
-      :geocoding_quota       => self.geocoding_quota,
-      :map_view_quota        => self.map_view_quota,
-      :map_view_block_price  => self.map_view_block_price,
-      :geocoding_block_price => self.geocoding_block_price,
-      :seats                 => self.seats,
-      :twitter_username      => self.twitter_username,
-      :updated_at            => self.updated_at,
-      :users                 => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
+      :quota_in_bytes           => self.quota_in_bytes,
+      :geocoding_quota          => self.geocoding_quota,
+      :map_view_quota           => self.map_view_quota,
+      :twitter_datasource_quota => self.twitter_datasource_quota,
+      :map_view_block_price     => self.map_view_block_price,
+      :geocoding_block_price    => self.geocoding_block_price,
+      :seats                    => self.seats,
+      :twitter_username         => self.twitter_username,
+      :updated_at               => self.updated_at,
+      :users => self.users.reject { |item| filtered_user && item.id == filtered_user.id }
         .map { |u|
         {
           :id         => u.id,
@@ -126,19 +136,19 @@ class Organization < Sequel::Model
   end
 
   def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)
-    public_vis_by_type(CartoDB::Visualization::Member::DERIVED_TYPE, page_num, items_per_page, tag)
+    public_vis_by_type(CartoDB::Visualization::Member::TYPE_DERIVED, page_num, items_per_page, tag)
   end
 
   def public_visualizations_count
-    public_vis_count_by_type(CartoDB::Visualization::Member::DERIVED_TYPE)
+    public_vis_count_by_type(CartoDB::Visualization::Member::TYPE_DERIVED)
   end
 
   def public_datasets(page_num = 1, items_per_page = 5, tag = nil)
-    public_vis_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE, page_num, items_per_page, tag)
+    public_vis_by_type(CartoDB::Visualization::Member::TYPE_CANONICAL, page_num, items_per_page, tag)
   end
 
   def public_datasets_count
-    public_vis_count_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE)
+    public_vis_count_by_type(CartoDB::Visualization::Member::TYPE_CANONICAL)
   end
 
   def tags(type, exclude_shared=true)

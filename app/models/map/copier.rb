@@ -1,5 +1,4 @@
 # encoding: utf-8
-require_relative '../map'
 
 module CartoDB
   module Map
@@ -52,7 +51,7 @@ module CartoDB
         layer.add_map(map)
         layer.save
       end #link
-    end # Copier
-  end # Map
-end # CartoDB
+    end
+  end
+end
 

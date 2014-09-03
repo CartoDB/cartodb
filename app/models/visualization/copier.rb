@@ -19,7 +19,7 @@ module CartoDB
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         Member::DERIVED_TYPE,
+          type:         Member::TYPE_DERIVED,
           map_id:       map_copy(layers).id,
           privacy:      visualization.privacy,
           user_id:      @user.id
@@ -28,7 +28,7 @@ module CartoDB
           overlays_copy(member)
         end
         member
-      end #copy
+      end
 
       private
 
@@ -43,13 +43,13 @@ module CartoDB
       end
 
       def map_copy(layers)
-        @map_copy ||= Map::Copier.new.copy(visualization.map, layers)
-      end #map
+        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers)
+      end
 
       def new_name
         @new_name ||= NameGenerator.new(user).name(name || visualization.name)
-      end #name
-    end # Copier
-  end # Visualization
-end # CartoDB
+      end
+    end
+  end
+end
 

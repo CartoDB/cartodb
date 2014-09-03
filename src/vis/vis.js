@@ -488,8 +488,8 @@ var Vis = cdb.core.View.extend({
 
     this._addOverlays(data.overlays, options);
 
-    //var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-    //if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
+    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
+    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -744,7 +744,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('logo');
       remove_overlay('share');
       remove_overlay('layer_selector');
-      remove_overlay('fullscreen');
+      //remove_overlay('fullscreen');
       remove_overlay('zoom');
     }
 

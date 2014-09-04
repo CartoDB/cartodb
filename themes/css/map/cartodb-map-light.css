@@ -779,13 +779,11 @@ only screen and (                min-resolution: 2dppx) {
   border-radius: 0;
 }
 .cartodb-mobile .cartodb-attribution {
-
   display:none;
-
   list-style:none;
   background: #fff;
   position: absolute;
-  padding: 14px 17px;
+  padding: 9px 12px;
   margin: 0;
   right: 20px;
   bottom: 20px;
@@ -794,16 +792,13 @@ only screen and (                min-resolution: 2dppx) {
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-
   z-index: 10000001;
-
 }
 .cartodb-mobile .cartodb-attribution li {
-
   padding: 0;
   margin: 3px;
   display:inline-block; zoom: 1; *display: inline; vertical-align:top;
-
+  color: #999999;
 }
 .cartodb-mobile .cartodb-attribution li a {
   text-transform: capitalize;

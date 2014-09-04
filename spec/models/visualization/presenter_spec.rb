@@ -67,6 +67,7 @@ describe Visualization::Member do
       vis_mock.stubs(:license).returns('')
       vis_mock.stubs(:title).returns('')
       vis_mock.stubs(:parent_id).returns(nil)
+      vis_mock.stubs(:children).returns([])
 
       vis_mock.stubs(:table).returns(nil)
       vis_mock.stubs(:related_tables).returns([])
@@ -90,6 +91,7 @@ describe Visualization::Member do
       data[:related_tables].should eq Array.new
       data[:table].should eq Hash.new
       data[:parent_id].should eq nil
+      data[:children].should eq Array.new
     end
   end
 

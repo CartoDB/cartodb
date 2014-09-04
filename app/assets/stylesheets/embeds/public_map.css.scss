@@ -61,3 +61,15 @@ html, body {height: 100%; padding: 0; margin: 0;}
 
 
 .cartodb-header { display:none!Important; }
+.cartodb-mobile.with-header .cartodb-header { 
+  display:block!Important;
+}
+.cartodb-mobile.with-header .hgroup {
+  display:none;
+}
+.cartodb-mobile.with-header.with-layers .cartodb-header .content .toggle {
+ background-color: rgba(0,0,0,0.5); 
+}
+.cartodb-mobile.with-header.with-fullscreen .cartodb-header .content .fullscreen {
+ background-color: rgba(0,0,0,0.5); 
+}

@@ -98,7 +98,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     'click .toggle': "_toggle",
     "click .fullscreen": "_toggleFullScreen",
     'click .cartodb-attribution-button': '_onAttributionClick',
-    'click .backdrop': '_onBackdropClick'
+    'click .backdrop': '_onBackdropClick',
+    "dbclick":         '_stopPropagation'
+  },
+
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
   },
 
   _onBackdropClick: function(e) {
@@ -430,7 +436,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderLayer: function(layer_data) {
 
-    var hide_toggle = (this.layers.length == 1 || layer_data.get("type") === "torque");
+    var hide_toggle = (this.layers.length == 1 || layer_data.type === "torque");
 
     var layer = new cdb.geo.ui.MobileLayer({ model: layer_data, hide_toggle: hide_toggle });
     this.$el.find(".aside .layers").append(layer.render().$el);

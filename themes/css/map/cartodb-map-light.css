@@ -306,7 +306,6 @@ only screen and (                min-resolution: 2dppx) {
     background: url('../img/loader@2x.gif') no-repeat center center white!Important;
     background-size: 16px 16px!Important;
   }
-
   div.cartodb-mobile .aside div.cartodb-searchbox span.loader {
     background: url('../img/dark_loader@2x.gif') no-repeat center center #292929!Important;
     background-size: 16px 16px!Important;
@@ -688,6 +687,12 @@ only screen and (                min-resolution: 2dppx) {
   padding: 2px 0 0 0;
   bottom: auto;
   right: auto;
+}
+.cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.bubble ul li.graph {
+  border:none;
+}
+.cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.bubble ul li.graph .bubbles {
+  background:url('../img/dark_bubbles.png') no-repeat 0 0;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend .graph {
   border: 1px solid #1A1108;
@@ -1231,6 +1236,12 @@ div.cartodb-zoom {
   -o-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #999999;
+}
+
+body.embed-map.embed-map--small .cartodb-zoom {
+  position: absolute!Important;
+  top: 60px;
+  z-index: 100000000;
 }
 
 div.cartodb-zoom a {

@@ -224,7 +224,7 @@ var Vis = cdb.core.View.extend({
 
   _addLegends: function(layers) {
 
-    if (!this.mobileEnabled) {
+    if (!this.mobile_enabled) {
 
       this._renderLegends(layers);
 
@@ -293,7 +293,7 @@ var Vis = cdb.core.View.extend({
 
       this.torqueLayer = torque[0];
 
-      if (!this.mobileEnabled && this.torqueLayer) {
+      if (!this.mobile_enabled && this.torqueLayer) {
 
         this.addOverlay({
           type: 'time_slider',
@@ -472,7 +472,7 @@ var Vis = cdb.core.View.extend({
     var mapView  = new cdb.geo.MapView.create(div_hack, map);
     this.mapView = mapView;
 
-    /*if (this.mobileEnabled) {
+    /*if (this.mobile_enabled) {
       $(".cartodb-map-wrapper").addClass("device");
     }*/
 
@@ -484,7 +484,9 @@ var Vis = cdb.core.View.extend({
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
-    if (this.mobileEnabled)        this.addMobile(data.overlays, data.layers);
+    if (this.mobile_enabled){
+      this.addMobile(data.overlays, data.layers);
+    }
 
     this._addOverlays(data.overlays, options);
 
@@ -514,9 +516,9 @@ var Vis = cdb.core.View.extend({
       if (type == 'layer_selector'          && options[type]        || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
       if (type == 'fullscreen'              && options[type]        || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
 
-      if (!this.mobileEnabled && (type == 'search' && options[type]        || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+      if (!this.mobile_enabled && (type == 'search' && options[type]        || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
-      if (!this.mobileEnabled && type === 'header') {
+      if (!this.mobile_enabled && type === 'header') {
 
         var m = overlay.model;
 
@@ -675,7 +677,11 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || $(window).width() < 620;
+    this.small_embed = $(window).width() < 620 && $("body").hasClass("embed-map");
+    this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    this.mobile_enabled = this.mobile || this.small_embed;
+
+    if (this.small_embed) $("body").addClass("embed-map--small");
 
     if (!opt.title) {
       vizjson.title = null;
@@ -693,7 +699,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (!this.mobileEnabled && (opt.search || opt.searchControl)) {
+    if (!this.mobile_enabled && (opt.search || opt.searchControl)) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search"
@@ -730,7 +736,7 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (opt.shareable && !this.mobileEnabled) {
+    if (opt.shareable && !this.mobile_enabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
@@ -740,11 +746,14 @@ var Vis = cdb.core.View.extend({
     }
 
     // We remove certain overlays in mobile devices
-    if (this.mobileEnabled) {
+    if (this.mobile_enabled) {
       remove_overlay('logo');
       remove_overlay('share');
       remove_overlay('layer_selector');
       //remove_overlay('fullscreen');
+    }
+
+    if (this.mobile) {
       remove_overlay('zoom');
     }
 

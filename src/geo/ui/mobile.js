@@ -333,9 +333,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.each(this.overlays, function(overlay) {
 
-      if (this.visibility_options.searchControl === "true" || (!this.visibility_options.searchControl && overlay.type == 'search')) {
-        this._addSearch(overlay);
-        hasSearchOverlay = true;
+      if (!this.visibility_options.searchControl && overlay.type == 'search') {
+        if (this.visibility_options.searchControl !== "false") {
+          this._addSearch(overlay);
+          hasSearchOverlay = true;
+        }
       }
 
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {

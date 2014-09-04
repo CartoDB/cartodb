@@ -16,8 +16,6 @@ CartoDB::Application.routes.draw do
   match '/limits' => 'home#limits', as: :limits
   match '/status' => 'home#app_status'
 
-  get   '/sitemap.xml' => 'admin/pages#sitemap'
-
   # OAuth
   match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
   match '(/u/:user_domain)/oauth/request_token'  => 'oauth#request_token', as: :request_token
@@ -131,6 +129,7 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
     get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_datasets_tag
     get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_datasets_tag_page
+    get '(/u/:user_domain)/sitemap.xml'              => 'pages#sitemap',  as: :public_sitemap
     # Public tables
     get '(/u/:user_domain)/tables/track_embed'       => 'visualizations#track_embed',     as: :public_tables_track_embed, defaults: { dont_rewrite: true }
     get '(/u/:user_domain)/tables/embed_forbidden'   => 'visualizations#embed_forbidden', as: :public_tables_embed_forbidden, defaults: { dont_rewrite: true }

@@ -17,8 +17,6 @@ class Admin::PagesController < ApplicationController
   before_filter :belongs_to_organization
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
-  # Don't force org urls
-  skip_before_filter :ensure_org_url_if_org_user
 
   def datasets
 
@@ -31,6 +29,14 @@ class Admin::PagesController < ApplicationController
     end
 
     return render_404 if viewed_user.nil?
+
+    # Redirect to org url if has only user
+    if viewed_user.has_organization?
+      if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
+        redirect_to CartoDB.base_url(viewed_user.organization.name) <<  \
+          public_datasets_home_path(user_domain: viewed_user.username) and return
+      end
+    end
 
     @tags             = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
@@ -81,13 +87,20 @@ class Admin::PagesController < ApplicationController
   def sitemap
     username = CartoDB.extract_subdomain(request)
     viewed_user = User.where(username: username.strip.downcase).first
-    
+
     if viewed_user.nil?
       org = get_organization_if_exists(username)
       return if org.nil?
       visualizations = (org.public_visualizations.to_a || [])
       visualizations += (org.public_datasets.to_a || [])
     else
+      # Redirect to org url if has only user
+      if viewed_user.has_organization?
+        if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
+          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  \
+          public_sitemap_path(user_domain: viewed_user.username) and return
+        end
+      end
 
       visualizations = Visualization::Collection.new.fetch({
         user_id:  viewed_user.id,
@@ -124,6 +137,13 @@ class Admin::PagesController < ApplicationController
     end
 
     return render_404 if viewed_user.nil?
+
+    # Redirect to org url if has only user
+    if viewed_user.has_organization?
+      if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
+        redirect_to CartoDB.base_url(viewed_user.organization.name) << "/u/#{viewed_user.username}/" and return
+      end
+    end
 
     @tags             = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username

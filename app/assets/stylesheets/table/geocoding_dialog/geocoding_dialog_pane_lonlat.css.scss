@@ -7,6 +7,7 @@
   @import "compass/css3/border-radius";
   @import "../../common/vars";
   @import "../../common/mixins";
+  @import "../../common/form-elements";
 
 
   $br: 3px; // Default border radius for this pane
@@ -17,8 +18,10 @@
     .geocoding-pane-lonlat {
 
       ul.lonlat-columns {
+        position:relative;
         @include display-flex();
         @include justify-content(space-between, justify);
+        z-index:2;
 
         li {
           border:none;
@@ -95,6 +98,9 @@
           color:white;
         }
       }
+
+      // Infobox styles
+      @include default-form-info();
     }
 
 

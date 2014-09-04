@@ -25,7 +25,7 @@
       display:block;
       width:525px;
       overflow-x:hidden;
-      overflow-y:visible;
+      overflow-y:visible!important;
     }
 
     .geocoding-pane-content-wrapper {
@@ -41,6 +41,9 @@
 
     // Default
     .geocoding-pane-default {
+
+      // Infobox styles
+      @include default-form-info();
 
       // Title
       .geocoding-pane-title {
@@ -79,9 +82,6 @@
           color:#666666;
         }
       }
-
-      // Infobox styles
-      @include default-form-info();
     }
 
 
@@ -91,10 +91,7 @@
     .geocoding-pane-styles {
       display:block;
       height:auto;
-
       @include display-flex();
-
-
       -webkit-transform: translate3d(0,0,0);
       -moz-transform: translate3d(0,0,0);
       transform: translate3d(0,0,0);
@@ -114,8 +111,8 @@
         &.selected {
 
           .opt {
-            color: #333333;
-            background: #F2F2F2;
+            color:white;
+            background:#3B7EBB;
           }
 
           .marker {
@@ -133,17 +130,17 @@
           @include box-sizing(border-box);
           min-height: 203px;
 
-          border: 1px solid #E4E4E4;
+          border: 1px solid #BBBBBB;
 
           font-size:15px;
-          font-weight:bold;
+          font-weight:500;
           text-align:center;
 
           background:white;
         }
 
         &:first-child .opt { border-right: none; @include border-radius(5px 0px 0px 5px); }
-        &:last-child  .opt { border-bottom: 1px solid #E4E4E4; @include border-radius(0px 5px 5px 0px); }
+        &:last-child  .opt { @include border-radius(0px 5px 5px 0px); }
 
         span {
           position:absolute;
@@ -294,7 +291,8 @@
 
         em {
           text-decoration: underline;
-          color:#999;
+          color:#467FB7;
+          &:hover { color:black }
         }
 
         &.selected .opt {
@@ -378,7 +376,7 @@
       .back {
         float:left;
         display:none;
-        margin-top:15px;
+        margin-top:12px;
         padding-left:17px;
         @include table-sprite(blue-back-arrow, $offset-y:4px);
         line-height:17px;
@@ -392,6 +390,7 @@
       .ok.button {
         float:right;
         @include inline-block();
+        font-size:17px;
       }
     }
   }

@@ -97,8 +97,7 @@ class Admin::PagesController < ApplicationController
       # Redirect to org url if has only user
       if viewed_user.has_organization?
         if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  \
-          public_sitemap_path(user_domain: viewed_user.username) and return
+          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_pathand and return
         end
       end
 

@@ -3064,10 +3064,7 @@ div.cartodb-timeslider p {
   line-height: normal;
   color: #fff;
 
-  -ms-word-break: break-all;
-  word-break: break-all;
-
-  // Non standard for webkit
+  -ms-word-break: break-word;
   word-break: break-word;
 
   -webkit-hyphens: auto;
@@ -3087,10 +3084,7 @@ div.cartodb-timeslider p {
   line-height: normal;
   color: #fff;
 
-  -ms-word-break: break-all;
-  word-break: break-all;
-
-  // Non standard for webkit
+  -ms-word-break: break-word;
   word-break: break-word;
 
   -webkit-hyphens: auto;
@@ -3098,6 +3092,7 @@ div.cartodb-timeslider p {
   hyphens: auto;
 
 }
+
 .cartodb-overlay.overlay-text .text strong {
   font-weight: bold;
 }

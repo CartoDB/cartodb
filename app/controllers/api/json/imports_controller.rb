@@ -24,7 +24,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     data_import = DataImport[params[:id]]
     data_import.mark_as_failed_if_stuck!
 
-    data = data_import.reload.public_values
+    data = data_import.reload.public_values.except('service_item_id', 'service_name')
     if data_import.state == DataImport::STATE_SUCCESS && \
        data_import.service_name == CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
 

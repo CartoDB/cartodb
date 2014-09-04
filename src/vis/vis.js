@@ -485,19 +485,35 @@ var Vis = cdb.core.View.extend({
     if (options.sublayer_options)  this._setLayerOptions(options);
 
     if (this.mobile_enabled){
-      this.addMobile(data.overlays, data.layers);
+
+      this.addMobile(data.overlays, data.layers, options);
     }
 
     this._addOverlays(data.overlays, options);
 
+    /*var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
+
+    if (options.fullscreen && fullscreenEnabled && !device) {
+      this._addFullScreen();
+    }*/
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
     })
 
     return this;
+
+  },
+
+  _addFullScreen: function() {
+
+    this.addOverlay({
+      options: {
+        allowWheelOnFullscreen: true
+      },
+      type: 'fullscreen'
+    });
 
   },
 
@@ -512,11 +528,11 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (type == 'share'                   && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector'          && options[type]        || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'              && options[type]        || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'share'          && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type]         || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'     && options[type]         || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
 
-      if (!this.mobile_enabled && (type == 'search' && options[type]        || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+      if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
       if (!this.mobile_enabled && type === 'header') {
 
@@ -540,8 +556,7 @@ var Vis = cdb.core.View.extend({
     }, this);
 
   },
-
-  addMobile: function(overlays, data_layers) {
+  addMobile: function(overlays, data_layers, options) {
 
     var layers;
 
@@ -549,7 +564,7 @@ var Vis = cdb.core.View.extend({
 
     if (layer.options && layer.options.layer_definition) {
       layers = layer.options.layer_definition.layers;
-    } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
       layers = layer.options.named_map.layers;
     }
 
@@ -557,6 +572,7 @@ var Vis = cdb.core.View.extend({
       type: 'mobile',
       layers: layers,
       overlays: overlays,
+      options: options,
       torqueLayer: this.torqueLayer
     });
 

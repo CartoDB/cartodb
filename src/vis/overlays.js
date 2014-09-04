@@ -35,6 +35,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
+    visibility_options: data.options,
     torqueLayer: data.torqueLayer,
     map: data.map
   });

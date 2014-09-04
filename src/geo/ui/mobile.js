@@ -239,6 +239,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.defaults(this.options, this.default_options);
 
+    this.visibility_options = this.options.visibility_options;
+
     this.mapView = this.options.mapView;
     this.map     = this.mapView.map;
 
@@ -327,10 +329,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    var hasSearchOverlay = false;
+
     _.each(this.overlays, function(overlay) {
 
-      if (overlay.type == 'search') {
+      if (this.visibility_options.searchControl === "true" || (!this.visibility_options.searchControl && overlay.type == 'search')) {
         this._addSearch(overlay);
+        hasSearchOverlay = true;
       }
 
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {
@@ -343,6 +348,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
+    if (!hasSearchOverlay && this.visibility_options.searchControl === "true") this._addSearch();
+
     this._addAttributions();
 
     this.$header = this.$el.find(".cartodb-header");
@@ -353,6 +360,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this._renderTorque();
 
     var self = this;
+
 
     setTimeout(function() {
       self.$el.find(".scrollpane").css("max-height", self.$el.height() - 30);
@@ -365,9 +373,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _addFullscreen: function() {
 
-
-    this.hasFullscreen = true;
-    this.$el.addClass("with-fullscreen");
+    if (this.visibility_options.fullscreen != false) {
+      this.hasFullscreen = true;
+      this.$el.addClass("with-fullscreen");
+    }
 
   },
 
@@ -400,17 +409,24 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.hasHeader = true;
     this.$header = this.$el.find(".cartodb-header");
 
-    this.$el.addClass("with-header");
-
     var extra = overlay.options.extra;
+    var has_header = false;
 
     if (extra) {
       this.$title  = this.$header.find(".title").html(extra.title);
       this.$description  = this.$header.find(".description").html(extra.description);
 
-      if (extra.show_title)       this.$title.show();
-      if (extra.show_description) this.$description.show();
+      if (this.visibility_options.title       || this.visibility_options.title != false       && extra.show_title)      {
+        this.$title.show();
+        has_header = true;
+      }
+      if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
+        this.$description.show();
+        has_header = true;
+      }
     }
+
+    if (has_header) this.$el.addClass("with-header");
 
   },
 

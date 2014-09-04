@@ -19,9 +19,9 @@ module CartoDB
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         additional_fields.fetch(:type, Member::TYPE_DERIVED),
+          type:         type_from(additional_fields),
           parent_id:    additional_fields.fetch(:parent_id, nil),
-          map_id:       map_copy(layers).id,
+          map_id:       map_copy(layers, type_from(additional_fields) == Member::TYPE_SLIDE).id,
           privacy:      visualization.privacy,
           user_id:      @user.id
         )
@@ -35,6 +35,10 @@ module CartoDB
 
       attr_reader :visualization, :user, :name
 
+      def type_from(fields)
+        fields.fetch(:type, Member::TYPE_DERIVED)
+      end
+
       def overlays_copy(new_visualization)
         copier = CartoDB::Overlay::Copier.new(new_visualization.id)
         visualization.overlays.each.map { |overlay|
@@ -43,8 +47,8 @@ module CartoDB
         }
       end
 
-      def map_copy(layers)
-        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers)
+      def map_copy(layers, create_as_children=false)
+        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers, create_as_children)
       end
 
       def new_name

@@ -113,8 +113,8 @@ class Layer < Sequel::Model
     end
   end
 
-  def copy
-    attributes = public_values.select { |k, v| k != 'id' }
+  def copy(override_attributes={})
+    attributes = public_values.select { |k, v| k != 'id' }.merge(override_attributes)
     ::Layer.new(attributes)
   end
 

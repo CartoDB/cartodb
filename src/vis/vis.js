@@ -222,7 +222,7 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  _addLegends: function(layers) {
+  addLegends: function(layers) {
 
     if (!this.mobile_enabled) {
 
@@ -285,7 +285,7 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  _addTimeSlider: function() {
+  addTimeSlider: function() {
 
     var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
 
@@ -478,9 +478,9 @@ var Vis = cdb.core.View.extend({
 
     this._addLayers(data.layers, options);
 
-    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this._addLegends(data.layers);
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers);
 
-    if (options.time_slider)       this._addTimeSlider();
+    if (options.time_slider)       this.addTimeSlider();
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 

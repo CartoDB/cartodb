@@ -88,9 +88,7 @@
   aside {
     width:280px;
 
-    ul {
-      display:block;
-    }
+    ul { display:block }
 
     li {
 
@@ -100,17 +98,18 @@
         @include align-items(center, center);
         height:52px;
         padding:0 20px;
+        border:1px solid transparent;
         border-top:1px solid #E2E2E2;
         color:#666666;
       }
 
       // First child doesn't have border
       &:first-child {
-        a { border-top:none }
+        a { border-top:1px solid transparent }
       }
 
-      a.selected {
-        font-weight:bold;
+      &.selected a {
+        font-weight:500;
         border:1px solid #E2E2E2!important;
         @include border-radius(2px);
         cursor:default;
@@ -120,7 +119,7 @@
       }
 
       &.selected + li a {
-        border-top:none
+        border-top:none!important
       }
 
     }

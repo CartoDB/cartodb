@@ -105,11 +105,11 @@ class CommonData
   end
 
   def export_url(table_name)
-    sql_api_url(export_query(table_name))
+    sql_api_url(table_name)
   end
 
-  def sql_api_url(query)
-    "#{base_url}/sql?api_key=#{config('api_key')}&format=#{config('format', 'shp')}&q=#{URI::encode query}"
+  def sql_api_url(table_name)
+    "#{base_url}/sql?api_key=#{config('api_key')}&format=#{config('format', 'shp')}&filename=#{table_name}&q=#{URI::encode export_query(table_name)}"
   end
 
   def export_query(table_name)

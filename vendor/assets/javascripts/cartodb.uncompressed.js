@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 4d6c0bc4e5ed3b3a9ea1349a83c0f80275e81e08
+// sha: fd4d4dd2e51c7108285ea5d314b2a08978785a87
 (function() {
   var root = this;
 
@@ -32516,6 +32516,7 @@ cdb.vis.Vis = Vis;
 (function() {
 
 cdb.vis.Overlay.register('logo', function(data, vis) {
+
 });
 
 cdb.vis.Overlay.register('mobile', function(data, vis) {

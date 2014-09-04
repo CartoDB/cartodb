@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: df9192a2f413bab26af8b2e22e5dfcb42bd2cfdb
+// sha: 3448904886895af0af00f401ce7f43c4dcf462e4
 (function() {
   var root = this;
 
@@ -23270,9 +23270,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.each(this.overlays, function(overlay) {
 
-      if (this.visibility_options.searchControl === "true" || (!this.visibility_options.searchControl && overlay.type == 'search')) {
-        this._addSearch(overlay);
-        hasSearchOverlay = true;
+      if (!this.visibility_options.searchControl && overlay.type == 'search') {
+        if (this.visibility_options.searchControl !== "false") {
+          this._addSearch(overlay);
+          hasSearchOverlay = true;
+        }
       }
 
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {

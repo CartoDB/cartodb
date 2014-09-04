@@ -89,7 +89,7 @@
       @include border-radius(100px);
     }
   }
- 
+
   // Tags
   ul {
     position:relative;
@@ -144,7 +144,7 @@
         span.text-icon {
           display:block;
           margin:0;
-          padding:0 5px 0px 7px;
+          padding:0 5px 0 7px;
           line-height:19px;
           color:#1F4362;
         }
@@ -152,7 +152,7 @@
     }
 
     li.tagit-choice.tagit-choice-read-only {
-      .tagit-label { border-right: 0px }
+      .tagit-label { border-right: 0 }
     }
 
     li.tagit-new {
@@ -228,7 +228,7 @@
     z-index:10;
 
     &.top { display:none; top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
-    &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+    &.bottom {bottom:0; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
   }
 
   section.modal.confirmation {

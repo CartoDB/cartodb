@@ -63,8 +63,8 @@ div.map {
         }
       }
 
-      .cartodb-logo { 
-        margin-bottom: 0px;
+      .cartodb-logo {
+        margin-bottom: 0;
         bottom: 10px!important;
       }
 
@@ -75,7 +75,7 @@ div.map {
       }
 
       .leaflet-right .leaflet-control, #cartodb_attribution {
-        margin-right: 0px;
+        margin-right: 0;
       }
 
       div.cartodb-searchbox {
@@ -105,7 +105,7 @@ div.map {
   }
 
   div.map_toolbar {
-    @include position(0, false, false, 0px);
+    @include position(0, false, false, 0);
     @include size(100%, 54px);
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     background: image-url('layout/thead_bkg.jpg') repeat 0 0;
@@ -395,7 +395,7 @@ div.map {
 
   }
 
-  div.cartodb-layer-selector-box { 
+  div.cartodb-layer-selector-box {
     display:none;
     font-weight: normal;
     margin: 0;
@@ -421,7 +421,7 @@ div.map {
     }
   }
 
-  // Fullscreen 
+  // Fullscreen
   div.cartodb-fullscreen {
     display:none;
     position:absolute;
@@ -459,7 +459,7 @@ div.map {
       margin: 41px 0 0 20px;
     }
 
-    div.cartodb-layer-selector-box { 
+    div.cartodb-layer-selector-box {
       position:relative;
       float:right;
       margin: 20px 20px 0 0;
@@ -491,9 +491,9 @@ div.map {
       height:28px;
     }
 
-    div.cartodb-zoom { 
-      position:absolute; 
-      top: 0px;
+    div.cartodb-zoom {
+      position:absolute;
+      top: 0;
       margin: 20px 0 0 20px;
     }
 
@@ -503,11 +503,11 @@ div.map {
     }
 
     div.cartodb-searchbox{
-      margin-right:0px;
+      margin-right:0;
     }
 
     .leaflet-right .leaflet-control, #cartodb_attribution {
-      margin-right: 0px!important;
+      margin-right: 0!important;
     }
   }
 
@@ -686,7 +686,7 @@ section.block.noGeoRef {
 
     .foot {
       border-top: 0;
-      padding-top: 0px;
+      padding-top: 0;
 
       .cancel {
         margin-top: 15px;
@@ -734,8 +734,8 @@ div.cartodb-edit-buttons {
     color: #999;
     font-size: 13px;
     margin-top:8px;
-    letter-spacing:0px;
-    word-spacing:0px;
+    letter-spacing:0;
+    word-spacing:0;
   }
 
   // Edit buttons
@@ -753,7 +753,7 @@ div.cartodb-edit-buttons {
     text-indent: -9999px;
     font-size:0;
     line-height:0;
-    letter-spacing:0px;
+    letter-spacing:0;
     @include border-radius(0);
 
     &.edit_data {@include edit-bottom-states(-4, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
@@ -813,7 +813,7 @@ div.cartodb-edit-buttons {
       position:absolute;
       content:'';
       top:0;
-      left:0px;
+      left:0;
       height:100%;
       width:1px;
       background:rgba(0,0,0,0.15);

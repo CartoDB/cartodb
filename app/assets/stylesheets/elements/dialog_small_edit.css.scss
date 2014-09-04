@@ -126,7 +126,7 @@
       word-spacing: -4px;
 
       .select2-container {width:100px!important;}
-      
+
       & > div.column {
         @include inline-block();
         letter-spacing: 0;
@@ -164,7 +164,7 @@
         }
 
         &:last-child {margin-right:0;}
-      }      
+      }
     }
 
 
@@ -358,7 +358,7 @@
 
         span.tagit-label {
           @include inline-block();
-          padding:0px 5px;
+          padding:0 5px;
           border-right:1px solid #2B5B85;
           line-height:19px;
         }
@@ -379,7 +379,7 @@
           span.text-icon {
             display:block;
             margin:0;
-            padding:0 5px 0px 7px;
+            padding:0 5px 0 7px;
             line-height:19px;
             color:#1F4362;
           }

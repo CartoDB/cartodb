@@ -23,10 +23,10 @@
   @import "../common/mixins";
   @import "../table/table-sprite";
 
-  
+
   // Modal dialogs
   .vis_privacy_dialog {
-    
+
     section.block {
       div.foot {
         position:relative;
@@ -71,7 +71,7 @@
 
     input.submit {
       padding:0 8px;
-      margin:0px;
+      margin:0;
       background:#FFD2A6;
       border:none;
       @include border-radius($br);
@@ -207,7 +207,7 @@
       z-index:10;
 
       &.top { display:none; top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
-      &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+      &.bottom {bottom:0; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
     }
   }
 
@@ -250,7 +250,7 @@
         display:block;
         padding:9px;
         text-decoration:none;
-        
+
         &:hover { background:#EDEDED }
 
         &.disabled:hover { background:none }
@@ -300,7 +300,7 @@
     .current-privacy-item {
       display:block;
       width:auto;
-      
+
       .privacy-link {
         position:relative;
         text-decoration:none;
@@ -310,7 +310,7 @@
         @include transform-style("linear");
         @include transition-property("box-shadow,border,background");
         @include transition-duration(250ms);
-        
+
         &:before,
         &:after {
           content:'';
@@ -343,7 +343,7 @@
           @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
         }
       }
-      
+
     }
 
   }

@@ -27,7 +27,7 @@
       @include border-top-left-radius(3px);
       background: image-url('layout/linen.png') repeat 0 0;
       z-index:2;
-      
+
       &:after {
         content: '';
         position:absolute;
@@ -94,7 +94,7 @@
 
         span.label {
           float:left;
-          margin:2px 7px 0px 0px;
+          margin:2px 7px 0 0;
           color:#ccc;
           line-height:18px;
         }

@@ -12,12 +12,12 @@
 
 .overlay.text {
 
-  .content > .text { 
+  .content > .text {
     font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.droid .content > .text { 
+  &.droid .content > .text {
     font-family: 'Droid Sans', serif; font-weight: 400;
     strong { font-weight: 700; }
   }
@@ -27,12 +27,12 @@
     strong { font-weight: 700; }
   }
 
-  &.vollkorn .content > .text { 
+  &.vollkorn .content > .text {
     font-family: 'Vollkorn', serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.open_sans .content > .text { 
+  &.open_sans .content > .text {
     font-family: 'Open Sans', sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
@@ -111,7 +111,7 @@
 
   z-index: 999;
 
-  &:hover { 
+  &:hover {
     background:rgba(#333, .7);
   }
 
@@ -125,7 +125,7 @@
     color: #fff;
     @include opacity(.7);
 
-    strong, em, span { 
+    strong, em, span {
       @include inline-block();
       margin-left: 3px;
     }
@@ -243,11 +243,11 @@
 
   &:hover .edit,
   &:hover .close,
-  &:hover div.dropdown.properties_dropdown { 
+  &:hover div.dropdown.properties_dropdown {
     @include opacity(1);
   }
 
-  div.dropdown.properties_dropdown { 
+  div.dropdown.properties_dropdown {
     @include opacity(0);
     @include simple-transition(opacity, .10s, ease-in-out);
 
@@ -309,8 +309,8 @@
       position:absolute;
       top: 10px;
       right: 8px;
-      width: 0; 
-      height: 0; 
+      width: 0;
+      height: 0;
       border-left: 3px solid transparent;
       border-right: 3px solid transparent;
       border-top: 4px solid #fff;
@@ -343,7 +343,7 @@
 
   .text {
 
-    em, i { font-style: italic; } 
+    em, i { font-style: italic; }
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
 
@@ -410,8 +410,8 @@ div.rule {
   @include simple-transition(opacity, .10s, ease-in-out);
 
   &.horizontal {
-    height: 1px; 
-    width: 100%; 
+    height: 1px;
+    width: 100%;
   }
 
 } // .rule
@@ -428,7 +428,7 @@ div.dropdown.properties_dropdown {
 
     li {
 
-      padding: 8px 0px;
+      padding: 8px 0;
       border:none;
       border-bottom: 1px solid rgba(#CCCCCC, .35);
 
@@ -455,13 +455,13 @@ div.dropdown.properties_dropdown {
           color: #666666;
         }
 
-        &.field { 
+        &.field {
           margin: 0;
           color: #333;
         }
 
         &.field div { margin-right: 5px; }
-        &.field div:last-child { margin-right: 0px; }
+        &.field div:last-child { margin-right: 0; }
 
       }
 

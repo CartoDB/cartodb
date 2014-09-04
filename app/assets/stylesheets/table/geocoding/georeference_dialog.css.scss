@@ -24,18 +24,18 @@
     top: -18px;
   }
 
-  .mamufas .block.modal div.content { 
+  .mamufas .block.modal div.content {
     padding: 40px;
   }
 
   section.block p { margin: 0 0 15px 0;}
 
-  .mamufas .block.modal div.foot { overflow: visible; padding: 0px 40px 48px 40px; }
+  .mamufas .block.modal div.foot { overflow: visible; padding: 0 40px 48px 40px; }
   .mamufas .block.modal div.foot a { padding: 12px 32px; }
 
   .marker {
 
-    &.a { top: 0px;  left: 14px; }
+    &.a { top: 0;  left: 14px; }
     &.b { top: 30px; left: 42px; }
     &.c { top: 20px; left: 72px; }
 
@@ -123,7 +123,7 @@
 
   .opt > .icon {
     position:absolute;
-    top: 0px;
+    top: 0;
     right: -5px;
     width:31px;
     height:31px;
@@ -218,12 +218,12 @@
     p {
       width: 143px;
       margin: 0 0 15px 0;
-      line-height: 120%; 
+      line-height: 120%;
       font-size: 13px;
       color: #999;
     }
 
-    .button { 
+    .button {
       $width: 141px;
       position:absolute;
       bottom: 39px;
@@ -320,8 +320,8 @@
 
         }
 
-        &:first-child .opt { border-right: none; @include border-radius(5px 0px 0px 5px); }
-        &:last-child  .opt { border-bottom: 1px solid #E4E4E4; @include border-radius(0px 5px 5px 0px); }
+        &:first-child .opt { border-right: none; @include border-radius(5px 0 0 5px); }
+        &:last-child  .opt { border-bottom: 1px solid #E4E4E4; @include border-radius(0px 5px 5px 0); }
 
         span {
           position:absolute;
@@ -342,13 +342,13 @@
 
         .marker {
 
-          &.a { top: 0px;  left: 14px; }
+          &.a { top: 0;  left: 14px; }
           &.b { top: 30px; left: 42px; }
           &.c { top: 20px; left: 72px; }
 
           @include opacity(0);
           position:absolute;
-          width: 12px; 
+          width: 12px;
           height: 12px;
           display: block;
           @include border-radius(100px);
@@ -420,11 +420,11 @@
 
           &.animated {
 
-            
+
             .icon .marker.a { top: 33px; @include opacity(1); }
             .icon .marker.b { top: 60px; @include opacity(1); }
             .icon .marker.c { top: 40px; @include opacity(1); }
-          
+
           }
 
           .opt, &.selected .opt {
@@ -436,7 +436,7 @@
               .icon {
                 @include filter(grayscale(80%));
                 @include opacity(.5);
-                .marker { 
+                .marker {
                   background: #666;
                   border-color: #333;
 

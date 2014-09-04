@@ -6,7 +6,7 @@
    *  - Panes styles
    *
    */
-  
+
   @import "compass/css3/background-size";
   @import "compass/css3/inline-block";
   @import "compass/css3/opacity";
@@ -116,7 +116,7 @@
 
         // Show state
         &.show {
-          margin-top:0px;
+          margin-top:0;
           @include opacity(1);
           z-index:1;
         }
@@ -131,7 +131,7 @@
 
       // Create icon
       .create-icon {
-        @include inline-block();     
+        @include inline-block();
         width:29px;
         height:38px;
         margin-bottom:18px;
@@ -145,7 +145,7 @@
 
         &.dropbox {
           width:40px;
-          @include elements-sprite(create-tabs-icons, $offset-x:-69px); 
+          @include elements-sprite(create-tabs-icons, $offset-x:-69px);
         }
 
         &.twitter {
@@ -165,9 +165,9 @@
 
         &.error {
           width:42px;
-          @include elements-sprite(create-tabs-icons, $offset-x:-211px); 
+          @include elements-sprite(create-tabs-icons, $offset-x:-211px);
         }
-        
+
       }
     }
 
@@ -297,7 +297,7 @@
           a {
             color: #999;
             text-decoration:underline;
-            &:hover { color:#666 }   
+            &:hover { color:#666 }
           }
         }
       }
@@ -312,7 +312,7 @@
       height:0;
       margin-top:30px;
       @include opacity(0);
-    
+
       .progress-bar {
         position:relative;
         width:160px;
@@ -350,7 +350,7 @@
         @include inline-block();
         width:13px;
         height:13px;
-        margin:0 0px 0 5px;
+        margin:0 0 0 5px;
         padding:0;
         @include common-sprite(close_grey);
         @include text-indent();

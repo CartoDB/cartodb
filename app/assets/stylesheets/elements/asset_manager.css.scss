@@ -57,7 +57,7 @@
           @include background(linear-gradient(white, rgba(white,0)));
         }
         &.bottom {
-          bottom:0px;
+          bottom:0;
           @include background(linear-gradient(rgba(white,0),white));
         }
       }
@@ -73,7 +73,7 @@
         overflow: hidden;
         background: image-url("layout/loader_transparent_small.gif") no-repeat center;
 
-        &:nth-child(14n) { margin-right:0 } 
+        &:nth-child(14n) { margin-right:0 }
 
         a.image {
           @include inline-block();

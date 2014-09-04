@@ -13,7 +13,7 @@
 
 
   section.create-dialog {
-    
+
     div.head {
       padding:0 40px 30px;
       border:none;
@@ -34,7 +34,7 @@
 
         &.disabled {
           @include opacity(0);
-          margin:0px;
+          margin:0;
         }
       }
     }
@@ -68,10 +68,10 @@
       &.middle {
         @include justify-content(center, center);
       }
-      
+
       a.ok {
         @include inline-block();
-        
+
         &.green {
           font-weight:400;
           font-size:17px;

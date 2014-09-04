@@ -8,7 +8,7 @@
   @import "../dashboard/dashboard-sprite";
   @import "../common/common-sprite";
 
-  
+
   article.visualizations aside,
   article.tables aside {
     @include inline-block();
@@ -22,7 +22,7 @@
       border:none;
     }
 
-    
+
     // Create tables or visualization button
     a.create {
       display:block;
@@ -80,7 +80,7 @@
           &.selected {
             color: #333333;
             font-weight: bold;
-            text-decoration:none;  
+            text-decoration:none;
           }
         }
       }
@@ -98,7 +98,7 @@
   }
 
   article.visualizations aside {
-    margin-top:0px;
+    margin-top:0;
 
     &.moving {
       margin-left:5px;

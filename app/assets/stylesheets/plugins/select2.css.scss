@@ -596,7 +596,7 @@ disabled look for already selected choices in the results dropdown
 
   span.type {
     position:absolute;
-    top:4px; right:0px;
+    top:4px; right:0;
     width:20px;
     background:#CCCCCC;
     @include border-radius(2px);

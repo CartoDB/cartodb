@@ -49,6 +49,27 @@
     }
   }
 
+  // Empty block
+  .empty {
+    display:none;
+    margin-top:30px;
+
+    div.inner {
+      padding:100px 0;
+      background:white;
+      border:1px solid #D1D1D1;
+      @include border-radius(3px);
+      text-align: center;
+      @include box-shadow(0 0 3px 3px rgba(black, .08) );
+    }
+    
+    p, h3 {
+      margin:10px auto 0;
+      width:600px;
+      text-align: center;
+    }
+  }
+
   // Content -> Aside + Tables
   .public_tables {
     display:block;

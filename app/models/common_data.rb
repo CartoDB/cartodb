@@ -4,7 +4,7 @@ class CommonData
 
   def initialize
     @datasets = nil
-    @tables = nil
+    @user = nil
   end
 
   def datasets
@@ -88,51 +88,45 @@ class CommonData
   end
 
   def base_url
-    "https://#{Cartodb.config[:common_data]['username']}.cartodb.com/api/v1"
-  end
-
-  def api_key
-    Cartodb.config[:common_data]['api_key']
+    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/v1"
   end
 
 
   def datasets_url
     privacy = Rails.env.development? ? '' : '&privacy=public'
-    "#{base_url}/viz?page=1&per_page=500#{privacy}&type=table&api_key=#{api_key}"
+    puts "#{base_url}/viz?page=1&per_page=500#{privacy}&type=table&exclude_shared=true&api_key=#{config('api_key')}"
+    "#{base_url}/viz?page=1&per_page=500#{privacy}&type=table&exclude_shared=true&api_key=#{config('api_key')}"
   end
-
 
   def export_url(table_name)
     sql_api_url(export_query(table_name))
   end
 
-  def tables_last_updated_url
-    sql_api_url(tables_last_updated_query)
-  end
-
   def sql_api_url(query)
-    "#{base_url}/sql?api_key=#{api_key}&format=#{format}&q=#{URI::encode query}"
-  end
-
-
-  def tables_last_updated_query
-    'select tabname as table_name, extract(epoch from updated_at) as updated_at from cdb_tablemetadata'
+    "#{base_url}/sql?api_key=#{config('api_key')}&format=#{config('format', 'shp')}&q=#{URI::encode query}"
   end
 
   def export_query(table_name)
     "select * from #{table_name}"
   end
 
-
-  def format
-    Cartodb.config[:common_data]['format'] || 'shp'
-  end
-
   def is_enabled
-    Cartodb.config[:common_data].present? && Cartodb.config[:common_data]['username'] && Cartodb.config[:common_data]['api_key']
+    !config('username').nil? && !config('api_key').nil?
   end
 
   def generate_every
-    Cartodb.config[:common_data]['generate_every'] || 86400
+    config('generate_every', 86400)
+  end
+
+  def common_data_user
+    @user ||= User.where(username: config('username')).first
+  end
+
+  def config(key, default=nil)
+    if Cartodb.config[:common_data].present?
+      Cartodb.config[:common_data][key].present? ? Cartodb.config[:common_data][key] : default
+    else
+      default
+    end
   end
 end

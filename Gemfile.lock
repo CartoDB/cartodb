@@ -63,6 +63,7 @@ GEM
     charlock_holmes (0.6.9.4)
     childprocess (0.5.1)
       ffi (~> 1.0, >= 1.0.11)
+    chronic (0.10.2)
     chunky_png (1.3.0)
     ci_reporter (1.9.0)
       builder (>= 2.1.2)
@@ -84,6 +85,8 @@ GEM
       debugger-ruby_core_source (~> 1.3.1)
     debugger-linecache (1.2.0)
     debugger-ruby_core_source (1.3.5)
+    delorean (2.1.0)
+      chronic
     descendants_tracker (0.0.3)
     diff-lcs (1.1.3)
     dropbox-sdk (1.6.3)
@@ -309,7 +312,6 @@ GEM
       rack (>= 1.0.0)
     thor (0.14.6)
     tilt (1.4.1)
-    timecop (0.6.3)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -351,6 +353,7 @@ DEPENDENCIES
   compass (= 0.12.3)
   dbf (= 2.0.6)
   debugger (= 1.6.5)
+  delorean
   dropbox-sdk (= 1.6.3)
   ejs (~> 1.1.1)
   em-pg-client (= 0.2.1)
@@ -403,7 +406,6 @@ DEPENDENCIES
   statsd-client (= 0.0.7)
   therubyracer (= 0.12.1)
   thin
-  timecop (= 0.6.3)
   typhoeus (= 0.6.7)
   unicorn (= 4.8.2)
   uuidtools (= 2.1.3)

@@ -51,11 +51,11 @@ class CommonData
   private
 
   def self.save_to_s3(filename, body)
-    s3_obj = s3_bucket.objects["common-data/#{filename}"]
+    s3_obj = s3_bucket.objects[filename]
+
     s3_obj.write({
-        :data => body[],
-        :acl => :public_read,
-        :content_type => MIME::Types['application/zip']
+        :data => body,
+        :acl => :public_read
     })
     s3_obj.public_url.to_s
   end

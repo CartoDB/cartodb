@@ -147,7 +147,7 @@
 
     // Tables list
     ul.tables {
-      &:first-child { border-top:none }
+      li:first-child .table-item-inner { border-top:none }
     }
 
     // Tables attributes

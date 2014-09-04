@@ -37,6 +37,13 @@ class CommonData
     }
   end
 
+  def update_table_metadata(table_name)
+    table = Table.get_by_id_or_name(table_name, common_data_user)
+    if table
+      table.update_cdb_tablemetadata
+    end
+  end
+
   def self.upload_to_s3(filename, body)
     self.save_to_s3(filename, body)
   end

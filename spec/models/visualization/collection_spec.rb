@@ -246,7 +246,7 @@ describe Visualization::Collection do
     canonical = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_CANONICAL })).store
 
     member.children.count.should eq 2
-    
+
     canonical.children.count.should eq 0
 
     member2 = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED })).store

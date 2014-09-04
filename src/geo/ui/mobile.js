@@ -1,7 +1,11 @@
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
-    'click .toggle':        "_toggle",
+    'click h3':              "_toggle",
+    //"dragstart":            "_checkOrigin",
+    //"mousedown":            "_checkOrigin",
+    //"touchstart":           "_checkOrigin",
+    //"MSPointerDown":        "_checkOrigin",
     "dbclick":              "_stopPropagation"
   },
 
@@ -12,11 +16,17 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
   template: cdb.core.Template.compile("<h3><%= layer_name %><a href='#' class='toggle<%= toggle_class %>'></a></h3>"),
 
   /**
-   *  Stop event bubbling
+   *  Check event origin
    */
-  _stopBubbling: function (e) {
-    e.preventDefault();
-    e.stopPropagation();
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
+
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
   },
 
   /**
@@ -47,6 +57,8 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     e.preventDefault();
     e.stopPropagation();
+
+    if (this.options.hide_toggle) return;
 
     this.model.set("visible", !this.model.get("visible"))
 

@@ -75,6 +75,7 @@ module CartoDB
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
 
+
         path = normalize(local_path)
         current_directory = Dir.pwd
         Dir.chdir(temporary_directory)
@@ -105,7 +106,13 @@ module CartoDB
         end
         unp_path = stdout.chop
         puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}"
-        "#{unp_path} #{path} -- -o"
+
+        if path.end_with?('tar.gz')
+          # tar doesn't allows -o, which doesn't makes too much sense as each import comes in a different folder
+          "#{unp_path} #{path} --"
+        else
+          "#{unp_path} #{path} -- -o"
+        end
       end
 
      def supported?(filename)

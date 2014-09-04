@@ -273,58 +273,6 @@ describe Search::Twitter do
       csv_dumper.send :destroy_files
     end
 
-    it 'tests basic full search flow' do
-      user_quota = 100
-      user_mock = Doubles::User.new({twitter_datasource_quota: user_quota})
-      data_import_mock = Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
-
-      twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
-
-      input_terms = terms_fixture
-      input_dates = dates_fixture
-
-      Typhoeus.stub(/fakeurl\.cartodb/) do |request|
-        accept = (request.options[:headers]||{})['Accept'] || 'application/json'
-        format = accept.split(',').first
-
-        if request.options[:params][:next].nil?
-          body = data_from_file('sample_tweets.json')
-        else
-          body = data_from_file('sample_tweets_2.json')
-        end
-
-        Typhoeus::Response.new(
-          code: 200,
-          headers: { 'Content-Type' => format },
-          body: body
-        )
-      end
-
-      twitter_datasource.send :audit_entry, Doubles::SearchTweet
-
-      twitter_datasource.data_import_item = data_import_mock
-
-      output = twitter_datasource.get_resource(::JSON.dump(
-        {
-          categories: input_terms[:categories],
-          dates:      input_dates[:dates]
-        }
-      ))
-
-      output.should eq data_from_file('sample_tweets_expected.csv')
-
-      audit_entry = twitter_datasource.send :audit_entry
-      # 40 = 2 categories of 20 results each (10 per .json, one with next the other without)
-      audit_entry.retrieved_items.should eq 40
-      audit_entry.user_id.should eq user_mock.id
-      audit_entry.data_import_id.should eq data_import_mock.id
-      audit_entry.service_item_id.should eq data_import_mock.service_item_id
-      audit_entry.state.should eq 'importing'
-
-      data_import_item = twitter_datasource.send :data_import_item
-      data_import_item.id.should eq data_import_mock.id
-    end
-
     it 'tests user limits on datasource usage' do
       twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new)
 
@@ -415,8 +363,12 @@ describe Search::Twitter do
     }
   end
 
-  def data_from_file(filename)
-    File.read(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"))
+  def data_from_file(filename, fullpath=false)
+    if fullpath
+      File.read(filename)
+    else
+      File.read(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"))
+    end
   end
 
 end

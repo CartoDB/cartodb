@@ -23376,7 +23376,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.each(attributions, function(attribution) {
       var $li = $("<li></li>");
-      var $el = $li.append($(attribution));
+      var $el = $li.html(attribution);
       this.$el.find(".cartodb-attribution").append($li);
     }, this);
 

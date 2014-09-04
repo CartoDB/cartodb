@@ -68,7 +68,6 @@ class CommonData
   end
 
   def asset(table_name)
-    puts "Downloading #{table_name}"
     response = Typhoeus.get(export_url(table_name), followlocation:true)
     raise URI::InvalidURIError unless [200, 201].include?(response.code)
     response.response_body

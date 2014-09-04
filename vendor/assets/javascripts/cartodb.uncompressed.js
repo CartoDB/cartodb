@@ -23176,6 +23176,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.defaults(this.options, this.default_options);
 
+    this.visibility_options = this.options.visibility_options;
+
     this.mapView = this.options.mapView;
     this.map     = this.mapView.map;
 
@@ -23264,10 +23266,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    var hasSearchOverlay = false;
+
     _.each(this.overlays, function(overlay) {
 
-      if (overlay.type == 'search') {
+      if (this.visibility_options.searchControl === "true" || (!this.visibility_options.searchControl && overlay.type == 'search')) {
         this._addSearch(overlay);
+        hasSearchOverlay = true;
       }
 
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {
@@ -23280,6 +23285,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
+    if (!hasSearchOverlay && this.visibility_options.searchControl === "true") this._addSearch();
+
     this._addAttributions();
 
     this.$header = this.$el.find(".cartodb-header");
@@ -23290,6 +23297,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this._renderTorque();
 
     var self = this;
+
 
     setTimeout(function() {
       self.$el.find(".scrollpane").css("max-height", self.$el.height() - 30);
@@ -23302,9 +23310,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _addFullscreen: function() {
 
-
-    this.hasFullscreen = true;
-    this.$el.addClass("with-fullscreen");
+    if (this.visibility_options.fullscreen != false) {
+      this.hasFullscreen = true;
+      this.$el.addClass("with-fullscreen");
+    }
 
   },
 
@@ -23337,17 +23346,24 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.hasHeader = true;
     this.$header = this.$el.find(".cartodb-header");
 
-    this.$el.addClass("with-header");
-
     var extra = overlay.options.extra;
+    var has_header = false;
 
     if (extra) {
       this.$title  = this.$header.find(".title").html(extra.title);
       this.$description  = this.$header.find(".description").html(extra.description);
 
-      if (extra.show_title)       this.$title.show();
-      if (extra.show_description) this.$description.show();
+      if (this.visibility_options.title       || this.visibility_options.title != false       && extra.show_title)      {
+        this.$title.show();
+        has_header = true;
+      }
+      if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
+        this.$description.show();
+        has_header = true;
+      }
     }
+
+    if (has_header) this.$el.addClass("with-header");
 
   },
 
@@ -31743,19 +31759,35 @@ var Vis = cdb.core.View.extend({
     if (options.sublayer_options)  this._setLayerOptions(options);
 
     if (this.mobile_enabled){
-      this.addMobile(data.overlays, data.layers);
+
+      this.addMobile(data.overlays, data.layers, options);
     }
 
     this._addOverlays(data.overlays, options);
 
+    /*var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
+
+    if (options.fullscreen && fullscreenEnabled && !device) {
+      this._addFullScreen();
+    }*/
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
     })
 
     return this;
+
+  },
+
+  _addFullScreen: function() {
+
+    this.addOverlay({
+      options: {
+        allowWheelOnFullscreen: true
+      },
+      type: 'fullscreen'
+    });
 
   },
 
@@ -31770,11 +31802,11 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (type == 'share'                   && options["shareable"] || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector'          && options[type]        || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'              && options[type]        || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'share'          && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type]         || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen'     && options[type]         || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
 
-      if (!this.mobile_enabled && (type == 'search' && options[type]        || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+      if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
       if (!this.mobile_enabled && type === 'header') {
 
@@ -31798,8 +31830,7 @@ var Vis = cdb.core.View.extend({
     }, this);
 
   },
-
-  addMobile: function(overlays, data_layers) {
+  addMobile: function(overlays, data_layers, options) {
 
     var layers;
 
@@ -31807,7 +31838,7 @@ var Vis = cdb.core.View.extend({
 
     if (layer.options && layer.options.layer_definition) {
       layers = layer.options.layer_definition.layers;
-    } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
       layers = layer.options.named_map.layers;
     }
 
@@ -31815,6 +31846,7 @@ var Vis = cdb.core.View.extend({
       type: 'mobile',
       layers: layers,
       overlays: overlays,
+      options: options,
       torqueLayer: this.torqueLayer
     });
 
@@ -32550,6 +32582,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
+    visibility_options: data.options,
     torqueLayer: data.torqueLayer,
     map: data.map
   });

@@ -97,7 +97,7 @@ group :development, :test do
 
   gem 'rspec-rails',           '2.10.1'
   gem 'capybara',              '1.1.2'
-  gem 'timecop',               '0.6.3'
+  gem 'delorean'
   gem 'rack',                  '1.4.1'
   gem 'rack-reverse-proxy',    '0.4.4',  require: 'rack/reverse_proxy'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'

@@ -173,6 +173,7 @@
     div.tables-tag,
     div.tables-featured {
       li:first-child .table-item-inner { border-top:none }
+      li:last-child .table-item-inner { border-bottom:1px solid rgba(204,204,204,0.5); }
     }
 
     // Tables attributes

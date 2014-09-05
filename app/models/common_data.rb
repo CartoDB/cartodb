@@ -235,3 +235,22 @@ class CommonData
   end
 
 end
+
+
+class CommonDataSingleton
+  include Singleton
+
+  def initialize
+    @common_data = CommonData.new
+    @last_usage = Time.now
+  end
+
+  def datasets
+    now = Time.now
+    if now - @last_usage > (60 * 60)
+      @common_data = CommonData.new
+      @last_usage = now
+    end
+    @common_data.datasets
+  end
+end

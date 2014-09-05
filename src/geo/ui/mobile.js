@@ -358,6 +358,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         }
       }
 
+      if (overlay.type == 'zoom' && !this.mobileEnabled) {
+        this._addZoom(overlay);
+      }
+
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {
         this._addFullscreen(overlay);
       }
@@ -394,6 +398,24 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       $scrollpane.css("max-height", height - 30);
       $scrollpane.jScrollPane({ showArrows: true });
     }, 500);
+
+  },
+
+  _addZoom: function(overlay) {
+
+    var template = cdb.core.Template.compile('\
+    <a href="#zoom_in" class="zoom_in">+</a>\
+    <a href="#zoom_out" class="zoom_out">-</a>\
+    <div class="info"></div>', 'mustache'
+    );
+
+    var zoom = new cdb.geo.ui.Zoom({
+      model: this.options.map,
+      template: template
+    });
+
+    this.$el.append(zoom.render().$el);
+    this.$el.addClass("with-zoom");
 
   },
 

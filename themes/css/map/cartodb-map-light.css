@@ -496,6 +496,13 @@ only screen and (                min-resolution: 2dppx) {
   background-size: 30px 30px;
   position: absolute;
 }
+.cartodb-mobile.with-zoom .cartodb-zoom {
+  position: absolute;
+  top: 0px;
+}
+.cartodb-mobile.with-zoom.with-header .cartodb-zoom {
+  top: 60px;
+}
 .cartodb-mobile .aside {
   position:absolute;
   width: 250px;
@@ -1228,12 +1235,6 @@ div.cartodb-zoom {
   -o-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #999999;
-}
-
-body.embed-map.embed-map-small .cartodb-zoom {
-  position: absolute!important;
-  top: 60px;
-  z-index: 100000000;
 }
 
 div.cartodb-zoom a {

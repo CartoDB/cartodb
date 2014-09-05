@@ -24,7 +24,7 @@ class CommonData
 
   def upload_datasets_to_s3(all_public)
     begin
-      datasets_json = get_datasets_json(datasets_api_url)
+      datasets_json = get_datasets_json(datasets_api_url(false))
       _datasets = get_datasets(datasets_json, [])
     rescue
       puts 'Unable to retrieve datasets, ending now without uploading anything to Amazon S3'
@@ -169,16 +169,17 @@ class CommonData
     "https://s3.amazonaws.com/#{config('s3_bucket_name')}/#{DATASETS_JSON_FILENAME}"
   end
 
-  def visualization_api_url(vis_id)
-    "#{base_url}/viz/#{vis_id}?api_key=#{config('api_key')}"
+  def visualization_api_url(visualization)
+    "#{base_url}/viz/#{visualization['id']}?api_key=#{config('api_key')}"
   end
 
   def table_api_url(table_name)
     "#{base_url}/tables/#{table_name}?api_key=#{config('api_key')}"
   end
 
-  def datasets_api_url
-    "#{base_url}/viz?page=1&per_page=500&privacy=public&type=table&exclude_shared=true&api_key=#{config('api_key')}"
+  def datasets_api_url(only_public=true)
+    privacy = only_public ? '&privacy=public' : ''
+    "#{base_url}/viz?page=1&per_page=500&type=table#{privacy}&exclude_shared=true&api_key=#{config('api_key')}"
   end
 
   def export_url(table_name)

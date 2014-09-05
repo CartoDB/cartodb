@@ -1637,8 +1637,8 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile .cartodb-header .content .toggle {
   display: none;
   position:relative;
-  top: 0px;
-  right: 0px;
+  top: 0;
+  right: 0;
   float: right;
   width: 70px;
   height: 60px;
@@ -1779,6 +1779,7 @@ only screen and (                min-resolution: 2dppx) {
   height: 10px;
   background: #191919;
   position:relative;
+  top: 2px;
 
   float: right;
 

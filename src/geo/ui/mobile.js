@@ -234,7 +234,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   initialize: function() {
 
-    _.bindAll(this, "_toggle");
+    _.bindAll(this, "_toggle", "_reInitScrollpane");
 
     _.defaults(this.options, this.default_options);
 
@@ -322,7 +322,26 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.$('.scrollpane').data('jsp') && this.$('.scrollpane').data('jsp').reinitialise();
   },
 
+  _bindOrientationChange: function() {
+
+    var self = this;
+
+    var onOrientationChange = function() {
+      $(".cartodb-mobile .scrollpane").css("max-height", self.$el.height() - 30);
+      $('.cartodb-mobile .scrollpane').data('jsp') && $('.cartodb-mobile .scrollpane').data('jsp').reinitialise();
+    };
+
+    if (!window.addEventListener) {
+      window.attachEvent('orientationchange', onOrientationChange, this);
+    } else {
+      window.addEventListener('orientationchange', _.bind(onOrientationChange));
+    }
+
+  },
+
   render:function() {
+
+    this._bindOrientationChange();
 
     this.$el.html(this.template(this.options));
 
@@ -360,15 +379,21 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this._renderLayers();
     this._renderTorque();
 
-    var self = this;
-
-
-    setTimeout(function() {
-      self.$el.find(".scrollpane").css("max-height", self.$el.height() - 30);
-      self.$el.find(".scrollpane").jScrollPane({ showArrows: true });
-    }, 500);
+    this._initScrollPane();
 
     return this;
+
+  },
+
+  _initScrollPane: function() {
+
+    var height      = this.$el.height();
+    var $scrollpane = this.$el.find(".scrollpane");
+
+    setTimeout(function() {
+      $scrollpane.css("max-height", height - 30);
+      $scrollpane.jScrollPane({ showArrows: true });
+    }, 500);
 
   },
 

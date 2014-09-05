@@ -499,6 +499,7 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile.with-zoom .cartodb-zoom {
   position: absolute;
   top: 0px;
+  z-index:100000;
 }
 .cartodb-mobile.with-zoom.with-header .cartodb-zoom {
   top: 60px;
@@ -582,7 +583,7 @@ only screen and (                min-resolution: 2dppx) {
     height: 100%;
     overflow: hidden;
     outline:none;
-    padding-bottom: 25px;
+    /*padding-bottom: 25px;*/
 }
 .cartodb-mobile .aside .scrollpane .jspContainer { overflow: hidden; position: relative; }
 .cartodb-mobile .aside .scrollpane .jspPane { position: absolute; }

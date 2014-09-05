@@ -107,7 +107,6 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation
     var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
-    console.log(come_from_scroll);
 
     if (!come_from_scroll) {
       ev.stopPropagation();
@@ -186,6 +185,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _open: function() {
 
     this.$el.animate({ right: this.$el.find(".aside").width() }, 200)
+    this._initScrollPane();
 
   },
 
@@ -263,16 +263,6 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.model.get("open") ? this._open() : this._close();
   },
 
-  open: function() {
-    var self = this;
-
-    this.$el.addClass("open");
-    this.isOpen = true;
-    this.$el.css("height", "110");
-
-    this.recalc();
-  },
-
   _createLayer: function(_class, opts) {
     return new cdb.geo.ui[_class](opts);
   },
@@ -348,6 +338,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     var hasSearchOverlay = false;
+    var hasZoomOverlay   = false;
 
     _.each(this.overlays, function(overlay) {
 
@@ -358,8 +349,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         }
       }
 
-      if (overlay.type == 'zoom' && !this.mobileEnabled) {
-        this._addZoom(overlay);
+      if (!this.visibility_options.zoomControl && overlay.type == 'zoom') {
+        if (this.visibility_options.zoomControl !== "false") {
+          this._addZoom(overlay);
+          hasZoomOverlay = true;
+        }
       }
 
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {
@@ -373,6 +367,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     }, this);
 
     if (!hasSearchOverlay && this.visibility_options.searchControl === "true") this._addSearch();
+    if (!hasZoomOverlay   && this.visibility_options.zoomControl === "true")   this._addZoom();
 
     this._addAttributions();
 
@@ -383,20 +378,22 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this._renderLayers();
     this._renderTorque();
 
-    this._initScrollPane();
-
     return this;
 
   },
 
   _initScrollPane: function() {
 
-    var height      = this.$el.height();
-    var $scrollpane = this.$el.find(".scrollpane");
+    if (this.$scrollpane) return;
+
+    var self = this;
+
+    var height       = this.$el.height();
+    this.$scrollpane = this.$el.find(".scrollpane");
 
     setTimeout(function() {
-      $scrollpane.css("max-height", height - 30);
-      $scrollpane.jScrollPane({ showArrows: true });
+      self.$scrollpane.css("max-height", height - 60);
+      self.$scrollpane.jScrollPane({ showArrows: true });
     }, 500);
 
   },

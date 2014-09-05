@@ -282,7 +282,7 @@
 
       &.selected {
         @include background(linear-gradient(#F3F3F3, #FFF));
-        @include box-shadow(inset 0px 2px 2px #ccc);
+        @include box-shadow(inset 0 2px 2px #ccc);
 
         &:after {
           @include opacity(1);
@@ -644,7 +644,7 @@
 
       span.handle {
         position:absolute;
-        top:0px;
+        top:0;
         left:11px;
         width:10px;
         height:10px;

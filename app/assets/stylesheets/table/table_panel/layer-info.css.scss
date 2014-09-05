@@ -7,7 +7,7 @@
    *
    */
 
-  
+
   @import "compass/css3/border-radius";
   @import "../../table/table-sprite";
   @import "../../common/mixins";
@@ -32,7 +32,7 @@
     div.left {width:82%;}
     div.right {width:45px; margin-right:20px;}
 
-    
+
     // Layer info block
     a.info {
       display:block;
@@ -40,7 +40,7 @@
       top:0!important;
       padding-left:24px;
 
-      * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
+      * {@include inline-block(); vertical-align:middle; letter-spacing:0;}
 
       // Order element
       .order {
@@ -124,7 +124,7 @@
     .remove {
       @include inline-block();
       vertical-align:middle;
-      letter-spacing:0px;
+      letter-spacing:0;
       width:13px;
       height:13px;
       margin-left:5px;

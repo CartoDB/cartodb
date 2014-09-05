@@ -131,7 +131,7 @@
           padding-left:15px;
 
           &.public { margin-left:116px }
-          
+
           em { font-style: italic; }
 
           .link { text-decoration: underline; }
@@ -153,7 +153,7 @@
       @include justify-content(flex-start, start);
       margin:0;
       top: 0;
-      
+
       li { margin:0; }
 
       .privacy {
@@ -212,10 +212,10 @@
           border: 2px solid #fff;
           background:none;
 
-          span { 
+          span {
             padding: 1px 0;
             @include inline-block();
-            color: #fff; 
+            color: #fff;
             font-size: 12px;
           }
 
@@ -230,7 +230,7 @@
         &:after {
           position:absolute;
           content:'';
-          top:0px;
+          top:0;
           right:0;
           margin:0;
           width: 1px;

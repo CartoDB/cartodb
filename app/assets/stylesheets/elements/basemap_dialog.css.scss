@@ -187,7 +187,7 @@
     z-index:10;
 
     &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
-    &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+    &.bottom {bottom:0; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
   }
 }
 
@@ -222,7 +222,7 @@
 // NASA basemap pane
 
 .basemap-pane.nasa-pane {
-  
+
   p.disclaimer {
     padding:0 0 15px 15px;
     font-size:13px;
@@ -241,7 +241,7 @@
   }
 
   input.url { display:none!important }
-  
+
   div.column {
     @include inline-block();
     &.time_field { display:none }

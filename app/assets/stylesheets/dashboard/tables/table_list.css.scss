@@ -21,7 +21,7 @@
   section.tables {
     @include inline-block();
     width: 928px;
-    letter-spacing:0px;
+    letter-spacing:0;
 
     // Tables list
     div.content {

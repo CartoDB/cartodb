@@ -29,7 +29,7 @@
       pointer-events: none;
 
       &.top    { @include opacity(0); @include position(61px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
-      &.bottom { @include opacity(1); @include position(false, false, 0px, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
+      &.bottom { @include opacity(1); @include position(false, false, 0, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
 
       @include size(100%, 30px);
 
@@ -146,7 +146,7 @@
 
       .combo {
 
-        @include box-shadow(inset 0px 4px 4px #EDEDED);
+        @include box-shadow(inset 0 4px 4px #EDEDED);
 
         display:none;
         @include box-sizing(border-box);

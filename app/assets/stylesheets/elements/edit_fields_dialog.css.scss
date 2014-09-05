@@ -27,7 +27,7 @@
         z-index:10;
 
         &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
-        &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+        &.bottom {bottom:0; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
       }
 
       div.wrapper {
@@ -60,7 +60,7 @@
 
             // Actions
             &.error {border-color:rgba(red,0.5);}
-          }  
+          }
         }
 
         // String touched
@@ -73,7 +73,7 @@
             max-height:200px;
             min-height:20px;
             height:18px;
-          }  
+          }
         }
 
         // Boolean touched
@@ -99,7 +99,7 @@
           }
         }
 
-        // Date touched 
+        // Date touched
         &.date {
           div.date_field {
             display:table;
@@ -109,7 +109,7 @@
             @include border-radius(4px);
             letter-spacing: -4px;
             word-spacing: -4px;
-            
+
             & > div.column {
               @include inline-block();
               letter-spacing: 0;
@@ -148,5 +148,5 @@
 
         &:first-child {margin-top:0;}
       }
-    }    
+    }
   }

@@ -40,9 +40,9 @@
       &.left_shadow:before {
         content:'';
         position:absolute;
-        top:0px;
-        bottom:0px;
-        left:0px;
+        top:0;
+        bottom:0;
+        left:0;
         width:30px;
         pointer-events: none;
         @include background(linear-gradient(left, rgba(#333, .7), rgba(#333,0)));
@@ -52,9 +52,9 @@
       &:after {
         content:'';
         position:absolute;
-        top:0px;
-        bottom:0px;
-        right:0px;
+        top:0;
+        bottom:0;
+        right:0;
         width:30px;
         pointer-events: none;
         @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, .7)));

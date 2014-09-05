@@ -42,7 +42,7 @@
 body.public { /* Public table CSS */
 
   &.table .panes { top: 67px; }
-  &.map .panes   { top: 0px; overflow-x: hidden; }
+  &.map .panes   { top: 0; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
     position:relative;
@@ -118,7 +118,7 @@ body.public { /* Public table CSS */
     }
   }
 
-  .cartodb-public-header { 
+  .cartodb-public-header {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
@@ -191,7 +191,7 @@ body.public { /* Public table CSS */
           text-transform: uppercase;
         }
 
-        a.selected { 
+        a.selected {
           text-decoration: none;
           color: rgba(#fff, .7);
           cursor:default;
@@ -217,7 +217,7 @@ body.public { /* Public table CSS */
     padding: 13px 0 0 0;
     margin: 30px 0 0 0;
     @include clearfix();
-    
+
     &.disabled {
       display:none;
     }
@@ -262,7 +262,7 @@ body.public { /* Public table CSS */
         img { margin: 0 5px 0 0; vertical-align: middle; }
       }
 
-      a { 
+      a {
         @include inline-block();
         margin: 0 0 0 0;
         padding: 7px 8px;
@@ -427,7 +427,7 @@ div.table {
               &:after {
                 position:absolute;
                 top:13px;
-                left:0px;
+                left:0;
                 z-index:0;
                 width:1px;
                 height:42px;
@@ -610,7 +610,7 @@ div.table {
 
       tr.placeholder.decoration {
         height: 15px;
-        border-bottom:0px;
+        border-bottom:0;
 
         &:hover {
           border-color:#ECECEC;
@@ -624,12 +624,12 @@ div.table {
 
       tr.placeholder.decoration td{
         height: 15px;
-        border-top:0px;
-        border-bottom:0px;
+        border-top:0;
+        border-bottom:0;
 
         &:hover {
           border-color:#ECECEC;
-          border-top: 0px;
+          border-top: 0;
           border-top-color:#ECECEC;
           background:inherit;
         }
@@ -770,7 +770,7 @@ div.table {
     &.vis {
       div.shadow {
         top:144px;
-      } 
+      }
     }
 
     // tbody
@@ -993,7 +993,7 @@ div.order_selector {
 
 
 // Hello hacks for Firefox
-@-moz-document url-prefix() { 
+@-moz-document url-prefix() {
   table { border-collapse: inherit; }
   thead div.sqlview { z-index:1!important; }
   thead tr th div { z-index:2!important; }

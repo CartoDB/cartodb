@@ -17,7 +17,7 @@
     @include align-items(center, center);
     @include cross-browser(flex-wrap, wrap);
     letter-spacing:0;
-    
+
     // Main vis item styles
     .vis-item {
       @include size(274px, 242px);
@@ -124,7 +124,7 @@
 
     // Tags
     .vis-tags {
-      padding:0px 22px;
+      padding:0 22px;
       display:block;
     }
 

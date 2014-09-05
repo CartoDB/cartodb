@@ -1647,11 +1647,11 @@ div.cartodb-mobile.open .legends {
 
   display:none;
 
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  -ms-border-radius: 0px;
-  -o-border-radius: 0px;
-  border-radius: 0px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
 
   background-color:transparent;
 
@@ -1670,11 +1670,11 @@ div.cartodb-mobile.open .toggle {
   -moz-box-shadow: none;
   box-shadow: none;
 
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  -ms-border-radius: 0px;
-  -o-border-radius: 0px;
-  border-radius: 0px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
 
   border: none;
   z-index: 110;
@@ -1781,11 +1781,11 @@ div.cartodb-mobile .torque {
   position:absolute;
   background:#fff;
 
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  -ms-border-radius: 0px;
-  -o-border-radius: 0px;
-  border-radius: 0px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
 
   webkit-box-shadow: none;
   -moz-box-shadow: none;
@@ -1840,11 +1840,11 @@ div.cartodb-mobile.torque .toggle {
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
 
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  -ms-border-radius: 0px;
-  -o-border-radius: 0px;
-  border-radius: 0px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
 
   webkit-box-shadow: none;
   -moz-box-shadow: none;
@@ -1916,7 +1916,7 @@ div.cartodb-legend-stack div.cartodb-legend {
   -moz-border-radius: 0;
   -ms-border-radius: 0;
   -o-border-radius: 0;
-  border-radius: 0px;
+  border-radius: 0;
 
   border-bottom: 1px solid #999;
 
@@ -2154,7 +2154,7 @@ div.cartodb-legend.choropleth li.graph {
   -webkit-background-clip: padding;
   background-clip: padding;
 
-  /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
+  /*box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);*/
   border: 1px solid #b3b3b3;
 }
 
@@ -2209,7 +2209,7 @@ div.cartodb-legend.density li.graph {
   -webkit-background-clip: padding;
   background-clip: padding;
 
-  /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
+  /*box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);*/
   border: 1px solid #b3b3b3;
 }
 
@@ -2251,11 +2251,11 @@ div.cartodb-legend.intensity li.graph {
   background-clip: padding;
 
   /*border: 1px solid #b3b3b3;*/
-  -webkit-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
-  -o-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
-  -ms-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
-  box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  -o-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  -ms-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 
 }
 
@@ -2569,7 +2569,7 @@ div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.switch:before {
 
 div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.switch span.handle {
   position: absolute;
-  top: 0px;
+  top: 0;
   left: 12px;
   width: 10px;
   height: 10px;

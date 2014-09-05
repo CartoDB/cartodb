@@ -10,7 +10,7 @@
   .org-user-form {
 
     @include progress-bar(41px, 3px, true, 5px);
-    div.progress-bar { margin-top:0px }
+    div.progress-bar { margin-top:0 }
 
     .bar-1:hover {
       background:#C3D1DD!important;

@@ -114,8 +114,8 @@ header {
 
         @include background(image-url('layout/cartodb.png') no-repeat);
         text-indent: -9999px;
-        line-height: 0px;
-        font-size: 0px;
+        line-height: 0;
+        font-size: 0;
         text-transform: uppercase;
       }
     }
@@ -202,7 +202,7 @@ header {
 
       background:#fff;
       @include border-radius(300px);
-      @include box-shadow(0px 0px 0 4px rgba(#333, .2));
+      @include box-shadow(0px 0 0 4px rgba(#333, .2));
     }
 
   } // .avatar

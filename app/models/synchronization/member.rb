@@ -329,7 +329,7 @@ module CartoDB
       def log
         return @log if defined?(@log) && @log
         log_attributes = {
-          type: CartoDB::TYPE_SYNCHRONIZATION,
+          type: CartoDB::Log::TYPE_SYNCHRONIZATION,
         }
         log_attributes.merge(id: log_id) if log_id
         log_attributes.merge(user_id: user.id) if user

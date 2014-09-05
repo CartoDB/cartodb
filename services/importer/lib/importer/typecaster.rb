@@ -34,7 +34,7 @@ module CartoDB
       end
 
       def cast(column_name) 
-        job.log.append "Casting '#{column_name}' to timestamp with time zone"
+        job.log "Casting '#{column_name}' to timestamp with time zone"
 
         # TODO: Use CDB_StringToDate() instead whenever generalizing typecasting
         db.run(%Q(

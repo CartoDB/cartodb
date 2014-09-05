@@ -1,11 +1,7 @@
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
-    'click h3':              "_toggle",
-    //"dragstart":            "_checkOrigin",
-    //"mousedown":            "_checkOrigin",
-    //"touchstart":           "_checkOrigin",
-    //"MSPointerDown":        "_checkOrigin",
+    'click h3':             "_toggle",
     "dbclick":              "_stopPropagation"
   },
 
@@ -14,20 +10,6 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
   className: "cartodb-mobile-layer",
 
   template: cdb.core.Template.compile("<h3><%= layer_name %><a href='#' class='toggle<%= toggle_class %>'></a></h3>"),
-
-  /**
-   *  Check event origin
-   */
-  _checkOrigin: function(ev) {
-    // If the mouse down come from jspVerticalBar
-    // dont stop the propagation, but if the event
-    // is a touchstart, stop the propagation
-    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
-
-    if (!come_from_scroll) {
-      ev.stopPropagation();
-    }
-  },
 
   /**
    *  Stop event propagation
@@ -83,7 +65,6 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   render: function() {
 
-
     var layer_name = this.model.get("layer_name");
 
     layer_name = this._truncate(layer_name, 23);
@@ -107,13 +88,31 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   className: "cartodb-mobile",
 
   events: {
-    'click .toggle': "_toggle",
-    "click .fullscreen": "_toggleFullScreen",
-    'click .cartodb-attribution-button': '_onAttributionClick',
-    'click .backdrop': '_onBackdropClick',
-    "dbclick":         '_stopPropagation'
+    "click .cartodb-attribution-button": "_onAttributionClick",
+    "click .toggle":                     "_toggle",
+    "click .fullscreen":                 "_toggleFullScreen",
+    "click .backdrop":                   "_onBackdropClick",
+    "dbclick":                           "_stopPropagation",
+    "dragstart .aside":                  "_checkOrigin",
+    "mousedown .aside":                  "_checkOrigin",
+    "touchstart .aside":                 "_checkOrigin",
+    "MSPointerDown .aside":              "_checkOrigin",
   },
 
+  /**
+   *  Check event origin
+   */
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
+    console.log(come_from_scroll);
+
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
+  },
 
   _stopPropagation: function(ev) {
     ev.stopPropagation();

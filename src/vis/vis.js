@@ -1038,7 +1038,6 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
-      //this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
     }
     if(this.layersLoading === 0) {
@@ -1050,7 +1049,6 @@ var Vis = cdb.core.View.extend({
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
-      //this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
     this.layersLoading--;
     // check less than 0 because loading event sometimes is

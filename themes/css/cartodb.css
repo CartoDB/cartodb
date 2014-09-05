@@ -2393,9 +2393,9 @@ div.cartodb-zoom {
 }
 
 body.embed-map.embed-map-small .cartodb-zoom {
-  position: absolute!Important;
+  position: absolute!important;
   top: 60px;
-  z-index: 10000000;
+  z-index: 100000000;
 }
 
 div.cartodb-zoom a {

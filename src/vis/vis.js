@@ -697,7 +697,7 @@ var Vis = cdb.core.View.extend({
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = this.mobile || this.small_embed;
 
-    if (this.small_embed) $("body").addClass("embed-map--small");
+    if (this.small_embed) $("body").addClass("embed-map-small");
 
     if (!opt.title) {
       vizjson.title = null;

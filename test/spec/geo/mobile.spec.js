@@ -106,11 +106,22 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".title").text()).toBe("Hello!");
     });
 
+    it("should render the layer toggle", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-header")).toBe(true);
+      expect(mobile.$el.find(".cartodb-header .toggle").length).toBe(1);
+    });
+
     it("should render the layers", function() {
       mobile.render();
       expect(mobile.$el.find(".layers > li").length).toBe(2);
     });
 
+    it("should render the attribution", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
+      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a></li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+    });
 
   });
 

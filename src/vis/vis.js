@@ -433,12 +433,13 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (!data.slides) {
+    if (!data.children) {
       // Sort the overlays by its internal order
       var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
       this._createOverlays(overlays, options);
     } else {
-      this._createSlides(data.slides);
+      //TODO: load odyssey and then slides
+      this._createSlides(data.children);
 
     }
 
@@ -478,17 +479,28 @@ var Vis = cdb.core.View.extend({
 
       this.map.actions = BackboneActions(this.map);
 
+      this.map.layers.each(function(layer) {
+        layer.actions = BackboneActions(layer);
+      });
+
       for (var i = 0; i < slides.length; ++i) {
         var slide = slides[i];
         var states = [];
 
         // generate states
-        if (slide.map) {
-          states.push(this.map.actions.set({
-            'center': slide.map.center,
-            'zoom': slide.map.zoom
-          }));
-        }
+        states.push(this.map.actions.set({
+          'center': JSON.parse(slide.center),
+          'zoom': slide.zoom
+        }));
+
+        // layers
+        this.map.layers.each(function(layer, i) {
+          var lyr = slide.layers[i];
+          _.extend(lyr, lyr.options);
+          if (lyr.options.named_map) {
+            states.push(layer.actions.set(lyr));
+          }
+        });
 
         this.slides.addState(
           seq.step(i),

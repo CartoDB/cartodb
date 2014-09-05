@@ -239,7 +239,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.defaults(this.options, this.default_options);
 
-    this.visibility_options = this.options.visibility_options;
+    this.visibility_options = this.options.visibility_options || {};
 
     this.mapView = this.options.mapView;
     this.map     = this.mapView.map;

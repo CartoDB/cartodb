@@ -70,6 +70,16 @@ class Admin::VisualizationsController < ApplicationController
 
     return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
 
+    # Legacy redirect, now all public pages also with org. name
+    if @visualization.user.has_organization? && !request.params[:redirected].present?
+      if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
+        redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path( \
+            user_domain: @visualization.user.username, \
+            id: "#{params[:id]}", redirected:true) \
+          and return
+      end
+    end
+
     @vizjson = @visualization.to_vizjson
     @auth_tokens = nil
     @use_https = false
@@ -141,6 +151,16 @@ class Admin::VisualizationsController < ApplicationController
     return(public_map_protected) if @visualization.password_protected?
     if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
       return(show_organization_public_map)
+    end
+
+    # Legacy redirect, now all public pages also with org. name
+    if @visualization.user.has_organization? && !request.params[:redirected].present?
+      if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
+        redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_visualizations_public_map_path( \
+            user_domain: @visualization.user.username, \
+            id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true) \
+          and return
+      end
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"

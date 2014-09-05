@@ -182,6 +182,17 @@
       font-size:13px;
       color:#868686;
     }
+
+    .table-source {
+
+      p, a { font-family:$text-fonts2 }
+
+      a {
+        color:#878787!important;
+        &:hover { color:#666 }
+      }
+    }
+
     .table-license {
       display:block;
       margin-top:8px;

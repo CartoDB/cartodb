@@ -76,6 +76,11 @@
 
     &.add {
       background: rgba(#E8E8E8, .1);
+      @include simple-transition(background, 150ms);
+
+      &:hover {
+        background: rgba(#E8E8E8, .08);
+      }
 
       .count {
         padding: 0;

@@ -1,5 +1,7 @@
 class CommonData
 
+  DATASETS_JSON_FILENAME = 'datasets.json'
+
   def initialize
     @datasets = nil
     @user = nil
@@ -40,11 +42,12 @@ class CommonData
         puts "#{table_name} was uploaded to #{url}"
         make_vis_public(dataset)
       rescue
-        if retries >= 3
+        if retries >= RETRIES_NUMBER
           puts "#{table_name} failed to upload. Updating table metadata"
+          # After all retries we update the updated_at so table will get processed again
           update_table_updated_at(table_name)
         else
-          sleep 2
+          sleep RETRIES_SLEEP
           retry
         end
       end
@@ -53,20 +56,23 @@ class CommonData
     retries = 0
     begin
       retries += 1
-      url = CommonData.upload_to_s3('datasets.json', datasets_json)
-      puts "datasets.json was uploaded to #{url}"
+      url = CommonData.upload_to_s3(DATASETS_JSON_FILENAME, datasets_json)
+      puts "#{DATASETS_JSON_FILENAME} was uploaded to #{url}"
     rescue => e
-      if retries >= 3
-        puts 'Failed to upload datasets.json'
+      if retries >= RETRIES_NUMBER
+        puts "Failed to upload #{DATASETS_JSON_FILENAME}"
       else
         puts e
-        sleep 2
+        sleep RETRIES_SLEEP
         retry
       end
     end
   end
 
   private
+
+  RETRIES_NUMBER = 3
+  RETRIES_SLEEP = 2
 
   def get_datasets(json, default)
     begin
@@ -160,15 +166,19 @@ class CommonData
   end
 
   def datasets_end_url
-    "https://s3.amazonaws.com/#{config('s3_bucket_name')}/datasets.json"
+    "https://s3.amazonaws.com/#{config('s3_bucket_name')}/#{DATASETS_JSON_FILENAME}"
+  end
+
+  def visualization_api_url(vis_id)
+    "#{base_url}/viz/#{vis_id}?api_key=#{config('api_key')}"
+  end
+
+  def table_api_url(table_name)
+    "#{base_url}/tables/#{table_name}?api_key=#{config('api_key')}"
   end
 
   def datasets_api_url
     "#{base_url}/viz?page=1&per_page=500&privacy=public&type=table&exclude_shared=true&api_key=#{config('api_key')}"
-  end
-
-  def dataset_api_url(vis_id)
-    "#{base_url}/viz/id?page=1&per_page=500&privacy=public&type=table&exclude_shared=true&api_key=#{config('api_key')}"
   end
 
   def export_url(table_name)

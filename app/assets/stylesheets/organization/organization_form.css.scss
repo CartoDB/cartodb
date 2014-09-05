@@ -4,6 +4,7 @@
    *
    */
 
+  @import "../common/mixins";
   @import "../elements/progress-bar";
 
   .org-user-form {
@@ -14,6 +15,16 @@
     .bar-1:hover {
       background:#C3D1DD!important;
       cursor:pointer;
+    }
+
+    ul.extras {
+      li {
+        @include display-flex();
+        @include justify-content(space-between, justify);
+        @include align-items(center, center);
+        height:36px;
+        border-color:#DDD;
+      }
     }
 
   }

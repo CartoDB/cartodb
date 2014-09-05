@@ -19,8 +19,10 @@ module CartoDB
       end
 
       def log(message)
-        logger.append(message)
+        @logger.append(message)
       end
+
+      alias_method :append, :log
 
       def table_name
         %Q(importer_#{id.gsub(/-/, '')})

@@ -42,6 +42,10 @@ class Geocoding < Sequel::Model
     cancel if state == 'cancelled'
   end # before_save
 
+  def geocoding_logger
+    @@geocoding_logger ||= Logger.new("#{Rails.root}/log/geocodings.log")
+  end
+
   def error
     { title: 'Geocoding error', description: '' }
   end
@@ -93,12 +97,19 @@ class Geocoding < Sequel::Model
     create_automatic_geocoding if automatic_geocoding_id.blank?
     rows_geocoded_after = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
-    CartoDB::Metrics.new.report(:geocoding, metrics_payload)
+    self.report
   rescue => e
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
-    CartoDB::Metrics.new.report(:geocoding, metrics_payload(e))
+    self.report(e)
     CartoDB::notify_exception(e, user: user)
   end # run!
+
+  def report(error = nil)
+    payload = metrics_payload(error)
+    CartoDB::Metrics.new.report(:geocoding, payload)
+    payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
+    geocoding_logger.info(payload.to_json)
+  end
 
   def self.processable_rows(table)
     dataset = table.owner.in_database.select.from(table.sequel_qualified_table_name)
@@ -121,6 +132,11 @@ class Geocoding < Sequel::Model
     return 0 unless used_credits.to_i > 0
     (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
   end # price
+
+  def cost
+    return 0 unless kind == 'high-resolution'
+    processed_rows.to_i * Cartodb.config[:geocoder]['cost_per_hit_in_cents'] rescue 0
+  end
 
   def remaining_quota
     user.remaining_geocoding_quota
@@ -177,6 +193,7 @@ class Geocoding < Sequel::Model
       successful_rows:  successful_rows,
       failed_rows:      failed_rows,
       price:            price,
+      cost:             cost,
       used_credits:     used_credits,
       remaining_quota:  remaining_quota
     }
@@ -187,7 +204,8 @@ class Geocoding < Sequel::Model
     elsif exception.present?
       payload.merge!(
         success: false,
-        error: exception.message
+        error: exception.message,
+        backtrace: exception.backtrace
       )
     else
       payload.merge!(

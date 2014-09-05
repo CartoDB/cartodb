@@ -221,13 +221,12 @@ module CartoDB
           self.log.append "File will be downloaded from #{downloader.url}"
         else
           self.log.append 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
-            checksum: checksum,
-          )
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, \
+            {checksum: checksum}, self.log)
         end
 
         downloader
-      end #get_downloader
+      end
 
       def set_success_state_from(importer)
         self.log.append     '******** synchronization succeeded ********'
@@ -353,6 +352,7 @@ module CartoDB
       def get_datasource(datasource_name)
         begin
           datasource = DatasourcesFactory.get_datasource(datasource_name, user)
+          datasource.report_component = Rollbar
           if datasource.kind_of? BaseOAuth
             oauth = user.oauths.select(datasource_name)
             datasource.token = oauth.token unless oauth.nil?
@@ -363,13 +363,13 @@ module CartoDB
           datasource = nil
         end
         datasource
-      end #get_datasource
+      end
 
       attr_reader :repository
 
       attr_accessor :log_trace, :service_name, :service_item_id
 
-    end # Member
-  end # Synchronization
-end # CartoDB
+    end
+  end
+end
 

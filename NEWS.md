@@ -1,12 +1,42 @@
-3.0.X
+3.y.z (2014-mm-dd)
 ------------------
-* Fixed bugs
-  * Fixed write buttons are shown when watching sync tables
-  * Fixed some avatar tests
-  * Upgrades to 0.3.2 cartodb postgresql extension version to make 0.3.0dev version upgradeable
+* New features
+  * Upgrades to 0.4.0 cartodb postgresql extension version
 
+3.2.0 (2014-08-27)
+------------------
+* New Features
+  * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
+
+3.0.1 (2014-mm-dd)
+------------------
+* New features
+  * Varnish HTTP invalidation support
+  * Dynamic generation of sitemap.xml with public visualizations/tables for users
+* Fixed bugs
+  * public map uses CORS headers to fetch user info
+  * infowindow on hover fixed on table mode
+  * fixed table export dialog when SQL query without geometries is applied
+  * fixed wrong replace executing SQL on multiuser accounts
+
+* Enhancements
+  * CartoDB PostgreSQL extension versioning more flexible based on semver
+
+3.0.1 (2014-08-07)
+------------------
 * New Features
   * Mail notifications when sharing or unsharing objects in organizations
+  * Publication system: you can now add text and images on top of your maps!
+  * New basemap selector
+  * Simplified share dialog
+* Fixed bugs
+  * Fixed write buttons are shown when watching sync tables
+  * Fixed a bug that prevented choosing a different column from the default to geocode an IP address
+  * Fixed some avatar tests
+  * Upgrades to 0.3.4 cartodb postgresql extension version:
+    * 0.3.4: fixes CDB_QueryTables function
+    * 0.3.3: splits cartodbify
+    * 0.3.2: makes 0.3.0dev version upgradeable
 
 3.0.0 (2014-07-15)
 ------------------
@@ -1424,7 +1454,7 @@ bundle exec rake cartodb:db:load_functions
 2.0.2 (21/01/13)
 -----
 * Added composite operations combo in style wizards
-* The list of public tables has been moved to a new page and is now accesible from the header
+* The list of public tables has been moved to a new page and is now accessible from the header
 * Fixed table pagination animation for new Firefox 18 version
 * User deletion now removes all the user data
 * Added a VACUUM FULL after table creation

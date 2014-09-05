@@ -6,8 +6,11 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './visualization/overlays'
+require_relative './overlay/member'
+require_relative './overlay/collection'
+require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
-
 
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
@@ -63,7 +66,7 @@ class Table < Sequel::Model(:user_tables)
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
+  def_delegators :relator, *CartoDB::TableRelator::INTERFACE
 
   def public_values(options = {}, viewer_user=nil)
     selected_attrs = if options[:except].present?
@@ -547,7 +550,7 @@ class Table < Sequel::Model(:user_tables)
     update_name_changes
 
     self.map.save
-    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager = CartoDB::TablePrivacyManager.new(self)
     manager.set_from_table_privacy(privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
@@ -587,12 +590,12 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_map_and_layers
-    m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
-    base_layer = Layer.new(Cartodb.config[:layer_opts]['base'])
+    base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
-    data_layer = Layer.new(Cartodb.config[:layer_opts]['data'])
+    data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
     data_layer.options['table_name'] = self.name
     data_layer.options['user_name'] = self.owner.username
     data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
@@ -604,7 +607,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
-    CartoDB::Visualization::Member.new(
+    member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
@@ -612,8 +615,14 @@ class Table < Sequel::Model(:user_tables)
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
       user_id:      self.owner.id
-    ).store
+    )
+
+    member.store
+
+    CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
+
+
 
   ##
   # Post the style to the tiler
@@ -1054,7 +1063,7 @@ class Table < Sequel::Model(:user_tables)
       column_name:    column_name,
       new_type:       new_type
     ).run
-  end #convert_column_datatype
+  end
 
   def records(options = {})
     rows = []
@@ -1295,7 +1304,7 @@ class Table < Sequel::Model(:user_tables)
     table_name = "#{owner.database_schema}.#{self.name}"
 
     # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
-    owner.in_database(:as => :superuser) do |user_database|
+    owner.in_database do |user_database|
       user_database.run(%Q{
         SELECT cartodb._CDB_check_prerequisites('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
       })
@@ -1364,7 +1373,7 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_text_for_vizjson
 
   def relator
-    @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end #relator
 
   def set_table_id
@@ -1562,7 +1571,7 @@ class Table < Sequel::Model(:user_tables)
     #if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == 'multipoint'
       owner.in_database(:as => :superuser) do |user_database|
-        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'POINT', 2);")
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
         user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
@@ -1573,11 +1582,7 @@ class Table < Sequel::Model(:user_tables)
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
     if %w(linestring polygon).include?(type.to_s.downcase)
       owner.in_database(:as => :superuser) do |user_database|
-        if type.to_s.downcase == 'polygon'
-          user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
-        else
-          user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
-        end
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
         user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
@@ -1714,7 +1719,7 @@ class Table < Sequel::Model(:user_tables)
       else
         http_res = nil
     end
-    raise "#{http_res.inspect}" unless http_res.is_a?(Net::HTTPOK)
+    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
     http_res
   end
 

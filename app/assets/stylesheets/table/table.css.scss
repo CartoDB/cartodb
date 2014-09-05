@@ -41,8 +41,8 @@
 
 body.public { /* Public table CSS */
 
-  &.table .panes { top:68px; }
-  &.map .panes   { top:0px; overflow-x: hidden; }
+  &.table .panes { top: 67px; }
+  &.map .panes   { top: 0px; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
     position:relative;
@@ -294,13 +294,13 @@ body.public { /* Public table CSS */
 
 div.panes {
   position:absolute;
-  top:148px;
+  top:78px;
   right:0;
   bottom:0;
   left:0;
 
   // When table/layer is synced
-  &.synced {top:177px}
+  &.synced {top:102px}
 
   .emptyTableContainer {
     position:fixed;
@@ -565,11 +565,12 @@ div.table {
       div.shadow {
         position:fixed;
         left:0;
-        top:215px;
+        top:144px;
         right:0;
         width:100%;
         height:10px;
         background: image-url('layout/thead_shadow.png') repeat 0 0;
+
         pointer-events:none;
         z-index:0;
       }
@@ -762,13 +763,13 @@ div.table {
         color:rgba(#666666,.5);
       }
       div.shadow {
-        top:244px;
+        top:144px;
       }
     }
     // Visualization table
     &.vis {
       div.shadow {
-        top:215px;
+        top:144px;
       } 
     }
 

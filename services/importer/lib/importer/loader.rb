@@ -8,6 +8,7 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
+require_relative './typecaster'
 require_relative './exceptions'
 
 module CartoDB
@@ -16,11 +17,17 @@ module CartoDB
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
       NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
+
+      # Files matching any of this regexps will be forcibly normalized
+      # @see services/datasources/lib/datasources/search/twitter.rb -> table_name
+      FORCE_NORMALIZER_REGEX = [
+        /^twitter_(.*)\.csv/
+      ]
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
         !(%w{ .tif .tiff .sql }.include?(extension))
-      end #self.supported?
+      end
 
       def initialize(job, source_file, layer=nil, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
@@ -28,7 +35,7 @@ module CartoDB
         self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
-      end #initialize
+      end
 
       def run
         normalize
@@ -46,34 +53,45 @@ module CartoDB
               (ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/)
             raise FileTooBigError.new(job.logger.fetch)
           end
-	  if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
-		raise UnsupportedFormatError.new
-	  end
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
+            raise UnsupportedFormatError.new
+          end
           raise LoadError.new(job.logger.fetch)
         end
         job.log 'Georeferencing...'
         georeferencer.run
         job.log 'Georeferenced'
+
+        job.log 'Typecasting...'
+        typecaster.run
+        job.log 'Typecasted'
         self
-      end #run
+      end
 
       def normalize
         converted_filepath = normalizers_for(source_file.extension)
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
-            normalizer_klass.new(filepath, job).run.converted_filepath
+            normalizer = normalizer_klass.new(filepath, job)
+
+            FORCE_NORMALIZER_REGEX.each { |regex|
+              normalizer.force_normalize if regex =~ source_file.path
+            }
+
+            normalizer.run
+                      .converted_filepath
           }
         layer = source_file.layer
         @source_file = SourceFile.new(converted_filepath)
         @source_file.layer = layer
         self
-      end #normalize
+      end
 
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
           job.table_name, @source_file.fullpath, job.pg_options,
           @source_file.layer, ogr2ogr_options
         )
-      end #ogr2ogr
+      end
 
       def ogr2ogr_options
         options = { encoding: encoding }
@@ -89,7 +107,7 @@ module CartoDB
         }
         return DEFAULT_ENCODING unless normalizer
         normalizer.new(source_file.fullpath, job).encoding
-      end #encoding
+      end
 
       def shape_encoding
         normalizer = [ShpNormalizer].find { |normalizer|
@@ -100,10 +118,12 @@ module CartoDB
       end
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(
-          job.db, job.table_name, SCHEMA, job, geometry_columns
-        )
-      end #georeferencer
+        @georeferencer ||= Georeferencer.new(job.db, job.table_name, SCHEMA, job, geometry_columns)
+      end
+
+      def typecaster
+        @typecaster ||= Typecaster.new(job.db, job.table_name, SCHEMA, job, ['postedtime'])
+      end
 
       def geometry_columns
         ['wkb_geometry'] if @source_file.extension == '.shp'
@@ -111,21 +131,25 @@ module CartoDB
 
       def valid_table_names
         [job.table_name]
-      end #valid_table_names
+      end
 
       def normalizers_for(extension)
-        NORMALIZERS.find_all { |klass| klass.supported?(extension) }
-      end #normalizers_for
+        NORMALIZERS.find_all { |klass|
+          klass.supported?(extension)
+        }
+      end
 
       def osm?(source_file)
         source_file.extension =~ /\.osm/
       end
 
+      attr_accessor   :source_file
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :source_file, :layer
-    end # Loader
-  end # Importer2
-end # CartoDB
+      attr_accessor   :job, :layer
+    end
+  end
+end
 

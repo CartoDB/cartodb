@@ -42,12 +42,13 @@ module CartoDB
       end
 
       def remove_target_schema(conn=@config[:target])
-        @drop_conn ||= PG.connect(conn[:conn])
-        @drop_conn.query("DROP SCHEMA #{conn[:schema]} CASCADE;")
+#        @drop_conn ||= PG.connect(conn[:conn])
+#        @drop_conn.query("DROP SCHEMA #{conn[:schema]} CASCADE;")
+        puts "Please manually cleanup the schema if it exists: DROP SCHEMA #{conn[:schema]} CASCADE;"
       end
 
       def migrate
-        command = "(echo \"BEGIN TRANSACTION;SET statement_timeout=0;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
+        command = "(echo \"BEGIN TRANSACTION;DROP FUNCTION IF EXISTS \"#{@config[:target][:schema]}\"._cdb_userquotainbytes();SET statement_timeout=0;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
         puts "Running: #{command}"
         return_code = system(command)
         raise "Error dumping and restoring! Please cleanup" if return_code != true

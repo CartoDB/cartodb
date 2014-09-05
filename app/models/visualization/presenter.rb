@@ -30,7 +30,10 @@ module CartoDB
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
           permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
-          locked:           visualization.locked
+          locked:           visualization.locked,
+          source:           visualization.source,
+          title:            visualization.title,
+          license:          visualization.license
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)
@@ -81,10 +84,17 @@ module CartoDB
           updated_at:   table.updated_at
         )
 
-        table_data.merge!(
-          size:         rows_and_sizes[table.name][:size],
-          row_count:    rows_and_sizes[table.name][:rows]
-        ) unless rows_and_sizes.nil? || rows_and_sizes.empty?
+        unless rows_and_sizes.nil? || rows_and_sizes.empty?
+          if rows_and_sizes[table.name][:size].nil? || rows_and_sizes[table.name][:rows].nil?
+            # don't add anything but don't break, UI supports detection of missing rows/size
+          else
+            table_data.merge!(
+                size:         rows_and_sizes[table.name][:size],
+                row_count:    rows_and_sizes[table.name][:rows]
+            )
+          end
+        end
+
         table_data
       end
 

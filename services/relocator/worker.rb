@@ -104,15 +104,16 @@ module CartoDB
                           dbname: user.database_name, user: 'postgres'}},
           redis: {host: Cartodb.config[:redis]['host'], port: Cartodb.config[:redis]['port']},
           dbname: user.database_name, username: user.database_username,
-          user_object: user
+          user_object: user, mode: :relocate
         )
         begin
-          relocator.migrate
           user.database_host = new_database_host
+          relocator.setup
+          user.monitor_user_notification
+          relocator.migrate
           user.set_statement_timeouts
           relocator.compare
           puts user.save #this will terminate all connections
-          user.enable_remote_db_user
           relocator.finalize
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"

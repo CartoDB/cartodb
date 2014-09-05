@@ -28,41 +28,41 @@ module CartoDB
                             SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION
                             UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX }
 
-      def initialize(db, table_name, column_name, schema=DEFAULT_SCHEMA,
-      job=nil)
+      def initialize(db, table_name, column_name, schema=DEFAULT_SCHEMA, job=nil)
         @job          = job || Job.new
         @db           = db
         @table_name   = table_name.to_sym
         @column_name  = column_name.to_sym
         @schema       = schema
-      end #initialize
+      end
 
       def type
         db.schema(table_name, reload: true, schema: schema)
           .select { |column_details|
             column_details.first == column_name
           }.last.last.fetch(:db_type)
-      end #type
+      end
 
       def geometrify
         job.log 'geometrifying'
-        raise                     if empty?
-        convert_from_wkt          if wkt?
-        convert_from_kml_multi    if kml_multi?
-        convert_from_kml_point    if kml_point?
-        convert_from_geojson      if geojson?
+        raise                               if empty?
+        convert_from_wkt                    if wkt?
+        convert_from_kml_multi              if kml_multi?
+        convert_from_kml_point              if kml_point?
+        convert_from_geojson_with_transform if geojson_from_twitter_search?
+        convert_from_geojson                if geojson?
         cast_to('geometry')
         convert_to_2d
         job.log 'geometrified'
         self
-      end #geometrify
+      end
 
       def convert_from_wkt
         QueryBatcher::execute(
           db,
           %Q{
             UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+            SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
           },
           qualified_table_name,
           job,
@@ -70,7 +70,117 @@ module CartoDB
           capture_exceptions=true
         )
         self
-      end #convert_from_wkt
+      end
+
+      def convert_from_geojson_with_transform
+        temp_col = 'temporal_the_geom'
+        threshold = 150000              #hectares
+
+        # 1) Add temp column for storing temporal geometries
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} ADD #{temp_col} geometry DEFAULT NULL;
+        })
+
+        # 2) Cast to proper null the geom column
+        db.run(%Q{
+          UPDATE #{qualified_table_name}
+          SET #{column_name} = NULL
+          WHERE #{column_name} = ''
+        })
+
+        # 3) Populate temp column, empty the_geom
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{temp_col} = ST_Envelope(
+              ST_SetSRID(
+                ST_GeomFromGeoJSON(#{column_name})
+              , #{DEFAULT_SRID})
+            ),
+            #{column_name} = NULL
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE
+              #{column_name} IS NOT NULL
+              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Creating temporally geometry to convert from GeoJSON',
+          capture_exceptions=true
+        )
+
+        # 4) delete geometries with bounding boxes greater than allowed threshold
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET
+              #{temp_col} = NULL
+            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+            WHERE
+              #{temp_col} IS NOT NULL
+              AND ST_area(#{temp_col}::geography)/10000 > #{threshold}
+              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Removing too big bounding boxes',
+          capture_exceptions=false
+        )
+
+        # 5) grab random point inside valid bounding boxes and store into the_geom
+        begin
+          QueryBatcher::execute(
+              db,
+              %Q{
+              UPDATE #{qualified_table_name}
+              SET #{column_name} =
+                ST_SetSRID(
+                  ST_MakePoint(
+                    ST_XMin(#{temp_col}) + (ST_XMax(#{temp_col}) - ST_XMin(#{temp_col})) * random(),
+                    ST_YMin(#{temp_col}) + (ST_YMax(#{temp_col}) - ST_YMin(#{temp_col})) * random()
+                  )
+                , #{DEFAULT_SRID})
+              #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+              WHERE
+                ST_GeometryType(#{temp_col}) = 'ST_Polygon'
+                #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            },
+              qualified_table_name,
+              job,
+              'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
+              capture_exceptions=false
+          )
+        rescue => exception
+          job.log "Error generating points inside bounding boxes: #{exception.to_s}"
+        end
+
+        # 6) copy normal points into the_geom
+        QueryBatcher::execute(
+          db,
+          %Q{
+          UPDATE #{qualified_table_name}
+          SET #{column_name} =
+            ST_SetSRID(#{temp_col}, #{DEFAULT_SRID})
+          #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+          WHERE
+            ST_GeometryType(#{temp_col}) = 'ST_Point'
+            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from GeoJSON (transforming points) to WKB',
+          capture_exceptions=true
+        )
+
+        # 7) Remove temp column
+        db.run(%Q{
+          ALTER TABLE #{qualified_table_name} DROP #{temp_col};
+        })
+
+        self
+      end
 
       def convert_from_geojson
         QueryBatcher::execute(
@@ -85,7 +195,7 @@ module CartoDB
           capture_exceptions=true
         )
         self
-      end #convert_from_geojson
+      end
 
       def convert_from_kml_point
         QueryBatcher::execute(
@@ -99,7 +209,7 @@ module CartoDB
           'Converting geometry from KML point to WKB',
           capture_exceptions=true
         )
-      end #convert_from_kml_point
+      end
 
       def convert_from_kml_multi
         QueryBatcher::execute(
@@ -113,7 +223,7 @@ module CartoDB
           'Converting geometry from KML multi to WKB',
           capture_exceptions=true
         )
-      end #convert_from_kml_multi
+      end
 
       def convert_to_2d
         QueryBatcher::execute(
@@ -127,27 +237,33 @@ module CartoDB
           'Converting to 2D point',
           capture_exceptions=true
         )
-      end #convert_to_2d
+      end
 
       def wkb?
         !!(sample.to_s =~ WKB_RE)
-      end #wkb?
+      end
 
       def wkt?
         !!(sample.to_s =~ WKT_RE)
-      end #wkt?
+      end
+
+      # As PostGIS only uses geometry field contents and cannot add properties, use a special column name to mark
+      # the column for transforming polygons to points
+      def geojson_from_twitter_search?
+        geojson? && column_name.to_s == 'the_geom_from_twitter_geojson'
+      end
 
       def geojson?
         !!(sample.to_s =~ GEOJSON_RE)
-      end #geojson?
+      end
 
       def kml_point?
         !!(sample.to_s =~ KML_POINT_RE)
-      end #kml_point?
+      end
 
       def kml_multi?
         !!(sample.to_s =~ KML_MULTI_RE)
-      end #kml_multi?
+      end
 
       def cast_to(type)
         job.log "casting #{column_name} to #{type}"
@@ -158,16 +274,16 @@ module CartoDB
           USING #{column_name}::#{type}
         })
         self
-      end #cast_to
+      end
 
       def sample
         return nil if empty?
         records_with_data.first.fetch(column_name)
-      end #sample
+      end
 
       def empty?
         records_with_data.empty?
-      end #empty?
+      end
 
       def records_with_data
         @records_with_data ||= db[%Q{
@@ -175,7 +291,7 @@ module CartoDB
           WHERE #{column_name} IS NOT NULL 
           AND #{column_name} != ''
         }]
-      end #records_with_data
+      end
 
       def rename_to(new_name)
         return self if new_name.to_s == column_name.to_s
@@ -187,7 +303,7 @@ module CartoDB
           RENAME COLUMN "#{column_name}" TO "#{new_name}"
         })
         @column_name = new_name
-      end #rename_to
+      end
 
       def geometry_type
         sample = db[%Q{
@@ -198,14 +314,14 @@ module CartoDB
           LIMIT 1
         }].first
         sample && sample.fetch(:type)
-      end #geometry_type
+      end
 
       def drop
         db.run(%Q{
           ALTER TABLE #{qualified_table_name} 
           DROP COLUMN IF EXISTS #{column_name} 
         })
-      end #drop
+      end
 
       # Replace empty strings by nulls to avoid cast errors
       def empty_lines_to_nulls
@@ -235,25 +351,25 @@ module CartoDB
         else
           job.log 'no string column found, nothing replaced'
         end
-      end #empty_lines_to_nulls
+      end
 
       def sanitize
         rename_to(sanitized_name)
-      end #sanitize
+      end
 
       def sanitized_name
         name = StringSanitizer.new.sanitize(column_name.to_s)
         return name unless reserved?(name) || unsupported?(name)
-        return "_#{name}"
-      end #sanitized_name
+        "_#{name}"
+      end
 
       def reserved?(name)
         RESERVED_WORDS.include?(name.upcase)
-      end #reserved?
+      end
 
       def unsupported?(name)
         name !~ /^[a-zA-Z_]/
-      end #unsupported?
+      end
 
       private
 
@@ -261,8 +377,8 @@ module CartoDB
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")
-      end #qualified_table_name
-    end # Column
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

@@ -217,6 +217,6 @@ module CartoDB
           replace(#{column_name}, '#{thousand}', ''), '#{decimal}', '.'
         )
       })
-    end #normalize_digit_separators
-  end # ColumnTypecaster
-end # CartoDB
+    end
+  end
+end

@@ -7255,7 +7255,7 @@ exports.Profiler = Profiler;
     url: function() {
       var opts = this.options;
       var protocol = opts.tiler_protocol || 'http';
-      if (!this.options.cdn_url) {
+      if (!this.options.cdn_url || this.options.no_cdn) {
         return this._tilerHost();
       }
       var h = protocol + "://"
@@ -7330,12 +7330,18 @@ exports.Profiler = Profiler;
           for(var k in opt) {
             self.options[k] = opt[k];
           }
+          // use cdn_url if present
+          if (data.cdn_url) {
+            var c = self.options.cdn_url = self.options.cdn_url || {};
+            c.http = data.cdn_url.http || c.http;
+            c.https = data.cdn_url.https || c.https;
+          }
           self.templateUrl = self.url() + "/api/v1/map/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
           self._setReady(true);
         } else {
           Profiler.metric('torque.provider.windshaft.layergroup.error').inc();
         }
-      });
+      }, { callbackName: self.options.instanciateCallback });
     }
 
   };
@@ -7351,12 +7357,13 @@ exports.Profiler = Profiler;
   var lastCall = null;
 
   function jsonp(url, callback, options) {
-     options = options || { timeout: 10000 };
+     options = options || {};
+     options.timeout = options.timeout === undefined ? 10000: options.timeout;
      var head = document.getElementsByTagName('head')[0];
      var script = document.createElement('script');
 
      // function name
-     var fnName = 'torque_' + Date.now();
+     var fnName = options.callbackName || 'torque_' + Date.now();
 
      function clean() {
        head.removeChild(script);
@@ -9723,6 +9730,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
   var extra = layerModel.get('extra_params');
   layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+
+  var query = this._getQuery(layerModel);
   torque.GMapsTorqueLayer.call(this, {
       table: layerModel.get('table_name'),
       user: layerModel.get('user_name'),
@@ -9740,7 +9749,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
-      sql: layerModel.get('query'),
+      sql: query,
       visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''
@@ -9751,7 +9760,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token')
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn')
   });
 
   //this.setCartoCSS(this.model.get('tile_style'));
@@ -9771,9 +9781,20 @@ _.extend(
     var changed = this.model.changedAttributes();
     if(changed === false) return;
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
-    'query' in changed && this.setSQL(this.model.get('query'));
+    if ('query' in changed || 'query_wrapper' in changed) {
+      this.setSQL(this._getQuery(this.model));
+    }
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();
+  },
+
+  _getQuery: function(layerModel) {
+    var query = layerModel.get('query');
+    var qw = layerModel.get('query_wrapper');
+    if(qw) {
+      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+    }
+    return query;
   },
 
   refreshView: function() {
@@ -9817,6 +9838,9 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
     layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+
+    var query = this._getQuery(layerModel);
+
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
       table: layerModel.get('table_name'),
@@ -9835,7 +9859,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
-      sql: layerModel.get('query'),
+      sql: query,
       visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''
@@ -9845,7 +9869,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token')
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
@@ -9875,11 +9900,22 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
   },
 
+  _getQuery: function(layerModel) {
+    var query = layerModel.get('query');
+    var qw = layerModel.get('query_wrapper');
+    if(qw) {
+      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+    }
+    return query;
+  },
+
   _modelUpdated: function(model) {
     var changed = this.model.changedAttributes();
     if(changed === false) return;
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
-    'query' in changed && this.setSQL(this.model.get('query'));
+    if ('query' in changed || 'query_wrapper' in changed) {
+      this.setSQL(this._getQuery(this.model));
+    }
 
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();

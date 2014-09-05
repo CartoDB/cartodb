@@ -597,11 +597,9 @@
   }
 
   // Address option
-  .address {
-    div.info {
-      margin-left:0!important;
-      /*margin-right:20px!important;*/
-    }
+  div.address {
+
+    div.info { margin-left:0!important; }
 
     .help {
       position: absolute;

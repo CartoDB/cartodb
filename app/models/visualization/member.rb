@@ -43,6 +43,8 @@ module CartoDB
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
+      # spec/models/visualization/collection_spec.rb -> random_attributes
+      # spec/models/visualization/member_spec.rb -> random_attributes
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -51,6 +53,9 @@ module CartoDB
       attribute :privacy,             String
       attribute :tags,                Array[String], default: []
       attribute :description,         String
+      attribute :license,             String
+      attribute :source,              String
+      attribute :title,               String
       attribute :created_at,          Time
       attribute :updated_at,          Time
       attribute :encrypted_password,  String, default: nil
@@ -207,7 +212,7 @@ module CartoDB
 
       def private?
         privacy == PRIVACY_PRIVATE and not organization?
-      end #private?
+      end
 
       def organization?
         privacy == PRIVACY_PRIVATE and permission.acl.size > 0
@@ -215,11 +220,11 @@ module CartoDB
 
       def password_protected?
         privacy == PRIVACY_PROTECTED
-      end #password_protected?
+      end
 
       def to_hash(options={})
         Presenter.new(self, options.merge(real_privacy: true)).to_poro
-      end #to_hash
+      end
 
       def to_vizjson
         options = {
@@ -230,7 +235,7 @@ module CartoDB
           viewer_user: user
         }
         VizJSON.new(self, options, configuration).to_poro
-      end #to_hash
+      end
 
       def is_owner?(user)
         user.id == user_id
@@ -467,7 +472,7 @@ module CartoDB
 
       def propagate_privacy_to(table)
         if type == CANONICAL_TYPE
-          Table::PrivacyManager.new(table)
+          CartoDB::TablePrivacyManager.new(table)
             .set_from(self)
             .propagate_to_redis_and_varnish
         end

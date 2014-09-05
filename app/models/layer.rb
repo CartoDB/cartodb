@@ -33,7 +33,7 @@ class Layer < Sequel::Model
   many_to_many :user_tables,
                 join_table: :layers_user_tables,
                 left_key: :layer_id, right_key: :user_table_id,
-                reciprocal: :layers, class: Table
+                reciprocal: :layers, class: ::Table
   
   plugin  :association_dependencies, :maps => :nullify, :users => :nullify,
           :user_tables => :nullify
@@ -180,13 +180,13 @@ class Layer < Sequel::Model
 
   def tables_from_query_option
     return [] unless query.present?
-    Table.get_all_by_names(affected_table_names, user)
+    ::Table.get_all_by_names(affected_table_names, user)
   rescue => exception
     []
   end
 
   def tables_from_table_name_option
-    Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
+    ::Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
   end #tables_from_table_name_option
 
   def affected_table_names

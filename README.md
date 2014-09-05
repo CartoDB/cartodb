@@ -210,12 +210,12 @@ queries. This is the heart of CartoDB!
 
 ```bash
 cd /usr/local/src
-wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
-tar xzf postgis-2.1.2.tar.gz
+sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
+sudo tar xzf postgis-2.1.2.tar.gz
 cd postgis-2.1
-./configure --with-raster --with-topology
-make
-make install
+sudo ./configure --with-raster --with-topology
+sudo make
+sudo make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
@@ -241,18 +241,36 @@ sudo su - postgres
 ./template_postgis.sh
 ```
 
+Alternatively, you may run the lines of the `template_postgis.sh` script one by one by entering Postgres as follows:
+```bash
+sudo su - postgres
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
+createdb -E UTF8 template_postgis
+createlang -d template_postgis plpgsql
+psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
+psql -d template_postgis -c "CREATE EXTENSION postgis"
+psql -d template_postgis -c "CREATE EXTENSION postgis_topology"
+psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
+psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+exit
+```
+
 ## Install cartodb-postgresql ##
 
-Download from https://github.com/cartodb/cartodb-postgresql/,
-read install instructions there
+```bash
+git clone --recursive https://github.com/CartoDB/pg_schema_triggers.git
+cd pg_schema_triggers
+sudo make install PGUSER=postgres
+ sudo make installcheck PGUSER=postgres
+cd ..
+git clone --recursive https://github.com/CartoDB/cartodb-postgresql.git
+cd cartodb-postgresql
+git checkout cdb
+sudo make install
+sudo PGUSER=postgres make installcheck 
+```
 
-## Configure PostgreSQL ##
-
-There are two tweaks required in PostgreSQL configuration for
-cartodb to work as expected. In postgresql.conf:
-
- 1) Add `cartodb` schema in the `search_path` variable.
- 2) Add `schema_triggers.so` in the `shared_preload_libraries` variable.
+Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
 ## Install Ruby ##
 
@@ -260,9 +278,19 @@ We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
 so you'll need to install Ruby 1.9.3. You can use rvm:
 
 ```bash
-curl -L https://get.rvm.io | bash
+sudo curl -L https://get.rvm.io | bash
+sudo su
+source /home/username/.rvm/scripts/rvm
 source /etc/profile.d/rvm.sh
+exit
+```
+Open the ~/.bash_profile file and add the `source ~/.profile` line at the end of the file
+
+Install Ruby and its related resources
+```bash
 rvm install 1.9.3
+sudo apt-get install ruby-bundler
+sudo apt-get install rubygems
 ```
 
 ## Install Node.js ##
@@ -270,9 +298,12 @@ The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 
 ```bash
 sudo apt-get install nodejs npm
+sudo add-apt-repository ppa:cartodb/nodejs-010
+sudo apt-get update; sudo apt-get upgrade
+sudo apt-get dist-upgrade
 ```
 
-We currently run our node apps against version 0.8.x. You can install NVM 
+We currently run our node apps against version 0.10. You can install NVM 
 to handle multiple versions in the same system:
 
 ```bash
@@ -294,7 +325,7 @@ sudo apt-get install redis-server
 ```
 
 ## Install Python dependencies ##
-This needs to be done from the cartodb20 local copy.
+This needs to be done from the cartodb local copy.
 To install the Python modules that CartoDB depends on, you can use
 `easy_install`.
 
@@ -302,6 +333,8 @@ You need to have some dependencies installed before using pip:
 ```bash
 sudo apt-get install python2.7-dev
 sudo apt-get install build-essential
+sudo su
+apt-get install python-setuptools
 ```
 
 ```bash
@@ -309,6 +342,7 @@ easy_install pip
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
 pip install --no-use-wheel -r python_requirements.txt
+exit
 ```
 
 If the previous step fails, try this alternative:
@@ -327,8 +361,12 @@ accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API.
 
 ```bash
-sudo apt-get install varnish
+sudo apt-get install varnish=2.1.0-2cdb~precise1
 ```
+
+Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
+
+
 
 ## Install Mapnik ##
 [Mapnik](http://mapnik.org) is an API for creating beautiful maps.
@@ -347,6 +385,7 @@ git clone git://github.com/CartoDB/CartoDB-SQL-API.git
 cd CartoDB-SQL-API
 git checkout master
 npm install
+cp config/environments/development.js.example config/environments/development.js
 ```
 
 To run CartoDB SQL API in development mode, simply type:
@@ -364,6 +403,7 @@ git clone git://github.com/CartoDB/Windshaft-cartodb.git
 cd Windshaft-cartodb
 git checkout master
 npm install
+cp config/environments/development.js.example config/environments/development.js
 ```
 To run Windshaft-cartodb in development mode, simply type:
 
@@ -395,7 +435,7 @@ is going to be 'development'
 export SUBDOMAIN=development
 
 # Enter the `cartodb` directory.
-cd cartodb20
+cd cartodb
 
 # Start redis, if you haven't done so yet
 # Redis must be running when starting either the
@@ -409,6 +449,9 @@ rvm use 1.9.3@cartodb --create && bundle install
 
 # If it's a system wide installation
 sudo bundle install
+
+# Make the created gemset your default one
+rvm use 1.9.3@cartodb --default
 
 # Configure the application constants
 mv config/app_config.yml.sample config/app_config.yml
@@ -515,3 +558,4 @@ See TESTING
   - Carlos Matallín (@matallo)
   - Rafa Casado (@rafacas)
   - Diego Muñoz (@kartones)
+  - Nicolás M. Jaremek (@NickJaremek)

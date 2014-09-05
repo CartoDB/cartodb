@@ -93,18 +93,6 @@ defaults: &defaults
   graphite_public:
     host: "graphite.dioc.cartodb.net"
     port: 8127
-
-
-
-
-
-
-
-
-
-
-
-
   layer_opts:
     public_opts: ["type", "active", "query", "opacity", "auto_bound", 
                   "interactivity", "debug", "visible", "tiler_domain", 
@@ -174,16 +162,45 @@ defaults: &defaults
     app_id: ""
   enforce_non_empty_layer_css: false
   oauth:
-    # Must be the same as FileProvider SERVICE constant
+    # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
+    # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
     gdrive:
       application_name: ''
       client_id: ''
       client_secret: ''
-      callback_url: ''
+      callback_url: 'http://cartodb.com'
     dropbox:
       app_key:  ''
       app_secret: ''
       callback_url: ''
+  datasource_search:
+    # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    twitter_search:
+      standard:
+        auth_required:          false
+        username:               ''
+        password:               ''
+        search_url:             'http://fake.url.nil'
+        ratelimit_active:       true
+        ratelimit_concurrency:  8
+        ratelimit_ttl:          4
+        ratelimit_wait_secs:    0.5
+      customized_user_list:     []
+      customized:
+        auth_required:          false
+        username:               ''
+        password:               ''
+        search_url:             'http://fake.url.nil'
+        ratelimit_active:       false
+        ratelimit_concurrency:  3
+        ratelimit_ttl:          4
+        ratelimit_wait_secs:    0.1
+  signups:
+    service:
+      port: 0000
+  users_dumps:
+    service:
+      port: 0000
 
 development:
   <<: *defaults

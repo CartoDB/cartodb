@@ -31,7 +31,12 @@
       #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
       #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
 
-      /* Styles showing up new cartodb text */
+      <% has_logo  = @visualization.overlays.any? {|o| o.type == "logo" } %>
+      <% hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false')) %>
+
+      <% if hide_logo %>
+      <% else %>
+        /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
         <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
           .cartodb-map-wrapper {bottom:30px!important;}
@@ -41,6 +46,7 @@
         .cartodb-map-wrapper {bottom:30px!important;}
         .cartodb-text {display:block;}
       <% end %>
+    <% end %>
 
     </style>
 
@@ -175,6 +181,10 @@
           opt.no_cdn = true;
         <% end %>
 
+         <% if hide_logo %>
+            opt.cartodb_logo = false;
+         <% end %>
+
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
@@ -187,9 +197,13 @@
           visReadyTime.end();
           vis.on('load', function() {
             loadingTime.end();
-          })
-          // add here your code
+          });
+
           window.vis = vis;
+
+          setTimeout(function() {
+          $(window).trigger("map_resized");
+          }, 400);
           // some stats
           stats();
         }).on('error', manageError);

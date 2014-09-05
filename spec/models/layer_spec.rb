@@ -17,6 +17,8 @@ describe Layer do
   before(:each) do
     CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
 
+    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
+
     delete_user_data @user
     @table = Table.new
     @table.user_id = @user.id
@@ -131,8 +133,9 @@ describe Layer do
     it "should update updated_at after saving" do
       layer = Layer.create(:kind => 'carto')
       after = layer.updated_at
-      Timecop.travel Time.now + 1.minutes
+      Delorean.jump(1.minute)
       after.should < layer.save.updated_at
+      Delorean.back_to_the_present
     end
 
     it "should correctly identify affected tables" do
@@ -278,7 +281,7 @@ describe Layer do
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
-      
+
       map     = Map.create(:user_id => @user.id, :table_id => @table.id)
       source  = @table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy

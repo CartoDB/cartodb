@@ -2,6 +2,8 @@
 require 'ostruct'
 require_relative '../../../app/models/overlay/presenter'
 
+require 'json'
+
 include CartoDB
 
 describe Overlay::Presenter do

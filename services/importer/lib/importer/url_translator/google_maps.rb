@@ -26,9 +26,9 @@ module CartoDB
 
         def doc_id_from(url)
           url.match(DOC_ID_REGEX)[1]
-        end #doc_id_from
-      end # FusionTables
-    end # UrlTranslator
-  end # Importer2
-end # CartoDB
+        end
+      end
+    end
+  end
+end
 

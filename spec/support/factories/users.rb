@@ -32,6 +32,8 @@ module CartoDB
         )
       end
 
+      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+
       attributes = attributes.dup
       user = User.new
       user.username              = attributes[:username] || String.random(5).downcase
@@ -53,7 +55,9 @@ module CartoDB
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
+      user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
+
       user
     end
 

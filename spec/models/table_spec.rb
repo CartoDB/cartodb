@@ -43,6 +43,8 @@ describe Table do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
   end
 
   after(:all) do
@@ -518,7 +520,7 @@ describe Table do
       @user.save
 
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
-      CartoDB::Table::PrivacyManager.any_instance
+      CartoDB::TablePrivacyManager.any_instance
       table.expects(:invalidate_varnish_cache)
       table.name = 'Wadus table #23'
       table.save
@@ -628,7 +630,7 @@ describe Table do
         .with(".*#{id}:vizjson")
         .returns(true)
 
-      CartoDB::Table::PrivacyManager.any_instance
+      CartoDB::TablePrivacyManager.any_instance
         .expects(:propagate_to_redis_and_varnish)
       table.privacy = Table::PRIVACY_PUBLIC
       table.save
@@ -1857,7 +1859,7 @@ describe Table do
       ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
       ::Table.any_instance.stubs(:after_create)
       ::Table.any_instance.stubs(:after_save)
-      CartoDB::Table::PrivacyManager.any_instance.stubs(:owner).returns(user_mock)
+      CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
       table = Table.new
 
       # A user who can create private tables has by default private tables

@@ -2,7 +2,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
-  before_filter :get_user, only: [:update, :destroy, :show]
+  before_filter :get_user, only: [:update, :destroy, :show, :dump]
 
   layout 'application'
 
@@ -37,6 +37,39 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def destroy
     @user.destroy
     respond_with(:superadmin, @user)
+  end
+
+  def dump
+    if Cartodb.config[:users_dumps].nil? || Cartodb.config[:users_dumps]["service"].nil? || Cartodb.config[:users_dumps]["service"]["port"].nil?
+      raise "There is not a dump method configured"
+    end
+    json_data = {database: @user.database_name, username: @user.username}
+    response = Typhoeus::Request.new(
+      "#{@user.database_host}:#{Cartodb.config[:users_dumps]["service"]["port"]}/scripts/db_dump",
+      method: :post,
+      headers: { "Content-Type" => "application/json" },
+      body: json_data.to_json
+    ).run
+    parsed_response = JSON.parse(response.body)
+    if response.code == 200 && 
+       parsed_response['retcode'] == 0 &&
+       !parsed_response['return_values']['local_file'].nil? &&
+       !parsed_response['return_values']['local_file'].empty? &&
+       !parsed_response['return_values']['remote_file'].nil? &&
+       !parsed_response['return_values']['remote_file'].empty?
+      sa_response = {
+        :dumper_response => parsed_response,
+        :remote_file => parsed_response['remote_file'],
+        :local_file => parsed_response['local_file'],
+        :database_host => @user.database_host
+      }
+      render json: sa_response, status: 200
+    else
+      sa_response = {
+        :dumper_response => parsed_response
+      }
+      render json: sa_response, status: 400   
+    end
   end
 
   private

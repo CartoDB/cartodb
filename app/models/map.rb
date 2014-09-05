@@ -1,7 +1,5 @@
 # encoding: utf-8
-require_relative './map/copier'
 require_relative '../models/visualization/collection'
-
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -33,7 +31,7 @@ class Map < Sequel::Model
   plugin :association_dependencies, :layers => :nullify
 
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw
-    bounding_box_ne center zoom view_bounds_sw view_bounds_ne }
+    bounding_box_ne center zoom view_bounds_sw view_bounds_ne legends scrollwheel }
 
   DEFAULT_OPTIONS = {
     zoom:            3,
@@ -97,10 +95,6 @@ class Map < Sequel::Model
     end
   end
 
-  def copy_for(user)
-    CartoDB::Map::Copier.new(self, user).copy
-  end #copy
-
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
@@ -145,7 +139,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = Table.filter(
+    related_table = ::Table.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id

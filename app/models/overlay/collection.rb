@@ -45,11 +45,9 @@ module CartoDB
           return self
         end
 
-        collection.storage = 
-          Set.new(
-            repository.collection(filter.merge(scope))
-              .map { |record| record.fetch(:id) }
-          )
+        collection.storage = Set.new(repository.collection(filter.merge(scope)).map { |attributes|
+          Overlay::Member.new(attributes)
+        })
         self
       end #fetch
 

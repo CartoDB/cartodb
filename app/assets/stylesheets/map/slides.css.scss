@@ -21,15 +21,16 @@
   $width: 140px;
   width: $width;
   position:absolute;
-  top: 54px;
+  top: 50px;
   left: -$width;
   bottom: 0;
   z-index: 1;
   background: #333 image-url('layout/noise.png') repeat 0 0;
 
   .scrollpane {
+    padding-top: 20px;
     height: 100%;
-    top: 16px;
+    top: 0px;
     bottom: 0;
     position:absolute;
     overflow: hidden;

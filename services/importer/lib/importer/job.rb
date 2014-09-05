@@ -2,7 +2,6 @@
 require 'pg'
 require 'sequel'
 require 'uuidtools'
-require_relative '../../../track_record/track_record'
 
 module CartoDB
   module Importer2

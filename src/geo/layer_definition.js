@@ -31,20 +31,9 @@ function NamedMap(named_map, options) {
   Map.call(this, options);
   this.options.pngParams.push('auth_token')
   this.options.gridParams.push('auth_token')
-  this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
-  this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
-  this.layers = _.clone(named_map.layers) || [];
-  for(var i = 0; i < this.layers.length; ++i) {
-    var layer = this.layers[i];
-    layer.options = layer.options || { hidden: false };
-    layer.options.layer_name = layer.layer_name;
-  }
-  this.named_map = named_map;
-  var token = named_map.auth_token || options.auth_token;
-  if (token) {
-    this.setAuthToken(token);
-  }
+  this.setLayerDefinition(named_map, options)
 }
+
 
 function LayerDefinition(layerDefinition, options) {
   var self = this;
@@ -669,6 +658,26 @@ Map.prototype = {
 };
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
+
+  setLayerDefinition: function(named_map, options) {
+    options = options || {}
+    this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
+    this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
+    this.layers = _.clone(named_map.layers) || [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layer.options = layer.options || { hidden: false };
+      layer.options.layer_name = layer.layer_name;
+    }
+    this.named_map = named_map;
+    var token = named_map.auth_token || options.auth_token;
+    if (token) {
+      this.setAuthToken(token);
+    }
+    if(!options.silent) {
+      this.invalidate();
+    }
+  },
 
   setAuthToken: function(token) {
     if(!this.isHttps()) {

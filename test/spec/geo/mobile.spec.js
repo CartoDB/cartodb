@@ -34,7 +34,23 @@ describe("cdb.geo.ui.Mobile", function() {
       map: map
     });
 
-    var overlays = {};
+    var overlays = [];
+
+
+    overlays.push({
+      options: {
+        extra: {
+          description: null,
+          title: "Hello!",
+          show_title: true,
+          show_description: false
+        },
+      },
+      order: 1,
+      shareable: false,
+      type: "header",
+      url: null
+    });
 
     mobile = new cdb.geo.ui.Mobile({
       template: template,
@@ -51,6 +67,11 @@ describe("cdb.geo.ui.Mobile", function() {
     it("should render properly", function() {
       mobile.render();
       expect(mobile.$el.find(".aside").length).toBe(1);
+    });
+
+    it("should render the title", function() {
+      mobile.render();
+      expect(mobile.$el.find(".title").text()).toBe("Hello!");
     });
 
   });

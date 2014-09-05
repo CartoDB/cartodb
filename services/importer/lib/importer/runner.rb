@@ -82,18 +82,18 @@ module CartoDB
         raise EmptyFileError if source_file.empty?
 
         tracker.call('importing')
-        job.log.append "Importing data from #{source_file.fullpath}"
+        job.log "Importing data from #{source_file.fullpath}"
         @loader.run
-        job.log.append "Finished importing data from #{source_file.fullpath}"
+        job.log "Finished importing data from #{source_file.fullpath}"
 
         job.success_status = true
         @results.push(result_for(job, source_file, @loader.valid_table_names))
       rescue => exception
-        job.log.append "Errored importing data from #{source_file.fullpath}:"
-        job.log.append "#{exception.class.to_s}: #{exception.to_s}"
-        job.log.append '----------------------------------------------------'
-        job.log.append exception.backtrace
-        job.log.append '----------------------------------------------------'
+        job.log "Errored importing data from #{source_file.fullpath}:"
+        job.log "#{exception.class.to_s}: #{exception.to_s}"
+        job.log '----------------------------------------------------'
+        job.log exception.backtrace
+        job.log '----------------------------------------------------'
         job.success_status = false
         @results.push(result_for(job, source_file, @loader.valid_table_names, exception.class))
       end

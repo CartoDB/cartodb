@@ -395,7 +395,6 @@ class Table < Sequel::Model(:user_tables)
       importer = CartoDB::Migrator.new hash_in
       importer = importer.migrate!
       @data_import.reload
-      #@data_import.migrated
       @data_import.save
       importer.name
     end
@@ -580,12 +579,12 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Logger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
-      @data_import.log << ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
+      @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
       $tables_metadata.del key
 
       self.remove_table_from_user_database
     end
-    @data_import.log << ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
+    @data_import.log.append ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
     raise e
   end
 

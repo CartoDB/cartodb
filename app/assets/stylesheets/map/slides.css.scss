@@ -54,9 +54,11 @@
 
   .slide_view {
 
-    &:hover .close {
-      @include opacity(1);
-    }
+    &.active:hover .count { background: #AAC6DF; }
+
+    &:hover .count { background: #bbb; }
+
+    &:hover .close { @include opacity(1); }
 
     &.active { 
       .count { background: #BECFDE; }
@@ -121,20 +123,19 @@
       height: 16px;
       @include absolute-landscape-center($width);
       bottom: -20px;
+      padding: 0px;
       line-height: 80%;
       background: #333;
       text-align: center;
       @include border-radius(2px);
       @include box-sizing(border-box);
-      padding: 0px;
 
       a {
         text-transform: uppercase;
         font-size:9px;
-        color: #fff;
+        color: #9CA0A3;
         text-decoration: none;
       }
-
 
     }
 

@@ -1,6 +1,7 @@
 class CommonData
 
   DATASETS_JSON_FILENAME = 'datasets.json'
+  DATASETS_EMPTY = []
 
   def initialize
     @datasets = nil
@@ -10,10 +11,10 @@ class CommonData
   def datasets
     if @datasets.nil?
 
-      _datasets = datasets_fallback
+      _datasets = DATASETS_EMPTY
 
       if is_enabled
-        _datasets = get_datasets(get_datasets_json(datasets_end_url), datasets_fallback)
+        _datasets = get_datasets(get_datasets_json(datasets_end_url), DATASETS_EMPTY)
       end
 
       @datasets = _datasets
@@ -25,7 +26,7 @@ class CommonData
   def upload_datasets_to_s3(all_public)
     begin
       datasets_json = get_datasets_json(datasets_api_url(false))
-      _datasets = get_datasets(datasets_json, [])
+      _datasets = get_datasets(datasets_json, DATASETS_EMPTY)
     rescue
       puts 'Unable to retrieve datasets, ending now without uploading anything to Amazon S3'
       return
@@ -56,7 +57,7 @@ class CommonData
     retries = 0
     begin
       retries += 1
-      url = CommonData.upload_to_s3(DATASETS_JSON_FILENAME, datasets_json)
+      url = CommonData.upload_to_s3(DATASETS_JSON_FILENAME, get_datasets_json(datasets_api_url))
       puts "#{DATASETS_JSON_FILENAME} was uploaded to #{url}"
     rescue => e
       if retries >= RETRIES_NUMBER
@@ -77,6 +78,9 @@ class CommonData
   def get_datasets(json, default)
     begin
       _datasets = JSON.parse(json).fetch('visualizations', default)
+      _datasets = _datasets.select { |dataset|
+        !dataset['tags'].empty?
+      }
     rescue
       _datasets = default
     end
@@ -142,13 +146,10 @@ class CommonData
   end
 
   def datasets_to_generate(_datasets, all_public=false)
-    tagged_datasets = _datasets.select { |dataset|
-      !dataset['tags'].empty?
-    }
-    private_datasets = tagged_datasets.select { |dataset|
+    private_datasets = _datasets.select { |dataset|
       dataset['privacy'].downcase == CartoDB::Visualization::Member::PRIVACY_PRIVATE.downcase
     }
-    public_datasets = tagged_datasets.select { |dataset|
+    public_datasets = _datasets.select { |dataset|
       dataset['privacy'].downcase == CartoDB::Visualization::Member::PRIVACY_PUBLIC.downcase
     }
 
@@ -204,34 +205,6 @@ class CommonData
     else
       default
     end
-  end
-
-  def datasets_fallback
-    !Rails.env.development? ? [] :
-        [
-            {
-                :id => 'wadus-wadus-wadus-wadus-wadus',
-                :name => 'table_50m_urban_area',
-                :tags => [
-                    'Cultural datasets'
-                ],
-                :description => '',
-                :privacy => 'PUBLIC',
-                :created_at => '2014-08-28T07:27:34+00:00',
-                :updated_at => '2014-08-28T13:01:36+00:00',
-                :source => nil,
-                :title => nil,
-                :license => nil,
-                :table => {
-                    :id => 'wadus-wadus-wadus-wadus-wadus',
-                    :name => 'table_50m_urban_area',
-                    :privacy => 'PUBLIC',
-                    :updated_at => '2014-08-28T12:43:45+00:00',
-                    :size => 1028096,
-                    :row_count => 2143
-                },
-            }
-        ]
   end
 
 end

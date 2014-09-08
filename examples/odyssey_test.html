@@ -24,7 +24,7 @@
 
     <script>
       function main() {
-        cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
+        cartodb.createVis('map', '/odyseey_vizjson/odyssey.json', {
             shareable: true,
             title: true,
             description: true,
@@ -32,29 +32,10 @@
             tiles_loader: true,
             center_lat: 0,
             center_lon: 0,
-            zoom: 2
+            zoom: 2,
+            no_cdn: true
         })
         .done(function(vis, layers) {
-          vis._createSlides([
-          {
-            map: {
-              center: [0, 0],
-              zoom: 3
-            }
-          },
-          {
-            map: {
-              center: [10, 0],
-              zoom: 3
-            }
-          },
-          {
-            map: {
-              center: [10, 10],
-              zoom: 3
-            }
-          }
-          ])
         })
         .error(function(err) {
           console.log(err);

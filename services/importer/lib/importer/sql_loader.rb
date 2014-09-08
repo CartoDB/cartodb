@@ -17,11 +17,11 @@ module CartoDB
       end #initialize
 
       def run
-        job.log "Using database connection #{job.concealed_pg_options}"
+        job.log.append "Using database connection #{job.concealed_pg_options}"
 
         psql.run
-        job.log "psql output:    #{psql.command_output}"
-        job.log "psql exit code: #{psql.exit_code}"
+        job.log.append "psql output:    #{psql.command_output}"
+        job.log.append "psql exit code: #{psql.exit_code}"
 
         #raise LoadError if psql.exit_code != 0
         drop_the_geom_webmercator

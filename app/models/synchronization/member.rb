@@ -2,7 +2,6 @@
 require 'virtus'
 require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer' 
-require_relative '../../../services/track_record/track_record/log'
 require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
@@ -29,8 +28,6 @@ module CartoDB
       STATE_FAILURE   = 'failure'
 
       STATES                        = %w{ success failure syncing }
-      REDIS_LOG_KEY_PREFIX          = 'synchronization'
-      REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
 
       attribute :id,              String
       attribute :name,            String
@@ -123,8 +120,8 @@ module CartoDB
         importer = nil
         self.state    = STATE_SYNCING
 
-        log           = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX, expiration: REDIS_LOG_EXPIRATION_IN_SECS)
-        self.log_id   = log.id
+        log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+        self.log_id = log.id
         store
 
         if user.nil?
@@ -204,7 +201,7 @@ module CartoDB
           raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
         end
 
-        self.log << "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+        self.log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
         if datasource_provider.providers_download_url?
@@ -221,9 +218,9 @@ module CartoDB
               checksum:         checksum,
               verify_ssl_cert:  false
           )
-          self.log << "File will be downloaded from #{downloader.url}"
+          self.log.append "File will be downloaded from #{downloader.url}"
         else
-          self.log << 'Downloading file data from datasource'
+          self.log.append 'Downloading file data from datasource'
           downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, \
             {checksum: checksum}, self.log)
         end
@@ -232,7 +229,7 @@ module CartoDB
       end
 
       def set_success_state_from(importer)
-        self.log            << '******** synchronization succeeded ********'
+        self.log.append     '******** synchronization succeeded ********'
         self.log_trace      = importer.runner_log_trace
         self.state          = STATE_SUCCESS
         self.etag           = importer.etag
@@ -248,9 +245,9 @@ module CartoDB
       end
 
       def set_retry_state_from(importer)
-        self.log            << '******** synchronization failed, will retry ********'
+        self.log.append     '******** synchronization failed, will retry ********'
         self.log_trace      = importer.runner_log_trace
-        self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
+        self.log.append     "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
         self.state          = STATE_SUCCESS
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
@@ -258,9 +255,9 @@ module CartoDB
       end
 
       def set_failure_state_from(importer)
-        self.log            << '******** synchronization failed ********'
+        self.log.append     '******** synchronization failed ********'
         self.log_trace      = importer.runner_log_trace
-        self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
+        self.log.append     "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
         self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
@@ -268,7 +265,7 @@ module CartoDB
       end
 
       def set_general_failure_state_from(exception)
-        self.log            << '******** synchronization raised exception ********'
+        self.log.append     '******** synchronization raised exception ********'
         self.log_trace      = ''
         self.state          = STATE_FAILURE
         self.error_code     = 99999
@@ -279,10 +276,10 @@ module CartoDB
       # Tries to run automatic geocoding if present
       def geocode_table
         return unless table && table.automatic_geocoding
-        self.log << 'Running automatic geocoding...'
+        self.log.append 'Running automatic geocoding...'
         table.automatic_geocoding.run
       rescue => e
-        self.log << "Error while running automatic geocoding: #{e.message}"
+        self.log.append "Error while running automatic geocoding: #{e.message}"
       end # geocode_table
 
       def to_hash
@@ -332,11 +329,12 @@ module CartoDB
       def log
         return @log if defined?(@log) && @log
         log_attributes = {
-          prefix:     REDIS_LOG_KEY_PREFIX,
-          expiration: REDIS_LOG_EXPIRATION_IN_SECS
+          type: CartoDB::Log::TYPE_SYNCHRONIZATION,
         }
         log_attributes.merge(id: log_id) if log_id
-        @log  = TrackRecord::Log.new(log_attributes)
+        log_attributes.merge(user_id: user.id) if user
+
+        @log = CartoDB::Log.new(log_attributes)
         @log.fetch if log_id
         @log_id = @log.id
         @log

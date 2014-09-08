@@ -2,20 +2,23 @@
 require 'pg'
 require 'sequel'
 require 'uuidtools'
-require_relative '../../../track_record/track_record'
 
 module CartoDB
   module Importer2
     class Job
       def initialize(attributes={})
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
-        @logger     = attributes.fetch(:logger, TrackRecord::Log.new)
+        @logger     = attributes.fetch(:logger, new_logger)
         @pg_options = attributes.fetch(:pg_options, {})
         @schema     = 'cdb_importer'
       end
 
+      def new_logger
+        CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
+      end
+
       def log(message)
-        logger.append(message)
+        @logger.append(message)
       end
 
       def table_name

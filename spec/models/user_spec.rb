@@ -191,7 +191,7 @@ describe User do
       organization.destroy
     end
 
-    it 'should set default settings properly unless overriden', focus: true do
+    it 'should set default settings properly unless overriden' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.max_layers.should == 6
@@ -828,23 +828,24 @@ describe User do
 
   it "should correctly identify last billing cycle" do
     user = create_user :email => 'example@example.com', :username => 'example', :password => 'testingbilling'
-    Timecop.freeze(Date.parse("2013-01-01")) do
+    Delorean.time_travel_to(Date.parse("2013-01-01")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-15"))
       user.last_billing_cycle.should == Date.parse("2012-12-15")
     end
-    Timecop.freeze(Date.parse("2013-01-01")) do
+    Delorean.time_travel_to(Date.parse("2013-01-01")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2012-12-02")
     end
-    Timecop.freeze(Date.parse("2013-03-01")) do
+    Delorean.time_travel_to(Date.parse("2013-03-01")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-31"))
       user.last_billing_cycle.should == Date.parse("2013-02-28")
     end
-    Timecop.freeze(Date.parse("2013-03-15")) do
+    Delorean.time_travel_to(Date.parse("2013-03-15")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
     user.destroy
+    Delorean.back_to_the_present
   end
 
   it "should calculate the trial end date" do

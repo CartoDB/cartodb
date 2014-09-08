@@ -63,24 +63,20 @@ class CommonData
     body
   end
 
-  def base_url
-    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/v1"
-  end
-
   def datasets_url
-    sql_authenticated_api_url sql_api_url(DATASETS_QUERY)
+    sql_authenticated_api_url sql_api_url(DATASETS_QUERY, 'v1')
   end
 
   def export_url(table_name)
     "#{sql_api_url export_query(table_name)}&filename=#{table_name}&format=#{config('format', 'shp')}"
   end
 
-  def sql_api_url(query)
-    "#{base_url}/sql?q=#{URI::encode query}"
+  def sql_api_url(query, version='v2')
+    "#{config('protocol', 'https')}://#{config('username')}.#{config('host')}/api/#{version}/sql?q=#{URI::encode query}"
   end
 
-  def sql_authenticated_api_url(sql_api_url)
-    "#{sql_api_url}&api_key=#{config('api_key')}"
+  def sql_authenticated_api_url(api_url)
+    "#{api_url}&api_key=#{config('api_key')}"
   end
 
   def export_query(table_name)

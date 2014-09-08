@@ -10,13 +10,10 @@ class CommonData
       _datasets = DATASETS_EMPTY
 
       if is_enabled
-        _datasets = get_datasets(get_datasets_json, DATASETS_EMPTY)
+        _datasets = get_datasets(get_datasets_json)
       end
 
-      @datasets = {
-        :datasets => _datasets,
-        :categories => get_categories(_datasets)
-      }
+      @datasets = _datasets
     end
 
     @datasets
@@ -24,31 +21,33 @@ class CommonData
 
   private
 
-  def get_datasets(json, default)
+  def get_datasets(json)
     begin
-      _datasets = JSON.parse(json).fetch('rows', default)
+      rows = JSON.parse(json).fetch('rows', [])
     rescue
-      _datasets = default
+      rows = []
     end
-    _datasets.map { |dataset|
-      dataset['url'] = export_url(dataset['tabname'])
-      dataset
-    }
-  end
 
-  def get_categories(datasets)
-    categories = {}
-    datasets.each { |dataset|
-      unless categories.has_key?(dataset['category'])
-        categories[dataset['category']] = {
-            :name => dataset['category'],
-            :image_url => dataset['category_image_url'],
+    _categories = {}
+    _datasets = []
+
+    rows.each { |row|
+      category = row['category']
+      unless _categories.has_key?(category)
+        _categories[category] = {
+            :name => category,
+            :image_url => row['category_image_url'],
             :count => 0
         }
       end
-      categories[dataset['category']][:count] += 1
+      _categories[category][:count] += 1
+
+      row.delete('category_image_url')
+      row['url'] = export_url(row['tabname'])
+      _datasets << row
     }
-    categories.values
+
+    {:datasets => _datasets, :categories => _categories.values}
   end
 
   def get_datasets_json
@@ -109,9 +108,9 @@ class CommonData
 select
     meta_dataset.name,
     meta_dataset.tabname,
-    meta_dataset.created_at,
-    meta_dataset.updated_at,
     meta_dataset.description,
+    meta_dataset.source,
+    meta_dataset.license,
     (
         SELECT reltuples
         FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
@@ -121,8 +120,8 @@ select
             AND relname = meta_dataset.tabname
     ) as rows,
     pg_relation_size(meta_dataset.tabname) size,
-    meta_dataset.source,
-    meta_dataset.license,
+    meta_dataset.created_at,
+    meta_dataset.updated_at,
     meta_category.name category,
     meta_category.image_url category_image_url
 from meta_dataset, meta_category

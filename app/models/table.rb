@@ -122,9 +122,17 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags, :description)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
-                :import_from_table_copy, :importing_encoding,
-                :temporal_the_geom_type, :migrate_existing_table, :new_table, :keep_user_database_table
+  attr_accessor :force_schema,
+                :import_from_file,
+                :import_from_url,
+                :import_from_query,
+                :import_from_table_copy,
+                :importing_encoding,
+                :temporal_the_geom_type,
+                :migrate_existing_table,
+                :new_table,
+                # Handy for rakes and custom ghost table registers, won't delete user table in case of error
+                :keep_user_database_table
 
   # Getter by table uuid or table name using canonical visualizations
   # @param table_id String
@@ -533,7 +541,6 @@ class Table < Sequel::Model(:user_tables)
 
     update_table_pg_stats
 
-    # Cartodbfy !
     self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
@@ -582,7 +589,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
       $tables_metadata.del key
 
-      self.remove_table_from_user_database
+      self.remove_table_from_user_database unless keep_user_database_table
     end
     @data_import.log.append ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
     raise e

@@ -2,17 +2,15 @@
 require_relative '../spec_helper'
 
 describe CommonData do
-  before(:all) do
-    CommonData.any_instance.stubs(:config).with('protocol', 'https').returns('https')
-    CommonData.any_instance.stubs(:config).with('username').returns('common-data')
-    CommonData.any_instance.stubs(:config).with('host').returns('example.com')
-    CommonData.any_instance.stubs(:config).with('api_key').returns('wadus')
-    CommonData.any_instance.stubs(:config).with('format', 'shp').returns('shp')
-  end
 
   before(:each) do
     Typhoeus::Expectation.clear
     @common_data = CommonData.new
+    @common_data.stubs(:config).with('protocol', 'https').returns('https')
+    @common_data.stubs(:config).with('username').returns('common-data')
+    @common_data.stubs(:config).with('host').returns('example.com')
+    @common_data.stubs(:config).with('api_key').returns('wadus')
+    @common_data.stubs(:config).with('format', 'shp').returns('shp')
   end
 
   after(:all) do
@@ -32,10 +30,20 @@ describe CommonData do
   end
 
   it 'should return correct categories and datasets for default stub response' do
-    stub_api_response(200, VALID_JSON_RESPONSE)
+    stub_valid_api_response
 
     @common_data.datasets[:datasets].size.should eq 7
     @common_data.datasets[:categories].size.should eq 3
+  end
+
+  it 'should use SQL API V2 for export URLs' do
+    stub_valid_api_response
+
+    @common_data.datasets[:datasets].first['url'].should match /^https:\/\/common-data\.example\.com\/api\/v2/
+  end
+
+  def stub_valid_api_response
+    stub_api_response(200, VALID_JSON_RESPONSE)
   end
 
   def stub_api_response(code, body=nil)

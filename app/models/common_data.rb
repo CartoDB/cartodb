@@ -109,6 +109,8 @@ class CommonData
 select
     meta_dataset.name,
     meta_dataset.tabname,
+    meta_dataset.created_at,
+    meta_dataset.updated_at,
     meta_dataset.description,
     (
         SELECT reltuples

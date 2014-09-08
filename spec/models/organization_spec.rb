@@ -1,6 +1,7 @@
 require_relative '../spec_helper'
 
 require_relative '../../app/models/visualization/collection'
+require_relative '../../services/relocator/worker'
 
 include CartoDB
 
@@ -16,9 +17,9 @@ describe Organization do
   end
 
   describe '#add_user_to_org' do
-    it 'Tests adding a user to an organization' do
-      org_name = 'wadus'
+    it 'Tests adding a user to an organization (but no owner)' do
       org_quota = 1234567890
+      org_name = 'wadus'
       org_seats = 5
 
       username = @user.username
@@ -49,6 +50,75 @@ describe Organization do
       @user.organization = nil
       @user.save
       organization.destroy
+    end
+
+    it 'Tests setting a user as the organization owner' do
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+
+      user_org = CartoDB::UserOrganization.new(organization.id, user.id)
+      user_org.promote_user_to_admin
+
+      organization.reload
+      user.reload
+
+      user.organization.id.should eq organization.id
+      user.organization.owner.id.should eq user.id
+
+      user.database_schema.should eq user.username
+
+      user_org = CartoDB::UserOrganization.new(organization.id, user.id)
+      expect {
+        user_org.promote_user_to_admin
+      }.to raise_error
+
+      begin
+        user.destroy
+      rescue
+        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
+      end
+    end
+  end
+
+  describe '#members_removal' do
+    it 'Tests removing a normal member from the organization' do
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+
+      owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+
+      user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      user_org.promote_user_to_admin
+
+      organization.reload
+      owner.reload
+
+      member1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      CartoDB::Relocator::Worker.organize(member1, organization)
+      member1.reload
+      organization.reload
+
+      member2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      CartoDB::Relocator::Worker.organize(member2, organization)
+      member2.reload
+
+      organization.users.count.should eq 3
+
+      member2.destroy
+      organization.reload
+
+      organization.users.count.should eq 2
+
+      member2.destroy
+      organization.reload
+
+      organization.users.count.should eq 1
+
+      begin
+        owner.destroy
+      rescue
+        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
+      end
     end
   end
 

@@ -208,9 +208,13 @@ class User < Sequel::Model
           drop_user_privileges_in_schema(s)
         end
         # Drop user quota function
-        database.run(%Q{ DROP FUNCTION IF EXISTS \"#{self.database_schema}\"._cdb_userquotainbytes()})
+        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._cdb_userquotainbytes()})
         # If user is in an organization should never have public schema, so to be safe check
-        database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
+        drop_all_functions_from_schema(self.database_schema)
+        unless self.database_schema == 'public'
+          # Must drop all functions before or it will fail
+          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
+        end
       end
 
       conn = self.in_database(as: :cluster_admin)
@@ -1163,9 +1167,9 @@ class User < Sequel::Model
 
   def create_public_db_user
     in_database(as: :superuser) do |database|
-      database.run(%Q{ CREATE USER \"#{database_public_username}\" LOGIN INHERIT })
-      database.run(%Q{ GRANT publicuser TO \"#{database_public_username}\" })
-      database.run(%Q{ ALTER USER \"#{database_public_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
+      database.run(%Q{ CREATE USER "#{database_public_username}" LOGIN INHERIT })
+      database.run(%Q{ GRANT publicuser TO "#{database_public_username}" })
+      database.run(%Q{ ALTER USER "#{database_public_username}" SET search_path = "#{database_schema}", public, cartodb })
     end
   end
 
@@ -1780,6 +1784,43 @@ TRIGGER
         end
         yield(user_database) if block_given?
       end
+    end
+  end
+
+  def drop_all_functions_from_schema(schema_name)
+    return if schema_name == 'public'
+
+    in_database(as: :superuser) do |database|
+      # Public-facing functions have publicuser grants, need to remove it to drop them
+      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
+      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM \"#{database_username}\"")
+
+      debugger
+
+      # Non-aggregate functions
+      drop_function_sqls = database.fetch(%Q{
+        SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
+        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
+        WHERE ns.nspname = '#{schema_name}'
+      })
+      drop_function_sqls.each { |sql_sentence|
+        database.run(sql_sentence[:sql])
+      }
+
+      debugger
+
+      # And now aggregate functions
+      drop_function_sqls = database.fetch(%Q{
+        SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
+        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
+        WHERE ns.nspname = '#{schema_name}'
+      })
+      drop_function_sqls.each { |sql_sentence|
+        database.run(sql_sentence[:sql])
+      }
+
+      debugger
+
     end
   end
 

@@ -5,7 +5,7 @@ class Api::Json::CommonDataController < Api::ApplicationController
   ssl_required :index
 
   def index
-    render_jsonp({ :visualizations => CommonDataSingleton.instance.datasets })
+    render_jsonp(CommonDataSingleton.instance.datasets)
   end
 
 end

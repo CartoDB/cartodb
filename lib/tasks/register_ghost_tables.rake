@@ -8,6 +8,8 @@ namespace :cartodb do
       usage = "usage: rake cartodb:db:register_ghost_table[username,table_name]"
       raise usage if args[:username].blank? || args[:table_name].blank?
 
+      raise 'Deprecated'
+
       begin
         user       = User.find(username: args[:username] )
         table_name = args[:table_name]

@@ -39,10 +39,14 @@ class CommonData
   def get_categories(datasets)
     categories = {}
     datasets.each { |dataset|
-      categories[dataset['category']] = {
-        :name => dataset['category'],
-        :image_url => dataset['category_image_url']
-      }
+      unless categories.has_key?(dataset['category'])
+        categories[dataset['category']] = {
+            :name => dataset['category'],
+            :image_url => dataset['category_image_url'],
+            :count => 0
+        }
+      end
+      categories[dataset['category']][:count] += 1
     }
     categories.values
   end

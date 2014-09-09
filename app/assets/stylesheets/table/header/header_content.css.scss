@@ -149,10 +149,11 @@
 
     // Actions list
     ul.actions {
-
+      @include display-flex();
       @include justify-content(flex-start, start);
+      @include align-items(center, center);
+      height:28px;
       margin:0;
-      top: 0;
       
       li { margin:0; }
 

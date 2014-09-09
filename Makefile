@@ -16,6 +16,7 @@ WORKING_SPECS_2 = \
   spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
+  spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
   $(NULL)
 

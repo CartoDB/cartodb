@@ -115,9 +115,10 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
 
     # Private dashboard
-    get '(/u/:user_domain)/dashboard/'            => 'visualizations#index', as: :dashboard
-    get '(/u/:user_domain)/dashboard'             => 'visualizations#index', as: :dashboard_bis
-    get '(/u/:user_domain)/dashboard/common_data' => 'pages#common_data',    as: :dashboard_common_data
+    get '(/u/:user_domain)/dashboard/'                  => 'visualizations#index', as: :dashboard
+    get '(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
+    get '(/u/:user_domain)/dashboard/common_data'       => 'pages#common_data',    as: :dashboard_common_data
+    get '(/u/:user_domain)/dashboard/common_data/:tag'  => 'pages#common_data',    as: :dashboard_common_data_tag
 
     # Public dashboard
     # root goes to 'pages#public'
@@ -271,6 +272,9 @@ CartoDB::Application.routes.draw do
 
     # Tags
     get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index
+
+    # Common data
+    get '(/u/:user_domain)/api/v1/common_data' => 'common_data#index', as: :api_v1_common_data_index
 
     # Synchronizations
     get    '(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#index',    as: :api_v1_synchronizations_index

@@ -6,85 +6,42 @@
     <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'common_data.js' %>
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
-      , user_data = <%=raw current_user.data.to_json.html_safe %>
-      , config = <%=raw frontend_config.html_safe %>
-      , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
-      , public_data = [{
-          name: "World borders",
-          description: "World countries borders",
-          author: null,
-          author_url: null,
-          url: "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-          size: 483328,
-          rows: 246
-        }, {
-          name: "European countries",
-          description: "European countries geometries",
-          author: null,
-          author_url: null,
-          url: "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-          size: 376832,
-          rows: 46
-        }, {
-          name: "Urban Areas",
-          description: "Areas of human habitation",
-          author: "naturalearthdata.com",
-          author_url: "http://www.naturalearthdata.com",
-          url: "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-          size: 983040,
-          rows: 2143
-        }, {
-          name: "Populated places",
-          description: "Most populated places",
-          author: "naturalearthdata.com",
-          author_url: "http://www.naturalearthdata.com",
-          url: "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
-          size: 1824522,
-          rows: 7313
-        }, {
-          name: "World rivers",
-          description: "Most of the world rivers",
-          author: "naturalearthdata.com",
-          author_url: "http://www.naturalearthdata.com",
-          url: "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
-          size: 704512,
-          rows: 1611
-        }, {
-          name: "New York Counties",
-          description: "All the New York counties",
-          author: null,
-          author_url: null,
-          url: "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-          size: 57344,
-          rows: 62
-        }, {
-          name: "NYC Subways",
-          description: "All the NYC Subways",
-          author: null,
-          author_url: null,
-          url: "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip",
-          size: 385024,
-          rows: 1904
-        }];
-
+      var user_data = <%=raw current_user.data.to_json.html_safe %>;
+      var config = <%=raw frontend_config.html_safe %>;
+      var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
     </script>
   <% end %>
 
   <%= content_for(:css) do %>
-    <%= stylesheet_link_tag 'common.css', 'dashboard.css', 'pages.css', :media => 'all' %>
+    <%= stylesheet_link_tag 'common.css', 'dashboard.css', 'common_data.css', :media => 'all' %>
   <% end %>
+
+  <div class="subheader active">
+    <div class="inner">
+      <h2>Enhance your maps by importing any of these free-to-use helpful datasets</h2>
+    </div>
+  </div>
+
+  <div class="main_loader">
+    <span class="loader"></span>
+    <p>Getting datasets...</p>
+  </div>
+
+  <div class="empty">
+    <div class="inner">
+      <h3>Oops! There was an error</h3>
+      <p>Unfortunately our CartoFante can't show you all the available common datasets, please come back in a while. If the problem persists, don't hesitate to contact us at <a href="mailto:support@cartodb.com">support@cartodb.com</a>.</p>
+    </div>
+  </div>
 
   <div class="content">
     <article class="public_tables">
       <div class="inner">
-        <div class="header">
-          <h2><i class="table"></i> Common data tables</h2>
-          <p>Import any to your account and start playing with them</p>
-        </div>
-        <table></table>
+        <aside class="options"></aside>
+        <section class="tables"></section>
       </div>
     </article>
-    <article class="support" style="display: inline-block;">
+    <article class="support">
       <div class="inner">
         <section class="left">
         <h3>Don’t find what you are looking for?</h3>

@@ -31,6 +31,12 @@ class DataImport < Sequel::Model
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
 
+  TYPE_EXTERNAL_TABLE = 'external_table'
+  TYPE_FILE           = 'file'
+  TYPE_URL            = 'url'
+  TYPE_QUERY          = 'query'
+  TYPE_DATASOURCE     = 'datasource'
+
   def after_initialize
     instantiate_log
     self.results  = []
@@ -116,11 +122,15 @@ class DataImport < Sequel::Model
   end
 
   def data_source=(data_source)
-    if File.exist?(Rails.root.join("public#{data_source}"))
-      self.values[:data_type] = 'file'
-      self.values[:data_source] = Rails.root.join("public#{data_source}").to_s
+    path = Rails.root.join("public#{data_source}").to_s
+    if data_source.nil?
+      self.values[:data_type] = TYPE_DATASOURCE
+      self.values[:data_source] = ''
+    elsif File.exist?(path) && !File.directory?(path)
+      self.values[:data_type] = TYPE_FILE
+      self.values[:data_source] = path
     elsif Addressable::URI.parse(data_source).host.present?
-      self.values[:data_type] = 'url'
+      self.values[:data_type] = TYPE_URL
       self.values[:data_source] = data_source
     end
     # else SQL-based import
@@ -252,7 +262,7 @@ class DataImport < Sequel::Model
   def import_from_query(name, query)
     log.append 'import_from_query()'
 
-    self.data_type    = 'query'
+    self.data_type    = TYPE_QUERY
     self.data_source  = query
     self.save
 

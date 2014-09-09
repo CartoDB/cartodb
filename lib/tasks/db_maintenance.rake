@@ -254,33 +254,6 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
-
-    ########################
-    # LOAD CARTODB TRIGGERS
-    ########################
-    desc 'Install/upgrade CARTODB SQL triggers'
-    task :load_triggers => :environment do |t, args|
-      require_relative '../../app/models/table'
-
-      count = User.count
-      User.all.each_with_index do |user, i|
-        begin
-          user.tables.all.each do |table|
-            begin
-              # set triggers
-              table.set_triggers
-            rescue => e
-              puts e
-              next
-            end
-          end
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
-        end
-      end
-    end
-
     ##########################################
     # SET ORGANIZATION GROUP ROLE TO ALL USERS
     ##########################################

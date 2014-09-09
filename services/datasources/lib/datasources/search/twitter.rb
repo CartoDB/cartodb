@@ -221,6 +221,14 @@ module CartoDB
           entry.save
         end
 
+        # @return Hash
+        def get_audit_stats
+          entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
+          raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
+                                        DATASOURCE_NAME) if entry.nil?
+          { :retrieved_items => entry.retrieved_items }
+        end
+
         # Sets an error reporting component
         # @param component mixed
         # @throws DatasourceBaseError

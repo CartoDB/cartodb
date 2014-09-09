@@ -77,17 +77,17 @@ module CartoDB
         @named_maps     = nil
         @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
-      end #initialize
+      end
 
       def default_privacy(owner)
         owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
-      end #default_privacy
+      end
 
       def store
         raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
         do_store
         self
-      end #store
+      end
 
       def store_using_table(fields)
         if type == CANONICAL_TYPE
@@ -122,14 +122,14 @@ module CartoDB
         end
 
         validator.valid?
-      end #valid?
+      end
 
       def fetch
         data = repository.fetch(id)
         raise KeyError if data.nil?
         self.attributes = data
         self
-      end #fetch
+      end
 
       def delete(from_table_deletion=false)
         # Named map must be deleted before the map, or we lose the reference to it
@@ -153,29 +153,29 @@ module CartoDB
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
         self
-      end #delete
+      end
 
       # A visualization is linked to a table when it uses that table in a layergroup (but is not the canonical table)
       def unlink_from(table)
         invalidate_varnish_cache
         remove_layers_from(table)
-      end #unlink_from
+      end
 
       def user_data=(user_data)
         @user_data = user_data
         named_maps(true)
-      end #user_data=
+      end
 
       def name=(name)
         name = name.downcase if name && table?
         self.name_changed = true if name != @name && !@name.nil?
         super(name)
-      end #name=
+      end
 
       def description=(description)
         self.description_changed = true if description != @description && !@description.nil?
         super(description)
-      end #description=
+      end
 
       def description_clean
         if description.present?
@@ -204,11 +204,11 @@ module CartoDB
 
       def public?
         privacy == PRIVACY_PUBLIC
-      end #public?
+      end
 
       def public_with_link?
         privacy == PRIVACY_LINK
-      end #public_with_link?
+      end
 
       def private?
         privacy == PRIVACY_PRIVATE and not organization?
@@ -264,23 +264,23 @@ module CartoDB
           i <=> j
         }.join(',')
         "#{user.database_name}:#{sorted_table_names},#{id}"
-      end #varnish_key
+      end
 
       def derived?
         type == DERIVED_TYPE
-      end #derived?
+      end
 
       def table?
         type == CANONICAL_TYPE
-      end #table?
+      end
 
       def dependent?
         derived? && single_data_layer?
-      end #dependent?
+      end
 
       def non_dependent?
         derived? && !single_data_layer?
-      end #non_dependent?
+      end
 
       def varnish_vizzjson_key
         ".*#{id}:vizjson"
@@ -295,7 +295,7 @@ module CartoDB
         if type != CANONICAL_TYPE or organization?
           save_named_map
         end
-      end #invalidate_cache_and_refresh_named_map
+      end
 
       def has_private_tables?
         has_private_tables = false
@@ -303,11 +303,11 @@ module CartoDB
           has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
         }
         has_private_tables
-      end #has_private_tables
+      end
 
       def retrieve_named_map?
         password_protected? || has_private_tables?
-      end #retrieve_named_map?
+      end
 
       def has_named_map?
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
@@ -316,28 +316,28 @@ module CartoDB
         else
           data
         end
-      end #has_named_map?
+      end
 
       def password=(value)
         if value && value.size > 0
           @password_salt = generate_salt if @password_salt.nil?
           @encrypted_password = password_digest(value, @password_salt)
         end
-      end #password
+      end
 
       def has_password?
         ( !@password_salt.nil? && !@encrypted_password.nil? ) 
-      end #has_password
+      end
 
       def is_password_valid?(password)
         raise CartoDB::InvalidMember unless ( privacy == PRIVACY_PROTECTED && has_password? )
         ( password_digest(password, @password_salt) == @encrypted_password )
-      end #is_password_valid
+      end
 
       def remove_password
         @password_salt = nil
         @encrypted_password = nil
-      end #remove_password
+      end
 
       # To be stored with the named map
       def make_auth_token
@@ -346,7 +346,7 @@ module CartoDB
           digest = secure_digest(digest, TOKEN_DIGEST)
         end
         digest            
-      end #make_auth_token
+      end
 
       def get_auth_tokens
         named_map = has_named_map?
@@ -363,7 +363,7 @@ module CartoDB
         end
 
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
-      end # supports_private_maps?
+      end
 
       private
 
@@ -412,7 +412,7 @@ module CartoDB
           save_named_map
           propagate_name_to(table) if table and propagate_changes
         end
-      end #do_store
+      end
 
       def named_maps(force_init = false)
         if @named_maps.nil? || force_init
@@ -439,7 +439,7 @@ module CartoDB
           )
         end
         @named_maps
-      end #named_maps
+      end
 
       def save_named_map
         named_map = has_named_map?
@@ -453,22 +453,22 @@ module CartoDB
           # Privacy changed, remove the map
           named_map.delete if named_map
         end
-      end #save_named_map
+      end
 
       def create_named_map
         new_named_map = named_maps.create(self)
         !new_named_map.nil?
-      end #create_named_map_if_proceeds
+      end
 
       def update_named_map(named_map_instance)
         named_map_instance.update(self)
-      end #update_named_map
+      end
 
       def propagate_privacy_and_name_to(table)
         return self unless table
         propagate_privacy_to(table) if privacy_changed
         propagate_name_to(table)    if name_changed
-      end #propagate_privacy_and_name_to
+      end
 
       def propagate_privacy_to(table)
         if type == CANONICAL_TYPE
@@ -477,33 +477,33 @@ module CartoDB
             .propagate_to_redis_and_varnish
         end
         self
-      end #propagate_privacy_to
+      end
 
       # @param table Table
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)
         self
-      end #propagate_name_to
+      end
 
       def set_timestamps
         self.created_at ||= Time.now
         self.updated_at = Time.now
         self
-      end #set_timestamps
+      end
 
       def relator
         Relator.new(attributes)
-      end #relator
+      end
 
       def name_checker
         @name_checker || NameChecker.new(user)
-      end #name_cheker
+      end
 
       def available_name?
         return true unless user && name_changed
         name_checker.available?(name)
-      end #available_name?
+      end
 
       def remove_layers_from(table)
         related_layers_from(table).each { |layer|
@@ -512,7 +512,7 @@ module CartoDB
         }
         self.active_layer_id = layers(:cartodb).first.id
         store
-      end #remove_layers_from
+      end
 
       def related_layers_from(table)
         layers(:cartodb).select do |layer|
@@ -520,12 +520,12 @@ module CartoDB
             [layer.options.fetch('table_name', nil)]
           ).include?(table.name)
         end
-      end #related_layers_from
+      end
 
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
-      end #configuration
+      end
 
       def password_digest(password, salt)
         digest = AUTH_DIGEST
@@ -533,18 +533,18 @@ module CartoDB
           digest = secure_digest(digest, salt, password, AUTH_DIGEST)
         end
         digest
-      end #password_digest
+      end
 
       def generate_salt
         secure_digest(Time.now, (1..10).map{ rand.to_s })
-      end #generate_salt
+      end
 
       def secure_digest(*args)
         #noinspection RubyArgCount
         Digest::SHA256.hexdigest(args.flatten.join)
-      end #secure_digest
+      end
 
-    end # Member
-  end # Visualization
-end # CartoDB
+    end
+  end
+end
 

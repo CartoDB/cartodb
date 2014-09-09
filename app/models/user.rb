@@ -204,7 +204,7 @@ class User < Sequel::Model
     Thread.new do
       in_database(as: :superuser) do |database|
         # Drop this user privileges in every schema of the DB
-        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] +
+        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
           User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema).uniq
         schemas.each do |s|
           drop_user_privileges_in_schema(s)
@@ -1796,10 +1796,9 @@ TRIGGER
 
     in_database(as: :superuser) do |database|
       # Public-facing functions have publicuser grants, need to remove it to drop them
-      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
+      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM \"#{CartoDB::PUBLIC_DB_USER}\"")
+      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM \"#{database_public_username}\"")
       database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM \"#{database_username}\"")
-
-      debugger
 
       # Non-aggregate functions
       drop_function_sqls = database.fetch(%Q{
@@ -1807,11 +1806,30 @@ TRIGGER
         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
         WHERE ns.nspname = '#{schema_name}'
       })
-      drop_function_sqls.each { |sql_sentence|
-        database.run(sql_sentence[:sql])
-      }
 
-      debugger
+      # Simulate a controlled environment drop cascade contained to only functions
+      failed_sqls = []
+      recursivity_level = 0
+      begin
+        drop_function_sqls.each { |sql_sentence|
+          begin
+            database.run(sql_sentence[:sql])
+          rescue Sequel::DatabaseError => e
+            if e.message =~ /depends on function /i
+              failed_sqls.push(sql_sentence)
+            else
+              raise
+            end
+          end
+        }
+        drop_function_sqls = failed_sqls
+        failed_sqls = []
+        recursivity_level += 1
+      end while failed_sqls.count > 0 && recursivity_level < 3
+
+      if failed_sqls.count > 0
+        raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, deep nested dependencies remain')
+      end
 
       # And now aggregate functions
       drop_function_sqls = database.fetch(%Q{
@@ -1820,10 +1838,13 @@ TRIGGER
         WHERE ns.nspname = '#{schema_name}'
       })
       drop_function_sqls.each { |sql_sentence|
-        database.run(sql_sentence[:sql])
+        begin
+          database.run(sql_sentence[:sql])
+        rescue Sequel::DatabaseError => e
+          debugger
+          puts e
+        end
       }
-
-      debugger
 
     end
   end

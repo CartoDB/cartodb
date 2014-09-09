@@ -134,7 +134,6 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    CartodbStats.increment_imports
     self.success  = true
     self.state    = STATE_SUCCESS
     log.append "Import finished\n"
@@ -422,7 +421,10 @@ class DataImport < Sequel::Model
                   'error_code' => self.error_code,
                   'import_timestamp' => Time.now,
                   'queue_server' => `hostname`.strip,
-                  'database_host' => owner.database_host
+                  'database_host' => owner.database_host,
+                  'service_name' => self.service_name,
+                  'is_sync_import' => !self.synchronization_id.nil?,
+                  'import_time' => self.updated_at - self.created_at
                  }
     dataimport_logger.info(import_log.to_json)
 

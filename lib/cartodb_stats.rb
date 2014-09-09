@@ -47,24 +47,6 @@ class CartodbStats
       end
     end
 
-    def increment_imports()
-      require 'socket'
-      begin 
-        Statsd.increment("imports.success.total")
-        Statsd.increment("imports.success.servers.#{Socket.gethostname.gsub('.', '_')}")
-      rescue => e
-      end
-    end
-    
-    def increment_failed_imports()
-      require 'socket'
-      begin 
-        Statsd.increment("imports.failed.total")
-        Statsd.increment("imports.failed.hosts.#{Socket.gethostname.gsub('.', '_')}")
-      rescue => e
-      end
-    end
-
     def increment_login_counter(email)
       begin
         u = User.select(:username).filter(:email => email).or(:username => email).first

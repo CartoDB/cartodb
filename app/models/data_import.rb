@@ -423,18 +423,19 @@ class DataImport < Sequel::Model
     owner = User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
-    import_log = {'user' => owner.username, 
-                  'state' => self.state, 
-                  'tables' => results.length, 
-                  'imported_tables' => imported_tables, 
-                  'failed_tables' => failed_tables,
-                  'error_code' => self.error_code,
-                  'import_timestamp' => Time.now,
-                  'queue_server' => `hostname`.strip,
-                  'database_host' => owner.database_host,
-                  'service_name' => self.service_name,
-                  'is_sync_import' => !self.synchronization_id.nil?,
-                  'import_time' => self.updated_at - self.created_at
+    import_log = {'user'              => owner.username,
+                  'state'             => self.state,
+                  'tables'            => results.length,
+                  'imported_tables'   => imported_tables,
+                  'failed_tables'     => failed_tables,
+                  'error_code'        => self.error_code,
+                  'import_timestamp'  => Time.now,
+                  'queue_server'      => `hostname`.strip,
+                  'database_host'     => owner.database_host,
+                  'service_name'      => self.service_name,
+                  'data_type'         => self.data_type,
+                  'is_sync_import'    => !self.synchronization_id.nil?,
+                  'import_time'       => self.updated_at - self.created_at
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)

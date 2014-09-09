@@ -137,10 +137,18 @@ class CommonDataSingleton
 
   def datasets
     now = Time.now
-    if now - @last_usage > (60 * 60)
+    if now - @last_usage > (cache_ttl * 60)
       @common_data = CommonData.new
       @last_usage = now
     end
     @common_data.datasets
+  end
+
+  def cache_ttl
+    ttl = 0
+    if Cartodb.config[:common_data].present?
+      ttl = Cartodb.config[:common_data]['cache_ttl'] || ttl
+    end
+    ttl
   end
 end

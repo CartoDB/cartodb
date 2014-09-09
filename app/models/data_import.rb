@@ -426,9 +426,21 @@ class DataImport < Sequel::Model
                   'is_sync_import' => !self.synchronization_id.nil?,
                   'import_time' => self.updated_at - self.created_at
                  }
+    import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
 
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
+  end
+
+  def decorate_log(data_import)
+    decoration = { retrieved_items: 0}
+    if data_import.success && data_import.table_id
+      datasource = get_datasource_provider
+      if datasource.persists_state_via_data_import?
+        decoration = datasource.get_audit_stats
+      end
+    end
+    decoration
   end
 
   def payload_for(result=nil)

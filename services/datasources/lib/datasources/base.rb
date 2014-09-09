@@ -89,6 +89,19 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
+      def set_audit_to_completed(table_id = nil)
+        raise 'To be implemented in child classes'
+      end
+
+      def set_audit_to_failed
+        raise 'To be implemented in child classes'
+      end
+
+      # @return Hash
+      def get_audit_stats
+        raise 'To be implemented in child classes'
+      end
+
       # Stores the data import item instance to use/manipulate it
       # @param value DataImport
       def data_import_item=(value)

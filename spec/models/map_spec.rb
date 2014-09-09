@@ -27,6 +27,32 @@ describe Map do
     @table.save
   end
 
+  describe '#bounds' do
+    it 'checks max-min bounds' do
+      new_map = Map.create(user_id: @user.id, table_id: @table.id)
+
+      max_value= :maxlon  # 179
+      min_value= :minlon  # -179
+      value1 = 5
+      value2 = 179
+      value3 = -179
+      value4 = 180
+      value5 = -180
+      value6 = 0
+
+      new_map.send(:bound_for, value1, min_value, max_value).should eq value1
+      new_map.send(:bound_for, value2, min_value, max_value).should eq value2
+      new_map.send(:bound_for, value2, min_value, max_value).should eq Map::DEFAULT_BOUNDS[max_value]
+      new_map.send(:bound_for, value3, min_value, max_value).should eq value3
+      new_map.send(:bound_for, value3, min_value, max_value).should eq Map::DEFAULT_BOUNDS[min_value]
+      new_map.send(:bound_for, value4, min_value, max_value).should eq Map::DEFAULT_BOUNDS[max_value]
+      new_map.send(:bound_for, value5, min_value, max_value).should eq Map::DEFAULT_BOUNDS[min_value]
+      new_map.send(:bound_for, value6, min_value, max_value).should eq value6
+
+      new_map.destroy
+    end
+  end
+
   describe '#tables' do
     it 'returns the associated tables' do
       map = Map.create(user_id: @user.id, table_id: @table.id)

@@ -61,7 +61,9 @@ class User < Sequel::Model
     super
     validates_presence :username
     validates_unique   :username
-    validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
+    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
+    validates_format /^[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
+    validates_format /[a-z0-9]{1}$/, :username, :message => "must end with alfanumeric chars"
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -913,6 +915,7 @@ class User < Sequel::Model
     outdated_tables.each do |t|
       table = self.tables.where(name: t[:relname]).first
       begin
+        table.keep_user_database_table = true
         table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
@@ -936,6 +939,7 @@ class User < Sequel::Model
       table.name     = t[:relname]
       table.table_id = t[:oid]
       table.migrate_existing_table = t[:relname]
+      table.keep_user_database_table = true
       begin
         table.save
       rescue Sequel::DatabaseError => e
@@ -950,6 +954,7 @@ class User < Sequel::Model
     renamed_tables.each do |t|
       table = ::Table.find(:table_id => t[:oid])
       begin
+        table.keep_user_database_table = true
         table.synchronize_name(t[:relname])
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
@@ -967,8 +972,7 @@ class User < Sequel::Model
       table.destroy
     end if dropped_tables.present?
 
-    # Remove tables with null oids unless the table name
-    # exists on the db
+    # Remove tables with null oids unless the table name exists on the db
     self.tables.filter(table_id: nil).all.each do |t|
       t.keep_user_database_table = true
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)

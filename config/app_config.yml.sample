@@ -47,6 +47,17 @@ defaults: &defaults
     api_key: ''
   trackjs:
     customer: ''
+  common_data:
+       protocol: 'https'
+       username: ''
+       host: ''
+       api_key: ''
+       format: 'shp'
+       generate_every: 86400
+       s3_bucket_name: ''
+  common_data:
+    username: ''
+    api_key: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

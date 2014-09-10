@@ -185,7 +185,16 @@ module CartoDB
           item_data = format_item_data(result.data.to_hash)
 
           result = @client.execute(uri: item_data.fetch(:url))
-          raise DataDownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+
+          if result.status != 200
+            if result.nil? || result.data['error'].nil? || result.data['error']['message'].nil?
+              error_message = 'Unknown error'
+            else
+              error_message = result.data['error']['message']
+            end
+            raise DataDownloadError.new("(#{result.status}) Downloading file #{id}: #{error_message}", DATASOURCE_NAME)
+          end
+
           result.body
         rescue Google::APIClient::InvalidIDTokenError => ex
           raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)

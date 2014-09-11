@@ -49,8 +49,10 @@
       &:hover { border-color:black }
     }
 
-    .geocoding-pane-options ul li {
-      position:relative;
+    .geocoding-pane-options ul {
+      li {
+        position:relative;
+      }
     }
 
     .geocoding-pane-terms {

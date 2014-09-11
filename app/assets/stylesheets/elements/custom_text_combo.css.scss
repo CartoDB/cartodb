@@ -1,0 +1,40 @@
+
+  /**
+   *  Custom text combo styles
+   *
+   */
+
+  @import "../elements/elements-sprite";
+  @import "../common/mixins";
+
+
+   // Dropdown list
+  .custom_text_combo {
+
+    .select2-text {
+      @include display-flex();
+      @include align-items(center, center);
+      @include justify-content(space-between, justify);
+      height:30px;
+      padding:0 7px;
+      border-top:1px solid #B5B4B4;
+    }
+
+    .select2-input-free {
+      padding:0;
+      border:none;
+      font-size:13px;
+      font-family: Arial;
+      color:#397EB9;
+      outline:none;
+    }
+
+    .select2-icon {
+      width:13px;
+      height:12px;
+      @include elements-sprite(custom_text_combo_icons, $offset-x:-4px);
+
+      &.select2-text-icon { @include elements-sprite(custom_text_combo_icons, $offset-x:-4px, $offset-y:-23px) }
+    }
+
+  }

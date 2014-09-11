@@ -52,10 +52,10 @@ and code.
 
   - Ubuntu 12.04
   - Postgres 9.3.x (with plpythonu extension)
-  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension 0.2.1
+  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension
   - Redis 2.2+
   - Ruby 1.9.3
-  - NodeJS 0.8.x
+  - Node.js 0.10.x
   - CartoDB-SQL-API
   - GEOS 3.3.4
   - GDAL 1.10.x (Starting with CartoDB 2.2.0)

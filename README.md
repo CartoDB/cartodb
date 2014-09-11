@@ -258,17 +258,20 @@ exit
 ## Install cartodb-postgresql ##
 
 ```bash
-git clone --recursive https://github.com/CartoDB/pg_schema_triggers.git
+git clone https://github.com/CartoDB/pg_schema_triggers.git
 cd pg_schema_triggers
-sudo make install PGUSER=postgres
- sudo make installcheck PGUSER=postgres
+sudo make all install PGUSER=postgres
+sudo make installcheck PGUSER=postgres # to run tests
 cd ..
-git clone --recursive https://github.com/CartoDB/cartodb-postgresql.git
+git clone https://github.com/CartoDB/cartodb-postgresql.git
 cd cartodb-postgresql
 git checkout cdb
-sudo make install
-sudo PGUSER=postgres make installcheck 
+sudo make all install
+sudo PGUSER=postgres make installcheck # to run tests
 ```
+
+NOTE: if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
+You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf
 
 Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 

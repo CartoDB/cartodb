@@ -107,7 +107,7 @@ module CartoDB
         unp_path = stdout.chop
         puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}"
 
-        if path.end_with?('tar.gz')
+        if path.end_with?('.tar.gz') || path.end_with?('.tgz')
           # tar doesn't allows -o, which doesn't makes too much sense as each import comes in a different folder
           "#{unp_path} #{path} --"
         else

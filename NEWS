@@ -1,5 +1,6 @@
 3.11.06 (XX//09/2014)
 - Fixed problem in infowindow showing horizontal scrollbar when it was not needed 
+- Fixed creating search overlay
 
 3.11.05 (20//08/2014)
 - Added support for query_wrapper in torque layers

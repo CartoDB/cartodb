@@ -2,7 +2,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
-  before_filter :get_user, only: [:update, :destroy, :show, :dump]
+  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
 
   layout 'application'
 
@@ -70,6 +70,24 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       }
       render json: sa_response, status: 400   
     end
+  end
+
+  def data_imports
+    respond_with(@user.data_imports_dataset.map { |entry|
+      {
+        id: entry.id,
+        data_type: entry.data_type,
+        date: entry.updated_at
+        }
+    })
+  end
+
+  def data_import
+    data_import = DataImport[params[:data_import_id]]
+    respond_with({
+                   data: data_import,
+                   log: data_import.nil? ? nil : data_import.log.entries
+                 })
   end
 
   private

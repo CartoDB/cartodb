@@ -302,6 +302,8 @@ CartoDB::Application.routes.draw do
     resources :users do
       collection do
         get '/:id/dump' => 'users#dump'
+        get '/:id/data_imports' => 'users#data_imports'
+        get '/:id/data_imports/:data_import_id' => 'users#data_import'
       end
     end
     resources :organizations

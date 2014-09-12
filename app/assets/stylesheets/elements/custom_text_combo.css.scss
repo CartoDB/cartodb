@@ -8,6 +8,38 @@
   @import "../common/mixins";
 
 
+  // Choice
+  .form_custom_text_combo {
+
+    // Select2 choice with option selected icon
+
+    .select2-container .select2-choice .combo-option-icon,
+    .select2-container .select2-choice .free-text-icon {
+      width:22px;
+
+      b {
+        &:after { display:none }
+        &:before {
+          left:0;
+          top:3px;
+          width:1px;
+          height:12px;
+          background:#CFCFCF;
+          border:0;
+        }
+      }
+    }
+
+    .combo-option-icon b {
+      @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:2px);
+    }
+
+    .free-text-icon b {
+      @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:-19px);
+    }
+
+  }
+
    // Dropdown list
   .custom_text_combo {
 
@@ -36,5 +68,4 @@
 
       &.select2-text-icon { @include elements-sprite(custom_text_combo_icons, $offset-x:-4px, $offset-y:-23px) }
     }
-
   }

@@ -72,15 +72,18 @@
             </div>
 
             <div class="user embed-right-col">
-              <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
-                <div class="user-info">
+              <div class="user-info">
+                <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
                   <h4>by <%= @name %></h4>
-                  <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
-                </div>
+                </a>
+
+                <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
+              </div>
+
+              <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
                 <img src="<%= @avatar_url %>" class="avatar" />
               </a>
             </div>
-
           </div>
         </div>
 

@@ -388,6 +388,7 @@ header {
     position:relative;
     text-align:left;
     overflow:hidden;
+    cursor: pointer;
     @include border-radius(5px 5px 0 0);
     @include browsers_transform(translate3d(0,0,10px) translateZ(10px), none, none);
 
@@ -403,7 +404,7 @@ header {
       height: 100%;
       @include opacity(0);
       background:#fff;
-      z-index: 50;
+      z-index: 20;
     }
 
     .map {
@@ -429,28 +430,32 @@ header {
       left: 42px;
 
       right: 42px;
-
-      z-index: 40;
     }
 
-    .title h3 {
+    .title h2 a {
+      position: relative;
       margin: 0;
-
       color: #fff;
       font-family: 'ProximaNova-Semibold', $text-fonts2;
       font-weight: 400;
       font-size: 27px;
       @include text-overflow();
       width: 100%;
+      z-index: 40;
 
+      &:hover {
+        text-decoration: none;
+      }
     }
 
     .title p {
+      position: relative;
       margin: 5px 0 0 0;
       font-size:15px;
       color: #DDDDDD;
       @include text-overflow();
       width: 100%;
+      z-index: 40;
 
       a {
         color: #fff;

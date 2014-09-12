@@ -49,11 +49,11 @@
           <li>
             <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">
 
-              <a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]) %>" class="backdrop"></a>
+              <div class="backdrop"></div>
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
-                <h3><%= vis[:title] %></h3>
+                <h2><a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]) %>"><%= vis[:title] %></a></h2>
                 <p><%= raw (vis[:description] ? vis[:description] : "") %></p>
               </div>
               <div class="gradient"></div>

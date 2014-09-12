@@ -64,7 +64,7 @@
                     <% if vis[:tags].size > 0 %>
                         <ul class="tags">
                             <% vis[:tags].each do |tag| %>
-                                <li><h3><%= link_to tag, public_tag_url(user_domain: params[:user_domain], tag: tag) %></h3></li>
+                                <li><h3><%= link_to tag, public_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
                             <% end %>
                         </ul>
                     <% end %>

@@ -51,12 +51,12 @@ module CartoDB
         if ogr2ogr.exit_code != 0
           if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || \
               (ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/)
-            raise FileTooBigError.new(job.logger.fetch)
+            raise FileTooBigError.new(job.logger)
           end
           if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
             raise UnsupportedFormatError.new
           end
-          raise LoadError.new(job.logger.fetch)
+          raise LoadError.new(job.logger)
         end
         job.log 'Georeferencing...'
         georeferencer.run

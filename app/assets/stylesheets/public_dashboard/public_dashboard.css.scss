@@ -258,9 +258,7 @@ header {
       }
 
       &, a, h2 {
-        font-family: 'ProximaNova-Semibold', $text-fonts2;
-        font-weight: 400;
-        font-size:11px;
+        font: 400 11px/1 'ProximaNova-Semibold', $text-fonts2;
         letter-spacing: 0;
       }
 

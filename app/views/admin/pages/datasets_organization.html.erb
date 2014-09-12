@@ -49,7 +49,7 @@
 
                         <div class="title">
                             <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
-                            <a href="<%= public_table_url(user_domain: dataset[:owner], id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a>
+                            <h2><a href="<%= public_table_url(user_domain: dataset[:owner], id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
                             <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>
                         </div>
 
@@ -57,7 +57,7 @@
                             <% if dataset[:tags].size > 0 %>
                                 <ul class="tags">
                                     <% dataset[:tags].each do |tag| %>
-                                        <li><%= link_to tag, public_datasets_tag_url(user_domain: params[:user_domain], tag: tag) %></li>
+                                        <li><h3><%= link_to tag, public_datasets_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
                                     <% end %>
                                 </ul>
                             <% end %>

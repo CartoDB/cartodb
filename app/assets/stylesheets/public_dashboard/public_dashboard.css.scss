@@ -148,6 +148,12 @@ header {
 
     a { line-height:normal; }
 
+    h3 {
+      font-size: 15px;
+      font-weight: normal;
+    }
+
+
     .close { float:right; margin: 0 3px 0 0; }
 
     &:first-child { padding-top: 0; }
@@ -251,7 +257,7 @@ header {
         display:block;
       }
 
-      &, a {
+      &, a, h2 {
         font-family: 'ProximaNova-Semibold', $text-fonts2;
         font-weight: 400;
         font-size:11px;
@@ -347,13 +353,18 @@ header {
     font-weight: 200;
   }
 
-  .title > a {
-    float:left;
-    display:block;
+  .title > h2 {
+    letter-spacing: 0;
+    line-height: normal;
 
-    font-size: 25px;
-    font-family: 'ProximaNova-Semibold', $text-fonts2;
-    font-weight: 200;
+    a {
+      float:left;
+      display:block;
+
+      font-size: 25px;
+      font-family: 'ProximaNova-Semibold', $text-fonts2;
+      font-weight: 200;
+    }
   }
 
   .title p {
@@ -433,7 +444,7 @@ header {
       z-index: 40;
     }
 
-    .title h3 {
+    .title h2 {
       margin: 0;
 
       color: #fff;
@@ -443,6 +454,10 @@ header {
       @include text-overflow();
       width: 100%;
 
+    }
+
+    .title h3 {
+      font-weight: normal;
     }
 
     .title p {
@@ -474,6 +489,10 @@ header {
     @include clearfix();
     @include border-radius(0 0 5px 5px);
     @include box-sizing(border-box);
+
+    h3 {
+      font-weight: normal;
+    }
   }
 
   .mapviews {
@@ -519,6 +538,10 @@ header {
       margin: 0 0 10px 0;
     }
 
+    h3 {
+      font-weight: normal;
+      line-height: 18px;
+    }
   }
 }
 

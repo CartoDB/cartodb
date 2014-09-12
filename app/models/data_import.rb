@@ -1,4 +1,4 @@
-# encoding: UTF-8'
+# encoding: UTF-8
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
@@ -16,6 +16,7 @@ require_relative '../connectors/importer'
 
 require_relative '../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../services/datasources/lib/datasources'
+require_relative '../../services/importer/lib/importer/mail_notifier'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
@@ -438,6 +439,7 @@ class DataImport < Sequel::Model
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
+    CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
 
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
   end

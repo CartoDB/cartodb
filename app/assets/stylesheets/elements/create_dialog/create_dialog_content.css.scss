@@ -188,6 +188,7 @@
       position:relative;
       padding:40px;
       background:#F6F6F6;
+      @include border-bottom-radius(3px);
       z-index:2;
 
       // When fixed class is set, elements out

@@ -1,3 +1,6 @@
+3.11.07 (15//09/2014)
+- Fixed problem breaking words in infowindow content.
+
 3.11.06 (12//09/2014)
 - Fixed problem in infowindow showing horizontal scrollbar when it was not needed 
 - Fixed creating search overlay

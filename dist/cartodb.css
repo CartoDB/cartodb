@@ -351,7 +351,7 @@
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
-    word-break: break-all;
+    word-wrap: break-word;
   }
 
   div.cartodb-popup p {
@@ -362,7 +362,7 @@
     padding:0 0 7px;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
-    word-break: break-all;
+    word-wrap: break-word;
   }
 
   div.cartodb-popup p.italic {

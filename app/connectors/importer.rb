@@ -125,7 +125,7 @@ module CartoDB
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
-    end # Importer
-  end # Connector
-end # CartoDB
+    end
+  end
+end
 

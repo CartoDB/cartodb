@@ -48,14 +48,14 @@ module CartoDB
         result[:options] = result[:options].nil? ? [] : ::JSON.parse(result[:options])
         self.attributes = result
         self
-      end #fetch
+      end
 
       def delete
         repository.delete(id)
         invalidate_varnish_cache
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
         self
-      end #delete
+      end
 
       def hide
         set_option('display', false)

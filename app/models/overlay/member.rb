@@ -26,7 +26,7 @@ module CartoDB
           self.id = @repository.next_id
           @new = true
         end
-      end #initialize
+      end
 
       # @throws DuplicateOverlayError
       def store(options={})
@@ -48,14 +48,14 @@ module CartoDB
         result[:options] = result[:options].nil? ? [] : ::JSON.parse(result[:options])
         self.attributes = result
         self
-      end #fetch
+      end
 
       def delete
         repository.delete(id)
-        invalidate_varnish_cache
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
+        invalidate_varnish_cache
         self
-      end #delete
+      end
 
       def hide
         set_option('display', false)
@@ -94,9 +94,10 @@ module CartoDB
       def invalidate_varnish_cache
         begin
           v = visualization
-        rescue KeyError => e
+          v.invalidate_varnish_cache
+        rescue KeyError
+          # Silenced error
         end
-        v.invalidate_varnish_cache unless v.nil?
       end
 
       def visualization
@@ -104,9 +105,9 @@ module CartoDB
       end
 
       attr_reader :repository
-    end # Member
+    end
 
     class DuplicateOverlayError < StandardError; end
-  end # Overlay
-end # CartoDB
+  end
+end
 

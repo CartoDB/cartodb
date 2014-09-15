@@ -1423,8 +1423,10 @@ class Table < Sequel::Model(:user_tables)
         CartoDB::notify_exception(exception_to_raise, user: owner)
       end
 
-      layers.each do |layer|
-        layer.rename_table(@name_changed_from, name).save unless errored
+      unless errored
+        layers.each do |layer|
+          layer.rename_table(@name_changed_from, name).save
+        end
       end
     end
     @name_changed_from = nil

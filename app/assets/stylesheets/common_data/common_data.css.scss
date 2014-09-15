@@ -55,10 +55,10 @@
   // Empty block
   .empty {
     display:none;
-    margin-top:80px;
+    padding-top:80px;
 
     div.inner {
-      padding:100px 0 0;
+      padding:100px 0;
       background:white;
       border:1px solid #D1D1D1;
       @include border-radius(3px);
@@ -70,6 +70,7 @@
       margin:10px auto 0;
       width:500px;
       text-align: center;
+      letter-spacing:0;
     }
 
     p { line-height:18px }

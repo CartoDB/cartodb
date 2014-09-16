@@ -26,7 +26,7 @@ module CartoDB
           self.id = @repository.next_id
           @new = true
         end
-      end #initialize
+      end
 
       # @throws DuplicateOverlayError
       def store(options={})
@@ -51,9 +51,12 @@ module CartoDB
       end
 
       def delete
+        # Usually deletes don't need full object loaded, but we need vis_id...
+        fetch if self.attributes[:visualization_id].nil?
+        vis_id = self.attributes[:visualization_id]
         repository.delete(id)
-        invalidate_varnish_cache
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
+        invalidate_varnish_cache(vis_id)
         self
       end
 
@@ -91,22 +94,23 @@ module CartoDB
         true
       end
 
-      def invalidate_varnish_cache
+      def invalidate_varnish_cache(vis_id=nil)
         begin
-          v = visualization
-        rescue KeyError => e
+          v = visualization(vis_id)
+          v.invalidate_varnish_cache
+        rescue KeyError
+          # Silenced error
         end
-        v.invalidate_varnish_cache unless v.nil?
       end
 
-      def visualization
-         CartoDB::Visualization::Member.new({ :id => self.attributes[:visualization_id] }).fetch
+      def visualization(vis_id=nil)
+         CartoDB::Visualization::Member.new({ :id => vis_id.nil? ? self.attributes[:visualization_id] : vis_id }).fetch
       end
 
       attr_reader :repository
-    end # Member
+    end
 
     class DuplicateOverlayError < StandardError; end
-  end # Overlay
-end # CartoDB
+  end
+end
 

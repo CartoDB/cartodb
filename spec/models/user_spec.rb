@@ -815,7 +815,7 @@ describe User do
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")
-      .times(2) #only default overlays
+      .times(2 + 5)
       .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)
 

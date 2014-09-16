@@ -1845,6 +1845,14 @@ TRIGGER
     self.database_schema
   end
 
+  # return public user url -> string
+  def public_url
+    subdomain = organization.nil? ? username : organization.name
+    user_name = organization.nil? ? nil : username
+
+    CartoDB.base_url(subdomain, user_name)
+  end
+
   private
 
   def name_exists_in_organizations?

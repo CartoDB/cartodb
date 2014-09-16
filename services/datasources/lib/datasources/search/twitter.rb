@@ -338,10 +338,8 @@ module CartoDB
           streamed_size
         end
 
-        # As Ruby is pass-by-value, we can't pass user as by-ref param
         def search_by_category(api, base_filters, category, csv_dumper=nil)
           api.params = base_filters
-          api.query_param = category[CATEGORY_TERMS_KEY]
 
           next_results_cursor = nil
           total_results = 0
@@ -357,6 +355,7 @@ module CartoDB
             }
 
             unless out_of_quota
+              api.query_param = category[CATEGORY_TERMS_KEY]
               begin
                 results_page = api.fetch_results(next_results_cursor)
               rescue TwitterSearch::TwitterHTTPException => e
@@ -367,6 +366,7 @@ module CartoDB
                     next: nil
                 }
               end
+
               dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 

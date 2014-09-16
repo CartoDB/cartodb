@@ -4,6 +4,7 @@
    *
    */
 
+  @import "compass/css3/opacity";
   @import "../elements/elements-sprite";
   @import "../common/mixins";
 
@@ -13,11 +14,13 @@
 
     // Select2 choice with option selected icon
 
-    .select2-container .select2-choice .combo-option-icon,
-    .select2-container .select2-choice .free-text-icon {
+    .select2-container .select2-choice > div {
       width:22px;
 
       b {
+        @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:2px);
+        @include opacity(0.5);
+
         &:after { display:none }
         &:before {
           left:0;
@@ -30,12 +33,14 @@
       }
     }
 
-    .combo-option-icon b {
+    .select2-container .select2-choice .combo-option-icon b {
       @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:2px);
+      @include opacity(1);
     }
 
-    .free-text-icon b {
+    .select2-container .select2-choice .free-text-icon b {
       @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:-19px);
+      @include opacity(1);
     }
 
   }

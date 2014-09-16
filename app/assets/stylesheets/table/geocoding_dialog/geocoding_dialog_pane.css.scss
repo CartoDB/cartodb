@@ -16,6 +16,15 @@
   @import "../../common/form-elements";
 
 
+
+  // Head
+  .geocoding-dialog.create-dialog {
+    div.head {
+      padding-bottom:15px;
+    }    
+  }
+
+  // Content
   section.block div.content {
 
     $br: 3px; // Default border radius for any pane

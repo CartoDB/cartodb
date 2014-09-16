@@ -211,8 +211,8 @@ queries. This is the heart of CartoDB!
 ```bash
 cd /usr/local/src
 sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
-sudo tar xzf postgis-2.1.2.tar.gz
-cd postgis-2.1
+sudo tar -xvzf postgis-2.1.2.tar.gz
+cd postgis-2.1.2
 sudo ./configure --with-raster --with-topology
 sudo make
 sudo make install

@@ -26,11 +26,11 @@
     </div>
     <ul>
       <% if action_name == 'datasets' %>
-        <li><div class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></div></li>
-        <li><a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></li>
+        <li><h2 class="count" title="<%= @name %> dataset<%= @tables_num == 1 ? '' : 's' %>"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></h2></li>
+        <li><h2><a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></h2></li>
       <% else %>
-        <li><a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></a></li>
-        <li><div class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></div></li>
+        <li><h2 title="<%= @name %> dataset<%= @tables_num == 1 ? '' : 's' %>"><a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></a></h2></li>
+        <li><h2 class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></h2></li>
       <% end %>
     </ul>
 

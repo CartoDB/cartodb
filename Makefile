@@ -77,6 +77,11 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   $(NULL)
 
+WORKING_SPECS_9 = \
+	services/table-geocoder/spec/table_geocoder_spec.rb \
+	services/table-geocoder/spec/geocoder_cache_spec.rb \
+	services/table-geocoder/spec/internal_geocoder_spec.rb\
+	$(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
 

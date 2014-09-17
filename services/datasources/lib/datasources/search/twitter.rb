@@ -68,7 +68,7 @@ module CartoDB
           raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
           raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
 
-          @search_api = TwitterSearch::SearchAPI.new({
+          @search_api_config = {
             TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED              => config['auth_required'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME              => config['username'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD              => config['password'],
@@ -77,7 +77,8 @@ module CartoDB
             TwitterSearch::SearchAPI::CONFIG_REDIS_RL_MAX_CONCURRENCY   => config.fetch('ratelimit_concurrency', nil),
             TwitterSearch::SearchAPI::CONFIG_REDIS_RL_TTL               => config.fetch('ratelimit_ttl', nil),
             TwitterSearch::SearchAPI::CONFIG_REDIS_RL_WAIT_SECS         => config.fetch('ratelimit_wait_secs', nil)
-          }, redis_storage)
+          }
+          @redis_storage = redis_storage
 
           @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
 
@@ -125,7 +126,7 @@ module CartoDB
 
           fields_from(id)
 
-          do_search(@search_api, @filters, stream)
+          do_search(@search_api_config, @redis_storage, @filters, stream)
         end
 
         # Retrieves a resource and returns its contents
@@ -143,7 +144,7 @@ module CartoDB
 
           fields_from(id)
 
-          do_search(@search_api, @filters, stream = nil)
+          do_search(@search_api_config, @redis_storage, @filters, stream = nil)
         end
 
         # @param id string
@@ -187,7 +188,7 @@ module CartoDB
 
         # Hide sensitive fields
         def to_s
-          "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api=#{@search_api}>"
+          "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api_config=#{@search_api_config}>"
         end
 
         # If this datasource accepts a data import instance
@@ -287,11 +288,12 @@ module CartoDB
           end
         end
 
-        # @param api Cartodb::TwitterSearch::SearchAPI
+        # @param api_config Hash
+        # @param redis_storage Mixed
         # @param filters Hash
         # @param stream IO
         # @return Mixed The data
-        def do_search(api, filters, stream)
+        def do_search(api_config, redis_storage, filters, stream)
           threads = {}
           base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
 
@@ -311,7 +313,9 @@ module CartoDB
             sleep(0.1)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
               # Dumps inside upon each block response
-              search_by_category(api, base_filters, category, @csv_dumper)
+              # Create new API instance for each thread to avoid sharing same value-ref
+              search_by_category(
+                TwitterSearch::SearchAPI.new(api_config, redis_storage), base_filters, category, @csv_dumper)
             }
           }
           threads.each {|key, thread|
@@ -338,10 +342,8 @@ module CartoDB
           streamed_size
         end
 
-        # As Ruby is pass-by-value, we can't pass user as by-ref param
         def search_by_category(api, base_filters, category, csv_dumper=nil)
           api.params = base_filters
-          api.query_param = category[CATEGORY_TERMS_KEY]
 
           next_results_cursor = nil
           total_results = 0
@@ -357,6 +359,7 @@ module CartoDB
             }
 
             unless out_of_quota
+              api.query_param = category[CATEGORY_TERMS_KEY]
               begin
                 results_page = api.fetch_results(next_results_cursor)
               rescue TwitterSearch::TwitterHTTPException => e
@@ -367,6 +370,7 @@ module CartoDB
                     next: nil
                 }
               end
+
               dumped_items_count = csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 

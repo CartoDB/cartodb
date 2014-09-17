@@ -83,7 +83,7 @@ describe User do
   end
 
   it "should only allow legal usernames" do
-    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon)
+    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon jose.rilla -rilla rilla-)
     legal_usernames   = %w(simon javier-de-la-torre sergio-leiva sergio99)
 
     illegal_usernames.each do |name|
@@ -206,6 +206,19 @@ describe User do
       user.max_layers.should == 3
       user.private_tables_enabled.should be_false
       user.sync_tables_enabled.should be_false
+      organization.destroy
+    end
+
+    it 'should inherit twitter_datasource_enabled from organization on creation' do
+      organization = create_organization_with_users(twitter_datasource_enabled: true)
+      organization.save
+      organization.twitter_datasource_enabled.should be_true
+      organization.users.reject(&:organization_owner?).each do |u|
+        u.twitter_datasource_enabled.should be_true
+      end
+      user = create_user(organization: organization)
+      user.save
+      user.twitter_datasource_enabled.should be_true
       organization.destroy
     end
 
@@ -414,6 +427,19 @@ describe User do
       User.any_instance.stubs(:map_view_quota).returns(120)
       User.any_instance.stubs(:get_geocoding_calls).returns(81)
       User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.overquota.should be_empty
+      User.overquota(0.20).map(&:id).should include(@user.id)
+      User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
+      User.overquota(0.10).should be_empty
+    end
+
+    it "should return users near their twitter quota" do
+      User.any_instance.stubs(:get_api_calls).returns([0])
+      User.any_instance.stubs(:map_view_quota).returns(120)
+      User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.any_instance.stubs(:get_twitter_imports_count).returns(81)
+      User.any_instance.stubs(:twitter_datasource_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).map(&:id).should include(@user.id)
       User.overquota(0.20).size.should == User.reject{|u| u.organization_id.present? }.count
@@ -802,23 +828,24 @@ describe User do
 
   it "should correctly identify last billing cycle" do
     user = create_user :email => 'example@example.com', :username => 'example', :password => 'testingbilling'
-    Timecop.freeze(Date.parse("2013-01-01")) do
+    Delorean.time_travel_to(Date.parse("2013-01-01")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-15"))
       user.last_billing_cycle.should == Date.parse("2012-12-15")
     end
-    Timecop.freeze(Date.parse("2013-01-01")) do
+    Delorean.time_travel_to(Date.parse("2013-01-01")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2012-12-02")
     end
-    Timecop.freeze(Date.parse("2013-03-01")) do
+    Delorean.time_travel_to(Date.parse("2013-03-01")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-31"))
       user.last_billing_cycle.should == Date.parse("2013-02-28")
     end
-    Timecop.freeze(Date.parse("2013-03-15")) do
+    Delorean.time_travel_to(Date.parse("2013-03-15")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
     user.destroy
+    Delorean.back_to_the_present
   end
 
   it "should calculate the trial end date" do
@@ -1053,6 +1080,77 @@ describe User do
       org.reload
       org.users.count.should eq 0
     end
+  end
+
+  describe '#cartodb_postgresql_extension_versioning' do
+    it 'should report pre multi user for known <0.3.0 versions' do
+      before_mu_known_versions = %w(0.1.0 0.1.1 0.2.0 0.2.1)
+      before_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report post multi user for >=0.3.0 versions' do
+      after_mu_known_versions = %w(0.3.0 0.3.1 0.3.2 0.3.3 0.3.4 0.3.5 0.4.0 0.5.5 0.10.0)
+      after_mu_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report post multi user for versions with minor<3 but major>0' do
+      minor_version_edge_cases = %w(1.0.0 1.0.1 1.2.0 1.2.1 1.3.0 1.4.4)
+      minor_version_edge_cases.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      before_mu_old_known_versions = [
+        '0.1.0 0.1.0',
+        '0.1.1 0.1.1',
+        '0.2.0 0.2.0',
+        '0.2.1 0.2.1'
+      ]
+      before_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, true)
+      }
+    end
+
+    it 'should report correct version with old version strings' do
+      after_mu_old_known_versions = [
+        '0.3.0 0.3.0',
+        '0.3.1 0.3.1',
+        '0.3.2 0.3.2',
+        '0.3.3 0.3.3',
+        '0.3.4 0.3.4',
+        '0.3.5 0.3.5',
+        '0.4.0 0.4.0',
+        '0.5.5 0.5.5',
+        '0.10.0 0.10.0'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    it 'should report correct version with `git describe` not being a tag' do
+
+      stub_and_check_version_pre_mu('0.2.1 0.2.0-8-g7840e7c', true)
+
+      after_mu_old_known_versions = [
+          '0.3.6 0.3.5-8-g7840e7c',
+          '0.4.0 0.3.6-8-g7840e7c'
+      ]
+      after_mu_old_known_versions.each { |version|
+        stub_and_check_version_pre_mu(version, false)
+      }
+    end
+
+    def stub_and_check_version_pre_mu(version, is_pre_mu)
+      @user.stubs(:cartodb_extension_version).returns(version)
+      @user.cartodb_extension_version_pre_mu?.should eq is_pre_mu
+    end
+
   end
 
   it "should notify a new user created from a organization" do

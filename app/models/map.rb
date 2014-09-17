@@ -1,7 +1,5 @@
 # encoding: utf-8
-require_relative './map/copier'
 require_relative '../models/visualization/collection'
-
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -55,27 +53,27 @@ class Map < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-  end #before_save
+  end
 
   def after_save
     super
     update_map_on_associated_entities
     invalidate_vizjson_varnish_cache
-  end #after_save
+  end
 
   def before_destroy
     super
     invalidate_vizjson_varnish_cache
-  end #before_destroy
+  end
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map { |a| [a, send(a)] }]
-  end #public_values
+  end
 
   def validate
     super
     errors.add(:user_id, "can't be blank") if user_id.blank?
-  end #validate
+  end
 
   def recalculate_bounds!
     result = get_map_bounds
@@ -85,11 +83,11 @@ class Map < Sequel::Model
     )
   rescue Sequel::DatabaseError => exception
     notify_airbrake(exception)
-  end #recalculate_bounds!
+  end
 
   def viz_updated_at
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
-  end #viz_updated_at
+  end
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
@@ -97,15 +95,11 @@ class Map < Sequel::Model
     end
   end
 
-  def copy_for(user)
-    CartoDB::Map::Copier.new(self, user).copy
-  end #copy
-
   def admits_layer?(layer)
     return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
     return admits_more_base_layers? if layer.base_layer?
-  end #admits?
+  end
 
   def can_add_layer(user)
     current_vis = visualizations.first
@@ -114,7 +108,7 @@ class Map < Sequel::Model
 
   def visualizations
     CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
-  end #visualizations
+  end
 
   def process_privacy_in(layer)
     return self unless layer.uses_private_tables?
@@ -125,12 +119,12 @@ class Map < Sequel::Model
         visualization.store
       end
     end
-  end #process_privacy_in
+  end
 
   def set_tile_style_from(layer)
     return self unless is_table_visualization?
     table_visualization.table.send_tile_style_request(layer)
-  end #set_tile_style_from
+  end
 
   private
 
@@ -139,13 +133,13 @@ class Map < Sequel::Model
     from_table  = table.data_last_modified if table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
-  end #get_the_last_time_tiles_have_changes_to_render_it_in_vizjsons
+  end
 
   def update_map_on_associated_entities
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = Table.filter(
+    related_table = ::Table.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id
@@ -171,7 +165,7 @@ class Map < Sequel::Model
       minx: bound_for(result[:minx].to_f, :minlon, :maxlon),
       miny: bound_for(result[:miny].to_f, :minlat, :maxlat)
     }
-  end #get_map_bounds
+  end
 
   def current_map_bounds
     user.in_database.fetch(%Q{
@@ -184,39 +178,32 @@ class Map < Sequel::Model
     }).first
   rescue Sequel::DatabaseError
     {}
-  end #get_map_bounds
+  end
 
   def bound_for(value, minimum, maximum)
-    minimum = DEFAULT_BOUNDS.fetch(minimum)
-    maximum = DEFAULT_BOUNDS.fetch(maximum)
-
-    return minimum if value < minimum
-    return maximum if value > maximum
-    return value
-  end #bound_for
+    [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
+  end
 
   def is_table_visualization?
     !!table_visualization
-  end #is_table_visualization?
+  end
 
   def table_visualization
     CartoDB::Visualization::Collection.new
       .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::CANONICAL_TYPE)
       .first
-  end #table_visualization
+  end
 
   def admits_more_data_layers?
-    return false if data_layers.length >= 1 && is_table_visualization?
-    return true
-  end #admits_mode_data_layers?
+    data_layers.length >= 1 && is_table_visualization? ? false : true
+  end
 
   def admits_more_torque_layers?
-    return false if torque_layers.length >= 1 && is_table_visualization?
-    return true
-  end #admits_mode_data_layers?
+    torque_layers.length >= 1 && is_table_visualization? ? false : true
+  end
 
   def admits_more_base_layers?
     user_layers.length < 1
-  end #admits_mode_data_layers?
-end # Map
+  end
+end
 

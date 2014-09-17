@@ -46,8 +46,6 @@ describe Visualization::Member do
 
   describe 'to_poro fields' do
     it 'basic fields as of jul-2014' do
-      user_id = UUIDTools::UUID.timestamp_create.to_s
-
       perm_mock = mock
       perm_mock.stubs(:to_poro).returns({ wadus: 'wadus'})
 
@@ -65,6 +63,9 @@ describe Visualization::Member do
       vis_mock.stubs(:updated_at).returns(Time.now)
       vis_mock.stubs(:permission).returns(perm_mock)
       vis_mock.stubs(:locked).returns(true)
+      vis_mock.stubs(:source).returns('')
+      vis_mock.stubs(:license).returns('')
+      vis_mock.stubs(:title).returns('')
 
       vis_mock.stubs(:table).returns(nil)
       vis_mock.stubs(:related_tables).returns([])

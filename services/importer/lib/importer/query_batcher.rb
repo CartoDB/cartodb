@@ -1,6 +1,8 @@
 
 module CartoDB
   module Importer2
+
+    # WARNING: Doesn't works with CTEs, only pure UPDATEs
     class QueryBatcher
       DEFAULT_BATCH_SIZE = 20000
       # If present, will concat there the additional where condition required for batching

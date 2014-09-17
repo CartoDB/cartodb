@@ -3,6 +3,7 @@ require 'eventmachine'
 require 'pg/em'
 require 'yaml'
 require 'resque'
+require_relative '../../../../app/models/log'
 require_relative '../../../../app/models/synchronization/member'
 require_relative '../../../../lib/resque/synchronization_jobs'
 

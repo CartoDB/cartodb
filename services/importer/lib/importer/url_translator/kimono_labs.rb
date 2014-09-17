@@ -25,8 +25,8 @@ module CartoDB
           'kl_' + url.hash.abs.to_s + '.csv'
         end
 
-      end # FusionTables
-    end # UrlTranslator
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

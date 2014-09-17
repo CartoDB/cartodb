@@ -228,7 +228,10 @@ describe Visualization::Collection do
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
       user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
-      locked:       attributes.fetch(:locked, false)
+      locked:       attributes.fetch(:locked, false),
+      title:        attributes.fetch(:title, ''),
+      source:       attributes.fetch(:source, ''),
+      license:      attributes.fetch(:license, '')
     }
   end #random_attributes
 end # Visualization::Collection

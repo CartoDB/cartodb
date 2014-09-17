@@ -63,7 +63,6 @@ module CartoDB
 
       def cartodbfy(table_name)
         table = ::Table.where(name: table_name, user_id: user.id).first
-        #table.migrate_existing_table = table_name
         table.force_schema = true
         table.send :update_updated_at
         table.import_to_cartodb(table_name)

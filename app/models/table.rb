@@ -66,7 +66,7 @@ class Table < Sequel::Model(:user_tables)
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
+  def_delegators :relator, *CartoDB::TableRelator::INTERFACE
 
   def public_values(options = {}, viewer_user=nil)
     selected_attrs = if options[:except].present?
@@ -122,9 +122,17 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags, :description)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
-                :import_from_table_copy, :importing_encoding,
-                :temporal_the_geom_type, :migrate_existing_table, :new_table, :keep_user_database_table
+  attr_accessor :force_schema,
+                :import_from_file,
+                :import_from_url,
+                :import_from_query,
+                :import_from_table_copy,
+                :importing_encoding,
+                :temporal_the_geom_type,
+                :migrate_existing_table,
+                :new_table,
+                # Handy for rakes and custom ghost table registers, won't delete user table in case of error
+                :keep_user_database_table
 
   # Getter by table uuid or table name using canonical visualizations
   # @param table_id String
@@ -370,7 +378,7 @@ class Table < Sequel::Model(:user_tables)
   def import_to_cartodb(uniname=nil)
     @data_import ||= DataImport.where(id: data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
-      @data_import.data_type = 'external_table'
+      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
       @data_import.data_source = migrate_existing_table || uniname
       @data_import.save
 
@@ -395,7 +403,6 @@ class Table < Sequel::Model(:user_tables)
       importer = CartoDB::Migrator.new hash_in
       importer = importer.migrate!
       @data_import.reload
-      #@data_import.migrated
       @data_import.save
       importer.name
     end
@@ -534,7 +541,6 @@ class Table < Sequel::Model(:user_tables)
 
     update_table_pg_stats
 
-    # Cartodbfy !
     self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
@@ -550,7 +556,7 @@ class Table < Sequel::Model(:user_tables)
     update_name_changes
 
     self.map.save
-    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager = CartoDB::TablePrivacyManager.new(self)
     manager.set_from_table_privacy(privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
@@ -580,22 +586,22 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Logger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
-      @data_import.log << ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
+      @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
       $tables_metadata.del key
 
-      self.remove_table_from_user_database
+      self.remove_table_from_user_database unless keep_user_database_table
     end
-    @data_import.log << ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
+    @data_import.log.append ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
     raise e
   end
 
   def create_default_map_and_layers
-    m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
-    base_layer = Layer.new(Cartodb.config[:layer_opts]['base'])
+    base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
-    data_layer = Layer.new(Cartodb.config[:layer_opts]['data'])
+    data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
     data_layer.options['table_name'] = self.name
     data_layer.options['user_name'] = self.owner.username
     data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
@@ -1063,7 +1069,7 @@ class Table < Sequel::Model(:user_tables)
       column_name:    column_name,
       new_type:       new_type
     ).run
-  end #convert_column_datatype
+  end
 
   def records(options = {})
     rows = []
@@ -1373,7 +1379,7 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_text_for_vizjson
 
   def relator
-    @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
   end #relator
 
   def set_table_id
@@ -1571,7 +1577,7 @@ class Table < Sequel::Model(:user_tables)
     #if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == 'multipoint'
       owner.in_database(:as => :superuser) do |user_database|
-        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'POINT', 2);")
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
         user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
@@ -1582,11 +1588,7 @@ class Table < Sequel::Model(:user_tables)
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
     if %w(linestring polygon).include?(type.to_s.downcase)
       owner.in_database(:as => :superuser) do |user_database|
-        if type.to_s.downcase == 'polygon'
-          user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
-        else
-          user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
-        end
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
         user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
@@ -1723,7 +1725,7 @@ class Table < Sequel::Model(:user_tables)
       else
         http_res = nil
     end
-    raise "#{http_res.inspect}" unless http_res.is_a?(Net::HTTPOK)
+    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
     http_res
   end
 

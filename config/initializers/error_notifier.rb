@@ -22,4 +22,8 @@ module CartoDB
     # If Rollbar fails, bubble up the exception
     raise e
   end
+
+  def self.notify_error(message, additional_data={})
+    Rollbar.report_message(message, 'error', additional_data)
+  end
 end

@@ -25,6 +25,7 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: :created_at.desc
+  one_to_many :search_tweets, order: :created_at.desc
   many_to_one :organization
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
@@ -36,7 +37,6 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
-
 
   # Restrict to_json attributes
   @json_serializer_opts = {
@@ -61,7 +61,9 @@ class User < Sequel::Model
     super
     validates_presence :username
     validates_unique   :username
-    validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
+    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
+    validates_format /^[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
+    validates_format /[a-z0-9]{1}$/, :username, :message => "must end with alfanumeric chars"
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -94,11 +96,13 @@ class User < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-
     # Set account_type and default values for organization users
     # TODO: Abstract this
     self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
     if self.organization_user?
+      if new? || column_changed?(:organization_id)
+        self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
+      end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
       self.sync_tables_enabled ||= true
@@ -288,9 +292,14 @@ class User < Sequel::Model
     User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
-        over_map_views || over_geocodings
+
+        limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
+        over_twitter_imports = u.get_twitter_imports_count > limit
+
+        over_map_views || over_geocodings || over_twitter_imports
     end
   end
 
@@ -598,6 +607,19 @@ class User < Sequel::Model
     self[:soft_geocoding_limit] = !val
   end
 
+  def soft_twitter_datasource_limit?
+    self.soft_twitter_datasource_limit  == true
+  end
+
+  def hard_twitter_datasource_limit?
+    !self.soft_twitter_datasource_limit?
+  end
+  alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
+
+  def hard_twitter_datasource_limit=(val)
+    self[:soft_twitter_datasource_limit] = !val
+  end
+
   def private_maps_enabled
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
@@ -647,6 +669,16 @@ class User < Sequel::Model
     self.auth_token
   end
 
+  # Should return the number of tweets imported by this user for the specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    self.search_tweets_dataset
+        .where(state: ::SearchTweet::STATE_COMPLETE)
+        .where('created_at >= ? AND created_at <= ?', date_from, date_to + 1.days)
+        .sum("retrieved_items".lit).to_i
+  end
+
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
@@ -692,11 +724,36 @@ class User < Sequel::Model
     return es_calls
   end
 
+  def effective_twitter_block_price
+    organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
+  end
+
+  def effective_twitter_datasource_block_size
+    organization.present? ? organization.twitter_datasource_block_size : self.twitter_datasource_block_size
+  end
+
+  def effective_twitter_total_quota
+    organization.present? ? organization.twitter_datasource_quota : self.twitter_datasource_quota
+  end
+
+  def effective_get_twitter_imports_count
+    organization.present? ? organization.get_twitter_imports_count : self.get_twitter_imports_count
+  end
+
   def remaining_geocoding_quota
     if organization.present?
       remaining = organization.geocoding_quota - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_twitter_quota
+    if organization.present?
+      remaining = organization.twitter_datasource_quota - organization.get_twitter_imports_count
+    else
+      remaining = self.twitter_datasource_quota - get_twitter_imports_count
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -858,6 +915,7 @@ class User < Sequel::Model
     outdated_tables.each do |t|
       table = self.tables.where(name: t[:relname]).first
       begin
+        table.keep_user_database_table = true
         table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
@@ -876,11 +934,12 @@ class User < Sequel::Model
   def link_created_tables
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
-      table = Table.new
+      table = ::Table.new
       table.user_id  = self.id
       table.name     = t[:relname]
       table.table_id = t[:oid]
       table.migrate_existing_table = t[:relname]
+      table.keep_user_database_table = true
       begin
         table.save
       rescue Sequel::DatabaseError => e
@@ -893,8 +952,9 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.find(:table_id => t[:oid])
+      table = ::Table.find(:table_id => t[:oid])
       begin
+        table.keep_user_database_table = true
         table.synchronize_name(t[:relname])
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
@@ -912,8 +972,7 @@ class User < Sequel::Model
       table.destroy
     end if dropped_tables.present?
 
-    # Remove tables with null oids unless the table name
-    # exists on the db
+    # Remove tables with null oids unless the table name exists on the db
     self.tables.filter(table_id: nil).all.each do |t|
       t.keep_user_database_table = true
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
@@ -960,7 +1019,7 @@ class User < Sequel::Model
         user_id: self.id
     }
     filter[:privacy] = privacy_filter unless privacy_filter.nil?
-    Table.filter(filter).count
+    ::Table.filter(filter).count
   end #table_count
 
   def failed_import_count
@@ -1368,7 +1427,17 @@ class User < Sequel::Model
   # Being unable to communicate with Varnish may or may not be critical
   # depending on CartoDB configuration at time of function definition.
   #
+
   def create_function_invalidate_varnish
+    if Cartodb.config[:varnish_management].fetch('http_port', false)
+      create_function_invalidate_varnish_http
+    else
+      create_function_invalidate_varnish_telnet
+    end
+  end
+
+  # Telnet invalidation works only for Varnish 2.x.
+  def create_function_invalidate_varnish_telnet
 
     add_python
 
@@ -1407,10 +1476,6 @@ class User < Sequel::Model
             # NOTE: every table change also changed CDB_TableMetadata, so
             #       we purge those entries too
             #
-            # TODO: check if any server is ever setting "table" as the
-            #       surrogate key, as that looks redundant to me
-            #       --strk-20131203;
-            #
             # TODO: do not invalidate responses with surrogate key
             #       "not_this_one" when table "this" changes :/
             #       --strk-20131203;
@@ -1433,25 +1498,82 @@ TRIGGER
     )
   end
 
+  def create_function_invalidate_varnish_http
+
+    add_python
+
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'http_port') || 6081
+    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
+    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
+    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
+    $$
+        critical = #{varnish_critical}
+        timeout = #{varnish_timeout}
+        retry = #{varnish_retry}
+
+        import httplib
+
+        while True:
+
+          try:
+            # NOTE: every table change also changed CDB_TableMetadata, so
+            #       we purge those entries too
+            #
+            # TODO: do not invalidate responses with surrogate key
+            #       "not_this_one" when table "this" changes :/
+            #       --strk-20131203;
+            #
+            client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+            client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{self.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+            response = client.getresponse()
+            assert response.status == 204
+            break
+          except Exception as err:
+            plpy.warning('Varnish purge error: ' + str(err))
+            if not retry:
+              if critical:
+                plpy.error('Varnish purge error: ' +  str(err))
+              break
+            retry -= 1 # try reconnecting
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    COMMIT;
+TRIGGER
+    )
+  end
+
+  # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
+  def cartodb_extension_semver(extension_version)
+    extension_version.split('.').take(3).map(&:to_i)
+  end
+
   def cartodb_extension_version
-    version, revision = self.in_database(:as => :superuser).fetch("select cartodb.cdb_version() as v").first[:v].split(" ")
-    return [version, revision]
+    self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
   end
 
   def cartodb_extension_version_pre_mu?
-    current_version_match = /(\d\.\d\.\d).*/.match(self.cartodb_extension_version.first)
-    if current_version_match.nil?
-      raise "Current cartodb extension version does not match standard x.y.z format"
+    current_version = self.cartodb_extension_semver(self.cartodb_extension_version)
+    if current_version.size == 3
+      major, minor, _ = current_version
+      major == 0 and minor < 3
     else
-      current_version_match[1] < '0.3.0'
+      raise 'Current cartodb extension version does not match standard x.y.z format'
     end
   end
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    tgt_ver = '0.3.6' # TODO: optionally take as parameter?
-    tgt_rev = '0.3.6'  # from 'git describe'
+    cdb_extension_target_version = '0.4.0' # TODO: optionally take as parameter?
 
     add_python
 
@@ -1486,15 +1608,15 @@ TRIGGER
       EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
         RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
         BEGIN
-          CREATE EXTENSION cartodb VERSION '#{tgt_ver}' FROM unpackaged;
+          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
         EXCEPTION WHEN undefined_table THEN
           RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-          CREATE EXTENSION cartodb VERSION '#{tgt_ver}';
+          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
           RETURN;
         END;
         RETURN;
       END;
-      ver := '#{tgt_ver}';
+      ver := '#{cdb_extension_target_version}';
       IF position('dev' in ver) > 0 THEN
         EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
         EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
@@ -1509,10 +1631,12 @@ TRIGGER
           db.run("SET statement_timeout TO '#{old_timeout}';")
         end
 
-        expected = "#{tgt_ver} #{tgt_rev}"
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
 
-        raise("Expected cartodb extension '#{expected}' obtained '#{obtained}'") unless expected == obtained
+
+        unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
+          raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
+        end
 
 #       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end

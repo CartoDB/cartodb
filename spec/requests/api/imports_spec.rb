@@ -24,7 +24,7 @@ describe "Imports API" do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
     post api_v1_imports_create_url(
       params.merge(:filename  => 'column_number_to_boolean.csv',
-                   :table_name => "wadus")), 
+                   :table_name => "wadus")),
       f.read.force_encoding('UTF-8')
 
 
@@ -76,7 +76,7 @@ describe "Imports API" do
                                         :table_name => "wadus")
     end
 
-    Timecop.travel Time.now + 7.hours
+    Delorean.jump(7.hours)
     get api_v1_imports_index_url, params
 
     response.code.should be == '200'
@@ -86,6 +86,7 @@ describe "Imports API" do
     imports = response_json['imports']
     imports.should have(0).items
     Resque.inline = true
+    Delorean.back_to_the_present
   end
 
   it 'gets the detail of an import' do
@@ -247,7 +248,7 @@ describe "Imports API" do
       table.should have_no_invalid_the_geom
       table.geometry_types.should_not be_blank
     end
-    
+
     DataImport.count.should == import_files.size
     Map.count.should == import_files.size
   end

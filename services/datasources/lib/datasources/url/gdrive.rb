@@ -57,7 +57,7 @@ module CartoDB
           @client.authorization.scope = OAUTH_SCOPE
           # By default assume callback with token flow
           @client.authorization.redirect_uri = @callback_url
-        end #initialize
+        end
 
         # Factory method
         # @param config {}
@@ -65,7 +65,7 @@ module CartoDB
         # @return CartoDB::Synchronizer::FileProviders::GDrive
         def self.get_new(config, user)
           new(config, user)
-        end #get_new
+        end
 
         # If will provide a url to download the resource, or requires calling get_resource()
         # @return bool
@@ -83,7 +83,7 @@ module CartoDB
             @client.authorization.redirect_uri = REDIRECT_URI
           end
           @client.authorization.authorization_uri.to_s
-        end #get_auth_url
+        end
 
         # Validate authorization code and store token
         # @param auth_code : string
@@ -99,7 +99,7 @@ module CartoDB
           @refresh_token = @client.authorization.refresh_token
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError => ex
           raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
-        end #validate_auth_code
+        end
 
         # Validates the authorization callback
         # @param params : mixed
@@ -113,7 +113,7 @@ module CartoDB
           else
             raise AuthError.new('validate_callback: Missing authorization code', DATASOURCE_NAME)
           end
-        end #validate_callback
+        end
 
         # Store token
         # Triggers generation of a valid access token for the lifetime of this instance
@@ -126,14 +126,13 @@ module CartoDB
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError, Google::APIClient::ClientError, \
                Google::APIClient::ServerError, Google::APIClient::BatchError, Google::APIClient::TransmissionError => ex
           raise AuthError.new("setting token: #{ex.message}", DATASOURCE_NAME)
-          #
-        end #token=
+        end
 
         # Retrieve token
         # @return string | nil
         def token
           @refresh_token
-        end #token
+        end
 
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
@@ -172,7 +171,7 @@ module CartoDB
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
                Google::APIClient::ServerError => ex
           raise DataDownloadError.new("getting resources: #{ex.message}", DATASOURCE_NAME)
-        end #get_resources_list
+        end
 
         # Retrieves a resource and returns its contents
         # @param id string
@@ -186,14 +185,23 @@ module CartoDB
           item_data = format_item_data(result.data.to_hash)
 
           result = @client.execute(uri: item_data.fetch(:url))
-          raise DataDownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+
+          if result.status != 200
+            if result.data['error'].nil? || result.data['error']['message'].nil?
+              error_message = 'Unknown error'
+            else
+              error_message = result.data['error']['message']
+            end
+            raise DataDownloadError.new("(#{result.status}) Downloading file #{id}: #{error_message}", DATASOURCE_NAME)
+          end
+
           result.body
         rescue Google::APIClient::InvalidIDTokenError => ex
           raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
                Google::APIClient::ServerError => ex
           raise DataDownloadError.new("downloading file #{id}: #{ex.message}", DATASOURCE_NAME)
-        end #get_resource
+        end
 
         # @param id string
         # @return Hash
@@ -209,13 +217,13 @@ module CartoDB
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
                Google::APIClient::ServerError
           raise DataDownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
-        end #get_resource_metadata
+        end
 
         # Retrieves current filters
         # @return {}
         def filter
           @formats
-        end #filter
+        end
 
         # Sets current filters
         # @param filter_data {}
@@ -228,12 +236,24 @@ module CartoDB
               end
             end
           end
-        end #filter=
+        end
 
         # Just return datasource name
         # @return string
         def to_s
           DATASOURCE_NAME
+        end
+
+        # If this datasource accepts a data import instance
+        # @return Boolean
+        def persists_state_via_data_import?
+          false
+        end
+
+        # Stores the data import item instance to use/manipulate it
+        # @param value DataImport
+        def data_import_item=(value)
+          nil
         end
 
         # Checks if token is still valid or has been revoked
@@ -248,7 +268,7 @@ module CartoDB
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
                Google::APIClient::ServerError => ex
           raise AuthError.new("token_valid?() #{id}: #{ex.message}", DATASOURCE_NAME)
-        end #token_valid?
+        end
 
         # Revokes current set token
         def revoke_token
@@ -258,7 +278,13 @@ module CartoDB
           true
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
-        end #revoke_token
+        end
+
+        # Sets an error reporting component
+        # @param component mixed
+        def report_component=(component)
+          nil
+        end
 
         private
 
@@ -287,7 +313,7 @@ module CartoDB
             data[:size] = item_data.fetch('fileSize').to_i
           end
           data
-        end #format_item_data
+        end
 
         # Calculates a checksum of given input
         # @param origin string
@@ -295,7 +321,7 @@ module CartoDB
         def checksum_of(origin)
           #noinspection RubyArgCount
           Zlib::crc32(origin).to_s
-        end #checksum_of
+        end
 
         def clean_filename(name)
           clean_name = ''
@@ -305,9 +331,9 @@ module CartoDB
           clean_name = name if clean_name.size == 0
 
           clean_name
-        end #clean_filename
+        end
 
-      end #GDrive
-    end #FileProviders
-  end #Syncronizer
-end #CartoDB
+      end
+    end
+  end
+end

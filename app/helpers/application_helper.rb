@@ -57,25 +57,31 @@ module ApplicationHelper
 
   def frontend_config
     config = {
-      tiler_protocol:      Cartodb.config[:tiler]["private"]["protocol"],
-      tiler_port:          Cartodb.config[:tiler]["private"]["port"],
-      tiler_domain:        Cartodb.config[:tiler]["private"]["domain"],
-      sql_api_protocol:    Cartodb.config[:sql_api]["private"]["protocol"],
-      sql_api_domain:      Cartodb.config[:sql_api]["private"]["domain"],
-      sql_api_endpoint:    Cartodb.config[:sql_api]["private"]["endpoint"],
-      sql_api_port:        Cartodb.config[:sql_api]["private"]["port"],
-      user_name:           CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
-      account_host:        Cartodb.config[:account_host],
-      dropbox_api_key:     Cartodb.config[:dropbox_api_key],
-      gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
-      gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
-      oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
-      oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
-      tumblr_api_key:      Cartodb.config[:tumblr]['api_key'],
-      max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
-      watcher_ttl:         Cartodb.config[:watcher].try("fetch", 'ttl', 60),
+      tiler_protocol:             Cartodb.config[:tiler]["private"]["protocol"],
+      tiler_port:                 Cartodb.config[:tiler]["private"]["port"],
+      tiler_domain:               Cartodb.config[:tiler]["private"]["domain"],
+      sql_api_protocol:           Cartodb.config[:sql_api]["private"]["protocol"],
+      sql_api_domain:             Cartodb.config[:sql_api]["private"]["domain"],
+      sql_api_endpoint:           Cartodb.config[:sql_api]["private"]["endpoint"],
+      sql_api_port:               Cartodb.config[:sql_api]["private"]["port"],
+      user_name:                  CartoDB.extract_subdomain(request),
+      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
+      account_host:               Cartodb.config[:account_host],
+      dropbox_api_key:            Cartodb.config[:dropbox_api_key],
+      gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
+      gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
+      oauth_dropbox:              Cartodb.config[:oauth]['dropbox']['app_key'],
+      oauth_gdrive:               Cartodb.config[:oauth]['gdrive']['client_id'],
+      datasource_search_twitter:  nil,
+      tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
+      max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
+      watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
     }
+
+    if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
+      && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
+      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
+    end
 
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']

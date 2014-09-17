@@ -16,6 +16,7 @@ WORKING_SPECS_2 = \
   spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
+  spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
   $(NULL)
 
@@ -68,7 +69,12 @@ WORKING_SPECS_8 = \
   spec/requests/superadmin/organizations_spec.rb \
   # Warning, run only 'uses locked filter' as the others fail
   spec/requests/api/visualizations_spec.rb:630 \
-  spec/requests/superadmin/users_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_9 = \
+  services/twitter-search/spec/unit/ \
+  services/datasources/spec/acceptance/datasources_factory_spec.rb \
+  services/datasources/spec/integration/ \
   $(NULL)
 
 WORKING_SPECS_9 = \

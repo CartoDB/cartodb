@@ -8,6 +8,8 @@
   @import "compass/css3/border-radius";
   @import "compass/css3/images";
   @import "compass/css3/inline-block";
+  @import "compass/css3/opacity";
+  @import "compass/css3/transform";
   @import "../common/mixins";
   @import "../common/vars";
 
@@ -53,10 +55,10 @@
   // Empty block
   .empty {
     display:none;
-    margin-top:80px;
+    padding-top:80px;
 
     div.inner {
-      padding:100px 0 0;
+      padding:100px 0;
       background:white;
       border:1px solid #D1D1D1;
       @include border-radius(3px);
@@ -68,6 +70,7 @@
       margin:10px auto 0;
       width:500px;
       text-align: center;
+      letter-spacing:0;
     }
 
     p { line-height:18px }
@@ -179,7 +182,29 @@
       li:last-child .table-item-inner { border-bottom:1px solid rgba(204,204,204,0.5); }
     }
 
+    .table-item-inner {
+      padding:21px 20px;
+      border-right:1px solid transparent;
+      border-left:1px solid transparent;
+
+      &:hover {
+        background:white;
+        border-right:1px solid rgba(204,204,204,0.5);
+        border-left:1px solid rgba(204,204,204,0.5);
+        @include border-radius(3px);
+
+        h4 a { color:black }
+      }
+    }
+
     // Tables attributes
+    .table-title {
+      a {
+        @include transform-style("linear");
+        @include transition-property("color");
+        @include transition-duration(250ms);
+      }
+    }
     .table-desc h3 { font-size:17px }
     .table-desc p {
       margin-top:8px;
@@ -217,9 +242,42 @@
       }
     }
 
+    // When user can't import that file,
+    // let's apply disabled state
+    .table-item-inner.disabled {
+      
+      .table-size > span { color:rgba(red, 0.6) }
+      
+      h4 a {
+        color:#999;
+        @include opacity(0.75);
+        
+        &:hover {
+          cursor:not-allowed;
+          color:#999;
+          text-decoration:none;
+        }
+      }
+
+      .table-description,
+      .table-source p a,
+      .table-rows > span,
+      .table-license {
+        color:#999;
+        @include opacity(0.50);
+      }
+
+      &:hover {
+        h4 a { color:#999 }
+        background:none;
+        border-right:1px solid transparent;
+        border-left:1px solid transparent;
+      }
+    }
+
     // View all
     .tables-view-all {
-      padding:15px 0;
+      padding:15px 20px;
       border-top: 0;
       border-bottom:1px solid #E2E2E2;
 

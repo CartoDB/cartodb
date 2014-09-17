@@ -5,12 +5,12 @@
     <% @tags.each_with_index do |tag, i| %>
       <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
         <% if params[:tag] && params[:tag] == tag %>
-          <h3><%= tag.capitalize.truncate(40) %></h3>
-
           <% if action_name == 'datasets' %>
           <%= link_to "x", "/datasets", { :class => "close" } %>
           <% else %>
           <%= link_to "x", "/", { :class => "close" } %>
+
+          <h3><%= tag.capitalize.truncate(40) %></h3>
         <% end %>
 
         <% else %>

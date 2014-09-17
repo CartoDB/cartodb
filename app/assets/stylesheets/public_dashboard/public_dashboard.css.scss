@@ -139,9 +139,7 @@ header {
   margin: 0 0 40px 0;
 
   li  {
-
     padding: 17px 0;
-
     border-bottom: 1px solid #ddd;
     border-bottom: 1px solid rgba(#BBBBBB, .2);
     color: #BABABA;
@@ -149,12 +147,16 @@ header {
     a { line-height:normal; }
 
     h3 {
+      color: #BABABA;
       font-size: 15px;
       font-weight: normal;
     }
 
 
-    .close { float:right; margin: 0 3px 0 0; }
+    .close {
+      float: right;
+      margin: -2px 3px 0 0;
+    }
 
     &:first-child { padding-top: 0; }
     &:last-child  { border:none; }

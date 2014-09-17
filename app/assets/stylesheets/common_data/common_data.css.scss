@@ -184,9 +184,15 @@
 
     .table-item-inner {
       padding:21px 20px;
+      border-right:1px solid transparent;
+      border-left:1px solid transparent;
 
       &:hover {
         background:white;
+        border-right:1px solid rgba(204,204,204,0.5);
+        border-left:1px solid rgba(204,204,204,0.5);
+        @include border-radius(3px);
+
         h4 a { color:black }
       }
     }
@@ -264,6 +270,8 @@
       &:hover {
         h4 a { color:#999 }
         background:none;
+        border-right:1px solid transparent;
+        border-left:1px solid transparent;
       }
     }
 

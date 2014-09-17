@@ -686,6 +686,99 @@ if (typeof module !== "undefined") {
 
 })(typeof exports === "undefined" ? this : exports);
 
+
+(function(exports) {
+
+var Point = function(x, y) {
+  this.x = x || 0;
+  this.y = y || 0;
+};
+
+function clamp(value, optMin, optMax) {
+  if (optMin !== null) value = Math.max(value, optMin);
+  if (optMax !== null) value = Math.min(value, optMax);
+  return value;
+}
+
+function degreesToRadians(deg) {
+  return deg * (Math.PI / 180);
+}
+
+function radiansToDegrees(rad) {
+  return rad / (Math.PI / 180);
+}
+
+
+var MercatorProjection = exports.torque.Mercator = function() {
+//  this._tileSize = L.Browser.retina ? 512 : 256;
+  this._tileSize = 256;
+  this._pixelOrigin = new Point(this._tileSize / 2, this._tileSize / 2);
+  this._pixelsPerLonDegree = this._tileSize / 360;
+  this._pixelsPerLonRadian = this._tileSize / (2 * Math.PI);
+};
+
+MercatorProjection.prototype._fromLatLonToPoint = function(lat, lon) {
+  var point = new Point(0, 0);
+  var origin = this._pixelOrigin;
+
+  point.x = origin.x + lon * this._pixelsPerLonDegree;
+
+  // NOTE(appleton): Truncating to 0.9999 effectively limits latitude to
+  // 89.189.  This is about a third of a tile past the edge of the world
+  // tile.
+  var siny = clamp(Math.sin(degreesToRadians(lat)), -0.9999, 0.9999);
+  point.y = origin.y + 0.5 * Math.log((1 + siny) / (1 - siny)) * -this._pixelsPerLonRadian;
+  return point;
+};
+
+MercatorProjection.prototype._fromPointToLatLon = function(point) {
+  var me = this;
+  var origin = me._pixelOrigin;
+  var lon = (point.x - origin.x) / me._pixelsPerLonDegree;
+  var latRadians = (point.y - origin.y) / -me._pixelsPerLonRadian;
+  var lat = radiansToDegrees(2 * Math.atan(Math.exp(latRadians)) - Math.PI / 2);
+  return { lat:lat, lon:lon };
+};
+
+MercatorProjection.prototype._tilePixelPos = function(tileX, tileY) {
+  return {
+    x: tileX*this._tileSize,
+    y: tileY*this._tileSize
+  };
+};
+
+MercatorProjection.prototype.tilePixelBBox = function(x, y, zoom, px, py) {
+  var numTiles = 1 <<zoom;
+  var inc = 1.0/numTiles;
+  px = (x*this._tileSize + px)/numTiles;
+  py = (y*this._tileSize + py)/numTiles;
+  return [
+    this._fromPointToLatLon(new Point(px, py + inc)),
+    this._fromPointToLatLon(new Point(px + inc, py))
+  ];
+};
+
+MercatorProjection.prototype.tileBBox = function(x, y, zoom, bufferSize) {
+  var numTiles = 1 <<zoom;
+  bufferSize = bufferSize || 0;
+  var inc =  (this._tileSize + bufferSize*2)/numTiles;
+  var px = (x*this._tileSize - bufferSize  )/numTiles;
+  var py = (y*this._tileSize - bufferSize  )/numTiles;
+  return [
+    this._fromPointToLatLon(new Point(px, py + inc)),
+    this._fromPointToLatLon(new Point(px + inc, py))
+  ];
+};
+
+MercatorProjection.prototype.latLonToTilePoint = function(lat, lon, tileX, tileY, zoom) {
+  var numTiles = 1 <<zoom;
+  var worldCoordinate = this._fromLatLonToPoint(lat, lon);
+  var pixelCoordinate = new Point(worldCoordinate.x*numTiles, worldCoordinate.y*numTiles);
+  var tilePixelPos    = this._tilePixelPos(tileX, tileY);
+  return new Point(Math.round(pixelCoordinate.x-tilePixelPos.x), Math.round(pixelCoordinate.y-tilePixelPos.y));
+};
+
+})(typeof exports === "undefined" ? this : exports);
 /*
 # metrics profiler
 
@@ -2317,6 +2410,7 @@ exports.Profiler = Profiler;
     this._sprites = []; // sprites per layer
     this._shader = null;
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
+    this.TILE_SIZE = 256;
   }
 
   PointRenderer.prototype = {
@@ -2418,7 +2512,7 @@ exports.Profiler = Profiler;
         //TODO: precache because this tile is not going to change
         key = tile.maxDate;
       }
-      var tileMax = this.options.resolution * (256/this.options.resolution - 1)
+      var tileMax = this.options.resolution * (this.TILE_SIZE/this.options.resolution - 1)
       var activePixels = tile.timeCount[key];
       if(activePixels) {
         var pixelIndex = tile.timeIndex[key];
@@ -2430,8 +2524,6 @@ exports.Profiler = Profiler;
            if(!sp) {
              sp = sprites[c] = this.generateSprite(shader, c, _.extend({ zoom: tile.z, 'frame-offset': frame_offset }, shaderVars));
            }
-           //var x = tile.x[posIdx]*res - (sp.width >> 1);
-           //var y = (256 - res - res*tile.y[posIdx]) - (sp.height >> 1);
            var x = tile.x[posIdx]- (sp.width >> 1);
            var y = tileMax - tile.y[posIdx]; // flip mercator
            ctx.drawImage(sp, x, y - (sp.height >> 1));
@@ -2443,6 +2535,36 @@ exports.Profiler = Profiler;
 
     setBlendMode: function(b) {
       this.options.blendmode = b;
+    },
+
+    /**
+     * get active points for a step in active zoom
+     * returns a list of bounding boxes [[sw, ne] , [], []] where ne is a {lat: .., lon: ...} obj
+     * empty list if there is no active pixels
+     */
+    getActivePointsBBox: function(tile, step) {
+      var positions = [];
+      var mercator = new torque.Mercator();
+
+      var tileMax = this.options.resolution * (this.TILE_SIZE/this.options.resolution - 1);
+      //this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      var activePixels = tile.timeCount[step];
+      var pixelIndex = tile.timeIndex[step];
+      for(var p = 0; p < activePixels; ++p) {
+        var posIdx = tile.renderDataPos[pixelIndex + p];
+        var c = tile.renderData[pixelIndex + p];
+        if (c) {
+         var x = tile.x[posIdx];
+         var y = tileMax - tile.y[posIdx]; // flip mercator
+         positions.push(mercator.tilePixelBBox(
+           tile.coord.x,
+           tile.coord.y,
+           tile.coord.z,
+           x, y
+         ));
+        }
+      }
+      return positions;
     }
 
   };
@@ -3623,6 +3745,16 @@ GMapsTorqueLayer.prototype = _.extend({},
     }
   },
 
+  getActivePointsBBox: function(step) {
+    var positions = [];
+    var tileMax = this.options.resolution * (256/this.options.resolution - 1);
+    for(var t in this._tiles) {
+      var tile = this._tiles[t];
+      positions = positions.concat(this.renderer.getActivePointsBBox(tile, step));
+    }
+    return positions;
+  },
+
   /**
    * set key to be shown. If it's a single value
    * it renders directly, if it's an array it renders
@@ -4212,6 +4344,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     }
     options.tileLoader = true;
     this.key = 0;
+    this.prevRenderedKey = 0;
     if (options.cartocss) {
       _.extend(options, torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
     }
@@ -4263,6 +4396,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
         // don't load tiles that are not being shown
         if (t.zoom !== self._map.getZoom()) return;
         self._tileLoaded(t, tileData);
+        self._clearTileCaches();
         if (tileData) {
           self.redraw();
         }
@@ -4272,8 +4406,19 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   },
 
+  _clearTileCaches: function() {
+    var t, tile;
+    for(t in this._tiles) {
+      tile = this._tiles[t];
+      if (tile && tile._tileCache) {
+        tile._tileCache = null;
+      }
+    }
+  },
+
   _clearCaches: function() {
     this.renderer && this.renderer.clearSpriteCache();
+    this._clearTileCaches();
   },
 
   onAdd: function (map) {
@@ -4376,11 +4521,41 @@ L.TorqueLayer = L.CanvasLayer.extend({
     for(t in this._tiles) {
       tile = this._tiles[t];
       if (tile) {
+        // clear cache
+        if (this.animator.isRunning()) {
+          tile._tileCache = null;
+        }
+
         pos = this.getTilePos(tile.coord);
         ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
-        this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+
+        if (tile._tileCache) {
+          // when the tile has a cached image just render it and avoid to render
+          // all the points
+          this.renderer._ctx.drawImage(tile._tileCache, 0, 0);
+        } else {
+          this.renderer.renderTile(tile, this.key);
+        }
       }
     }
+
+    // prepare caches if the animation is not running
+    // don't cache if the key has just changed, this avoids to cache
+    // when the user is dragging, it only cache when the map is still
+    if (!this.animator.isRunning() && this.key === this.prevRenderedKey) {
+      var tile_size = this.renderer.TILE_SIZE;
+      for(t in this._tiles) {
+        tile = this._tiles[t];
+        if (tile && !tile._tileCache) {
+          var c = tile._tileCache = document.createElement('canvas');
+          c.width = c.height = tile_size;
+          pos = this.getTilePos(tile.coord);
+          c.getContext('2d').drawImage(this.getCanvas(), pos.x, pos.y, tile_size, tile_size, 0, 0, tile_size, tile_size);
+        }
+      }
+    }
+
+    this.prevRenderedKey = this.key;
 
   },
 
@@ -4392,6 +4567,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
   setKey: function(key, options) {
     this.key = key;
     this.animator.step(key);
+    this._clearTileCaches();
     this.redraw(options && options.direct);
     this.fire('change:time', { time: this.getTime(), step: this.key });
   },
@@ -4462,6 +4638,20 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     this.redraw();
     return this;
+  },
+
+  /**
+   * get active points for a step in active zoom
+   * returns a list of bounding boxes [[] , [], []]
+   * empty list if there is no active pixels
+   */
+  getActivePointsBBox: function(step) {
+    var positions = [];
+    for(var t in this._tiles) {
+      var tile = this._tiles[t];
+      positions = positions.concat(this.renderer.getActivePointsBBox(tile, step));
+    }
+    return positions;
   }
 
 });

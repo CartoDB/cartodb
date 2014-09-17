@@ -1,3 +1,6 @@
+3.11.87 ()
+- updated torque module with speed optimizations
+
 3.11.07 (15//09/2014)
 - Fixed problem breaking words in infowindow content.
 

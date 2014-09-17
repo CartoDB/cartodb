@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'spec_helper'
 require_relative 'factories/pg_connection'
 require_relative '../lib/internal_geocoder.rb'
 
@@ -7,10 +8,21 @@ RSpec.configure do |config|
 end
 
 describe CartoDB::InternalGeocoder do
+
+  before(:all) do
+    @user = create_user
+  end
+  after(:all) do
+    @user.destroy
+  end
+
   before do
-    conn          = CartoDB::Importer2::Factories::PGConnection.new
-    @db           = conn.connection
-    @pg_options   = conn.pg_options
+    conn                         = CartoDB::Importer2::Factories::PGConnection.new(database: @user.database_name)
+    @db                          = conn.connection
+    @table_name                  = 'adm0'
+    @sequel_qualified_table_name = 'adm0'
+    @qualified_table_name        = 'adm0'
+    @table_schema                = 'public'
   end
 
   let(:default_params) { { connection: @db, internal: { username: 'geocoding' }, kind: 'admin0', geometry_type: 'polygon' } }
@@ -25,7 +37,12 @@ describe CartoDB::InternalGeocoder do
     end
 
     it "generates a csv with geocoded data" do
-      ig = CartoDB::InternalGeocoder.new(default_params.merge(table_name: 'adm0', formatter: 'geo_string'))
+      ig = CartoDB::InternalGeocoder.new(default_params.merge(
+        table_name: @table_name,
+        qualified_table_name: @qualified_table_name,
+        sequel_qualified_table_name: @sequel_qualified_table_name,
+        table_schema: @table_schema,
+        formatter: 'geo_string'))
       ig.add_georef_status_column
       results = ig.download_results
       `wc -l #{results} 2>&1`.to_i.should eq 11

@@ -75,8 +75,10 @@ WORKING_SPECS_9 = \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
-  $(NULL)
-
+	services/table-geocoder/spec/table_geocoder_spec.rb \
+	services/table-geocoder/spec/geocoder_cache_spec.rb \
+	services/table-geocoder/spec/internal_geocoder_spec.rb\
+	$(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
 

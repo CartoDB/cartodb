@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'spec_helper'
 require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
@@ -8,8 +9,16 @@ RSpec.configure do |config|
 end
 
 describe CartoDB::GeocoderCache do
+
+  before(:all) do
+    @user = create_user
+  end
+  after(:all) do
+    @user.destroy
+  end
+
   before do
-    conn                         = CartoDB::Importer2::Factories::PGConnection.new
+    conn                         = CartoDB::Importer2::Factories::PGConnection.new(database: @user.database_name)
     @db                          = conn.connection
     @table_name                  = "ne_10m_populated_places_simple"
     @qualified_table_name        = "ne_10m_populated_places_simple"

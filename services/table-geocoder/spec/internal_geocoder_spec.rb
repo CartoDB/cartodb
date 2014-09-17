@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'spec_helper'
 require_relative 'factories/pg_connection'
 require_relative '../lib/internal_geocoder.rb'
 
@@ -7,8 +8,16 @@ RSpec.configure do |config|
 end
 
 describe CartoDB::InternalGeocoder do
+
+  before(:all) do
+    @user = create_user
+  end
+  after(:all) do
+    @user.destroy
+  end
+
   before do
-    conn                         = CartoDB::Importer2::Factories::PGConnection.new
+    conn                         = CartoDB::Importer2::Factories::PGConnection.new(database: @user.database_name)
     @db                          = conn.connection
     @table_name                  = 'adm0'
     @sequel_qualified_table_name = 'adm0'

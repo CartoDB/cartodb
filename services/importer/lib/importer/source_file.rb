@@ -27,6 +27,10 @@ module CartoDB
         )
       end
 
+      def size
+        File.size(fullpath)
+      end
+
       def path
         File.basename(fullpath)
       end

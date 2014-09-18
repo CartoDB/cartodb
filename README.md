@@ -16,7 +16,7 @@ If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/cartodb) on Vimeo.
 We hope you like it!
 
-<img src="http://cartodb.s3.amazonaws.com/github/map.png" width="900px"/>
+![Map View](http://cartodb.s3.amazonaws.com/github/map_view.png)
 
 
 # What can I do with CartoDB? #
@@ -35,8 +35,8 @@ powerful geospatial applications! Definitely check out the [CartoDB
 Develop](http://cartodb.com/develop) for interactive examples
 and code.
 
-<img src="http://cartodb.s3.amazonaws.com/github/mapWizard.png" width="900px"/>
-<img src="http://cartodb.s3.amazonaws.com/github/tableSQL.png" width="900px"/>
+![Map View Wizard](http://cartodb.s3.amazonaws.com/github/map_view_wizard.png)
+![Data View](http://cartodb.s3.amazonaws.com/github/data_view.png)
 
 # What are the components of CartoDB? #
 
@@ -52,10 +52,10 @@ and code.
 
   - Ubuntu 12.04
   - Postgres 9.3.x (with plpythonu extension)
-  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension 0.2.1
+  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension
   - Redis 2.2+
   - Ruby 1.9.3
-  - NodeJS 0.8.x
+  - Node.js 0.10.x
   - CartoDB-SQL-API
   - GEOS 3.3.4
   - GDAL 1.10.x (Starting with CartoDB 2.2.0)
@@ -211,8 +211,8 @@ queries. This is the heart of CartoDB!
 ```bash
 cd /usr/local/src
 sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
-sudo tar xzf postgis-2.1.2.tar.gz
-cd postgis-2.1
+sudo tar -xvzf postgis-2.1.2.tar.gz
+cd postgis-2.1.2
 sudo ./configure --with-raster --with-topology
 sudo make
 sudo make install
@@ -224,7 +224,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
@@ -244,7 +244,7 @@ sudo su - postgres
 Alternatively, you may run the lines of the `template_postgis.sh` script one by one by entering Postgres as follows:
 ```bash
 sudo su - postgres
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
@@ -258,17 +258,20 @@ exit
 ## Install cartodb-postgresql ##
 
 ```bash
-git clone --recursive https://github.com/CartoDB/pg_schema_triggers.git
+git clone https://github.com/CartoDB/pg_schema_triggers.git
 cd pg_schema_triggers
-sudo make install PGUSER=postgres
- sudo make installcheck PGUSER=postgres
+sudo make all install PGUSER=postgres
+sudo make installcheck PGUSER=postgres # to run tests
 cd ..
-git clone --recursive https://github.com/CartoDB/cartodb-postgresql.git
+git clone https://github.com/CartoDB/cartodb-postgresql.git
 cd cartodb-postgresql
 git checkout cdb
-sudo make install
-sudo PGUSER=postgres make installcheck 
+sudo make all install
+sudo PGUSER=postgres make installcheck # to run tests
 ```
+
+NOTE: if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
+You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf
 
 Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
@@ -538,24 +541,25 @@ See TESTING
 
 ### Contributors ###
 
-  - Fernando Blat (@ferblape)
-  - Javier Álvarez Medina (@xavijam)
-  - Simon Tokumine (@tokumine)
-  - Alvaro Bautista (@batu)
-  - Fernando Espinosa (@ferdev)
-  - Sergio Alvarez Leiva (@saleiva)
-  - Javier de la Torre (@jatorre)
-  - Andrew W Hill (@andrewxhill)
-  - Javi Santana (@javisantana)
-  - Javier Arce (@javierarce)
-  - Aaron Steele (@eightysteele)
-  - Luis Bosque (@luisico)
-  - Sandro Santilli (@strk)
-  - David Arango (@demimismo)
-  - Xabel Álvarez (@johnhackworth)
-  - Lorenzo Planas (@lorenzoplanas)
-  - Alejandro Martínez (@iamzenitram)
-  - Carlos Matallín (@matallo)
-  - Rafa Casado (@rafacas)
-  - Diego Muñoz (@kartones)
-  - Nicolás M. Jaremek (@NickJaremek)
+  - Fernando Blat ([ferblape](https://twitter.com/ferblape))
+  - Javier Álvarez Medina ([xavijam](https://twitter.com/xavijam))
+  - Simon Tokumine ([tokumine](https://twitter.com/tokumine))
+  - Alvaro Bautista ([batu](https://twitter.com/batu))
+  - Fernando Espinosa ([ferdev](https://twitter.com/ferdev))
+  - Sergio Alvarez Leiva ([saleiva](https://twitter.com/saleiva))
+  - Javier de la Torre ([jatorre](https://twitter.com/jatorre))
+  - Andrew W Hill ([andrewxhill](https://twitter.com/andrewxhill))
+  - Javi Santana ([javisantana](https://twitter.com/javisantana))
+  - Javier Arce ([javierarce](https://twitter.com/javierarce))
+  - Aaron Steele ([eightysteele](https://twitter.com/eightysteele))
+  - Luis Bosque ([luisico](https://twitter.com/luisico))
+  - Sandro Santilli ([strk](https://twitter.com/strk))
+  - David Arango ([demimismo](https://twitter.com/demimismo))
+  - Xabel Álvarez ([johnhackworth](https://twitter.com/johnhackworth))
+  - Lorenzo Planas ([lorenzoplanas](https://twitter.com/lorenzoplanas))
+  - Alejandro Martínez ([iamzenitram](https://twitter.com/iamzenitram))
+  - Carlos Matallín ([matallo](https://twitter.com/matallo))
+  - Rafa Casado ([rafacas](https://twitter.com/rafacas))
+  - Diego Muñoz ([kartones](https://twitter.com/kartones))
+  - Raul Ochoa ([rochoa](https://twitter.com/rochoa))
+  - Nicolás M. Jaremek ([NickJaremek](https://twitter.com/NickJaremek))

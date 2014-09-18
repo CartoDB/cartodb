@@ -1,5 +1,6 @@
-3.y.z (2014-mm-dd)
+3.2.1 (2014-09-05)
 ------------------
+* New common data section
 * New features
   * Upgrades to 0.4.0 cartodb postgresql extension version
 
@@ -8,7 +9,7 @@
 * New Features
   * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
 
-3.0.1 (2014-mm-dd)
+3.1.0 (2014-08-25)
 ------------------
 * New features
   * Varnish HTTP invalidation support

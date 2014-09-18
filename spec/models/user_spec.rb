@@ -83,7 +83,7 @@ describe User do
   end
 
   it "should only allow legal usernames" do
-    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon)
+    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon jose.rilla -rilla rilla-)
     legal_usernames   = %w(simon javier-de-la-torre sergio-leiva sergio99)
 
     illegal_usernames.each do |name|
@@ -815,7 +815,7 @@ describe User do
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")
-      .times(5 + 2) #5 overlays
+      .times(2 + 5)
       .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)
 

@@ -73,11 +73,9 @@ describe Organization do
         user_org.promote_user_to_admin
       }.to raise_error
 
-      begin
-        user.destroy
-      rescue
-        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
-      end
+      user.destroy
+
+      organization.destroy
     end
   end
 
@@ -104,21 +102,24 @@ describe Organization do
 
       organization.users.count.should eq 3
 
-      member2.destroy
+      member1.destroy
       organization.reload
 
       organization.users.count.should eq 2
+
+      # Can't remove owner if other members exist
+      expect {
+        owner.destroy
+      }.to raise_error CartoDB::BaseCartoDBError
 
       member2.destroy
       organization.reload
 
       organization.users.count.should eq 1
 
-      begin
-        owner.destroy
-      rescue
-        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
-      end
+      owner.destroy
+
+      organization.destroy
     end
   end
 

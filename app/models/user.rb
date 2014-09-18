@@ -18,7 +18,7 @@ class User < Sequel::Model
   # @param avatar_url       String
   # @param database_schema  String
 
-  one_to_one :client_application
+  one_to_one  :client_application
   one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
@@ -144,7 +144,8 @@ class User < Sequel::Model
   def before_destroy
     error_happened = false
     has_organization = false
-    unless self.organization_id.nil? || self.organization.nil?
+    unless self.organization.nil?
+      self.organization.reload  # Avoid ORM caching
       if self.organization.owner.id == self.id && self.organization.users.count > 1
         msg = 'Attempted to delete owner from organization with other users'
         CartoDB::Logger.info msg
@@ -172,7 +173,7 @@ class User < Sequel::Model
       # Remove user data imports, maps, layers and assets
       self.data_imports.each { |d| d.destroy }
       self.maps.each { |m| m.destroy }
-      self.layers.each { |l| self.remove_layer l }
+      self.layers.each { |l| remove_layer l }
       self.geocodings.each { |g| g.destroy }
       self.assets.each { |a| a.destroy }
       CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
@@ -185,16 +186,16 @@ class User < Sequel::Model
     $users_metadata.DEL(self.key) unless error_happened
 
     # Invalidate user cache
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
 
     # Delete the DB or the schema
     if has_organization
-      self.drop_organization_user unless error_happened
+      drop_organization_user unless error_happened
     else
       if User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
       else
-        self.drop_database_and_user unless error_happened
+        drop_database_and_user unless error_happened
       end
     end
   end
@@ -226,6 +227,9 @@ class User < Sequel::Model
       conn.run("DROP USER \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_username}\"")
     end.join
+
+
+
     monitor_user_notification
   end
 

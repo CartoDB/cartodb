@@ -78,8 +78,6 @@ describe Organization do
       }.to raise_error
 
       user.destroy
-
-      organization.destroy
     end
   end
 
@@ -123,7 +121,9 @@ describe Organization do
 
       owner.destroy
 
-      organization.destroy
+      expect {
+        organization.reload
+      }.to raise_error Sequel::Error
     end
   end
 

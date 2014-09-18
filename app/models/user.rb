@@ -142,14 +142,18 @@ class User < Sequel::Model
   end
 
   def before_destroy
+    @org_id = nil
     error_happened = false
     has_organization = false
     unless self.organization.nil?
       self.organization.reload  # Avoid ORM caching
-      if self.organization.owner.id == self.id && self.organization.users.count > 1
-        msg = 'Attempted to delete owner from organization with other users'
-        CartoDB::Logger.info msg
-        raise CartoDB::BaseCartoDBError.new(msg)
+      if self.organization.owner.id == self.id
+        @org_id = self.organization.id  # after_destroy will wipe the organization too
+        if self.organization.users.count > 1
+          msg = 'Attempted to delete owner from organization with other users'
+          CartoDB::Logger.info msg
+          raise CartoDB::BaseCartoDBError.new(msg)
+        end
       end
 
       # Right now, cannot delete users with entities shared with other users or the org.
@@ -197,6 +201,13 @@ class User < Sequel::Model
       else
         drop_database_and_user unless error_happened
       end
+    end
+  end
+
+  def after_destroy
+    unless @org_id.nil?
+      organization = Organization.where(id:@org_id).first
+      organization.destroy
     end
   end
 

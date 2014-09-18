@@ -13,7 +13,11 @@ describe Organization do
 
   after(:all) do
     Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-    @user.destroy
+    begin
+      @user.destroy
+    rescue
+      # Silence error, can't do much more
+    end
   end
 
   describe '#add_user_to_org' do
@@ -79,7 +83,7 @@ describe Organization do
     end
   end
 
-  describe '#members_removal' do
+  describe '#org_members_and_owner_removal' do
     it 'Tests removing a normal member from the organization' do
       organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
@@ -120,6 +124,34 @@ describe Organization do
       owner.destroy
 
       organization.destroy
+    end
+  end
+
+  describe '#non_org_user_removal' do
+    it 'Tests removing a normal user' do
+      User.all.count.should eq 1  # @user
+      User.first.id.should eq @user.id
+
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 50)
+
+      User.all.count.should eq 2
+
+      user.destroy
+
+      User.all.count.should eq 1  # @user
+      User.first.id.should eq @user.id
+    end
+  end
+
+  describe '#users_in_same_db_removal_error' do
+    it "Tests that if 2+ users somehow have same database name, can't be deleted" do
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 50, :database_name => @user.database_name)
+      user2.database_name = @user.database_name
+      user2.save
+
+      expect {
+        user2.destroy
+      }.to raise_error CartoDB::BaseCartoDBError
     end
   end
 

@@ -204,9 +204,9 @@ class User < Sequel::Model
     Thread.new do
       in_database(as: :superuser) do |database|
         # Drop this user privileges in every schema of the DB
-        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] +
-          User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema).uniq
-        schemas.each do |s|
+        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
+          User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema)
+        schemas.uniq.each do |s|
           drop_user_privileges_in_schema(s)
         end
         # Drop user quota function
@@ -1747,7 +1747,8 @@ TRIGGER
   def drop_user_privileges_in_schema(schema)
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        [self.database_username, self.database_public_username].each do |u|
+
+        [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER].each do |u|
           user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
@@ -1791,39 +1792,81 @@ TRIGGER
     end
   end
 
+  # Drops grants and functions in a given schema, avoiding by all means a CASCADE
+  # to not affect extensions or other users
   def drop_all_functions_from_schema(schema_name)
+    recursivity_max_depth = 3
+
     return if schema_name == 'public'
 
     in_database(as: :superuser) do |database|
-      # Public-facing functions have publicuser grants, need to remove it to drop them
-      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM #{CartoDB::PUBLIC_DB_USER}")
-      database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema_name}\" FROM \"#{database_username}\"")
-
-      debugger
-
       # Non-aggregate functions
       drop_function_sqls = database.fetch(%Q{
         SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
         WHERE ns.nspname = '#{schema_name}'
       })
-      drop_function_sqls.each { |sql_sentence|
-        database.run(sql_sentence[:sql])
-      }
 
-      debugger
+      # Simulate a controlled environment drop cascade contained to only functions
+      failed_sqls = []
+      recursivity_level = 0
+      begin
+        failed_sqls = []
+        drop_function_sqls.each { |sql_sentence|
+          begin
+            database.run(sql_sentence[:sql])
+          rescue Sequel::DatabaseError => e
+            if e.message =~ /depends on function /i
+              failed_sqls.push(sql_sentence)
+            else
+              raise
+            end
+          end
+        }
+        drop_function_sqls = failed_sqls
+        recursivity_level += 1
+      end while failed_sqls.count > 0 && recursivity_level < recursivity_max_depth
+
+      # If something remains, reattempt later after dropping aggregates
+      if drop_function_sqls.count > 0
+        aggregate_dependant_function_sqls = drop_function_sqls
+      else
+        aggregate_dependant_function_sqls = []
+      end
 
       # And now aggregate functions
+      failed_sqls = []
       drop_function_sqls = database.fetch(%Q{
         SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
         WHERE ns.nspname = '#{schema_name}'
       })
       drop_function_sqls.each { |sql_sentence|
-        database.run(sql_sentence[:sql])
+        begin
+          database.run(sql_sentence[:sql])
+        rescue Sequel::DatabaseError => e
+          failed_sqls.push(sql_sentence)
+        end
       }
 
-      debugger
+      if failed_sqls.count > 0
+        raise CartoDB::BaseCartoDBError.new('Cannot drop schema aggregate functions, dependencies remain')
+      end
+
+      # One final pass of normal functions, if left
+      if aggregate_dependant_function_sqls.count > 0
+        aggregate_dependant_function_sqls.each { |sql_sentence|
+          begin
+            database.run(sql_sentence[:sql])
+          rescue Sequel::DatabaseError => e
+            failed_sqls.push(sql_sentence)
+          end
+        }
+      end
+
+      if failed_sqls.count > 0
+        raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
+      end
 
     end
   end

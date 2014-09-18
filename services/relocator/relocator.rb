@@ -75,6 +75,10 @@ module CartoDB
         @dumper.setup
       end
 
+      def cleanup
+        @dumper.cleanup
+      end
+
       def check_org_user(user)
         @org_tester.check_user_permissions(user)
       end

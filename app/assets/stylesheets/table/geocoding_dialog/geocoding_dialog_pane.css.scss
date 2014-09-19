@@ -10,6 +10,7 @@
   @import "compass/css3/opacity";
   @import "compass/css3/images";
   @import "compass/css3/filter";
+  @import "compass/css3/background-size";
   @import "../../table/table-sprite";
   @import "../../common/vars";
   @import "../../common/mixins";
@@ -296,6 +297,19 @@
           height:31px;
           @include background(image-url("layout/georeference_warning.png") repeat center center);
           @include opacity(1);
+        }
+
+        .opt .loading {
+          position:absolute;
+          top: 30px;
+          right:65px;
+          width:31px;
+          height:31px;
+          @include background(image-url("layout/loader.gif") no-repeat center center white);
+          @include background-size(24px 10px);
+          border:1px solid #CCC;
+          @include opacity(1);
+          @include border-radius(31px);
         }
 
         em {

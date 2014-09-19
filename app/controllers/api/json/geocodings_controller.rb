@@ -80,16 +80,19 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     if params[:free_text]
       input = [params[:free_text]]
     else
-      table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
-      return head(400) if table.nil?
-      input = table.sequel.distinct.select_map(params[:column_name].to_sym)
+      begin
+        table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
+        return head(400) if table.nil?
+        input = table.sequel.distinct.select_map(params[:column_name].to_sym)
+      rescue Sequel::DatabaseError
+        render(json: []) and return
+      end
     end
 
     input = input.map{ |v| v.to_s.squish.downcase.gsub(/[^\p{Alnum}]/, '') }
             .reject(&:blank?)
-    if input.empty?
-      render_jsonp({ errors: 'No input provided' }, 400) and return
-    end
+
+    render(json: []) and return if input.empty?
 
     list = input.map{ |v| "'#{ v }'" }.join(",")
 
@@ -102,11 +105,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
                         GROUP BY iso3")
                 .map { |i| i['services'] }.inject(:'&')
 
-    if geometries.nil?
-      render_jsonp({ errors: 'No coverage info available for that input' }, 400) and return
-    end
-
-    render(json: geometries)
+    render(json: geometries || [])
   end
 
   def estimation_for

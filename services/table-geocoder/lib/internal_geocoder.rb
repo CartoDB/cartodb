@@ -12,32 +12,32 @@ module CartoDB
 
     SQL_PATTERNS = {
       point: {
-        namedplace: 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{search_terms}], null, {country_list})).*) SELECT q, null, geom, success FROM geo_function',
+        namedplace: 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function',
         ipaddress:  'WITH geo_function AS (SELECT (geocode_ip(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
         postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
       },
       polygon: {
         admin0:     'WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
-        admin1:     'WITH geo_function AS (SELECT (geocode_admin1_polygons(Array[{search_terms}], {country_list})).*) SELECT q, null, geom, success FROM geo_function',
+        admin1:     'WITH geo_function AS (SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function',
         postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
       }
     }
 
     def initialize(arguments)
-      @sql_api           = CartoDB::SQLApi.new arguments.fetch(:internal)
-      @connection        = arguments.fetch(:connection)
-      @working_dir       = Dir.mktmpdir
+      @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)
+      @connection           = arguments.fetch(:connection)
+      @working_dir          = Dir.mktmpdir
       `chmod 777 #{@working_dir}`
-      @table_name        = arguments[:table_name]
-      @table_schema        = arguments[:table_schema]
+      @table_name           = arguments[:table_name]
+      @table_schema         = arguments[:table_schema]
       @qualified_table_name = arguments[:qualified_table_name]
-      @column_name       = arguments[:formatter]
-      @countries         = arguments[:countries].to_s
-      @geometry_type     = arguments.fetch(:geometry_type, '').to_sym
-      @kind              = arguments.fetch(:kind, '').to_sym
-      @schema            = arguments[:schema] || 'cdb'
-      @batch_size        = (@geometry_type == :point ? 5000 : 10)
-      @state             = 'submitted'
+      @column_name          = arguments[:formatter]
+      @countries            = arguments[:countries].to_s
+      @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
+      @kind                 = arguments.fetch(:kind, '').to_sym
+      @schema               = arguments[:schema] || 'cdb'
+      @batch_size           = (@geometry_type == :point ? 5000 : 10)
+      @state                = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
     end # initialize
 
@@ -81,7 +81,7 @@ module CartoDB
     def generate_sql(search_terms)
       SQL_PATTERNS.fetch(@geometry_type).fetch(@kind)
         .gsub('{search_terms}', search_terms.join(','))
-        .gsub('{country_list}', "'#{@countries}'")
+        .gsub('{country_list}', "#{ @countries }")
     rescue KeyError => e
       raise NotImplementedError.new("Can't find geocoding function for #{@geometry_type}, #{@kind}")
     end # generate_sql

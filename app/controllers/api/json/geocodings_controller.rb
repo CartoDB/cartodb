@@ -4,6 +4,8 @@ require Rails.root.join('services', 'sql-api', 'sql_api')
 class Api::Json::GeocodingsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :country_data_for, :all_country_data, :get_countries, :estimation_for, :available_geometries
 
+  before_filter :load_table, only: [:create, :available_geometries, :estimation_for]
+
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
     render json: { geocodings: geocodings }
@@ -25,15 +27,19 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
-    table     = current_user.tables.where(name: params[:table_name]).first
-    geocoding = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
-    geocoding.formatter = "{#{params[:column_name]}}" if params[:column_name].present?
-    geocoding.user      = current_user
-    geocoding.table_id  = table.try(:id)
+    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
+    geocoding.user     = current_user
+    geocoding.table_id = @table.try(:id)
     geocoding.raise_on_save_failure = true
+
+    geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
+
+    countries = params[:text] ? [params[:location]] : @table.sequel.distinct.select_map(params[:location].to_sym)
+    geocoding.country_code = countries.map{ |c| "'#{ c }'"}.join(',')
+
     geocoding.save
 
-    table.automatic_geocoding.destroy if table.automatic_geocoding.present?
+    @table.automatic_geocoding.destroy if @table.automatic_geocoding.present?
     Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
 
     render_jsonp(geocoding.to_json)
@@ -81,9 +87,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
       input = [params[:free_text]]
     else
       begin
-        table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
-        return head(400) if table.nil?
-        input = table.sequel.distinct.select_map(params[:column_name].to_sym)
+        return head(400) if @table.nil?
+        input = @table.sequel.distinct.select_map(params[:column_name].to_sym)
       rescue Sequel::DatabaseError
         render(json: []) and return
       end
@@ -109,8 +114,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def estimation_for
-    table = current_user.tables.where(name: params[:table_name]).first
-    total_rows       = Geocoding.processable_rows(table)
+    total_rows       = Geocoding.processable_rows(@table)
     remaining_quota  = current_user.geocoding_quota - current_user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
@@ -123,4 +127,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render_jsonp( { description: e.message }, 500)
   end
 
+  protected
+
+  def load_table
+    @table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
+  end
 end

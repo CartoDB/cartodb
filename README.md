@@ -211,8 +211,8 @@ queries. This is the heart of CartoDB!
 ```bash
 cd /usr/local/src
 sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
-sudo tar xzf postgis-2.1.2.tar.gz
-cd postgis-2.1
+sudo tar -xvzf postgis-2.1.2.tar.gz
+cd postgis-2.1.2
 sudo ./configure --with-raster --with-topology
 sudo make
 sudo make install
@@ -224,7 +224,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
@@ -244,7 +244,7 @@ sudo su - postgres
 Alternatively, you may run the lines of the `template_postgis.sh` script one by one by entering Postgres as follows:
 ```bash
 sudo su - postgres
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"

@@ -47,14 +47,21 @@ module CartoDB
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
-        raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
+        raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
+
+        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+
         if ogr2ogr.exit_code != 0
-          if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || \
-              (ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/)
+          # OOM
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/
             raise FileTooBigError.new(job.logger)
           end
+          # Could be OOM, could be wrong input
+          if ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/
+            raise LoadError.new(job.logger)
+          end
           if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
-            raise UnsupportedFormatError.new
+            raise UnsupportedFormatError.new(job.logger)
           end
           raise LoadError.new(job.logger)
         end

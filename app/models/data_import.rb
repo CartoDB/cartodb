@@ -355,9 +355,7 @@ class DataImport < Sequel::Model
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
 
-    # TODO: WIP for CDB-3936 (store)
-    #puts runner.loader.class.to_s
-    #puts runner.loader.source_file.extension
+    self.stats = ::JSON.dump(runner.stats)
 
     update_synchronization(importer)
 
@@ -435,7 +433,8 @@ class DataImport < Sequel::Model
                   'service_name'      => self.service_name,
                   'data_type'         => self.data_type,
                   'is_sync_import'    => !self.synchronization_id.nil?,
-                  'import_time'       => self.updated_at - self.created_at
+                  'import_time'       => self.updated_at - self.created_at,
+                  'file_stats'        => ::JSON.parse(self.stats)
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)

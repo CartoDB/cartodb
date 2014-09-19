@@ -63,11 +63,15 @@
           </div>
 
           <div class="user embed-right-col">
-            <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
-              <div class="user-info">
+            <div class="user-info">
+              <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
                 <h4>by <%= @name %></h4>
-                <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>
-              </div>
+              </a>
+
+              <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>
+            </div>
+
+            <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
               <img src="<%= @avatar_url %>" class="avatar" />
             </a>
           </div>

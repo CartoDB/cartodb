@@ -139,7 +139,9 @@ module CartoDB
           named_map.delete if named_map
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
-          raise exception unless from_table_deletion
+          unless from_table_deletion
+            CartoDB.notify_exception(exception, { user: user })
+          end
         end
 
         invalidate_varnish_cache

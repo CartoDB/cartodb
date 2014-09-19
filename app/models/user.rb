@@ -1100,6 +1100,11 @@ class User < Sequel::Model
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |db|
+      
+      if !cartodb_extension_version_pre_mu? && has_organization?
+        db.run("DROP FUNCTION IF EXISTS public._cdb_userquotainbytes();")
+      end
+
       db.transaction do
         # NOTE: this has been written to work for both
         #       databases that switched to "cartodb" extension
@@ -1414,9 +1419,9 @@ class User < Sequel::Model
   def create_schema(schema, role = nil)
     in_database(as: :superuser) do |database|
       if role
-        database.run(%Q{CREATE SCHEMA \"#{schema}\" AUTHORIZATION "#{role}"})
+        database.run(%Q{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
       else
-        database.run(%Q{CREATE SCHEMA \"#{schema}\"})
+        database.run(%Q{CREATE SCHEMA "#{schema}"})
       end
     end
   rescue Sequel::DatabaseError => e

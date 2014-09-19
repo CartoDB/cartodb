@@ -20,19 +20,19 @@
   }
 
   div.cartodb-popup.dark {
-    background:url('../img/dark.png') no-repeat -226px 0;
+    background:url(../img/dark.png) no-repeat -226px 0;
   }
 
   div.cartodb-popup.dark div.cartodb-popup-content-wrapper {
-    background:url('../img/dark.png') repeat-y -452px 0;
+    background:url(../img/dark.png) repeat-y -452px 0;
   }
 
   div.cartodb-popup.dark div.cartodb-popup-tip-container {
-    background:url('../img/dark.png') no-repeat 0 0;
+    background:url(../img/dark.png) no-repeat 0 0;
   }
 
   div.cartodb-popup.dark a.cartodb-popup-close-button {
-    background:url('../img/dark.png') no-repeat 0 -23px;
+    background:url(../img/dark.png) no-repeat 0 -23px;
   }
 
   div.cartodb-popup.dark h4 {
@@ -121,7 +121,7 @@
     height:auto;
     padding:7px 0 0 0;
     margin:0;
-    background:url('../img/light.png') no-repeat -226px 0;
+    background:url(../img/light.png) no-repeat -226px 0;
   }
 
   div.cartodb-popup div.cartodb-popup-content-wrapper {
@@ -129,7 +129,7 @@
     max-width: 190px;
     padding:12px 19px 12px 19px;
     overflow-x: hidden;
-    background:url('../img/light.png') repeat-y -452px 0;
+    background:url(../img/light.png) repeat-y -452px 0;
   }
 
   div.cartodb-popup div.cartodb-popup-content {
@@ -184,7 +184,7 @@
   div.cartodb-popup div.cartodb-popup-tip-container {
     width:226px;
     height:20px;
-    background:url('../img/light.png') no-repeat 0 0;
+    background:url(../img/light.png) no-repeat 0 0;
   }
 
   div.cartodb-popup a.cartodb-popup-close-button {
@@ -194,7 +194,7 @@
     width:26px;
     height:26px;
     padding:0;
-    background:url('../img/light.png') no-repeat 0 -23px;
+    background:url(../img/light.png) no-repeat 0 -23px;
     text-indent:-9999px;
     font-size:0;
     line-height:0;
@@ -585,7 +585,7 @@
  */
 
 div.cartodb-popup.header.blue div.cartodb-popup-header {
-  background:url('../img/headers.png') no-repeat 0 -40px;
+  background:url(../img/headers.png) no-repeat 0 -40px;
 }
 
 div.cartodb-popup.header.blue.header .cartodb-popup-header a {
@@ -601,7 +601,7 @@ div.cartodb-popup.header.blue div.cartodb-popup-header span.separator {
 }
 
 div.cartodb-popup.header.blue a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -226px -40px;
+  background:url(../img/headers.png) no-repeat -226px -40px;
 }
 
 div.cartodb-popup.header.blue a.cartodb-popup-close-button:hover {
@@ -648,7 +648,7 @@ div.cartodb-popup.header div.cartodb-popup-header {
   max-height:62px;
   overflow:hidden;
   padding:17px 19px 17px 19px;
-  background:url('../img/headers.png') no-repeat 0 -40px;
+  background:url(../img/headers.png) no-repeat 0 -40px;
 }
 
 
@@ -713,7 +713,7 @@ div.cartodb-popup.header div.cartodb-popup-content {
 }
 
 div.cartodb-popup.header a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -226px -40px;
+  background:url(../img/headers.png) no-repeat -226px -40px;
 }
 
 div.cartodb-popup.header a.cartodb-popup-close-button:hover {
@@ -828,7 +828,7 @@ div.cartodb-popup.v2.header a.cartodb-popup-close-button:hover {
  */
 
 div.cartodb-popup.header.green div.cartodb-popup-header {
-  background:url('../img/headers.png') no-repeat -252px -40px;
+  background:url(../img/headers.png) no-repeat -252px -40px;
 }
 
 div.cartodb-popup.header.green div.cartodb-popup-header h4 {
@@ -840,7 +840,7 @@ div.cartodb-popup.header.green div.cartodb-popup-header span.separator {
 }
 
 div.cartodb-popup.header.green a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -478px -40px;
+  background:url(../img/headers.png) no-repeat -478px -40px;
 }
 
 div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
@@ -879,7 +879,7 @@ div.cartodb-popup.v2.header.green a.cartodb-popup-close-button:after {
  */
 
 div.cartodb-popup.header.orange div.cartodb-popup-header {
-  background:url('../img/headers.png') no-repeat -756px -40px;
+  background:url(../img/headers.png) no-repeat -756px -40px;
 }
 
 div.cartodb-popup.header.orange div.cartodb-popup-header h4 {
@@ -891,7 +891,7 @@ div.cartodb-popup.header.orange div.cartodb-popup-header span.separator {
 }
 
 div.cartodb-popup.header.orange a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -982px -40px;
+  background:url(../img/headers.png) no-repeat -982px -40px;
 }
 
 div.cartodb-popup.header.orange a.cartodb-popup-close-button:hover {
@@ -932,7 +932,7 @@ div.cartodb-popup.v2.header.orange a.cartodb-popup-close-button:after {
   div.cartodb-popup.header.with-image div.cartodb-popup-header {
     position:relative;
 
-    background:url('../img/headers.png') no-repeat -1008px 0;
+    background:url(../img/headers.png) no-repeat -1008px 0;
     height:138px;
     max-height:104px;
   }
@@ -954,7 +954,7 @@ div.cartodb-popup.v2.header.orange a.cartodb-popup-close-button:after {
     height:55px;
     bottom: 0;
     left: 0;
-    background:url('../img/shadow.png') no-repeat;
+    background:url(../img/shadow.png) no-repeat;
     z-index: 100;
   }
 
@@ -996,7 +996,7 @@ div.cartodb-popup.v2.header.orange a.cartodb-popup-close-button:after {
     display:-moz-inline-stack;display:inline-block;vertical-align:top;*vertical-align:auto;zoom:1;*display:inline;
     width: 31px;
     height: 22px;
-    background:transparent url('../img/image_not_found.png');
+    background:transparent url(../img/image_not_found.png);
   }
 
   div.cartodb-popup.header.with-image div.cartodb-popup-header h1 {
@@ -1016,7 +1016,7 @@ div.cartodb-popup.v2.header.orange a.cartodb-popup-close-button:after {
   }
 
   div.cartodb-popup.header.with-image a.cartodb-popup-close-button {
-    background:url('../img/headers.png') no-repeat -226px -40px;
+    background:url(../img/headers.png) no-repeat -226px -40px;
   }
 
   div.cartodb-popup.header.with-image a.cartodb-popup-close-button:hover {
@@ -1094,7 +1094,7 @@ div.cartodb-popup.v2.header.orange a.cartodb-popup-close-button:after {
  */
 
 div.cartodb-popup.header.yellow div.cartodb-popup-header {
-  background:url('../img/headers.png') no-repeat -504px -40px;
+  background:url(../img/headers.png) no-repeat -504px -40px;
 }
 
 div.cartodb-popup.header.yellow div.cartodb-popup-header h4 {
@@ -1106,7 +1106,7 @@ div.cartodb-popup.header.yellow div.cartodb-popup-header span.separator {
 }
 
 div.cartodb-popup.header.yellow a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -730px -40px;
+  background:url(../img/headers.png) no-repeat -730px -40px;
 }
 
 div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
@@ -1189,7 +1189,7 @@ div.cartodb-share a {
   text-shadow: none;
   padding: 7px 7px;
 
-  background: #ffffff url('../img/share.png') no-repeat 7px 8px;
+  background: #ffffff url(../img/share.png) no-repeat 7px 8px;
 
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
@@ -1212,11 +1212,11 @@ div.cartodb-share a {
 }
 
 div.cartodb-share a:hover {
-  background: #ffffff url('../img/share.png') no-repeat -28px 8px;
+  background: #ffffff url(../img/share.png) no-repeat -28px 8px;
 }
 
 div.cartodb-share a:active, div.cartodb-share a:hover:active {
-  background: #ffffff url('../img/share.png') no-repeat 7px 8px;
+  background: #ffffff url(../img/share.png) no-repeat 7px 8px;
 }
 
 .cartodb-fullscreen a:active { 
@@ -1242,7 +1242,7 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
   height: 14px;
   padding: 7px;
 
-  background: #ffffff url('../img/fullscreen.png') no-repeat 7px 3px;
+  background: #ffffff url(../img/fullscreen.png) no-repeat 7px 3px;
 
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
@@ -1450,7 +1450,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   div.cartodb-zoom a {
-    background:url('../img/other@2x.png') no-repeat 0 0!Important;
+    background:url(../img/other@2x.png) no-repeat 0 0!Important;
     background-size: 113px 34px!Important;
   }
 
@@ -1463,44 +1463,44 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   div.cartodb-header div.social a.facebook {
-    background:url('../img/other@2x.png') no-repeat 0 0!Important;
+    background:url(../img/other@2x.png) no-repeat 0 0!Important;
     background-size: 113px 34px!Important;
   }
 
   div.cartodb-header div.social a.twitter {
-    background:url('../img/other@2x.png') no-repeat -26px 0!Important;
+    background:url(../img/other@2x.png) no-repeat -26px 0!Important;
     background-size: 113px 34px!Important;
   }
 
   div.cartodb-searchbox span.loader {
-    background: url('../img/loader@2x.gif') no-repeat center center white!Important;
+    background: url(../img/loader@2x.gif) no-repeat center center white!Important;
     background-size: 16px 16px!Important;
   }
 
   div.cartodb-tiles-loader div.loader {
-    background: url('../img/loader@2x.gif') no-repeat center center white!Important;
+    background: url(../img/loader@2x.gif) no-repeat center center white!Important;
     background-size: 16px 16px!Important;
   }
 
   div.cartodb-searchbox input.submit {
-    background:url('../img/other@2x.png') no-repeat -56px 0!Important;
+    background:url(../img/other@2x.png) no-repeat -56px 0!Important;
     background-size: 113px 34px!Important;
   }
 
 }
 
 .cartodb-share-dialog .block .buttons li a.twitter { 
-  background:#3D8FCA url('../img/twitter.png') no-repeat 10px 50%;
+  background:#3D8FCA url(../img/twitter.png) no-repeat 10px 50%;
 }
 .cartodb-share-dialog .block .buttons li a.twitter:hover { background-color:#3272A0; }
 
 .cartodb-share-dialog .block .buttons li a.facebook { 
-  background:#3B5998 url('../img/facebook.png') no-repeat 10px 50%;
+  background:#3B5998 url(../img/facebook.png) no-repeat 10px 50%;
 }
 .cartodb-share-dialog .block .buttons li a.facebook:hover { background-color: #283C65; }
 
 .cartodb-share-dialog .block .buttons li a.link { 
-  background:#f37f7b url('../img/link.png') no-repeat 10px 50%;
+  background:#f37f7b url(../img/link.png) no-repeat 10px 50%;
 }
 .cartodb-share-dialog .block .buttons li a.link:hover { background-color:#DC6161; }
 
@@ -1876,7 +1876,7 @@ div.cartodb-mobile .toggle {
 
   padding: 5px 0;
 
-  background: url('../img/burguer.png') no-repeat center center white;
+  background: url(../img/burguer.png) no-repeat center center white;
   z-index: 10;
 }
 
@@ -2097,7 +2097,7 @@ div.cartodb-legend.bubble ul li.graph {
 }
 
 div.cartodb-legend.bubble ul li.graph .bubbles {
-  background:url('../img/bubbles.png') no-repeat 0 0;
+  background:url(../img/bubbles.png) no-repeat 0 0;
   width:120px; height:40px;
 }
 
@@ -2294,7 +2294,7 @@ div.cartodb-zoom a {
   text-indent: -9999px;
   line-height: 0;
   font-size: 0;
-  background:url('../img/other.png') no-repeat 0 0;
+  background:url(../img/other.png) no-repeat 0 0;
 }
 
 div.cartodb-zoom a.zoom_in {
@@ -2390,7 +2390,7 @@ div.cartodb-tiles-loader div.loader {
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   z-index: 5;
-  background: url('../img/loader.gif') no-repeat center center white;
+  background: url(../img/loader.gif) no-repeat center center white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
@@ -2661,7 +2661,7 @@ div.cartodb-searchbox span.loader {
   left:3px;
   width:22px;
   height:22px;
-  background: url('../img/loader.gif') no-repeat center center white;
+  background: url(../img/loader.gif) no-repeat center center white;
   z-index:5;
 }
 
@@ -2704,7 +2704,7 @@ div.cartodb-searchbox input.submit {
   line-height: 0;
   text-transform: uppercase;
   border:none;
-  background: url('../img/other.png') no-repeat -56px 0;
+  background: url(../img/other.png) no-repeat -56px 0;
   z-index:1;
 }
 
@@ -2862,7 +2862,7 @@ div.cartodb-timeslider a.button {
   text-indent:-9999px;
   line-height:0;
   font-size:0;
-  background:url('../img/slider.png') no-repeat -2px -55px;
+  background:url(../img/slider.png) no-repeat -2px -55px;
 }
 
 div.cartodb-timeslider a.button:hover {
@@ -3014,63 +3014,63 @@ div.cartodb-timeslider p {
   font-family: 'Droid Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Droid Sans'), local('DroidSans'), url(//themes.googleusercontent.com/static/fonts/droidsans/v4/s-BiyweUPV0v-yRb-cjciL3hpw3pgy2gAi-Ip7WPMi0.woff) format('woff');
+  src: local('Droid Sans), local('DroidSans), url(//themes.googleusercontent.com/static/fonts/droidsans/v4/s-BiyweUPV0v-yRb-cjciL3hpw3pgy2gAi-Ip7WPMi0.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Droid Sans';
   font-style: bold;
   font-weight: 700;
-  src: local('Droid Sans Bold'), local('DroidSans-Bold'), url(//themes.googleusercontent.com/static/fonts/droidsans/v4/EFpQQyG9GqCrobXxL-KRMXbFhgvWbfSbdVg11QabG8w.woff) format('woff');
+  src: local('Droid Sans Bold), local('DroidSans-Bold), url(//themes.googleusercontent.com/static/fonts/droidsans/v4/EFpQQyG9GqCrobXxL-KRMXbFhgvWbfSbdVg11QabG8w.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Vollkorn';
   font-style: normal;
   font-weight: 400;
-  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff');
+  src: local('Vollkorn Regular), local('Vollkorn-Regular), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Vollkorn';
   font-style: normal;
   font-weight: 400;
-  src: local('Vollkorn Regular'), local('Vollkorn-Regular'), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff');
+  src: local('Vollkorn Regular), local('Vollkorn-Regular), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/BCFBp4rt5gxxFrX6F12DKnYhjbSpvc47ee6xR_80Hnw.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Vollkorn';
   font-style: bold;
   font-weight: 700;
-  src: local('Vollkorn Bold'), local('Vollkorn-Bold'), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/wMZpbUtcCo9GUabw9JODerrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+  src: local('Vollkorn Bold), local('Vollkorn-Bold), url(//themes.googleusercontent.com/static/fonts/vollkorn/v4/wMZpbUtcCo9GUabw9JODerrIa-7acMAeDBVuclsi6Gc.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Open Sans';
   font-style: bold;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(//themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+  src: local('Open Sans), local('OpenSans), url(//themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Open Sans';
   font-style: bold;
   font-weight: 600;
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(//themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+  src: local('Open Sans Semibold), local('OpenSans-Semibold), url(//themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Roboto Slab';
   font-style: normal;
   font-weight: 400;
-  src: local('Roboto Slab Regular'), local('RobotoSlab-Regular'), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/y7lebkjgREBJK96VQi37ZrrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+  src: local('Roboto Slab Regular), local('RobotoSlab-Regular), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/y7lebkjgREBJK96VQi37ZrrIa-7acMAeDBVuclsi6Gc.woff) format('woff);
 }
 
 @font-face {
   font-family: 'Roboto Slab';
   font-style: bold;
   font-weight: 700;
-  src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/dazS1PrQQuCxC3iOAJFEJRbnBKKEOwRKgsHDreGcocg.woff) format('woff');
+  src: local('Roboto Slab Bold), local('RobotoSlab-Bold), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/dazS1PrQQuCxC3iOAJFEJRbnBKKEOwRKgsHDreGcocg.woff) format('woff);
 }
 
 /* HELVETICA */
@@ -3104,7 +3104,7 @@ only screen and (                min-resolution: 2dppx) {
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px!Important;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
+    background:transparent url(../img/handle@2x.png) center center no-repeat!Important;
     border:none!Important;
     background-size: 11px 12px!Important;
   }
@@ -3119,7 +3119,7 @@ only screen and (                min-resolution: 2dppx) {
 
     padding: 5px 0;
 
-    background: url('../img/burguer@2x.png') no-repeat center center white;
+    background: url(../img/burguer@2x.png) no-repeat center center white;
     background-size: 18px 11px;
   }
 
@@ -3137,7 +3137,7 @@ and (max-device-width : 480px) {
   div.cartodb-map-wrapper div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat;
+    background:transparent url(../img/handle@2x.png) center center no-repeat;
     border:none;
     background-size: 11px 12px;
   }
@@ -3193,7 +3193,7 @@ and (orientation : portrait) {
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px!Important;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
+    background:transparent url(../img/handle@2x.png) center center no-repeat!Important;
     border:none!Important;
     background-size: 11px 12px!Important;
   }
@@ -3208,7 +3208,7 @@ and (orientation : landscape) {
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px!Important;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
+    background:transparent url(../img/handle@2x.png) center center no-repeat!Important;
     border:none!Important;
     background-size: 11px 12px!Important;
   }
@@ -3227,7 +3227,7 @@ and (orientation : portrait) {
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px!Important;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
+    background:transparent url(../img/handle@2x.png) center center no-repeat!Important;
     border:none!Important;
     background-size: 11px 12px!Important;
   }
@@ -3246,7 +3246,7 @@ and (orientation : landscape) {
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
     top: -12px!Important;
     padding: 9px 3px;
-    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
+    background:transparent url(../img/handle@2x.png) center center no-repeat!Important;
     border:none!Important;
     background-size: 11px 12px!Important;
   }
@@ -3354,7 +3354,7 @@ div.cartodb-timeslider .ui-slider .ui-slider-handle {
   width: 9px;
   height: 10px;
   cursor: default;
-  background:url('../img/slider.png') no-repeat -98px -18px white;
+  background:url(../img/slider.png) no-repeat -98px -18px white;
   border:1px solid #555555;
   border-radius:2px;
   -webkit-border-radius:2px;

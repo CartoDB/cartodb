@@ -53,6 +53,8 @@ module CartoDB
           end
 
           # --------------- then move the user to its new place
+          old_database_host = user.database_host
+          old_database_name = user.database_name
           user.database_host = org.owner.database_host
           user.database_schema = user.username
           user.database_name = org.owner.database_name
@@ -81,6 +83,8 @@ module CartoDB
           relocator.compare
           relocator.finalize
           relocator.check_org_user(user)
+          User.terminate_database_connections(old_database_name, old_database_host)
+          relocator.cleanup
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"
           puts "Rolling back in 5 secs"

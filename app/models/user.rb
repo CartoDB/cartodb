@@ -18,7 +18,7 @@ class User < Sequel::Model
   # @param avatar_url       String
   # @param database_schema  String
 
-  one_to_one :client_application
+  one_to_one  :client_application
   one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
@@ -142,13 +142,18 @@ class User < Sequel::Model
   end
 
   def before_destroy
+    @org_id = nil
     error_happened = false
     has_organization = false
-    unless self.organization_id.nil? || self.organization.nil?
-      if self.organization.owner.id == self.id && self.organization.users.count > 1
-        msg = 'Attempted to delete owner from organization with other users'
-        CartoDB::Logger.info msg
-        raise CartoDB::BaseCartoDBError.new(msg)
+    unless self.organization.nil?
+      self.organization.reload  # Avoid ORM caching
+      if self.organization.owner.id == self.id
+        @org_id = self.organization.id  # after_destroy will wipe the organization too
+        if self.organization.users.count > 1
+          msg = 'Attempted to delete owner from organization with other users'
+          CartoDB::Logger.info msg
+          raise CartoDB::BaseCartoDBError.new(msg)
+        end
       end
 
       # Right now, cannot delete users with entities shared with other users or the org.
@@ -172,7 +177,7 @@ class User < Sequel::Model
       # Remove user data imports, maps, layers and assets
       self.data_imports.each { |d| d.destroy }
       self.maps.each { |m| m.destroy }
-      self.layers.each { |l| self.remove_layer l }
+      self.layers.each { |l| remove_layer l }
       self.geocodings.each { |g| g.destroy }
       self.assets.each { |a| a.destroy }
       CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
@@ -185,17 +190,24 @@ class User < Sequel::Model
     $users_metadata.DEL(self.key) unless error_happened
 
     # Invalidate user cache
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
 
     # Delete the DB or the schema
     if has_organization
-      self.drop_organization_user unless error_happened
+      drop_organization_user unless error_happened
     else
       if User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
       else
-        self.drop_database_and_user unless error_happened
+        drop_database_and_user unless error_happened
       end
+    end
+  end
+
+  def after_destroy
+    unless @org_id.nil?
+      organization = Organization.where(id:@org_id).first
+      organization.destroy
     end
   end
 
@@ -204,15 +216,19 @@ class User < Sequel::Model
     Thread.new do
       in_database(as: :superuser) do |database|
         # Drop this user privileges in every schema of the DB
-        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public'] +
-          User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema).uniq
-        schemas.each do |s|
+        schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
+          User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema)
+        schemas.uniq.each do |s|
           drop_user_privileges_in_schema(s)
         end
         # Drop user quota function
-        database.run(%Q{ DROP FUNCTION IF EXISTS \"#{self.database_schema}\"._cdb_userquotainbytes()})
+        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._cdb_userquotainbytes()})
         # If user is in an organization should never have public schema, so to be safe check
-        database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
+        drop_all_functions_from_schema(self.database_schema)
+        unless self.database_schema == 'public'
+          # Must drop all functions before or it will fail
+          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
+        end
       end
 
       conn = self.in_database(as: :cluster_admin)
@@ -222,6 +238,9 @@ class User < Sequel::Model
       conn.run("DROP USER \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_username}\"")
     end.join
+
+
+
     monitor_user_notification
   end
 
@@ -1167,9 +1186,9 @@ class User < Sequel::Model
 
   def create_public_db_user
     in_database(as: :superuser) do |database|
-      database.run(%Q{ CREATE USER \"#{database_public_username}\" LOGIN INHERIT })
-      database.run(%Q{ GRANT publicuser TO \"#{database_public_username}\" })
-      database.run(%Q{ ALTER USER \"#{database_public_username}\" SET search_path = \"#{database_schema}\", public, cartodb })
+      database.run(%Q{ CREATE USER "#{database_public_username}" LOGIN INHERIT })
+      database.run(%Q{ GRANT publicuser TO "#{database_public_username}" })
+      database.run(%Q{ ALTER USER "#{database_public_username}" SET search_path = "#{database_schema}", public, cartodb })
     end
   end
 
@@ -1743,7 +1762,8 @@ TRIGGER
   def drop_user_privileges_in_schema(schema)
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        [self.database_username, self.database_public_username].each do |u|
+
+        [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER].each do |u|
           user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
@@ -1784,6 +1804,85 @@ TRIGGER
         end
         yield(user_database) if block_given?
       end
+    end
+  end
+
+  # Drops grants and functions in a given schema, avoiding by all means a CASCADE
+  # to not affect extensions or other users
+  def drop_all_functions_from_schema(schema_name)
+    recursivity_max_depth = 3
+
+    return if schema_name == 'public'
+
+    in_database(as: :superuser) do |database|
+      # Non-aggregate functions
+      drop_function_sqls = database.fetch(%Q{
+        SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
+        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
+        WHERE ns.nspname = '#{schema_name}'
+      })
+
+      # Simulate a controlled environment drop cascade contained to only functions
+      failed_sqls = []
+      recursivity_level = 0
+      begin
+        failed_sqls = []
+        drop_function_sqls.each { |sql_sentence|
+          begin
+            database.run(sql_sentence[:sql])
+          rescue Sequel::DatabaseError => e
+            if e.message =~ /depends on function /i
+              failed_sqls.push(sql_sentence)
+            else
+              raise
+            end
+          end
+        }
+        drop_function_sqls = failed_sqls
+        recursivity_level += 1
+      end while failed_sqls.count > 0 && recursivity_level < recursivity_max_depth
+
+      # If something remains, reattempt later after dropping aggregates
+      if drop_function_sqls.count > 0
+        aggregate_dependant_function_sqls = drop_function_sqls
+      else
+        aggregate_dependant_function_sqls = []
+      end
+
+      # And now aggregate functions
+      failed_sqls = []
+      drop_function_sqls = database.fetch(%Q{
+        SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');' AS sql
+        FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
+        WHERE ns.nspname = '#{schema_name}'
+      })
+      drop_function_sqls.each { |sql_sentence|
+        begin
+          database.run(sql_sentence[:sql])
+        rescue Sequel::DatabaseError => e
+          failed_sqls.push(sql_sentence)
+        end
+      }
+
+      if failed_sqls.count > 0
+        raise CartoDB::BaseCartoDBError.new('Cannot drop schema aggregate functions, dependencies remain')
+      end
+
+      # One final pass of normal functions, if left
+      if aggregate_dependant_function_sqls.count > 0
+        aggregate_dependant_function_sqls.each { |sql_sentence|
+          begin
+            database.run(sql_sentence[:sql])
+          rescue Sequel::DatabaseError => e
+            failed_sqls.push(sql_sentence)
+          end
+        }
+      end
+
+      if failed_sqls.count > 0
+        raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
+      end
+
     end
   end
 

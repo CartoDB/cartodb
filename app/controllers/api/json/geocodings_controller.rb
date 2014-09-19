@@ -102,7 +102,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
                         GROUP BY iso3")
                 .map { |i| i['services'] }.inject(:'&')
 
-    render_jsonp({ errors: 'No coverage info available for that input' }, 400) and return
+    if geometries.nil?
+      render_jsonp({ errors: 'No coverage info available for that input' }, 400) and return
+    end
 
     render(json: geometries)
   end

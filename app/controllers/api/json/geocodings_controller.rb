@@ -2,7 +2,7 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :all_country_data, :get_countries, :estimation_for
+  ssl_required :index, :show, :create, :update, :country_data_for, :all_country_data, :get_countries, :estimation_for, :available_geometries
 
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
@@ -67,6 +67,44 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder]["internal"].symbolize_keys)
             .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
     render json: rows
+  end
+
+  def available_geometries
+    return head(400) unless %w(admin1 namedplace postalcode).include? params[:kind]
+
+    render(json: ["polygon"]) and return if params[:kind] == "admin1"
+    render(json: ["point"])   and return if params[:kind] == "namedplace"
+
+    return head(400) unless params[:free_text] || (params[:column_name] && params[:table_name])
+
+    if params[:free_text]
+      input = [params[:free_text]]
+    else
+      table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
+      return head(400) if table.nil?
+      input = table.sequel.distinct.select_map(params[:column_name].to_sym)
+    end
+
+    input = input.map{ |v| v.to_s.squish.downcase.gsub(/[^\p{Alnum}]/, '') }
+            .reject(&:blank?)
+    if input.empty?
+      render_jsonp({ errors: 'No input provided' }, 400) and return
+    end
+
+    list = input.map{ |v| "'#{ v }'" }.join(",")
+
+    geometries = CartoDB::SQLApi.new(username: 'geocoding')
+                .fetch("SELECT iso3,ARRAY_AGG(service) AS services
+                        FROM postal_code_coverage
+                        WHERE iso3 IN (SELECT DISTINCT adm0_a3
+                        FROM admin0_synonyms
+                        WHERE name_ IN (#{ list }))
+                        GROUP BY iso3")
+                .map { |i| i['services'] }.inject(:'&')
+
+    render_jsonp({ errors: 'No coverage info available for that input' }, 400) and return
+
+    render(json: geometries)
   end
 
   def estimation_for

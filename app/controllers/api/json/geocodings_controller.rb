@@ -4,7 +4,7 @@ require Rails.root.join('services', 'sql-api', 'sql_api')
 class Api::Json::GeocodingsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :country_data_for, :all_country_data, :get_countries, :estimation_for, :available_geometries
 
-  before_filter :load_table, only: [:create, :available_geometries, :estimation_for]
+  before_filter :load_table, only: [:create, :estimation_for]
 
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
@@ -87,6 +87,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
       input = [params[:free_text]]
     else
       begin
+        load_table
         return head(400) if @table.nil?
         input = @table.sequel.distinct.select_map(params[:column_name].to_sym)
       rescue Sequel::DatabaseError

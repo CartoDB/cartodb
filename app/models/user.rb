@@ -142,13 +142,14 @@ class User < Sequel::Model
   end
 
   def before_destroy
-    @org_id = nil
+    org_id = nil
+    @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false
     unless self.organization.nil?
       self.organization.reload  # Avoid ORM caching
       if self.organization.owner.id == self.id
-        @org_id = self.organization.id  # after_destroy will wipe the organization too
+        @org_id_for_org_wipe = self.organization.id  # after_destroy will wipe the organization too
         if self.organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
           CartoDB::Logger.info msg
@@ -169,6 +170,7 @@ class User < Sequel::Model
     end
 
     begin
+      org_id = self.organization_id
       self.organization_id = nil
 
       # Remove user tables
@@ -194,7 +196,7 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      drop_organization_user unless error_happened
+      drop_organization_user(org_id) unless error_happened
     else
       if User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
@@ -205,19 +207,21 @@ class User < Sequel::Model
   end
 
   def after_destroy
-    unless @org_id.nil?
-      organization = Organization.where(id:@org_id).first
+    unless @org_id_for_org_wipe.nil?
+      organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
     end
   end
 
   # Org users share the same db, so must only delete the schema
-  def drop_organization_user
+  def drop_organization_user(org_id)
+    raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
+
     Thread.new do
       in_database(as: :superuser) do |database|
         # Drop this user privileges in every schema of the DB
         schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
-          User.select(:database_schema).where(:organization_id => self.organization_id).all.collect(&:database_schema)
+          User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
         schemas.uniq.each do |s|
           drop_user_privileges_in_schema(s)
         end

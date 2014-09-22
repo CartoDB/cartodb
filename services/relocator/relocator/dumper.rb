@@ -52,6 +52,9 @@ module CartoDB
         end
       end
       
+      def cleanup
+      end
+
       def setup
         create_user(@username, superuser_conn)
         create_db(@config[:target][:conn][:dbname])

@@ -39,21 +39,16 @@ module CartoDB
     end
 
     def owner
-      return @owner
+      @owner
     end
     
     def organization
-      return @organization
+      @organization
     end
    
     def users
-      return @users
+      @users
     end
-
-    #def add_user_to_organization(user_id)
-    #  user = User.where(:id => user_id).first
-    #  raise "User with id #{user_id} doesn't exist" if user.nil?
-    #end
 
     def self.from_org_id(organization_id)
       organization = Organization.where(:id => organization_id).first
@@ -83,13 +78,14 @@ module CartoDB
     end
 
     private
+
     def move_user_tables_to_schema(user_id)
       user = User.where(:id => user_id).first
       raise "User doesn't exist" if user.nil?
       user.real_tables.each do |t|
         puts "TABLE: #{t}"
         user.in_database(as: :superuser) do |database|
-          database.run(%Q{ALTER TABLE public.#{t[:relname]} SET SCHEMA \"#{user.username}\"})
+          database.run(%Q{ ALTER TABLE public.#{t[:relname]} SET SCHEMA "#{user.username}" })
         end
       end
     end

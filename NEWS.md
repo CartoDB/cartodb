@@ -9,7 +9,7 @@
 * New Features
   * Twitter datasource, unsing Gnip Search API. Introduces new app_config.yml fields (search for 'datasource_search')
 
-3.0.1 (2014-mm-dd)
+3.1.0 (2014-08-25)
 ------------------
 * New features
   * Varnish HTTP invalidation support

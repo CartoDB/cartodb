@@ -1,8 +1,8 @@
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
-    'click h3':             "_toggle",
-    "dbclick":              "_stopPropagation"
+    'click':    "_toggle",
+    "dbclick":  "_stopPropagation"
   },
 
   tagName: "li",
@@ -32,7 +32,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
     this.$el[ this.model.get("visible") ? "removeClass":"addClass"]("hidden");
 
     this.trigger("change_visibility", this);
- 
+
   },
 
   _toggle: function(e) {
@@ -69,7 +69,13 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     layer_name = this._truncate(layer_name, 23);
 
-    var attributes = _.extend(this.model.attributes, { layer_name: layer_name, toggle_class: this.options.hide_toggle ? " hide" : "" });
+    var attributes = _.extend(
+      this.model.attributes,
+      {
+        layer_name: layer_name,
+        toggle_class: this.options.hide_toggle ? " hide" : ""
+      }
+    );
 
     this.$el.html(this.template(attributes));
 
@@ -126,7 +132,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.$el.find(".cartodb-attribution").fadeOut(250);
 
   },
-  
+
   _onAttributionClick: function(e) {
 
     e.preventDefault();
@@ -509,7 +515,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderLayer: function(layer_data) {
 
-    var hide_toggle = (this.layers.length == 1 || layer_data.type === "torque");
+    var hide_toggle = (this.layers.length == 1 || layer_data.type === "torque" || this.visibility_options.layer_selector === false);
 
     var layer = new cdb.geo.ui.MobileLayer({ model: layer_data, hide_toggle: hide_toggle });
     this.$el.find(".aside .layers").append(layer.render().$el);

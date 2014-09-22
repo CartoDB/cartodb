@@ -89,6 +89,12 @@ module CartoDB
         self
       end
 
+      def store_from_map(fields)
+        self.map_id = fields[:map_id]
+        do_store(false)
+        self
+      end
+
       def store_using_table(fields)
         if type == CANONICAL_TYPE
           # Each table has a canonical visualization which must have privacy synced

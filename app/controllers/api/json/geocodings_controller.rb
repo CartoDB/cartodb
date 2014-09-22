@@ -2,9 +2,9 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :all_country_data, :get_countries, :estimation_for, :available_geometries
+  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for, :available_geometries
 
-  before_filter :load_table, only: [:create, :available_geometries, :estimation_for]
+  before_filter :load_table, only: [:create, :estimation_for]
 
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
@@ -59,16 +59,6 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render json: response
   end
 
-  def all_country_data
-    rows = CartoDB::SQLApi.new(username: 'geocoding')
-            .fetch("SELECT country_decoder.name,ARRAY_AGG(postal_code_coverage.service) AS services
-                    FROM postal_code_coverage
-                    INNER JOIN country_decoder
-                    ON postal_code_coverage.iso3 = country_decoder.iso3 GROUP BY country_decoder.name")
-            .map { |i| { i['name'] => { admin1: ["polygon"], namedplace: ["point"], postalcode: i['services'] } } }.reduce Hash.new, :merge
-    render json: rows
-  end
-
   def get_countries
     rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder]["internal"].symbolize_keys)
             .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
@@ -87,6 +77,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
       input = [params[:free_text]]
     else
       begin
+        load_table
         return head(400) if @table.nil?
         input = @table.sequel.distinct.select_map(params[:column_name].to_sym)
       rescue Sequel::DatabaseError

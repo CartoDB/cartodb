@@ -49,11 +49,11 @@
         <% @public_org_visualizations.each_with_index do |vis, i| %>
           <li>
             <div class="map-wrapper headless">
-              <a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>" class="backdrop"></a>
+              <div class="backdrop"></div>
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
-                <h3><%= vis[:title] %></h3>
+                <h2><a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>"><%= vis[:title] %></a></h2>
                 <p><%= raw (vis[:description] ? vis[:description] : "") %></p>
               </div>
               <div class="gradient"></div>
@@ -64,7 +64,7 @@
                     <% if vis[:tags].size > 0 %>
                         <ul class="tags">
                             <% vis[:tags].each do |tag| %>
-                                <li><%= link_to tag, public_tag_url(user_domain: params[:user_domain], tag: tag) %></li>
+                                <li><h3><%= link_to tag, public_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
                             <% end %>
                         </ul>
                     <% end %>

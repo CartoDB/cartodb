@@ -389,25 +389,23 @@
         overflow: hidden;
       }
 
-      p.message {
-        display:block;
+      .progress-text {
+        @include display-flex();
+        @include justify-content(center, center);
+        @include align-items(center, center);
         margin-top:15px;
+      }
+
+      .message {
         text-align:center;
         font-size:15px;
         color:#666666;
       }
 
-      a.stop {
-        @include inline-block();
-        width:13px;
-        height:13px;
-        margin:0 0px 0 5px;
-        padding:0;
-        @include common-sprite(close_grey);
-        @include text-indent();
-
-        &:hover {@include common-sprite(close_grey, $offset-y: -13px);}
-        &:active {@include common-sprite(close_grey, $offset-y: -26px);}
+      .progress-stop {
+        display:none;
+        margin-left:7px;
+        color:#666;
       }
 
     }

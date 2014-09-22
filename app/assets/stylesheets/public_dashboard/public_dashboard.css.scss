@@ -139,16 +139,24 @@ header {
   margin: 0 0 40px 0;
 
   li  {
-
     padding: 17px 0;
-
     border-bottom: 1px solid #ddd;
     border-bottom: 1px solid rgba(#BBBBBB, .2);
     color: #BABABA;
 
     a { line-height:normal; }
 
-    .close { float:right; margin: 0 3px 0 0; }
+    h3 {
+      color: #BABABA;
+      font-size: 15px;
+      font-weight: normal;
+    }
+
+
+    .close {
+      float: right;
+      margin: -2px 3px 0 0;
+    }
 
     &:first-child { padding-top: 0; }
     &:last-child  { border:none; }
@@ -251,10 +259,9 @@ header {
         display:block;
       }
 
-      &, a {
-        font-family: 'ProximaNova-Semibold', $text-fonts2;
-        font-weight: 400;
-        font-size:11px;
+      &, a, h2 {
+        font: 400 11px/1 'ProximaNova-Semibold', $text-fonts2;
+        letter-spacing: 0;
       }
 
       a:hover {
@@ -347,13 +354,18 @@ header {
     font-weight: 200;
   }
 
-  .title > a {
-    float:left;
-    display:block;
+  .title > h2 {
+    letter-spacing: 0;
+    line-height: normal;
 
-    font-size: 25px;
-    font-family: 'ProximaNova-Semibold', $text-fonts2;
-    font-weight: 200;
+    a {
+      float:left;
+      display:block;
+
+      font-size: 25px;
+      font-family: 'ProximaNova-Semibold', $text-fonts2;
+      font-weight: 200;
+    }
   }
 
   .title p {
@@ -388,6 +400,7 @@ header {
     position:relative;
     text-align:left;
     overflow:hidden;
+    cursor: pointer;
     @include border-radius(5px 5px 0 0);
     @include browsers_transform(translate3d(0,0,10px) translateZ(10px), none, none);
 
@@ -403,7 +416,7 @@ header {
       height: 100%;
       @include opacity(0);
       background:#fff;
-      z-index: 50;
+      z-index: 20;
     }
 
     .map {
@@ -429,28 +442,36 @@ header {
       left: 42px;
 
       right: 42px;
-
-      z-index: 40;
     }
 
-    .title h3 {
+    .title h2 a {
+      position: relative;
       margin: 0;
-
       color: #fff;
       font-family: 'ProximaNova-Semibold', $text-fonts2;
       font-weight: 400;
       font-size: 27px;
       @include text-overflow();
       width: 100%;
+      z-index: 40;
 
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    .title h3 {
+      font-weight: normal;
     }
 
     .title p {
+      position: relative;
       margin: 5px 0 0 0;
       font-size:15px;
       color: #DDDDDD;
       @include text-overflow();
       width: 100%;
+      z-index: 40;
 
       a {
         color: #fff;
@@ -474,6 +495,11 @@ header {
     @include clearfix();
     @include border-radius(0 0 5px 5px);
     @include box-sizing(border-box);
+
+    h3 {
+      line-height: 18px;
+      font-weight: normal;
+    }
   }
 
   .mapviews {
@@ -519,6 +545,10 @@ header {
       margin: 0 0 10px 0;
     }
 
+    h3 {
+      font-weight: normal;
+      line-height: 18px;
+    }
   }
 }
 

@@ -271,6 +271,11 @@ body.public { /* Public table CSS */
         font-weight: bold;
       }
 
+      h2 {
+        @include inline-block();
+        line-height: normal;
+      }
+
     }
 
     .generating {

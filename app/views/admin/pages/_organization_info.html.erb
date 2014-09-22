@@ -28,11 +28,11 @@
 
     <ul>
       <% if action_name == 'datasets' %>
-        <li><div class="count"><strong><%= @public_org_tables_count %></strong>dataset<%= @public_org_tables_count == 1 ? '' : 's' %></div></li>
-        <li><a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @public_org_vis_count %></strong>visualization<%= @public_org_vis_count == 1 ? '' : 's' %></a></li>
+        <li><h2 class="count" title="<%= @organization.display_name.present? ? @organization.name : @organization.display_name %> dataset<%= @public_org_tables_count == 1 ? '' : 's' %>"><strong><%= @public_org_tables_count %></strong>dataset<%= @public_org_tables_count == 1 ? '' : 's' %></h2></li>
+        <li><h2><a href="<%= public_visualizations_home_url(user_domain: params[:user_domain]) %>" class="count" title="<%= @organization.display_name.present? ? @organization.name : @organization.display_name %> visualization<%= @public_org_tables_count == 1 ? '' : 's' %>"><strong><%= @public_org_vis_count %></strong>visualization<%= @public_org_vis_count == 1 ? '' : 's' %></a></h2></li>
       <% else %>
-        <li><a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" class="count"><strong><%= @public_org_tables_count %></strong>dataset<%= @public_org_tables_count == 1 ? '' : 's' %></a></li>
-        <li><div class="count"><strong><%= @public_org_vis_count %></strong>visualization<%= @public_org_vis_count == 1 ? '' : 's' %></div></li>
+        <li><h2><a href="<%= public_datasets_home_url(user_domain: params[:user_domain]) %>" class="count" title="<%= @organization.display_name.present? ? @organization.name : @organization.display_name %> dataset<%= @public_org_tables_count == 1 ? '' : 's' %>"><strong><%= @public_org_tables_count %></strong>dataset<%= @public_org_tables_count == 1 ? '' : 's' %></a></h2></li>
+        <li><h2 class="count" title="<%= @organization.display_name.present? ? @organization.name : @organization.display_name %> dataset<%= @public_org_tables_count == 1 ? '' : 's' %>"><strong><%= @public_org_vis_count %></strong>visualization<%= @public_org_vis_count == 1 ? '' : 's' %></h2></li>
       <% end %>
     </ul>
 

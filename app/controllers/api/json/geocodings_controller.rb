@@ -101,14 +101,12 @@ class Api::Json::GeocodingsController < Api::ApplicationController
 
     list = input.map{ |v| "'#{ v }'" }.join(",")
 
-    geometries = CartoDB::SQLApi.new(username: 'geocoding')
-                .fetch("SELECT iso3,ARRAY_AGG(service) AS services
-                        FROM postal_code_coverage
-                        WHERE iso3 IN (SELECT DISTINCT adm0_a3
-                        FROM admin0_synonyms
-                        WHERE name_ IN (#{ list }))
-                        GROUP BY iso3")
-                .map { |i| i['services'] }.inject(:'&')
+    services = CartoDB::SQLApi.new(username: 'geocoding')
+                .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
+
+    geometries = []
+    geometries.append 'point' if services.map { |i| i['postal_code_points'] }.inject(:'&')
+    geometries.append 'polygon' if services.map { |i| i['postal_code_polygons'] }.inject(:'&')
 
     render(json: geometries || [])
   end

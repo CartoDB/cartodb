@@ -2471,7 +2471,9 @@ exports.Profiler = Profiler;
         }
       }
       prof.end(true);
-      return canvas;
+      var i = new Image();
+      i.src = canvas.toDataURL();
+      return i;
     },
 
     //

@@ -2,7 +2,7 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :all_country_data, :get_countries, :estimation_for, :available_geometries
+  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for, :available_geometries
 
   before_filter :load_table, only: [:create, :estimation_for]
 
@@ -57,16 +57,6 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     response[:postalcode] = rows if rows.size > 0
 
     render json: response
-  end
-
-  def all_country_data
-    rows = CartoDB::SQLApi.new(username: 'geocoding')
-            .fetch("SELECT country_decoder.name,ARRAY_AGG(postal_code_coverage.service) AS services
-                    FROM postal_code_coverage
-                    INNER JOIN country_decoder
-                    ON postal_code_coverage.iso3 = country_decoder.iso3 GROUP BY country_decoder.name")
-            .map { |i| { i['name'] => { admin1: ["polygon"], namedplace: ["point"], postalcode: i['services'] } } }.reduce Hash.new, :merge
-    render json: rows
   end
 
   def get_countries

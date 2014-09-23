@@ -75,6 +75,7 @@
         position:relative;
         display:block;
         border:1px solid #BBBBBB;
+        border-top:none;
         @include border-bottom-radius($br);
         background:white;
         z-index:1;

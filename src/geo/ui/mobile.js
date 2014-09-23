@@ -48,11 +48,14 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   _renderLegend: function() {
 
+    if (!this.options.show_legends) return;
+
     if (this.model.get("legend") && this.model.get("legend").type == "none") return;
 
     this.$el.addClass("has-legend");
 
     var legend = new cdb.geo.ui.Legend(this.model.get("legend"));
+
     legend.undelegateEvents();
 
     this.$el.append(legend.render().$el);
@@ -67,7 +70,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     var layer_name = this.model.get("layer_name");
 
-    layer_name = this._truncate(layer_name, 23);
+    layer_name = layer_name ? this._truncate(layer_name, 23) : "untitled";
 
     var attributes = _.extend(this.model.attributes, { layer_name: layer_name, toggle_class: this.options.hide_toggle ? " hide" : "" });
 
@@ -511,7 +514,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var hide_toggle = (this.layers.length == 1 || layer_data.type === "torque");
 
-    var layer = new cdb.geo.ui.MobileLayer({ model: layer_data, hide_toggle: hide_toggle });
+    var show_legends = this.options.visibility_options ? this.options.visibility_options.legends : true;
+
+    var layer = new cdb.geo.ui.MobileLayer({ model: layer_data, show_legends: show_legends, hide_toggle: hide_toggle });
     this.$el.find(".aside .layers").append(layer.render().$el);
     layer.bind("change_visibility", this._reInitScrollpane, this);
 

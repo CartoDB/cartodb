@@ -5,7 +5,6 @@ describe("cdb.geo.ui.Mobile", function() {
   beforeEach(function() {
 
     var map = new cdb.geo.Map();
-    var map2 = new cdb.geo.Map();
 
     // Layers
     var l1 = new cdb.geo.CartoDBLayer({ type: "Tiled", visible: true, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
@@ -33,7 +32,29 @@ describe("cdb.geo.ui.Mobile", function() {
             layer_name: "jamon_countries",
             interactivity: ['description', 'cartodb_id']
           }
-        }]
+        },{
+          type: 'cartodb',
+          options: {
+            sql: "select * from jamon_countries",
+            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+            cartocss_version : '2.0.0',
+            layer_name: "layer_with_legend",
+            interactivity: ['description', 'cartodb_id'],
+          },
+          legend: {
+            type: "custom",
+            title: "Little legend",
+            show_title: true,
+            data: [
+              { name: "Natural Parks",  value: "#58A062" },
+              { name: "Villages",       value: "#F07971" },
+              { name: "Rivers",         value: "#54BFDE" },
+              { name: "Fields",         value: "#9BC562" },
+              { name: "Caves",          value: "#FABB5C" }
+            ]
+          }
+        }
+        ]
       }
     });
 
@@ -92,6 +113,17 @@ describe("cdb.geo.ui.Mobile", function() {
       map: map
     });
 
+    mobile_without_legend = new cdb.geo.ui.Mobile({
+      template: template,
+      mapView: mapView,
+      overlays: overlays,
+      torqueLayer: null,
+      map: map,
+      visibility_options: {
+        legends: false
+      },
+    });
+
   });
 
   describe("with CartoDB layers", function() {
@@ -114,7 +146,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     it("should render the layers", function() {
       mobile.render();
-      expect(mobile.$el.find(".layers > li").length).toBe(2);
+      expect(mobile.$el.find(".layers > li").length).toBe(3);
     });
 
     it("should render the attribution", function() {
@@ -134,6 +166,17 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
     });
 
+    it("should render the legend", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title").text()).toBe("Little legend");
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
+    });
+
+    it("shouldn't render the legend", function() {
+      mobile_without_legend.render();
+      expect(mobile_without_legend.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+    });
+
     it("should hide the attribution when clicking on the backdrop", function() {
       mobile.render();
       mobile.$el.find(".cartodb-attribution-button").click();
@@ -146,5 +189,4 @@ describe("cdb.geo.ui.Mobile", function() {
     });
 
   });
-
 });

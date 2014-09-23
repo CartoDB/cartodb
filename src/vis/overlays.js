@@ -43,29 +43,6 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
   return mobile.render();
 });
 
-cdb.vis.Overlay.register('mobile_old', function(data, vis) {
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-    <div class="torque"></div>\
-    <div class="top-shadow"></div>\
-    <div class="bottom-shadow"></div>\
-    <div class="legends"></div>\
-    <a class="toggle" href="#"></a>\
-    ',
-    data.templateType || 'mustache'
-  );
-
-  var mobile = new cdb.geo.ui.Mobile({
-    template: template,
-    torqueLayer: data.torqueLayer,
-    legends: data.legends,
-    map: data.map
-  });
-
-  return mobile.render();
-});
-
 cdb.vis.Overlay.register('image', function(data, vis) {
 
   var options = data.options;

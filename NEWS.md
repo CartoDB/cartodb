@@ -1,3 +1,8 @@
+3.2.X
+------------------
+* New features
+  * Improved torque rendering on pause or static datasets
+
 3.2.1 (2014-09-05)
 ------------------
 * New common data section

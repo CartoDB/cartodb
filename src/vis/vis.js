@@ -384,8 +384,8 @@ var Vis = cdb.core.View.extend({
 
     this.cartodb_logo = (options.cartodb_logo !== undefined) ? options.cartodb_logo: has_logo_overlay;
 
-    // We set the logo by default
-    if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true;
+    if (this.mobile) this.cartodb_logo = false;
+    else if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true; // We set the logo by default
 
     var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 
@@ -697,7 +697,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    this.small_embed = $(window).width() < 620 && $("body").hasClass("embed-map");
+    this.small_embed    = $(window).width() < 620 && $("body").hasClass("embed-map");
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = this.mobile || this.small_embed;
 
@@ -770,7 +770,6 @@ var Vis = cdb.core.View.extend({
       remove_overlay('logo');
       remove_overlay('share');
       remove_overlay('layer_selector');
-      //remove_overlay('fullscreen');
     }
 
     if (this.mobile) {

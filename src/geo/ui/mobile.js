@@ -2,7 +2,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
     'click':    "_toggle",
-    "dbclick":  "_stopPropagation"
+    "dblclick":  "_stopPropagation"
   },
 
   tagName: "li",
@@ -101,7 +101,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     "click .toggle":                     "_toggle",
     "click .fullscreen":                 "_toggleFullScreen",
     "click .backdrop":                   "_onBackdropClick",
-    "dbclick":                           "_stopPropagation",
+    "dblclick .aside":                   "_stopPropagation",
     "dragstart .aside":                  "_checkOrigin",
     "mousedown .aside":                  "_checkOrigin",
     "touchstart .aside":                 "_checkOrigin",
@@ -520,7 +520,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var hide_toggle = (this.layers.length == 1 || layer_data.type === "torque" || this.visibility_options.layer_selector === false);
 
-    var show_legends = this.options.visibility_options ? this.options.visibility_options.legends : true;
+    var show_legends = true;
+
+    if (this.options.visibility_options && this.options.visibility_options.legends !== undefined) {
+      show_legends = this.options.visibility_options.legends;
+    }
 
     var layer = new cdb.geo.ui.MobileLayer({ model: layer_data, show_legends: show_legends, hide_toggle: hide_toggle });
     this.$el.find(".aside .layers").append(layer.render().$el);

@@ -1162,7 +1162,7 @@ div.cartodb-popup.v2.header.yellow a.cartodb-popup-close-button:after {
   div.cartodb-popup p.empty {
     color:#999999;
   }/**
- *  CartoDB map style components 
+ *  CartoDB map style components
  */
 
 * {
@@ -1227,9 +1227,9 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
 
   z-index: 5;
 }
-.cartodb-fullscreen a { 
-  display:block; 
-  width: 14px; 
+.cartodb-fullscreen a {
+  display:block;
+  width: 14px;
   height: 14px;
   padding: 7px;
 
@@ -1245,10 +1245,10 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
   border-radius: 4px;
   border: 1px solid #999999;
 }
-.cartodb-fullscreen a:active { 
+.cartodb-fullscreen a:active {
   background-position: 7px 3px!important;
 }
-.cartodb-fullscreen a:hover { 
+.cartodb-fullscreen a:hover {
   background-position: -19px 5px;
 }
 
@@ -1397,32 +1397,32 @@ and (orientation : landscape) {
 }
 
 /* iPhone portrait */
-@media only screen 
-and (min-device-width : 320px) 
-and (max-device-width : 480px) { 
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px) {
 
   /*.cartodb-map-wrapper div.cartodb-overlay.overlay-text.desktop { display:none; }*/
   /*.cartodb-map-wrapper div.cartodb-overlay.overlay-text.mobile  { display:block; }*/
 
   div.cartodb-header h1 {
-    width:78%; 
+    width:78%;
   }
   div.cartodb-header > p {
-    width:80%; 
+    width:80%;
   }
 
 }
 
 /* iPad */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) { 
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px) {
 
   div.cartodb-header h1 {
-    width:78%; 
+    width:78%;
   }
   div.cartodb-header > p {
-    width:80%; 
+    width:80%;
   }
 
 }
@@ -1433,13 +1433,13 @@ only screen and (   min--moz-device-pixel-ratio: 2),
 only screen and (     -o-min-device-pixel-ratio: 2/1),
 only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) { 
+only screen and (                min-resolution: 2dppx) {
 
   div.cartodb-header h1 {
-    width:78%; 
+    width:78%;
   }
   div.cartodb-header > p {
-    width:80%; 
+    width:80%;
   }
 
   div.cartodb-zoom a {
@@ -1492,17 +1492,17 @@ only screen and (                min-resolution: 2dppx) {
 
 }
 
-.cartodb-share-dialog .block .buttons li a.twitter { 
+.cartodb-share-dialog .block .buttons li a.twitter {
   background:#3D8FCA url('../img/twitter.png') no-repeat 10px 50%;
 }
 .cartodb-share-dialog .block .buttons li a.twitter:hover { background-color:#3272A0; }
 
-.cartodb-share-dialog .block .buttons li a.facebook { 
+.cartodb-share-dialog .block .buttons li a.facebook {
   background:#3B5998 url('../img/facebook.png') no-repeat 10px 50%;
 }
 .cartodb-share-dialog .block .buttons li a.facebook:hover { background-color: #283C65; }
 
-.cartodb-share-dialog .block .buttons li a.link { 
+.cartodb-share-dialog .block .buttons li a.link {
   background:#f37f7b url('../img/link.png') no-repeat 10px 50%;
 }
 .cartodb-share-dialog .block .buttons li a.link:hover { background-color:#DC6161; }
@@ -1511,13 +1511,13 @@ only screen and (                min-resolution: 2dppx) {
 
 .cartodb-share-dialog .block div.head {
   position:relative;
-  padding: 5px 26px; 
+  padding: 5px 26px;
   border-bottom:1px solid #E5E5E5;
 }
 
 .cartodb-share-dialog .block h3 { margin: 1em 0; font-size: 15px; font-weight: bold; }
 
-.cartodb-share-dialog .block h4 { 
+.cartodb-share-dialog .block h4 {
   font-size: 13px;
   font-weight: bold;
   color: #666666;
@@ -1550,7 +1550,7 @@ only screen and (                min-resolution: 2dppx) {
 }
 
 .cartodb-share-dialog .block .content {
-  padding: 20px 26px 30px 26px; 
+  padding: 20px 26px 30px 26px;
 }
 
 /* MOBILE */
@@ -1709,15 +1709,15 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile .aside .cartodb-searchbox input.text::-webkit-input-placeholder {
   font-style: italic;
 }
-.cartodb-mobile .aside .cartodb-searchbox input.text:-moz-placeholder { 
+.cartodb-mobile .aside .cartodb-searchbox input.text:-moz-placeholder {
   /* Firefox 18- */
   font-style: italic;
 }
-.cartodb-mobile .aside .cartodb-searchbox input.text::-moz-placeholder {  
+.cartodb-mobile .aside .cartodb-searchbox input.text::-moz-placeholder {
   /* Firefox 19+ */
   font-style: italic;
 }
-.cartodb-mobile .aside .cartodb-searchbox input.text:-ms-input-placeholder {  
+.cartodb-mobile .aside .cartodb-searchbox input.text:-ms-input-placeholder {
   font-style: italic;
 }
 .cartodb-mobile .aside .cartodb-searchbox span.loader {
@@ -1801,14 +1801,13 @@ only screen and (                min-resolution: 2dppx) {
   display:none;
 }
 .cartodb-mobile .aside .layer-container .layers > li.hidden a.toggle:before {
-  right: 0;
-  left: auto;
+  left: 0;
 }
 .cartodb-mobile .aside .layer-container .layers > li a.toggle:before {
   position:absolute;
   content:' ';
   top:1px;
-  left:0;
+  right:0;
   width: 7px;
   height: 7px;
 
@@ -2148,8 +2147,8 @@ div.cartodb-legend.color ul li.bkg {
 div.cartodb-legend.custom ul li.bkg .bullet,
 div.cartodb-legend.category ul li.bkg .bullet,
 div.cartodb-legend.color ul li.bkg .bullet {
-  height: 20px; 
-  width: 20px; 
+  height: 20px;
+  width: 20px;
   border: 1px solid rgba(0, 0, 0, .3);
   border:none;
   background-size: 26px 26px!important;
@@ -2175,7 +2174,7 @@ div.cartodb-legend.category ul li .bullet,
 div.cartodb-legend.color ul li .bullet {
   float:left;
   margin: 0 5px 0 0;
-  width: 3px; 
+  width: 3px;
   height: 3px;
 
   -webkit-border-radius: 50%;
@@ -2203,13 +2202,13 @@ div.cartodb-legend.bubble ul {
   display: inline-block;
 }
 
-div.cartodb-legend.bubble ul li { 
+div.cartodb-legend.bubble ul li {
   position:relative;
   float: left;
   top: 15px;
 }
 
-div.cartodb-legend.bubble ul li.graph { 
+div.cartodb-legend.bubble ul li.graph {
   top: 0;
   width: 120px;
   height: 40px;
@@ -2610,8 +2609,8 @@ div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.layer {
   color: #666666;
   font:normal 13px "Helvetica Neue","Helvetica",Arial;
   text-decoration:none;
-  overflow:hidden; 
-  white-space:nowrap; 
+  overflow:hidden;
+  white-space:nowrap;
   text-overflow: ellipsis;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -2909,7 +2908,7 @@ div#cartodb-gmaps-attribution {
   background-repeat: initial initial;
   border:none;
   z-index:10000;
-}  
+}
 
 div#cartodb-gmaps-attribution a {
   color: #444;

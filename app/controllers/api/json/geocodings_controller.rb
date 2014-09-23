@@ -35,7 +35,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
 
     # TODO api should be more regular
-    unless params[:kind] == 'high-resolution' then
+    unless ['high-resolution', 'ipaddress'].include? params[:kind] then
       countries = params[:text] ? [params[:location]] : @table.sequel.distinct.select_map(params[:location].to_sym)
       geocoding.country_code = countries.map{ |c| "'#{ c }'"}.join(',')
     end

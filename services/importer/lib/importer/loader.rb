@@ -95,8 +95,7 @@ module CartoDB
 
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
-          job.table_name, @source_file.fullpath, job.pg_options,
-          @source_file.layer, ogr2ogr_options
+          job.table_name, @source_file.fullpath, job.pg_options, @source_file.layer, ogr2ogr_options
         )
       end
 

@@ -37,7 +37,7 @@ module CartoDB
           ssl_verifyhost: @verify_host,
           followlocation: true
 				})
-				raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)" if response.code != 200
+				raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
 
 				::JSON.parse(response.response_body)
 			end #all
@@ -63,7 +63,7 @@ module CartoDB
 					# Request ok, template with provided name not found
 					nil
 				else
-					raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)"
+					raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}"
 				end
 			end #get
 

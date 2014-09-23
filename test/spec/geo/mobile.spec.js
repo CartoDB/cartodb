@@ -1,6 +1,6 @@
 describe("cdb.geo.ui.Mobile", function() {
 
-  var mobile;
+  var mobile, options;
 
   beforeEach(function() {
 
@@ -69,6 +69,8 @@ describe("cdb.geo.ui.Mobile", function() {
 
     var overlays = [];
 
+    options = {};
+
     overlays.push({
       options: {
         extra: {
@@ -89,6 +91,7 @@ describe("cdb.geo.ui.Mobile", function() {
       mapView: mapView,
       overlays: overlays,
       torqueLayer: null,
+      visibility_options: options,
       map: map
     });
 
@@ -110,6 +113,15 @@ describe("cdb.geo.ui.Mobile", function() {
       mobile.render();
       expect(mobile.$el.hasClass("with-header")).toBe(true);
       expect(mobile.$el.find(".cartodb-header .toggle").length).toBe(1);
+    });
+
+    it("should not render the layer toggle if layer_selector in the visibility_options is false", function() {
+      options.layer_selector = false;
+      mobile.render();
+      console.log(mobile.$el.html());
+      expect(mobile.$el.hasClass("with-header")).toBe(true);
+      expect(mobile.$(".cartodb-mobile-layer .toggle.hide").length).toBe(2);
+      expect(mobile.$(".cartodb-mobile-layer .toggle:not(.hide)").length).toBe(0);
     });
 
     it("should render the layers", function() {

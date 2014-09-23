@@ -1619,6 +1619,9 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile.with-header .cartodb-header .content .fullscreen {
   border-right: 1px solid rgba(255, 255, 255, .35);
 }
+.cartodb-mobile.with-header .cartodb-header .content .fullscreen:hover {
+  background: rgba(0,0,0,.3);
+}
 .cartodb-mobile .cartodb-header .content .fullscreen:before {
   content: '';
   width: 60px;
@@ -1664,8 +1667,9 @@ only screen and (                min-resolution: 2dppx) {
   transition-duration: 150ms;
 
 }
-.cartodb-mobile .cartodb-header .content .toggle:hover {
-  background: rgba(0,0,0, .3);
+.cartodb-mobile .cartodb-header .content .toggle:hover,
+.cartodb-mobile.with-header .cartodb-header .content .toggle:hover {
+  background: rgba(0,0,0,.3);
 }
 .cartodb-mobile.with-header .cartodb-header .content .toggle {
   background: none;
@@ -1699,6 +1703,7 @@ only screen and (                min-resolution: 2dppx) {
   top: 0;
   right: -250px;
   background:#2D2D2D;
+  cursor: default;
 }
 .cartodb-mobile .aside .cartodb-searchbox {
   position: relative;
@@ -1748,11 +1753,11 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile .aside .cartodb-searchbox span.loader {
   left: initial;
   top: 18px;
-  right: 8px;
+  right: 14px;
   background: url('../img/dark_loader.gif') no-repeat center center;
 }
 .cartodb-mobile .aside .cartodb-searchbox input.submit {
-  right: 12px;
+  right: 18px;
   top: 23px;
   background:#f1f1f1;
   width: 14px;
@@ -1801,6 +1806,7 @@ only screen and (                min-resolution: 2dppx) {
   color: #fff;
   list-style: none;
   border-bottom: 1px solid #585858;
+  cursor: pointer;
 }
 .cartodb-mobile .aside .layer-container .layers > li:last-child h3,
 .cartodb-mobile .aside .layer-container .layers > li:last-child {
@@ -1813,9 +1819,7 @@ only screen and (                min-resolution: 2dppx) {
   background: #191919;
   position:relative;
   top: 2px;
-
   float: right;
-
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
@@ -1830,7 +1834,7 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-mobile .aside .layer-container .layers > li a.toggle:before {
   position:absolute;
-  content:' ';
+  content:'';
   top:1px;
   right:0;
   width: 7px;
@@ -2053,9 +2057,7 @@ only screen and (                min-resolution: 2dppx) {
   -moz-transition-duration: 150ms;
   -o-transition-duration: 150ms;
   transition-duration: 150ms;
-
 }
-
 .cartodb-mobile .cartodb-attribution-button:hover:before {
   border: 3px solid rgba(0, 0, 0, 0.7);
 }

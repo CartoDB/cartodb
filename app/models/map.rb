@@ -181,12 +181,7 @@ class Map < Sequel::Model
   end
 
   def bound_for(value, minimum, maximum)
-    minimum = DEFAULT_BOUNDS.fetch(minimum)
-    maximum = DEFAULT_BOUNDS.fetch(maximum)
-
-    return minimum if value < minimum
-    return maximum if value > maximum
-    return value
+    [[value, DEFAULT_BOUNDS.fetch(minimum)].max, DEFAULT_BOUNDS.fetch(maximum)].min
   end
 
   def is_table_visualization?
@@ -200,13 +195,11 @@ class Map < Sequel::Model
   end
 
   def admits_more_data_layers?
-    return false if data_layers.length >= 1 && is_table_visualization?
-    return true
+    data_layers.length >= 1 && is_table_visualization? ? false : true
   end
 
   def admits_more_torque_layers?
-    return false if torque_layers.length >= 1 && is_table_visualization?
-    return true
+    torque_layers.length >= 1 && is_table_visualization? ? false : true
   end
 
   def admits_more_base_layers?

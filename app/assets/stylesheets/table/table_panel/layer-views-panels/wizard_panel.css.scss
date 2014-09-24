@@ -188,6 +188,7 @@
           &.cluster { background: image-url('layout/wizard-cluster.png') no-repeat;}
           &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
           &.torque  { background: image-url('layout/wizard-torque.png') no-repeat;}
+          &.torque_cat  { background: image-url('layout/wizard-torque-cat.png') no-repeat;}
 
           &:hover {
             border-color:$cGray2;

@@ -15,11 +15,11 @@ module CartoDB
       end #initialize
 
       def run
-        job.log "Using database connection with #{job.concealed_pg_options}"
+        job.log.append "Using database connection with #{job.concealed_pg_options}"
 
         raster2pgsql.run
-        job.log "raster2pgsql output:    #{raster2pgsql.command_output}"
-        job.log "raster2pgsql exit code: #{raster2pgsql.exit_code}"
+        job.log.append "raster2pgsql output:    #{raster2pgsql.command_output}"
+        job.log.append "raster2pgsql exit code: #{raster2pgsql.exit_code}"
 
         job.db.run(%Q{
           ALTER TABLE #{job.qualified_table_name}

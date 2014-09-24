@@ -47,6 +47,11 @@ module CartoDB
         puts "Please manually cleanup the schema if it exists: DROP SCHEMA #{conn[:schema]} CASCADE;"
       end
 
+      def cleanup(conn=@config[:source])
+        @drop_conn ||= PG.connect(conn[:conn].merge({:dbname => 'postgres'}))
+        @drop_conn.query("DROP DATABASE \"#{conn[:conn][:dbname]}\";")
+      end
+
       def migrate
         command = "(echo \"BEGIN TRANSACTION;DROP FUNCTION IF EXISTS \"#{@config[:target][:schema]}\"._cdb_userquotainbytes();SET statement_timeout=0;\"; #{dump_command(@config[:source][:conn], @config[:target][:schema])}; echo \"COMMIT;\")| sed \"s/^CREATE SCHEMA.*;$/\-- schema removed/g\"| #{restore_command(@config[:target][:conn])}"
         puts "Running: #{command}"

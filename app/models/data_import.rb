@@ -4,12 +4,12 @@ require 'fileutils'
 require 'uuidtools'
 require_relative './user'
 require_relative './table'
+require_relative './log'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
-require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
@@ -19,8 +19,6 @@ require_relative '../../services/datasources/lib/datasources'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
-  REDIS_LOG_KEY_PREFIX          = 'importer'
-  REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
   attr_accessor   :log, :results
@@ -32,6 +30,12 @@ class DataImport < Sequel::Model
   STATE_SUCCESS   = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
+
+  TYPE_EXTERNAL_TABLE = 'external_table'
+  TYPE_FILE           = 'file'
+  TYPE_URL            = 'url'
+  TYPE_QUERY          = 'query'
+  TYPE_DATASOURCE     = 'datasource'
 
   def after_initialize
     instantiate_log
@@ -118,11 +122,15 @@ class DataImport < Sequel::Model
   end
 
   def data_source=(data_source)
-    if File.exist?(Rails.root.join("public#{data_source}"))
-      self.values[:data_type] = 'file'
-      self.values[:data_source] = Rails.root.join("public#{data_source}").to_s
+    path = Rails.root.join("public#{data_source}").to_s
+    if data_source.nil?
+      self.values[:data_type] = TYPE_DATASOURCE
+      self.values[:data_source] = ''
+    elsif File.exist?(path) && !File.directory?(path)
+      self.values[:data_type] = TYPE_FILE
+      self.values[:data_source] = path
     elsif Addressable::URI.parse(data_source).host.present?
-      self.values[:data_type] = 'url'
+      self.values[:data_type] = TYPE_URL
       self.values[:data_source] = data_source
     end
     # else SQL-based import
@@ -136,7 +144,6 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    CartodbStats.increment_imports
     self.success  = true
     self.state    = STATE_SUCCESS
     log.append "Import finished\n"
@@ -203,16 +210,13 @@ class DataImport < Sequel::Model
     uuid = self.logger
 
     if valid_uuid?(uuid)
-      self.log  = TrackRecord::Log.new(
-        id:         uuid.to_s,
-        prefix:     REDIS_LOG_KEY_PREFIX,
-        expiration: REDIS_LOG_EXPIRATION_IN_SECS
-      ).fetch
+      self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
-      self.log  = TrackRecord::Log.new(
-        prefix:     REDIS_LOG_KEY_PREFIX,
-        expiration: REDIS_LOG_EXPIRATION_IN_SECS
+      self.log = CartoDB::Log.new(
+          type:     CartoDB::Log::TYPE_DATA_IMPORT,
+          user_id:  current_user.id
       )
+      self.log.save
     end
   end
 
@@ -258,7 +262,7 @@ class DataImport < Sequel::Model
   def import_from_query(name, query)
     log.append 'import_from_query()'
 
-    self.data_type    = 'query'
+    self.data_type    = TYPE_QUERY
     self.data_source  = query
     self.save
 
@@ -351,9 +355,7 @@ class DataImport < Sequel::Model
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
 
-    # TODO: WIP for CDB-3936 (store)
-    #puts runner.loader.class.to_s
-    #puts runner.loader.source_file.extension
+    self.stats = ::JSON.dump(runner.stats)
 
     update_synchronization(importer)
 
@@ -419,19 +421,36 @@ class DataImport < Sequel::Model
     owner = User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
-    import_log = {'user' => owner.username, 
-                  'state' => self.state, 
-                  'tables' => results.length, 
-                  'imported_tables' => imported_tables, 
-                  'failed_tables' => failed_tables,
-                  'error_code' => self.error_code,
-                  'import_timestamp' => Time.now,
-                  'queue_server' => `hostname`.strip,
-                  'database_host' => owner.database_host
+    import_log = {'user'              => owner.username,
+                  'state'             => self.state,
+                  'tables'            => results.length,
+                  'imported_tables'   => imported_tables,
+                  'failed_tables'     => failed_tables,
+                  'error_code'        => self.error_code,
+                  'import_timestamp'  => Time.now,
+                  'queue_server'      => `hostname`.strip,
+                  'database_host'     => owner.database_host,
+                  'service_name'      => self.service_name,
+                  'data_type'         => self.data_type,
+                  'is_sync_import'    => !self.synchronization_id.nil?,
+                  'import_time'       => self.updated_at - self.created_at,
+                  'file_stats'        => ::JSON.parse(self.stats)
                  }
+    import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
 
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
+  end
+
+  def decorate_log(data_import)
+    decoration = { retrieved_items: 0}
+    if data_import.success && data_import.table_id
+      datasource = get_datasource_provider
+      if datasource.persists_state_via_data_import?
+        decoration = datasource.get_audit_stats
+      end
+    end
+    decoration
   end
 
   def payload_for(result=nil)

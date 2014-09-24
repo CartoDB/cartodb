@@ -37,7 +37,6 @@ describe Loader do
 
       loader   = Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
 
-
       loader.run
     end
 

@@ -9,7 +9,7 @@ require_relative '../factories/pg_connection'
 include CartoDB::Importer2
 
 describe Ogr2ogr do
-  before do
+  before(:each) do
     @csv              = Factories::CSV.new.write
     @filepath         = @csv.filepath
     @pg_options       = Factories::PGConnection.new.pg_options
@@ -23,7 +23,7 @@ describe Ogr2ogr do
     @db.execute('SET search_path TO cdb_importer,public')
   end
 
-  after do
+  after(:each) do
     @csv.delete
     @db.drop_table? @full_table_name
     @db.execute('DROP SCHEMA cdb_importer')
@@ -114,5 +114,30 @@ describe Ogr2ogr do
       wrapper.exit_code.should eq 0
     end
   end
+
+  describe '#append_mode' do
+    it "tests that ogr2ogr's append mode works as expected" do
+      header = ["cartodb_id", "header_2"]
+      data_1   = ["1", "cell_#{rand(999)}"]
+      data_2   = ["2", "cell_#{rand(999)}"]
+
+      csv_1 = Factories::CSV.new(name=nil, how_many_duplicates=0)
+        .write(header, data_1)
+
+      csv_2 = Factories::CSV.new(name=nil, how_many_duplicates=0)
+      .write(header, data_2)
+
+      ogr2ogr = Ogr2ogr.new(@full_table_name, csv_1.filepath, @pg_options)
+      ogr2ogr.run
+
+      ogr2ogr.filepath = csv_2.filepath
+      ogr2ogr.run(append_mode=true)
+
+      @dataset.all[0].fetch(:cartodb_id).should eq '1'
+      @dataset.all[1].fetch(:cartodb_id).should eq '2'
+      @dataset.all.count.should eq 2
+    end
+  end
+
 end
 

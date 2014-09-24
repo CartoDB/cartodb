@@ -122,9 +122,17 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags, :description)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
-                :import_from_table_copy, :importing_encoding,
-                :temporal_the_geom_type, :migrate_existing_table, :new_table, :keep_user_database_table
+  attr_accessor :force_schema,
+                :import_from_file,
+                :import_from_url,
+                :import_from_query,
+                :import_from_table_copy,
+                :importing_encoding,
+                :temporal_the_geom_type,
+                :migrate_existing_table,
+                :new_table,
+                # Handy for rakes and custom ghost table registers, won't delete user table in case of error
+                :keep_user_database_table
 
   # Getter by table uuid or table name using canonical visualizations
   # @param table_id String
@@ -370,7 +378,7 @@ class Table < Sequel::Model(:user_tables)
   def import_to_cartodb(uniname=nil)
     @data_import ||= DataImport.where(id: data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
-      @data_import.data_type = 'external_table'
+      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
       @data_import.data_source = migrate_existing_table || uniname
       @data_import.save
 
@@ -395,7 +403,6 @@ class Table < Sequel::Model(:user_tables)
       importer = CartoDB::Migrator.new hash_in
       importer = importer.migrate!
       @data_import.reload
-      #@data_import.migrated
       @data_import.save
       importer.name
     end
@@ -534,7 +541,6 @@ class Table < Sequel::Model(:user_tables)
 
     update_table_pg_stats
 
-    # Cartodbfy !
     self.cartodbfy
   rescue => e
     self.handle_creation_error(e)
@@ -580,12 +586,12 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Logger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
-      @data_import.log << ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
+      @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
       $tables_metadata.del key
 
-      self.remove_table_from_user_database
+      self.remove_table_from_user_database unless keep_user_database_table
     end
-    @data_import.log << ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
+    @data_import.log.append ("Import ERROR: #{e.message} Trace: #{e.backtrace}") if @data_import
     raise e
   end
 
@@ -1390,6 +1396,7 @@ class Table < Sequel::Model(:user_tables)
 
   # @throws CartoDB::TableError
   def update_name_changes
+    errored = false
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
       reload
@@ -1399,27 +1406,27 @@ class Table < Sequel::Model(:user_tables)
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        #raise exception_to_raise
+        errored = true
       end
 
       begin
-        owner.in_database.rename_table(@name_changed_from, name)
+        owner.in_database.rename_table(@name_changed_from, name) unless errored
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        #raise exception_to_raise
       end
-      propagate_namechange_to_table_vis
+      propagate_namechange_to_table_vis unless errored
 
-      if layers.blank?
+      if layers.blank? && !errored
         exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        #raise exception_to_raise
       end
 
-      layers.each do |layer|
-        layer.rename_table(@name_changed_from, name).save
+      unless errored
+        layers.each do |layer|
+          layer.rename_table(@name_changed_from, name).save
+        end
       end
     end
     @name_changed_from = nil

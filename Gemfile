@@ -79,7 +79,7 @@ gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 
 # TODO Production gems, put them in :production group
 gem 'mixpanel',              '4.0.2'
-gem 'rollbar',               '0.12.12'
+gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.23.0'
 
 group :development, :test do
@@ -97,7 +97,7 @@ group :development, :test do
 
   gem 'rspec-rails',           '2.10.1'
   gem 'capybara',              '1.1.2'
-  gem 'timecop',               '0.6.3'
+  gem 'delorean'
   gem 'rack',                  '1.4.1'
   gem 'rack-reverse-proxy',    '0.4.4',  require: 'rack/reverse_proxy'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'

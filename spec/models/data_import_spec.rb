@@ -228,9 +228,9 @@ describe DataImport do
   end
 
   describe 'log' do
-    it 'is initialized to a TrackRecord::Log instance' do
+    it 'is initialized to a CartoDB::Log instance' do
       data_import   = DataImport.new
-      data_import.log.should be_instance_of TrackRecord::Log
+      data_import.log.should be_instance_of CartoDB::Log
     end
 
     it 'allows messages to be appended' do

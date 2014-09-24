@@ -19,18 +19,23 @@ module CartoDB
 
       # @param pg_options Hash
       # @param downloader CartoDB::Datasources::Base|CartoDB::Importer2::Downloader
-      # @param log TrackRecord::Log|nil
+      # @param log CartoDB::Log|nil
       # @param available_quota int|nil
       # @param unpacker Unp|nil
       def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
-        @pg_options       = pg_options
-        @downloader       = downloader
-        @log              = log             || TrackRecord::Log.new
-        @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker         = unpacker        || Unp.new
-        @results          = []
-        @loader           = nil
+        @pg_options         = pg_options
+        @downloader         = downloader
+        @log                = log             || new_logger
+        @available_quota    = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @unpacker           = unpacker        || Unp.new
+        @results            = []
+	      @loader	            = nil
+        @stats              = []
       end #initialize
+
+      def new_logger
+        CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
+      end
 
       def include_additional_errors_mapping(additional_errors)
         @additional_errors = additional_errors
@@ -56,6 +61,11 @@ module CartoDB
         tracker.call('unpacking')
         unpacker.run(@downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file|
+          log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+          @stats << {
+            type: source_file.extension,
+            size: source_file.size
+          }
           import(source_file)
         }
         unpacker.clean_up
@@ -137,7 +147,7 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results, :log, :loader
+      attr_reader :results, :log, :loader, :stats
 
       private
  

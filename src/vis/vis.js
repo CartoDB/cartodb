@@ -26,6 +26,7 @@ var Overlay = {
     }
 
     data.options = typeof data.options === 'string' ? JSON.parse(data.options): data.options;
+    data.options = data.options || {}
     var widget = t(data, vis);
 
     if (widget) {

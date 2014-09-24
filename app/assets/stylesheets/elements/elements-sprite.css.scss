@@ -17,7 +17,8 @@ $elements-sprites: sprite-map("sprites/elements/*.png",
   $elements-background_loader_error-spacing:  10px,
   $elements-question-spacing:                 10px,
   $elements-image_color-spacing:              5px,
-  $elements-image_fill-spacing:               15px
+  $elements-image_fill-spacing:               15px,
+  $elements-custom_text_combo_icons-spacing:  10px
 );
 
 // All sprites should extend this class

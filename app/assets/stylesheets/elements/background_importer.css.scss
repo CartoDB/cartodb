@@ -11,11 +11,10 @@
   z-index: 100;
   background: white;
   bottom: -100px;
-  left: 0px;
+  left: 20px;
   padding: 8px 12px 8px 8px;
-  border-top: solid 1px #CCC;
-  border-right: solid 1px #CCC;
-  @include border-top-right-radius(5px);
+  border: solid 1px #CCC;
+  @include border-radius(5px);
   @include box-shadow(rgba(black, 0.2) 0 0 5px);
 
   span{

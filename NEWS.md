@@ -1,3 +1,8 @@
+3.2.X (2014-XX-XX)
+------------------
+* ArcGIS import integration
+
+
 3.2.1 (2014-09-05)
 ------------------
 * New common data section

@@ -27,6 +27,8 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
+  services/importer/spec/unit/kml_splitter_spec.rb \
+  services/importer/spec/unit/runner_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \

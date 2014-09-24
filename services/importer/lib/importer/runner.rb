@@ -34,6 +34,7 @@ module CartoDB
       end #initialize
 
       def new_logger
+        # TODO: Inject logging class
         CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
       end
 

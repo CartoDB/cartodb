@@ -1,19 +1,21 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
-require 'minitest/mock'
-require 'sqlite3'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../doubles/loader'
+require_relative '../doubles/log'
 require_relative '../doubles/indexer'
 require_relative '../factories/pg_connection'
 
 include CartoDB::Importer2
 
+RSpec.configure do |config|
+  config.mock_with :mocha
+end
+
 describe Runner do
   before do
+
     @filepath       = '/var/tmp/foo.txt'
     FileUtils.touch(@filepath)
     @pg_options      = Factories::PGConnection.new.pg_options
@@ -21,58 +23,67 @@ describe Runner do
 
   describe '#initialize' do
     it 'requires postgres options and the path to a file' do
-      lambda { Runner.new }.must_raise ArgumentError
-      lambda { Runner.new '/var/tmp/foo.txt' }.must_raise ArgumentError
+      expect {
+        Runner.new
+      }.to raise_error ArgumentError
+      expect {
+        Runner.new('/var/tmp/foo.txt')
+      }.to raise_error ArgumentError
     end
-  end #initialize
+  end
 
   describe '#run' do
     it 'calls import for each file to process' do
-      downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, nil, nil, fake_unpacker)
-      runner.instance_variable_set(:@import_called, 0)
+      fake_log = Doubles::Log.new
 
-      def runner.import(*args)
-        @import_called = @import_called +1
-      end
+      downloader  = Downloader.new(@filepath)
+      source_file = SourceFile.new(@filepath)
+
+      fake_loader = self.fake_loader_for(nil, source_file)
+      def fake_loader.run(args); end
+
+      runner = Runner.new(@pg_options, downloader, fake_log, nil, fake_loader)
+
+      runner.stubs(:import)
+
+      runner.expects(:import).once
 
       runner.run
-
-      runner.instance_variable_get(:@import_called).must_equal 1
     end
 
     it 'logs the file path to be imported' do
-      downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, nil, nil, fake_unpacker)
-      runner.instance_variable_set(:@import_called, 0)
+      fake_log = Doubles::Log.new
 
-      def runner.import(*args)
-        @import_called = @import_called +1
-      end
+      downloader  = Downloader.new(@filepath)
+      runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker)
 
       runner.run
-      runner.report.must_match /#{@filepath}/
+      (runner.report =~ /#{@filepath}/).should_not be nil
     end
-  end #run
+  end
 
   describe '#tracker' do
     it 'returns the block passed at initialization' do
+      fake_log = Doubles::Log.new
+
       data_import = OpenStruct.new
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, nil, nil, fake_unpacker)
+      runner      = Runner.new(@pg_options, downloader, fake_log, fake_unpacker)
 
       def runner.import(*args); end
 
       runner.run { |state| data_import.state = 'bogus_state' }
-      data_import.state.must_equal 'bogus_state'
+      data_import.state.should eq 'bogus_state'
     end
-  end #tracker
+  end
 
   describe '#import' do
     it 'creates a sucessful result if all import steps completed' do
+      fake_log = Doubles::Log.new
+
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new)
-      job         = Job.new(pg_options: @pg_options)
+      runner      = Runner.new(@pg_options, Object.new, fake_log)
+      job         = Job.new({ pg_options: @pg_options, logger: fake_log })
 
       def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
@@ -80,20 +91,22 @@ describe Runner do
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.success?.must_equal true
+      result.success?.should eq true
     end
 
     it 'creates a failed result if an exception raised during import' do
+      fake_log = Doubles::Log.new
+
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new)
-      job         = Job.new(pg_options: @pg_options)
+      runner      = Runner.new(@pg_options, Object.new, fake_log)
+      job         = Job.new({ pg_options: @pg_options, logger: fake_log })
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.success?.must_equal false
+      result.success?.should eq false
     end
   end
 
@@ -101,16 +114,23 @@ describe Runner do
     OpenStruct.new(
       job:                job, 
       source_file:        source_file,
+      source_files:       [source_file],
       valid_table_names:  []
     )
-  end #fake_loader
+  end
 
-  def fake_unpacker
+  def fake_unpacker()
     Class.new { 
-      def run(*args); end
-      def source_files; [@filepath]; end
-      def clean_up; end
+      def run(*args)
+      end
+
+      def source_files
+        [@filepath]
+      end
+
+      def clean_up
+      end
     }.new
-  end #fake_unpacker
-end # Runner
+  end
+end
 

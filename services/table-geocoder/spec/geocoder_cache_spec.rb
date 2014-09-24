@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'spec_helper'
 require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
@@ -8,11 +9,20 @@ RSpec.configure do |config|
 end
 
 describe CartoDB::GeocoderCache do
+
+  before(:all) do
+    @user = create_user
+  end
+  after(:all) do
+    @user.destroy
+  end
+
   before do
-    conn          = CartoDB::Importer2::Factories::PGConnection.new
-    @db           = conn.connection
-    @pg_options   = conn.pg_options
-    @table_name   = "ne_10m_populated_places_simple"
+    conn                         = CartoDB::Importer2::Factories::PGConnection.new(database: @user.database_name)
+    @db                          = conn.connection
+    @table_name                  = "ne_10m_populated_places_simple"
+    @qualified_table_name        = "ne_10m_populated_places_simple"
+    @sequel_qualified_table_name = "ne_10m_populated_places_simple"
     load_csv path_to("populated_places_short.csv")
   end
 
@@ -20,7 +30,14 @@ describe CartoDB::GeocoderCache do
     @db.drop_table @table_name
   end
 
-  let(:default_params) { { table_name: @table_name, formatter: "concat(name, iso3)", connection: @db, sql_api: { table_name: '' } } }
+  let(:default_params) { {
+    table_name: @table_name,
+    qualified_table_name: @qualified_table_name,
+    sequel_qualified_table_name: @sequel_qualified_table_name,
+    formatter: "concat(name, iso3)",
+    connection: @db,
+    sql_api: { table_name: '' }
+  } }
 
   describe '#get_cache_results' do
     it "runs the query in batches" do

@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'spec_helper'
 require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
@@ -9,11 +10,20 @@ end
 
 describe CartoDB::TableGeocoder do
   let(:default_params) { {app_id: '', token: '', mailto: ''} }
+
+  before(:all) do
+    @user = create_user
+  end
+  after(:all) do
+    @user.destroy
+  end
+
   before do
-    conn          = CartoDB::Importer2::Factories::PGConnection.new
-    @db           = conn.connection
-    @pg_options   = conn.pg_options
-    @table_name   = "ne_10m_populated_places_simple"
+    conn                         = CartoDB::Importer2::Factories::PGConnection.new(database: @user.database_name)
+    @db                          = conn.connection
+    @table_name                  = "ne_10m_populated_places_simple"
+    @qualified_table_name        = "ne_10m_populated_places_simple"
+    @sequel_qualified_table_name = "ne_10m_populated_places_simple"
     load_csv path_to("populated_places_short.csv")
   end
 
@@ -25,6 +35,8 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
+        qualified_table_name: @qualified_table_name,
+        sequel_qualified_table_name: @sequel_qualified_table_name,
         formatter:  "name, ', ', iso3",
         connection: @db
       }))
@@ -47,6 +59,8 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
+        qualified_table_name: @qualified_table_name,
+        sequel_qualified_table_name: @sequel_qualified_table_name,
         formatter:  "name, ', ', iso3",
         connection: @db
       }))
@@ -113,7 +127,7 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'returns an alternative name if the table exists' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus', schema: 'public')      
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus', schema: 'public')
       @db.run("drop table if exists geo_wadus; create table geo_wadus (id int)")
       @db.run("drop table if exists geo_wadus_1; create table geo_wadus_1 (id int)")
       tg.temp_table_name.should eq 'public.geo_wadus'
@@ -124,14 +138,14 @@ describe CartoDB::TableGeocoder do
     after do
       @db.drop_table('geo_temp_table')
     end
-    
+
     it 'loads the Nokia output format to an existing temp table' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public')      
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public')
       tg.create_temp_table
       tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
       tg.import_results_to_temp_table
       @db.fetch(%Q{
-        SELECT count(*) FROM #{tg.temp_table_name} 
+        SELECT count(*) FROM #{tg.temp_table_name}
         WHERE displayLatitude IS NOT NULL AND displayLongitude IS NOT NULL
       }).first[:count].should eq 44
     end
@@ -143,7 +157,7 @@ describe CartoDB::TableGeocoder do
   describe '#add_georef_status_column' do
     before do
       @db.run("create table wwwwww (id integer)")
-      @tg = CartoDB::TableGeocoder.new(table_name: 'wwwwww', connection: @db, remote_id: 'wadus')
+      @tg = CartoDB::TableGeocoder.new(table_name: 'wwwwww', connection: @db, remote_id: 'wadus', qualified_table_name: 'wwwwww', sequel_qualified_table_name: 'wwwwww')
     end
 
     after do
@@ -164,7 +178,7 @@ describe CartoDB::TableGeocoder do
     it 'casts cartodb_georef_status to boolean if needed' do
       @db.run('alter table wwwwww add column cartodb_georef_status text')
       @tg.add_georef_status_column
-      @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww'")
+      @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww' and column_name = 'cartodb_georef_status'")
         .first[:data_type].should eq 'boolean'
     end
   end
@@ -178,7 +192,9 @@ describe CartoDB::TableGeocoder do
       table_name: @table_name,
       formatter:  "name, ', ', iso3",
       connection: @db,
-      schema:     'public'
+      schema:     'public',
+      qualified_table_name: @qualified_table_name,
+      sequel_qualified_table_name: @sequel_qualified_table_name
     ))
     t.geocoder.stubs("use_batch_process?").returns(true)
 
@@ -192,7 +208,7 @@ describe CartoDB::TableGeocoder do
     t.process_results
     t.geocoder.status.should eq 'completed'
     t.geocoder.processed_rows.to_i.should eq 0
-    t.cache.hits.should eq 10
+    t.cache.hits.should eq 9 # 4/14 rows in source csv are invalid (i.e. empty) and 1 is a duplicate, so we expect 9 hits
     @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 2
     @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 0
   end

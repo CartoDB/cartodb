@@ -50,13 +50,13 @@ module CartoDB
         self
       end
 
-      attr_accessor :append_mode
+      attr_accessor :append_mode, :filepath
       attr_reader   :exit_code, :command_output
 
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :pg_options, :options, :table_name, :layer
+      attr_accessor :pg_options, :options, :table_name, :layer
 
       def client_encoding_option
         "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"

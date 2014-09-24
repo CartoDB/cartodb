@@ -10,7 +10,7 @@ class Geocoding < Sequel::Model
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota]
+                       :used_credits, :remaining_quota, :country_column]
 
   many_to_one :user
   many_to_one :table
@@ -63,7 +63,8 @@ class Geocoding < Sequel::Model
       countries:     country_code,
       geometry_type: geometry_type,
       kind:          kind,
-      max_rows:      max_geocodable_rows
+      max_rows:      max_geocodable_rows,
+      country_column: country_column
     )
     @table_geocoder ||= geocoder_class.new(config)
   end # table_geocoder

@@ -8,7 +8,7 @@ module CartoDB
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
                   :working_dir, :remote_id, :state, :processed_rows
 
-    attr_accessor :table_schema, :table_name, :column_name
+    attr_accessor :table_schema, :table_name, :column_name, :country_column
 
     SQL_PATTERNS = {
       point: {
@@ -39,6 +39,7 @@ module CartoDB
       @batch_size           = (@geometry_type == :point ? 5000 : 10)
       @state                = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+      @country_column = arguments[:country_column]
     end # initialize
 
     def run

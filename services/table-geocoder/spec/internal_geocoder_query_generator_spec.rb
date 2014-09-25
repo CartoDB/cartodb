@@ -65,6 +65,10 @@ describe CartoDB::InternalGeocoderQueryGenerator do
       @internal_geocoder.stubs('column_name').once.returns('city')
       @internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
       @internal_geocoder.stubs('batch_size').returns(5000)
+      @internal_geocoder.stubs('kind').once.returns(:namedplace)
+      @internal_geocoder.stubs('geometry_type').once.returns(:point)
+      @internal_geocoder.stubs('country_column').once.returns(nil)
+
 
       query = @query_generator.search_terms_query(0)
 
@@ -77,6 +81,9 @@ describe CartoDB::InternalGeocoderQueryGenerator do
       @internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
       @internal_geocoder.stubs('temp_table_name').once.returns('any_temp_table')
       @internal_geocoder.stubs('column_name').once.returns('any_column_name')
+      @internal_geocoder.stubs('kind').once.returns(:namedplace)
+      @internal_geocoder.stubs('geometry_type').once.returns(:point)
+      @internal_geocoder.stubs('country_column').once.returns(nil)
 
       query = @query_generator.copy_results_to_table_query
 

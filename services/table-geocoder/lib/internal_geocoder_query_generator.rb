@@ -40,15 +40,19 @@ module CartoDB
     end
 
     def kind
-      :namedplace
+      @internal_geocoder.kind
     end
 
     def geometry_type
-      :point
+      @internal_geocoder.geometry_type
     end
 
     def country_input_type
-      :freetext
+      if @internal_geocoder.country_column
+        :column
+      else
+        :freetext
+      end
     end
 
   end

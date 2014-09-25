@@ -90,8 +90,12 @@ describe CartoDB::InternalGeocoderQueryGenerator do
   end
 
   describe '#input_type' do
+
     it 'should return an array characterizing the inputs for <namedplace, point, freetext>' do
       internal_geocoder = mock
+      internal_geocoder.stubs('kind').once.returns(:namedplace)
+      internal_geocoder.stubs('geometry_type').once.returns(:point)
+      internal_geocoder.stubs('country_column').once.returns(nil)
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
 
       query_gen.input_type.should == {
@@ -99,6 +103,46 @@ describe CartoDB::InternalGeocoderQueryGenerator do
         :geometry_type => :point,
         :country => :freetext
       }
+    end
+
+  end
+
+  describe '#kind' do
+    it 'should return the type of the internal geocoding: namedplace' do
+      #TODO move all these mock instantiations to somewhere else
+      internal_geocoder = mock
+      internal_geocoder.stubs('kind').once.returns(:namedplace)
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
+
+      query_gen.kind.should == :namedplace
+    end
+  end
+
+  describe '#geometry_type' do
+    it 'should return the type of the geometry to be geocoded: polygon' do
+      internal_geocoder = mock
+      internal_geocoder.stubs('geometry_type').once.returns(:polygon)
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
+
+      query_gen.geometry_type.should == :polygon
+    end
+  end
+
+  describe '#country_input_type' do
+    it 'should return column if a column was passed' do
+      internal_geocoder = mock
+      internal_geocoder.stubs('country_column').once.returns('any_column_name')
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
+
+      query_gen.country_input_type.should == :column
+    end
+
+    it 'should return column if no column was passed' do
+      internal_geocoder = mock
+      internal_geocoder.stubs('country_column').once.returns(nil)
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
+
+      query_gen.country_input_type.should == :freetext
     end
   end
 

@@ -223,9 +223,9 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addLegends: function(layers) {
+  addLegends: function(layers, mobile_enabled) {
 
-    if (!this.mobile_enabled) {
+    if (!mobile_enabled) {
 
       this._renderLegends(layers);
 
@@ -479,7 +479,7 @@ var Vis = cdb.core.View.extend({
 
     this._addLayers(data.layers, options);
 
-    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers);
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
 
     if (options.time_slider)       this.addTimeSlider();
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
@@ -532,9 +532,9 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (type == 'share'          && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector' && options[type]         || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'     && options[type]         || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
 
       if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
@@ -560,6 +560,7 @@ var Vis = cdb.core.View.extend({
     }, this);
 
   },
+
   addMobile: function(overlays, data_layers, options) {
 
     var layers;
@@ -660,8 +661,8 @@ var Vis = cdb.core.View.extend({
       //description: false,
       //layer_selector: false,
       //legends: true,
+      //zoomControl: true,
       tiles_loader: true,
-      zoomControl: true,
       loaderControl: true,
       searchControl: false,
       infowindow: true,

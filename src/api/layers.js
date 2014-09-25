@@ -159,6 +159,10 @@
 
       function createLayer() {
         layerView = viz.createLayer(layerData, { no_base_layer: true });
+
+        var torqueLayer;
+        var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         if(!layerView) {
           promise.trigger('error', "layer not supported");
           return promise;
@@ -170,10 +174,24 @@
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData]);
+          viz.addLegends([layerData], mobileEnabled);
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);
+          torqueLayer = layerView;
+        }
+
+        if (mobileEnabled) {
+
+          options.mapView = map.viz.mapView;
+
+          viz.addOverlay({
+            type: 'mobile',
+            layerView: layerView,
+            overlays: [],
+            torqueLayer: torqueLayer,
+            options: options
+          });
         }
 
         callback && callback(layerView);

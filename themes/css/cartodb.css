@@ -1693,6 +1693,7 @@ only screen and (                min-resolution: 2dppx) {
   top: 0px;
   z-index:100000;
 }
+.cartodb-mobile.with-fullscreen .cartodb-zoom,
 .cartodb-mobile.with-zoom.with-header .cartodb-zoom {
   top: 60px;
 }

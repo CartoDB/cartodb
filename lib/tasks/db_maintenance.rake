@@ -462,13 +462,17 @@ namespace :cartodb do
           schema_name = user.database_schema
           Table.filter(:user_id => user.id).each do |table|
             table_name = "#{user.database_schema}.#{table.name}"
-            user.in_database do |user_db|
-              user_db.run(%Q{
-                SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
-              })
-              user_db.run(%Q{
-                SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-              })
+            begin
+              user.in_database do |user_db|
+                user_db.run(%Q{
+                  SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
+                })
+                user_db.run(%Q{
+                  SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+                })
+              end
+            rescue => exception
+              puts "ERROR:  #{user.username} / #{user.id} : #{table_name} #{exception}"
             end
           end
           puts "DONE: #{user.username} / #{user.id}"

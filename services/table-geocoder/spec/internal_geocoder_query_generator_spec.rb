@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require_relative '../lib/internal_geocoder_query_generator.rb'
-require_relative '../lib/internal_geocoder.rb'
 
 RSpec.configure do |config|
   config.mock_with :mocha

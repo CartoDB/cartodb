@@ -7,9 +7,10 @@ module CartoDB
     class NotImplementedError < StandardError; end
 
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
-                  :working_dir, :remote_id, :state, :processed_rows
+                  :working_dir, :remote_id, :state, :processed_rows, :country_column,
+                  :qualified_table_name, :batch_size
 
-    attr_accessor :table_schema, :table_name, :column_name, :country_column, :qualified_table_name, :batch_size
+    attr_accessor :table_schema, :table_name, :column_name
 
     def initialize(arguments)
       @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)

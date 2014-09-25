@@ -36,8 +36,8 @@ cdb.geo.ui.Header = cdb.core.View.extend({
   // Add target attribute to all links
   _setLinksTarget: function(str) {
     if (!str) return str;
-    var reg = new RegExp(/<a(((?!target=).)*)\">/g);
-    return str.replace(reg, "<a$1\" target=\"_blank\">");
+    var reg = new RegExp(/<(a)([^>]+)>/g);
+    return str.replace(reg, "<$1 target=\"_blank\"$2>");
   },
 
   render: function() {

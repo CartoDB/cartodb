@@ -47,7 +47,7 @@ describe CartoDB::InternalGeocoderQueryGenerator do
 
     it 'should replace "world" with null' do
       internal_geocoder = mock
-      internal_geocoder.stubs('countries').once.returns('world')
+      internal_geocoder.stubs('countries').once.returns("'world'")
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new(internal_geocoder)
 
       query = query_gen.dataservices_query_template

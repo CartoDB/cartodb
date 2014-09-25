@@ -9,7 +9,7 @@ module CartoDB
     end
 
     def dataservices_query_template
-      country_clause = @internal_geocoder.countries == 'world' ? 'null' : '{country}'
+      country_clause = @internal_geocoder.countries == "'world'" ? 'null' : '{country}'
       %Q{WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, #{country_clause})).*) SELECT q, null, geom, success FROM geo_function}
     end
 

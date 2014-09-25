@@ -61,7 +61,7 @@ module CartoDB
           begin
             puts "Cartodbfying table #{table}.."
             @cartodbfy_conn ||= PG.connect(@config[:target][:conn])
-            puts @cartodbfy_conn.query("select cdb_cartodbfytable('#{@config[:target][:schema]}.#{table}')").to_a
+            puts @cartodbfy_conn.query("select cdb_cartodbfytable('#{@config[:target][:schema]}', '#{@config[:target][:schema]}.#{table}')").to_a
           rescue PG::Error => e
             puts "Cannot cartodbfy table #{table}."
           end

@@ -16,8 +16,9 @@ module CartoDB
         # @param config
         # [ ]
         def initialize(config)
-          @service_name = DATASOURCE_NAME
+          super
 
+          @service_name = DATASOURCE_NAME
           @headers = nil
         end
 

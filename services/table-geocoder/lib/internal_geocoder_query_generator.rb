@@ -9,8 +9,13 @@ module CartoDB
     end
 
     def dataservices_query_template
-      country_clause = @internal_geocoder.countries == "'world'" ? 'null' : '{country}'
-      %Q{WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, #{country_clause})).*) SELECT q, null, geom, success FROM geo_function}
+      case input_type
+        when [:namedplace, :point, :freetext]
+          country_clause = @internal_geocoder.countries == "'world'" ? 'null' : '{country}'
+          %Q{WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, #{country_clause})).*) SELECT q, null, geom, success FROM geo_function}
+        else
+          raise "Not implemented"
+      end
     end
 
     def search_terms_query(page)
@@ -32,11 +37,7 @@ module CartoDB
     end
 
     def input_type
-      {
-        :kind => kind,
-        :geometry_type => geometry_type,
-        :country => country_input_type
-      }
+      [kind, geometry_type, country_input_type]
     end
 
     def kind

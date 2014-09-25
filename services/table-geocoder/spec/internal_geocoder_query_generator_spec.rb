@@ -38,6 +38,9 @@ describe CartoDB::InternalGeocoderQueryGenerator do
 
     it 'should return a query template suitable for <namedplace, point, freetext>' do
       @internal_geocoder.stubs('countries').once.returns('any_country')
+      @internal_geocoder.stubs('kind').once.returns(:namedplace)
+      @internal_geocoder.stubs('geometry_type').once.returns(:point)
+      @internal_geocoder.stubs('country_column').once.returns(nil)
 
       query = @query_generator.dataservices_query_template
 
@@ -46,6 +49,9 @@ describe CartoDB::InternalGeocoderQueryGenerator do
 
     it 'should replace "world" with null' do
       @internal_geocoder.stubs('countries').once.returns("'world'")
+      @internal_geocoder.stubs('kind').once.returns(:namedplace)
+      @internal_geocoder.stubs('geometry_type').once.returns(:point)
+      @internal_geocoder.stubs('country_column').once.returns(nil)
 
       query = @query_generator.dataservices_query_template
 
@@ -90,11 +96,7 @@ describe CartoDB::InternalGeocoderQueryGenerator do
       @internal_geocoder.stubs('geometry_type').once.returns(:point)
       @internal_geocoder.stubs('country_column').once.returns(nil)
 
-      @query_generator.input_type.should == {
-        :kind => :namedplace,
-        :geometry_type => :point,
-        :country => :freetext
-      }
+      @query_generator.input_type.should == [:namedplace, :point, :freetext]
     end
 
   end

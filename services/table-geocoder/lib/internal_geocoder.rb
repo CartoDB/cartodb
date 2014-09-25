@@ -11,19 +11,6 @@ module CartoDB
 
     attr_accessor :table_schema, :table_name, :column_name, :country_column, :qualified_table_name, :batch_size
 
-    SQL_PATTERNS = {
-      point: {
-        namedplace: 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function',
-        ipaddress:  'WITH geo_function AS (SELECT (geocode_ip(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
-        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
-      },
-      polygon: {
-        admin0:     'WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
-        admin1:     'WITH geo_function AS (SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function',
-        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
-      }
-    }
-
     def initialize(arguments)
       @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)
       @connection           = arguments.fetch(:connection)

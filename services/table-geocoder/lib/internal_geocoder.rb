@@ -82,9 +82,9 @@ module CartoDB
     end # download_results
 
     def generate_sql(search_terms)
-      querytemplate = @query_generator.dataservices_querytemplate
+      query_template = @query_generator.dataservices_query_template
       #TODO move this to QueryGenerator
-      querytemplate.gsub('{cities}', search_terms.join(',')).gsub('{country}', @countries)
+      query_template.gsub('{cities}', search_terms.join(',')).gsub('{country}', @countries)
     rescue KeyError => e
       raise NotImplementedError.new("Can't find geocoding function for #{@geometry_type}, #{@kind}")
     end # generate_sql

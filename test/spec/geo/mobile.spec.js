@@ -91,6 +91,12 @@ describe("cdb.geo.ui.Mobile", function() {
     var overlays = [];
 
     overlays.push({
+      order: 2,
+      type: "zoom",
+      url: null
+    });
+
+    overlays.push({
       options: {
         extra: {
           description: null,
@@ -121,7 +127,7 @@ describe("cdb.geo.ui.Mobile", function() {
       map: map,
       visibility_options: {
         legends: false
-      },
+      }
     });
 
   });
@@ -160,6 +166,11 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
     });
 
+    it("should show the zoom", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+    });
+
     it("should show the toggle button", function() {
       mobile.render();
       expect(mobile.$el.find(".cartodb-header .content .toggle").length).toBe(1);
@@ -189,7 +200,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
       setTimeout(function() {
         expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
-      }, 250);
+      }, 350);
 
     });
 

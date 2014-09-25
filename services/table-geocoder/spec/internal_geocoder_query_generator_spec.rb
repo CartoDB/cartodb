@@ -44,13 +44,32 @@ describe CartoDB::InternalGeocoderQueryGenerator do
     it 'should get the search terms for <namedplace, point, freetext>' do
       internal_geocoder = mock
       internal_geocoder.stubs('column_name').once.returns('city')
-      internal_geocoder.stubs('qualified_table_name').once.returns('"public"."untitled_table"')
+      internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
       internal_geocoder.stubs('batch_size').returns(5000)
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new(internal_geocoder)
 
       query = query_gen.search_terms_query(0)
       #TODO replace by squish or just copy the template
-      query.strip.gsub(/[\s\n]+/, ' ').should == 'SELECT DISTINCT(quote_nullable(city)) AS searchtext FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
+      query.gsub(/[\s\n]+/, ' ').strip.should == 'SELECT DISTINCT(quote_nullable(city)) AS searchtext FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
+    end
+  end
+
+  describe '#copy_results_to_table_query' do
+    it 'should generate a suitable query to update geocoded table with temp table' do
+      internal_geocoder = mock
+      internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
+      internal_geocoder.stubs('temp_table_name').once.returns('any_temp_table')
+      internal_geocoder.stubs('column_name').once.returns('any_column_name')
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
+
+      query = query_gen.copy_results_to_table_query
+      expected_string = %Q{
+        UPDATE "public"."untitled_table" AS dest
+        SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
+        FROM any_temp_table AS orig
+        WHERE any_column_name::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
+      }.gsub(/[\s\n]+/, ' ').strip
+      query.gsub(/[\s\n]+/, ' ').strip.should == expected_string
     end
   end
 

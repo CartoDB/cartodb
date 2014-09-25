@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.08-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8efc1081a176d08b33a58763bd08a39a8bbf1a67
+// sha: dc8df11397712bc11a62abccc1f28918d63a684e
 (function() {
   var root = this;
 
@@ -25896,20 +25896,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.defaults(this.options, this.default_options);
 
+    this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     this.visibility_options = this.options.visibility_options || {};
 
     this.mapView = this.options.mapView;
     this.map     = this.mapView.map;
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-
-    var self = this;
-
-    //this.options.layerView.bind("added_layer", function(i) {
-      //self.options.layerView = i;
-      //self._getLayers();
-    //});
-
     this.overlays = this.options.overlays;
 
     this.model = new Backbone.Model({
@@ -25934,6 +25928,18 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.layers = [];
 
+    // we add the layers to the array depending on the method used
+    // to sent us the layers
+    if (this.options.layerView) {
+      this._getLayersFromLayerView();
+    } else {
+      _.each(this.map.layers.models, this._getLayer, this);
+    }
+
+  },
+
+  _getLayersFromLayerView: function() {
+
     if (this.options.layerView && this.options.layerView.model.get("type") == "layergroup") {
 
       this.layers = _.map(this.options.layerView.layers, function(l, i) {
@@ -25955,16 +25961,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       }, this);
 
-    } else if (this.options.layerView && (this.options.layerView.model.get("type") == "cartodb" || this.options.layerView.model.get("type") == "torque")) {
+    } else if (this.options.layerView && (this.options.layerView.model.get("type") == "torque")) {
 
       var layerView = this._createLayer('LayerView', { model: this.options.layerView.model });
 
       this.layers.push(layerView.model);
 
-    } else {
-      _.each(this.map.layers.models, this._getLayer, this);
     }
-
   },
 
   _getLayer: function(layer) {
@@ -25990,10 +25993,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         });
 
         this.layers.push(layerView.model);
+
       }
 
     } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
-      this.layers.push(layer);
+     this.layers.push(layer);
     }
 
   },
@@ -26019,13 +26023,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
-  render:function() {
-
-    this._bindOrientationChange();
-
-    this.$el.html(this.template(this.options));
-
-    this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  _renderOverlays: function() {
 
     var hasSearchOverlay = false;
     var hasZoomOverlay   = false;
@@ -26056,8 +26054,21 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
-    if (!hasSearchOverlay && this.visibility_options.searchControl === "true") this._addSearch();
-    if (!hasZoomOverlay   && this.visibility_options.zoomControl === "true")   this._addZoom();
+    var search_visibility = this.visibility_options.searchControl === "true" || this.visibility_options.searchControl === true;
+    var zoom_visibility   = this.visibility_options.zoomControl   === "true" || this.visibility_options.zoomControl   === true;
+
+    if (!hasSearchOverlay && search_visibility) this._addSearch();
+    if (!hasZoomOverlay   && zoom_visibility) this._addZoom();
+
+  },
+
+  render:function() {
+
+    this._bindOrientationChange();
+
+    this.$el.html(this.template(this.options));
+
+    this._renderOverlays();
 
     this._addAttributions();
 
@@ -27547,7 +27558,6 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
         options: def
       });
       this._definitionUpdated();
-      //this.fire("added_layer", this);
     }
     return this;
   },
@@ -31858,11 +31868,8 @@ var Vis = cdb.core.View.extend({
 
     // Create the map
     var mapView  = new cdb.geo.MapView.create(div_hack, map);
-    this.mapView = mapView;
 
-    /*if (this.mobile_enabled) {
-      $(".cartodb-map-wrapper").addClass("device");
-    }*/
+    this.mapView = mapView;
 
     this._addLayers(data.layers, options);
 
@@ -31878,13 +31885,6 @@ var Vis = cdb.core.View.extend({
     }
 
     this._addOverlays(data.overlays, options);
-
-    /*var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-
-    if (options.fullscreen && fullscreenEnabled && !device) {
-      this._addFullScreen();
-    }*/
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -31919,9 +31919,9 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (type == 'share'          && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector' && options[type]         || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen'     && options[type]         || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
 
       if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
@@ -31947,6 +31947,7 @@ var Vis = cdb.core.View.extend({
     }, this);
 
   },
+
   addMobile: function(overlays, data_layers, options) {
 
     var layers;
@@ -32042,13 +32043,7 @@ var Vis = cdb.core.View.extend({
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
-      //search: false,
-      //title: false,
-      //description: false,
-      //layer_selector: false,
-      //legends: true,
       tiles_loader: true,
-      zoomControl: true,
       loaderControl: true,
       searchControl: false,
       infowindow: true,
@@ -32084,7 +32079,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    this.small_embed    = $(window).width() < 620 && $("body").hasClass("embed-map");
+    this.small_embed    = $(window).width() < 620;
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = this.mobile || this.small_embed;
 
@@ -33371,7 +33366,10 @@ Layers.register('torque', function(vis, data) {
       function createLayer() {
         layerView = viz.createLayer(layerData, { no_base_layer: true });
 
+        var torqueLayer;
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var smallEmbed = $(window).width() < 620;
+
 
         if(!layerView) {
           promise.trigger('error', "layer not supported");
@@ -33384,27 +33382,25 @@ Layers.register('torque', function(vis, data) {
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], mobileEnabled);
+          viz.addLegends([layerData], mobileEnabled || smallEmbed);
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);
-        }
-
-        var torqueLayer;
-
-        if (options.time_slider && layerView.model.get('type') === 'torque') {
           torqueLayer = layerView;
         }
 
-        options.mapView = map.viz.mapView;
+        if (mobileEnabled || smallEmbed) {
 
-        viz.addOverlay({
-          type: 'mobile',
-          layerView: layerView,
-          overlays: [],
-          torqueLayer: torqueLayer,
-          options: options
-        });
+          options.mapView = map.viz.mapView;
+
+          viz.addOverlay({
+            type: 'mobile',
+            layerView: layerView,
+            overlays: [],
+            torqueLayer: torqueLayer,
+            options: options
+          });
+        }
 
         callback && callback(layerView);
         promise.trigger('done', layerView);

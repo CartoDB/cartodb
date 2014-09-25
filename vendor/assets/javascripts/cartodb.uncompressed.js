@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.08-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: dc8df11397712bc11a62abccc1f28918d63a684e
+// sha: 340f4d6ab00eb26feb38882c56d934ef25691976
 (function() {
   var root = this;
 
@@ -31880,7 +31880,7 @@ var Vis = cdb.core.View.extend({
     if (options.sublayer_options)  this._setLayerOptions(options);
 
     if (this.mobile_enabled){
-
+      options.legends = data.legends;
       this.addMobile(data.overlays, data.layers, options);
     }
 

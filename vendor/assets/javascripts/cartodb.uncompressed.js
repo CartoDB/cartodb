@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.05-dev
+// cartodb.js version: 3.11.09-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 24ad42067b0fc263c28e5eb33c59d5f0d8e09227
+// sha: beaf9f2376580e43fb30924ab557f093769fe9ba
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.05-dev';
+    cdb.VERSION = '3.11.09-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -30967,6 +30967,7 @@ var Overlay = {
     }
 
     data.options = typeof data.options === 'string' ? JSON.parse(data.options): data.options;
+    data.options = data.options || {}
     var widget = t(data, vis);
 
     if (widget) {

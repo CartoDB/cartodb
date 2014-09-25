@@ -2,7 +2,9 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for
+  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for, :available_geometries
+
+  before_filter :load_table, only: [:create, :estimation_for]
 
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
@@ -25,15 +27,22 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
-    table     = current_user.tables.where(name: params[:table_name]).first
-    geocoding = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
-    geocoding.formatter = "{#{params[:column_name]}}" if params[:column_name].present?
-    geocoding.user      = current_user
-    geocoding.table_id  = table.try(:id)
+    geocoding          = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
+    geocoding.user     = current_user
+    geocoding.table_id = @table.try(:id)
     geocoding.raise_on_save_failure = true
+
+    geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
+
+    # TODO api should be more regular
+    unless ['high-resolution', 'ipaddress'].include? params[:kind] then
+      countries = params[:text] ? [params[:location]] : @table.sequel.distinct.select_map(params[:location].to_sym)
+      geocoding.country_code = countries.map{ |c| "'#{ c }'"}.join(',')
+    end
+
     geocoding.save
 
-    table.automatic_geocoding.destroy if table.automatic_geocoding.present?
+    @table.automatic_geocoding.destroy if @table.automatic_geocoding.present?
     Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
 
     render_jsonp(geocoding.to_json)
@@ -59,14 +68,50 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render json: rows
   end
 
+  def available_geometries
+    return head(400) unless %w(admin1 namedplace postalcode).include? params[:kind]
+
+    render(json: ["polygon"]) and return if params[:kind] == "admin1"
+    render(json: ["point"])   and return if params[:kind] == "namedplace"
+
+    return head(400) unless params[:free_text] || (params[:column_name] && params[:table_name])
+
+    if params[:free_text]
+      input = [params[:free_text]]
+    else
+      begin
+        load_table
+        return head(400) if @table.nil?
+        input = @table.sequel.distinct.select_map(params[:column_name].to_sym)
+      rescue Sequel::DatabaseError
+        render(json: []) and return
+      end
+    end
+
+    input = input.map{ |v| v.to_s.squish.downcase.gsub(/[^\p{Alnum}]/, '') }
+            .reject(&:blank?)
+
+    render(json: []) and return if input.empty?
+
+    list = input.map{ |v| "'#{ v }'" }.join(",")
+
+    services = CartoDB::SQLApi.new(username: 'geocoding')
+                .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
+
+    geometries = []
+    geometries.append 'point' if services.map { |i| i['postal_code_points'] }.inject(:'&')
+    geometries.append 'polygon' if services.map { |i| i['postal_code_polygons'] }.inject(:'&')
+
+    render(json: geometries || [])
+  end
+
   def estimation_for
-    table = current_user.tables.where(name: params[:table_name]).first
-    total_rows       = Geocoding.processable_rows(table)
+    total_rows       = Geocoding.processable_rows(@table)
     remaining_quota  = current_user.geocoding_quota - current_user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
     used_credits     = (used_credits > 0 ? used_credits : 0)
-    render json: { 
+    render json: {
       rows:       total_rows,
       estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
     }
@@ -74,4 +119,9 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render_jsonp( { description: e.message }, 500)
   end
 
+  protected
+
+  def load_table
+    @table = ::Table.get_by_id_or_name(params.fetch('table_name'), current_user)
+  end
 end

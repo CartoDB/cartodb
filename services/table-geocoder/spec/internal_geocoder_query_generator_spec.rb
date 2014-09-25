@@ -21,12 +21,13 @@ The class should generate queries to be used by the InternalGeocoder depending o
 describe CartoDB::InternalGeocoderQueryGenerator do
 
   before do
-    @query_gen = CartoDB::InternalGeocoderQueryGenerator()
+    @query_gen = CartoDB::InternalGeocoderQueryGenerator.new()
   end
 
-  describe '#dataservices_query' do
-    it 'should return a query  suitable for <namedplace, point, freetext>' do
-      true.should == false
+  describe '#dataservices_querytemplate' do
+    it 'should return a query template suitable for <namedplace, point, freetext>' do
+      query = @query_gen.dataservices_querytemplate
+      query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{places}], null, {country})).*) SELECT q, null, geom, success FROM geo_function'
     end
   end
 

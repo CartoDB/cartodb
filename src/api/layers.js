@@ -162,6 +162,8 @@
 
         var torqueLayer;
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var smallEmbed = $(window).width() < 620;
+
 
         if(!layerView) {
           promise.trigger('error', "layer not supported");
@@ -174,14 +176,14 @@
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], mobileEnabled);
+          viz.addLegends([layerData], mobileEnabled || smallEmbed);
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);
           torqueLayer = layerView;
         }
 
-        if (mobileEnabled) {
+        if (mobileEnabled || smallEmbed) {
 
           options.mapView = map.viz.mapView;
 

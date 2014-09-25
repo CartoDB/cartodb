@@ -12,7 +12,6 @@ end
 
 class String
   # We just need this instead of adding the whole rails thing
-  # TODO ask the experts for alternative
   def squish
     self.split.join(' ')
   end
@@ -87,6 +86,19 @@ describe CartoDB::InternalGeocoderQueryGenerator do
         FROM any_temp_table AS orig
         WHERE any_column_name::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
       }.squish
+    end
+  end
+
+  describe '#input_type' do
+    it 'should return an array characterizing the inputs for <namedplace, point, freetext>' do
+      internal_geocoder = mock
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
+
+      query_gen.input_type.should == {
+        :kind => :namedplace,
+        :geometry_type => :point,
+        :country => :freetext
+      }
     end
   end
 

@@ -31,6 +31,26 @@ module CartoDB
       }
     end
 
+    def input_type
+      {
+        :kind => kind,
+        :geometry_type => geometry_type,
+        :country => country_input_type
+      }
+    end
+
+    def kind
+      :namedplace
+    end
+
+    def geometry_type
+      :point
+    end
+
+    def country_input_type
+      :freetext
+    end
+
   end
 
 end

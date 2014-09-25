@@ -19,7 +19,9 @@ module CartoDB
             when Url::GDrive::DATASOURCE_NAME
               Url::GDrive.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::PublicUrl::DATASOURCE_NAME
-              Url::PublicUrl.get_new()
+              Url::PublicUrl.get_new
+            when Url::ArcGIS::DATASOURCE_NAME
+              Url::ArcGIS.get_new
             when Search::Twitter::DATASOURCE_NAME
               Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user), user, redis_storage)
             when nil

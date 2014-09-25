@@ -33,6 +33,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
+          super
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME)        if user.nil?
           raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME)       unless config.include?('app_key')

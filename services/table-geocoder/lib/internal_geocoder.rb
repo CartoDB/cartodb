@@ -110,12 +110,7 @@ module CartoDB
     end # load_results_to_temp_table
 
     def copy_results_to_table
-      connection.run(%Q{
-        UPDATE #{@qualified_table_name} AS dest
-        SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
-        FROM #{temp_table_name} AS orig
-        WHERE #{column_name}::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
-      })
+      connection.run(@query_generator.copy_results_to_table_query)
     end # copy_results_to_table
 
     def drop_temp_table

@@ -452,6 +452,35 @@ namespace :cartodb do
       end
     end
 
+    desc "Recreates all table triggers"
+    task :recreate_table_triggers => :environment do
+      User.where('organization_id IS NOT NULL').each do |user|
+
+        if  user.cartodb_extension_version_pre_mu? #|| user.database_schema=='public'
+          puts "SKIP: #{user.username} / #{user.id}"
+        else
+          schema_name = user.database_schema
+          Table.filter(:user_id => user.id).each do |table|
+            table_name = "#{user.database_schema}.#{table.name}"
+            begin
+              user.in_database do |user_db|
+                user_db.run(%Q{
+                  SELECT cartodb._CDB_drop_triggers('#{table_name}'::REGCLASS);
+                })
+                user_db.run(%Q{
+                  SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+                })
+              end
+            rescue => exception
+              puts "ERROR:  #{user.username} / #{user.id} : #{table_name} #{exception}"
+            end
+          end
+          puts "DONE: #{user.username} / #{user.id}"
+        end
+      end
+      puts 'Finished'
+    end
+
     desc "Update update_the_geom_webmercator_trigger"
     task :update_the_geom_webmercator_trigger => :environment do
       User.all.each do |user|
@@ -758,6 +787,7 @@ namespace :cartodb do
             table_columns = th["columns"].map {|name,attrs| "#{name} #{attrs['column_type']}"}
             db.run("CREATE FOREIGN TABLE #{table_name} (#{table_columns.join(', ')}) SERVER #{server_name} OPTIONS (schema '#{args[:remote_schema]}', table '#{th["remote_table"]}', readonly '#{table_readonly}')")
             db.run("GRANT SELECT ON #{table_name} TO \"#{u.database_username}\"")
+            db.run("GRANT SELECT ON #{table_name} TO \"#{CartoDB::PUBLIC_DB_USER}\"")
           end
         end
       end

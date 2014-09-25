@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
+require_relative 'internal_geocoder_query_generator'
 
 module CartoDB
   class InternalGeocoder
@@ -40,6 +41,7 @@ module CartoDB
       @state                = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
       @country_column = arguments[:country_column]
+      @query_generator = CartoDB::InternalGeocoderQueryGenerator.new
     end # initialize
 
     def run
@@ -80,9 +82,9 @@ module CartoDB
     end # download_results
 
     def generate_sql(search_terms)
-      SQL_PATTERNS.fetch(@geometry_type).fetch(@kind)
-        .gsub('{search_terms}', search_terms.join(','))
-        .gsub('{country_list}', "#{ @countries }")
+      querytemplate = @query_generator.dataservices_querytemplate
+      #TODO move this to QueryGenerator
+      querytemplate.gsub('{cities}', search_terms.join(',')).gsub('{country}', @countries)
     rescue KeyError => e
       raise NotImplementedError.new("Can't find geocoding function for #{@geometry_type}, #{@kind}")
     end # generate_sql

@@ -27,7 +27,7 @@ describe CartoDB::InternalGeocoderQueryGenerator do
   describe '#dataservices_querytemplate' do
     it 'should return a query template suitable for <namedplace, point, freetext>' do
       query = @query_gen.dataservices_querytemplate
-      query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{places}], null, {country})).*) SELECT q, null, geom, success FROM geo_function'
+      query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, {country})).*) SELECT q, null, geom, success FROM geo_function'
     end
   end
 

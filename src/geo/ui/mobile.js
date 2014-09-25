@@ -150,7 +150,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _toggle: function(e) {
 
     e.preventDefault();
-    e.stopPropagation();
+    //e.stopPropagation();
 
     this.model.set("open", !this.model.get("open"));
 

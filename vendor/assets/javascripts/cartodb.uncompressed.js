@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.08-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 947016bbc02c9e10591513e69ae908fbb46b9152
+// sha: db74b8513adfab80d3c942857799ec8936b5ac6a
 (function() {
   var root = this;
 
@@ -32724,7 +32724,7 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 
   var isDevice = options.device == "mobile" ? true : false;
 
-  if (vis.device !== isDevice) return;
+  if (vis.mobile_enabled !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -32749,7 +32749,7 @@ cdb.vis.Overlay.register('text', function(data, vis) {
 
   var isDevice = options.device == "mobile" ? true : false;
 
-  if (vis.device !== isDevice) return;
+  if (vis.mobile_enabled !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -32775,7 +32775,7 @@ cdb.vis.Overlay.register('zoom_info', function(data, vis) {
 
 cdb.vis.Overlay.register('header', function(data, vis) {
 
-  if (vis.device) return;
+  if (vis.mobile_enabled) return;
 
   var options = data.options;
 

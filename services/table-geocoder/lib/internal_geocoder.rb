@@ -9,7 +9,7 @@ module CartoDB
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
                   :working_dir, :remote_id, :state, :processed_rows
 
-    attr_accessor :table_schema, :table_name, :column_name, :country_column
+    attr_accessor :table_schema, :table_name, :column_name, :country_column, :qualified_table_name, :batch_size
 
     SQL_PATTERNS = {
       point: {
@@ -41,7 +41,7 @@ module CartoDB
       @state                = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
       @country_column = arguments[:country_column]
-      @query_generator = CartoDB::InternalGeocoderQueryGenerator.new
+      @query_generator = CartoDB::InternalGeocoderQueryGenerator.new self
     end # initialize
 
     def run
@@ -90,21 +90,14 @@ module CartoDB
     end # generate_sql
 
     def get_search_terms(page)
+      query = @query_generator.search_terms_query(page)
+
+      # TODO possibly casting is not this class' responsibility
       case column_datatype
       when 'double precision'
-        connection.fetch(%Q{
-            SELECT DISTINCT(#{column_name}) AS searchtext
-            FROM #{@qualified_table_name}
-            WHERE cartodb_georef_status IS NULL
-            LIMIT #{@batch_size} OFFSET #{page * @batch_size}
-        }).all.map { |r| r[:searchtext].to_i }
+        connection.fetch(query).all.map { |r| r[:searchtext].to_i }
       when 'text'
-        connection.fetch(%Q{
-            SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
-            FROM #{@qualified_table_name}
-            WHERE cartodb_georef_status IS NULL
-            LIMIT #{@batch_size} OFFSET #{page * @batch_size}
-        }).all.map { |r| r[:searchtext] }
+        connection.fetch(query).all.map { |r| r[:searchtext] }
       else
         raise NotImplementedError.new("Source column #{ column_name } has an unsupported data type (#{ column_datatype })")
       end

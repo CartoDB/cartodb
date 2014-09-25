@@ -471,11 +471,8 @@ var Vis = cdb.core.View.extend({
 
     // Create the map
     var mapView  = new cdb.geo.MapView.create(div_hack, map);
-    this.mapView = mapView;
 
-    /*if (this.mobile_enabled) {
-      $(".cartodb-map-wrapper").addClass("device");
-    }*/
+    this.mapView = mapView;
 
     this._addLayers(data.layers, options);
 
@@ -491,13 +488,6 @@ var Vis = cdb.core.View.extend({
     }
 
     this._addOverlays(data.overlays, options);
-
-    /*var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-
-    if (options.fullscreen && fullscreenEnabled && !device) {
-      this._addFullScreen();
-    }*/
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -656,12 +646,6 @@ var Vis = cdb.core.View.extend({
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
-      //search: false,
-      //title: false,
-      //description: false,
-      //layer_selector: false,
-      //legends: true,
-      //zoomControl: true,
       tiles_loader: true,
       loaderControl: true,
       searchControl: false,
@@ -698,7 +682,7 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    this.small_embed    = $(window).width() < 620 && $("body").hasClass("embed-map");
+    this.small_embed    = $(window).width() < 620;
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = this.mobile || this.small_embed;
 

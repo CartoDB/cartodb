@@ -10,6 +10,14 @@ RSpec.configure do |config|
   config.mock_with :mocha
 end
 
+class String
+  # We just need this instead of adding the whole rails thing
+  # TODO ask the experts for alternative
+  def squish
+    self.split.join(' ')
+  end
+end
+
 =begin
 The class should generate queries to be used by the InternalGeocoder depending on the inputs.
 
@@ -30,12 +38,15 @@ describe CartoDB::InternalGeocoderQueryGenerator do
     it 'should return a query template suitable for <namedplace, point, freetext>' do
       internal_geocoder = mock
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new(internal_geocoder)
+
       query = query_gen.dataservices_query_template
+
       query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, {country})).*) SELECT q, null, geom, success FROM geo_function'
     end
 
     it 'should replace "world" with null' do
-      pending('TBD')
+      #TODO
+      pending('TODO')
     end
 
   end
@@ -49,8 +60,8 @@ describe CartoDB::InternalGeocoderQueryGenerator do
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new(internal_geocoder)
 
       query = query_gen.search_terms_query(0)
-      #TODO replace by squish or just copy the template
-      query.gsub(/[\s\n]+/, ' ').strip.should == 'SELECT DISTINCT(quote_nullable(city)) AS searchtext FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
+
+      query.squish.should == 'SELECT DISTINCT(quote_nullable(city)) AS searchtext FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
     end
   end
 
@@ -63,13 +74,13 @@ describe CartoDB::InternalGeocoderQueryGenerator do
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new internal_geocoder
 
       query = query_gen.copy_results_to_table_query
-      expected_string = %Q{
+
+      query.squish.should == %Q{
         UPDATE "public"."untitled_table" AS dest
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM any_temp_table AS orig
         WHERE any_column_name::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
-      }.gsub(/[\s\n]+/, ' ').strip
-      query.gsub(/[\s\n]+/, ' ').strip.should == expected_string
+      }.squish
     end
   end
 

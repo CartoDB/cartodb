@@ -37,6 +37,7 @@ describe CartoDB::InternalGeocoderQueryGenerator do
 
     it 'should return a query template suitable for <namedplace, point, freetext>' do
       internal_geocoder = mock
+      internal_geocoder.stubs('countries').once.returns('any_country')
       query_gen = CartoDB::InternalGeocoderQueryGenerator.new(internal_geocoder)
 
       query = query_gen.dataservices_query_template
@@ -45,8 +46,13 @@ describe CartoDB::InternalGeocoderQueryGenerator do
     end
 
     it 'should replace "world" with null' do
-      #TODO
-      pending('TODO')
+      internal_geocoder = mock
+      internal_geocoder.stubs('countries').once.returns('world')
+      query_gen = CartoDB::InternalGeocoderQueryGenerator.new(internal_geocoder)
+
+      query = query_gen.dataservices_query_template
+
+      query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, null)).*) SELECT q, null, geom, success FROM geo_function'
     end
 
   end

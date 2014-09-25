@@ -1,15 +1,18 @@
 # encoding: utf-8
 
+require_relative 'internal_geocoder_input_type_resolver'
+
 module CartoDB
 
   class InternalGeocoderQueryGenerator
 
-    def initialize(internal_geocoder)
+    def initialize(internal_geocoder, input_type=nil)
       @internal_geocoder = internal_geocoder
+      @input_type = input_type || CartoDB::InternalGeocoderInputTypeResolver.new(@internal_geocoder).type
     end
 
     def dataservices_query_template
-      case input_type
+      case @input_type
         when [:namedplace, :point, :freetext]
           country_clause = @internal_geocoder.countries == "'world'" ? 'null' : '{country}'
           "WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, #{country_clause})).*) SELECT q, null, geom, success FROM geo_function"
@@ -22,7 +25,7 @@ module CartoDB
     end
 
     def search_terms_query(page)
-      case input_type
+      case @input_type
         when [:namedplace, :point, :freetext]
           %Q{
             SELECT DISTINCT(quote_nullable(#{@internal_geocoder.column_name})) AS searchtext
@@ -45,7 +48,7 @@ module CartoDB
     end
 
     def copy_results_to_table_query
-      case input_type
+      case @input_type
         when [:namedplace, :point, :freetext]
           %Q{
             UPDATE #{@internal_geocoder.qualified_table_name} AS dest
@@ -63,26 +66,6 @@ module CartoDB
           }
         else
           raise "Not implemented"
-      end
-    end
-
-    def input_type
-      [kind, geometry_type, country_input_type]
-    end
-
-    def kind
-      @internal_geocoder.kind
-    end
-
-    def geometry_type
-      @internal_geocoder.geometry_type
-    end
-
-    def country_input_type
-      if @internal_geocoder.country_column
-        :column
-      else
-        :freetext
       end
     end
 

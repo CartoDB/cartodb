@@ -353,7 +353,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       }
 
     } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
-     this.layers.push(layer);
+
+      if (layer.get('type') === 'torque')  {
+        layer.on("change:visible", this._toggleSlider, this);
+      }
+
+      this.layers.push(layer);
+
+    }
+
+  },
+
+  _toggleSlider: function(m) {
+
+    if (m.get("visible")) {
+      this.$el.addClass("with-torque");
+      this.slider.show();
+    } else {
+      this.$el.removeClass("with-torque");
+      this.slider.hide();
     }
 
   },

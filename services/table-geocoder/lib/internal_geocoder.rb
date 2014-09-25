@@ -8,7 +8,7 @@ module CartoDB
 
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
                   :working_dir, :remote_id, :state, :processed_rows, :country_column,
-                  :qualified_table_name, :batch_size, :countries
+                  :qualified_table_name, :batch_size, :countries, :kind, :geometry_type
 
     attr_accessor :table_schema, :table_name, :column_name
 

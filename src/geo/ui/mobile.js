@@ -536,7 +536,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       this.$title  = this.$header.find(".title").html(extra.title);
       this.$description  = this.$header.find(".description").html(extra.description);
 
-      if (this.visibility_options.title       || this.visibility_options.title != false       && extra.show_title)      {
+      if (this.visibility_options.title || this.visibility_options.title != false && extra.show_title)      {
         this.$title.show();
         has_header = true;
       }

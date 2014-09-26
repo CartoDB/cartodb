@@ -2,8 +2,8 @@
 require_relative '../../sql-api/sql_api'
 require_relative 'internal_geocoder_query_generator'
 
-module CartoDB
-  class InternalGeocoder
+module CartoDB::InternalGeocoder
+  class Geocoder
     class NotImplementedError < StandardError; end
 
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,

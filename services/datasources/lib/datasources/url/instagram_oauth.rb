@@ -10,6 +10,8 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'instagram'
 
+        FORMAT_ALL_MEDIA = 'all_media'
+
         # Constructor
         # @param config Array
         # [
@@ -108,7 +110,7 @@ module CartoDB
         def get_resources_list(filter=[])
           [
             {
-              id:      'all_media',
+              id:       FORMAT_ALL_MEDIA,
               title:    'All your photos and videos',
               url:      'All your photos and videos',
               service:  DATASOURCE_NAME,
@@ -125,7 +127,18 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource(id)
-          contents,  = @client.get_file_and_metadata(id)
+          # TODO: Paginate, etc. (https://github.com/Instagram/instagram-ruby-gem#sample-application)
+          items = @client.user_recent_media({count:999})
+
+          contents = "\"thumbnail\",\"image\",\"link\",\"type\",\"lat\",\"lon\"\n"
+
+          for item in items
+            lat = item.location.nil? ? nil : item.location.latitude
+            lon = item.location.nil? ? nil : item.location.longitude
+            # TODO: Format using function instead
+            contents << "\"#{item.images.thumbnail.url}\",\"#{item.images.thumbnail.url}\",\"#{item.link}\"," \
+              << "\"#{item.type}\",\"#{lat}\",\"#{lon}\"\n"
+          end
           contents
         rescue => ex
           handle_error(ex, "get_resource() #{id}: #{ex.message}")
@@ -137,10 +150,10 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource_metadata(id)
-          response = @client.metadata(id)
-          item_data = format_item_data(response)
-
-          item_data.to_hash
+          {
+            id:       FORMAT_ALL_MEDIA,
+            filename: "#{DATASOURCE_NAME}_#{@client.user.username}.csv"
+          }
         rescue => ex
           handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")
         end
@@ -148,7 +161,7 @@ module CartoDB
         # Retrieves current filters
         # @return {}
         def filter
-          @formats
+          {}
         end
 
         # Sets current filters

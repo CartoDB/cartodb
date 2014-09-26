@@ -173,6 +173,10 @@ defaults: &defaults
       app_key:  ''
       app_secret: ''
       callback_url: ''
+    instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
   datasource_search:
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
     twitter_search:

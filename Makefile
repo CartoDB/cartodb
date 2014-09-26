@@ -79,6 +79,7 @@ WORKING_SPECS_9 = \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
+  services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
 
 

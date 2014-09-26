@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
-require_relative 'internal-geocoder/query_generator'
+require_relative 'internal-geocoder/query_generator_factory'
 
 module CartoDB
   module InternalGeocoder
@@ -31,7 +31,7 @@ module CartoDB
         @state                = 'submitted'
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
         @country_column = arguments[:country_column]
-        @query_generator = CartoDB::InternalGeocoderQueryGenerator.new self
+        @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
       end # initialize
 
       def run

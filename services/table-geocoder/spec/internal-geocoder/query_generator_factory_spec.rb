@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../lib/internal-geocoder/query_generator.rb'
+require_relative '../../lib/internal-geocoder/query_generator_factory.rb'
 
 RSpec.configure do |config|
   config.mock_with :mocha
@@ -26,7 +26,7 @@ The class should generate queries to be used by the InternalGeocoder depending o
   - to import results into table
 =end
 
-describe CartoDB::InternalGeocoder::QueryGenerator do
+describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
   before(:each) do
     @internal_geocoder = mock
@@ -36,7 +36,7 @@ describe CartoDB::InternalGeocoder::QueryGenerator do
 
     it 'should return a query template suitable for <namedplace, freetext, point>' do
       @internal_geocoder.stubs('countries').once.returns('any_country')
-      query_generator = CartoDB::InternalGeocoder::QueryGenerator.new(@internal_geocoder, [:namedplace, :text, :point])
+      query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
 
       query = query_generator.dataservices_query_template
 
@@ -45,7 +45,7 @@ describe CartoDB::InternalGeocoder::QueryGenerator do
 
     it 'should replace "world" with null' do
       @internal_geocoder.stubs('countries').once.returns("'world'")
-      query_generator = CartoDB::InternalGeocoder::QueryGenerator.new(@internal_geocoder, [:namedplace, :text, :point])
+      query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
 
       query = query_generator.dataservices_query_template
 
@@ -59,7 +59,7 @@ describe CartoDB::InternalGeocoder::QueryGenerator do
       @internal_geocoder.stubs('column_name').once.returns('city')
       @internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
       @internal_geocoder.stubs('batch_size').returns(5000)
-      query_generator = CartoDB::InternalGeocoder::QueryGenerator.new(@internal_geocoder, [:namedplace, :text, :point])
+      query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
 
       query = query_generator.search_terms_query(0)
 
@@ -72,7 +72,7 @@ describe CartoDB::InternalGeocoder::QueryGenerator do
       @internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
       @internal_geocoder.stubs('temp_table_name').once.returns('any_temp_table')
       @internal_geocoder.stubs('column_name').once.returns('any_column_name')
-      query_generator = CartoDB::InternalGeocoder::QueryGenerator.new(@internal_geocoder, [:namedplace, :text, :point])
+      query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
 
       query = query_generator.copy_results_to_table_query
 

@@ -1,0 +1,33 @@
+# encoding: utf-8
+
+require_relative 'input_type_resolver'
+require_relative 'cities_text_points'
+require_relative 'cities_column_points'
+
+module CartoDB
+  module InternalGeocoder
+
+    class QueryGeneratorFactory
+
+      class << self
+        private :new
+
+        def get(internal_geocoder, input_type=nil)
+          input_type ||= InputTypeResolver.new(internal_geocoder).type
+
+          case input_type
+            when [:namedplace, :text, :point]
+              CitiesTextPoints.new internal_geocoder
+            when [:namedplace, :column, :point]
+              CitiesColumnPoints.new internal_geocoder
+            else
+              raise 'Not implemented'
+          end
+        end
+      end
+
+
+    end # QueryGeneratorFactory
+
+  end # InternalGeocoder
+end #CartoDB

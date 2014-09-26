@@ -2,32 +2,35 @@
 
 module CartoDB
 
-  class InternalGeocoderInputTypeResolver
+  module InternalGeocoder
 
-    def initialize(internal_geocoder)
-      @internal_geocoder = internal_geocoder
-    end
+    class InputTypeResolver
 
-    def type
-      [kind, geometry_type, country_input_type]
-    end
-
-    def kind
-      @internal_geocoder.kind
-    end
-
-    def geometry_type
-      @internal_geocoder.geometry_type
-    end
-
-    def country_input_type
-      if @internal_geocoder.country_column
-        :column
-      else
-        :freetext
+      def initialize(internal_geocoder)
+        @internal_geocoder = internal_geocoder
       end
-    end
 
-  end
+      def type
+        [kind, geometry_type, country_input_type]
+      end
+
+      def kind
+        @internal_geocoder.kind
+      end
+
+      def geometry_type
+        @internal_geocoder.geometry_type
+      end
+
+      def country_input_type
+        if @internal_geocoder.country_column
+          :column
+        else
+          :freetext
+        end
+      end
+
+    end # InputTypeResolver
+  end # InternalGeocoder
 
 end

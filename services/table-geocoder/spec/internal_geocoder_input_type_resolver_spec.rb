@@ -6,11 +6,11 @@ RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-describe CartoDB::InternalGeocoderInputTypeResolver do
+describe CartoDB::InternalGeocoder::InputTypeResolver do
 
   before(:each) do
     @internal_geocoder = mock
-    @input_type_resolver = CartoDB::InternalGeocoderInputTypeResolver.new(@internal_geocoder)
+    @input_type_resolver = CartoDB::InternalGeocoder::InputTypeResolver.new(@internal_geocoder)
   end
 
   describe '#type' do

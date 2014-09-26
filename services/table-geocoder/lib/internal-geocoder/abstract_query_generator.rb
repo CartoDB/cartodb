@@ -20,10 +20,6 @@ module CartoDB
         raise 'Not implemented'
       end
 
-      def dataservices_query_template
-        raise 'Not implemented'
-      end
-
       def copy_results_to_table_query
         raise 'Not implemented'
       end

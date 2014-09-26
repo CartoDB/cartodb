@@ -18,15 +18,10 @@ module CartoDB
         }
       end
 
-      def dataservices_query_template
-        'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, Array[{countries}])).*) SELECT q, c, geom, success FROM geo_function'
-      end
-
       def dataservices_query(search_terms)
-        #TODO simplify by removing the dataservices_query_template method
         cities = search_terms.map { |row| row[:city] }.join(',')
         countries = search_terms.map { |row| row[:country] }.join(',')
-        dataservices_query_template.gsub('{cities}', cities).gsub('{countries}', countries)
+        "WITH geo_function AS (SELECT (geocode_namedplace(Array[#{cities}], null, Array[#{countries}])).*) SELECT q, c, geom, success FROM geo_function"
       end
 
       def copy_results_to_table_query

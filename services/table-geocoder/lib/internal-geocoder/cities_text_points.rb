@@ -16,18 +16,13 @@ module CartoDB
         }
       end
 
-      def post_process_search_terms_query(results)
-        results.map { |r| r[:city] }
-      end
-
-      def dataservices_query_template
-        "WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, {country})).*) SELECT q, null, geom, success FROM geo_function"
-      end
-
       def dataservices_query(search_terms)
         cities = search_terms.map { |row| row[:city] }.join(',')
-        country = @internal_geocoder.countries == "'world'" ? 'null' : @internal_geocoder.countries
-        dataservices_query_template.gsub('{cities}', cities).gsub('{country}', country)
+        country = @internal_geocoder.countries
+        if country == %Q{'world'}
+          country = 'null'
+        end
+        "WITH geo_function AS (SELECT (geocode_namedplace(Array[#{cities}], null, #{country})).*) SELECT q, null, geom, success FROM geo_function"
       end
 
       def copy_results_to_table_query

@@ -32,14 +32,16 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
     @internal_geocoder = mock
   end
 
-  describe '#dataservices_query_template' do
+  describe '#dataservices' do
 
     it 'should return a query template suitable for <namedplace, freetext, point>' do
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
+      @internal_geocoder.expects('countries').once.returns(%Q{'Spain'})
+      search_terms = [{city: %Q{'Madrid'}}, {city: %Q{'Granada'}}]
 
-      query = query_generator.dataservices_query_template
+      query = query_generator.dataservices_query(search_terms)
 
-      query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, {country})).*) SELECT q, null, geom, success FROM geo_function'
+      query.should == "WITH geo_function AS (SELECT (geocode_namedplace(Array['Madrid','Granada'], null, 'Spain')).*) SELECT q, null, geom, success FROM geo_function"
     end
 
   end

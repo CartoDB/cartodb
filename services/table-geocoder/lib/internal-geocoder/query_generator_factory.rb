@@ -10,6 +10,7 @@ require_relative 'postalcode_text_points'
 require_relative 'postalcode_column_points'
 require_relative 'postalcode_text_polygon'
 require_relative 'postalcode_column_polygon'
+require_relative 'ipaddress_text_point'
 
 module CartoDB
   module InternalGeocoder
@@ -41,6 +42,8 @@ module CartoDB
               PostalcodeTextPolygon.new internal_geocoder
             when [:postalcode, :column, :polygon]
               PostalcodeColumnPolygon. new internal_geocoder
+            when [:ipaddress, :text, :point]
+              IpAddressTextPoint.new internal_geocoder
             else
               raise QueryGeneratorNotImplemented. new "QueryGenerator not implemented for input type #{input_type}"
           end

@@ -456,7 +456,7 @@ namespace :cartodb do
     task :recreate_table_triggers => :environment do
       User.where('organization_id IS NOT NULL').each do |user|
 
-        if  user.cartodb_extension_version_pre_mu? #|| user.database_schema=='public'
+        if  user.cartodb_extension_version_pre_mu? || user.database_schema=='public'
           puts "SKIP: #{user.username} / #{user.id}"
         else
           schema_name = user.database_schema

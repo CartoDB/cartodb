@@ -54,6 +54,7 @@ module CartoDB
       raise e
     ensure
       drop_temp_table
+      FileUtils.rm_rf @working_dir
     end
 
     def column_datatype

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.08-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: db74b8513adfab80d3c942857799ec8936b5ac6a
+// sha: fcf65ac755a090112325494c535bf05e1c8e542a
 (function() {
   var root = this;
 
@@ -31897,7 +31897,7 @@ var Vis = cdb.core.View.extend({
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
-    if (this.mobile_enabled){
+    if (options.mobile_layout && this.mobile_enabled){
       options.legends = data.legends;
       this.addMobile(data.overlays, data.layers, options);
     }
@@ -31927,12 +31927,21 @@ var Vis = cdb.core.View.extend({
 
     _.each(overlays, function(data) {
 
-      var type    = data.type;
+      var type = data.type;
 
-      if (this.mobile_enabled && type == "zoom") return;
+      // We don't render certain overlays if we are in mobile
+      if (this.mobile_enabled && type === "zoom")   return;
+      if (this.mobile_enabled && type === 'header') return;
 
+      if (type === 'image' || type === 'text') {
+        var isDevice = data.options.device == "mobile" ? true : false;
+        if (this.mobile_enabled !== isDevice) return;
+      }
+
+      // We add the overlay
       var overlay = this.addOverlay(data);
 
+      // We show/hide the overlays
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
       var opt = data.options;
@@ -31969,7 +31978,6 @@ var Vis = cdb.core.View.extend({
   addMobile: function(overlays, data_layers, options) {
 
     var layers;
-
     var layer = data_layers[1];
 
     if (layer.options && layer.options.layer_definition) {
@@ -32100,8 +32108,6 @@ var Vis = cdb.core.View.extend({
     this.small_embed    = $(window).width() < 620;
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = this.mobile || this.small_embed;
-
-    if (this.small_embed) $("body").addClass("embed-map-small");
 
     if (!opt.title) {
       vizjson.title = null;
@@ -32722,10 +32728,6 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 
   var options = data.options;
 
-  var isDevice = options.device == "mobile" ? true : false;
-
-  if (vis.mobile_enabled !== isDevice) return;
-
   var template = cdb.core.Template.compile(
     data.template || '\
     <div class="content">\
@@ -32746,10 +32748,6 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 cdb.vis.Overlay.register('text', function(data, vis) {
 
   var options = data.options;
-
-  var isDevice = options.device == "mobile" ? true : false;
-
-  if (vis.mobile_enabled !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -32774,8 +32772,6 @@ cdb.vis.Overlay.register('zoom_info', function(data, vis) {
 });
 
 cdb.vis.Overlay.register('header', function(data, vis) {
-
-  if (vis.mobile_enabled) return;
 
   var options = data.options;
 
@@ -33388,7 +33384,6 @@ Layers.register('torque', function(vis, data) {
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         var smallEmbed = $(window).width() < 620;
 
-
         if(!layerView) {
           promise.trigger('error', "layer not supported");
           return promise;
@@ -33407,7 +33402,7 @@ Layers.register('torque', function(vis, data) {
           torqueLayer = layerView;
         }
 
-        if (mobileEnabled || smallEmbed) {
+        if (options.mobile_layout && (mobileEnabled || smallEmbed)) {
 
           options.mapView = map.viz.mapView;
 

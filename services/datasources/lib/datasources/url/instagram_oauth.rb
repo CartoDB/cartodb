@@ -106,7 +106,14 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resources_list(filter=[])
-          []
+          [
+            {
+              id:      'all_media',
+              title:    'All your photos and videos',
+              url:      'All your photos and videos',
+              service:  DATASOURCE_NAME
+            }
+          ]
         end
 
         # Retrieves a resource and returns its contents

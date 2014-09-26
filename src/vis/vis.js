@@ -482,7 +482,7 @@ var Vis = cdb.core.View.extend({
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
-    if (this.mobile_enabled){
+    if (options.mobile_layout && this.mobile_enabled){
       options.legends = data.legends;
       this.addMobile(data.overlays, data.layers, options);
     }
@@ -554,7 +554,6 @@ var Vis = cdb.core.View.extend({
   addMobile: function(overlays, data_layers, options) {
 
     var layers;
-
     var layer = data_layers[1];
 
     if (layer.options && layer.options.layer_definition) {
@@ -685,8 +684,6 @@ var Vis = cdb.core.View.extend({
     this.small_embed    = $(window).width() < 620;
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = this.mobile || this.small_embed;
-
-    if (this.small_embed) $("body").addClass("embed-map-small");
 
     if (!opt.title) {
       vizjson.title = null;

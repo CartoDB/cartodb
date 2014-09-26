@@ -283,7 +283,7 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addTimeSlider: function(options) {
+  addTimeSlider: function() {
 
     var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
 
@@ -291,13 +291,14 @@ var Vis = cdb.core.View.extend({
 
       this.torqueLayer = torque[0];
 
-      if (!this.torqueLayer) return;
-      if (options.mobile_layout && this.mobile_enabled) return;
+      if (!this.mobile_enabled && this.torqueLayer) {
 
-      this.addOverlay({
-        type: 'time_slider',
-        layer: this.torqueLayer
-      });
+        this.addOverlay({
+          type: 'time_slider',
+          layer: this.torqueLayer
+        });
+
+      }
 
     }
 
@@ -472,9 +473,9 @@ var Vis = cdb.core.View.extend({
 
     this._addLayers(data.layers, options);
 
-    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, options.mobile_layout && this.mobile_enabled);
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
 
-    if (options.time_slider)       this.addTimeSlider(options);
+    if (options.time_slider)       this.addTimeSlider();
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
@@ -511,8 +512,8 @@ var Vis = cdb.core.View.extend({
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (options.mobile_layout && this.mobile_enabled && type === "zoom")   return;
-      if (options.mobile_layout && this.mobile_enabled && type === 'header') return;
+      if (this.mobile_enabled && type === "zoom")   return;
+      if (this.mobile_enabled && type === 'header') return;
 
       if (type === 'image' || type === 'text') {
         var isDevice = data.options.device == "mobile" ? true : false;
@@ -531,9 +532,9 @@ var Vis = cdb.core.View.extend({
       if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
       if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
 
-      if (!(opt.mobile_layout && this.mobile_enabled) && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+      if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
 
-      if (!(opt.mobile_layout && this.mobile_enabled) && type === 'header') {
+      if (!this.mobile_enabled && type === 'header') {
 
         var m = overlay.model;
 
@@ -674,9 +675,8 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    this.small_embed    = $(window).width() < 620;
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = this.mobile || this.small_embed;
+    this.mobile_enabled = opt.mobile_layout && this.mobile || opt.force_mobile;
 
     if (!opt.title) {
       vizjson.title = null;
@@ -694,7 +694,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (!(opt.mobile_layout && this.mobile_enabled) && (opt.search || opt.searchControl)) {
+    if (!this.mobile_enabled && (opt.search || opt.searchControl)) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search"
@@ -731,7 +731,7 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (opt.shareable && !(opt.mobile_layout && this.mobile_enabled)) {
+    if (opt.shareable && !this.mobile_enabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
@@ -741,13 +741,13 @@ var Vis = cdb.core.View.extend({
     }
 
     // We remove certain overlays in mobile devices
-    if (opt.mobile_layout && this.mobile_enabled) {
+    if (this.mobile_enabled) {
       remove_overlay('logo');
       remove_overlay('share');
       remove_overlay('layer_selector');
     }
 
-    if (opt.mobile_layout && this.mobile) {
+    if (this.mobile) {
       remove_overlay('zoom');
     }
 

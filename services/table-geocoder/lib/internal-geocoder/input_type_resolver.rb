@@ -11,7 +11,7 @@ module CartoDB
       end
 
       def type
-        [kind, geometry_type, country_input_type]
+        [kind, country_input_type, geometry_type]
       end
 
       def kind

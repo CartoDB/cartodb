@@ -20,7 +20,7 @@ describe CartoDB::InternalGeocoder::InputTypeResolver do
       @internal_geocoder.stubs('geometry_type').once.returns(:point)
       @internal_geocoder.stubs('country_column').once.returns(nil)
 
-      @input_type_resolver.type.should == [:namedplace, :point, :freetext]
+      @input_type_resolver.type.should == [:namedplace, :freetext, :point]
     end
 
   end

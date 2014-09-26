@@ -16,7 +16,7 @@ module CartoDB
 
       def search_terms_query(page)
         case @input_type
-          when [:namedplace, :point, :freetext]
+          when [:namedplace, :freetext, :point]
             %Q{
               SELECT DISTINCT(quote_nullable(#{@internal_geocoder.column_name})) AS city
               FROM #{@internal_geocoder.qualified_table_name}
@@ -39,7 +39,7 @@ module CartoDB
 
       def post_process_search_terms_query(results)
         case @input_type
-          when [:namedplace, :point, :freetext]
+          when [:namedplace, :freetext, :point]
             results.map { |r| r[:city] }
           when [:namedplace, :point, :column]
             results
@@ -50,7 +50,7 @@ module CartoDB
 
       def dataservices_query_template
         case @input_type
-          when [:namedplace, :point, :freetext]
+          when [:namedplace, :freetext, :point]
             country_clause = @internal_geocoder.countries == "'world'" ? 'null' : '{country}'
             "WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, #{country_clause})).*) SELECT q, null, geom, success FROM geo_function"
           when [:namedplace, :point, :column]
@@ -68,7 +68,7 @@ module CartoDB
 
       def copy_results_to_table_query
         case @input_type
-          when [:namedplace, :point, :freetext]
+          when [:namedplace, :freetext, :point]
             %Q{
               UPDATE #{@internal_geocoder.qualified_table_name} AS dest
               SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status

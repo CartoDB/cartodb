@@ -100,7 +100,7 @@ describe User do
   end
 
   it "should not allow a username in use by an organization" do
-    organization = create_org('testusername', 10.megabytes, 1)
+    create_org('testusername', 10.megabytes, 1)
     @user.username = 'testusername'
     @user.valid?.should be_false
     @user.username = 'wadus'
@@ -1064,21 +1064,6 @@ describe User do
         u1.destroy
       }.to raise_exception CartoDB::BaseCartoDBError
 
-
-      pending "Until User organization is stabilized, cannot properly delete stuff"
-
-      # Remove non-admin first
-      u2.destroy
-
-      u1.reload
-      org.reload
-      org.users.count.should eq 1
-
-      # And now we can destroy the owner
-      u1.destroy
-
-      org.reload
-      org.users.count.should eq 0
     end
   end
 
@@ -1166,9 +1151,6 @@ describe User do
     user1.save
 
     organization.destroy
-    #user1.destroy
-    #organization.users.each {|u| u.destroy unless u == organization.owner }
-    #organization.owner.destroy
   end
 
   def create_org(org_name, org_quota, org_seats)

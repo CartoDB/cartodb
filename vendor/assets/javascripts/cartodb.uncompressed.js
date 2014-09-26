@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.08-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: fcf65ac755a090112325494c535bf05e1c8e542a
+// sha: 2eecd61f5a1d00e7ddf28a6c8230ef2afb1b7afd
 (function() {
   var root = this;
 
@@ -33395,7 +33395,7 @@ Layers.register('torque', function(vis, data) {
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], mobileEnabled || smallEmbed);
+          viz.addLegends([layerData], (options.mobile_layout && (mobileEnabled || smallEmbed)));
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);

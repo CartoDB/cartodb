@@ -79,7 +79,7 @@ module CartoDB
       def create_temp_table
         connection.run(%Q{
           CREATE TABLE #{temp_table_name} (
-            geocode_string text, iso3 text, the_geom geometry, cartodb_georef_status boolean
+            geocode_string text, country text, the_geom geometry, cartodb_georef_status boolean
           );
         })
       end # create_temp_table

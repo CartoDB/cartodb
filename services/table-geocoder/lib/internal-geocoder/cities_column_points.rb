@@ -8,7 +8,6 @@ module CartoDB
     class CitiesColumnPoints < AbstractQueryGenerator
 
       def search_terms_query(page)
-        #TODO quoting should not be part of this query's responsibility
         %Q{
           SELECT DISTINCT
             quote_nullable(#{@internal_geocoder.column_name}) as city,
@@ -20,21 +19,24 @@ module CartoDB
       end
 
       def dataservices_query_template
-        'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, Array[{countries}])).*) SELECT q, null, geom, success FROM geo_function'
+        'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, Array[{countries}])).*) SELECT q, c, geom, success FROM geo_function'
       end
 
       def dataservices_query(search_terms)
-        #TODO: implement
-        raise 'Not implemented yet'
+        #TODO simplify by removing the dataservices_query_template method
+        cities = search_terms.map { |row| row[:city] }.join(',')
+        countries = search_terms.map { |row| row[:country] }.join(',')
+        dataservices_query_template.gsub('{cities}', cities).gsub('{countries}', countries)
       end
 
       def copy_results_to_table_query
-        #TODO redo this query
         %Q{
           UPDATE #{@internal_geocoder.qualified_table_name} AS dest
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE #{@internal_geocoder.column_name}::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
+          WHERE #{@internal_geocoder.column_name}::text = orig.geocode_string
+            AND dest.#{@internal_geocoder.country_column}::text = orig.country
+            AND dest.cartodb_georef_status IS NULL
         }
       end
 

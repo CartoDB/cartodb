@@ -280,6 +280,7 @@
           opt.cartodb_logo  = false;
           opt.scrollwheel   = false;
           opt.mobile_layout = true;
+          opt.force_mobile  = $(window).width() < 620;
 
           cartodb.config.set({
             cartodb_attributions: "",

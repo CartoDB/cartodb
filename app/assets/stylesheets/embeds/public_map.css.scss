@@ -64,6 +64,9 @@ html, body {height: 100%; padding: 0; margin: 0;}
 .cartodb-mobile.with-header .cartodb-header { 
   display:block!Important;
 }
+.cartodb-map-wrapper .cartodb-mobile.with-zoom.with-header .cartodb-zoom {
+  top: 0;
+}
 .cartodb-mobile.with-header .hgroup {
   display:none;
 }

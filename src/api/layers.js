@@ -162,7 +162,6 @@
 
         var torqueLayer;
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        var smallEmbed = $(window).width() < 620;
 
         if(!layerView) {
           promise.trigger('error', "layer not supported");
@@ -182,7 +181,7 @@
           torqueLayer = layerView;
         }
 
-        if (options.mobile_layout && (mobileEnabled || smallEmbed)) {
+        if ((options.mobile_layout && mobileEnabled) || options.force_mobile) {
 
           options.mapView = map.viz.mapView;
 

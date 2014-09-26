@@ -512,12 +512,21 @@ var Vis = cdb.core.View.extend({
 
     _.each(overlays, function(data) {
 
-      var type    = data.type;
+      var type = data.type;
 
-      if (this.mobile_enabled && type == "zoom") return;
+      // We don't render certain overlays if we are in mobile
+      if (this.mobile_enabled && type === "zoom")   return;
+      if (this.mobile_enabled && type === 'header') return;
 
+      if (type === 'image' || type === 'text') {
+        var isDevice = data.options.device == "mobile" ? true : false;
+        if (this.mobile_enabled !== isDevice) return;
+      }
+
+      // We add the overlay
       var overlay = this.addOverlay(data);
 
+      // We show/hide the overlays
       if (overlay && (type in options) && options[type] === false) overlay.hide();
 
       var opt = data.options;

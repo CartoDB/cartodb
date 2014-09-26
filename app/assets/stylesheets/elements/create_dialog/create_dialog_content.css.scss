@@ -210,6 +210,12 @@
         @include elements-sprite(create-tabs-icons, $offset-x:-253px);
       }
 
+      &.instagram {
+        width:37px;
+        height:43px;
+        @include elements-sprite(create-tabs-icons, $offset-x:-290px);
+      }
+
       &.error {
         width:42px;
         @include elements-sprite(create-tabs-icons, $offset-x:-211px); 

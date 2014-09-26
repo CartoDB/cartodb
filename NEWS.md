@@ -1,4 +1,3 @@
-
 3.2.3 (2014-XX-XX)
 ------------------
 * ArcGIS import integration

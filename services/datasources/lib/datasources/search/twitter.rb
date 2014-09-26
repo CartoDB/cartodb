@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'typhoeus'
 require 'json'
 
 require_relative '../util/csv_file_dumper'

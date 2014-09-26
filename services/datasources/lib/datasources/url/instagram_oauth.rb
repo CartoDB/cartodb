@@ -1,26 +1,14 @@
 # encoding: utf-8
 
-require 'dropbox_sdk'
+require "instagram"
 
 module CartoDB
   module Datasources
     module Url
-      class Dropbox < BaseOAuth
+      class InstagramOAuth < BaseOAuth
 
         # Required for all datasources
-        DATASOURCE_NAME = 'dropbox'
-
-        # Specific of this datasource
-        FORMATS_TO_SEARCH_QUERIES = {
-            FORMAT_CSV =>         %W( .csv ),
-            FORMAT_EXCEL =>       %W( .xls .xlsx ),
-            FORMAT_GPX =>         %W( .kml ),
-            FORMAT_KML =>         %W( .gpx ),
-            FORMAT_PNG =>         %W( .png ),
-            FORMAT_JPG =>         %W( .jpg .jpeg ),
-            FORMAT_SVG =>         %W( .svg ),
-            FORMAT_COMPRESSED =>  %W( .zip )
-        }
+        DATASOURCE_NAME = 'instagram'
 
         # Constructor
         # @param config Array
@@ -54,7 +42,7 @@ module CartoDB
         # Factory method
         # @param config : {}
         # @param user : User
-        # @return CartoDB::Datasources::Url::Dropbox
+        # @return CartoDB::Datasources::Url::InstagramOAuth
         def self.get_new(config, user)
           return new(config, user)
         end
@@ -69,42 +57,28 @@ module CartoDB
         # @param use_callback_flow : bool
         # @throws AuthError
         def get_auth_url(use_callback_flow=true)
-          if use_callback_flow
-            @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, {}, :csrf_token)
-          else
-            @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
-          end
-          @auth_flow.start(CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME))
-        rescue DropboxError, ArgumentError => ex
+          # TODO: Add CSRF here (http://instagram.com/developer/authentication/)
+          Instagram.authorize_url({
+            client_id:      @app_key,
+            response_type:  'code',
+            redirect_uri:   @callback_url
+          })
+        rescue => ex
           raise AuthError.new("get_auth_url(#{use_callback_flow}): #{ex.message}", DATASOURCE_NAME)
-        end
-
-        # Validate authorization code and store token
-        # @param auth_code : string
-        # @return string : Access token
-        # @throws AuthError
-        def validate_auth_code(auth_code)
-          @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
-          data = @auth_flow.finish(auth_code)
-          @access_token = data[0] # Only keep the access token
-          @auth_flow = nil
-          @client = DropboxClient.new(@access_token)
-          @access_token
-        rescue DropboxError, ArgumentError => ex
-          raise AuthError.new("validate_auth_code(): #{ex.message}", DATASOURCE_NAME)
         end
 
         # Validates the authorization callback
         # @param params : mixed
         def validate_callback(params)
-          session = {csrf_token: params[:state].split('|').first.presence }
-          @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, session, :csrf_token)
-          data = @auth_flow.finish(params)
-          @access_token = data[0] # Only keep the access token
-          @auth_flow = nil
-          @client = DropboxClient.new(@access_token)
+          response = Instagram.get_access_token(params[:code], {
+            client_id:      @app_key,
+            client_secret:  @app_secret,
+            redirect_uri:   @callback_url
+          })
+          @access_token = response.access_token
+          @client = Instagram.client(access_token: @access_token)
           @access_token
-        rescue DropboxError, ArgumentError => ex
+        rescue => ex
           raise AuthError.new("validate_callback(#{params.inspect}): #{ex.message}", DATASOURCE_NAME)
         end
 
@@ -114,7 +88,7 @@ module CartoDB
         # @throws AuthError
         def token=(token)
           @access_token = token
-          @client = DropboxClient.new(@access_token)
+          @client = Instagram.client(access_token: @access_token)
         rescue => ex
           handle_error(ex, "token= : #{ex.message}")
         end
@@ -132,18 +106,7 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resources_list(filter=[])
-          all_results = []
-          self.filter = filter
-
-          @formats.each do |search_query|
-            response = @client.search('/', search_query)
-            response.each do |item|
-              all_results.push(format_item_data(item))
-            end
-          end
-          all_results
-        rescue => ex
-          handle_error(ex, "get_resources_list(): #{ex.message}")
+          []
         end
 
         # Retrieves a resource and returns its contents
@@ -182,14 +145,7 @@ module CartoDB
         # Sets current filters
         # @param filter_data {}
         def filter=(filter_data=[])
-          @formats = []
-          FORMATS_TO_SEARCH_QUERIES.each do |id, queries|
-            if filter_data.empty? || filter_data.include?(id)
-              queries.each do |query|
-                @formats = @formats.push(query)
-              end
-            end
-          end
+          nil
         end
 
         # Just return datasource name
@@ -214,18 +170,13 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-        # Any call would do, we just want to see if communicates or refuses the token
-          @client.account_info
+          # TODO: See how to check this
           true
-        rescue DropboxError => ex
-          error_code = ex.http_response.code.to_i
-          raise AuthError.new("token_valid? : #{ex.message}") unless (error_code == 401 || error_code == 403)
-          false
         end
 
         # Revokes current set token
         def revoke_token
-          @client.disable_access_token
+          # TODO: See how to check this
           true
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
@@ -246,18 +197,8 @@ module CartoDB
         # @throws AuthError
         # @throws mixed
         def handle_error(original_exception, message)
-          if original_exception.kind_of? DropboxError
-            error_code = original_exception.http_response.code.to_i
-            if error_code == 401 || error_code == 403
-              raise TokenExpiredOrInvalidError.new(message, DATASOURCE_NAME)
-            else
-              raise AuthError.new(message)
-            end
-          elsif original_exception.kind_of? ArgumentError
-            raise DataDownloadError.new(message, DATASOURCE_NAME)
-          else
-            raise original_exception
-          end
+          # TODO: Implement
+          raise original_exception
         end
 
         # Formats all data to comply with our desired format

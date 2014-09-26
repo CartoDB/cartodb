@@ -64,7 +64,7 @@ module CartoDB
         # Factory method
         # @param config {}
         # @param user User
-        # @return CartoDB::Synchronizer::FileProviders::GDrive
+        # @return CartoDB::Datasources::Url::GDrive
         def self.get_new(config, user)
           new(config, user)
         end

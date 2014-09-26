@@ -18,6 +18,8 @@ module CartoDB
               Url::Dropbox.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::GDrive::DATASOURCE_NAME
               Url::GDrive.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
+            when Url::InstagramOAuth::DATASOURCE_NAME
+              Url::InstagramOAuth.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::PublicUrl::DATASOURCE_NAME
               Url::PublicUrl.get_new
             when Url::ArcGIS::DATASOURCE_NAME
@@ -42,7 +44,7 @@ module CartoDB
           includes_customized_config = false
 
           case datasource_name
-            when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME
+            when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME
               config = (config_source[:oauth] rescue nil)
               config ||= (config_source[:oauth.to_s] rescue nil)
             when Search::Twitter::DATASOURCE_NAME

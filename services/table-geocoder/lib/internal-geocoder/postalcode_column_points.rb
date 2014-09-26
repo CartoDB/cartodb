@@ -21,7 +21,7 @@ module CartoDB
       def dataservices_query(search_terms)
         postalcodes = search_terms.map { |row| row[:postalcode] }.join(',')
         countries = search_terms.map { |row| row[:country] }.join(',')
-        "WITH geo_function AS (SELECT (geocode_namedplace(Array[#{postalcodes}], null, Array[#{countries}])).*) SELECT q, c, geom, success FROM geo_function"
+        "WITH geo_function AS (SELECT (geocode_postalcode_points(Array[#{postalcodes}], Array[#{countries}])).*) SELECT q, c, geom, success FROM geo_function"
       end
 
       def copy_results_to_table_query

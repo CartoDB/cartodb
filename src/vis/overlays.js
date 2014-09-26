@@ -50,6 +50,7 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 
   var isDevice = options.device == "mobile" ? true : false;
 
+  //TODO this check shouldn't be here, should be outside
   if (vis.mobile_enabled !== isDevice) return;
 
   var template = cdb.core.Template.compile(
@@ -75,6 +76,7 @@ cdb.vis.Overlay.register('text', function(data, vis) {
 
   var isDevice = options.device == "mobile" ? true : false;
 
+  //TODO this check shouldn't be here, should be outside
   if (vis.mobile_enabled !== isDevice) return;
 
   var template = cdb.core.Template.compile(
@@ -101,6 +103,7 @@ cdb.vis.Overlay.register('zoom_info', function(data, vis) {
 
 cdb.vis.Overlay.register('header', function(data, vis) {
 
+  //TODO this check shouldn't be here, should be outside
   if (vis.mobile_enabled) return;
 
   var options = data.options;

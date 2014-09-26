@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative 'internal_geocoder_input_type_resolver'
+require_relative 'input_type_resolver'
 
 module CartoDB
   module InternalGeocoder

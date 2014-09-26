@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
-require_relative 'internal_geocoder_query_generator'
+require_relative 'internal-geocoder/query_generator'
 
 module CartoDB
   module InternalGeocoder

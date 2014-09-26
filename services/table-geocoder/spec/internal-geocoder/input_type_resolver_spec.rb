@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../lib/internal_geocoder_input_type_resolver.rb'
+require_relative '../../lib/internal-geocoder/input_type_resolver.rb'
 
 RSpec.configure do |config|
   config.mock_with :mocha

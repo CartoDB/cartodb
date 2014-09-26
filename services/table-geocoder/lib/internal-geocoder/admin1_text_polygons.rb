@@ -5,7 +5,7 @@ require_relative 'abstract_query_generator'
 module CartoDB
   module InternalGeocoder
 
-    class Admin1TextPoints < AbstractQueryGenerator
+    class Admin1TextPolygons < AbstractQueryGenerator
 
       def search_terms_query(page)
         %Q{

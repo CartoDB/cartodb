@@ -7,7 +7,7 @@ module CartoDB
   module Datasources
     module Url
 
-      class ArcGIS
+      class ArcGIS < Base
 
         # Required for all datasources
         DATASOURCE_NAME = 'arcgis'
@@ -144,6 +144,18 @@ module CartoDB
         # Hide sensitive fields
         def to_s
           "<CartoDB::Datasources::Url::ArcGIS>"
+        end
+
+        # If this datasource accepts a data import instance
+        # @return Boolean
+        def persists_state_via_data_import?
+          false
+        end
+
+        # Sets an error reporting component
+        # @param component mixed
+        def report_component=(component)
+          nil
         end
 
         private

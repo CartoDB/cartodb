@@ -9,6 +9,8 @@ module CartoDB
 
     class QueryGeneratorFactory
 
+      class QueryGeneratorNotImplemented < StandardError; end
+
       class << self
         private :new
 
@@ -21,7 +23,7 @@ module CartoDB
             when [:namedplace, :column, :point]
               CitiesColumnPoints.new internal_geocoder
             else
-              raise 'Not implemented'
+              raise QueryGeneratorNotImplemented. new "QueryGenerator not implemented for input type #{input_type}"
           end
         end
       end

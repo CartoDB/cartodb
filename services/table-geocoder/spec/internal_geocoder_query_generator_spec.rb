@@ -63,7 +63,7 @@ describe CartoDB::InternalGeocoderQueryGenerator do
 
       query = query_generator.search_terms_query(0)
 
-      query.squish.should == 'SELECT DISTINCT(quote_nullable(city)) AS searchtext FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
+      query.squish.should == 'SELECT DISTINCT(quote_nullable(city)) AS city FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
     end
   end
 

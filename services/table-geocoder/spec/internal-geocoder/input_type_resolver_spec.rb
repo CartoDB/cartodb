@@ -20,7 +20,7 @@ describe CartoDB::InternalGeocoder::InputTypeResolver do
       @internal_geocoder.stubs('geometry_type').once.returns(:point)
       @internal_geocoder.stubs('country_column').once.returns(nil)
 
-      @input_type_resolver.type.should == [:namedplace, :freetext, :point]
+      @input_type_resolver.type.should == [:namedplace, :text, :point]
     end
 
   end
@@ -47,7 +47,7 @@ describe CartoDB::InternalGeocoder::InputTypeResolver do
 
     it 'should return column if no column was passed' do
       @internal_geocoder.stubs('country_column').once.returns(nil)
-      @input_type_resolver.country_input_type.should == :freetext
+      @input_type_resolver.country_input_type.should == :text
     end
   end
 

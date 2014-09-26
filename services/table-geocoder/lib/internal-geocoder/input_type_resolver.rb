@@ -26,7 +26,7 @@ module CartoDB
         if @internal_geocoder.country_column
           :column
         else
-          :freetext
+          :text
         end
       end
 

@@ -62,7 +62,7 @@ module CartoDB
           count = count + 1 rescue 0
           search_terms = get_search_terms(count)
           unless search_terms.size == 0
-            sql = generate_sql(search_terms)
+            sql = @query_generator.dataservices_query(search_terms)
             response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
             File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
           end
@@ -70,10 +70,6 @@ module CartoDB
         @processed_rows = `wc -l #{geocoding_results} 2>&1`.to_i
         geocoding_results
       end # download_results
-
-      def generate_sql(search_terms)
-        @query_generator.dataservices_query(search_terms)
-      end # generate_sql
 
       def get_search_terms(page)
         query = @query_generator.search_terms_query(page)

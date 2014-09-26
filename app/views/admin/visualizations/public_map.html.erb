@@ -277,13 +277,14 @@
           var scrollwheelEnabled = opt.scrollwheel;
 
           // Logo MUST be hidden in this view
-          opt.cartodb_logo = false;
-          opt.scrollwheel = false; 
+          opt.cartodb_logo  = false;
+          opt.scrollwheel   = false;
+          opt.mobile_layout = true;
 
           cartodb.config.set({
             cartodb_attributions: "",
             cartodb_logo_link: ""
-          })
+          });
 
           var loadingTime  = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();

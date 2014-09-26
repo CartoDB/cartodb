@@ -101,7 +101,6 @@
 
     <script>
 
-
       function get_url_params(conversion) {
 
         conversion = conversion || {};
@@ -155,6 +154,10 @@
 
       $(document).ready(function(){
 
+        if ($(window).width() < 620) {
+          $("body").addClass("embed-map-small");
+        }
+
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
         , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
@@ -197,6 +200,8 @@
          <% if hide_logo %>
             opt.cartodb_logo = false;
          <% end %>
+
+         opt.mobile_layout = true;
 
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",

@@ -8,6 +8,7 @@ module CartoDB
     class CitiesColumnPoints < AbstractQueryGenerator
 
       def search_terms_query(page)
+        #TODO quoting should not be part of this query's responsibility
         %Q{
           SELECT DISTINCT
             quote_nullable(#{@internal_geocoder.column_name}) as city,
@@ -18,12 +19,13 @@ module CartoDB
         }
       end
 
-      def post_process_search_terms_query(results)
-        results
-      end
-
       def dataservices_query_template
         'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, Array[{countries}])).*) SELECT q, null, geom, success FROM geo_function'
+      end
+
+      def dataservices_query(search_terms)
+        #TODO: implement
+        raise 'Not implemented yet'
       end
 
       def copy_results_to_table_query

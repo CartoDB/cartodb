@@ -21,8 +21,13 @@ module CartoDB
       end
 
       def dataservices_query_template
-        country_clause = @internal_geocoder.countries == "'world'" ? 'null' : '{country}'
-        "WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, #{country_clause})).*) SELECT q, null, geom, success FROM geo_function"
+        "WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, {country})).*) SELECT q, null, geom, success FROM geo_function"
+      end
+
+      def dataservices_query(search_terms)
+        cities = search_terms.map { |row| row[:city] }.join(',')
+        country = @internal_geocoder.countries == "'world'" ? 'null' : @internal_geocoder.countries
+        dataservices_query_template.gsub('{cities}', cities).gsub('{country}', country)
       end
 
       def copy_results_to_table_query

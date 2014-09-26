@@ -72,25 +72,12 @@ module CartoDB
       end # download_results
 
       def generate_sql(search_terms)
-        query_template = @query_generator.dataservices_query_template
-        #TODO move this to QueryGenerator
-        query_template.gsub('{cities}', search_terms.join(',')).gsub('{country}', @countries)
-      rescue KeyError => e
-        raise NotImplementedError.new("Can't find geocoding function for #{@geometry_type}, #{@kind}")
+        @query_generator.dataservices_query(search_terms)
       end # generate_sql
 
       def get_search_terms(page)
         query = @query_generator.search_terms_query(page)
-
-        # TODO possibly casting is not this class' responsibility
-        case column_datatype
-        when 'double precision'
-          connection.fetch(query).all.map { |r| r[:searchtext].to_i }
-        when 'text'
-          connection.fetch(query).all.map { |r| r[:searchtext] }
-        else
-          raise NotImplementedError.new("Source column #{ column_name } has an unsupported data type (#{ column_datatype })")
-        end
+        connection.fetch(query).all
       end # get_search_terms
 
       def create_temp_table

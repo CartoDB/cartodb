@@ -16,7 +16,7 @@ module CartoDB
         raise 'Not implemented'
       end
 
-      def post_process_search_terms_query(results)
+      def dataservices_query(search_terms)
         raise 'Not implemented'
       end
 

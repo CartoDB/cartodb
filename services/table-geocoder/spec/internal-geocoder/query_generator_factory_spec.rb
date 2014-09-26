@@ -35,21 +35,11 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
   describe '#dataservices_query_template' do
 
     it 'should return a query template suitable for <namedplace, freetext, point>' do
-      @internal_geocoder.stubs('countries').once.returns('any_country')
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
 
       query = query_generator.dataservices_query_template
 
       query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, {country})).*) SELECT q, null, geom, success FROM geo_function'
-    end
-
-    it 'should replace "world" with null' do
-      @internal_geocoder.stubs('countries').once.returns("'world'")
-      query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :point])
-
-      query = query_generator.dataservices_query_template
-
-      query.should == 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{cities}], null, null)).*) SELECT q, null, geom, success FROM geo_function'
     end
 
   end

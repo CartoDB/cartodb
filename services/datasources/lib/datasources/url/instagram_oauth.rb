@@ -111,7 +111,9 @@ module CartoDB
               id:      'all_media',
               title:    'All your photos and videos',
               url:      'All your photos and videos',
-              service:  DATASOURCE_NAME
+              service:  DATASOURCE_NAME,
+              checksum: '',
+              size:     1
             }
           ]
         end
@@ -206,30 +208,6 @@ module CartoDB
         def handle_error(original_exception, message)
           # TODO: Implement
           raise original_exception
-        end
-
-        # Formats all data to comply with our desired format
-        # @param item_data Hash : Single item returned from Dropbox API
-        # @return { :id, :title, :url, :service, :size }
-        def format_item_data(item_data)
-          filename = item_data.fetch('path').split('/').last
-
-          {
-            id:       item_data.fetch('path'),
-            title:    filename,
-            filename: filename,
-            service:  DATASOURCE_NAME,
-            checksum: checksum_of(item_data.fetch('rev')),
-            size:     item_data.fetch('bytes').to_i
-          }
-        end
-
-        # Calculates a checksum of given input
-        # @param origin string
-        # @return string
-        def checksum_of(origin)
-          #noinspection RubyArgCount
-          Zlib::crc32(origin).to_s
         end
 
       end

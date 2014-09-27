@@ -37,14 +37,14 @@ describe Geocoding do
     end
 
     it 'returns an instance of InternalGeocoder when kind is not high-resolution' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0', geometry_type: 'point')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0', geometry_type: 'polygon')
       geocoding.table_geocoder.should be_kind_of(CartoDB::InternalGeocoder::Geocoder)
     end
 
     it 'memoizes' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0', geometry_type: 'point')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0', geometry_type: 'polygon')
       geocoder = geocoding.table_geocoder
-      geocoder.should be_kind_of(CartoDB::InternalGeocoder)
+      geocoder.should be_kind_of(CartoDB::InternalGeocoder::Geocoder)
       geocoder.should eq geocoding.table_geocoder
     end
   end

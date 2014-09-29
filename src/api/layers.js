@@ -174,7 +174,7 @@
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], (options.mobile_layout && (mobileEnabled || smallEmbed)));
+          viz.addLegends([layerData], (options.mobile_layout || options.force_mobile));
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);

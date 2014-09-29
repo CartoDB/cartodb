@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.08-dev
+// cartodb.js version: 3.11.09-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f42527157931495f496439f2754aab74772dd96f
+// sha: 776d3e29fcb4f59079e541187dbdf7b6800ff318
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.08-dev';
+    cdb.VERSION = '3.11.09-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25283,7 +25283,7 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     this.model.set({
       title:            extra.title,
-      description:      extra.description,
+      description:      this._setLinksTarget(extra.description),
       show_title:       extra.show_title,
       show_description: extra.show_description
     }, { silent: true });
@@ -25306,6 +25306,13 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     }
 
+  },
+
+  // Add target attribute to all links
+  _setLinksTarget: function(str) {
+    if (!str) return str;
+    var reg = new RegExp(/<(a)([^>]+)>/g);
+    return str.replace(reg, "<$1 target=\"_blank\"$2>");
   },
 
   render: function() {
@@ -33378,7 +33385,7 @@ Layers.register('torque', function(vis, data) {
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], (options.mobile_layout && (mobileEnabled || smallEmbed)));
+          viz.addLegends([layerData], (options.mobile_layout || options.force_mobile));
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);

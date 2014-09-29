@@ -61,9 +61,21 @@ html, body {height: 100%; padding: 0; margin: 0;}
 
 .cartodb-header { display:none!Important; }
 
-.cartodb-mobile.with-header .cartodb-header { 
+.cartodb-mobile.with-header .cartodb-header,
+.cartodb-mobile.with-search .cartodb-header,
+.cartodb-mobile.with-layers .cartodb-header { 
   display:block!Important;
 }
+
+.cartodb-mobile .cartodb-header .content .fullscreen,
+.cartodb-mobile.with-header.with-fullscreen .cartodb-header .content .fullscreen {
+  @include border-radius(0 0 5px 0);
+}
+.cartodb-mobile .cartodb-header .content .toggle,
+.cartodb-mobile.with-header.with-layers .cartodb-header .content .toggle {
+  @include border-radius(0 0 0 5px);
+}
+
 .cartodb-map-wrapper .cartodb-mobile.with-zoom.with-header .cartodb-zoom {
   top: 0;
 }

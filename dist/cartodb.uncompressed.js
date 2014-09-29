@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.10
+// cartodb.js version: 3.11.11
 // uncompressed version: cartodb.uncompressed.js
-// sha: e9b95c7f86c97d305658e7914259bd8361564f6c
+// sha: db9c8ffc087b95dbe4ffd13a08f62a13c8f521de
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.10';
+    cdb.VERSION = '3.11.11';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25701,7 +25701,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     if (!this.options.show_legends) return;
 
-    if (this.model.get("legend") && this.model.get("legend").type == "none") return;
+    if (this.model.get("legend") && (this.model.get("legend").type == "none" || !this.model.get("legend").type)) return;
     if (this.model.get("legend") && this.model.get("legend").items && this.model.get("legend").items.length == 0) return;
 
     this.$el.addClass("has-legend");
@@ -25801,7 +25801,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _toggle: function(e) {
 
     e.preventDefault();
-    //e.stopPropagation();
+    e.stopPropagation();
 
     this.model.set("open", !this.model.get("open"));
 
@@ -25845,14 +25845,22 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _open: function() {
 
-    this.$el.animate({ right: this.$el.find(".aside").width() }, 200)
+    var right = this.$el.find(".aside").width();
+
+    this.$el.find(".cartodb-header").animate({ right: right }, 200)
+    this.$el.find(".aside").animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
     this._initScrollPane();
 
   },
 
   _close: function() {
 
-    this.$el.animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-header").animate({ right: 0 }, 200)
+    this.$el.find(".aside").animate({ right: - this.$el.find(".aside").width() }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: 20 }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: 20 }, 200)
 
   },
 

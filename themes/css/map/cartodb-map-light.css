@@ -395,7 +395,6 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile {
   width: 100%;
   height: 100%;
-  position:relative;
   z-index: 100000000;
 }
 .cartodb-mobile .cartodb-header {
@@ -542,6 +541,7 @@ only screen and (                min-resolution: 2dppx) {
   right: -250px;
   background:#2D2D2D;
   cursor: default;
+  z-index: 1000010;
 }
 .cartodb-mobile .aside .cartodb-searchbox {
   position: relative;
@@ -773,6 +773,7 @@ only screen and (                min-resolution: 2dppx) {
   border-left: none;
   border-right: none;
   border-top: 1px solid rgba(0,0,0, .2);
+  z-index: 1000001;
 }
 .cartodb-mobile div.cartodb-timeslider .slider-wrapper {
   display:block;
@@ -866,6 +867,7 @@ only screen and (                min-resolution: 2dppx) {
   -o-border-radius: 100px;
   border-radius: 100px;
   background: #fff url('../img/bg-attribution-button.png') no-repeat 49% 50%;
+  font:12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
 .cartodb-mobile .cartodb-attribution-button:before {

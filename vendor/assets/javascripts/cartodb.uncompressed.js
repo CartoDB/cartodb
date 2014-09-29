@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.12-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 95b1c7db50e85a1beee5c8a1aa53ed7485484857
+// sha: 8481a4a8c9347861cbd6da17e57de9c43fc87a2c
 (function() {
   var root = this;
 
@@ -31718,22 +31718,14 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addTimeSlider: function() {
+  addTimeSlider: function(torqueLayer) {
 
-    var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+    if (torqueLayer) {
 
-    if (torque.length) {
-
-      this.torqueLayer = torque[0];
-
-      if (!this.mobile_enabled && this.torqueLayer) {
-
-        this.addOverlay({
-          type: 'time_slider',
-          layer: this.torqueLayer
-        });
-
-      }
+      this.addOverlay({
+        type: 'time_slider',
+        layer: torqueLayer
+      });
 
     }
 
@@ -31910,7 +31902,22 @@ var Vis = cdb.core.View.extend({
 
     if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
 
-    if (options.time_slider)       this.addTimeSlider();
+    if (options.time_slider)       {
+
+      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+
+      if (torque && torque.length) {
+
+        this.torqueLayer = torque[0];
+
+        if (!this.mobile_enabled && this.torqueLayer) {
+
+          this.addTimeSlider(this.torqueLayer);
+
+        }
+      }
+    }
+
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
@@ -32111,7 +32118,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = opt.mobile_layout && this.mobile || opt.force_mobile;
+    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
     if (!opt.title) {
       vizjson.title = null;
@@ -33386,6 +33393,7 @@ Layers.register('torque', function(vis, data) {
 
         var torqueLayer;
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var addMobileLayout = (options.mobile_layout && mobileEnabled) || options.force_mobile;
 
         if(!layerView) {
           promise.trigger('error', "layer not supported");
@@ -33400,12 +33408,17 @@ Layers.register('torque', function(vis, data) {
         if(options.legends) {
           viz.addLegends([layerData], ((mobileEnabled && options.mobile_layout) || options.force_mobile));
         }
+
         if(options.time_slider && layerView.model.get('type') === 'torque') {
-          viz.addTimeSlider(layerView);
+
+          if (!addMobileLayout) { // don't add the overlay if we are in mobile
+            viz.addTimeSlider(layerView);
+          }
+
           torqueLayer = layerView;
         }
 
-        if ((options.mobile_layout && mobileEnabled) || options.force_mobile) {
+        if (addMobileLayout) {
 
           options.mapView = map.viz.mapView;
 

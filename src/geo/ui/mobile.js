@@ -561,14 +561,16 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addAttributions: function() {
 
     var attributions = "";
-    this.options.mapView.$el.find(".leaflet-control-attribution").hide();
+
+    this.options.mapView.$el.find(".leaflet-control-attribution").hide(); // TODO: remove this from here
 
     if (this.options.layerView) {
 
       attributions = this.options.layerView.model.get("attribution");
       this.$el.find(".cartodb-attribution").append(attributions);
 
-    } else {
+    } else if (this.options.map.get("attribution")) {
+
       attributions = this.options.map.get("attribution");
 
       _.each(attributions, function(attribution) {
@@ -576,9 +578,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         var $el = $li.html(attribution);
         this.$el.find(".cartodb-attribution").append($li);
       }, this);
+
     }
 
-    this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    if (attributions) {
+      this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    }
 
   },
 

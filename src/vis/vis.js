@@ -471,7 +471,7 @@ var Vis = cdb.core.View.extend({
 
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
 
-      if (torque) {
+      if (torque && torque.length) {
 
         this.torqueLayer = torque[0];
 

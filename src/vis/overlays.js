@@ -4,24 +4,40 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
-// map mobile control
 cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
+    <div class="backdrop"></div>\
+    <div class="cartodb-header">\
+      <div class="content">\
+        <a href="#" class="fullscreen"></a>\
+        <a href="#" class="toggle"></a>\
+        <div class="hgroup">\
+        <div class="title"></div>\
+        <div class="description"></div>\
+        </div>\
+      </div>\
+    </div>\
+    <div class="aside">\
+    <div class="layer-container">\
+    <div class="scrollpane"><ul class="layers"></ul></div>\
+    </div>\
+    </div>\
+    <div class="cartodb-attribution"></div>\
+    <a href="#" class="cartodb-attribution-button"></a>\
     <div class="torque"></div>\
-    <div class="top-shadow"></div>\
-    <div class="bottom-shadow"></div>\
-    <div class="legends"></div>\
-    <a class="toggle" href="#"></a>\
     ',
     data.templateType || 'mustache'
   );
 
   var mobile = new cdb.geo.ui.Mobile({
     template: template,
+    mapView: vis.mapView,
+    overlays: data.overlays,
+    layerView: data.layerView,
+    visibility_options: data.options,
     torqueLayer: data.torqueLayer,
-    legends: data.legends,
     map: data.map
   });
 
@@ -31,10 +47,6 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 cdb.vis.Overlay.register('image', function(data, vis) {
 
   var options = data.options;
-
-  var isDevice = options.device == "mobile" ? true : false;
-
-  if (vis.device !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -56,10 +68,6 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 cdb.vis.Overlay.register('text', function(data, vis) {
 
   var options = data.options;
-
-  var isDevice = options.device == "mobile" ? true : false;
-
-  if (vis.device !== isDevice) return;
 
   var template = cdb.core.Template.compile(
     data.template || '\

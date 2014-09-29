@@ -24,8 +24,8 @@ $table-sprites: sprite-map("sprites/table/*.png",
   $table-lock_closed-spacing:             15px,
   $table-lock_key-spacing:                15px,
   $table-lock_user-spacing:               15px,
-  $table-share-spacing:                   15px
-
+  $table-share-spacing:                   15px,
+  $table-blue-back-arrow-spacing:         10px
 );
 
 // All sprites should extend this class

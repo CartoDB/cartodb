@@ -70,7 +70,6 @@ module CartoDB
 
           # FEATURE_IDS_URL
           # FEATURE_DATA_URL
-
           {
 
           }
@@ -83,9 +82,9 @@ module CartoDB
         def get_resource_metadata(id)
           url = sanitize_id(id)
 
-          # METADATA_URL
           response = Typhoeus.get(METADATA_URL % [url], http_options)
-          raise DataDownloadError.new("#{METADATA_URL % [url]} (#{response.code}) : #{response.body}") if response.code != 200
+          raise DataDownloadError.new("#{METADATA_URL % [url]} (#{response.code}) : #{response.body}") \
+            if response.code != 200
 
           # non-rails symbolize keys
           data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
@@ -117,7 +116,6 @@ module CartoDB
           raise InvalidServiceError.new("Unsupported ArcGIS version #{@metadata[:arcgis_Version]}, must be >= #{MINIMUM_SUPPORTED_VERSION}") \
             if @metadata[:arcgis_version] < MINIMUM_SUPPORTED_VERSION
 
-          # Here store the metadata fields from: "fields":[{"name":"OBJECTID"}]
           {
               id:       id,
               title:    @metadata[:name],

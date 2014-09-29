@@ -29,7 +29,7 @@ describe Url::ArcGIS do
       test7   = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
       valid_7 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/MapServer/0'
 
-      arcgis = Url::ArcGIS.new
+      arcgis = Url::ArcGIS.get_new
 
       expect {
         arcgis.send(:sanitize_id, invalid_1)
@@ -50,10 +50,85 @@ describe Url::ArcGIS do
   end
 
   describe '#get_resource_metadata' do
+    it 'tests error scenarios' do
+      url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
+
+      arcgis = Url::ArcGIS.get_new
+
+      # 'general http error (non-200)'
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        Typhoeus::Response.new(
+          code: 400,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ''
+        )
+      end
+
+      expect {
+        arcgis.get_resource_metadata(url)
+      }.to raise_error DataDownloadError
+
+      # 'fields' part
+      Typhoeus::Expectation.clear
+      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+
+        body = ::JSON.parse(body)
+        body.delete('fields')
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      expect {
+        arcgis.get_resource_metadata(url)
+      }.to raise_error ResponseError
+
+
+      # Another required field
+      Typhoeus::Expectation.clear
+      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+
+        body = ::JSON.parse(body)
+        body.delete('name')
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      expect {
+        arcgis.get_resource_metadata(url)
+      }.to raise_error ResponseError
+
+      # Invalid ArcGIS version
+      Typhoeus::Expectation.clear
+      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+
+        body = ::JSON.parse(body)
+        body['currentVersion'] = 9.0
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      expect {
+        arcgis.get_resource_metadata(url)
+      }.to raise_error InvalidServiceError
+
+    end
+
     it 'tests metadata retrieval' do
       url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
 
-      arcgis = Url::ArcGIS.new
+      arcgis = Url::ArcGIS.get_new
 
       Typhoeus.stub(/\/arcgis\/rest\//) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'

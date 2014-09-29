@@ -50,7 +50,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     if (!this.options.show_legends) return;
 
-    if (this.model.get("legend") && this.model.get("legend").type == "none") return;
+    if (this.model.get("legend") && (this.model.get("legend").type == "none" || !this.model.get("legend").type)) return;
     if (this.model.get("legend") && this.model.get("legend").items && this.model.get("legend").items.length == 0) return;
 
     this.$el.addClass("has-legend");

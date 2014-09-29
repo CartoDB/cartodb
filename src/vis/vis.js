@@ -283,22 +283,14 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addTimeSlider: function() {
+  addTimeSlider: function(torqueLayer) {
 
-    var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+    if (torqueLayer) {
 
-    if (torque.length) {
-
-      this.torqueLayer = torque[0];
-
-      if (!this.mobile_enabled && this.torqueLayer) {
-
-        this.addOverlay({
-          type: 'time_slider',
-          layer: this.torqueLayer
-        });
-
-      }
+      this.addOverlay({
+        type: 'time_slider',
+        layer: torqueLayer
+      });
 
     }
 
@@ -475,7 +467,22 @@ var Vis = cdb.core.View.extend({
 
     if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
 
-    if (options.time_slider)       this.addTimeSlider();
+    if (options.time_slider)       {
+
+      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+
+      if (torque) {
+
+        this.torqueLayer = torque[0];
+
+        if (!this.mobile_enabled && this.torqueLayer) {
+
+          this.addTimeSlider(this.torqueLayer);
+
+        }
+      }
+    }
+
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
@@ -676,7 +683,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = opt.mobile_layout && this.mobile || opt.force_mobile;
+    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
     if (!opt.title) {
       vizjson.title = null;

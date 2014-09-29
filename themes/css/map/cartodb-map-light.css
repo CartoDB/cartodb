@@ -395,7 +395,6 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile {
   width: 100%;
   height: 100%;
-  position:relative;
   z-index: 100000000;
 }
 .cartodb-mobile .cartodb-header {
@@ -866,6 +865,7 @@ only screen and (                min-resolution: 2dppx) {
   -o-border-radius: 100px;
   border-radius: 100px;
   background: #fff url('../img/bg-attribution-button.png') no-repeat 49% 50%;
+  font:12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
 .cartodb-mobile .cartodb-attribution-button:before {

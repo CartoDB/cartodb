@@ -150,7 +150,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _toggle: function(e) {
 
     e.preventDefault();
-    //e.stopPropagation();
+    e.stopPropagation();
 
     this.model.set("open", !this.model.get("open"));
 
@@ -194,14 +194,22 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _open: function() {
 
-    this.$el.animate({ right: this.$el.find(".aside").width() }, 200)
+    var right = this.$el.find(".aside").width();
+
+    this.$el.find(".cartodb-header").animate({ right: right }, 200)
+    this.$el.find(".aside").animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
     this._initScrollPane();
 
   },
 
   _close: function() {
 
-    this.$el.animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-header").animate({ right: 0 }, 200)
+    this.$el.find(".aside").animate({ right: - this.$el.find(".aside").width() }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: 20 }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: 20 }, 200)
 
   },
 

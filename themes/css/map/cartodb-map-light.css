@@ -541,6 +541,7 @@ only screen and (                min-resolution: 2dppx) {
   right: -250px;
   background:#2D2D2D;
   cursor: default;
+  z-index: 100000;
 }
 .cartodb-mobile .aside .cartodb-searchbox {
   position: relative;

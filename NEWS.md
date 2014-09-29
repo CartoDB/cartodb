@@ -2,7 +2,9 @@
 ------------------
 * New features
   * Improved torque rendering on pause or static datasets
-  * Improved mobile layout 
+  * Improved mobile layout
+  * Improved Geocoder UI
+  * Refactor of InternalGeocoder
 
 3.2.1 (2014-09-05)
 ------------------

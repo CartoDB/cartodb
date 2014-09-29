@@ -541,7 +541,7 @@ only screen and (                min-resolution: 2dppx) {
   right: -250px;
   background:#2D2D2D;
   cursor: default;
-  z-index: 100000;
+  z-index: 1000010;
 }
 .cartodb-mobile .aside .cartodb-searchbox {
   position: relative;
@@ -773,6 +773,7 @@ only screen and (                min-resolution: 2dppx) {
   border-left: none;
   border-right: none;
   border-top: 1px solid rgba(0,0,0, .2);
+  z-index: 1000001;
 }
 .cartodb-mobile div.cartodb-timeslider .slider-wrapper {
   display:block;

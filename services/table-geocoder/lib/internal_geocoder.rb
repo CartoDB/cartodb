@@ -1,167 +1,125 @@
 # encoding: utf-8
 require_relative '../../sql-api/sql_api'
+require_relative 'internal-geocoder/query_generator_factory'
 
 module CartoDB
-  class InternalGeocoder
-    class NotImplementedError < StandardError; end
+  module InternalGeocoder
 
-    attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
-                  :working_dir, :remote_id, :state, :processed_rows
+    class Geocoder
+      class NotImplementedError < StandardError; end
 
-    attr_accessor :table_schema, :table_name, :column_name
+      attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
+                    :working_dir, :remote_id, :state, :processed_rows, :country_column,
+                    :qualified_table_name, :batch_size, :countries, :kind, :geometry_type
 
-    SQL_PATTERNS = {
-      point: {
-        namedplace: 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{search_terms}], null, {country_list})).*) SELECT q, null, geom, success FROM geo_function',
-        ipaddress:  'WITH geo_function AS (SELECT (geocode_ip(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
-        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
-      },
-      polygon: {
-        admin0:     'WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
-        admin1:     'WITH geo_function AS (SELECT (geocode_admin1_polygons(Array[{search_terms}], {country_list})).*) SELECT q, null, geom, success FROM geo_function',
-        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function'
-      }
-    }
+      attr_accessor :table_schema, :table_name, :column_name
 
-    def initialize(arguments)
-      @sql_api           = CartoDB::SQLApi.new arguments.fetch(:internal)
-      @connection        = arguments.fetch(:connection)
-      @working_dir       = Dir.mktmpdir
-      `chmod 777 #{@working_dir}`
-      @table_name        = arguments[:table_name]
-      @table_schema        = arguments[:table_schema]
-      @qualified_table_name = arguments[:qualified_table_name]
-      @column_name       = arguments[:formatter]
-      @countries         = arguments[:countries].to_s
-      @geometry_type     = arguments.fetch(:geometry_type, '').to_sym
-      @kind              = arguments.fetch(:kind, '').to_sym
-      @schema            = arguments[:schema] || 'cdb'
-      @batch_size        = (@geometry_type == :point ? 5000 : 10)
-      @state             = 'submitted'
-      @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
-    end # initialize
+      def initialize(arguments)
+        @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)
+        @connection           = arguments.fetch(:connection)
+        @working_dir          = Dir.mktmpdir
+        `chmod 777 #{@working_dir}`
+        @table_name           = arguments[:table_name]
+        @table_schema         = arguments[:table_schema]
+        @qualified_table_name = arguments[:qualified_table_name]
+        @column_name          = arguments[:formatter]
+        @countries            = arguments[:countries].to_s
+        @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
+        @kind                 = arguments.fetch(:kind, '').to_sym
+        @schema               = arguments[:schema] || 'cdb'
+        @batch_size           = (@geometry_type == :point ? 5000 : 10)
+        @state                = 'submitted'
+        @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+        @country_column = arguments[:country_column]
+        @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
+      end # initialize
 
-    def run
-      @state = 'processing'
-      add_georef_status_column
-      download_results
-      create_temp_table
-      load_results_to_temp_table
-      copy_results_to_table
-      @state = 'completed'
-    rescue => e
-      @state = 'failed'
-      raise e
-    ensure
-      drop_temp_table
-      FileUtils.rm_rf @working_dir
-    end
-
-    def column_datatype
-      @column_datatype ||= connection.fetch(%Q{
-        SELECT column_name, data_type
-        FROM information_schema.columns
-        WHERE table_schema = '#{table_schema}' AND table_name='#{table_name}' AND column_name='#{column_name}'
-      }).first[:data_type]
-    end
-
-    def download_results
-      begin
-        count = count + 1 rescue 0
-        search_terms = get_search_terms(count)
-        unless search_terms.size == 0
-          sql = generate_sql(search_terms)
-          response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-          File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
-        end
-      end while search_terms.size >= @batch_size
-      @processed_rows = `wc -l #{geocoding_results} 2>&1`.to_i
-      geocoding_results
-    end # download_results
-
-    def generate_sql(search_terms)
-      SQL_PATTERNS.fetch(@geometry_type).fetch(@kind)
-        .gsub('{search_terms}', search_terms.join(','))
-        .gsub('{country_list}', "'#{@countries}'")
-    rescue KeyError => e
-      raise NotImplementedError.new("Can't find geocoding function for #{@geometry_type}, #{@kind}")
-    end # generate_sql
-
-    def get_search_terms(page)
-      case column_datatype
-      when 'double precision'
-        connection.fetch(%Q{
-            SELECT DISTINCT(#{column_name}) AS searchtext
-            FROM #{@qualified_table_name}
-            WHERE cartodb_georef_status IS NULL
-            LIMIT #{@batch_size} OFFSET #{page * @batch_size}
-        }).all.map { |r| r[:searchtext].to_i }
-      when 'text'
-        connection.fetch(%Q{
-            SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
-            FROM #{@qualified_table_name}
-            WHERE cartodb_georef_status IS NULL
-            LIMIT #{@batch_size} OFFSET #{page * @batch_size}
-        }).all.map { |r| r[:searchtext] }
-      else
-        raise NotImplementedError.new("Source column #{ column_name } has an unsupported data type (#{ column_datatype })")
+      def run
+        @state = 'processing'
+        add_georef_status_column
+        download_results
+        create_temp_table
+        load_results_to_temp_table
+        copy_results_to_table
+        @state = 'completed'
+      rescue => e
+        @state = 'failed'
+        raise e
+      ensure
+        drop_temp_table
+        FileUtils.rm_rf @working_dir
       end
-    end # get_search_terms
 
-    def create_temp_table
-      connection.run(%Q{
-        CREATE TABLE #{temp_table_name} (
-          geocode_string text, iso3 text, the_geom geometry, cartodb_georef_status boolean
-        );
-      })
-    end # create_temp_table
+      def download_results
+        begin
+          count = count + 1 rescue 0
+          search_terms = get_search_terms(count)
+          unless search_terms.size == 0
+            sql = @query_generator.dataservices_query(search_terms)
+            response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+            File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
+          end
+        end while search_terms.size >= @batch_size
+        @processed_rows = `wc -l #{geocoding_results} 2>&1`.to_i
+        geocoding_results
+      end # download_results
 
-    def update_geocoding_status
-      { processed_rows: processed_rows, state: state }
-    end # update_geocoding_status
+      def get_search_terms(page)
+        query = @query_generator.search_terms_query(page)
+        connection.fetch(query).all
+      end # get_search_terms
 
-    def process_results; end
-    def cancel; end
+      def create_temp_table
+        connection.run(%Q{
+          CREATE TABLE #{temp_table_name} (
+            geocode_string text, country text, the_geom geometry, cartodb_georef_status boolean
+          );
+        })
+      end # create_temp_table
 
-    def load_results_to_temp_table
-      connection.copy_into(temp_table_name.lit, data: File.read(geocoding_results), format: :csv)
-    end # load_results_to_temp_table
+      def update_geocoding_status
+        { processed_rows: processed_rows, state: state }
+      end # update_geocoding_status
 
-    def copy_results_to_table
-      connection.run(%Q{
-        UPDATE #{@qualified_table_name} AS dest
-        SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
-        FROM #{temp_table_name} AS orig
-        WHERE #{column_name}::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
-      })
-    end # copy_results_to_table
+      def process_results; end
+      def cancel; end
 
-    def drop_temp_table
-      connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
-    end # drop_temp_table
+      def load_results_to_temp_table
+        connection.copy_into(temp_table_name.lit, data: File.read(geocoding_results), format: :csv)
+      end # load_results_to_temp_table
 
-    def temp_table_name
-      @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
-    end # temp_table_name
+      def copy_results_to_table
+        connection.run(@query_generator.copy_results_to_table_query)
+      end # copy_results_to_table
 
-    def add_georef_status_column
-      connection.run(%Q{
-        ALTER TABLE #{@qualified_table_name}
-        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
-      })
-    rescue Sequel::DatabaseError => e
-      raise unless e.message =~ /column .* of relation .* already exists/
-      cast_georef_status_column
-    end
+      def drop_temp_table
+        connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
+      end # drop_temp_table
 
-    def cast_georef_status_column
-      connection.run(%Q{
-        ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
-        TYPE boolean USING cast(cartodb_georef_status as boolean)
-      })
-    rescue => e
-      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
-    end
+      def temp_table_name
+        @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
+      end # temp_table_name
+
+      def add_georef_status_column
+        connection.run(%Q{
+          ALTER TABLE #{@qualified_table_name}
+          ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
+        })
+      rescue Sequel::DatabaseError => e
+        raise unless e.message =~ /column .* of relation .* already exists/
+        cast_georef_status_column
+      end
+
+      def cast_georef_status_column
+        connection.run(%Q{
+          ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
+          TYPE boolean USING cast(cartodb_georef_status as boolean)
+        })
+      rescue => e
+        raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
+      end
+
+    end # Geocoder
 
   end # InternalGeocoder
 end # CartoDB

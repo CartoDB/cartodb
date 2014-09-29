@@ -16,6 +16,7 @@
   @import "../../common/mixins";
   @import "../../common/vars";
   @import "../../elements/elements-sprite";
+  @import "../../elements/progress-bar";
   @import "../../common/common-sprite";
 
 
@@ -187,6 +188,7 @@
       position:relative;
       padding:40px;
       background:#F6F6F6;
+      @include border-bottom-radius(3px);
       z-index:2;
 
       // When fixed class is set, elements out
@@ -226,6 +228,55 @@
 
           .infobox {
             div.info.active { margin-top:-18px }
+          }
+        }
+      }
+
+      // Message + progress (Twitter and geocoding credits for example)
+      .pane-quota {
+        @include display-flex();
+        @include justify-content(space-between, justify);
+        @include align-items(center, center);
+
+        .message {
+          width:342px;
+          color:#999;
+          font-size:13px;
+          line-height:16px;
+        }
+
+        .pane-progress {
+          @include display-flex();
+          @include cross-browser(flex-direction,column);
+          @include justify-content(center,center);
+          width:143px;
+          height:48px;
+          padding-left:10px;
+          border-left: 1px solid #CCCCCC;
+
+          @include progress-bar(4px, 3px, true, 3px);
+
+          div.progress-bar {
+            margin-top:7px;
+            span.bar-2 { z-index:1 }
+          }
+          
+          i.icon.help {
+            @include inline-block();
+            width:13px;
+            height:13px;
+            @include border-radius(13px);
+            background:#CCC;
+            text-align:center;
+            line-height:14px;
+            font-weight:300;
+            font-size:9px;
+            color:white;
+            
+            &:hover {
+              background:#999;
+              cursor:pointer;
+            }
           }
         }
       }

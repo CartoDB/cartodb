@@ -6,7 +6,7 @@ RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-describe CartoDB::InternalGeocoder do
+describe CartoDB::InternalGeocoder::Geocoder do
   before do
     conn          = CartoDB::Importer2::Factories::PGConnection.new
     @db           = conn.connection

@@ -70,10 +70,12 @@ html, body {height: 100%; padding: 0; margin: 0;}
 .cartodb-mobile .cartodb-header .content .fullscreen,
 .cartodb-mobile.with-header.with-fullscreen .cartodb-header .content .fullscreen {
   @include border-radius(0 0 5px 0);
+  border: none;
 }
 .cartodb-mobile .cartodb-header .content .toggle,
 .cartodb-mobile.with-header.with-layers .cartodb-header .content .toggle {
   @include border-radius(0 0 0 5px);
+  border: none;
 }
 
 .cartodb-map-wrapper .cartodb-mobile.with-zoom.with-header .cartodb-zoom {

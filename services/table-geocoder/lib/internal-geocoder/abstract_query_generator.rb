@@ -24,6 +24,11 @@ module CartoDB
         raise 'Not implemented'
       end
 
+      def country
+        country = @internal_geocoder.countries
+        country == %Q{'world'} ? 'null' : country
+      end
+
     end # AbstractQueryGenerator
 
   end # InternalGeocoder

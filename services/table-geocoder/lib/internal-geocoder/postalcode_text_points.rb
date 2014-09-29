@@ -18,10 +18,6 @@ module CartoDB
 
       def dataservices_query(search_terms)
         postalcodes = search_terms.map { |row| row[:postalcode] }.join(',')
-        country = @internal_geocoder.countries
-        if country == %Q{'world'}
-          country = 'null'
-        end
         "WITH geo_function AS (SELECT (geocode_postalcode_points(Array[#{postalcodes}], #{country})).*) SELECT q, null, geom, success FROM geo_function"
       end
 

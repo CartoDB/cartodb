@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.10-dev
+// cartodb.js version: 3.11.12-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3d1ac0ed5b966d7b588e6d1be5647bc264cd23a9
+// sha: 95b1c7db50e85a1beee5c8a1aa53ed7485484857
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.10-dev';
+    cdb.VERSION = '3.11.12-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25701,7 +25701,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     if (!this.options.show_legends) return;
 
-    if (this.model.get("legend") && this.model.get("legend").type == "none") return;
+    if (this.model.get("legend") && (this.model.get("legend").type == "none" || !this.model.get("legend").type)) return;
     if (this.model.get("legend") && this.model.get("legend").items && this.model.get("legend").items.length == 0) return;
 
     this.$el.addClass("has-legend");
@@ -25801,7 +25801,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _toggle: function(e) {
 
     e.preventDefault();
-    //e.stopPropagation();
+    e.stopPropagation();
 
     this.model.set("open", !this.model.get("open"));
 
@@ -25845,14 +25845,22 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _open: function() {
 
-    this.$el.animate({ right: this.$el.find(".aside").width() }, 200)
+    var right = this.$el.find(".aside").width();
+
+    this.$el.find(".cartodb-header").animate({ right: right }, 200)
+    this.$el.find(".aside").animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
     this._initScrollPane();
 
   },
 
   _close: function() {
 
-    this.$el.animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-header").animate({ right: 0 }, 200)
+    this.$el.find(".aside").animate({ right: - this.$el.find(".aside").width() }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: 20 }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: 20 }, 200)
 
   },
 
@@ -26204,14 +26212,16 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addAttributions: function() {
 
     var attributions = "";
-    this.options.mapView.$el.find(".leaflet-control-attribution").hide();
+
+    this.options.mapView.$el.find(".leaflet-control-attribution").hide(); // TODO: remove this from here
 
     if (this.options.layerView) {
 
       attributions = this.options.layerView.model.get("attribution");
       this.$el.find(".cartodb-attribution").append(attributions);
 
-    } else {
+    } else if (this.options.map.get("attribution")) {
+
       attributions = this.options.map.get("attribution");
 
       _.each(attributions, function(attribution) {
@@ -26219,9 +26229,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         var $el = $li.html(attribution);
         this.$el.find(".cartodb-attribution").append($li);
       }, this);
+
     }
 
-    this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    if (attributions) {
+      this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    }
 
   },
 
@@ -33385,7 +33398,7 @@ Layers.register('torque', function(vis, data) {
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], (options.mobile_layout || options.force_mobile));
+          viz.addLegends([layerData], ((mobileEnabled && options.mobile_layout) || options.force_mobile));
         }
         if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);

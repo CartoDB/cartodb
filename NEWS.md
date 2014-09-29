@@ -1,7 +1,8 @@
-3.2.X
+3.2.2 (2014-09-29)
 ------------------
 * New features
   * Improved torque rendering on pause or static datasets
+  * Improved mobile layout 
 
 3.2.1 (2014-09-05)
 ------------------

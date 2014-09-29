@@ -1,3 +1,6 @@
+3.11.12 (29//09//2014)
+- fixes a bug that prevented showing the torque slider
+
 3.11.11 (29//09//2014)
 - fixes a bug that prevented dragging google maps with the mobile layout activated
 

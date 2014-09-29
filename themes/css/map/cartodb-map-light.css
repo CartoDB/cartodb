@@ -844,7 +844,7 @@ only screen and (                min-resolution: 2dppx) {
   text-transform: capitalize;
   color: #0078A8;
 }
-.backdrop {
+.cartodb-mobile .backdrop {
   display:none;
   position: absolute;
   top: 0; left: 0; right:0; bottom: 0;

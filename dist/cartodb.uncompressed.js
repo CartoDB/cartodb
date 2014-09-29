@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.11
+// cartodb.js version: 3.11.12
 // uncompressed version: cartodb.uncompressed.js
-// sha: db9c8ffc087b95dbe4ffd13a08f62a13c8f521de
+// sha: 3d31eb2ea322fc44c942d4252c4e273b34028041
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.11';
+    cdb.VERSION = '3.11.12';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26212,14 +26212,16 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addAttributions: function() {
 
     var attributions = "";
-    this.options.mapView.$el.find(".leaflet-control-attribution").hide();
+
+    this.options.mapView.$el.find(".leaflet-control-attribution").hide(); // TODO: remove this from here
 
     if (this.options.layerView) {
 
       attributions = this.options.layerView.model.get("attribution");
       this.$el.find(".cartodb-attribution").append(attributions);
 
-    } else {
+    } else if (this.options.map.get("attribution")) {
+
       attributions = this.options.map.get("attribution");
 
       _.each(attributions, function(attribution) {
@@ -26227,9 +26229,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         var $el = $li.html(attribution);
         this.$el.find(".cartodb-attribution").append($li);
       }, this);
+
     }
 
-    this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    if (attributions) {
+      this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    }
 
   },
 
@@ -31713,22 +31718,14 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addTimeSlider: function() {
+  addTimeSlider: function(torqueLayer) {
 
-    var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+    if (torqueLayer) {
 
-    if (torque.length) {
-
-      this.torqueLayer = torque[0];
-
-      if (!this.mobile_enabled && this.torqueLayer) {
-
-        this.addOverlay({
-          type: 'time_slider',
-          layer: this.torqueLayer
-        });
-
-      }
+      this.addOverlay({
+        type: 'time_slider',
+        layer: torqueLayer
+      });
 
     }
 
@@ -31905,7 +31902,22 @@ var Vis = cdb.core.View.extend({
 
     if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
 
-    if (options.time_slider)       this.addTimeSlider();
+    if (options.time_slider)       {
+
+      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+
+      if (torque && torque.length) {
+
+        this.torqueLayer = torque[0];
+
+        if (!this.mobile_enabled && this.torqueLayer) {
+
+          this.addTimeSlider(this.torqueLayer);
+
+        }
+      }
+    }
+
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
@@ -32106,7 +32118,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = opt.mobile_layout && this.mobile || opt.force_mobile;
+    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
     if (!opt.title) {
       vizjson.title = null;
@@ -33381,6 +33393,7 @@ Layers.register('torque', function(vis, data) {
 
         var torqueLayer;
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var addMobileLayout = (options.mobile_layout && mobileEnabled) || options.force_mobile;
 
         if(!layerView) {
           promise.trigger('error', "layer not supported");
@@ -33395,12 +33408,17 @@ Layers.register('torque', function(vis, data) {
         if(options.legends) {
           viz.addLegends([layerData], ((mobileEnabled && options.mobile_layout) || options.force_mobile));
         }
+
         if(options.time_slider && layerView.model.get('type') === 'torque') {
-          viz.addTimeSlider(layerView);
+
+          if (!addMobileLayout) { // don't add the overlay if we are in mobile
+            viz.addTimeSlider(layerView);
+          }
+
           torqueLayer = layerView;
         }
 
-        if ((options.mobile_layout && mobileEnabled) || options.force_mobile) {
+        if (addMobileLayout) {
 
           options.mapView = map.viz.mapView;
 

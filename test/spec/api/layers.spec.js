@@ -254,6 +254,32 @@ describe('api.layers', function() {
 
       });
 
+      it("should add a torque layer", function() {
+        var layer;
+        var s = sinon.spy();
+        runs(function() {
+          cartodb.createLayer(map, {
+            updated_at: 'jaja',
+            layers: [
+              null,
+              {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
+              {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: '#test { marker-width: 10; }'}, infowindow: null }
+            ]
+          }, { layerIndex: 2 }, s).done(function(lyr) {
+            layer = lyr;
+          }).addTo(map)
+        });
+
+        var wait = 500;
+        if (!map.getContainer) wait = 2500;
+        waits(wait);
+
+        runs(function() {
+          if (map.getContainer) expect($(map.getContainer()).find('.cartodb-timeslider').length).toBe(1)
+          if (map.getDiv)       expect($(map.getDiv()).find('.cartodb-timeslider').length).toBe(1)
+        });
+      });
+
       it("should add cartodb logo with torque layer although it is not defined", function() {
         var layer;
         var s = sinon.spy();

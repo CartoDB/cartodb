@@ -66,13 +66,13 @@
 //= require cdb/src/geo/ui/share
 //= require cdb/src/geo/ui/zoom
 //= require cdb/src/geo/ui/zoom_info
-//= require cdb/src/geo/ui/mobile
 //= require cdb/src/geo/ui/legend
 //= require cdb/src/geo/ui/switcher
 //= require cdb/src/geo/ui/infowindow
 //= require cdb/src/geo/ui/header
 //= require cdb/src/geo/ui/search
 //= require cdb/src/geo/ui/layer_selector
+//= require cdb/src/geo/ui/mobile
 //= require cdb/src/geo/ui/tiles_loader
 //= require cdb/src/geo/ui/infobox
 //= require cdb/src/geo/ui/time_slider

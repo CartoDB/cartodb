@@ -1,5 +1,5 @@
-// version: 3.11.04
-// sha: c902fc8b27a9f336c82cb0b437511b712d8b8451
+// version: 3.11.09
+// sha: d7bef82d09878ac0846ab24720a7e65808ea9127
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.04';
+    cdb.VERSION = '3.11.09';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1203,13 +1203,13 @@ var Mustache;
         'geo/ui/share.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
-        'geo/ui/mobile.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
         'geo/ui/layer_selector.js',
+        'geo/ui/mobile.js',
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',

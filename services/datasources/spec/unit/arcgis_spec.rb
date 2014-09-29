@@ -6,6 +6,10 @@ include CartoDB::Datasources
 
 describe Url::ArcGIS do
 
+  before(:all) do
+    @url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
+  end
+
   before(:each) do
     Typhoeus::Expectation.clear
   end
@@ -51,8 +55,6 @@ describe Url::ArcGIS do
 
   describe '#get_resource_metadata' do
     it 'tests error scenarios' do
-      url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
-
       arcgis = Url::ArcGIS.get_new
 
       # 'general http error (non-200)'
@@ -65,7 +67,7 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(url)
+        arcgis.get_resource_metadata(@url)
       }.to raise_error DataDownloadError
 
       # 'fields' part
@@ -83,9 +85,8 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(url)
+        arcgis.get_resource_metadata(@url)
       }.to raise_error ResponseError
-
 
       # Another required field
       Typhoeus::Expectation.clear
@@ -102,7 +103,7 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(url)
+        arcgis.get_resource_metadata(@url)
       }.to raise_error ResponseError
 
       # Invalid ArcGIS version
@@ -120,14 +121,12 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(url)
+        arcgis.get_resource_metadata(@url)
       }.to raise_error InvalidServiceError
 
     end
 
     it 'tests metadata retrieval' do
-      url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
-
       arcgis = Url::ArcGIS.get_new
 
       Typhoeus.stub(/\/arcgis\/rest\//) do |request|
@@ -166,7 +165,7 @@ describe Url::ArcGIS do
       }
 
       expected_metadata_response = {
-        id:       url,
+        id:       @url,
         title:    'Test Feature',
         url:      nil,
         service:  Url::ArcGIS::DATASOURCE_NAME,
@@ -175,7 +174,7 @@ describe Url::ArcGIS do
         filename: 'test_feature'
       }
 
-      response = arcgis.get_resource_metadata(url)
+      response = arcgis.get_resource_metadata(@url)
 
       response.nil?.should be false
       arcgis.metadata.should eq expected_metadata
@@ -183,6 +182,190 @@ describe Url::ArcGIS do
       response.should eq expected_metadata_response
     end
   end
+
+  describe '#get_resource' do
+    it 'tests the get_ids_list() private method with error scenarios' do
+      arcgis = Url::ArcGIS.get_new
+
+      id = arcgis.send(:sanitize_id, @url)
+
+      # 'general http error (non-200)'
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        Typhoeus::Response.new(
+          code: 400,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ''
+        )
+      end
+
+      expect {
+        arcgis.send(:get_ids_list, id)
+      }.to raise_error DataDownloadError
+
+      # 'objectIds' not present
+      Typhoeus::Expectation.clear
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
+
+        body = ::JSON.parse(body)
+        body.delete('objectIds')
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      expect {
+        arcgis.send(:get_ids_list, id)
+      }.to raise_error ResponseError
+
+      # 'objectIds' empty
+      Typhoeus::Expectation.clear
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
+
+        body = ::JSON.parse(body)
+        body['objectIds'] = []
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      expect {
+        arcgis.send(:get_ids_list, id)
+      }.to raise_error ResponseError
+
+    end
+
+    it 'tests the get_ids_list() private method' do
+      arcgis = Url::ArcGIS.get_new
+
+      id = arcgis.send(:sanitize_id, @url)
+
+      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      expected_ids = [1,2,3,4,5,6,7,8,9,10]
+
+      respose_ids = arcgis.send(:get_ids_list, id)
+
+      respose_ids.nil?.should be false
+      respose_ids.should eq expected_ids
+    end
+
+    it 'tests the get_by_ids() private method with error scenarios' do
+      arcgis = Url::ArcGIS.get_new
+
+      id = arcgis.send(:sanitize_id, @url)
+
+      # Empty ids
+      expect {
+        arcgis.send(:get_by_ids, id, [], [{ key: 'value' }])
+      }.to raise_error InvalidInputDataError
+
+      # Empty fields
+      expect {
+        arcgis.send(:get_by_ids, id, [1], [])
+      }.to raise_error InvalidInputDataError
+
+
+      # 'general http error (non-200)'
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        Typhoeus::Response.new(
+          code: 400,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ''
+        )
+      end
+
+      expect {
+        arcgis.send(:get_by_ids, id, [1], [{ key: 'value' }])
+      }.to raise_error DataDownloadError
+
+      # Expecting a not-retrieved field
+      Typhoeus::Expectation.clear
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      ids_to_retrieve = [1,2,3]
+      fields_to_retrieve = [{
+                              name: 'OBJECTID',
+                              type: 'esriFieldTypeOID'
+                            },
+                            {
+                              name: 'NAME',
+                              type: 'esriFieldTypeString'
+                            },
+                            {
+                              name: 'MISSING_FIELD',
+                              type: 'esriFieldTypeString'
+                            }]
+
+      expect {
+        arcgis.send(:get_by_ids, id, ids_to_retrieve, fields_to_retrieve)
+      }.to raise_error ResponseError
+
+    end
+
+    it 'tests the get_by_ids() private method' do
+      arcgis = Url::ArcGIS.get_new
+
+      id = arcgis.send(:sanitize_id, @url)
+
+      Typhoeus.stub(/\/arcgis\/rest\//) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      expected_response_data = [
+        {"attributes"=>{"OBJECTID"=>1, "NAME"=>"Name of object 1"}, "geometry"=>{"fake"=>"geom"}},
+        {"attributes"=>{"OBJECTID"=>2, "NAME"=>"Name of object 2"}, "geometry"=>{"fake"=>"geom"}},
+        {"attributes"=>{"OBJECTID"=>3, "NAME"=>"Name of object 3"}, "geometry"=>{"fake"=>"geom"}}
+      ]
+
+      ids_to_retrieve = [1,2,3]
+      # WDPAID also present, but left on purpose untouched
+      fields_to_retrieve = [{
+                              name: 'OBJECTID',
+                              type: 'esriFieldTypeOID'
+                            },
+                            {
+                              name: 'NAME',
+                              type: 'esriFieldTypeString'
+                            }]
+
+      response_data = arcgis.send(:get_by_ids, id, ids_to_retrieve, fields_to_retrieve)
+
+      response_data.nil?.should eq false
+      response_data.length.should eq 3
+
+      response_data.should eq expected_response_data
+
+    end
+
+  end
+
+
+
 
 end
 

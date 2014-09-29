@@ -16,7 +16,7 @@ module CartoDB
         ARCGIS_API_LIKE_URL_RE = /arcgis\/rest/
 
         METADATA_URL     = '%s?f=json'
-        FEATURE_IDS_URL  = '%s/query?where=1%3D1&returnIdsOnly=true&f=json'
+        FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
         FEATURE_DATA_URL = '%s/query?objectIds=%s&outFields=%s&outSR=4326&f=json'
 
         MINIMUM_SUPPORTED_VERSION = 10.1
@@ -41,6 +41,7 @@ module CartoDB
             advanced_queries_supported: false
           }
 
+          @url = nil
         end
 
         # Factory method
@@ -67,6 +68,8 @@ module CartoDB
         # @return mixed
         def get_resource(id)
           url = sanitize_id(id)
+
+          ids = get_ids_list(url)
 
           # FEATURE_IDS_URL
           # FEATURE_DATA_URL
@@ -139,11 +142,6 @@ module CartoDB
           filter_data
         end
 
-        # Hide sensitive fields
-        def to_s
-          "<CartoDB::Datasources::Url::ArcGIS>"
-        end
-
         # If this datasource accepts a data import instance
         # @return Boolean
         def persists_state_via_data_import?
@@ -158,6 +156,8 @@ module CartoDB
 
         private
 
+        # @param id String
+        # @return String
         # @throws InvalidInputDataError
         def sanitize_id(id)
           raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server") \
@@ -182,6 +182,68 @@ module CartoDB
           end
 
           id + '0'
+        end
+
+        # NOTE: Assumes url is valid
+        # @param url String
+        # @return Array
+        # @throws DataDownloadError
+        # @throws ResponseError
+        def get_ids_list(url)
+          response = Typhoeus.get(FEATURE_IDS_URL % [url], http_options)
+          raise DataDownloadError.new("#{FEATURE_IDS_URL % [url]} (#{response.code}) : #{response.body}") \
+            if response.code != 200
+
+          begin
+            data = ::JSON.parse(response.body).fetch('objectIds')
+          rescue => exception
+            raise ResponseError.new("Missing data: #{exception}")
+          end
+
+          raise ResponseError.new("Empty ids list") if data.length == 0
+
+          data
+        end
+
+        # NOTE: Assumes url is valid
+        # @param url String
+        # @param ids Array
+        # @param fields Array
+        # @return Array [ Hash ] (non-symbolized keys)
+        # @throws InvalidInputDataError
+        # @throws DataDownloadError
+        def get_by_ids(url, ids, fields)
+          raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
+          raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
+
+          prepared_ids    = URI.escape(ids.map { |id| "#{id}" }.join(','))
+          prepared_fields = URI.escape(fields.map { |field| "#{field}" }.join(','))
+          prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
+
+          response = Typhoeus.get(prepared_url, http_options)
+          raise DataDownloadError.new("#{prepared_url} (#{response.code}) : #{response.body}") \
+            if response.code != 200
+
+          begin
+            body = ::JSON.parse(response.body)
+            retrieved_fields = body.fetch('fields')
+            retrieved_items = body.fetch('features')
+          rescue => exception
+            raise ResponseError.new("Missing data: #{exception}")
+          end
+          raise ResponseError.new("'fields' empty or invalid") if (retrieved_fields.nil? || retrieved_fields.length == 0)
+          raise ResponseError.new("'features' empty or invalid") if (retrieved_items.nil? || retrieved_items.length == 0)
+
+          desired_fields = fields.map { |field| field[:name] }
+          obtained_fields = retrieved_fields.map { |field| field['name'] }
+          raise ResponseError.new("Missing required 'fields'") if desired_fields - obtained_fields != []
+
+          retrieved_items.collect { |item|
+            {
+              'attributes' => item['attributes'].select{ |k, v| desired_fields.include?(k) },
+              'geometry' => item['geometry']
+            }
+          }
         end
 
         def http_options(params={})

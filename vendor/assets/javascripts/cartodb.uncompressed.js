@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.10-dev
+// cartodb.js version: 3.11.13-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3d1ac0ed5b966d7b588e6d1be5647bc264cd23a9
+// sha: 7e8a5be973d2e2997cdc330c8737d96006ce6996
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.10-dev';
+    cdb.VERSION = '3.11.13-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25701,7 +25701,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     if (!this.options.show_legends) return;
 
-    if (this.model.get("legend") && this.model.get("legend").type == "none") return;
+    if (this.model.get("legend") && (this.model.get("legend").type == "none" || !this.model.get("legend").type)) return;
     if (this.model.get("legend") && this.model.get("legend").items && this.model.get("legend").items.length == 0) return;
 
     this.$el.addClass("has-legend");
@@ -25801,7 +25801,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _toggle: function(e) {
 
     e.preventDefault();
-    //e.stopPropagation();
+    e.stopPropagation();
 
     this.model.set("open", !this.model.get("open"));
 
@@ -25845,14 +25845,22 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _open: function() {
 
-    this.$el.animate({ right: this.$el.find(".aside").width() }, 200)
+    var right = this.$el.find(".aside").width();
+
+    this.$el.find(".cartodb-header").animate({ right: right }, 200)
+    this.$el.find(".aside").animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
     this._initScrollPane();
 
   },
 
   _close: function() {
 
-    this.$el.animate({ right: 0 }, 200)
+    this.$el.find(".cartodb-header").animate({ right: 0 }, 200)
+    this.$el.find(".aside").animate({ right: - this.$el.find(".aside").width() }, 200)
+    this.$el.find(".cartodb-attribution-button").animate({ right: 20 }, 200)
+    this.$el.find(".cartodb-attribution").animate({ right: 20 }, 200)
 
   },
 
@@ -26204,14 +26212,16 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addAttributions: function() {
 
     var attributions = "";
-    this.options.mapView.$el.find(".leaflet-control-attribution").hide();
+
+    this.options.mapView.$el.find(".leaflet-control-attribution").hide(); // TODO: remove this from here
 
     if (this.options.layerView) {
 
       attributions = this.options.layerView.model.get("attribution");
       this.$el.find(".cartodb-attribution").append(attributions);
 
-    } else {
+    } else if (this.options.map.get("attribution")) {
+
       attributions = this.options.map.get("attribution");
 
       _.each(attributions, function(attribution) {
@@ -26219,9 +26229,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         var $el = $li.html(attribution);
         this.$el.find(".cartodb-attribution").append($li);
       }, this);
+
     }
 
-    this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    if (attributions) {
+      this.$el.find(".cartodb-attribution-button").fadeIn(250);
+    }
 
   },
 
@@ -31705,22 +31718,14 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addTimeSlider: function() {
+  addTimeSlider: function(torqueLayer) {
 
-    var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+    if (torqueLayer) {
 
-    if (torque.length) {
-
-      this.torqueLayer = torque[0];
-
-      if (!this.mobile_enabled && this.torqueLayer) {
-
-        this.addOverlay({
-          type: 'time_slider',
-          layer: this.torqueLayer
-        });
-
-      }
+      this.addOverlay({
+        type: 'time_slider',
+        layer: torqueLayer
+      });
 
     }
 
@@ -31897,7 +31902,22 @@ var Vis = cdb.core.View.extend({
 
     if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
 
-    if (options.time_slider)       this.addTimeSlider();
+    if (options.time_slider)       {
+
+      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+
+      if (torque && torque.length) {
+
+        this.torqueLayer = torque[0];
+
+        if (!this.mobile_enabled && this.torqueLayer) {
+
+          this.addTimeSlider(this.torqueLayer);
+
+        }
+      }
+    }
+
     if (!options.sublayer_options) this._setupSublayers(data.layers, options);
     if (options.sublayer_options)  this._setLayerOptions(options);
 
@@ -32098,7 +32118,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = opt.mobile_layout && this.mobile || opt.force_mobile;
+    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
     if (!opt.title) {
       vizjson.title = null;
@@ -33373,6 +33393,7 @@ Layers.register('torque', function(vis, data) {
 
         var torqueLayer;
         var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        var addMobileLayout = (options.mobile_layout && mobileEnabled) || options.force_mobile;
 
         if(!layerView) {
           promise.trigger('error', "layer not supported");
@@ -33385,14 +33406,19 @@ Layers.register('torque', function(vis, data) {
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], (options.mobile_layout || options.force_mobile));
+          viz.addLegends([layerData], ((mobileEnabled && options.mobile_layout) || options.force_mobile));
         }
+
         if(options.time_slider && layerView.model.get('type') === 'torque') {
-          viz.addTimeSlider(layerView);
+
+          if (!addMobileLayout) { // don't add the overlay if we are in mobile
+            viz.addTimeSlider(layerView);
+          }
+
           torqueLayer = layerView;
         }
 
-        if ((options.mobile_layout && mobileEnabled) || options.force_mobile) {
+        if (addMobileLayout) {
 
           options.mapView = map.viz.mapView;
 

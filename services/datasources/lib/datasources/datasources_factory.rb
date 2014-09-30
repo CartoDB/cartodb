@@ -9,10 +9,14 @@ module CartoDB
         # Retrieve a datasource instance
         # @param datasource_name string
         # @param user User
-        # @param redis Redis|nil (optional)
+        # @param additional_config Hash
+        # {
+        #   :redis_storage => Redis|nil
+        #   :ogr2ogr_instance => Ogr2ogr|nil
+        # }
         # @return mixed
         # @throws MissingConfigurationError
-        def self.get_datasource(datasource_name, user, redis_storage = nil)
+        def self.get_datasource(datasource_name, user, additional_config = {})
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME
               Url::Dropbox.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
@@ -25,7 +29,8 @@ module CartoDB
             when Url::ArcGIS::DATASOURCE_NAME
               Url::ArcGIS.get_new
             when Search::Twitter::DATASOURCE_NAME
-              Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user), user, redis_storage)
+              Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user),
+                                      user, additional_config[:redis_storage])
             when nil
               nil
             else

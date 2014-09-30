@@ -144,12 +144,17 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    self.success  = true
-    self.state    = STATE_SUCCESS
-    log.append "Import finished\n"
-    save
-    notify(results)
-    self
+    if log.entries =~ /Table (.*) registered/
+      self.success  = true
+      self.state    = STATE_SUCCESS
+      log.append "Import finished\n"
+      save
+      notify(results)
+      self
+    else
+      log.append "Import FAILED registering table!\n"
+      handle_failure
+    end
   end
 
   def handle_failure
@@ -484,7 +489,8 @@ class DataImport < Sequel::Model
     begin
       oauth = current_user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
-      datasource = DatasourcesFactory.get_datasource(datasource_name, current_user, $tables_metadata)
+      datasource = DatasourcesFactory.get_datasource(
+        datasource_name, current_user, { redis_storage: $tables_metadata })
       datasource.report_component = Rollbar
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex

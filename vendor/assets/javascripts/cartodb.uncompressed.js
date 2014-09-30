@@ -20698,11 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-<<<<<<< HEAD
-    cdb.VERSION = '3.11.09-dev';
-=======
     cdb.VERSION = '3.11.13-dev';
->>>>>>> master
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {

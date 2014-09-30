@@ -1,3 +1,8 @@
+3.2.4 (2014-xx-xx)
+------------------
+* New features
+  * Upon table creation no tile style call performed anymore. Still done upon layer/map change, though.
+
 3.2.3 (2014-09-30)
 ------------------
 * New features

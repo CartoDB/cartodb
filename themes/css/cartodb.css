@@ -1807,7 +1807,6 @@ only screen and (                min-resolution: 2dppx) {
   color: #fff;
   list-style: none;
   border-bottom: 1px solid #585858;
-  cursor: pointer;
 }
 .cartodb-mobile .aside .layer-container .layers > li:last-child h3,
 .cartodb-mobile .aside .layer-container .layers > li:last-child {
@@ -1856,6 +1855,10 @@ only screen and (                min-resolution: 2dppx) {
   text-transform: uppercase;
   padding: 12px 0 13px 0;
 }
+
+.cartodb-mobile .aside .layer-container .layers > li.has-toggle h3 {
+  cursor: pointer;
+}
 .cartodb-mobile .aside .layer-container .layers > li.has-legend.hidden h3,
 .cartodb-mobile .aside .layer-container .layers > li.hidden h3 {
   color: #666666;
@@ -1870,7 +1873,6 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-mobile .aside .layer-container .layers > li.has-legend h3 {
   border-bottom: 1px solid #585858;
-  margin: 0 0 10px 0;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend {
   position:relative;
@@ -1880,10 +1882,11 @@ only screen and (                min-resolution: 2dppx) {
   box-shadow: none;
   background: none;
   padding: 0;
-  margin: 0 0 18px 0;
+  margin: 10px 0 18px 0;
   padding: 2px 0 0 0;
   bottom: auto;
   right: auto;
+  cursor: text;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.bubble ul li.graph {
   border:none;

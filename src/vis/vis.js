@@ -751,7 +751,6 @@ var Vis = cdb.core.View.extend({
     if (this.mobile_enabled) {
       remove_overlay('logo');
       remove_overlay('share');
-      remove_overlay('layer_selector');
     }
 
     if (this.mobile) {

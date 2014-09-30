@@ -47,7 +47,7 @@ module CartoDB
       @mailto             = arguments.fetch(:mailto)
       @force_batch        = arguments[:force_batch] || false
       @dir                = arguments[:dir] || Dir.mktmpdir
-      @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] || false
+      @batch_api_disabled = Cartodb.config[:geocoder]['batch_api_disabled'] == true
     end # initialize
 
     def use_batch_process?

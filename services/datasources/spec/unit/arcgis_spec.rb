@@ -362,6 +362,66 @@ describe Url::ArcGIS do
 
     end
 
+    it 'tests the get_resource() method (does not check actual stored data)' do
+      arcgis = Url::ArcGIS.get_new
+
+      id = arcgis.send(:sanitize_id, @url)
+
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)\?f=json/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list_01.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      # First item fetch
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?objectIds=1&outFields/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+        body = ::JSON.parse(body)
+
+        body['features'] = [ body['features'][0] ]
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      # Remaining items fetch
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?objectIds=2%2C3&outFields/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+        body = ::JSON.parse(body)
+
+        body['features'] = [ body['features'][1], body['features'][2] ]
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      # Needed to set the metadata
+      arcgis.get_resource_metadata(id)
+
+      results = arcgis.get_resource(id)
+
+      # [ total_ids, processed_ids ]
+      results.should eq [3, 3]
+    end
+
   end
 
 

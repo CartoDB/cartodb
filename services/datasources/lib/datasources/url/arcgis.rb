@@ -2,6 +2,7 @@
 
 require 'typhoeus'
 require 'json'
+require 'addressable/uri'
 
 module CartoDB
   module Datasources
@@ -21,6 +22,9 @@ module CartoDB
 
         MINIMUM_SUPPORTED_VERSION = 10.1
 
+        # ~50MB max
+        MAX_BLOCK_SIZE = 1024 * 1024 * 50
+
         attr_reader :metadata
 
         # Constructor
@@ -28,20 +32,26 @@ module CartoDB
           super
           @service_name = DATASOURCE_NAME
 
-          @metadata = {
-            arcgis_version:             nil,
-            name:                       nil,
-            description:                nil,
-            type:                       nil,
-            geometry_type:              nil,
-            copyright:                  nil,
-            fields:                     [],
-            max_records_per_query:      500,
-            supported_formats:          [],
-            advanced_queries_supported: false
-          }
+          # Fields:
+          # @metadata = {
+          #   arcgis_version:             nil,
+          #   name:                       nil,
+          #   description:                nil,
+          #   type:                       nil,
+          #   geometry_type:              nil,
+          #   copyright:                  nil,
+          #   fields:                     [],
+          #   max_records_per_query:      500,
+          #   supported_formats:          [],
+          #   advanced_queries_supported: false
+          # }
+          @metadata = nil
 
           @url = nil
+
+          @ids_total = 0
+          @ids_retrieved = 0
+          @block_size = 0
         end
 
         # Factory method
@@ -50,15 +60,21 @@ module CartoDB
           return new
         end
 
+        # @return String
+        def to_s
+          "<CartoDB::Datasources::Url::ArcGis @url=#{@url} @metadata=#{@metadata} @ids_total=#{@ids_total}" +
+          " @ids_retrieved=#{@ids_retrieved} @block_size=#{@block_size}>"
+        end
+
         # If will provide a url to download the resource, or requires calling get_resource()
-        # @return bool
+        # @return Bool
         def providers_download_url?
           false
         end
 
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
-        # @return [ { :id, :title, :url, :service } ]
+        # @return [ Hash ]
         def get_resources_list(filter=[])
           filter
         end
@@ -67,15 +83,26 @@ module CartoDB
         # @param id string
         # @return mixed
         def get_resource(id)
-          url = sanitize_id(id)
+          @url = sanitize_id(id)
 
-          ids = get_ids_list(url)
+          ids = get_ids_list(@url)
+          @ids_total = ids.length
 
-          # FEATURE_IDS_URL
-          # FEATURE_DATA_URL
-          {
+          # Grab first item to estimate size of block
+          first_item = get_by_ids(@url, [ids.slice!(0)], @metadata[:fields])
+          # TODO: Store
+          @ids_retrieved += 1
 
-          }
+          @block_size = calculate_block_size(first_item, MAX_BLOCK_SIZE)
+
+          while ids.length > 0 do
+            ids_block = ids.slice!(0, [ids.length, @block_size].min)
+            items = get_by_ids(@url, ids_block, @metadata[:fields])
+            # TODO: Store
+            @ids_retrieved += ids_block.length
+          end
+
+          [@ids_total, @ids_retrieved]
         end
 
         # @param id string
@@ -83,10 +110,10 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ResponseError
         def get_resource_metadata(id)
-          url = sanitize_id(id)
+          @url = sanitize_id(id)
 
-          response = Typhoeus.get(METADATA_URL % [url], http_options)
-          raise DataDownloadError.new("#{METADATA_URL % [url]} (#{response.code}) : #{response.body}") \
+          response = Typhoeus.get(METADATA_URL % [@url], http_options)
+          raise DataDownloadError.new("#{METADATA_URL % [@url]} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
           # non-rails symbolize keys
@@ -216,8 +243,9 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-          prepared_ids    = URI.escape(ids.map { |id| "#{id}" }.join(','))
-          prepared_fields = URI.escape(fields.map { |field| "#{field}" }.join(','))
+          # Doesn't encodes properly even using an external gem, good job Ruby!
+          prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(',')).gsub(',','%2C')
+          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(',')).gsub(',','%2C')
           prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
 
           response = Typhoeus.get(prepared_url, http_options)
@@ -244,6 +272,13 @@ module CartoDB
               'geometry' => item['geometry']
             }
           }
+        end
+
+        # @param sample_item Hash
+        # @param max_size Integer
+        # @param Integer
+        def calculate_block_size(sample_item, max_size)
+          (max_size.to_f / ::JSON.dump(sample_item).length.to_f).floor
         end
 
         def http_options(params={})

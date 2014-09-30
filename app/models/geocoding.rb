@@ -81,7 +81,7 @@ class Geocoding < Sequel::Model
     self.update state: 'started', processable_rows: self.class.processable_rows(table)
     rows_geocoded_before = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
     if processable_rows == 0
-      self.update(state: 'finished', processed_rows: 0, cache_hits: 0)
+      self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
       self.report
       return
     end

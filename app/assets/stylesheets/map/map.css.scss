@@ -78,14 +78,14 @@ div.map {
         margin-right: 0px;
       }
 
-      div.cartodb-searchbox {
+      & > div.cartodb-searchbox {
         right: 15px!important;
       }
 
       // Overlays hidden in mobile
       div.cartodb-layer-selector-box,
       div.cartodb-share,
-      div.cartodb-searchbox,
+      & > div.cartodb-searchbox,
       div.cartodb-fullscreen,
       div.cartodb-zoom,
       div.cartodb-zoom-info {
@@ -341,7 +341,7 @@ div.map {
 
   div.cartodb-map {
 
-    div.cartodb-searchbox{
+    & > div.cartodb-searchbox{
       top: 20px;
       right: 77px;
       float: right;

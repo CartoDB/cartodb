@@ -6,6 +6,7 @@ require_relative 'cities_text_points'
 require_relative 'cities_column_points'
 require_relative 'admin0_text_polygons'
 require_relative 'admin1_text_polygons'
+require_relative 'admin1_column_polygons'
 require_relative 'postalcode_text_points'
 require_relative 'postalcode_column_points'
 require_relative 'postalcode_text_polygon'
@@ -34,6 +35,8 @@ module CartoDB
               Admin0TextPolygons.new internal_geocoder
             when [:admin1, :text, :polygon]
               Admin1TextPolygons.new internal_geocoder
+            when [:admin1, :column, :polygon]
+              Admin1ColumnPolygons.new internal_geocoder
             when [:postalcode, :text, :point]
               PostalcodeTextPoints.new internal_geocoder
             when [:postalcode, :column, :point]

@@ -10,6 +10,16 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
+
+/* Mobile */
+.cartodb-mobile .aside .layer-container .layers h3 {
+  color: #fff;
+}
+.cartodb-mobile .cartodb-attribution-button {
+  z-index: 10001
+}
+
+/* Overlay */
 .overlay.text {
 
   .content > .text { 

@@ -1,3 +1,8 @@
+3.2.3 (2014-09-30)
+------------------
+* Fixed bugs
+  * Missing geocoding type (Admin regions, country column, polygons)
+
 3.2.2 (2014-09-29)
 ------------------
 * New features

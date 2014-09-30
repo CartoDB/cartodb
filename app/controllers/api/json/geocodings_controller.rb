@@ -38,6 +38,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     unless ['high-resolution', 'ipaddress'].include? params[:kind] then
       countries = params[:text] ? [params[:location]] : @table.sequel.distinct.select_map(params[:location].to_sym)
       geocoding.country_code = countries.map{ |c| "'#{ c }'"}.join(',')
+      geocoding.country_column = params[:location] if params[:text] == false
     end
 
     geocoding.save

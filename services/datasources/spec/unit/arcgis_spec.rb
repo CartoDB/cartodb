@@ -171,7 +171,7 @@ describe Url::ArcGIS do
         service:  Url::ArcGIS::DATASOURCE_NAME,
         checksum: nil,
         size:     0,
-        filename: 'test_feature'
+        filename: 'test_feature.json'
       }
 
       response = arcgis.get_resource_metadata(@url)
@@ -290,36 +290,6 @@ describe Url::ArcGIS do
       expect {
         arcgis.send(:get_by_ids, id, [1], [{ key: 'value' }])
       }.to raise_error DataDownloadError
-
-      # Expecting a not-retrieved field
-      Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
-        Typhoeus::Response.new(
-          code: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: body
-        )
-      end
-
-      ids_to_retrieve = [1,2,3]
-      fields_to_retrieve = [{
-                              name: 'OBJECTID',
-                              type: 'esriFieldTypeOID'
-                            },
-                            {
-                              name: 'NAME',
-                              type: 'esriFieldTypeString'
-                            },
-                            {
-                              name: 'MISSING_FIELD',
-                              type: 'esriFieldTypeString'
-                            }]
-
-      expect {
-        arcgis.send(:get_by_ids, id, ids_to_retrieve, fields_to_retrieve)
-      }.to raise_error ResponseError
-
     end
 
     it 'tests the get_by_ids() private method' do
@@ -336,11 +306,36 @@ describe Url::ArcGIS do
         )
       end
 
-      expected_response_data = [
-        {"attributes"=>{"OBJECTID"=>1, "NAME"=>"Name of object 1"}, "geometry"=>{"fake"=>"geom"}},
-        {"attributes"=>{"OBJECTID"=>2, "NAME"=>"Name of object 2"}, "geometry"=>{"fake"=>"geom"}},
-        {"attributes"=>{"OBJECTID"=>3, "NAME"=>"Name of object 3"}, "geometry"=>{"fake"=>"geom"}}
-      ]
+      expected_response_data = {
+        geometryType: "esriGeometryPolygon",
+        spatialReference: {
+          "wkid" => 4326,
+          "latestWkid" => 4326
+        },
+        fields: [
+          {
+            "name" => "OBJECTID",
+            "type" => "esriFieldTypeOID",
+            "alias" => "OBJECTID"
+          },
+          {
+            "name" => "WDPAID",
+            "type" => "esriFieldTypeInteger",
+            "alias" => "WDPAID"
+          },
+          {
+            "name" => "NAME",
+            "type" => "esriFieldTypeString",
+            "alias" => "NAME",
+            "length" => 254
+          }
+        ],
+        features: [
+          {"attributes"=>{"OBJECTID"=>1, "NAME"=>"Name of object 1"}, "geometry"=>{"fake"=>"geom"}},
+          {"attributes"=>{"OBJECTID"=>2, "NAME"=>"Name of object 2"}, "geometry"=>{"fake"=>"geom"}},
+          {"attributes"=>{"OBJECTID"=>3, "NAME"=>"Name of object 3"}, "geometry"=>{"fake"=>"geom"}}
+        ]
+      }
 
       ids_to_retrieve = [1,2,3]
       # WDPAID also present, but left on purpose untouched
@@ -356,7 +351,7 @@ describe Url::ArcGIS do
       response_data = arcgis.send(:get_by_ids, id, ids_to_retrieve, fields_to_retrieve)
 
       response_data.nil?.should eq false
-      response_data.length.should eq 3
+      response_data[:features].length.should eq 3
 
       response_data.should eq expected_response_data
 

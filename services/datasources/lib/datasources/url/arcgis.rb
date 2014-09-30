@@ -8,7 +8,7 @@ module CartoDB
   module Datasources
     module Url
 
-      class ArcGIS < Base
+      class ArcGIS < BaseDirectStream
 
         # Required for all datasources
         DATASOURCE_NAME = 'arcgis'
@@ -52,6 +52,8 @@ module CartoDB
           @ids_total = 0
           @ids_retrieved = 0
           @block_size = 0
+
+          @ids = nil
         end
 
         # Factory method
@@ -83,26 +85,52 @@ module CartoDB
         # @param id string
         # @return mixed
         def get_resource(id)
+          # TODO: Deprecate this after streaming version done
           @url = sanitize_id(id)
 
-          ids = get_ids_list(@url)
-          @ids_total = ids.length
+          @ids = get_ids_list(@url)
+          @ids_total = @ids.length
 
           # Grab first item to estimate size of block
-          first_item = get_by_ids(@url, [ids.slice!(0)], @metadata[:fields])
+          first_item = get_by_ids(@url, [@ids.slice!(0)], @metadata[:fields])
           # TODO: Store
           @ids_retrieved += 1
 
           @block_size = calculate_block_size(first_item, MAX_BLOCK_SIZE)
 
-          while ids.length > 0 do
-            ids_block = ids.slice!(0, [ids.length, @block_size].min)
+          while @ids.length > 0 do
+            ids_block = @ids.slice!(0, [@ids.length, @block_size].min)
             items = get_by_ids(@url, ids_block, @metadata[:fields])
             # TODO: Store
             @ids_retrieved += ids_block.length
           end
 
           [@ids_total, @ids_retrieved]
+        end
+
+        # Initial stream, to be used for container creation (table usually)
+        # @param id string
+        # @return String
+        def initial_stream(id)
+          @url = sanitize_id(id)
+
+          @ids = get_ids_list(@url)
+          @ids_total = @ids.length
+
+          first_item = get_by_ids(@url, [@ids.slice!(0)], @metadata[:fields])
+          @ids_retrieved += 1
+          @block_size = calculate_block_size(first_item, MAX_BLOCK_SIZE)
+
+          ::JSON.dump(first_item)
+        end
+
+        # @param id string
+        # @return String
+        def stream_resource(id)
+
+          # TODO: Error if @ids nil or @block_size <= 0
+
+          raise 'To be implemented in child classes'
         end
 
         # @param id string
@@ -255,6 +283,8 @@ module CartoDB
           begin
             body = ::JSON.parse(response.body)
             retrieved_fields = body.fetch('fields')
+            geometry_type = body.fetch('geometryType')
+            spatial_reference = body.fetch('spatialReference')
             retrieved_items = body.fetch('features')
           rescue => exception
             raise ResponseError.new("Missing data: #{exception}")
@@ -262,14 +292,18 @@ module CartoDB
           raise ResponseError.new("'fields' empty or invalid") if (retrieved_fields.nil? || retrieved_fields.length == 0)
           raise ResponseError.new("'features' empty or invalid") if (retrieved_items.nil? || retrieved_items.length == 0)
 
+          # Fields can be optional, cannot be enforced to always be present
           desired_fields = fields.map { |field| field[:name] }
-          obtained_fields = retrieved_fields.map { |field| field['name'] }
-          raise ResponseError.new("Missing required 'fields'") if desired_fields - obtained_fields != []
 
-          retrieved_items.collect { |item|
-            {
-              'attributes' => item['attributes'].select{ |k, v| desired_fields.include?(k) },
-              'geometry' => item['geometry']
+          {
+            geometryType:     geometry_type,
+            spatialReference: spatial_reference,
+            fields:           retrieved_fields,
+            features:         retrieved_items.collect { |item|
+              {
+                'attributes' => item['attributes'].select{ |k, v| desired_fields.include?(k) },
+                'geometry' => item['geometry']
+              }
             }
           }
         end
@@ -278,7 +312,7 @@ module CartoDB
         # @param max_size Integer
         # @param Integer
         def calculate_block_size(sample_item, max_size)
-          (max_size.to_f / ::JSON.dump(sample_item).length.to_f).floor
+          [(max_size.to_f / ::JSON.dump(sample_item).length.to_f).floor, 1].max
         end
 
         def http_options(params={})
@@ -295,7 +329,7 @@ module CartoDB
         end
 
         def filename_from(feature_name)
-          feature_name.gsub(/[^\w]/, '_').downcase
+          feature_name.gsub(/[^\w]/, '_').downcase + '.json'
         end
 
       end

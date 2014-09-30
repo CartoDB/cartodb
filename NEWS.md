@@ -1,5 +1,7 @@
 3.2.3 (2014-09-30)
 ------------------
+* New features
+  * Added ability to disable high resolution geocoding batch api by config 
 * Fixed bugs
   * Missing geocoding type (Admin regions, country column, polygons)
 

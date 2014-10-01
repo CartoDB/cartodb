@@ -178,6 +178,7 @@ class Geocoding < Sequel::Model
 
   def metrics_payload(exception = nil)
     payload = {
+      created_at:       created_at,
       distinct_id:      user.username,
       username:         user.username,
       email:            user.email,

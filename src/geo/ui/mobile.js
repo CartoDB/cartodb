@@ -455,6 +455,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       if (overlay.type == 'layer_selector') {
         hasLayerSelector = true;
+        this.hasLayerSelector = true;
       }
 
     }, this);
@@ -593,7 +594,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderLayers: function() {
 
-    var hasLegendOverlay = this.options.legends;
+    var hasLegendOverlay = this.visibility_options.legends;
 
     var legends = this.layers.filter(function(layer) {
       return layer.get("legend") && layer.get("legend").type !== "none"

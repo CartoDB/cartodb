@@ -87,39 +87,37 @@ describe("cdb.geo.ui.Mobile", function() {
             map: map
           });
 
- overlays = [];
+          overlays = [];
 
-    overlays.push({
-      order: 2,
-      type: "zoom",
-      url: null
-    });
+          overlays.push({
+            order: 2,
+            type: "zoom",
+            url: null
+          });
 
-    overlays.push({
-      extra: {
-      },
-      order: 3,
-      type: "search"
-    });
+          //overlays.push({
+            //order: 3,
+            //type: "search"
+          //});
 
-    overlays.push({
-      options: {
-        extra: {
-          description: null,
-          title: "Hello!",
-          show_title: true,
-          show_description: false
-        },
-      },
-      order: 1,
-      shareable: false,
-      type: "header",
-      url: null
-    });
+          overlays.push({
+            options: {
+              extra: {
+                description: null,
+                title: "Hello!",
+                show_title: true,
+                show_description: false
+              },
+            },
+            order: 1,
+            shareable: false,
+            type: "header",
+            url: null
+          });
 
   });
 
-  describe("with legends and layer selector", function() {
+  describe("with legends, with layer selector, without search", function() {
 
     var mobile;
 
@@ -150,19 +148,19 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".title").text()).toBe("Hello!");
     });
 
-    it("should render the layer toggle", function() {
-      mobile.render();
-      expect(mobile.$el.hasClass("with-header")).toBe(true);
-      expect(mobile.$el.find(".cartodb-header .toggle").length).toBe(1);
-    });
-
     it("should render the layers", function() {
       mobile.render();
+      expect(mobile.$el.hasClass("with-layers")).toBe(true);
+      expect(mobile.$el.find(".layer-container > h3").text()).toBe("3 layers");
       expect(mobile.$el.find(".layers > li").length).toBe(3);
+      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp…");
+      expect(mobile.$el.find(".layers > li:nth-child(2) h3").text()).toBe("jamon_countries");
+      expect(mobile.$el.find(".layers > li:nth-child(3) h3").text()).toBe("layer_with_legend");
     });
 
     it("shouldn't render the search", function() {
       mobile.render();
+      expect(mobile.$el.hasClass("with-search")).toBe(false);
       expect(mobile.$el.find(".cartodb-searchbox").length).toBe(0);
     });
 
@@ -206,13 +204,13 @@ describe("cdb.geo.ui.Mobile", function() {
 
       setTimeout(function() {
         expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
-      }, 350);
+      }, 450);
 
     });
 
   });
 
-  describe("with layer_selector and legends", function() {
+  describe("without layer_selector, without legends, without search", function() {
 
     var mobile;
 
@@ -225,6 +223,7 @@ describe("cdb.geo.ui.Mobile", function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
+          searchControl:false,
           legends: false,
           layer_selector: false
         }
@@ -242,10 +241,102 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".title").text()).toBe("Hello!");
     });
 
-    it("should render the layer toggle", function() {
+    it("should set the right classes", function() {
       mobile.render();
       expect(mobile.$el.hasClass("with-header")).toBe(true);
-      expect(mobile.$el.find(".cartodb-header .toggle").length).toBe(1);
+      expect(mobile.$el.hasClass("with-layers")).toBe(false);
+      expect(mobile.$el.hasClass("with-search")).toBe(false);
+    });
+
+    it("shouldn't render the layers", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers > li").length).toBe(0);
+    });
+
+
+    it("should render the attribution", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
+      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a></li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+    });
+
+    it("should has the attribution hidden by default", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+    });
+
+    it("should show the zoom", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+    });
+
+    it("should show the attribution", function() {
+      mobile.render();
+      mobile.$el.find(".cartodb-attribution-button").click();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+    });
+
+    it("shouldn't render the legend", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+    });
+
+    it("should hide the attribution when clicking on the backdrop", function() {
+      mobile.render();
+      mobile.$el.find(".cartodb-attribution-button").click();
+      mobile.$el.find(".cartodb-attribution-button .backdrop").click();
+
+      setTimeout(function() {
+        expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      }, 350);
+
+    });
+
+  });
+
+  describe("with legends, without layer selector, without search", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+    mobile = new cdb.geo.ui.Mobile({
+      template: template,
+      mapView: mapView,
+      overlays: overlays,
+      torqueLayer: null,
+      map: map,
+      visibility_options: {
+        searchControl: false,
+        legends: true,
+        layer_selector: false
+      }
+    });
+
+    });
+
+    it("should render properly", function() {
+      mobile.render();
+      expect(mobile.$el.find(".aside").length).toBe(1);
+    });
+
+    it("should render the title", function() {
+      mobile.render();
+      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+    });
+
+    it("should render only the layers with legends", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-layers")).toBe(true);
+      expect(mobile.$el.find(".layers > li h3").length).toBe(0);
+      expect(mobile.$el.find(".layers > li").length).toBe(1);
+      expect(mobile.$el.find(".layer-container h3").text()).toBe("1 layer");
+    });
+
+    it("shouldn't render the search", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-search")).toBe(false);
+      expect(mobile.$el.find(".cartodb-searchbox").length).toBe(0);
     });
 
     it("should render the attribution", function() {
@@ -275,6 +366,226 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
     });
 
+    it("should render the legend", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title").text()).toBe("Little legend");
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
+    });
+
+  });
+
+  describe("with layer_selector, without legends, without search", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+      mobile = new cdb.geo.ui.Mobile({
+        template: template,
+        mapView: mapView,
+        overlays: overlays,
+        torqueLayer: null,
+        map: map,
+        visibility_options: {
+          searchControl: false,
+          legends: false,
+          layer_selector: true
+        }
+      });
+
+    });
+
+    it("should render properly", function() {
+      mobile.render();
+      expect(mobile.$el.find(".aside").length).toBe(1);
+    });
+
+    it("should render the title", function() {
+      mobile.render();
+      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+    });
+
+    it("shouldn't render the search", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-search")).toBe(false);
+    });
+
+    it("should render the layers", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-header")).toBe(true);
+      expect(mobile.$el.hasClass("with-layers")).toBe(true);
+      expect(mobile.$el.find(".layers > li").length).toBe(3);
+      expect(mobile.$el.find(".layers > li:first-child").hasClass("has-toggle")).toBe(true);
+    });
+
+    it("shouldn't render the legend", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+    });
+
+    it("should render the attribution", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
+      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a></li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+    });
+
+    it("should has the attribution hidden by default", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+    });
+
+    it("should show the zoom", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+    });
+
+    it("should show the attribution", function() {
+      mobile.render();
+      mobile.$el.find(".cartodb-attribution-button").click();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+    });
+
+  });
+
+  describe("with search, without layer_selector, without legends", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+      mobile = new cdb.geo.ui.Mobile({
+        template: template,
+        mapView: mapView,
+        overlays: overlays,
+        torqueLayer: null,
+        map: map,
+        visibility_options: {
+          searchControl:true,
+          legends: false,
+          layer_selector: false
+        }
+      });
+
+    });
+
+    it("should render properly", function() {
+      mobile.render();
+      expect(mobile.$el.find(".aside").length).toBe(1);
+    });
+
+    it("should render the title", function() {
+      mobile.render();
+      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+    });
+
+    it("should render the search", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-search")).toBe(true);
+    });
+
+    it("shouldn't render the layers", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-header")).toBe(true);
+      expect(mobile.$el.hasClass("with-layers")).toBe(false);
+      expect(mobile.$el.find(".layers > li").length).toBe(0);
+    });
+
+    it("should render the attribution", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
+      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a></li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+    });
+
+    it("should has the attribution hidden by default", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+    });
+
+    it("should show the zoom", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+    });
+
+    it("should show the attribution", function() {
+      mobile.render();
+      mobile.$el.find(".cartodb-attribution-button").click();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+    });
+
+    it("shouldn't render the legend", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+    });
+
+
+  });
+
+  describe("without anything", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+
+      mobile = new cdb.geo.ui.Mobile({
+        template: template,
+        mapView: mapView,
+        overlays: [],
+        torqueLayer: null,
+        map: map,
+        visibility_options: {
+          legends: false,
+          layer_selector: false
+        }
+      });
+
+    });
+
+    it("should render properly", function() {
+      mobile.render();
+      expect(mobile.$el.find(".aside").length).toBe(1);
+    });
+
+    it("shouldn't render the title", function() {
+      mobile.render();
+      expect(mobile.$el.find(".title").text()).toBe("");
+    });
+
+    it("should set the right classes", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-header")).toBe(false);
+      expect(mobile.$el.hasClass("with-layers")).toBe(false);
+      expect(mobile.$el.hasClass("with-search")).toBe(false);
+    });
+
+    it("shouldn't render the layers", function() {
+      mobile.render();
+      expect(mobile.$el.find(".layers > li").length).toBe(0);
+    });
+
+
+    it("should render the attribution", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
+      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a></li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+    });
+
+    it("should has the attribution hidden by default", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+    });
+
+    it("shouldn't show the zoom", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-zoom").length).toBe(0);
+    });
+
+    it("should show the attribution", function() {
+      mobile.render();
+      mobile.$el.find(".cartodb-attribution-button").click();
+      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+    });
+
     it("shouldn't render the legend", function() {
       mobile.render();
       expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
@@ -291,11 +602,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     });
 
-    it("shouldn't render the layers", function() {
-      mobile.render();
-      expect(mobile.$el.find(".layers > li").length).toBe(0);
-    });
-
   });
+
 
 });

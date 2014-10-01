@@ -487,7 +487,11 @@ var Vis = cdb.core.View.extend({
     if (options.sublayer_options)  this._setLayerOptions(options);
 
     if (this.mobile_enabled){
-      options.legends = data.legends;
+
+      if (options.legends == undefined) {
+        options.legends = this.legends ? true : false;
+      }
+
       this.addMobile(data.overlays, data.layers, options);
     }
 
@@ -648,7 +652,6 @@ var Vis = cdb.core.View.extend({
     opt = _.defaults(opt, {
       tiles_loader: true,
       loaderControl: true,
-      searchControl: false,
       infowindow: true,
       tooltip: true,
       time_slider: true
@@ -684,6 +687,8 @@ var Vis = cdb.core.View.extend({
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
+
+    if (opt.force_mobile == false) this.mobile_enabled = false;
 
     if (!opt.title) {
       vizjson.title = null;
@@ -751,7 +756,6 @@ var Vis = cdb.core.View.extend({
     if (this.mobile_enabled) {
       remove_overlay('logo');
       remove_overlay('share');
-      remove_overlay('layer_selector');
     }
 
     if (this.mobile) {

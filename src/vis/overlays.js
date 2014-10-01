@@ -13,9 +13,6 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
       <div class="content">\
         <a href="#" class="fullscreen"></a>\
         <a href="#" class="toggle"></a>\
-        <div class="hgroup">\
-        <div class="title"></div>\
-        <div class="description"></div>\
         </div>\
       </div>\
     </div>\

@@ -13,17 +13,28 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'arcgis'
 
-        URL_LIKE_RE            = /(http|https):\/\//
         ARCGIS_API_LIKE_URL_RE = /arcgis\/rest/
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
+        # TODO: See if this is needed or we can assume client has at least 10.1 SP1
+        #FEATURE_DATA_URL_NOCACHE = '%s/query?where=%s&objectIds=%s&outFields=%s&outSR=4326&f=json'
         FEATURE_DATA_URL = '%s/query?objectIds=%s&outFields=%s&outSR=4326&f=json'
 
         MINIMUM_SUPPORTED_VERSION = 10.1
 
-        # ~50MB max
-        MAX_BLOCK_SIZE = 1024 * 1024 * 50
+        # In seconds and for the full request
+        HTTP_TIMEOUT = 90
+
+        # Amount to multiply or divide
+        BLOCK_FACTOR = 2
+        MIN_BLOCK_SIZE = 1
+        # Lots of ids can generate too long urls. This size, with a dozen fields fits up to 6 digit ids
+        # @see http://www.iis.net/configreference/system.webserver/security/requestfiltering/requestlimits
+        MAX_BLOCK_SIZE = 175
+
+        # Used to display more data in local
+        DEBUG = true
 
         attr_reader :metadata
 
@@ -48,11 +59,11 @@ module CartoDB
           @metadata = nil
 
           @url = nil
-
           @ids_total = 0
           @ids_retrieved = 0
           @block_size = 0
-
+          @current_stream_status = true
+          @last_stream_status = true
           @ids = nil
         end
 
@@ -65,7 +76,7 @@ module CartoDB
         # @return String
         def to_s
           "<CartoDB::Datasources::Url::ArcGis @url=#{@url} @metadata=#{@metadata} @ids_total=#{@ids_total}" +
-          " @ids_retrieved=#{@ids_retrieved} @block_size=#{@block_size}>"
+          " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update=false)}>"
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -95,13 +106,14 @@ module CartoDB
           @url = sanitize_id(id)
 
           @ids = get_ids_list(@url)
+
           @ids_total = @ids.length
 
           first_item = get_by_ids(@url, [@ids.slice!(0)], @metadata[:fields])
           @ids_retrieved += 1
-          #@block_size = calculate_block_size(first_item, MAX_BLOCK_SIZE, @metadata[:max_records_per_query])
-          # All the algorithm, and the URL gets too big :_(
-          @block_size = 200
+
+          # Start optimistic
+          @block_size = [MAX_BLOCK_SIZE, @metadata[:max_records_per_query]].min
 
           ::JSON.dump(first_item)
         end
@@ -109,14 +121,28 @@ module CartoDB
         # @param id string
         # @return String|nil Nil if no more items
         def stream_resource(id)
-          # TODO: Error if @ids nil or @block_size <= 0
-
           return nil if @ids.empty?
 
-          ids_block = @ids.slice!(0, [@ids.length, @block_size].min)
-          items = get_by_ids(@url, ids_block, @metadata[:fields])
+          begin
+            ids_block = @ids.slice!(0, [@ids.length, block_size].min)
+            items = get_by_ids(@url, ids_block, @metadata[:fields])
+            @last_stream_status = @current_stream_status
+            @current_stream_status = true
+          rescue ExternalServiceError => exception
+            # Failed too much, can't do anything
+            if @block_size == MIN_BLOCK_SIZE
+              raise exception
+            else
+              @last_stream_status = @current_stream_status
+              @current_stream_status = false
+              # Add back, so next pass will get fewer items
+              @ids = ids_block + @ids
+              retry
+            end
+          end
+
           @ids_retrieved += ids_block.length
-          puts @ids_retrieved
+          puts "#{@block_size} , #{@ids_retrieved}/#{@ids_total}" if DEBUG
 
           ::JSON.dump(items)
         end
@@ -203,28 +229,28 @@ module CartoDB
         # @return String
         # @throws InvalidInputDataError
         def sanitize_id(id)
-          raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server") \
-            unless id =~ ARCGIS_API_LIKE_URL_RE && id =~ URL_LIKE_RE
+
+          unless id =~ ARCGIS_API_LIKE_URL_RE
+            raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server")
+          end
 
           # No query params
           unless id.index('?').nil?
             id = id.split('?').first
           end
 
-          unless (id =~ /([0-9])+$/).nil?
-            range_end = id =~ /([0-9])+$/
-            id = id.slice(Range.new(0,range_end-1))
+          # If no layer specified, craft retrieval of first
+          if (id =~ /([0-9])+$/).nil?
+            unless id =~ /\/$/
+              id += '/'
+            end
+            unless id =~ /\/MapServer\/$/
+              id += 'MapServer/'
+            end
+            id += '0'
           end
 
-          unless id =~ /\/$/
-            id += '/'
-          end
-
-          unless id =~ /\/MapServer\/$/
-            id += 'MapServer/'
-          end
-
-          id + '0'
+          id
         end
 
         # NOTE: Assumes url is valid
@@ -255,21 +281,48 @@ module CartoDB
         # @return Array [ Hash ] (non-symbolized keys)
         # @throws InvalidInputDataError
         # @throws DataDownloadError
+        # @throws ExternalServiceError
         def get_by_ids(url, ids, fields)
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
+
           # Doesn't encodes properly even using an external gem, good job Ruby!
           prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(',')).gsub(',','%2C')
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(',')).gsub(',','%2C')
+
+          #timestamp = Time.now.to_i
+          #prepared_url = FEATURE_DATA_URL_NO_CACHE % [url, "#{timestamp}=#{timestamp}", prepared_ids, prepared_fields]
           prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
 
           response = Typhoeus.get(prepared_url, http_options)
+
+          # Timeout connecting to ArcGIS
+          raise ExternalServiceError.new("#{prepared_url} : #{response.body}") if response.code == 0
+
           raise DataDownloadError.new("#{prepared_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
           begin
             body = ::JSON.parse(response.body)
+            success = true
+          rescue JSON::ParserError
+            success = false
+          end
+
+          unless success
+            begin
+              # HACK: JSON spec does not cover Infinity
+              body = ::JSON.parse(response.body.gsub(':INF,', ':"Infinity",'))
+            rescue JSON::ParserError
+              raise ResponseError.new("JSON parsing error. URL: #{prepared_url} #{to_s}")
+            end
+          end
+
+          # Arcgis error
+          raise ExternalServiceError.new("#{prepared_url} : #{response.body}") if body.include?('error')
+
+          begin
             retrieved_fields = body.fetch('fields')
             geometry_type = body.fetch('geometryType')
             spatial_reference = body.fetch('spatialReference')
@@ -296,12 +349,18 @@ module CartoDB
           }
         end
 
-        # @param sample_item Hash
-        # @param max_size Integer
-        # @param metadata_query_size Integer
-        # @return Integer
-        def calculate_block_size(sample_item, max_size, metadata_query_size)
-          [ [(max_size.to_f / ::JSON.dump(sample_item).length.to_f).floor, 1].max, metadata_query_size].min
+        # By default, will update the block size, incrementing or decrementing it according to stream operation results
+        def block_size(update=true)
+          if update
+            if @current_stream_status && @last_stream_status && @block_size < MAX_BLOCK_SIZE
+              @block_size = [@block_size * BLOCK_FACTOR, MAX_BLOCK_SIZE].min
+            end
+            if !@current_stream_status && @block_size > MIN_BLOCK_SIZE
+              @block_size = [[(@block_size / BLOCK_FACTOR).floor, 1].max, MAX_BLOCK_SIZE].min
+            end
+            @block_size = [@block_size, @metadata[:max_records_per_query]].min
+          end
+          @block_size
         end
 
         def http_options(params={})
@@ -312,8 +371,9 @@ module CartoDB
             ssl_verifypeer:   false,
             accept_encoding:  'gzip',
             headers:          { 'Accept-Charset' => 'utf-8' },
-            ssl_verifyhost:     0,
-            nosignal: true
+            ssl_verifyhost:   0,
+            nosignal:         true,
+            timeout:          HTTP_TIMEOUT
           }
         end
 

@@ -487,7 +487,6 @@ var Vis = cdb.core.View.extend({
     if (options.sublayer_options)  this._setLayerOptions(options);
 
     if (this.mobile_enabled){
-      options.legends = data.legends;
       this.addMobile(data.overlays, data.layers, options);
     }
 

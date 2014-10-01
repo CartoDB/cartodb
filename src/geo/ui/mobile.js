@@ -83,6 +83,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
     this.$el.html(this.template(_.extend(attributes, { show_title: this.options.show_title } )));
 
+
     if (this.options.hide_toggle)   this.$el.removeClass("has-toggle");
     if (!this.model.get("visible")) this.$el.addClass("hidden");
     if (this.model.get("legend"))   this._renderLegend();
@@ -540,26 +541,40 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addHeader: function(overlay) {
 
     this.hasHeader = true;
+
     this.$header = this.$el.find(".cartodb-header");
+
+    var title_template = _.template('<div class="hgroup"><% if (show_title) { %><div class="title"><%= title %></div><% } %><% if (show_description) { %><div class="description"><%= description %><% } %></div></div>');
 
     var extra = overlay.options.extra;
     var has_header = false;
+    var show_title = false, show_description = false;
 
     if (extra) {
-      this.$title  = this.$header.find(".title").html(extra.title);
-      this.$description  = this.$header.find(".description").html(extra.description);
 
       if (this.visibility_options.title || this.visibility_options.title != false && extra.show_title)      {
-        this.$title.show();
         has_header = true;
+        show_title = true;
       }
-      if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
-        this.$description.show();
-        has_header = true;
-      }
-    }
 
-    if (has_header) this.$el.addClass("with-header");
+      if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
+        has_header = true;
+        show_description = true;
+      }
+
+      var $hgroup = title_template({ 
+        title: extra.title,
+        show_title:show_title,
+        description: extra.description,
+        show_description: show_description 
+      });
+
+      if (has_header) {
+        this.$el.addClass("with-header");
+        this.$header.find(".content").append($hgroup);
+      }
+
+    }
 
   },
 

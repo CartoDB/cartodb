@@ -784,4 +784,37 @@ describe("cdb.geo.ui.Mobile", function() {
     });
 
   });
+
+  describe("search overlay", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+      mobile = new cdb.geo.ui.Mobile({
+        template: template,
+        mapView: mapView,
+        overlays: [{
+            order: 3,
+            type: "search",
+            template: null
+          }],
+        torqueLayer: null,
+        map: map,
+        visibility_options: {
+          layer_selector:false,
+          legends:false,
+          title: false,
+          description: false,
+        }
+      });
+
+    });
+
+    it("should render the search", function() {
+      mobile.render();
+      expect(mobile.$el.hasClass("with-search")).toBe(true);
+    });
+
+  });
 });

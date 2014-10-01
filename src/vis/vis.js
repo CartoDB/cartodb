@@ -652,7 +652,6 @@ var Vis = cdb.core.View.extend({
     opt = _.defaults(opt, {
       tiles_loader: true,
       loaderControl: true,
-      searchControl: false,
       infowindow: true,
       tooltip: true,
       time_slider: true

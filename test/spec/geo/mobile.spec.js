@@ -524,7 +524,6 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-
       mobile = new cdb.geo.ui.Mobile({
         template: template,
         mapView: mapView,
@@ -558,6 +557,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     it("shouldn't render the layers", function() {
       mobile.render();
+      expect(mobile.$el.hasClass("with-layers")).toBe(false);
       expect(mobile.$el.find(".layers > li").length).toBe(0);
     });
 

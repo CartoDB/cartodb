@@ -456,18 +456,17 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       if (overlay.type == 'layer_selector') {
         hasLayerSelector = true;
-        this.hasLayerSelector = true;
       }
 
     }, this);
 
     var search_visibility = this.visibility_options.searchControl === "true" || this.visibility_options.searchControl  === true;
     var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl    === true;
-    var layer_selector_visibility  = this.visibility_options.layer_selector === "true" || this.visibility_options.layer_selector === true;
+    var layer_selector_visibility  = this.visibility_options.layer_selector;
 
     if (!hasSearchOverlay && search_visibility) this._addSearch();
     if (!hasZoomOverlay   && zoom_visibility) this._addZoom();
-    if (!hasLayerSelector && layer_selector_visibility) this.hasLayerSelector = true;
+    if (layer_selector_visibility || hasLayerSelector && layer_selector_visibility == undefined) this.hasLayerSelector = true;
 
   },
 

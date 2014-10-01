@@ -460,8 +460,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
-    var search_visibility = this.visibility_options.searchControl === "true" || this.visibility_options.searchControl  === true;
-    var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl    === true;
+    var search_visibility = this.visibility_options.searchControl === "true" || this.visibility_options.searchControl === true;
+    var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl === true;
     var layer_selector_visibility  = this.visibility_options.layer_selector;
 
     if (!hasSearchOverlay && search_visibility) this._addSearch();

@@ -689,6 +689,8 @@ var Vis = cdb.core.View.extend({
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
+    if (opt.force_mobile == false) this.mobile_enabled = false;
+
     if (!opt.title) {
       vizjson.title = null;
     }

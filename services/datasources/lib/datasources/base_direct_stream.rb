@@ -2,7 +2,7 @@
 
 module CartoDB
   module Datasources
-    # Performs streaming from the datasource directly to the caller
+    # Performs streaming from the datasource directly to the caller in batches
     class BaseDirectStream < Base
 
       # Initial stream, to be used for container creation (table usually)

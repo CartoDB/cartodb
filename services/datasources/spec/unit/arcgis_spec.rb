@@ -358,6 +358,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_resource() method (does not check actual stored data)' do
+      pending 'Migrate to test instead initial_stream and stream_resource'
       arcgis = Url::ArcGIS.get_new
 
       id = arcgis.send(:sanitize_id, @url)

@@ -48,7 +48,11 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
-      end #initialize
+      end
+
+      def provides_stream?
+        false
+      end
 
       def run(available_quota_in_bytes=nil)
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)

@@ -41,30 +41,9 @@ module CartoDB
         normalize
         job.log "Detected encoding #{encoding}"
         job.log "Using database connection with #{job.concealed_pg_options}"
-        ogr2ogr.run
 
-        job.log "ogr2ogr call:      #{ogr2ogr.command}"
-        job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
-        job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
+        run_ogr2ogr
 
-        raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-
-        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
-
-        if ogr2ogr.exit_code != 0
-          # OOM
-          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/
-            raise FileTooBigError.new(job.logger)
-          end
-          # Could be OOM, could be wrong input
-          if ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/
-            raise LoadError.new(job.logger)
-          end
-          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
-            raise UnsupportedFormatError.new(job.logger)
-          end
-          raise LoadError.new(job.logger)
-        end
         job.log 'Georeferencing...'
         georeferencer.run
         job.log 'Georeferenced'
@@ -73,6 +52,29 @@ module CartoDB
         typecaster.run
         job.log 'Typecasted'
         self
+      end
+
+      def streamed_run_init
+        normalize
+        job.log "Detected encoding #{encoding}"
+        job.log "Using database connection with #{job.concealed_pg_options}"
+        job.log "Running in append mode"
+        run_ogr2ogr
+      end
+
+      def streamed_run_continue(new_source_file)
+        @ogr2ogr.filepath = new_source_file.fullpath
+        run_ogr2ogr(append_mode=true)
+      end
+
+      def streamed_run_finish
+        job.log 'Georeferencing...'
+        georeferencer.run
+        job.log 'Georeferenced'
+
+        job.log 'Typecasting...'
+        typecaster.run
+        job.log 'Typecasted'
       end
 
       def normalize
@@ -155,6 +157,35 @@ module CartoDB
 
       attr_writer     :ogr2ogr, :georeferencer
       attr_accessor   :job, :layer
+
+      def run_ogr2ogr(append_mode=false)
+        ogr2ogr.run(append_mode)
+
+        # too verbose in append mode
+        unless append_mode
+          job.log "ogr2ogr call:      #{ogr2ogr.command}"
+          job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
+          job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
+        end
+
+        raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
+        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+
+        if ogr2ogr.exit_code != 0
+          # OOM
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/
+            raise FileTooBigError.new(job.logger)
+          end
+          # Could be OOM, could be wrong input
+          if ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/
+            raise LoadError.new(job.logger)
+          end
+          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/
+            raise UnsupportedFormatError.new(job.logger)
+          end
+          raise LoadError.new(job.logger)
+        end
+      end
     end
   end
 end

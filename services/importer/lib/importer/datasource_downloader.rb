@@ -21,11 +21,26 @@ module CartoDB
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
+      def provides_stream?
+        @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+      end
+
       def run(available_quota_in_bytes=nil)
         @datasource.logger=@logger unless @logger.nil?
-
         set_downloaded_source_file(available_quota_in_bytes)
         self
+      end
+
+      # Assumes only will be called for streaming
+      # @return Boolean if retrieved data or has finished
+      def continue_run(available_quota_in_bytes=nil)
+        stream_data = @datasource.stream_resource(@item_metadata[:id])
+        if stream_data.nil?
+          false
+        else
+          store_retrieved_data(@item_metadata[:filename], stream_data, available_quota_in_bytes)
+          true
+        end
       end
 
       def clean_up
@@ -99,6 +114,8 @@ module CartoDB
         name = filename
         raise_if_over_storage_quota(data.size, available_quota_in_bytes)
         self.source_file = SourceFile.new(filepath(name), name)
+        # Delete if exists
+        repository.remove(source_file.path) if repository.respond_to?(:remove)
         repository.store(source_file.path, data)
       end
 

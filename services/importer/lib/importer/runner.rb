@@ -62,6 +62,7 @@ module CartoDB
         tracker.call('unpacking')
         unpacker.run(@downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file|
+          # TODO: Move this stats inside import, for streaming scenarios, or differentiate
           log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
           @stats << {
             type: source_file.extension,
@@ -90,7 +91,23 @@ module CartoDB
 
         tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
-        @loader.run
+
+        if @downloader.provides_stream? && @loader.respond_to?(:streamed_run_init)
+          job.log "Streaming import load"
+          @loader.streamed_run_init
+
+          begin
+            # TODO: Make sure quota check works
+            got_data = @downloader.continue_run(available_quota)
+            @loader.streamed_run_continue(@downloader.source_file) if got_data
+          end while got_data
+
+          @loader.streamed_run_finish
+        else
+          job.log "File-based import load"
+          @loader.run
+        end
+
         job.log "Finished importing data from #{source_file.fullpath}"
 
         job.success_status = true

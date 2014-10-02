@@ -1,5 +1,10 @@
 3.11.14 ()
 - adds stats_tag for all request in the url
+- mobile layout fixes:
+  - small CSS fixes
+	- fixes issues activating legends, layer_selectors and search
+	- setting the force_mobile to false disables the mobile layout
+  - adds specs
 
 3.11.13 (29//09//2014)
 - fixes the scope of the backdrop element in the CSS file

@@ -1,3 +1,6 @@
+3.11.14 ()
+- adds stats_tag for all request in the url
+
 3.11.13 (29//09//2014)
 - fixes the scope of the backdrop element in the CSS file
 

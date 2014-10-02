@@ -87,7 +87,10 @@ div.map {
       div.cartodb-share,
       & > div.cartodb-searchbox,
       div.cartodb-fullscreen,
+      & > div.cartodb-timeslider,
+      & > div.header,
       div.cartodb-zoom,
+      div.cartodb-legend-stack,
       div.cartodb-zoom-info {
         display:none!important;
       }

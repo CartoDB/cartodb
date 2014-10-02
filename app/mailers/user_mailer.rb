@@ -48,7 +48,7 @@ class UserMailer < ActionMailer::Base
   def data_import_finished(user, imported_tables, total_tables)
     @imported_tables = imported_tables
     @total_tables = total_tables
-    @link = "#{user.public_url}#{tables_index_url(only_path:true)}"
+    @link = "#{user.public_url}#{tables_index_path}"
     mail :to => user.email,
          :subject => "Table import finished"
   end

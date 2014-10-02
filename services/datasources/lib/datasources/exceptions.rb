@@ -3,6 +3,10 @@
 module CartoDB
   module Datasources
 
+    # Remember to add new errors to:
+    # config/initializers/carto_db.rb
+    # services/importer/lib/importer/exceptions.rb
+
       class DatasourceBaseError  < StandardError
 
         UNKNOWN_SERVICE = 'UKNOWN'

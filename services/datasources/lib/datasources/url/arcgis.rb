@@ -13,7 +13,7 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'arcgis'
 
-        ARCGIS_API_LIKE_URL_RE = /arcgis\/rest/
+        ARCGIS_API_LIKE_URL_RE = /arcgis\/rest/i
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
@@ -32,6 +32,10 @@ module CartoDB
         # Lots of ids can generate too long urls. This size, with a dozen fields fits up to 6 digit ids
         # @see http://www.iis.net/configreference/system.webserver/security/requestfiltering/requestlimits
         MAX_BLOCK_SIZE = 175
+
+        # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count+1)
+        MAX_RETRIES = 3
+        SLEEP_REQUEST_TIME = 3
 
         # Used to display more data in local
         DEBUG = true
@@ -76,7 +80,8 @@ module CartoDB
         # @return String
         def to_s
           "<CartoDB::Datasources::Url::ArcGis @url=#{@url} @metadata=#{@metadata} @ids_total=#{@ids_total}" +
-          " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update=false)}>"
+          " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update=false)}" +
+          " @requests_count=#{@requests_count}>"
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -123,26 +128,38 @@ module CartoDB
         def stream_resource(id)
           return nil if @ids.empty?
 
+          retries = 0
+
           begin
             ids_block = @ids.slice!(0, [@ids.length, block_size].min)
+
+            puts "#{@ids_retrieved}/#{@ids_total} (#{ids_block.length})" if DEBUG
+
             items = get_by_ids(@url, ids_block, @metadata[:fields])
             @last_stream_status = @current_stream_status
             @current_stream_status = true
+            retries = 0
           rescue ExternalServiceError => exception
-            # Failed too much, can't do anything
-            if @block_size == MIN_BLOCK_SIZE
+            if @block_size == MIN_BLOCK_SIZE && retries >= MAX_RETRIES
               raise exception
             else
               @last_stream_status = @current_stream_status
               @current_stream_status = false
-              # Add back, so next pass will get fewer items
+              # Add back, next pass will get fewer items
               @ids = ids_block + @ids
+
+              if @block_size == MIN_BLOCK_SIZE
+                retries += 1
+                sleep_time = SLEEP_REQUEST_TIME ** (retries+1)
+                puts "Retry delay (#{sleep_time}s)" if DEBUG
+                sleep(sleep_time)
+              end
+
               retry
             end
           end
 
           @ids_retrieved += ids_block.length
-          puts "#{@block_size} , #{@ids_retrieved}/#{@ids_total}" if DEBUG
 
           ::JSON.dump(items)
         end
@@ -151,6 +168,7 @@ module CartoDB
         # @return Hash
         # @throws DataDownloadError
         # @throws ResponseError
+        # @throws InvalidServiceError
         def get_resource_metadata(id)
           @url = sanitize_id(id)
 
@@ -229,6 +247,8 @@ module CartoDB
         # @return String
         # @throws InvalidInputDataError
         def sanitize_id(id)
+          # http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>
+          # <site> is almost always "arcgis" (according to official doc)
 
           unless id =~ ARCGIS_API_LIKE_URL_RE
             raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server")
@@ -286,7 +306,6 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-
           # Doesn't encodes properly even using an external gem, good job Ruby!
           prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(',')).gsub(',','%2C')
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(',')).gsub(',','%2C')
@@ -294,6 +313,8 @@ module CartoDB
           #timestamp = Time.now.to_i
           #prepared_url = FEATURE_DATA_URL_NO_CACHE % [url, "#{timestamp}=#{timestamp}", prepared_ids, prepared_fields]
           prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
+
+          puts "#{prepared_url}" if DEBUG
 
           response = Typhoeus.get(prepared_url, http_options)
 
@@ -350,6 +371,10 @@ module CartoDB
         end
 
         # By default, will update the block size, incrementing or decrementing it according to stream operation results
+        # Block size only gets incremented after 2 successful streams to avoid scenario of:
+        # X items -> FAIL
+        # X/2 items -> PASS
+        # X items -> FAIL (again, because erroring item was at second half of X)
         def block_size(update=true)
           if update
             if @current_stream_status && @last_stream_status && @block_size < MAX_BLOCK_SIZE

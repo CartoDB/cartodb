@@ -82,6 +82,11 @@ div.map {
         right: 15px!important;
       }
 
+      .cartodb-tiles-loader{
+        right: 10px!important;
+        top: 10px!important;
+      }
+
       .cartodb-mobile .cartodb-searchbox,
       .cartodb-mobile .cartodb-header {
         display: block;
@@ -94,6 +99,7 @@ div.map {
       div.cartodb-fullscreen,
       & > div.cartodb-timeslider,
       & > div.header,
+      div.cartodb-logo,
       div.cartodb-zoom,
       div.cartodb-legend-stack,
       div.cartodb-zoom-info {

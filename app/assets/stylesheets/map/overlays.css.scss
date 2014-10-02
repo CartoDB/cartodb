@@ -12,9 +12,25 @@
 
 
 /* Mobile */
+.cartodb-mobile .aside {
+  width: 218px;
+}
 .cartodb-mobile .aside .layer-container .layers h3 {
   color: #fff;
 }
+
+.cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 {
+  @include clearfix();
+}
+.cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 span {
+  @include inline-block();
+  float: left;
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .cartodb-mobile .cartodb-attribution-button {
   z-index: 10001
 }

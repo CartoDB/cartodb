@@ -82,6 +82,11 @@ div.map {
         right: 15px!important;
       }
 
+      .cartodb-mobile .cartodb-searchbox,
+      .cartodb-mobile .cartodb-header {
+        display: block;
+      }
+
       // Overlays hidden in mobile
       div.cartodb-layer-selector-box,
       div.cartodb-share,

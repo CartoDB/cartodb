@@ -15,6 +15,7 @@ describe("cdb.geo.ui.Mobile", function() {
         version: '1.0.0',
         layers: [{
           type: 'cartodb',
+            visible: false,
           options: {
             sql: "select * from european_countries_export",
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
@@ -24,8 +25,8 @@ describe("cdb.geo.ui.Mobile", function() {
           }
         },{
           type: 'cartodb',
-          options: {
             visible: false,
+          options: {
             sql: "select * from jamon_countries",
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
             cartocss_version : '2.0.0',
@@ -34,6 +35,7 @@ describe("cdb.geo.ui.Mobile", function() {
           }
         },{
           type: 'cartodb',
+            visible: true,
           options: {
             sql: "select * from jamon_countries",
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
@@ -58,7 +60,7 @@ describe("cdb.geo.ui.Mobile", function() {
     });
 
     map.layers = new cdb.geo.Layers([l1, layerGroup]);
-    
+
     template = cdb.core.Template.compile('\<div class="backdrop"></div>\
           <div class="cartodb-header">\
           <div class="content">\
@@ -328,7 +330,7 @@ describe("cdb.geo.ui.Mobile", function() {
     it("should render only the layers with legends", function() {
       mobile.render();
       expect(mobile.$el.hasClass("with-layers")).toBe(true);
-      expect(mobile.$el.find(".layers > li h3").length).toBe(0);
+      expect(mobile.$el.find(".layers > li h3").length).toBe(0); // don't show titles
       expect(mobile.$el.find(".layers > li").length).toBe(1);
       expect(mobile.$el.find(".layer-container h3").text()).toBe("1 layer");
     });

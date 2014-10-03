@@ -650,6 +650,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     // When the layer selector is disabled, don't show the layer if it doesn't have legends
     if (!this.hasLayerSelector && !hasLegend) return;
+    if (!this.hasLayerSelector && !data.get("visible")) return;
 
     var hide_toggle = (this.layers.length == 1 || !this.hasLayerSelector);
 

@@ -390,7 +390,7 @@ class DataImport < Sequel::Model
 
     store_results(importer, runner, datasource_provider, manual_fields)
 
-    importer.success?
+    importer.nil? ? false : importer.success?
   end
 
   # Note: Assumes that if importer is nil an error happened

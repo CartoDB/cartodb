@@ -52,6 +52,16 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
+      # @param id String
+      # @param subresource_id String
+      # @return Hash
+      # @throws DataDownloadError
+      # @throws ResponseError
+      # @throws InvalidServiceError
+      def get_subresource_metadata(id, subresource_id)
+        raise 'To be implemented in child classes'
+      end
+
       # @param id string
       # @return Hash
       def get_resource_metadata(id)
@@ -117,6 +127,13 @@ module CartoDB
       # @param component mixed
       def report_component=(component)
         raise 'To be implemented in child classes'
+      end
+
+      # If true, a single resource id might return >1 subresources (each one spawning a table)
+      # @param id String
+      # @return Bool
+      def multi_resource_import_supported?(id)
+        false
       end
 
       private_class_method :new

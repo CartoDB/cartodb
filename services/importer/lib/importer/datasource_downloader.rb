@@ -102,14 +102,21 @@ module CartoDB
         false
       end
 
-      attr_reader  :source_file
+      # @return Bool
+      def multi_resource_import_supported?
+        @datasource.multi_resource_import_supported?(@item_metadata[:id])
+      end
+
+      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
 
       private
       
-      attr_reader :repository
       attr_writer :source_file
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
+        # Skip storing if no data came in
+        return if resource_data.empty?
+
         data = StringIO.new(resource_data)
         name = filename
         raise_if_over_storage_quota(data.size, available_quota_in_bytes)

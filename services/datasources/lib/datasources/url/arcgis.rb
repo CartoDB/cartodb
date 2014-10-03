@@ -17,9 +17,8 @@ module CartoDB
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
-        # TODO: See if this is needed or we can assume client has at least 10.1 SP1
-        #FEATURE_DATA_URL_NOCACHE = '%s/query?where=%s&objectIds=%s&outFields=%s&outSR=4326&f=json'
         FEATURE_DATA_URL = '%s/query?objectIds=%s&outFields=%s&outSR=4326&f=json'
+        LAYERS_URL       = '%s/layers?f=json'
 
         MINIMUM_SUPPORTED_VERSION = 10.1
 
@@ -34,11 +33,12 @@ module CartoDB
         MAX_BLOCK_SIZE = 175
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count+1)
-        MAX_RETRIES = 3
+        MAX_RETRIES = 1
         SLEEP_REQUEST_TIME = 3
+        SKIP_FAILED_IDS = true
 
-        # Used to display more data in local
-        DEBUG = true
+        # Used to display more data only (for local debugging purposes)
+        DEBUG = false
 
         attr_reader :metadata
 
@@ -108,7 +108,8 @@ module CartoDB
         # @param id string
         # @return String
         def initial_stream(id)
-          @url = sanitize_id(id)
+          sub_id = get_subresource_id(id)
+          @url = sanitize_id(id, sub_id)
 
           @ids = get_ids_list(@url)
 
@@ -129,7 +130,6 @@ module CartoDB
           return nil if @ids.empty?
 
           retries = 0
-
           begin
             ids_block = @ids.slice!(0, [@ids.length, block_size].min)
 
@@ -141,7 +141,11 @@ module CartoDB
             retries = 0
           rescue ExternalServiceError => exception
             if @block_size == MIN_BLOCK_SIZE && retries >= MAX_RETRIES
-              raise exception
+              if SKIP_FAILED_IDS
+                items = []
+              else
+                raise exception
+              end
             else
               @last_stream_status = @current_stream_status
               @current_stream_status = false
@@ -161,7 +165,7 @@ module CartoDB
 
           @ids_retrieved += ids_block.length
 
-          ::JSON.dump(items)
+          items.length > 0 ? ::JSON.dump(items) : ''
         end
 
         # @param id string
@@ -170,51 +174,17 @@ module CartoDB
         # @throws ResponseError
         # @throws InvalidServiceError
         def get_resource_metadata(id)
-          @url = sanitize_id(id)
-
-          response = Typhoeus.get(METADATA_URL % [@url], http_options)
-          raise DataDownloadError.new("#{METADATA_URL % [@url]} (#{response.code}) : #{response.body}") \
-            if response.code != 200
-
-          # non-rails symbolize keys
-          data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-
-          raise ResponseError.new("Missing data: 'fields'") if data[:fields].nil?
-
-          begin
-            @metadata = {
-              arcgis_version:             data.fetch(:currentVersion),
-              name:                       data.fetch(:name),
-              description:                data.fetch(:description),
-              type:                       data.fetch(:type),
-              geometry_type:              data.fetch(:geometryType),
-              copyright:                  data.fetch(:copyrightText),
-              fields:                     data.fetch(:fields).map{ |field|
-                                                                    {
-                                                                      name: field['name'],
-                                                                      type: field['type']
-                                                                    }
-                                                                  },
-              max_records_per_query:      data.fetch(:maxRecordCount, 500),
-              supported_formats:          data.fetch(:supportedQueryFormats).gsub(' ', '').split(','),
-              advanced_queries_supported: data.fetch(:supportsAdvancedQueries)
+          if is_multiresource?(id)
+            @url = sanitize_id(id)
+            {
+              # Store original id, not the sanitized one
+              id:           id,
+              subresources: get_layers_list(@url)
             }
-          rescue => exception
-            raise ResponseError.new("Missing data: #{exception}")
+          else
+            sub_id = get_subresource_id(id)
+            get_subresource_metadata(id, sub_id)
           end
-
-          raise InvalidServiceError.new("Unsupported ArcGIS version #{@metadata[:arcgis_Version]}, must be >= #{MINIMUM_SUPPORTED_VERSION}") \
-            if @metadata[:arcgis_version] < MINIMUM_SUPPORTED_VERSION
-
-          {
-              id:       id,
-              title:    @metadata[:name],
-              url:      nil,
-              service:  DATASOURCE_NAME,
-              checksum: nil,
-              size:     0,
-              filename: filename_from(@metadata[:name])
-          }
         end
 
         # Retrieves current filters. Unused as here there's no get_resources_list
@@ -241,36 +211,129 @@ module CartoDB
           nil
         end
 
+        # If true, a single resource id might return >1 subresources (each one spawning a table)
+        # @param id String
+        # @return Bool
+        def multi_resource_import_supported?(id)
+          is_multiresource?(id)
+        end
+
         private
 
         # @param id String
+        # @param subresource_id String
+        # @return Hash
+        # @throws DataDownloadError
+        # @throws ResponseError
+        # @throws InvalidServiceError
+        def get_subresource_metadata(id, subresource_id)
+          @url = sanitize_id(id, subresource_id)
+
+          response = Typhoeus.get(METADATA_URL % [@url], http_options)
+          raise DataDownloadError.new("#{METADATA_URL % [@url]} (#{response.code}) : #{response.body}") \
+            if response.code != 200
+
+          # non-rails symbolize keys
+          data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+
+          raise ResponseError.new("Missing data: 'fields'") if data[:fields].nil?
+
+          begin
+            @metadata = {
+              arcgis_version:             data.fetch(:currentVersion),
+              name:                       data.fetch(:name),
+              description:                data.fetch(:description),
+              type:                       data.fetch(:type),
+              geometry_type:              data.fetch(:geometryType),
+              copyright:                  data.fetch(:copyrightText),
+              fields:                     data.fetch(:fields).map{ |field|
+                {
+                  name: field['name'],
+                  type: field['type']
+                }
+              },
+              max_records_per_query:      data.fetch(:maxRecordCount, 500),
+              supported_formats:          data.fetch(:supportedQueryFormats).gsub(' ', '').split(','),
+              advanced_queries_supported: data.fetch(:supportsAdvancedQueries)
+            }
+          rescue => exception
+            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+          end
+
+          raise InvalidServiceError.new("Unsupported ArcGIS version #{@metadata[:arcgis_Version]}, must be >= #{MINIMUM_SUPPORTED_VERSION}") \
+            if @metadata[:arcgis_version] < MINIMUM_SUPPORTED_VERSION
+
+          {
+            id:       id,
+            title:    @metadata[:name],
+            url:      nil,
+            service:  DATASOURCE_NAME,
+            checksum: nil,
+            size:     0,
+            filename: filename_from(@metadata[:name])
+          }
+        end
+
+        # Just detects if id is a full map or a specific layer
+        # @param id String
+        # @return Bool
+        def is_multiresource?(id)
+          (id =~ /([0-9])+$/).nil?
+        end
+
+        def get_subresource_id(id)
+          id.match(/([0-9])+$/)[0]
+        end
+
+        # @param id String
+        # @param sub_id String|nil
         # @return String
         # @throws InvalidInputDataError
-        def sanitize_id(id)
-          # http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>
+        def sanitize_id(id, sub_id=nil)
+          # http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/
           # <site> is almost always "arcgis" (according to official doc)
-
           unless id =~ ARCGIS_API_LIKE_URL_RE
             raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server")
           end
 
-          # No query params
-          unless id.index('?').nil?
-            id = id.split('?').first
-          end
-
-          # If no layer specified, craft retrieval of first
-          if (id =~ /([0-9])+$/).nil?
-            unless id =~ /\/$/
-              id += '/'
+          if is_multiresource?(id)
+            if sub_id.nil?
+              id = id.slice(0, id.rindex('/') + 1)
+            else
+              id = id + sub_id
             end
-            unless id =~ /\/MapServer\/$/
-              id += 'MapServer/'
-            end
-            id += '0'
           end
 
           id
+        end
+
+        # @return Array [ { :id, :title} ]
+        # @throws DataDownloadError
+        # @throws ResponseError
+        def get_layers_list(url)
+          response = Typhoeus.get(LAYERS_URL % [url], http_options)
+          raise DataDownloadError.new("#{FEATURE_IDS_URL % [url]} (#{response.code}) : #{response.body}") \
+            if response.code != 200
+
+          begin
+            data = ::JSON.parse(response.body).fetch('layers')
+          rescue => exception
+            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+          end
+
+          raise ResponseError.new("Empty layers list") if data.length == 0
+
+          begin
+            data.collect { |item|
+              {
+                # Leave prepared all child urls
+                id: url + item.fetch('id').to_s,
+                title: item.fetch('name')
+              }
+            }
+          rescue => exception
+            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+          end
         end
 
         # NOTE: Assumes url is valid
@@ -286,7 +349,7 @@ module CartoDB
           begin
             data = ::JSON.parse(response.body).fetch('objectIds')
           rescue => exception
-            raise ResponseError.new("Missing data: #{exception}")
+            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
           end
 
           raise ResponseError.new("Empty ids list") if data.length == 0
@@ -310,8 +373,6 @@ module CartoDB
           prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(',')).gsub(',','%2C')
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(',')).gsub(',','%2C')
 
-          #timestamp = Time.now.to_i
-          #prepared_url = FEATURE_DATA_URL_NO_CACHE % [url, "#{timestamp}=#{timestamp}", prepared_ids, prepared_fields]
           prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
 
           puts "#{prepared_url}" if DEBUG
@@ -319,10 +380,12 @@ module CartoDB
           response = Typhoeus.get(prepared_url, http_options)
 
           # Timeout connecting to ArcGIS
-          raise ExternalServiceError.new("#{prepared_url} : #{response.body}") if response.code == 0
-
-          raise DataDownloadError.new("#{prepared_url} (#{response.code}) : #{response.body}") \
-            if response.code != 200
+          if response.code == 0
+            raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.body} #{self.to_s}")
+          end
+          if response.code != 200
+            raise DataDownloadError.new("ERROR: #{prepared_url} (#{response.code}) : #{response.body} #{self.to_s}")
+          end
 
           begin
             body = ::JSON.parse(response.body)
@@ -349,7 +412,7 @@ module CartoDB
             spatial_reference = body.fetch('spatialReference')
             retrieved_items = body.fetch('features')
           rescue => exception
-            raise ResponseError.new("Missing data: #{exception}")
+            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
           end
           raise ResponseError.new("'fields' empty or invalid") if (retrieved_fields.nil? || retrieved_fields.length == 0)
           raise ResponseError.new("'features' empty or invalid") if (retrieved_items.nil? || retrieved_items.length == 0)
@@ -407,6 +470,9 @@ module CartoDB
         end
 
       end
+    end
+
+    class URLTooLargeError < StandardError
     end
   end
 end

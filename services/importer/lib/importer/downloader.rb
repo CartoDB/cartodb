@@ -196,6 +196,10 @@ module CartoDB
         last_modified
       end
 
+      def multi_resource_import_supported?
+        false
+      end
+
       attr_reader   :source_file, :etag, :last_modified
       attr_accessor :url
 

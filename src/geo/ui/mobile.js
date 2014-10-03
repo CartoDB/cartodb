@@ -199,11 +199,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     ev.preventDefault();
 
     var doc   = window.document;
-    var docEl = doc.documentElement;
-
-    if (this.options.doc) { // we use a custom element
-      docEl = $(this.options.doc)[0];
-    }
+    var docEl = $("#map > div")[0];
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
     var cancelFullScreen  = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;

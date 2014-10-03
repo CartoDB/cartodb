@@ -121,7 +121,7 @@ describe("cdb.geo.ui.Mobile", function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          searchControl: false,
+          search: false,
           legends: true,
           layer_selector: true
         }
@@ -223,7 +223,7 @@ describe("cdb.geo.ui.Mobile", function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          searchControl:false,
+          search:false,
           legends: false,
           layer_selector: false
         }
@@ -307,7 +307,7 @@ describe("cdb.geo.ui.Mobile", function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          searchControl: false,
+          search: false,
           legends: true,
           layer_selector: false
         }
@@ -387,7 +387,7 @@ describe("cdb.geo.ui.Mobile", function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          searchControl: false,
+          search: false,
           legends: false,
           layer_selector: true
         }
@@ -460,7 +460,7 @@ describe("cdb.geo.ui.Mobile", function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          searchControl:true,
+          search:true,
           legends: false,
           layer_selector: false
         }

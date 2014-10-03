@@ -132,6 +132,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
+    this._addWheelEvent();
+
+  },
+
+  _addWheelEvent: function() {
+
+      var self    = this;
+      var mapView = this.options.mapView;
+
+      $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+
+        if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+          mapView.options.map.set("scrollwheel", false);
+        }
+
+        mapView.invalidateSize();
+
+      });
+
   },
 
   _setupModel: function() {
@@ -212,9 +231,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       if (mapView) {
 
-        if (this.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", true);
-        }
+        mapView.options.map.set("scrollwheel", true);
 
       }
 
@@ -428,8 +445,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     _.each(this.overlays, function(overlay) {
 
-      if (!this.visibility_options.searchControl && overlay.type == 'search') {
-        if (this.visibility_options.searchControl !== false && this.visibility_options.searchControl !== "false") {
+      if (!this.visibility_options.search && overlay.type == 'search') {
+        if (this.visibility_options.search !== false && this.visibility_options.search !== "false") {
           this._addSearch();
           hasSearchOverlay = true;
         }
@@ -456,7 +473,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
-    var search_visibility = this.visibility_options.searchControl === "true" || this.visibility_options.searchControl === true;
+    var search_visibility = this.visibility_options.search === "true" || this.visibility_options.search === true;
     var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl === true;
     var layer_selector_visibility  = this.visibility_options.layer_selector;
 

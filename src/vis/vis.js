@@ -706,7 +706,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
-    if (!this.mobile_enabled && (opt.search || opt.searchControl)) {
+    if (!this.mobile_enabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search"

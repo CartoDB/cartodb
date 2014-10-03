@@ -17,6 +17,14 @@
 }
 .cartodb-mobile .aside .layer-container .layers h3 {
   color: #fff;
+  cursor: pointer;
+}
+.cartodb-mobile .cartodb-legend ul {
+  min-width: 170px;
+}
+.cartodb-mobile .cartodb-attribution {
+  max-width: 150px;
+  font:11px/1 "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
 .cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 {

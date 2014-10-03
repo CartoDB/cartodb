@@ -23,7 +23,7 @@ module CartoDB
         MINIMUM_SUPPORTED_VERSION = 10.1
 
         # In seconds and for the full request
-        HTTP_TIMEOUT = 90
+        HTTP_TIMEOUT = 60
 
         # Amount to multiply or divide
         BLOCK_FACTOR = 2
@@ -32,8 +32,8 @@ module CartoDB
         # @see http://www.iis.net/configreference/system.webserver/security/requestfiltering/requestlimits
         MAX_BLOCK_SIZE = 175
 
-        # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count+1)
-        MAX_RETRIES = 1
+        # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying
+        MAX_RETRIES = 0
         SLEEP_REQUEST_TIME = 3
         SKIP_FAILED_IDS = true
 
@@ -154,7 +154,7 @@ module CartoDB
 
               if @block_size == MIN_BLOCK_SIZE
                 retries += 1
-                sleep_time = SLEEP_REQUEST_TIME ** (retries+1)
+                sleep_time = SLEEP_REQUEST_TIME ** retries
                 puts "Retry delay (#{sleep_time}s)" if DEBUG
                 sleep(sleep_time)
               end

@@ -1,6 +1,6 @@
 3.2.4 (2014-XX-XX)
 ------------------
-* ArcGIS import integration
+* ArcGIS import integration (includes new app_config.yml values)
 
 3.2.3 (2014-09-30)
 ------------------

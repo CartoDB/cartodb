@@ -25,6 +25,7 @@ describe("cdb.geo.ui.Mobile", function() {
         },{
           type: 'cartodb',
           options: {
+            visible: false,
             sql: "select * from jamon_countries",
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
             cartocss_version : '2.0.0',

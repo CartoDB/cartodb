@@ -631,11 +631,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
-  _renderLayer: function(layer_data) {
+  _renderLayer: function(data) {
 
-    var hasLegend = layer_data.get("legend") && (layer_data.get("legend").type !== "none" || layer_data.get("legend").type);
+    var hasLegend = data.get("legend") && data.get("legend").type !== "" && data.get("legend").type !== "none";
 
-    // When the layer selector is disabled, don't show the layers that don't have legends
+    // When the layer selector is disabled, don't show the layer if it doesn't have legends
     if (!this.hasLayerSelector && !hasLegend) return;
 
     var hide_toggle = (this.layers.length == 1 || !this.hasLayerSelector);
@@ -647,7 +647,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     }
 
     var layer = new cdb.geo.ui.MobileLayer({ 
-      model: layer_data,
+      model: data,
       show_legends: show_legends,
       show_title: !this.hasLayerSelector ? false : true,
       hide_toggle: hide_toggle 

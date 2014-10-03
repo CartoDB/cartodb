@@ -19,7 +19,11 @@
   color: #fff;
   cursor: pointer;
 }
-.cartodb-mobile .cartodb-legend ul {
+
+.cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.bubble ul li {
+  margin: 0;
+}
+.cartodb-mobile .layers .cartodb-mobile-layer .cartodb-legend ul {
   min-width: 170px;
 }
 .cartodb-mobile .cartodb-attribution {

@@ -2,6 +2,9 @@
 ------------------
 * New features
   * Upon table creation no tile style call performed anymore. Still done upon layer/map change, though.
+  * Send an email upon completion of an import if it takes more than 5 minutes.
+* Fixed bugs
+  * Geocoding a table with 0 geocodificable rows throws error
 
 3.2.3 (2014-09-30)
 ------------------

@@ -129,7 +129,8 @@ describe Map do
   describe '#after_save' do
     it 'invalidates varnish cache' do
       map = @table.map
-      map.expects(:invalidate_vizjson_varnish_cache)
+      # One per save, one per destroy
+      map.expects(:invalidate_vizjson_varnish_cache).twice()
       map.save
       map.destroy
     end

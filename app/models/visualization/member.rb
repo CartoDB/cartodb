@@ -177,6 +177,7 @@ module CartoDB
       def name=(name)
         name = name.downcase if name && table?
         self.name_changed = true if name != @name && !@name.nil?
+        self.old_name = @name
         super(name)
       end
 
@@ -376,7 +377,7 @@ module CartoDB
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed, :description_changed, :permission_change_valid
+      attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
 
       def do_store(propagate_changes=true)
         if password_protected?
@@ -473,7 +474,7 @@ module CartoDB
       end
 
       def propagate_privacy_and_name_to(table)
-        return self unless table
+        raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
         propagate_privacy_to(table) if privacy_changed
         propagate_name_to(table)    if name_changed
       end
@@ -492,6 +493,16 @@ module CartoDB
         table.name = self.name
         table.update(name: self.name)
         self
+      rescue => exception
+        revert_name_change(old_name) if name_changed
+        raise CartoDB::InvalidMember.new(exception.to_s)
+      end
+
+      def revert_name_change(previous_name)
+        self.name = previous_name
+        store
+      rescue => exception
+        raise CartoDB::InvalidMember.new(exception.to_s)
       end
 
       def set_timestamps

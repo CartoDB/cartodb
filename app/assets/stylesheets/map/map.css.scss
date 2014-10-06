@@ -34,6 +34,20 @@ div.map.animated .cartodb-map {
 
 div.map {
 
+  &.mobile div.editing {
+    top: 10px;
+    margin-left: -68px;
+    z-index: 1000000;
+
+    span.tooltip {
+      width:270px;
+      left:-68px;
+    }
+    span.tooltip p {
+      font-size: 11px;
+    }
+  }
+
   &.table { // TABLE'S MAP
 
     div.cartodb-legend-stack {

@@ -34,6 +34,10 @@ div.map.animated .cartodb-map {
 
 div.map {
 
+  &.mobile #cartodb-gmaps-attribution {
+    display: none;
+  }
+
   &.mobile div.editing {
     top: 10px;
     margin-left: -68px;

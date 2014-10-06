@@ -521,7 +521,6 @@ class Table < Sequel::Model(:user_tables)
     super
     self.create_default_map_and_layers
     self.create_default_visualization
-    self.send_tile_style_request
 
     grant_select_to_tiler_user
     set_default_table_privacy
@@ -635,11 +634,15 @@ class Table < Sequel::Model(:user_tables)
   #
   def send_tile_style_request(data_layer=nil)
     data_layer ||= self.map.data_layers.first
-    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {
+    url = "/tiles/#{self.name}/style?map_key=#{owner.api_key}"
+    data = {
       'style_version' => data_layer.options['style_version'],
       'style'         => data_layer.options['tile_style']
-    })
+    }
+    tile_request('POST', url, data)
   rescue => exception
+    CartoDB::Logger.info('Table#send_tile_style_request Error', \
+      "Error sending tile request: #{url} #{data} #{exception}")
     raise exception if Rails.env.production? || Rails.env.staging?
   end
 

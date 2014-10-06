@@ -1,3 +1,26 @@
+3.2.4 (2014-xx-xx)
+------------------
+* New features
+  * Upon table creation no tile style call performed anymore. Still done upon layer/map change, though.
+  * Send an email upon completion of an import if it takes more than 5 minutes.
+* Fixed bugs
+  * Geocoding a table with 0 geocodificable rows throws error
+
+3.2.3 (2014-09-30)
+------------------
+* New features
+  * Added ability to disable high resolution geocoding batch api by config 
+* Fixed bugs
+  * Missing geocoding type (Admin regions, country column, polygons)
+
+3.2.2 (2014-09-29)
+------------------
+* New features
+  * Improved torque rendering on pause or static datasets
+  * Improved mobile layout
+  * Improved Geocoder UI
+  * Refactor of InternalGeocoder
+
 3.2.1 (2014-09-05)
 ------------------
 * New common data section

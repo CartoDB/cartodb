@@ -10,7 +10,7 @@ class Geocoding < Sequel::Model
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota]
+                       :used_credits, :remaining_quota, :country_column]
 
   many_to_one :user
   many_to_one :table
@@ -51,7 +51,7 @@ class Geocoding < Sequel::Model
   end
 
   def table_geocoder
-    geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder)
+    geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder::Geocoder)
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
       table_schema:  table.try(:database_schema),
       table_name:    table.try(:name),
@@ -63,7 +63,8 @@ class Geocoding < Sequel::Model
       countries:     country_code,
       geometry_type: geometry_type,
       kind:          kind,
-      max_rows:      max_geocodable_rows
+      max_rows:      max_geocodable_rows,
+      country_column: country_column
     )
     @table_geocoder ||= geocoder_class.new(config)
   end # table_geocoder
@@ -79,6 +80,11 @@ class Geocoding < Sequel::Model
   def run!
     self.update state: 'started', processable_rows: self.class.processable_rows(table)
     rows_geocoded_before = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
+    if processable_rows == 0
+      self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
+      self.report
+      return
+    end
     table_geocoder.run
     self.update remote_id: table_geocoder.remote_id
     started = Time.now
@@ -177,6 +183,7 @@ class Geocoding < Sequel::Model
 
   def metrics_payload(exception = nil)
     payload = {
+      created_at:       created_at,
       distinct_id:      user.username,
       username:         user.username,
       email:            user.email,

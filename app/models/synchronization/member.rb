@@ -18,7 +18,7 @@ module CartoDB
     class Member
       include Virtus.model
 
-      MAX_RETRIES     = 5
+      MAX_RETRIES     = 10
 
       # Seconds required between manual sync now
       SYNC_NOW_TIMESPAN = 900
@@ -111,7 +111,7 @@ module CartoDB
 
       # @return bool
       def can_manually_sync?
-        self.state == STATE_SUCCESS && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
+        (self.state == STATE_SUCCESS || self.state == STATE_FAILURE) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
       end #can_manually_sync?
 
       # @return bool

@@ -78,9 +78,11 @@
       </div>
       <div class="cartodb-text">
         Map created by
-        <% username = @visualization.user.name || @visualization.user.username %>
+        <% username = @visualization.user.name.blank? ? @visualization.user.username : @visualization.user.name %>
         <a class="user" href="<%= @visualization.user.public_url %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
-          <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
+          <% if !@visualization.user.avatar_url.blank? %>
+            <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
+          <% end %>
           <span class="username"><%= username %></span>
         </a>
       </div>
@@ -173,6 +175,7 @@
         };
 
         var opt = get_url_params({
+          'force_mobile': bool_fn,
           'search':       bool_fn,
           'title':        bool_fn,
           'description':  bool_fn,
@@ -201,9 +204,7 @@
             opt.cartodb_logo = false;
          <% end %>
 
-
          opt.mobile_layout = true;
-         opt.force_mobile  = $(window).width() < 620;
 
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",

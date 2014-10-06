@@ -158,13 +158,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError
     head(404)
   rescue CartoDB::InvalidMember
-    render_jsonp({ errors: vis.full_errors }, 400)
+    render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
     render_jsonp({ errors: { named_maps: exception } }, 400)
+  rescue
+    render_jsonp({ errors: ['Unknown error'] }, 400)
   end
 
   def destroy

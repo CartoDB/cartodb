@@ -6,19 +6,19 @@ module CartoDB
   class TablePrivacyManager
     def initialize(table)
       @table  = table
-    end #initialize
+    end
 
     def set_public
       self.privacy = ::Table::PRIVACY_PUBLIC
       set_database_permissions(grant_query)
       self
-    end #set_public
+    end
 
     def set_private
       self.privacy = ::Table::PRIVACY_PRIVATE
       set_database_permissions(revoke_query)
       self
-    end #set_private
+    end
 
     def set_from_table_privacy(table_privacy)
       case table_privacy
@@ -29,7 +29,7 @@ module CartoDB
         else
           set_private
       end
-    end #set_from_table_privacy
+    end
 
     def set_from(visualization)
       set_public                if visualization.public?
@@ -37,7 +37,7 @@ module CartoDB
       set_private               if visualization.private? or visualization.organization?
       table.update(privacy: privacy)
       self
-    end #set_from
+    end
 
     def propagate_to(visualization)
       visualization.store_using_table({
@@ -45,7 +45,7 @@ module CartoDB
                                         map_id: visualization.map_id
                                       })
       self
-    end #propagate_to
+    end
 
     def privacy_for_redis
       case @table.privacy
@@ -54,7 +54,7 @@ module CartoDB
         else
           ::Table::PRIVACY_PRIVATE
       end
-    end #privacy_for_redis
+    end
 
     def propagate_to_redis_and_varnish
       raise 'table privacy cannot be nil' unless privacy
@@ -62,7 +62,7 @@ module CartoDB
       $tables_metadata.hset redis_key, 'privacy', privacy_for_redis
       invalidate_varnish_cache
       self
-    end #propagate_to_redis_and_varnish
+    end
 
     private
 
@@ -72,29 +72,29 @@ module CartoDB
     def set_public_with_link_only
       self.privacy = ::Table::PRIVACY_LINK
       set_database_permissions(grant_query)
-    end #set_public_with_link_only
+    end
 
     def owner
       @owner ||= User.where(id: table.user_id).first
-    end #owner
+    end
 
     def set_database_permissions(query)
       owner.in_database(as: :superuser).run(query)
-    end #set_database_permissions
+    end
 
     def revoke_query
       %Q{
         REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
-    end #revoke_query
+    end
 
     def grant_query
       %Q{
         GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
         TO #{CartoDB::PUBLIC_DB_USER};
       }
-    end #grant_query
+    end
 
     def invalidate_varnish_cache
       Varnish.new.purge("#{varnish_key}")
@@ -106,7 +106,7 @@ module CartoDB
       else
         "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
       end
-    end #varnish_key
+    end
 
     def redis_key
       "rails:#{table.owner.database_name}:#{owner.database_schema}.#{table.name}"

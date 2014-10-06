@@ -1,15 +1,15 @@
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
-    'click':    "_toggle",
+    'click h3':    "_toggle",
     "dblclick":  "_stopPropagation"
   },
 
   tagName: "li",
 
-  className: "cartodb-mobile-layer",
+  className: "cartodb-mobile-layer has-toggle",
 
-  template: cdb.core.Template.compile("<h3><%= layer_name %><a href='#' class='toggle<%= toggle_class %>'></a></h3>"),
+  template: cdb.core.Template.compile("<% if (show_title) { %><h3><%= layer_name %><% } %><a href='#' class='toggle<%= toggle_class %>'></a></h3>"),
 
   /**
    *  Stop event propagation
@@ -76,13 +76,15 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
     var attributes = _.extend(
       this.model.attributes,
       {
-        layer_name: layer_name,
+        layer_name:   this.options.show_title ? layer_name : "",
         toggle_class: this.options.hide_toggle ? " hide" : ""
       }
     );
 
-    this.$el.html(this.template(attributes));
+    this.$el.html(this.template(_.extend(attributes, { show_title: this.options.show_title } )));
 
+
+    if (this.options.hide_toggle)   this.$el.removeClass("has-toggle");
     if (!this.model.get("visible")) this.$el.addClass("hidden");
     if (this.model.get("legend"))   this._renderLegend();
 
@@ -107,6 +109,60 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     "mousedown .aside":                  "_checkOrigin",
     "touchstart .aside":                 "_checkOrigin",
     "MSPointerDown .aside":              "_checkOrigin",
+  },
+
+  initialize: function() {
+
+    _.bindAll(this, "_toggle", "_reInitScrollpane");
+
+    _.defaults(this.options, this.default_options);
+
+    this.hasLayerSelector = false;
+    this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    this.visibility_options = this.options.visibility_options || {};
+
+    this.mapView  = this.options.mapView;
+    this.map      = this.mapView.map;
+
+    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
+    this.overlays = this.options.overlays;
+
+    this._setupModel();
+
+    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+
+    this._addWheelEvent();
+
+  },
+
+  _addWheelEvent: function() {
+
+      var self    = this;
+      var mapView = this.options.mapView;
+
+      $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+
+        if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+          mapView.options.map.set("scrollwheel", false);
+        }
+
+        mapView.invalidateSize();
+
+      });
+
+  },
+
+  _setupModel: function() {
+
+    this.model = new Backbone.Model({
+      open: false,
+      layer_count: 0
+    });
+
+    this.model.on("change:open", this._onChangeOpen, this);
+    this.model.on("change:layer_count", this._onChangeLayerCount, this);
+
   },
 
   /**
@@ -162,11 +218,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     ev.preventDefault();
 
     var doc   = window.document;
-    var docEl = doc.documentElement;
-
-    if (this.options.doc) { // we use a custom element
-      docEl = $(this.options.doc)[0];
-    }
+    var docEl = $("#map > div")[0];
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
     var cancelFullScreen  = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
@@ -179,9 +231,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       if (mapView) {
 
-        if (this.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", true);
-        }
+        mapView.options.map.set("scrollwheel", true);
 
       }
 
@@ -254,29 +304,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
-  initialize: function() {
+  _onChangeLayerCount: function() {
 
-    _.bindAll(this, "_toggle", "_reInitScrollpane");
-
-    _.defaults(this.options, this.default_options);
-
-    this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    this.visibility_options = this.options.visibility_options || {};
-
-    this.mapView = this.options.mapView;
-    this.map     = this.mapView.map;
-
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-    this.overlays = this.options.overlays;
-
-    this.model = new Backbone.Model({
-      open: false
-    });
-
-    this.model.on("change:open", this._onChangeOpen, this);
-
-    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+    var layer_count = this.model.get("layer_count");
+    var msg = layer_count + " layer" + (layer_count != 1 ? "s" : "");
+    this.$el.find(".aside .layer-container > h3").html(msg);
 
   },
 
@@ -407,61 +439,47 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderOverlays: function() {
 
-    var hasSearchOverlay = false;
-    var hasZoomOverlay   = false;
+    var hasSearchOverlay  = false;
+    var hasZoomOverlay    = false;
+    var hasLayerSelector  = false;
 
     _.each(this.overlays, function(overlay) {
 
-      if (!this.visibility_options.searchControl && overlay.type == 'search') {
-        if (this.visibility_options.searchControl !== "false") {
-          this._addSearch(overlay);
+      if (!this.visibility_options.search && overlay.type == 'search') {
+        if (this.visibility_options.search !== false && this.visibility_options.search !== "false") {
+          this._addSearch();
           hasSearchOverlay = true;
         }
       }
 
       if (!this.visibility_options.zoomControl && overlay.type == 'zoom') {
         if (this.visibility_options.zoomControl !== "false") {
-          this._addZoom(overlay);
+          this._addZoom();
           hasZoomOverlay = true;
         }
       }
 
       if (overlay.type == 'fullscreen' && !this.mobileEnabled) {
-        this._addFullscreen(overlay);
+        this._addFullscreen();
       }
 
       if (overlay.type == 'header') {
         this._addHeader(overlay);
       }
 
+      if (overlay.type == 'layer_selector') {
+        hasLayerSelector = true;
+      }
+
     }, this);
 
-    var search_visibility = this.visibility_options.searchControl === "true" || this.visibility_options.searchControl === true;
-    var zoom_visibility   = this.visibility_options.zoomControl   === "true" || this.visibility_options.zoomControl   === true;
+    var search_visibility = this.visibility_options.search === "true" || this.visibility_options.search === true;
+    var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl === true;
+    var layer_selector_visibility  = this.visibility_options.layer_selector;
 
     if (!hasSearchOverlay && search_visibility) this._addSearch();
     if (!hasZoomOverlay   && zoom_visibility) this._addZoom();
-
-  },
-
-  render:function() {
-
-    this._bindOrientationChange();
-
-    this.$el.html(this.template(this.options));
-
-    this._renderOverlays();
-
-    this._addAttributions();
-
-    this.$header = this.$el.find(".cartodb-header");
-    this.$header.show();
-
-    this._getLayers();
-    this._renderLayers();
-    this._renderTorque();
-
-    return this;
+    if (layer_selector_visibility || hasLayerSelector && layer_selector_visibility == undefined) this.hasLayerSelector = true;
 
   },
 
@@ -481,7 +499,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
-  _addZoom: function(overlay) {
+  _addZoom: function() {
 
     var template = cdb.core.Template.compile('\
     <a href="#zoom_in" class="zoom_in">+</a>\
@@ -523,7 +541,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var search = new cdb.geo.ui.Search({
       template: template,
-      model: this.options.map
+      model: this.mapView.map
     });
 
     this.$el.find(".aside").prepend(search.render().$el);
@@ -535,26 +553,40 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   _addHeader: function(overlay) {
 
     this.hasHeader = true;
+
     this.$header = this.$el.find(".cartodb-header");
+
+    var title_template = _.template('<div class="hgroup"><% if (show_title) { %><div class="title"><%= title %></div><% } %><% if (show_description) { %><div class="description"><%= description %><% } %></div></div>');
 
     var extra = overlay.options.extra;
     var has_header = false;
+    var show_title = false, show_description = false;
 
     if (extra) {
-      this.$title  = this.$header.find(".title").html(extra.title);
-      this.$description  = this.$header.find(".description").html(extra.description);
 
       if (this.visibility_options.title || this.visibility_options.title != false && extra.show_title)      {
-        this.$title.show();
         has_header = true;
+        show_title = true;
       }
-      if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
-        this.$description.show();
-        has_header = true;
-      }
-    }
 
-    if (has_header) this.$el.addClass("with-header");
+      if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
+        has_header = true;
+        show_description = true;
+      }
+
+      var $hgroup = title_template({ 
+        title: extra.title,
+        show_title:show_title,
+        description: extra.description,
+        show_description: show_description 
+      });
+
+      if (has_header) {
+        this.$el.addClass("with-header");
+        this.$header.find(".content").append($hgroup);
+      }
+
+    }
 
   },
 
@@ -589,40 +621,57 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderLayers: function() {
 
-    if (this.layers.length == 0) return;
-    if (this.layers.length == 1 && (!this.layers[0].get("legend") || this.layers[0].get("legend").type == "none")) return;
+    var hasLegendOverlay = this.visibility_options.legends;
 
-    this.hasLayers = true;
+    var legends = this.layers.filter(function(layer) {
+      return layer.get("legend") && layer.get("legend").type !== "none"
+    });
+
+    var hasLegends = legends.length ? true : false;
+
+    if (!this.hasLayerSelector && !hasLegendOverlay) return;
+    if (!this.hasLayerSelector && !hasLegends) return;
+    if (this.layers.length == 0) return;
+    if (this.layers.length == 1 && !hasLegends) return;
 
     this.$el.addClass("with-layers");
 
-    var msg = this.layers.length + " layer" + (this.layers.length != 1 ? "s" : "");
+    this.model.set("layer_count", 0);
 
-    if (!this.hasSearch) this.$el.find(".aside .layer-container").prepend("<h3>" + msg + "</h3>");
+    if (!this.hasSearch) this.$el.find(".aside .layer-container").prepend("<h3></h3>");
 
     _.each(this.layers, this._renderLayer, this);
 
   },
 
-  _renderLayer: function(layer_data) {
+  _renderLayer: function(data) {
 
-    var hide_toggle = (this.layers.length == 1 || layer_data.type === "torque" || this.visibility_options.layer_selector === false);
+    var hasLegend = data.get("legend") && data.get("legend").type !== "" && data.get("legend").type !== "none";
+
+    // When the layer selector is disabled, don't show the layer if it doesn't have legends
+    if (!this.hasLayerSelector && !hasLegend) return;
+    if (!this.hasLayerSelector && !data.get("visible")) return;
+
+    var hide_toggle = (this.layers.length == 1 || !this.hasLayerSelector);
 
     var show_legends = true;
 
-    if (this.options.visibility_options && this.options.visibility_options.legends !== undefined) {
-      show_legends = this.options.visibility_options.legends;
+    if (this.visibility_options && this.visibility_options.legends !== undefined) {
+      show_legends = this.visibility_options.legends;
     }
 
     var layer = new cdb.geo.ui.MobileLayer({ 
-      model: layer_data,
+      model: data,
       show_legends: show_legends,
+      show_title: !this.hasLayerSelector ? false : true,
       hide_toggle: hide_toggle 
     });
 
     this.$el.find(".aside .layers").append(layer.render().$el);
 
     layer.bind("change_visibility", this._reInitScrollpane, this);
+
+    this.model.set("layer_count", this.model.get("layer_count") + 1);
 
   },
 
@@ -641,6 +690,27 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       this.$el.find(".torque").append(this.slider.render().$el);
       this.$el.addClass("with-torque");
     }
+
+  },
+
+  render:function() {
+
+    this._bindOrientationChange();
+
+    this.$el.html(this.template(this.options));
+
+    this._renderOverlays();
+
+    this._addAttributions();
+
+    this.$header = this.$el.find(".cartodb-header");
+    this.$header.show();
+
+    this._getLayers();
+    this._renderLayers();
+    this._renderTorque();
+
+    return this;
 
   }
 

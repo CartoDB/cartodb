@@ -48,6 +48,37 @@
   z-index: 100000;
 }
 
+.overlay-properties {
+  float:left;
+}
+.overlay-properties ul {
+  margin: 15px 0 0 0;
+}
+.overlay-properties ul li {
+  @include inline-block();
+  padding: 0 10px;
+  border-right: 1px solid rgba(217,217,217,0.8);
+}
+.overlay-properties ul li:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+.overlay-properties ul li .field .form-view {
+  margin: 0 8px 0 0;
+}
+.overlay-properties ul li .field .form-view:last-child {
+  margin-right: 0;
+}
+.overlay-properties ul li > span {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+  color: #7A7A7A;
+  display:block;
+  font-family: "Helvetica", Arial;
+  font-weight:normal;
+  line-height:12px;
+}
+
 .header.overlay-static {
   display: none;
   width: 100%;

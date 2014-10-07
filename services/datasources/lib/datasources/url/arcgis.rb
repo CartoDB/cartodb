@@ -80,8 +80,7 @@ module CartoDB
         # @return String
         def to_s
           "<CartoDB::Datasources::Url::ArcGis @url=#{@url} @metadata=#{@metadata} @ids_total=#{@ids_total}" +
-          " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update=false)}" +
-          " @requests_count=#{@requests_count}>"
+          " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update=false)}>"
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -278,11 +277,14 @@ module CartoDB
         # @param id String
         # @return Bool
         def is_multiresource?(id)
-          (id =~ /([0-9])+$/).nil?
+          unless id.rindex('?').nil?
+            id = id.slice(0, id.rindex('?'))
+          end
+          (id =~ /\/([0-9]+\/|[0-9]+)$/).nil?
         end
 
         def get_subresource_id(id)
-          id.match(/([0-9])+$/)[0]
+          id.match(/([0-9]+\/|[0-9]+)$?/)[0]
         end
 
         # @param id String
@@ -296,12 +298,12 @@ module CartoDB
             raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server")
           end
 
-          if is_multiresource?(id)
-            if sub_id.nil?
-              id = id.slice(0, id.rindex('/') + 1)
-            else
-              id = id + sub_id
-            end
+          unless id.rindex('?').nil?
+            id = id.slice(0, id.rindex('?'))
+          end
+
+          if is_multiresource?(id) && !sub_id.nil?
+            id = id + sub_id
           end
 
           id
@@ -311,17 +313,18 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ResponseError
         def get_layers_list(url)
-          response = Typhoeus.get(LAYERS_URL % [url], http_options)
-          raise DataDownloadError.new("#{FEATURE_IDS_URL % [url]} (#{response.code}) : #{response.body}") \
+          request_url = LAYERS_URL % [url]
+          response = Typhoeus.get(request_url, http_options)
+          raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
           begin
             data = ::JSON.parse(response.body).fetch('layers')
           rescue => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+            raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
 
-          raise ResponseError.new("Empty layers list") if data.length == 0
+          raise ResponseError.new("Empty layers list #{request_url}") if data.length == 0
 
           begin
             data.collect { |item|
@@ -332,7 +335,7 @@ module CartoDB
               }
             }
           rescue => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+            raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
         end
 
@@ -342,17 +345,18 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ResponseError
         def get_ids_list(url)
-          response = Typhoeus.get(FEATURE_IDS_URL % [url], http_options)
-          raise DataDownloadError.new("#{FEATURE_IDS_URL % [url]} (#{response.code}) : #{response.body}") \
+          request_url = FEATURE_IDS_URL % [url]
+          response = Typhoeus.get(request_url, http_options)
+          raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
           begin
             data = ::JSON.parse(response.body).fetch('objectIds')
           rescue => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+            raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
 
-          raise ResponseError.new("Empty ids list") if data.length == 0
+          raise ResponseError.new("Empty ids list #{request_url}") if data.length == 0
 
           data
         end
@@ -412,10 +416,12 @@ module CartoDB
             spatial_reference = body.fetch('spatialReference')
             retrieved_items = body.fetch('features')
           rescue => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+            raise ResponseError.new("Missing data: #{exception.to_s} #{prepared_url} #{exception.backtrace}")
           end
-          raise ResponseError.new("'fields' empty or invalid") if (retrieved_fields.nil? || retrieved_fields.length == 0)
-          raise ResponseError.new("'features' empty or invalid") if (retrieved_items.nil? || retrieved_items.length == 0)
+          raise ResponseError.new("'fields' empty or invalid #{prepared_url}") \
+            if (retrieved_fields.nil? || retrieved_fields.length == 0)
+          raise ResponseError.new("'features' empty or invalid #{prepared_url}") \
+            if (retrieved_items.nil? || retrieved_items.length == 0)
 
           # Fields can be optional, cannot be enforced to always be present
           desired_fields = fields.map { |field| field[:name] }

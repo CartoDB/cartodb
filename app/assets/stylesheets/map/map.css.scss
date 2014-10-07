@@ -163,6 +163,13 @@ div.map {
     @include clearfix();
 
     z-index:6;
+
+    .options {
+      position:absolute;
+      top: 0;
+      left: 0;
+      @include inline-block();
+    }
   }
 
   .options {

@@ -50,6 +50,9 @@
 /* Overlay */
 .overlay.text {
 
+  &.selected {
+    border: 3px dashed rgba(#fff, .5);
+  }
   .content > .text { 
     font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
     strong { font-weight: 700; }
@@ -87,7 +90,10 @@
 }
 
 .overlay-properties {
-  float:left;
+  position: absolute;
+  top: 0;
+  left: 35px;
+  width: 680px;
 }
 .overlay-properties ul {
   margin: 15px 0 0 0;
@@ -125,8 +131,6 @@
 
   .content:hover { cursor: default; }
   &:hover { background:rgba(#333, .5); }
-
-  @include simple-transition(all, .10s, ease-in-out);
 
   position: absolute;
   background:rgba(#333, .5);
@@ -203,6 +207,10 @@
 
   /* Image Overlay */
   &.image {
+
+    &.selected {
+      border: 3px dashed rgba(#fff, .5);
+    }
 
     .loader{
       display:none;

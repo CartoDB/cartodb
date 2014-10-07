@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../spec_helper'
 require_relative '../../app/models/map'
+require_relative '../../app/models/visualization/member'
 
 describe Map do
   before(:all) do
@@ -59,6 +60,32 @@ describe Map do
       @table.reload
       map.reload
       map.tables.should include(@table)
+      map.destroy
+    end
+
+    it 'updates associated tables/vis upon change' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
+      @table.reload
+
+      CartoDB::Visualization::Member.new(
+        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        name:     'wadus',
+        type:     CartoDB::Visualization::Member::CANONICAL_TYPE,
+        user_id:  @user.id,
+        map_id:   map.id
+      ).store
+
+      map2 = Map.create(user_id: @user.id, table_id: @table.id)
+      # Change map_id on the table, but visualization still points to old map.id
+      @table.map_id = map2.id
+      @table.save
+
+      # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
+      CartoDB::Visualization::Member.any_instance.expects(:store_from_map)
+      map.save
+
+      map.destroy
+      map2.destroy
     end
   end #tables
 
@@ -70,6 +97,7 @@ describe Map do
       5.times { map.add_layer(Layer.create(kind: 'carto')) }
 
       map.reload.base_layers.first.id.should == base_layer.id
+      map.destroy
     end
   end #base_layers
 
@@ -81,6 +109,7 @@ describe Map do
       map.add_layer(data_layer)
 
       map.reload.data_layers.first.id.should == data_layer.id
+      map.destroy
     end
   end #data_layers
 
@@ -93,14 +122,17 @@ describe Map do
 
       map.reload.base_layers.length.should == 6
       map.reload.user_layers.length.should == 5
+      map.destroy
     end
   end #user_layers
 
   describe '#after_save' do
     it 'invalidates varnish cache' do
       map = @table.map
-      map.expects(:invalidate_vizjson_varnish_cache)
+      # One per save, one per destroy
+      map.expects(:invalidate_vizjson_varnish_cache).twice()
       map.save
+      map.destroy
     end
 
     it "recalculates bounds" do
@@ -130,12 +162,12 @@ describe Map do
       sleep 0.5
       map.save
       map.updated_at.should > updated_at
+      map.destroy
     end
   end #updated_at
 
   describe '#admits?' do
-    it 'returns false if passed a base layer
-    and it is already linked to a a base layer' do
+    it 'returns false if passed a base layer and it is already linked to a a base layer' do
       map   = Map.create(user_id: @user.id, table_id: @table.id)
       layer = Layer.new(kind: 'tiled')
 
@@ -144,11 +176,11 @@ describe Map do
       map.save.reload
 
       map.admits_layer?(Layer.new(kind: 'tiled')).should == false
+      map.destroy
     end
 
     describe 'when linked to a table visualization' do
-      it 'returns false when passed a data layer
-      and it is already linked to a base layer' do
+      it 'returns false when passed a data layer and it is already linked to a base layer' do
         map = @table.map
         map.remove_layer(map.data_layers.first)
         map.reload

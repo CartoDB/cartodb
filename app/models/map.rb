@@ -148,8 +148,7 @@ class Map < Sequel::Model
           user_id:  user_id,
           map_id:   related_table.map_id
       ).each { |entry|
-        entry.map_id = id
-        entry.store
+        entry.store_from_map(map_id: id)
       }
       # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
       related_table.this.update(map_id: id)

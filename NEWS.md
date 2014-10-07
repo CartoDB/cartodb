@@ -3,11 +3,13 @@
 * New features
   * ArcGIS import integration (includes new app_config.yml values)
 
-3.2.4 (2014-xx-xx)
+3.2.4 (2014-10-06)
 ------------------
 * New features
   * Upon table creation no tile style call performed anymore. Still done upon layer/map change, though.
   * Send an email upon completion of an import if it takes more than 5 minutes.
+  * The mobile editor resembles to the mobile layout of the embed maps.
+  * Removed force_mobile flag from the embed maps.
 * Fixed bugs
   * Geocoding a table with 0 geocodificable rows throws error
 

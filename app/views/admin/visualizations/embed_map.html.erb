@@ -175,6 +175,7 @@
         };
 
         var opt = get_url_params({
+          'force_mobile': bool_fn,
           'search':       bool_fn,
           'title':        bool_fn,
           'description':  bool_fn,
@@ -203,9 +204,7 @@
             opt.cartodb_logo = false;
          <% end %>
 
-
          opt.mobile_layout = true;
-         opt.force_mobile  = $(window).width() < 620;
 
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",

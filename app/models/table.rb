@@ -1399,11 +1399,13 @@ class Table < Sequel::Model(:user_tables)
 
   # @throws CartoDB::TableError
   def update_name_changes
+    exception_to_raise = nil
     errored = false
+
     if @name_changed_from.present? && @name_changed_from != name
-      # update metadata records
       reload
       begin
+        # update metadata records
         $tables_metadata.rename(Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}"), key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
@@ -1421,16 +1423,18 @@ class Table < Sequel::Model(:user_tables)
       end
       propagate_namechange_to_table_vis unless errored
 
-      if layers.blank? && !errored
-        exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
-        CartoDB::notify_exception(exception_to_raise, user: owner)
-      end
-
       unless errored
-        layers.each do |layer|
-          layer.rename_table(@name_changed_from, name).save
+        if layers.blank?
+          exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
+          CartoDB::notify_exception(exception_to_raise, user: owner)
+        else
+          layers.each do |layer|
+            layer.rename_table(@name_changed_from, name).save
+          end
         end
       end
+
+      raise exception_to_raise if errored
     end
     @name_changed_from = nil
   end

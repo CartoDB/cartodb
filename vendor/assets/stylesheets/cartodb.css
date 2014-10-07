@@ -1562,6 +1562,7 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-mobile .cartodb-header {
   background: none;
+  z-index: 100000;
 }
 .cartodb-mobile .cartodb-header .content  {
   padding: 0;
@@ -1574,10 +1575,12 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile.with-fullscreen .cartodb-header .hgroup {
   position: relative;
   margin-left: 60px;
+  margin-right: 70px;
 }
-.cartodb-mobile.with-layers .cartodb-header .hgroup .content .title ,
-.cartodb-mobile.with-layers .cartodb-header .hgroup .content .description {
-  padding-right: 15px;
+
+.cartodb-mobile.with-header .cartodb-header .content .hgroup .title,
+.cartodb-mobile.with-header .cartodb-header .content .hgroup .description {
+  display: block;
 }
 .cartodb-mobile .cartodb-header .content .title ,
 .cartodb-mobile .cartodb-header .content .description  {
@@ -1611,13 +1614,37 @@ only screen and (                min-resolution: 2dppx) {
   height: 60px;
   margin: auto;
   padding: 0;
-  background: rgba(0,0,0, .2);
+  background: rgba(0,0,0,.5);
   cursor: pointer;
   z-index: 10;
+  -webkit-border-radius: 0 0 5px 0;
+  -moz-border-radius: 0 0 5px 0;
+  -ms-border-radius: 0 0 5px 0;
+  -o-border-radius: 0 0 5px 0;
+  border-radius: 0 0 5px 0;
+  -webkit-transform-style: "ease-in";
+  -moz-transform-style: "ease-in";
+  -ms-transform-style: "ease-in";
+  -o-transform-style: "ease-in";
+  transform-style: "ease-in";
+  -webkit-transition-property: background;
+  -moz-transition-property: background;
+  -o-transition-property: background;
+  transition-property: background;
+  -webkit-transition-duration: 150ms;
+  -moz-transition-duration: 150ms;
+  -o-transition-duration: 150ms;
+  transition-duration: 150ms;
 }
 .cartodb-mobile.with-header .cartodb-header .content .fullscreen {
   border-right: 1px solid rgba(255, 255, 255, .35);
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
 }
+.cartodb-mobile .cartodb-header .content .fullscreen:hover,
 .cartodb-mobile.with-header .cartodb-header .content .fullscreen:hover {
   background: rgba(0,0,0,.3);
 }
@@ -1643,7 +1670,7 @@ only screen and (                min-resolution: 2dppx) {
   height: 60px;
   margin: auto;
   padding: 0;
-  background: rgba(0,0,0, .2);
+  background: rgba(0,0,0, .5);
   cursor: pointer;
   z-index: 10;
   -webkit-border-radius: 0 0 0 5px;
@@ -1664,7 +1691,6 @@ only screen and (                min-resolution: 2dppx) {
   -moz-transition-duration: 150ms;
   -o-transition-duration: 150ms;
   transition-duration: 150ms;
-
 }
 .cartodb-mobile .cartodb-header .content .toggle:hover,
 .cartodb-mobile.with-header .cartodb-header .content .toggle:hover {
@@ -1807,7 +1833,6 @@ only screen and (                min-resolution: 2dppx) {
   color: #fff;
   list-style: none;
   border-bottom: 1px solid #585858;
-  cursor: pointer;
 }
 .cartodb-mobile .aside .layer-container .layers > li:last-child h3,
 .cartodb-mobile .aside .layer-container .layers > li:last-child {
@@ -1856,6 +1881,10 @@ only screen and (                min-resolution: 2dppx) {
   text-transform: uppercase;
   padding: 12px 0 13px 0;
 }
+
+.cartodb-mobile .aside .layer-container .layers > li.has-toggle h3 {
+  cursor: pointer;
+}
 .cartodb-mobile .aside .layer-container .layers > li.has-legend.hidden h3,
 .cartodb-mobile .aside .layer-container .layers > li.hidden h3 {
   color: #666666;
@@ -1870,7 +1899,6 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-mobile .aside .layer-container .layers > li.has-legend h3 {
   border-bottom: 1px solid #585858;
-  margin: 0 0 10px 0;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend {
   position:relative;
@@ -1880,10 +1908,11 @@ only screen and (                min-resolution: 2dppx) {
   box-shadow: none;
   background: none;
   padding: 0;
-  margin: 0 0 18px 0;
+  margin: 10px 0 18px 0;
   padding: 2px 0 0 0;
   bottom: auto;
   right: auto;
+  cursor: text;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.bubble ul li.graph {
   border:none;
@@ -2007,7 +2036,7 @@ only screen and (                min-resolution: 2dppx) {
   text-transform: capitalize;
   color: #0078A8;
 }
-.backdrop {
+.cartodb-mobile .backdrop {
   display:none;
   position: absolute;
   top: 0; left: 0; right:0; bottom: 0;

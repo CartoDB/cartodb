@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.14
+// cartodb.js version: 3.11.15
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0607a1aa80872475146e597663d9a97bf2db83db
+// sha: e986120faa8a6daac4a7cbc412ac539c0fdfe0ae
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.14';
+    cdb.VERSION = '3.11.15';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32038,7 +32038,7 @@ var Vis = cdb.core.View.extend({
 
       if (type === 'image' || type === 'text') {
         var isDevice = data.options.device == "mobile" ? true : false;
-        if (this.mobile_enabled !== isDevice) return;
+        if (this.mobile !== isDevice) return;
       }
 
       // We add the overlay

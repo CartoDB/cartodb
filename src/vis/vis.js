@@ -528,7 +528,7 @@ var Vis = cdb.core.View.extend({
 
       if (type === 'image' || type === 'text') {
         var isDevice = data.options.device == "mobile" ? true : false;
-        if (this.mobile_enabled !== isDevice) return;
+        if (this.mobile !== isDevice) return;
       }
 
       // We add the overlay

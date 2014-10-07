@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.14-dev
+// cartodb.js version: 3.11.15-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 55f403fdd16236174ba9a45a7ae057782349420f
+// sha: 53d2d57d6bffdf0ca29a1819c5a669fc5b5a808f
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.14-dev';
+    cdb.VERSION = '3.11.15-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26301,6 +26301,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     // When the layer selector is disabled, don't show the layer if it doesn't have legends
     if (!this.hasLayerSelector && !hasLegend) return;
+    if (!this.hasLayerSelector && !data.get("visible")) return;
 
     var hide_toggle = (this.layers.length == 1 || !this.hasLayerSelector);
 

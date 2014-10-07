@@ -1,5 +1,8 @@
 REV=$(shell git rev-parse HEAD)
 
+all:
+	bundle install
+
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
@@ -79,9 +82,6 @@ WORKING_SPECS_9 = \
 
 
 CDB_PATH=lib/assets/javascripts/cdb
-
-all:
-	@echo "Try make check"
 
 prepare-test-db:
 ifdef JENKINS_URL

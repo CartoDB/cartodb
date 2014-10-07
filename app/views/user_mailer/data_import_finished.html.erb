@@ -3,8 +3,19 @@
 
 <% content_for :body do %>
 
-<p style="text-align: center;">Your table import just finished.</p>
-<p style="text-align: center;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> <%= @total_tables == 1? 'was' : 'were' %> successfully imported.</p>
+
+<%= @user %>
+
+<% if @total_tables == 1 %>
+  <% if @total_tables == @imported_tables %>
+    <p style="text-align: center;">Your table <strong><%= @first_table.name %></strong> was successfully imported.</p>
+  <% else %>
+    <p style="text-align: center;">We couldn't import your table <strong><%= @first_table.name %></strong>.</p>
+  <% end %>
+<% else %>
+  <p style="text-align: center;">Your tables import just finished.</p>
+  <p style="text-align: center;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> were successfully imported.</p>
+<% end %>
 
 <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
   <tr>
@@ -13,7 +24,7 @@
         <tbody>
         <tr>
           <td align="center" valign="middle" style="color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:100%;padding-top:15px;padding-right:31px;padding-bottom:13px;padding-left:31px">
-            <a href="<%= @link %>" style="color:#ffffff;text-decoration:none" target="_blank">View your tables</a>
+            <a href="<%= @link %>" style="color:#ffffff;text-decoration:none" target="_blank">View your table<%= @imported_tables == 1 ? '' : 's' %></a>
           </td>
         </tr>
         </tbody>
@@ -25,6 +36,6 @@
   </tr>
 </table>
 
-<%= @first_table %>
+
 
 <% end %>

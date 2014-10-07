@@ -26,6 +26,10 @@ if [ -z "$PGPORT" ]; then
   PGPORT=`grep -w "port:" ${DBCONFIG}.sample | head -1 | cut -d: -f2 | sed 's/^\s*//;s/\s*$//'`
 fi
 
+if [ -z "$PGUSER" ]; then
+  PGUSER=`grep -w "username:" ${DBCONFIG}.sample | head -1 | cut -d: -f2 | sed 's/^\s*//;s/\s*$//'`
+fi
+
 if [ -z "$SQLAPI_PORT" ]; then
   SQLAPI_PORT=`cat ${APPCONFIG}.sample | grep -A10 sql_api: | grep port: | head -1 | cut -d: -f2 | sed 's/^\s*//;s/\s*$//'`
 fi
@@ -42,6 +46,7 @@ usage() {
   echo "Configuration:"
   echo "  --help                        display this help and exit"
   echo "  --with-pgport=NUM             access PostgreSQL server on TCP port NUM [$PGPORT]"
+  echo "  --with-pguser=STRING          access PostgreSQL as user STRING [$PGUSER]"
   echo "  --with-mapapi-port=NUM        access MAP-API server on TCP port NUM [$MAPAPI_PORT]"
   echo "  --with-sqlapi-port=NUM        access SQL-API server on TCP port NUM [$SQLAPI_PORT]"
 }
@@ -54,6 +59,9 @@ while test -n "$1"; do
       ;;
     --with-pgport=*)
       PGPORT=`echo "$1" | cut -d= -f2`
+      ;;
+    --with-pguser=*)
+      PGUSER=`echo "$1" | cut -d= -f2`
       ;;
     --with-sqlapi-port=*)
       SQLAPI_PORT=`echo "$1" | cut -d= -f2`
@@ -70,6 +78,7 @@ while test -n "$1"; do
 done
 
 echo "PGPORT: $PGPORT"
+echo "PGUSER: $PGUSER"
 echo "SQLAPI_PORT: $SQLAPI_PORT"
 echo "MAPAPI_PORT: $MAPAPI_PORT"
 
@@ -80,7 +89,7 @@ cat ${APPCONFIG}.sample | sed "s/8080/${SQLAPI_PORT}/;s/8181/${MAPAPI_PORT}/" > 
 
 echo "Writing ${DBCONFIG}"
 # Relies on known values in the .sample file
-cat ${DBCONFIG}.sample | sed "s/5432/${PGPORT}/" > "${DBCONFIG}"
+cat ${DBCONFIG}.sample | sed "s/port: .*/port: ${PGPORT}/;s/username: .*/username: ${PGUSER}/" > "${DBCONFIG}"
 
 STATUSFILE=config.status
 echo "Writing ${STATUSFILE}"

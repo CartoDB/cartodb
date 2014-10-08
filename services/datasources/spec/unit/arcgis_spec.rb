@@ -462,7 +462,7 @@ describe Url::ArcGIS do
       item_metadata = arcgis.get_resource_metadata(metadata[:subresources].first[:id])
 
       item_metadata.nil?.should eq false
-      # No more checkes as will fail later if missing something
+      # No more checks as will fail later if missing something
 
       spatial_ref_expectation = {"wkid"=>4326, "latestWkid"=>4326}
 

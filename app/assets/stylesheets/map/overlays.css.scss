@@ -11,6 +11,18 @@
 @import "../elements/elements-sprite";
 
 
+.ui-resizable { position: relative;}
+.ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block;}
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+.ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
+.ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
+.ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
+.ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
+.ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+.ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+.ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
+
 /* Mobile */
 .cartodb-mobile .aside {
   width: 218px;
@@ -41,6 +53,23 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.overlay-properties ul li .btn {
+  position: relative;
+  display: block;
+  float: left;
+  min-width: 28px;
+  width: auto;
+  height: 20px;
+  margin: 0;
+  border: 1px solid #9E9E9E;
+  @include border-radius(3px);
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2));
+  background: -webkit-linear-gradient(#ffffff,#f2f2f2);
+  background: -moz-linear-gradient(#ffffff,#f2f2f2);
+  background: -o-linear-gradient(#ffffff,#f2f2f2);
+  background: linear-gradient(#ffffff,#f2f2f2);
 }
 
 .cartodb-mobile .cartodb-attribution-button {
@@ -93,7 +122,7 @@
   position: absolute;
   top: 0;
   left: 35px;
-  width: 680px;
+  width: 740px;
 }
 .overlay-properties ul {
   margin: 15px 0 0 0;
@@ -106,6 +135,9 @@
 .overlay-properties ul li:last-child {
   border-right: none;
   padding-right: 0;
+}
+.overlay-properties ul li .field {
+  @include inline-block();
 }
 .overlay-properties ul li .field .form-view {
   margin: 0 8px 0 0;

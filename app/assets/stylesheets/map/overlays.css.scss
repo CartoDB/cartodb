@@ -55,11 +55,30 @@
   text-overflow: ellipsis;
 }
 
+.overlay-properties ul li .field .btn:active {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f3f3f3), color-stop(100%, #ffffff));
+  background: -webkit-linear-gradient(#f3f3f3,#ffffff);
+  background: -moz-linear-gradient(#f3f3f3,#ffffff);
+  background: -o-linear-gradient(#f3f3f3,#ffffff);
+  background: linear-gradient(#f3f3f3,#ffffff);
+  -webkit-box-shadow: inset 0px 2px 2px #ccc;
+  -moz-box-shadow: inset 0px 2px 2px #ccc;
+  box-shadow: inset 0px 2px 2px #ccc;
+}
+
+.overlay-properties ul li .field.double-field .btn:first-child {
+  @include border-radius(3px 0 0 3px);
+}
+.overlay-properties ul li .field.double-field .btn:last-child {
+  @include border-radius(0 3px 3px 0);
+  border-left: none;
+}
+
 .overlay-properties ul li .btn {
   position: relative;
   display: block;
   float: left;
-  min-width: 28px;
+  min-width: 25px;
   width: auto;
   height: 20px;
   margin: 0;
@@ -70,6 +89,23 @@
   background: -moz-linear-gradient(#ffffff,#f2f2f2);
   background: -o-linear-gradient(#ffffff,#f2f2f2);
   background: linear-gradient(#ffffff,#f2f2f2);
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    display: block;
+    width: 10px;
+    height: 9px;
+  }
+}
+
+.overlay-properties ul li .btn {
+  &.btn-copy:after      { @include map-sprite(overlay_duplicate); }
+  &.btn-delete:after    { @include map-sprite(overlay_delete);  }
+  &.btn-zIndexInc:after { @include map-sprite(overlay_push_to_front);  }
+  &.btn-zIndexDec:after { @include map-sprite(overlay_push_to_back);  }
 }
 
 .cartodb-mobile .cartodb-attribution-button {

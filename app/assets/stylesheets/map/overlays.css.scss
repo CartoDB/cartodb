@@ -288,8 +288,6 @@
 
   &.editable {
 
-    .hint { display: block; }
-
     .text {
 
       @include user-select(inherit);
@@ -394,7 +392,14 @@
     }
   }
 
-} // .overlay
+} 
+
+// .overlay
+.overlay.editable .content {
+  .text {
+    @include user-select(inherit);
+  }
+}
 
 .header.overlay-static .content,
 .overlay .content {
@@ -424,7 +429,7 @@
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
 
-    /* @include user-select(none); this breaks safari edition */
+     @include user-select(none); this breaks safari edition 
 
     &.text img {
       display:block;

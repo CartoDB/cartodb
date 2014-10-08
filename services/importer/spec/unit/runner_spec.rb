@@ -14,10 +14,11 @@ RSpec.configure do |config|
 end
 
 describe Runner do
-  before do
-
+  before(:all) do
     @filepath       = '/var/tmp/foo.txt'
-    FileUtils.touch(@filepath)
+    @filepath = File.open(@filepath, 'w+')
+    @filepath.write('...')
+    @filepath.close
     @pg_options      = Factories::PGConnection.new.pg_options
   end
 
@@ -58,7 +59,7 @@ describe Runner do
       runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker)
 
       runner.run
-      (runner.report =~ /#{@filepath}/).should_not be nil
+      (runner.report =~ /#{@filepath.path}/).should_not eq nil
     end
   end
 
@@ -89,7 +90,7 @@ describe Runner do
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; end
 
-      runner.import(source_file, job, fake_loader)
+      runner.import(source_file, nil, job, fake_loader)
       result = runner.results.first
       result.success?.should eq true
     end
@@ -104,7 +105,7 @@ describe Runner do
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
 
-      runner.import(source_file, job, fake_loader)
+      runner.import(source_file, nil, job, fake_loader)
       result = runner.results.first
       result.success?.should eq false
     end

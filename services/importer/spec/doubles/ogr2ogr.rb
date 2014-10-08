@@ -4,7 +4,7 @@ module CartoDB
   module Importer2
     module Doubles
       class Ogr2ogr
-        def run
+        def run(append_mode=false)
           Object.new
         end
 

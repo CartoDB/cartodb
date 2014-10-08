@@ -16,6 +16,8 @@ require_relative '../connectors/importer'
 
 require_relative '../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../services/datasources/lib/datasources'
+require_relative '../../services/importer/lib/importer/unp'
+require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
 include CartoDB::Datasources
 
@@ -375,9 +377,19 @@ class DataImport < Sequel::Model
     if had_errors
       importer = runner = datasource_provider = nil
     else
-      tracker       = lambda { |state| self.state = state; save }
+      tracker       = lambda { |state|
+        self.state = state
+        save
+      }
+
+      post_import_handler = CartoDB::Importer2::PostImportHandler.new
+      # TODO: Abstract this by making datasource set their tasks according to the type?
+      if datasource_provider.class == CartoDB::Datasources::Url::ArcGIS
+        post_import_handler.add_fix_geometries_task
+      end
+
       runner        = CartoDB::Importer2::Runner.new(
-        pg_options, downloader, log, current_user.remaining_quota
+        pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)

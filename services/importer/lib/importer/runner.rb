@@ -22,15 +22,17 @@ module CartoDB
       # @param log CartoDB::Log|nil
       # @param available_quota int|nil
       # @param unpacker Unp|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
-        @pg_options         = pg_options
-        @downloader         = downloader
-        @log                = log             || new_logger
-        @available_quota    = available_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker           = unpacker        || Unp.new
-        @results            = []
-        @stats              = []
-      end #initialize
+      # @param post_import_handler CartoDB::Importer2::PostImportHandler|nil
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil)
+        @pg_options          = pg_options
+        @downloader          = downloader
+        @log                 = log             || new_logger
+        @available_quota     = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @unpacker            = unpacker        || Unp.new
+        @results             = []
+        @stats               = []
+        @post_import_handler = post_import_handler || nil
+      end
 
       def new_logger
         # TODO: Inject logging class
@@ -128,10 +130,10 @@ module CartoDB
             loader.streamed_run_continue(downloader.source_file) if got_data
           end while got_data
 
-          loader.streamed_run_finish
+          loader.streamed_run_finish(@post_import_handler)
         else
           job.log "File-based import load"
-          loader.run
+          loader.run(@post_import_handler)
         end
 
         job.log "Finished importing data from #{source_file.fullpath}"

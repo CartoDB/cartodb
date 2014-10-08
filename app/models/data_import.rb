@@ -319,6 +319,7 @@ class DataImport < Sequel::Model
       refresh
       self.table_id = table.id
       self.table_name = table.name
+      log.append "Table '#{table.name}' registered"
       save
       true
     else

@@ -18,7 +18,7 @@ module CartoDB
       UNKNOWN_ERROR_CODE      = 99999
 
       # @param pg_options Hash
-      # @param downloader CartoDB::Datasources::Base|CartoDB::Importer2::Downloader
+      # @param downloader CartoDB::Importer2::DatasourceDownloader|CartoDB::Importer2::Downloader
       # @param log CartoDB::Log|nil
       # @param available_quota int|nil
       # @param unpacker Unp|nil

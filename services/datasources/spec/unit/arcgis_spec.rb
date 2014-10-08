@@ -387,13 +387,23 @@ describe Url::ArcGIS do
 
     end
 
-    it 'tests the get_resource() method (does not check actual stored data)' do
-      pending 'Migrate to test instead initial_stream and stream_resource'
+    it 'tests retrieval of data' do
       arcgis = Url::ArcGIS.get_new
 
-      id = arcgis.send(:sanitize_id, @url)
+      feature_names = []
 
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)\?f=json/) do
+      # Layers request
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(::JSON.parse(body))
+        )
+      end
+
+      # Metadata of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0\?f=json/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -402,6 +412,7 @@ describe Url::ArcGIS do
         )
       end
 
+      # IDs list of a layer
       Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list_01.json"))
         Typhoeus::Response.new(
@@ -411,10 +422,12 @@ describe Url::ArcGIS do
         )
       end
 
-      # First item fetch
+      # First item fetch of a layer
       Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?objectIds=1&outFields/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
         body = ::JSON.parse(body)
+
+        feature_names.push body['features'][0]['attributes']['NAME']
 
         body['features'] = [ body['features'][0] ]
 
@@ -425,10 +438,13 @@ describe Url::ArcGIS do
         )
       end
 
-      # Remaining items fetch
+      # Remaining items fetch of a layer
       Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?objectIds=2%2C3&outFields/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
         body = ::JSON.parse(body)
+
+        feature_names.push body['features'][1]['attributes']['NAME']
+        feature_names.push body['features'][2]['attributes']['NAME']
 
         body['features'] = [ body['features'][1], body['features'][2] ]
 
@@ -439,19 +455,47 @@ describe Url::ArcGIS do
         )
       end
 
-      # Needed to set the metadata
-      arcgis.get_resource_metadata(id)
+      # 1) Retrieve lists of layers
+      metadata = arcgis.get_resource_metadata(@url)
 
-      results = arcgis.get_resource(id)
+      # 2) Retrieve metadata of a specific layer (doesn't adds much, but to replicate flow)
+      item_metadata = arcgis.get_resource_metadata(metadata[:subresources].first[:id])
 
-      # [ total_ids, processed_ids ]
-      results.should eq [3, 3]
+      item_metadata.nil?.should eq false
+      # No more checkes as will fail later if missing something
+
+      spatial_ref_expectation = {"wkid"=>4326, "latestWkid"=>4326}
+
+      initial_stream_data = arcgis.initial_stream(item_metadata[:id])
+
+      initial_stream_data.nil?.should eq false
+      initial_stream_data = ::JSON.parse(initial_stream_data)
+      initial_stream_data['geometryType'].should eq 'esriGeometryPolygon'
+      initial_stream_data['spatialReference'].should eq spatial_ref_expectation
+      initial_stream_data['fields'].count.should eq 3
+      initial_stream_data['fields'][0]['name'].should eq 'OBJECTID'
+      initial_stream_data['fields'][1]['name'].should eq 'WDPAID'
+      initial_stream_data['fields'][2]['name'].should eq 'NAME'
+      initial_stream_data['features'].count.should eq 1
+      initial_stream_data['features'][0]['attributes'].nil?.should eq false
+      initial_stream_data['features'][0]['attributes']['NAME'].should eq feature_names[0]
+      initial_stream_data['features'][0]['geometry'].nil?.should eq false
+
+      streamed_data = arcgis.stream_resource(item_metadata[:id])
+
+      streamed_data.nil?.should eq false
+      streamed_data = ::JSON.parse(streamed_data)
+      streamed_data['geometryType'].should eq 'esriGeometryPolygon'
+      streamed_data['spatialReference'].should eq spatial_ref_expectation
+      streamed_data['fields'].count.should eq 3
+      streamed_data['fields'][0]['name'].should eq 'OBJECTID'
+      streamed_data['fields'][1]['name'].should eq 'WDPAID'
+      streamed_data['fields'][2]['name'].should eq 'NAME'
+      streamed_data['features'].count.should eq 2
+      streamed_data['features'][0]['attributes']['NAME'].should eq feature_names[1]
+      streamed_data['features'][1]['attributes']['NAME'].should eq feature_names[2]
+
     end
-
   end
-
-
-
-
 end
 

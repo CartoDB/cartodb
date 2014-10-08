@@ -52,16 +52,6 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
-      # @param id String
-      # @param subresource_id String
-      # @return Hash
-      # @throws DataDownloadError
-      # @throws ResponseError
-      # @throws InvalidServiceError
-      def get_subresource_metadata(id, subresource_id)
-        raise 'To be implemented in child classes'
-      end
-
       # @param id string
       # @return Hash
       def get_resource_metadata(id)

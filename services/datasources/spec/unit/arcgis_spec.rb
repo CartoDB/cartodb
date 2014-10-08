@@ -19,19 +19,20 @@ describe Url::ArcGIS do
       invalid_1 = 'http://myserver/services/MyFakeService/featurename/MapServer'
       invalid_2 = 'myserver/services/MyFakeService/featurename/MapServer'
 
-      test0 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
-      test1 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/'
-      test2 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer'
-      test3 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/'
-      test4 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0'
-      test5 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0?'
-      test6 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0?q=blablabla'
+      test1 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer'
+      test2 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/'
+      test3 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0'
+      test4 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0?'
+      test5 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0?q=blablabla'
+      test6 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer?q=blablabla'
 
-      valid = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0'
+      valid_map = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer'
+      valid_map_trailing_slash = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/'
+      valid_layer = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/MapServer/0'
 
       # Should be treated as ok
       test7   = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
-      valid_7 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/MapServer/0'
+      valid_7 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
 
       arcgis = Url::ArcGIS.get_new
 
@@ -42,13 +43,12 @@ describe Url::ArcGIS do
         arcgis.send(:sanitize_id, invalid_2)
       }.to raise_error InvalidInputDataError
 
-      arcgis.send(:sanitize_id, test0).should eq valid
-      arcgis.send(:sanitize_id, test1).should eq valid
-      arcgis.send(:sanitize_id, test2).should eq valid
-      arcgis.send(:sanitize_id, test3).should eq valid
-      arcgis.send(:sanitize_id, test4).should eq valid
-      arcgis.send(:sanitize_id, test5).should eq valid
-      arcgis.send(:sanitize_id, test6).should eq valid
+      arcgis.send(:sanitize_id, test1).should eq valid_map
+      arcgis.send(:sanitize_id, test2).should eq valid_map_trailing_slash
+      arcgis.send(:sanitize_id, test3).should eq valid_layer
+      arcgis.send(:sanitize_id, test4).should eq valid_layer
+      arcgis.send(:sanitize_id, test5).should eq valid_layer
+      arcgis.send(:sanitize_id, test6).should eq valid_map
       arcgis.send(:sanitize_id, test7).should eq valid_7
     end
   end
@@ -57,8 +57,10 @@ describe Url::ArcGIS do
     it 'tests error scenarios' do
       arcgis = Url::ArcGIS.get_new
 
+      sub_id = '0'
+
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -70,9 +72,28 @@ describe Url::ArcGIS do
         arcgis.get_resource_metadata(@url)
       }.to raise_error DataDownloadError
 
+      # Stub layers request (so now works)
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(::JSON.parse(body))
+        )
+      end
+
+      layers_data = arcgis.get_resource_metadata(@url)
+      layers_data_expected = {
+        id:           @url,
+        subresources: [{
+          id: "#{@url}/#{sub_id}",
+          title: 'first layer'
+        }]
+      }
+      layers_data.should eq layers_data_expected
+
       # 'fields' part
-      Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
 
         body = ::JSON.parse(body)
@@ -85,12 +106,11 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(@url)
+        arcgis.send(:get_subresource_metadata, @url, sub_id)
       }.to raise_error ResponseError
 
       # Another required field
-      Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
 
         body = ::JSON.parse(body)
@@ -103,12 +123,11 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(@url)
+        arcgis.send(:get_subresource_metadata, @url, sub_id)
       }.to raise_error ResponseError
 
       # Invalid ArcGIS version
-      Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
 
         body = ::JSON.parse(body)
@@ -121,7 +140,7 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(@url)
+        arcgis.send(:get_subresource_metadata, @url, sub_id)
       }.to raise_error InvalidServiceError
 
     end
@@ -129,7 +148,17 @@ describe Url::ArcGIS do
     it 'tests metadata retrieval' do
       arcgis = Url::ArcGIS.get_new
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+      # Stub layers request (so now works)
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(::JSON.parse(body))
+        )
+      end
+
+      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'
         format = accept.split(',').first
 
@@ -165,7 +194,7 @@ describe Url::ArcGIS do
       }
 
       expected_metadata_response = {
-        id:       @url,
+        id:       @url + '/0',
         title:    'Test Feature',
         url:      nil,
         service:  Url::ArcGIS::DATASOURCE_NAME,
@@ -174,7 +203,8 @@ describe Url::ArcGIS do
         filename: 'test_feature.json'
       }
 
-      response = arcgis.get_resource_metadata(@url)
+      # Multi-resource scenario already tested above
+      response = arcgis.get_resource_metadata(@url + '/0')
 
       response.nil?.should be false
       arcgis.metadata.should eq expected_metadata

@@ -301,9 +301,8 @@ module CartoDB
           unless id.rindex('?').nil?
             id = id.slice(0, id.rindex('?'))
           end
-
           if is_multiresource?(id) && !sub_id.nil?
-            id = id + sub_id
+            id = (id.end_with?('/') ? id : id + '/') + sub_id
           end
 
           id
@@ -330,7 +329,7 @@ module CartoDB
             data.collect { |item|
               {
                 # Leave prepared all child urls
-                id: url + item.fetch('id').to_s,
+                id: (url.end_with?('/') ? url : url + '/') + item.fetch('id').to_s,
                 title: item.fetch('name')
               }
             }

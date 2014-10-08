@@ -65,8 +65,10 @@ module CartoDB
           end
 
           if includes_customized_config
+            custom_config_orgs = config[datasource_name].fetch(:customized_orgs_list.to_s, [])
             custom_config_users = config[datasource_name][:customized_user_list.to_s]
-            if custom_config_users.include?(user.username)
+            if (!user.organization.nil? && custom_config_orgs.include?(user.organization.name)) \
+               || custom_config_users.include?(user.username)
               config[datasource_name][:customized.to_s]
             else
               config[datasource_name][:standard.to_s]

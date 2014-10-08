@@ -34,6 +34,7 @@ module CartoDB
         CATEGORY_TERMS_KEY = :terms
 
         GEO_SEARCH_FILTER = 'has:geo'
+        PROFILE_GEO_SEARCH_FILTER = 'has:profile_geo'
         OR_SEARCH_FILTER  = 'OR'
 
         # Seconds to substract from current time as threshold to consider a time
@@ -243,8 +244,8 @@ module CartoDB
         end
 
         def clean_category(category)
-          category.gsub(" #{OR_SEARCH_FILTER} ", ', ')
-                  .gsub(" #{GEO_SEARCH_FILTER}", '')
+          category.gsub(" (#{GEO_SEARCH_FILTER} OR #{PROFILE_GEO_SEARCH_FILTER})", '')
+                  .gsub(" #{OR_SEARCH_FILTER} ", ', ')
                   .gsub(/^\(/, '')
                   .gsub(/\)$/, '')
         end
@@ -436,7 +437,7 @@ module CartoDB
             unless category[:terms].count == 0
               query[CATEGORY_TERMS_KEY] << '('
               query[CATEGORY_TERMS_KEY] << category[:terms].join(' OR ')
-              query[CATEGORY_TERMS_KEY] << ") #{GEO_SEARCH_FILTER}"
+              query[CATEGORY_TERMS_KEY] << ") (#{GEO_SEARCH_FILTER} OR #{PROFILE_GEO_SEARCH_FILTER})"
             end
 
             if query[CATEGORY_TERMS_KEY].length > MAX_QUERY_SIZE

@@ -207,6 +207,7 @@ defaults: &defaults
         ratelimit_ttl:          4
         ratelimit_wait_secs:    0.5
       customized_user_list:     []
+      customized_orgs_list:     []
       customized:
         auth_required:          false
         username:               ''

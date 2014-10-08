@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/datasources'
+require_relative '../doubles/user'
 
 include CartoDB::Datasources
 
@@ -8,6 +9,7 @@ describe Url::ArcGIS do
 
   before(:all) do
     @url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
+    @user = Doubles::User.new
   end
 
   before(:each) do
@@ -34,7 +36,7 @@ describe Url::ArcGIS do
       test7   = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
       valid_7 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
 
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       expect {
         arcgis.send(:sanitize_id, invalid_1)
@@ -55,7 +57,7 @@ describe Url::ArcGIS do
 
   describe '#get_resource_metadata' do
     it 'tests error scenarios' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       sub_id = '0'
 
@@ -146,7 +148,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests metadata retrieval' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       # Stub layers request (so now works)
       Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
@@ -215,7 +217,7 @@ describe Url::ArcGIS do
 
   describe '#get_resource' do
     it 'tests the get_ids_list() private method with error scenarios' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       id = arcgis.send(:sanitize_id, @url)
 
@@ -271,7 +273,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_ids_list() private method' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       id = arcgis.send(:sanitize_id, @url)
 
@@ -293,7 +295,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_by_ids() private method with error scenarios' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       id = arcgis.send(:sanitize_id, @url)
 
@@ -323,7 +325,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_by_ids() private method' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       id = arcgis.send(:sanitize_id, @url)
 
@@ -388,7 +390,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests retrieval of data' do
-      arcgis = Url::ArcGIS.get_new
+      arcgis = Url::ArcGIS.get_new(@user)
 
       feature_names = []
 

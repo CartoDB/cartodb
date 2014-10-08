@@ -27,7 +27,7 @@ module CartoDB
             when Url::PublicUrl::DATASOURCE_NAME
               Url::PublicUrl.get_new
             when Url::ArcGIS::DATASOURCE_NAME
-              Url::ArcGIS.get_new
+              Url::ArcGIS.get_new(user)
             when Search::Twitter::DATASOURCE_NAME
               Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user),
                                       user, additional_config[:redis_storage])

@@ -43,7 +43,8 @@ module CartoDB
         attr_reader :metadata
 
         # Constructor
-        def initialize
+        # @param user User
+        def initialize(user)
           super
           @service_name = DATASOURCE_NAME
 
@@ -62,6 +63,8 @@ module CartoDB
           # }
           @metadata = nil
 
+          @user = user
+
           @url = nil
           @ids_total = 0
           @ids_retrieved = 0
@@ -72,9 +75,10 @@ module CartoDB
         end
 
         # Factory method
+        # @param user User
         # @return CartoDB::Datasources::Url::ArcGIS
-        def self.get_new
-          return new
+        def self.get_new(user)
+          return new(user)
         end
 
         # @return String
@@ -172,7 +176,10 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ResponseError
         # @throws InvalidServiceError
+        # @throws ServiceDisabledError
         def get_resource_metadata(id)
+          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless @user.arcgis_datasource_enabled?
+
           if is_multiresource?(id)
             @url = sanitize_id(id)
             {

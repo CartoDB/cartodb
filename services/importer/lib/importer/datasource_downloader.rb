@@ -95,6 +95,7 @@ module CartoDB
 
       def modified?
         previous_checksum = @options.fetch(:checksum, false)
+        previous_checksum = false if previous_checksum == ''  # If comes empty from DB, make pure false
         checksum          = (@checksum.nil? || @checksum.size == 0) ? false : @checksum
 
         return true unless (previous_checksum)

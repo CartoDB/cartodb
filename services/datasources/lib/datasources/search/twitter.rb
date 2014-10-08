@@ -232,7 +232,7 @@ module CartoDB
         private
 
         # Used at specs
-        attr_accessor :search_api, :csv_dumper
+        attr_accessor :search_api_config, :csv_dumper
         attr_reader   :data_import_item
 
         def table_name

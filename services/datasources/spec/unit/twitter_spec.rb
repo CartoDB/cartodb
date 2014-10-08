@@ -66,11 +66,11 @@ describe Search::Twitter do
       expected_output_terms = [
           {
             Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-            Search::Twitter::CATEGORY_TERMS_KEY => '(uno OR @dos OR #tres) has:geo'
+            Search::Twitter::CATEGORY_TERMS_KEY => '(uno OR @dos OR #tres) (has:geo OR has:profile_geo)'
           },
           {
             Search::Twitter::CATEGORY_NAME_KEY  => 'Category 2',
-            Search::Twitter::CATEGORY_TERMS_KEY => '(aaa OR bbb) has:geo'
+            Search::Twitter::CATEGORY_TERMS_KEY => '(aaa OR bbb) (has:geo OR has:profile_geo)'
           }
       ]
 
@@ -96,7 +96,7 @@ describe Search::Twitter do
       expected_output_terms = [
           {
               Search::Twitter::CATEGORY_NAME_KEY  => 'Category 1',
-              Search::Twitter::CATEGORY_TERMS_KEY => '(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12 OR 13 OR 14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24 OR 25 OR 26 OR 27 OR 28 OR 29) has:geo'
+              Search::Twitter::CATEGORY_TERMS_KEY => '(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12 OR 13 OR 14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24 OR 25 OR 26 OR 27 OR 28 OR 29) (has:geo OR has:profile_geo)'
           },
       ]
 
@@ -181,7 +181,8 @@ describe Search::Twitter do
         )
       end
 
-      twitter_api = twitter_datasource.send :search_api
+      twitter_api_config = twitter_datasource.send :search_api_config
+      twitter_api = CartoDB::TwitterSearch::SearchAPI.new(twitter_api_config, redis_storage=nil)
 
       fields = {
         categories: input_terms[:categories],
@@ -243,7 +244,8 @@ describe Search::Twitter do
         )
       end
 
-      twitter_api = twitter_datasource.send :search_api
+      twitter_api_config = twitter_datasource.send :search_api_config
+      twitter_api = CartoDB::TwitterSearch::SearchAPI.new(twitter_api_config, redis_storage=nil)
 
       fields = {
           categories: input_terms[:categories],

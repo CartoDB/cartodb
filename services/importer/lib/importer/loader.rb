@@ -8,6 +8,7 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
+require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
 require_relative './exceptions'
@@ -36,24 +37,19 @@ module CartoDB
         self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
+        @post_import_handler = nil
       end
 
-      def run(post_import_handler=nil)
+      def run(post_import_handler_instance=nil)
+        @post_import_handler = post_import_handler_instance
+
         normalize
         job.log "Detected encoding #{encoding}"
         job.log "Using database connection with #{job.concealed_pg_options}"
 
         run_ogr2ogr
 
-        job.log 'Georeferencing...'
-        georeferencer.run
-        job.log 'Georeferenced'
-
-        job.log 'Typecasting...'
-        typecaster.run
-        job.log 'Typecasted'
-
-        run_post_import_handler(post_import_handler)
+        post_ogr2ogr_tasks
 
         self
       end
@@ -71,7 +67,15 @@ module CartoDB
         run_ogr2ogr(append_mode=true)
       end
 
-      def streamed_run_finish(post_import_handler=nil)
+      def streamed_run_finish(post_import_handler_instance=nil)
+        @post_import_handler = post_import_handler_instance
+
+        post_ogr2ogr_tasks
+      end
+
+      def post_ogr2ogr_tasks
+        georeferencer.mark_as_from_geojson_with_transform if post_import_handler.has_transform_geojson_geom_column?
+
         job.log 'Georeferencing...'
         georeferencer.run
         job.log 'Georeferenced'
@@ -80,7 +84,11 @@ module CartoDB
         typecaster.run
         job.log 'Typecasted'
 
-        run_post_import_handler(post_import_handler)
+        if post_import_handler.has_fix_geometries_task?
+          job.log 'Fixing geometry...'
+          # At this point the_geom column is renamed
+          GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
+        end
       end
 
       def normalize
@@ -135,6 +143,10 @@ module CartoDB
         @georeferencer ||= Georeferencer.new(job.db, job.table_name, SCHEMA, job, geometry_columns)
       end
 
+      def post_import_handler
+        @post_import_handler ||= PostImportHandler.new
+      end
+
       def typecaster
         @typecaster ||= Typecaster.new(job.db, job.table_name, SCHEMA, job, ['postedtime'])
       end
@@ -163,16 +175,6 @@ module CartoDB
 
       attr_writer     :ogr2ogr, :georeferencer
       attr_accessor   :job, :layer
-
-      def run_post_import_handler(post_import_handler)
-        unless post_import_handler.nil?
-          if post_import_handler.has_fix_geometries_task?
-            # TODO: Maybe provide constructor with a common structure?
-            geometry_fixer = GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job)
-            geometry_fixer.run
-          end
-        end
-      end
 
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)

@@ -383,9 +383,11 @@ class DataImport < Sequel::Model
       }
 
       post_import_handler = CartoDB::Importer2::PostImportHandler.new
-      # TODO: Abstract this by making datasource set their tasks according to the type?
-      if datasource_provider.class == CartoDB::Datasources::Url::ArcGIS
-        post_import_handler.add_fix_geometries_task
+      case datasource_provider.class::DATASOURCE_NAME
+        when Url::ArcGIS::DATASOURCE_NAME
+          post_import_handler.add_fix_geometries_task
+        when Search::Twitter::DATASOURCE_NAME
+          post_import_handler.add_transform_geojson_geom_column
       end
 
       runner        = CartoDB::Importer2::Runner.new(

@@ -207,6 +207,7 @@ cartodb.createVis('map', url)
   - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
   - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
+- **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ### cartodb.Vis
 

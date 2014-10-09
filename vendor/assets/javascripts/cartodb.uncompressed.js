@@ -22566,6 +22566,8 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
 
+    this.$el.css("z-index", style["z-index"]);
+
     var fontFamilyClass = "";
 
     if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
@@ -22711,6 +22713,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     var boxWidth   = style["box-width"];
 
     this.$text.css(style);
+    this.$el.css("z-index", style["z-index"]);
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)

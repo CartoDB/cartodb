@@ -160,6 +160,10 @@ div.map {
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     background: image-url('layout/thead_bkg.jpg') repeat 0 0;
 
+    &.animated {
+      overflow:hidden;
+    }
+
     @include clearfix();
 
     z-index:6;

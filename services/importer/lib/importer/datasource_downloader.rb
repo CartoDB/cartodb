@@ -21,11 +21,26 @@ module CartoDB
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
+      def provides_stream?
+        @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+      end
+
       def run(available_quota_in_bytes=nil)
         @datasource.logger=@logger unless @logger.nil?
-
         set_downloaded_source_file(available_quota_in_bytes)
         self
+      end
+
+      # Assumes only will be called for streaming
+      # @return Boolean if retrieved data or has finished
+      def continue_run(available_quota_in_bytes=nil)
+        stream_data = @datasource.stream_resource(@item_metadata[:id])
+        if stream_data.nil?
+          false
+        else
+          store_retrieved_data(@item_metadata[:filename], stream_data, available_quota_in_bytes)
+          true
+        end
       end
 
       def clean_up
@@ -36,21 +51,28 @@ module CartoDB
         end
       end
 
+      # In the case of DirectStream datasources, this will store a sample to trigger DB creation.
+      # In other cases full contents will be stored.
       def set_downloaded_source_file(available_quota_in_bytes=nil)
         @checksum = @item_metadata[:checksum]
         return self unless modified?
 
-        stream_data = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
+        stream_to_file = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
+        direct_stream  = @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
 
-        if stream_data
+        if direct_stream
+          initial_stream_data = @datasource.initial_stream(@item_metadata[:id])
+          store_retrieved_data(@item_metadata[:filename], initial_stream_data, available_quota_in_bytes)
+        end
+
+        if stream_to_file
           self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
-
           output_stream = File.open(self.source_file.fullpath, 'wb')
-
           @datasource.stream_resource(@item_metadata[:id], output_stream)
-
           output_stream.close
-        else
+        end
+
+        if !stream_to_file && !direct_stream
           begin
             resource_data = @datasource.get_resource(@item_metadata[:id])
           rescue => exception
@@ -73,6 +95,7 @@ module CartoDB
 
       def modified?
         previous_checksum = @options.fetch(:checksum, false)
+        previous_checksum = false if previous_checksum == ''  # If comes empty from DB, make pure false
         checksum          = (@checksum.nil? || @checksum.size == 0) ? false : @checksum
 
         return true unless (previous_checksum)
@@ -80,24 +103,33 @@ module CartoDB
         false
       end
 
-      attr_reader  :source_file
+      # @return Bool
+      def multi_resource_import_supported?
+        @datasource.multi_resource_import_supported?(@item_metadata[:id])
+      end
+
+      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
 
       private
       
-      attr_reader :repository
       attr_writer :source_file
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
+        # Skip storing if no data came in
+        return if resource_data.empty?
+
         data = StringIO.new(resource_data)
         name = filename
         raise_if_over_storage_quota(data.size, available_quota_in_bytes)
         self.source_file = SourceFile.new(filepath(name), name)
+        # Delete if exists
+        repository.remove(source_file.path) if repository.respond_to?(:remove)
         repository.store(source_file.path, data)
       end
 
 
       def filepath(name)
-        repository.fullpath_for(name )
+        repository.fullpath_for(name)
       end
 
       def temporary_directory

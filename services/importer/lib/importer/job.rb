@@ -8,7 +8,9 @@ module CartoDB
     class Job
       def initialize(attributes={})
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
-        @logger     = attributes.fetch(:logger, new_logger)
+        @logger     = attributes.fetch(:logger, nil)
+        # Avoid calling new_logger (and thus, requiring CartoDB::Log) if param comes
+        @logger     = new_logger if @logger.nil?
         @pg_options = attributes.fetch(:pg_options, {})
         @schema     = 'cdb_importer'
       end

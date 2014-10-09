@@ -34,6 +34,12 @@ module CartoDB
         @table_name   = table_name.to_sym
         @column_name  = column_name.to_sym
         @schema       = schema
+
+        @from_geojson_with_transform = false
+      end
+
+      def mark_as_from_geojson_with_transform
+        @from_geojson_with_transform = true
       end
 
       def type
@@ -49,7 +55,7 @@ module CartoDB
         convert_from_wkt                    if wkt?
         convert_from_kml_multi              if kml_multi?
         convert_from_kml_point              if kml_point?
-        convert_from_geojson_with_transform if geojson_from_twitter_search?
+        convert_from_geojson_with_transform if geojson? && @from_geojson_with_transform
         convert_from_geojson                if geojson?
         cast_to('geometry')
         convert_to_2d
@@ -245,12 +251,6 @@ module CartoDB
 
       def wkt?
         !!(sample.to_s =~ WKT_RE)
-      end
-
-      # As PostGIS only uses geometry field contents and cannot add properties, use a special column name to mark
-      # the column for transforming polygons to points
-      def geojson_from_twitter_search?
-        geojson? && column_name.to_s == 'the_geom_from_twitter_geojson'
       end
 
       def geojson?

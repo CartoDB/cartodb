@@ -24,7 +24,6 @@ describe Search::Twitter do
   end
 
   describe '#search' do
-    # TODO: Move this to integration specs
     it 'tests basic full search flow with streaming' do
       user_quota = 100
       user_mock = Doubles::User.new({twitter_datasource_quota: user_quota})

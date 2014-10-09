@@ -21,6 +21,10 @@ module CartoDB
       # .zip
       FORMAT_COMPRESSED = 'zip'
 
+      def initialize(*args)
+        @logger = nil
+      end
+
       # Factory method
       # @param config {}
       # @return mixed
@@ -69,12 +73,13 @@ module CartoDB
       # Log a message
       # @param message String
       def log(message)
-        puts message
+        puts message if @logger.nil?
+        @logger.append(message) unless @logger.nil?
       end
 
       # @param logger Mixed|nil Set or unset the logger
       def logger=(logger=nil)
-        # Do nothing but not break
+        @logger = logger
       end
 
       # Just return datasource name
@@ -112,6 +117,13 @@ module CartoDB
       # @param component mixed
       def report_component=(component)
         raise 'To be implemented in child classes'
+      end
+
+      # If true, a single resource id might return >1 subresources (each one spawning a table)
+      # @param id String
+      # @return Bool
+      def multi_resource_import_supported?(id)
+        false
       end
 
       private_class_method :new

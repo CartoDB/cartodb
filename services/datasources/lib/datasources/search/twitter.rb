@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'typhoeus'
 require 'json'
 
 require_relative '../util/csv_file_dumper'
@@ -175,18 +174,6 @@ module CartoDB
           filter_data
         end
 
-        # Log a message
-        # @param message String
-        def log(message)
-          puts message if @logger.nil?
-          @logger.append(message) unless @logger.nil?
-        end
-
-        # @param logger Mixed|nil Set or unset the logger
-        def logger=(logger=nil)
-          @logger = logger
-        end
-
         # Hide sensitive fields
         def to_s
           "<CartoDB::Datasources::Search::Twitter @user=#{@user} @filters=#{@filters} @search_api_config=#{@search_api_config}>"
@@ -245,7 +232,7 @@ module CartoDB
         private
 
         # Used at specs
-        attr_accessor :search_api, :csv_dumper
+        attr_accessor :search_api_config, :csv_dumper
         attr_reader   :data_import_item
 
         def table_name

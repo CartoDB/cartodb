@@ -96,9 +96,8 @@ module CartoDB
 
       # Other fields with special behaviour we want to add
       CARTODB_FIELDS = [
-        :the_geom_from_twitter_geojson   # Supported as an alias for the_geom, but converting polygons to points
+        :the_geom
       ]
-
 
       def generate_headers(additional_fields = {})
         process([], true, additional_fields)
@@ -168,7 +167,7 @@ module CartoDB
           }
 
           CARTODB_FIELDS.each{ |field|
-            if field == :the_geom_from_twitter_geojson
+            if field == :the_geom
               results_row << field_to_csv(calculate_the_geom(item))
             end
           }

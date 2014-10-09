@@ -1,3 +1,9 @@
+3.2.X (2014-XX-XX)
+------------------
+* New features
+  * ArcGIS import integration (includes new app_config.yml values)
+  * Detection of imports without tables registered and marking them as failed
+
 3.2.4 (2014-10-06)
 ------------------
 * New features

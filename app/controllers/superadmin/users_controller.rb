@@ -26,8 +26,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def update
-    attributes = params[:user]
-
     @user.set_fields_from_central(params[:user], :update)
 
     @user.save

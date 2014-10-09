@@ -11,7 +11,7 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson the_geom_from_twitter_geojson wkt }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
@@ -21,7 +21,12 @@ module CartoDB
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
-      end #initialize
+        @from_geojson_with_transform = false
+      end
+
+      def mark_as_from_geojson_with_transform
+        @from_geojson_with_transform = true
+      end
 
       def run
         disable_autovacuum
@@ -36,21 +41,21 @@ module CartoDB
 
         raise_if_geometry_collection
         self
-      end #run
+      end
 
       def disable_autovacuum
         job.log "Disabling autovacuum for #{qualified_table_name}"
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);
         })
-      end #disable_autovacuum
+      end
 
       def enable_autovacuum
         job.log "Enabling autovacuum for #{qualified_table_name}"
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);
         })
-      end #enable_autovacuum
+      end
 
       def create_the_geom_from_latlon
         latitude_column_name  = latitude_column_name_in
@@ -63,7 +68,7 @@ module CartoDB
         populate_the_geom_from_latlon(
           qualified_table_name, latitude_column_name, longitude_column_name
         )
-      end #create_the_geom_from_latlon
+      end
 
       def create_the_geom_from_geometry_column
         column = nil
@@ -71,6 +76,7 @@ module CartoDB
         return false unless geometry_column_name
         job.log "Creating the_geom from #{geometry_column_name} column"
         column = Column.new(db, table_name, geometry_column_name, schema, job)
+        column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
         unless column_exists_in?(table_name, :the_geom)
@@ -91,7 +97,7 @@ module CartoDB
           end
         end
         false
-      end #create_the_geom_from_geometry_column
+      end
 
       # Note: Performs a really simple ',' to '.' normalization.
       # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"
@@ -116,7 +122,7 @@ module CartoDB
           job,
           'Populating the_geom from latitude / longitude'
         )
-      end #populate_the_geom_from_latlon
+      end
 
       def create_the_geom_in(table_name)
         job.log 'Creating the_geom column'
@@ -127,34 +133,34 @@ module CartoDB
             '#{schema}','#{table_name}','the_geom',4326,'geometry',2
           );
         })
-      end #create_the_geom_in
+      end
 
       def column_exists_in?(table_name, column_name)
         columns_in(table_name).include?(column_name.to_sym)
-      end #column_exists_in?
+      end
 
       def columns_in(table_name)
         db.schema(table_name, reload: true, schema: schema).map(&:first)
-      end #columns_in
+      end
 
       def latitude_column_name_in
         names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name  = find_column_in(table_name, names)
         job.log "Identified #{name} as latitude column" if name
         name
-      end #latitude_column_name_in
+      end
 
       def longitude_column_name_in
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name = find_column_in(table_name, names)
         job.log "Identified #{name} as longitude column" if name
         name
-      end #longitude_column_name_in
+      end
 
       def geometry_column_in
         names = geometry_columns.map { |name| "'#{name}'" }.join(',')
         find_column_in(table_name, names)
-      end #geometry_column_in
+      end
 
       def drop_the_geom_webmercator
         return self unless column_exists_in?(table_name, THE_GEOM_WEBMERCATOR)
@@ -162,13 +168,13 @@ module CartoDB
         job.log 'Dropping the_geom_webmercator column'
         column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
         column.drop
-      end #drop_the_geom_webmercator
+      end
 
       def raise_if_geometry_collection
         column = Column.new(db, table_name, :the_geom, schema, job)
         return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
         raise GeometryCollectionNotSupportedError
-      end #raise_if_geometry_collection
+      end
 
       def find_column_in(table_name, possible_names)
         sample = db[%Q{
@@ -181,7 +187,7 @@ module CartoDB
         }].first
 
         !!sample && sample.fetch(:column_name, false)
-      end #find_column_in
+      end
 
       def handle_multipoint(qualified_table_name)
         QueryBatcher::execute(
@@ -195,7 +201,7 @@ module CartoDB
           'Converting detected multipoint to point',
           capture_exceptions=true
         )
-      end #handle_multipoint
+      end
 
       def multipoint?
         is_multipoint = db[%Q{

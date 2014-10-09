@@ -48,7 +48,11 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
-      end #initialize
+      end
+
+      def provides_stream?
+        false
+      end
 
       def run(available_quota_in_bytes=nil)
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
@@ -190,6 +194,10 @@ module CartoDB
         last_modified ||= headers.fetch('last-modified', nil)
         last_modified = last_modified.delete('"').delete("'") if last_modified
         last_modified
+      end
+
+      def multi_resource_import_supported?
+        false
       end
 
       attr_reader   :source_file, :etag, :last_modified

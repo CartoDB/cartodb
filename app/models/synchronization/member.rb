@@ -6,8 +6,10 @@ require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
-include CartoDB::Datasources
+require_relative '../../../services/importer/lib/importer/unp'
+require_relative '../../../services/importer/lib/importer/post_import_handler'
 
+include CartoDB::Datasources
 
 module CartoDB
   module Synchronization
@@ -133,7 +135,17 @@ module CartoDB
 
         downloader    = get_downloader
 
-        runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
+        post_import_handler = CartoDB::Importer2::PostImportHandler.new
+        case downloader.datasource.class::DATASOURCE_NAME
+          when Url::ArcGIS::DATASOURCE_NAME
+            post_import_handler.add_fix_geometries_task
+          when Search::Twitter::DATASOURCE_NAME
+            post_import_handler.add_transform_geojson_geom_column
+        end
+
+        runner        = CartoDB::Importer2::Runner.new(
+          pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
+        )
 
         runner.include_additional_errors_mapping(
           {

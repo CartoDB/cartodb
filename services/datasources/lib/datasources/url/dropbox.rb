@@ -33,6 +33,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
+          super
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME)        if user.nil?
           raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME)       unless config.include?('app_key')
@@ -53,7 +54,7 @@ module CartoDB
         # Factory method
         # @param config : {}
         # @param user : User
-        # @return CartoDB::Synchronizer::FileProviders::Dropbox
+        # @return CartoDB::Datasources::Url::Dropbox
         def self.get_new(config, user)
           return new(config, user)
         end

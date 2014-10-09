@@ -2,6 +2,7 @@
 
 module CartoDB
   module Datasources
+    # Performs streaming from the datasource to a file
     class BaseFileStream < Base
 
       # @param id string

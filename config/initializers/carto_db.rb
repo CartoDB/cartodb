@@ -126,6 +126,7 @@ module CartoDB
 
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
+  # @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
   IMPORTER_ERROR_CODES = {
     1 => {
       title: 'Install error',
@@ -173,11 +174,15 @@ module CartoDB
     },
     1011 => {
         title: 'Error retrieving data from datasource',
-        what_about: "There was an error retrieving data from the datasource. Check that the file is still present."
+        what_about: "There was an error retrieving data from the datasource. Check that the file/data is still present."
     },
     1012 => {
         title: 'Error connecting to datasource',
-        what_about: "There was an error trying to connect to the datasource. This might be caused due to a configuration problem, revoked access token or similar cause."
+        what_about: "There was an error trying to connect to the datasource. This might be caused due to a configuration problem, server being unavaliable, revoked access token or similar cause."
+    },
+    1013 => {
+      title: 'Invalid ArcGIS version',
+      what_about: "The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards."
     },
     2001 => {
       title: 'Unable to load data',

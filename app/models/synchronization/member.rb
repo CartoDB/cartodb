@@ -136,11 +136,13 @@ module CartoDB
         downloader    = get_downloader
 
         post_import_handler = CartoDB::Importer2::PostImportHandler.new
-        case downloader.datasource.class::DATASOURCE_NAME
-          when Url::ArcGIS::DATASOURCE_NAME
-            post_import_handler.add_fix_geometries_task
-          when Search::Twitter::DATASOURCE_NAME
-            post_import_handler.add_transform_geojson_geom_column
+        unless downloader.datasource.nil?
+          case downloader.datasource.class::DATASOURCE_NAME
+            when Url::ArcGIS::DATASOURCE_NAME
+              post_import_handler.add_fix_geometries_task
+            when Search::Twitter::DATASOURCE_NAME
+              post_import_handler.add_transform_geojson_geom_column
+          end
         end
 
         runner        = CartoDB::Importer2::Runner.new(

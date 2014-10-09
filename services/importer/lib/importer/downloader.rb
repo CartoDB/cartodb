@@ -38,6 +38,7 @@ module CartoDB
         @http_options = http_options
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
+        @datasource
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -200,7 +201,7 @@ module CartoDB
         false
       end
 
-      attr_reader   :source_file, :etag, :last_modified
+      attr_reader   :source_file, :datasource, :etag, :last_modified
       attr_accessor :url
 
       private

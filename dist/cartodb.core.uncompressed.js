@@ -1,5 +1,5 @@
-// version: 3.11.13
-// sha: 5f226cbee373496f240fefdabe170f0975df20ec
+// version: 3.11.15
+// sha: e986120faa8a6daac4a7cbc412ac539c0fdfe0ae
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.13';
+    cdb.VERSION = '3.11.15';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1950,6 +1950,7 @@ function NamedMap(named_map, options) {
     layer.options.layer_name = layer.layer_name;
   }
   this.named_map = named_map;
+  this.stat_tag = named_map.stat_tag;
   var token = named_map.auth_token || options.auth_token;
   if (token) {
     this.setAuthToken(token);
@@ -2280,6 +2281,10 @@ Map.prototype = {
         params.push("auth_token=" + extra_params.auth_token);
       }
     }
+
+    if (this.stat_tag) {
+      params.push("stat_tag=" + this.stat_tag);
+    }
     // mark as the request is being done
     this._waiting = true;
     var req = null;
@@ -2299,7 +2304,7 @@ Map.prototype = {
       }
       // check payload size
       var payload = JSON.stringify(this.toJSON());
-      if (payload < this.options.MAX_GET_SIZE) {
+      if (payload.length < this.options.MAX_GET_SIZE) {
         return false;
       }
     }

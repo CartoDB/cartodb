@@ -193,7 +193,7 @@ cartodb.createVis('map', url)
   - **shareable**: add facebook and twitter share buttons.
   - **title**: adds a header with the title of the visualization.
   - **description**: adds description to the header (as you set in the UI).
-  - **search**: adds a search control (default: false).
+  - **searchControl**: adds a search control (default: false).
   - **zoomControl**: adds zoom control (default: true).
   - **loaderControl**: adds loading control (default: true).
   - **center_lat**: latitude where the map is initializated.
@@ -207,6 +207,8 @@ cartodb.createVis('map', url)
   - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
   - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
+  - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)
+  - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ### cartodb.Vis

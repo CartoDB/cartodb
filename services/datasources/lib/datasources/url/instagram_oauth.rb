@@ -127,10 +127,25 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource(id)
-          # TODO: Paginate, etc. (https://github.com/Instagram/instagram-ruby-gem#sample-application)
-          items = @client.user_recent_media({count:999})
-
           contents = "\"thumbnail\",\"image\",\"link\",\"type\",\"lat\",\"lon\"\n"
+          max_id = nil
+
+          begin
+            batch_contents, max_id = get_resource_page(id, max_id)
+            contents << batch_contents
+          end while !max_id.nil?
+
+          contents
+        end
+
+        def get_resource_page(resource_id, max_id=nil)
+          contents = ''
+
+          data = { count: 30 }
+          data[:max_id] = max_id unless max_id.nil?
+
+          items = @client.user_recent_media(data)
+          new_max_id = items.pagination.next_max_id
 
           for item in items
             lat = item.location.nil? ? nil : item.location.latitude
@@ -139,9 +154,10 @@ module CartoDB
             contents << "\"#{item.images.thumbnail.url}\",\"#{item.images.thumbnail.url}\",\"#{item.link}\"," \
               << "\"#{item.type}\",\"#{lat}\",\"#{lon}\"\n"
           end
-          contents
+
+          [ contents, new_max_id ]
         rescue => ex
-          handle_error(ex, "get_resource() #{id}: #{ex.message}")
+          handle_error(ex, "get_resource() #{resource_id}: #{ex.message}")
         end
 
         # @param id string

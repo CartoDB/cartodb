@@ -1,3 +1,6 @@
+3.11.16 (10//10//2014)
+- applies the z-index to the text and image overlays
+
 3.11.15 (07//10//2014)
 - fixes a display issue with overlays in desktop.
 

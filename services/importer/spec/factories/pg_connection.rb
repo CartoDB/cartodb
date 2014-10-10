@@ -9,15 +9,20 @@ module CartoDB
     module Factories
       class PGConnection
         def initialize(options = {})
-          @options = options.reverse_merge(read_config)
+          @options = read_config.merge(options)
           create_db if options[:create_db]
-        end #initialize
+        end
 
         def connection
           Sequel.postgres(@options)
-        end #connection
+        end
+
+        def pg_options
+          @options
+        end
 
         private
+
         def read_config
           begin
             load_from_json
@@ -45,23 +50,22 @@ module CartoDB
 
         def load_from_json
           json_config = File.join(File.dirname("#{__FILE__}"), 'database.json')
-          json_config = ::JSON.parse(File.read(json_config)).symbolize_keys
-          json_config
+            ::JSON.parse(File.read(json_config)).each_with_object({}){ |(k,v), h|
+            h[k.to_sym] = v
+          }
         end
 
         def load_from_yml
           yml_config = "#{File.dirname(__FILE__)}/../../../../config/database.yml"
-          yml_config = YAML.load_file(yml_config)['test'].symbolize_keys
+          yml_config = YAML.load_file(yml_config)['test'].each_with_object({}){ |(k,v), h|
+            h[k.to_sym] = v
+          }
           yml_config[:user] = yml_config.delete :username
           yml_config
         rescue
-          raise(
-            "Please configure your database settings " +
-            "in RAILS_ROOT/config/database.yml "+
-            "or spec/factories/database.json"
-          )
+          raise("Configure database settings in RAILS_ROOT/config/database.yml or spec/factories/database.json")
         end
-      end # PGConnection
-    end # Factories
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end

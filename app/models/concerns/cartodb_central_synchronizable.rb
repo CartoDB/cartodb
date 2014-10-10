@@ -61,7 +61,9 @@ module Concerns
         :user_timeout, :username, :website, :soft_geocoding_limit,
         :twitter_datasource_enabled, :twitter_datasource_block_size,
         :twitter_datasource_block_price, :twitter_datasource_quota,
-        :soft_twitter_datasource_limit]
+        :soft_twitter_datasource_limit,
+        :arcgis_datasource_enabled
+        ]
       end
     end
 
@@ -82,7 +84,9 @@ module Concerns
           :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
           :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
           :user_timeout, :username, :website, :soft_geocoding_limit,
-          :twitter_datasource_enabled, :soft_twitter_datasource_limit)
+          :twitter_datasource_enabled, :soft_twitter_datasource_limit,
+          :arcgis_datasource_enabled
+        )
         case action
         when :create
           attrs[:remote_user_id] = self.id

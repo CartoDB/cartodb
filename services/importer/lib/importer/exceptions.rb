@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../../services/datasources/lib/datasources/exceptions'
+
 module CartoDB
   module Importer2
 
@@ -30,7 +32,7 @@ module CartoDB
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
 
-    # @see also app/models/synchronization/member.rb for more error codes
+    # @see also app/models/synchronization/member.rb => run() for more error codes
     # @see config/initializers/carto_db.rb For the texts
     ERRORS_MAP = {
       InstallError                          => 0001,
@@ -61,7 +63,20 @@ module CartoDB
       DownloadError                         => 1001,
       GDriveNotPublicError                  => 1010,
       EncodingDetectionError                => 2002,
-      FileTooBigError                       => 6666
+      FileTooBigError                       => 6666,
+      CartoDB::Datasources::DatasourceBaseError                   => 1012,
+      CartoDB::Datasources::AuthError                             => 1011,
+      CartoDB::Datasources::TokenExpiredOrInvalidError            => 1012,
+      CartoDB::Datasources::InvalidServiceError                   => 1012,
+      CartoDB::Datasources::DataDownloadError                     => 1011,
+      CartoDB::Datasources::MissingConfigurationError             => 1012,
+      CartoDB::Datasources::UninitializedError                    => 1012,
+      CartoDB::Datasources::ParameterError                        => 99999,
+      CartoDB::Datasources::ServiceDisabledError                  => 99999,
+      CartoDB::Datasources::OutOfQuotaError                       => 8001,
+      CartoDB::Datasources::InvalidInputDataError                 => 1012,
+      CartoDB::Datasources::ResponseError                         => 1011,
+      CartoDB::Datasources::ExternalServiceError                  => 1012
     }
   end # Importer2
 end # CartoDB

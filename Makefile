@@ -25,6 +25,10 @@ WORKING_SPECS_3 = \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
+  services/importer/spec/unit/loader_spec.rb \
+  services/importer/spec/unit/ogr2ogr_spec.rb \
+  services/importer/spec/unit/kml_splitter_spec.rb \
+  services/importer/spec/unit/runner_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \
@@ -76,6 +80,7 @@ WORKING_SPECS_9 = \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
+  services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
 
 

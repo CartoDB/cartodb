@@ -1,0 +1,22 @@
+{"currentVersion":10.22,
+  "id":0,
+  "name":"Test Feature",
+  "type":"Feature Layer",
+  "description":"Sample metadata payload",
+  "geometryType":"esriGeometryPolygon",
+  "copyrightText":"CartoDB",
+  "fields":[
+    {"name":"OBJECTID",
+      "type":"esriFieldTypeOID",
+      "alias":"OBJECTID",
+      "domain":null},
+    {"name":"NAME",
+      "type":"esriFieldTypeString",
+      "alias":"NAME",
+      "length":254,
+      "domain":null}
+  ],
+  "maxRecordCount":1000,
+  "supportsAdvancedQueries":true,
+  "supportedQueryFormats":"JSON,AMF",
+  "useStandardizedQueries":true}

@@ -38,6 +38,7 @@ module CartoDB
         @http_options = http_options
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
+        @datasource
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -48,7 +49,11 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
-      end #initialize
+      end
+
+      def provides_stream?
+        false
+      end
 
       def run(available_quota_in_bytes=nil)
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
@@ -192,7 +197,11 @@ module CartoDB
         last_modified
       end
 
-      attr_reader   :source_file, :etag, :last_modified
+      def multi_resource_import_supported?
+        false
+      end
+
+      attr_reader   :source_file, :datasource, :etag, :last_modified
       attr_accessor :url
 
       private

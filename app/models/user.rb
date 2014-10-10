@@ -638,6 +638,10 @@ class User < Sequel::Model
     self[:soft_geocoding_limit] = !val
   end
 
+  def arcgis_datasource_enabled?
+    self.arcgis_datasource_enabled == true
+  end
+
   def soft_twitter_datasource_limit?
     self.soft_twitter_datasource_limit  == true
   end

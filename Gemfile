@@ -56,6 +56,7 @@ gem 'faraday',                 '0.9.0'
 gem 'retriable',               '1.4.1'
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
+gem 'instagram',               '1.1.3'
 
 # Synchronizer
 gem 'eventmachine',            '1.0.3'

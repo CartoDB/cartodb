@@ -24,6 +24,7 @@ module CartoDB
         self.job            = job
         self.source_file    = source_file
         self.osm2pgsql      = osm2pgsql
+        self.options        = {}
       end #initialize
 
       def run
@@ -94,6 +95,8 @@ module CartoDB
           FROM public
         })
       end #revoke_all_privileges_from_public_in
+
+      attr_accessor   :options
 
       private
 

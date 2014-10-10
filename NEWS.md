@@ -1,8 +1,10 @@
-3.2.X (2014-XX-XX)
+3.2.5 (2014-XX-XX)
 ------------------
 * New features
   * ArcGIS import integration (includes new app_config.yml values)
   * Detection of imports without tables registered and marking them as failed
+  * CSV import type guessing (performed via OGR2OGR). Disabled by default, to enable should run new package
+    from our sources: apt-get install ogr2ogr2-static-bin
 
 3.2.4 (2014-10-06)
 ------------------

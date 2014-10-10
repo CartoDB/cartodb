@@ -189,6 +189,10 @@ module CartoDB
         etag
       end
 
+      def checksum
+        etag_from(headers)
+      end
+
       def last_modified_from(headers)
         last_modified =   headers.fetch('Last-Modified', nil)
         last_modified ||= headers.fetch('Last-modified', nil)

@@ -127,7 +127,23 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource(id)
-          contents = "\"thumbnail\",\"image\",\"link\",\"type\",\"lat\",\"lon\"\n"
+
+          contents = [
+            field_to_csv('thumbnail'),
+            field_to_csv('image'),
+            field_to_csv('link'),
+            field_to_csv('type'),
+            field_to_csv('lat'),
+            field_to_csv('lon'),
+            field_to_csv('location_id'),
+            field_to_csv('location_name'),
+            field_to_csv('caption'),
+            field_to_csv('comments_count'),
+            field_to_csv('likes_count'),
+            field_to_csv('tags'),
+            field_to_csv('created_time')
+          ].join(',') << "\n"
+
           max_id = nil
 
           begin
@@ -136,28 +152,6 @@ module CartoDB
           end while !max_id.nil?
 
           contents
-        end
-
-        def get_resource_page(resource_id, max_id=nil)
-          contents = ''
-
-          data = { count: 30 }
-          data[:max_id] = max_id unless max_id.nil?
-
-          items = @client.user_recent_media(data)
-          new_max_id = items.pagination.next_max_id
-
-          for item in items
-            lat = item.location.nil? ? nil : item.location.latitude
-            lon = item.location.nil? ? nil : item.location.longitude
-            # TODO: Format using function instead
-            contents << "\"#{item.images.thumbnail.url}\",\"#{item.images.thumbnail.url}\",\"#{item.link}\"," \
-              << "\"#{item.type}\",\"#{lat}\",\"#{lon}\"\n"
-          end
-
-          [ contents, new_max_id ]
-        rescue => ex
-          handle_error(ex, "get_resource() #{resource_id}: #{ex.message}")
         end
 
         # @param id string
@@ -227,6 +221,55 @@ module CartoDB
         end
 
         private
+
+        def field_to_csv(field)
+          '"' + field.to_s.gsub('"', '""').gsub("\\n", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '')
+                     .gsub("\\", ' ') + '"'
+        end
+
+        # @param resource_id String
+        # @para max_id Integer|nil Max media id retrieved (used to paginate)
+        def get_resource_page(resource_id, max_id=nil)
+          contents = ''
+
+          data = { count: 30 }
+          data[:max_id] = max_id unless max_id.nil?
+
+          items = @client.user_recent_media(data)
+          new_max_id = items.pagination.next_max_id
+
+          items.each do |item|
+            if item.location.nil?
+              lat = lon = location_id = location_name = nil
+            else
+              lat = item.location.latitude
+              lon = item.location.longitude
+              location_id = item.location.id
+              location_name = item.location.name
+            end
+            caption = item.caption.nil? ? '' : item.caption.text
+
+            contents << [
+              field_to_csv(item.images.thumbnail.url),
+              field_to_csv(item.images.standard_resolution.url),
+              field_to_csv(item.link),
+              field_to_csv(item.type),
+              field_to_csv(lat),
+              field_to_csv(lon),
+              field_to_csv(location_id),
+              field_to_csv(location_name),
+              field_to_csv(caption),
+              field_to_csv(item.comments['count']),
+              field_to_csv(item.likes['count']),
+              field_to_csv(item.tags.join(',')),
+              field_to_csv(item.created_time)
+            ].join(',') << "\n"
+          end
+
+          [ contents, new_max_id ]
+        rescue => ex
+          handle_error(ex, "get_resource() #{resource_id}: #{ex.message}")
+        end
 
         # Handles
         # @param original_exception mixed

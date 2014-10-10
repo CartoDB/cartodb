@@ -209,6 +209,7 @@ cartodb.createVis('map', url)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
   - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)
   - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
+- **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ### cartodb.Vis
 

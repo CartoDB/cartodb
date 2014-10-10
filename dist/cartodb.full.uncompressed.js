@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.15
+// cartodb.js version: 3.11.16
 // uncompressed version: cartodb.uncompressed.js
-// sha: e986120faa8a6daac4a7cbc412ac539c0fdfe0ae
+// sha: 7d2093587ff59c1759be70744f2ea53f6f01afd3
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.15';
+    cdb.VERSION = '3.11.16';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22566,6 +22566,8 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
 
+    this.$el.css("z-index", style["z-index"]);
+
     var fontFamilyClass = "";
 
     if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
@@ -22711,6 +22713,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     var boxWidth   = style["box-width"];
 
     this.$text.css(style);
+    this.$el.css("z-index", style["z-index"]);
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)

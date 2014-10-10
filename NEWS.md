@@ -4,6 +4,7 @@
   * ArcGIS import integration (includes new app_config.yml values)
   * Detection of imports without tables registered and marking them as failed
   * Adds property toolbar to style and control the image and text overlays.
+  * Import of .xlsx excel files is much faster now (requires sudo pip install xlsx2csv)
 
 3.2.4 (2014-10-06)
 ------------------

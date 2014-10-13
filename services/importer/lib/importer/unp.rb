@@ -49,7 +49,7 @@ module CartoDB
       end
 
       def compressed?(path)
-        COMPRESSED_EXTENSIONS.include?(File.extname(path))
+        COMPRESSED_EXTENSIONS.include?(File.extname(path).downcase)
       end
 
       def process(path)
@@ -116,7 +116,7 @@ module CartoDB
       end
 
      def supported?(filename)
-        SUPPORTED_FORMATS.include?(File.extname(filename))
+        SUPPORTED_FORMATS.include?(File.extname(filename).downcase)
       end
 
       def normalize(filename)

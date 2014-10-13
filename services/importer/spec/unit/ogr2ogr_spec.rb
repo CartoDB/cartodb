@@ -1,6 +1,4 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require 'pg'
 require 'sequel'
 require_relative '../../lib/importer/ogr2ogr'
@@ -11,7 +9,7 @@ require_relative '../factories/pg_connection'
 include CartoDB::Importer2
 
 describe Ogr2ogr do
-  before do
+  before(:each) do
     @csv              = Factories::CSV.new.write
     @filepath         = @csv.filepath
     @pg_options       = Factories::PGConnection.new.pg_options
@@ -21,94 +19,125 @@ describe Ogr2ogr do
     @dataset          = @db[@full_table_name.to_sym]
     @wrapper          = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
 
+    @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
     @db.execute('SET search_path TO cdb_importer,public')
   end
 
-  after do
+  after(:each) do
     @csv.delete
     @db.drop_table? @full_table_name
+    @db.execute('DROP SCHEMA cdb_importer')
     @db.disconnect
   end
 
   describe '#initialize' do
     it 'requires a filepath and postgres options' do
-      lambda { Ogr2ogr.new }.must_raise ArgumentError
-      lambda { Ogr2ogr.new('bogus.txt') }.must_raise ArgumentError
+      expect{
+        Ogr2ogr.new
+      }.to raise_error ArgumentError
+      expect{
+        Ogr2ogr.new('bogus.txt')
+      }.to raise_error ArgumentError
     end
-  end #initialize
+  end
 
   describe '#command' do
     it 'includes an encoding' do
-      @wrapper.command.must_match /PGCLIENTENCODING/
+      (@wrapper.command =~ /PGCLIENTENCODING/).should_not be nil
     end
 
     it 'includes the postgres options passed at initialization time' do
-      @wrapper.command.must_match /#{@pg_options.fetch(:host)}/
-      @wrapper.command.must_match /#{@pg_options.fetch(:port)}/
-      @wrapper.command.must_match /#{@pg_options.fetch(:user)}/
-      @wrapper.command.must_match /#{@pg_options.fetch(:database)}/
+      (@wrapper.command =~ /#{@pg_options.fetch(:host)}/).should_not be nil
+      (@wrapper.command =~ /#{@pg_options.fetch(:port)}/).should_not be nil
+      (@wrapper.command =~ /#{@pg_options.fetch(:user)}/).should_not be nil
+      (@wrapper.command =~ /#{@pg_options.fetch(:database)}/).should_not be nil
     end
 
     it 'includes the desired output table name' do
-      @wrapper.command.must_match /#{@full_table_name}/
+      (@wrapper.command =~ /#{@full_table_name}/).should_not be nil
     end
 
     it 'includes the filepath to process' do
-      @wrapper.command.must_match /#{@filepath}/
+      (@wrapper.command =~ /#{@filepath}/).should_not be nil
     end
-  end #command
+  end
 
   describe '#executable_path' do
     it 'returns the path to the ogr2ogr binary' do
-      @wrapper.executable_path.must_match /ogr2ogr/
+      (@wrapper.executable_path =~ /ogr2ogr/).should_not be nil
     end
-  end #executable_path 
+  end
 
   describe '#run' do
     it 'imports a CSV to a Postgres table' do
       @wrapper.run
-      records   = @dataset.to_a
+      records = @dataset.to_a
 
-      records.length      .must_equal 10
-      records.first.keys  .must_include :header_1
-      records.first.keys  .must_include :header_2
+      records.length.should eq 10
+      records.first.keys.include?(:header_1).should eq true
+      records.first.keys.include?(:header_2).should eq true
     end
 
     it 'keeps an existing cartodb_id column in imported records' do
-      header    = ["cartodb_id", "header_2"]
-      data      = ["5", "cell_#{rand(999)}"]
-      csv       = Factories::CSV.new.write(header, data)
+      header = ["cartodb_id", "header_2"]
+      data   = ["5", "cell_#{rand(999)}"]
+      csv    = Factories::CSV.new.write(header, data)
 
-      @wrapper  = Ogr2ogr.new(@full_table_name, csv.filepath, @pg_options)
+      @wrapper = Ogr2ogr.new(@full_table_name, csv.filepath, @pg_options)
       @wrapper.run
 
       record    = @dataset.first
-      record.fetch(:cartodb_id).must_equal '5'
+      record.fetch(:cartodb_id).should eq '5'
     end
-  end #run
+  end
 
   describe '#command_output' do
     it 'returns stdout and stderr from ogr2ogr binary' do
-      wrapper   = Ogr2ogr.new(@full_table_name, 'non_existent', @pg_options)
+      wrapper = Ogr2ogr.new(@full_table_name, 'non_existent', @pg_options)
       wrapper.run
-      wrapper.command_output.wont_be_empty
+      wrapper.command_output.should_not eq ''
 
-      wrapper   = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
+      wrapper = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
       wrapper.run
-      wrapper.command_output.must_be_empty
+      wrapper.command_output.should eq ''
     end
-  end #command_output
+  end
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do
-      wrapper   = Ogr2ogr.new(@full_table_name, 'non_existent', @pg_options)
+      wrapper = Ogr2ogr.new(@full_table_name, 'non_existent', @pg_options)
       wrapper.run
-      wrapper.exit_code.wont_equal 0
+      wrapper.exit_code.should_not eq 0
 
-      wrapper   = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
+      wrapper = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
       wrapper.run
-      wrapper.exit_code.must_equal 0
+      wrapper.exit_code.should eq 0
     end
-  end #exit_code
-end # Ogr2ogr
+  end
+
+  describe '#append_mode' do
+    it "tests that ogr2ogr's append mode works as expected" do
+      header = ["cartodb_id", "header_2"]
+      data_1   = ["1", "cell_#{rand(999)}"]
+      data_2   = ["2", "cell_#{rand(999)}"]
+
+      csv_1 = Factories::CSV.new(name=nil, how_many_duplicates=0)
+        .write(header, data_1)
+
+      csv_2 = Factories::CSV.new(name=nil, how_many_duplicates=0)
+      .write(header, data_2)
+
+      ogr2ogr = Ogr2ogr.new(@full_table_name, csv_1.filepath, @pg_options)
+      ogr2ogr.run
+
+      ogr2ogr.filepath = csv_2.filepath
+      ogr2ogr.run(append_mode=true)
+
+      @dataset.all[0].fetch(:cartodb_id).should eq '1'
+      @dataset.all[1].fetch(:cartodb_id).should eq '2'
+      @dataset.all.count.should eq 2
+    end
+  end
+
+end
 

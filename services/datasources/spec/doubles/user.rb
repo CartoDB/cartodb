@@ -23,6 +23,10 @@ module CartoDB
             : nil
         end
 
+        def arcgis_datasource_enabled?
+          true
+        end
+
         def organization
           @organization
         end

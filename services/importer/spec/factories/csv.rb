@@ -5,10 +5,12 @@ module CartoDB
   module Importer2
     module Factories
       class CSV
-        def initialize(name=nil)
+        # Duplicates set to 9 (+1 for the original) for legacy specs
+        def initialize(name=nil, how_many_duplicates=9)
           @name       = name || "importer#{rand(999)}"
           @filepath   = "/var/tmp/#{@name}.csv"
-        end #initialize
+          @how_many_duplicates = how_many_duplicates
+        end
 
         def write(header=nil, data=nil, columns=2, rows=10)
           header  ||= (1..columns).map { |index| "header_#{index}" }
@@ -16,20 +18,22 @@ module CartoDB
 
           ::CSV.open(filepath, "wb") do |csv|
             csv << header
-            10.times { csv << data }
+            (@how_many_duplicates + 1).times {
+              csv << data
+            }
           end
 
           self
-        end #write
+        end
         
         def delete
           File.delete(filepath)
           self
-        end #delete
+        end
 
         attr_reader :name, :filepath
-      end # CSV
-    end # Factories
-  end # Importer2
-end # CartoDB
+      end
+    end
+  end
+end
 

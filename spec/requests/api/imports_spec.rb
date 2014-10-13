@@ -157,6 +157,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
+    response.code.should be == '200'
 
     @table_from_import = Table.all.last
 

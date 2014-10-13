@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.15-dev
+// cartodb.js version: 3.11.17-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 53d2d57d6bffdf0ca29a1819c5a669fc5b5a808f
+// sha: f5e2de48a3bd252bc6e469925293d86c39741c7f
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.15-dev';
+    cdb.VERSION = '3.11.17-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22566,6 +22566,8 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
 
+    this.$el.css("z-index", style["z-index"]);
+
     var fontFamilyClass = "";
 
     if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
@@ -22711,6 +22713,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     var boxWidth   = style["box-width"];
 
     this.$text.css(style);
+    this.$el.css("z-index", style["z-index"]);
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)
@@ -31725,12 +31728,10 @@ var Vis = cdb.core.View.extend({
 
 
   _addLayers: function(layers, options) {
-
-    for(var i in layers) {
+    for(var i = 0; i < layers.length; ++i) {
       var layerData = layers[i];
       this.loadLayer(layerData, options);
     }
-
   },
 
   addLegends: function(layers, mobile_enabled) {
@@ -32038,7 +32039,7 @@ var Vis = cdb.core.View.extend({
 
       if (type === 'image' || type === 'text') {
         var isDevice = data.options.device == "mobile" ? true : false;
-        if (this.mobile_enabled !== isDevice) return;
+        if (this.mobile !== isDevice) return;
       }
 
       // We add the overlay

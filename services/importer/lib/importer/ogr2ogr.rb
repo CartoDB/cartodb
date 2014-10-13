@@ -13,6 +13,8 @@ module CartoDB
       OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
       APPEND_MODE_OPTION    = '-append'
 
+      DEFAULT_BINARY = 'which ogr2ogr'
+
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
@@ -20,7 +22,7 @@ module CartoDB
         self.layer      = layer
         self.options    = options
         self.append_mode = false
-        self.binary = options.fetch(:ogr2ogr_binary, 'which ogr2ogr')
+        self.csv_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
       end
 
@@ -37,7 +39,7 @@ module CartoDB
       end
 
       def executable_path
-        `#{binary}`.strip
+        is_csv? ? `#{csv_binary}`.strip : `#{DEFAULT_BINARY}`.strip
       end
 
       def command
@@ -58,10 +60,15 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :binary, :csv_guessing
+      attr_accessor :pg_options, :options, :table_name, :layer, :csv_binary, :csv_guessing
+
+      def is_csv?
+        filepath =~ /\.csv$/i
+      end
 
       def guessing_option
-        csv_guessing ? '-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=NO' : ''
+        # Only send parameters for
+        csv_guessing && is_csv? ? '-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=NO' : ''
       end
 
       def client_encoding_option
@@ -95,7 +102,7 @@ module CartoDB
       end
 
       def projection_option
-        filepath =~ /\.csv/ || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
+        is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
       end
     end
   end

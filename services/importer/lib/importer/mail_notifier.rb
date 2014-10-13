@@ -7,7 +7,7 @@ module CartoDB
 
     class MailNotifier
 
-      MIN_IMPORT_TIME_TO_NOTIFY = 5 * 60 # seconds
+      MIN_IMPORT_TIME_TO_NOTIFY = 1 # seconds
 
       def initialize(data_import, results, resque)
         @data_import = data_import
@@ -21,7 +21,8 @@ module CartoDB
       end
 
       def should_notify?
-        import_time >= MIN_IMPORT_TIME_TO_NOTIFY && @data_import.synchronization_id.nil?
+        true
+        # import_time >= MIN_IMPORT_TIME_TO_NOTIFY && @data_import.synchronization_id.nil?
       end
 
       def import_time
@@ -34,7 +35,8 @@ module CartoDB
         total_tables = @results.length
         first_imported_table = imported_tables == 0 ? nil : @results.select {|r| r.success }.first
         first_table = @results.first
-        @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user_id, imported_tables, total_tables, first_imported_table, first_table)
+        errors = imported_tables == total_tables ? nil : @data_import.get_error_text
+        @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user_id, imported_tables, total_tables, first_imported_table, first_table, errors)
       end
 
       def mail_sent?

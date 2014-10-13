@@ -14,6 +14,30 @@
     <p style="text-align: center;"><strong><%= @imported_tables %></strong> out of <strong><%= @total_tables %></strong> were successfully imported.</p>
   <% end %>
 
+  <% unless @errors.nil? %>
+    <p style="text-align: center;">There was some error while importing your table<%= @total_tables == 1 ? '' : 's' %>:</p>
+
+    <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+      <tr>
+        <td align="center" valign="middle">
+          <table border="0" cellpadding="0" cellspacing="0" style="background-color:#e5e5e5">
+            <tbody>
+            <tr>
+              <td align="center" valign="middle" style="padding-top:15px;padding-right:15px;padding-bottom:15px;padding-left:15px">
+                <p style="text-align:left;font-size:14px;"><strong><%= @errors['title'] %></strong><br /><%= @errors['what_about'].html_safe %></p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="height: 20px;">&nbsp;</td>
+      </tr>
+    </table>
+
+  <% end %>
+
   <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
     <tr>
       <td align="center" valign="middle">

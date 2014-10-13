@@ -1,0 +1,40 @@
+production:
+  adapter: postgres
+  encoding: unicode
+  host: localhost
+  port: 5432
+  database: carto_db_production
+  username: postgres
+  password:
+  conn_validator_timeout: 900
+
+staging:
+  adapter: postgres
+  encoding: unicode
+  host: localhost
+  port: 5432
+  database: carto_db_staging
+  username: postgres
+  password:
+  conn_validator_timeout: 900
+
+development:
+  adapter: postgres
+  encoding: unicode
+  host: localhost
+  port: 5432
+  database: carto_db_development
+  username: postgres
+  password:
+  conn_validator_timeout: 900
+
+test:
+  adapter: postgres
+  encoding: unicode
+  database: carto_db_test
+  host: localhost
+  port: 5432  
+  username: postgres
+  password:
+  conn_validator_timeout: -1
+

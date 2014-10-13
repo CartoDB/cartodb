@@ -215,12 +215,10 @@ var Vis = cdb.core.View.extend({
 
 
   _addLayers: function(layers, options) {
-
-    for(var i in layers) {
+    for(var i = 0; i < layers.length; ++i) {
       var layerData = layers[i];
       this.loadLayer(layerData, options);
     }
-
   },
 
   addLegends: function(layers, mobile_enabled) {

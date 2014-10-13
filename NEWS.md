@@ -3,6 +3,7 @@
 * New features
   * ArcGIS import integration (includes new app_config.yml values)
   * Detection of imports without tables registered and marking them as failed
+  * Adds property toolbar to style and control the image and text overlays.
 
 3.2.4 (2014-10-06)
 ------------------

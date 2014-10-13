@@ -390,7 +390,7 @@ Number of sublayers.
 
 ##### Example
 
-<div class="code-title">layer.getSubLayerCount</div>
+<div class="code-title">Hide layers using layer.getSubLayerCount</div>
 {% highlight javascript %}
 var num_sublayers = layer.getSubLayerCount();
 

@@ -380,6 +380,25 @@ var sublayer = layer.getSubLayer(0);
 sublayer.setSQL('SELECT * FROM table_name limit 10');
 {% endhighlight %}
 
+#### layer.getSubLayer(_layerIndex_)
+
+Get the number of sublayers in layer.
+
+##### Returns
+
+Number of sublayers.
+
+##### Example
+
+<div class="code-title">Hide layers using layer.getSubLayerCount</div>
+{% highlight javascript %}
+var num_sublayers = layer.getSubLayerCount();
+
+for (var i = 0; i < num_sublayers; i++) {
+  layer.getSubLayer(i).hide();
+}
+{% endhighlight %}
+
 #### layer.createSubLayer(_layerDefinition_)
 
 Adds a new data to the current layer. With this method data from multiple tables can be easily visualized. New in V3.

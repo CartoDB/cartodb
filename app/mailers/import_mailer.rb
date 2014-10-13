@@ -1,6 +1,4 @@
 class ImportMailer < UserMailer
-  include AbstractController::Callbacks
-  after_filter :set_subject
 
   def data_import_finished(user, imported_tables, total_tables, first_imported_table, first_table, errors)
     @imported_tables = imported_tables
@@ -11,7 +9,8 @@ class ImportMailer < UserMailer
     user_name = organization.nil? ? nil : user.username
     @link = first_imported_table.nil? ? "#{user.public_url}#{tables_index_path}" : "#{CartoDB.base_url(subdomain, user_name)}#{public_tables_show_path(id:@first_table['name'])}"
     @errors = errors
-    mail :to => user.email
+    mail :to => user.email,
+         :subject => set_subject
   end
 
   private
@@ -31,7 +30,7 @@ class ImportMailer < UserMailer
         end
       end
 
-      mail.subject = subject
+      subject
     end
 
 end

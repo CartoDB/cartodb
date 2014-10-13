@@ -57,9 +57,9 @@ module Resque
       module DataImportFinished
         @queue = :users
 
-        def self.perform(user_id, imported_tables, total_tables, first_table)
+        def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table)
           user = User.where(id: user_id).first
-          UserMailer.data_import_finished(user, imported_tables, total_tables, first_table).deliver
+          UserMailer.data_import_finished(user, imported_tables, total_tables, first_imported_table, first_table).deliver
         end
       end
 

@@ -32,6 +32,11 @@ module CartoDB
         @results             = []
         @stats               = []
         @post_import_handler = post_import_handler || nil
+        @loader_options      = {}
+      end
+
+      def loader_options=(value)
+        @loader_options = value
       end
 
       def new_logger
@@ -114,6 +119,7 @@ module CartoDB
         job     ||= Job.new(logger: log, pg_options: pg_options)
 
         loader = loader_object || loader_for(source_file).new(job, source_file)
+        loader.options = @loader_options
 
         raise EmptyFileError if source_file.empty?
 
@@ -125,7 +131,6 @@ module CartoDB
           loader.streamed_run_init
 
           begin
-            # TODO: Make sure quota check works
             got_data = downloader.continue_run(available_quota)
             loader.streamed_run_continue(downloader.source_file) if got_data
           end while got_data

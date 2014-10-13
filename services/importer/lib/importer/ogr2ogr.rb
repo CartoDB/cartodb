@@ -20,11 +20,13 @@ module CartoDB
         self.layer      = layer
         self.options    = options
         self.append_mode = false
+        self.binary = options.fetch(:ogr2ogr_binary, 'which ogr2ogr')
+        self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
       end
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{postgres_options} #{projection_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
@@ -35,7 +37,7 @@ module CartoDB
       end
 
       def executable_path
-        `which ogr2ogr`.strip
+        `#{binary}`.strip
       end
 
       def command
@@ -56,7 +58,11 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer
+      attr_accessor :pg_options, :options, :table_name, :layer, :binary, :csv_guessing
+
+      def guessing_option
+        csv_guessing ? '-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=NO' : ''
+      end
 
       def client_encoding_option
         "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"

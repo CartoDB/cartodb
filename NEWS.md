@@ -1,4 +1,4 @@
-3.2.X (2014-XX-XX)
+3.2.5 (2014-10-13)
 ------------------
 * New features
   * ArcGIS import integration (includes new app_config.yml values)

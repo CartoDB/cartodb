@@ -1,5 +1,4 @@
 class UserMailer < ActionMailer::Base
-  include MailerHelper
   default from: "cartodb.com <support@cartodb.com>"
   layout 'mail'
 
@@ -46,18 +45,4 @@ class UserMailer < ActionMailer::Base
          :subject => "#{@visualization_owner_name} has stopped sharing a CartoDB visualization with you"
   end
 
-  def data_import_finished(user, imported_tables, total_tables, first_imported_table, first_table, errors)
-    @imported_tables = imported_tables
-    @total_tables = total_tables
-    @first_table = first_imported_table.nil? ? first_table : first_imported_table
-    organization = user.organization
-    subdomain = organization.nil? ? user.username : organization.name
-    user_name = organization.nil? ? nil : user.username
-    @link = first_imported_table.nil? ? "#{user.public_url}#{tables_index_path}" : "#{CartoDB.base_url(subdomain, user_name)}#{public_tables_show_path(id:@first_table['name'])}"
-    @plural = @total_tables == 1 ? '' : 's'
-    @errors = errors
-    mail :to => user.email,
-         :subject => import_finished_title(@imported_tables, @total_tables, @errors)
-  end
-  
 end

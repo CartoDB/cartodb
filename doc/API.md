@@ -380,7 +380,7 @@ var sublayer = layer.getSubLayer(0);
 sublayer.setSQL('SELECT * FROM table_name limit 10');
 {% endhighlight %}
 
-#### layer.getSubLayer(_layerIndex_)
+#### layer.getSubLayerCount()
 
 Get the number of sublayers in layer.
 

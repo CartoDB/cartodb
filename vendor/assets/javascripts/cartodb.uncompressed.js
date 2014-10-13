@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.16-dev
+// cartodb.js version: 3.11.17-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5a205e1ba39efdeacfb961ba4a5b86b3998ecce1
+// sha: f5e2de48a3bd252bc6e469925293d86c39741c7f
 (function() {
   var root = this;
 
@@ -20698,7 +20698,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.16-dev';
+    cdb.VERSION = '3.11.17-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -31728,12 +31728,10 @@ var Vis = cdb.core.View.extend({
 
 
   _addLayers: function(layers, options) {
-
-    for(var i in layers) {
+    for(var i = 0; i < layers.length; ++i) {
       var layerData = layers[i];
       this.loadLayer(layerData, options);
     }
-
   },
 
   addLegends: function(layers, mobile_enabled) {

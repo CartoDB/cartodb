@@ -1,3 +1,6 @@
+3.11.17 (XX//XX//2014)
+- fixes positioning of the search and share overlays on the screen
+
 3.11.16 (10//10//2014)
 - applies the z-index to the text and image overlays
 

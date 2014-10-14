@@ -21,8 +21,8 @@ class Api::ApplicationController < ApplicationController
     if current_user.search_for_cartodbfied_tables.length
       # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
       # test if there is a job already for this
-      working = Resque::Worker.all.select { |w| 
-        w.job['payload']['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && w.job['args'] === current_user.id
+      working = Resque::Worker.all.select { |w|
+        w.job && w.job['payload'] && w.job['payload']['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && w.job['args'] === current_user.id
       }.length
       if !working
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)

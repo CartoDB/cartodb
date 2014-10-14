@@ -1,8 +1,10 @@
-3.2.X (2014-XX-XX)
+3.2.5 (2014-10-13)
 ------------------
 * New features
   * ArcGIS import integration (includes new app_config.yml values)
   * Detection of imports without tables registered and marking them as failed
+  * Adds property toolbar to style and control the image and text overlays.
+  * CSV import type guessing (performed via OGR2OGR). Disabled by default, to enable install ogr2ogr2-static-bin package and modify configuration
 
 3.2.4 (2014-10-06)
 ------------------

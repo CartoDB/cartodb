@@ -24,7 +24,8 @@ module CartoDB
 
         # --ignoreempty: skip empty lines
         # --escape: Escape \r\n\t characters
-        `xlsx2csv --ignoreempty --escape #{filepath} #{converted_filepath}`
+        # --dateformat: specify a standardized dateformat (ISO 8601)
+        `xlsx2csv --ignoreempty --escape --dateformat '%Y-%m-%dT%H:%M:%S' #{filepath} #{converted_filepath}`
 
         # Normalize here for consistency's sake
         normalizer = CsvNormalizer.new(converted_filepath, job)

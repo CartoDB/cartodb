@@ -18,6 +18,7 @@ module CartoDB
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
         FEATURE_DATA_URL = '%s/query?objectIds=%s&outFields=%s&outSR=4326&f=json'
+        FEATURE_DATA_POST_URL = '%s/query'
         LAYERS_URL       = '%s/layers?f=json'
 
         MINIMUM_SUPPORTED_VERSION = 10.1
@@ -28,9 +29,10 @@ module CartoDB
         # Amount to multiply or divide
         BLOCK_FACTOR = 2
         MIN_BLOCK_SIZE = 1
-        # Lots of ids can generate too long urls. This size, with a dozen fields fits up to 6 digit ids
+        # If using GET, lots of ids can generate too long urls. This size, with a dozen fields fits up to 6 digit ids
         # @see http://www.iis.net/configreference/system.webserver/security/requestfiltering/requestlimits
-        MAX_BLOCK_SIZE = 175
+        # Also, even for POST GeoJSON can get too big in memory, warning with allowing too much
+        MAX_BLOCK_SIZE = 500
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying
         MAX_RETRIES = 0
@@ -379,22 +381,26 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-          # Doesn't encodes properly even using an external gem, good job Ruby!
-          prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(',')).gsub(',','%2C')
-          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(',')).gsub(',','%2C')
+          prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(','))
+          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
 
-          prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
-
-          puts "#{prepared_url}" if DEBUG
-
-          response = Typhoeus.get(prepared_url, http_options)
+          prepared_url = FEATURE_DATA_POST_URL % [url]
+          params_data = {
+            objectIds:  prepared_ids,
+            outFields:  prepared_fields,
+            outSR:      4326,
+            f:          'json'
+          }
+          puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
+          response = Typhoeus.post(prepared_url, http_options(params_data, :post))
 
           # Timeout connecting to ArcGIS
           if response.code == 0
             raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.body} #{self.to_s}")
           end
           if response.code != 200
-            raise DataDownloadError.new("ERROR: #{prepared_url} (#{response.code}) : #{response.body} #{self.to_s}")
+            raise DataDownloadError.new("ERROR: #{prepared_url} POST " +
+                                        "#{params_data} (#{response.code}) : #{response.body} #{self.to_s}")
           end
 
           begin
@@ -463,10 +469,11 @@ module CartoDB
           @block_size
         end
 
-        def http_options(params={})
+        def http_options(params={}, method=:get)
           {
-            params:           params,
-            method:           :get,
+            method:           method,
+            params:           method == :get ? params : {},
+            body:             method == :post ? params : {},
             followlocation:   true,
             ssl_verifypeer:   false,
             accept_encoding:  'gzip',

@@ -923,7 +923,7 @@ describe User do
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
       @user.in_database.run('create table non_ghost_table (test integer)')
       @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "non_ghost_table"]
-      @user.real_tables.size.should == 4
+      @user.real_tables.size.should == 2
       @user.tables.count.should == 2
     end
 

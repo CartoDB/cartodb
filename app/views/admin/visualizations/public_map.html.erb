@@ -281,10 +281,14 @@
           opt.scrollwheel   = false;
           opt.mobile_layout = true;
 
-          cartodb.config.set({
-            cartodb_attributions: "",
-            cartodb_logo_link: ""
-          });
+          var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+          if (!opt.force_mobile && !mobileDevice) {
+            cartodb.config.set({
+              cartodb_attributions: "",
+              cartodb_logo_link: ""
+            });
+          }
 
           var loadingTime  = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();

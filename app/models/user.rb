@@ -946,7 +946,6 @@ class User < Sequel::Model
   # returns the list of tables in the database with those columns but not in metadata database
   def search_for_cartodbfied_tables
     metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
-    return [] if metadata_table_names.empty?
     db = self.in_database(:as => :superuser)
     reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
     cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
@@ -955,8 +954,13 @@ class User < Sequel::Model
         SELECT table_name, count(column_name::text) cdb_columns_count
         FROM information_schema.columns 
         WHERE
-          table_name not in (#{metadata_table_names})
-            AND
+    }
+
+    if metadata_table_names.length
+      sql += "table_name not in (#{metadata_table_names}) AND"
+    end
+
+    sql += %Q{
           column_name in (#{cartodb_columns})
           group by 1
       )

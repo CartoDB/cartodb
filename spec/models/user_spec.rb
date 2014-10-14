@@ -922,7 +922,7 @@ describe User do
     it "should correctly count real tables" do
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
       @user.in_database.run('create table non_ghost_table (test integer)')
-      @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters", "non_ghost_table"]
+      @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "non_ghost_table"]
       @user.real_tables.size.should == 4
       @user.tables.count.should == 2
     end
@@ -990,6 +990,7 @@ describe User do
     it "should remove a table that does not exist on the user database" do
       initial_count = @user.tables.count
       table = create_table :user_id => @user.id, :name => 'My table 3'
+      puts "dropping", table.name
       @user.in_database.drop_table(table.name)
       @user.tables.where(name: table.name).first.should_not be_nil
       @user.link_ghost_tables

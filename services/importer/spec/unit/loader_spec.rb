@@ -30,10 +30,10 @@ describe Loader do
 
     it 'runs the ogr2ogr command to load the file' do
       ogr2ogr_mock = mock
-      ogr2ogr_mock.stubs(:command).returns('')
-      ogr2ogr_mock.stubs(:command_output).returns('')
-      ogr2ogr_mock.stubs(:exit_code).returns(0)
-      ogr2ogr_mock.stubs(:run).returns(Object.new)
+      ogr2ogr_mock.stubs(:command).returns('').at_least_once
+      ogr2ogr_mock.stubs(:command_output).returns('').at_least_once
+      ogr2ogr_mock.stubs(:exit_code).returns(0).at_least_once
+      ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
       loader   = Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
 

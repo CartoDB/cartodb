@@ -3,6 +3,22 @@ require_relative './base_job'
 
 module Resque
   module UserJobs
+
+    module SyncTables
+
+      module LinkGhostTables 
+        @queue = :users
+
+        def self.perform(user_id)
+          u = User.where(id: user_id).first
+          u.link_ghost_tables
+        end
+
+      end
+
+    end
+
+
     module Mail
 
       module NewOrganizationUser

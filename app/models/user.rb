@@ -932,58 +932,41 @@ class User < Sequel::Model
     .all
   end
 
-  # Looks for tables created on the user database
-  # but not linked to the Rails app database. Creates/Updates/Deletes
-  # required records to sync them
+  # Looks for tables created on the user database with
+  # the columns needed
   def link_ghost_tables
     return true if self.real_tables.blank?
-    link_outdated_tables
-    # link_created_tables
-    # link_renamed_tables
+    link_renamed_tables
     link_deleted_tables
+    link_created_tables(search_for_cartodbfied_tables)
   end
 
-  def link_outdated_tables
-    # Link tables without oid
-    metadata_tables_without_id = self.tables.where(table_id: nil).map(&:name)
-    outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
-    outdated_tables.each do |t|
-      table = self.tables.where(name: t[:relname]).first
-      begin
-        table.keep_user_database_table = true
-        table.this.update table_id: t[:oid]
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /must be owner of relation/
-      end
-    end
-
-    # Link tables which oid has changed
-    self.tables.where(
-      "table_id not in ?", self.real_tables.map {|t| t[:oid]}
-    ).each do |table|
-      real_table_id = table.get_table_id
-      table.this.update(table_id: real_table_id) unless real_table_id.blank?
-    end
+  # this method search for tables with all the columns needed in a cartodb table.
+  # it does not check column types or triggers attached
+  # returns the list of tables in the database with those columns but not in metadata database
+  def search_for_cartodbfied_tables
+    metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
+    db = self.in_database(:as => :superuser)
+    reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
+    cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
+    sql = %Q{
+      WITH a as (
+        SELECT table_name, count(column_name::text) cdb_columns_count
+        FROM information_schema.columns 
+        WHERE
+          table_name not in (#{metadata_table_names})
+            AND
+          column_name in (#{cartodb_columns})
+          group by 1
+      )
+      select table_name from a where cdb_columns_count = #{reserved_columns.length}
+    }
+    db[sql].all.map { |t| t[:table_name] }
   end
 
-  def link_created_tables
-    created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
-    created_tables.each do |t|
-      table = ::Table.new
-      table.user_id  = self.id
-      table.name     = t[:relname]
-      table.table_id = t[:oid]
-      table.migrate_existing_table = t[:relname]
-      table.keep_user_database_table = true
-      begin
-        table.save
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /must be owner of relation/
-      end
-    end
-  end
 
   def link_renamed_tables
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
@@ -993,6 +976,23 @@ class User < Sequel::Model
         table.synchronize_name(t[:relname])
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
+      end
+    end
+  end
+
+  def link_created_tables(table_names)
+    created_tables = real_tables.select {|t| table_names }
+    created_tables.each do |t|
+      begin
+        table = Table.new
+        table.user_id  = self.id
+        table.name     = t[:relname]
+        table.table_id = t[:oid]
+        table.migrate_existing_table = t[:relname]
+        table.keep_user_database_table = true
+        table.save
+      rescue => e
+        puts e
       end
     end
   end

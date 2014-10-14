@@ -924,7 +924,6 @@ describe User do
       @user.in_database.run('create table non_ghost_table (test integer)')
       @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "non_ghost_table"]
       @user.real_tables.size.should == 2
-      @user.tables.count.should == 2
     end
 
     it "should return cartodbfied tables" do

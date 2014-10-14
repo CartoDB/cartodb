@@ -17,7 +17,6 @@
 
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
-    <%= insert_rollbar() %>
     <%= insert_google_analytics('primary', [{title: "Public Pages", value: action_name == "datasets" ? "Other" : "Home", num: 3}] ) %>
     <%= yield :js %>
     <%= csrf_meta_tag %>
@@ -26,5 +25,6 @@
     <%= render 'admin/shared/public_header', :clone => false, :signin => true %>
     <%= yield %>
     <%= render 'admin/shared/public_footer' %>
+    <%= render 'shared/crazyegg' %>
   </body>
 </html>

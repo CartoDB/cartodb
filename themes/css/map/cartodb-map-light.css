@@ -887,6 +887,7 @@ only screen and (                min-resolution: 2dppx) {
   bottom: 59px;
 }
 .cartodb-mobile .cartodb-attribution-button {
+  display: none;
   width: 20px;
   height: 20px;
   background: #fff;

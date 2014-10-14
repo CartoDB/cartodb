@@ -21,8 +21,6 @@ module CartoDB
         FEATURE_DATA_POST_URL = '%s/query'
         LAYERS_URL       = '%s/layers?f=json'
 
-        USE_POST_ITEM_RETRIEVALS = true
-
         MINIMUM_SUPPORTED_VERSION = 10.1
 
         # In seconds and for the full request
@@ -383,36 +381,25 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-          params_data = {}
           prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(','))
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
 
-          if USE_POST_ITEM_RETRIEVALS
-            prepared_url = FEATURE_DATA_POST_URL % [url]
-            params_data = {
-              objectIds:  prepared_ids,
-              outFields:  prepared_fields,
-              outSR:      4326,
-              f:          'json'
-            }
-            puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
-            response = Typhoeus.post(prepared_url, http_options(params_data, :post))
-          else
-            # Doesn't encodes properly even using an external gem, good job Ruby!
-            prepared_ids = prepared_ids.gsub(',','%2C')
-            prepared_fields = prepared_fields.gsub(',','%2C')
-
-            prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
-            puts "#{prepared_url}" if DEBUG
-            response = Typhoeus.get(prepared_url, http_options(params_data))
-          end
+          prepared_url = FEATURE_DATA_POST_URL % [url]
+          params_data = {
+            objectIds:  prepared_ids,
+            outFields:  prepared_fields,
+            outSR:      4326,
+            f:          'json'
+          }
+          puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
+          response = Typhoeus.post(prepared_url, http_options(params_data, :post))
 
           # Timeout connecting to ArcGIS
           if response.code == 0
             raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.body} #{self.to_s}")
           end
           if response.code != 200
-            raise DataDownloadError.new("ERROR: #{prepared_url} #{USE_POST_ITEM_RETRIEVALS ? 'POST' : 'GET'} " +
+            raise DataDownloadError.new("ERROR: #{prepared_url} POST " +
                                         "#{params_data} (#{response.code}) : #{response.body} #{self.to_s}")
           end
 

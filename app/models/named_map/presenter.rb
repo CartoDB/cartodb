@@ -2,17 +2,17 @@
 
 module CartoDB
   module NamedMapsWrapper
-		class Presenter
+    class Presenter
 
       NAMED_MAP_TYPE = 'namedmap'
 
       LAYER_TYPES_TO_DECORATE = [ 'torque' ]
 
       # @throws NamedMapsPresenterError
-			def initialize(visualization, layergroup, options, configuration)
+      def initialize(visualization, layergroup, options, configuration)
         @visualization    = visualization
         @options          = options
-        @configuration	  = configuration
+        @configuration    = configuration
         @layergroup_data  = layergroup
         @named_map_name   = NamedMap.normalize_name(@visualization.id)
       end
@@ -112,6 +112,6 @@ module CartoDB
         layers_data
       end
 
-		end
-	end
+    end
+  end
 end

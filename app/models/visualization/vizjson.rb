@@ -96,7 +96,6 @@ module CartoDB
 
       def layer_group_for_named_map(visualization)
         layer_group_poro = layer_group_for(visualization)
-
         # If there is *only* a torque layer, there is no layergroup
         return {} if layer_group_poro.nil?
 

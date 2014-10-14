@@ -958,7 +958,7 @@ class User < Sequel::Model
         WHERE
     }
 
-    if metadata_table_names.length == 0
+    if metadata_table_names.length != 0
       sql += "table_name not in (#{metadata_table_names}) AND"
     end
 

@@ -1,3 +1,33 @@
+3.11.16 (10//10//2014)
+- applies the z-index to the text and image overlays
+
+3.11.15 (07//10//2014)
+- fixes a display issue with overlays in desktop.
+- fixed compatibility with mootools
+
+3.11.14 (06//10//2014)
+- adds stats_tag for all request in the url
+- mobile layout fixes:
+  - small CSS fixes
+	- fixes issues activating legends, layer_selectors and search
+	- setting the force_mobile to false disables the mobile layout
+  - adds specs
+
+3.11.13 (29//09//2014)
+- fixes the scope of the backdrop element in the CSS file
+
+3.11.12 (29//09//2014)
+- fixes a bug that prevented showing the torque slider
+
+3.11.11 (29//09//2014)
+- fixes a bug that prevented dragging google maps with the mobile layout activated
+
+3.11.10 (29//09//2014)
+- fixes a bug that prevented showing the legend using the createLayer method
+
+3.11.09 (29//09//2014)
+- adds mobile layout
+
 3.11.08 (21//09//2014)
 - updated torque module with speed optimizations
 

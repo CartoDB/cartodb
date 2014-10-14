@@ -32,6 +32,7 @@ function NamedMap(named_map, options) {
   this.options.pngParams.push('auth_token')
   this.options.gridParams.push('auth_token')
   this.setLayerDefinition(named_map, options)
+  this.stat_tag = named_map.stat_tag;
 }
 
 
@@ -359,6 +360,10 @@ Map.prototype = {
         params.push("auth_token=" + extra_params.auth_token);
       }
     }
+
+    if (this.stat_tag) {
+      params.push("stat_tag=" + this.stat_tag);
+    }
     // mark as the request is being done
     this._waiting = true;
     var req = null;
@@ -378,7 +383,7 @@ Map.prototype = {
       }
       // check payload size
       var payload = JSON.stringify(this.toJSON());
-      if (payload < this.options.MAX_GET_SIZE) {
+      if (payload.length < this.options.MAX_GET_SIZE) {
         return false;
       }
     }

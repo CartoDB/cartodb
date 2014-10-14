@@ -148,6 +148,7 @@ module CartoDB
         runner        = CartoDB::Importer2::Runner.new(
           pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
         )
+        runner.loader_options = ogr2ogr_options
 
         runner.include_additional_errors_mapping(
           {
@@ -342,6 +343,18 @@ module CartoDB
 	          host:     user.user_database_host
           )
       end 
+
+      def ogr2ogr_options
+        options = Cartodb.config.fetch(:ogr2ogr, {})
+        if options['binary'].nil? || options['csv_guessing'].nil?
+          {}
+        else
+          {
+            ogr2ogr_binary:       options['binary'],
+            ogr2ogr_csv_guessing: options['csv_guessing']
+          }
+        end
+      end
 
       def log
         return @log unless @log.nil?

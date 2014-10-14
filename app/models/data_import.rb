@@ -339,6 +339,18 @@ class DataImport < Sequel::Model
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end
 
+  def ogr2ogr_options
+    options = Cartodb.config.fetch(:ogr2ogr, {})
+    if options['binary'].nil? || options['csv_guessing'].nil?
+      {}
+    else
+      {
+        ogr2ogr_binary:       options['binary'],
+        ogr2ogr_csv_guessing: options['csv_guessing']
+      }
+    end
+  end
+
   def new_importer
     manual_fields = {}
     had_errors = false
@@ -394,6 +406,7 @@ class DataImport < Sequel::Model
       runner        = CartoDB::Importer2::Runner.new(
         pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
+      runner.loader_options = ogr2ogr_options
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database

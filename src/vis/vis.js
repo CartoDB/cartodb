@@ -273,7 +273,7 @@ var Vis = cdb.core.View.extend({
   },
 
   _addOverlays: function(overlays, options) {
-   
+
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
 
@@ -707,7 +707,8 @@ var Vis = cdb.core.View.extend({
     if (!this.mobile_enabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
-           type: "search"
+           type: "search",
+           order: 3
         });
       }
     }
@@ -745,6 +746,7 @@ var Vis = cdb.core.View.extend({
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
+          order: 2,
           url: vizjson.url
         });
       }

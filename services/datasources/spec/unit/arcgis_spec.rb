@@ -424,31 +424,23 @@ describe Url::ArcGIS do
         )
       end
 
-      # First item fetch of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?objectIds=1&outFields/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
-        body = ::JSON.parse(body)
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |response|
+        if response.options[:body][:objectIds] == "1"
+          # First item fetch of a layer
+          body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+          body = ::JSON.parse(body)
 
-        feature_names.push body['features'][0]['attributes']['NAME']
+          feature_names.push body['features'][0]['attributes']['NAME']
+          body['features'] = [ body['features'][0] ]
+        else
+          # Remaining items fetch of a layer
+          body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+          body = ::JSON.parse(body)
 
-        body['features'] = [ body['features'][0] ]
-
-        Typhoeus::Response.new(
-          code: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: ::JSON.dump(body)
-        )
-      end
-
-      # Remaining items fetch of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?objectIds=2%2C3&outFields/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
-        body = ::JSON.parse(body)
-
-        feature_names.push body['features'][1]['attributes']['NAME']
-        feature_names.push body['features'][2]['attributes']['NAME']
-
-        body['features'] = [ body['features'][1], body['features'][2] ]
+          feature_names.push body['features'][1]['attributes']['NAME']
+          feature_names.push body['features'][2]['attributes']['NAME']
+          body['features'] = [ body['features'][1], body['features'][2] ]
+        end
 
         Typhoeus::Response.new(
           code: 200,

@@ -6,7 +6,7 @@
       <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
         <% if params[:tag] && params[:tag] == tag %>
           <% if action_name == 'datasets' %>
-          <%= link_to "x", "/datasets", { :class => "close" } %>
+          <%= params[:tag] %> <%= link_to "x", "/datasets", { :class => "close" } %>
           <% else %>
           <%= link_to "x", "/", { :class => "close" } %>
 

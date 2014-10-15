@@ -265,9 +265,36 @@
   &.annotation {
     @include border-radius(1px);
 
+    &.selected {
+      border: 1px dashed rgba(#fff, .5);
+    }
+
     .content {
       padding: 5px;
     }
+
+
+    .stick {
+      position: absolute;
+      top: 13px;
+      left: -50px;
+      width: 50px;
+      height: 2px;
+      background: #333;
+
+      .ball {
+        position:absolute;
+        left: 0;
+        top: 50%;
+        margin-top: -3px;
+        width: 6px;
+        height: 6px;
+        background: #333;
+        @include border-radius(2000px)
+      }
+
+    }
+
   }
 
   /* Image Overlay */

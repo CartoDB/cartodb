@@ -1,25 +1,32 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
+require_relative '../doubles/log'
 
 include CartoDB::Importer2
 
 describe 'SHP regression tests' do
   before do
-    @pg_options  = Factories::PGConnection.new.pg_options
+    pg_connection = Factories::PGConnection.new
+    @db = pg_connection.connection
+    @pg_options  = pg_connection.pg_options
+    @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
+  end
+
+  after(:each) do
+    @db.execute('DROP SCHEMA cdb_importer CASCADE')
+    @db.disconnect
   end
 
   it 'imports GPX files' do
     filepath    = path_to('route2.gpx')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
     runner.run
 
-    geometry_type_for(runner).wont_be_nil
+    geometry_type_for(runner).should be
   end
 
   def path_to(filepath)

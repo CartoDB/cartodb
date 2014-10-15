@@ -934,6 +934,18 @@ class User < Sequel::Model
     .all
   end
 
+  def ghost_tables_work(job)
+    job && job['payload'] && job['payload']['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
+  end
+
+  def link_ghost_tables_working
+    # search in the first 100. This is random number
+    enqeued = Resque.peek(:users, 0, 100).find_all { |job| ghost_tables_work(job) }.length
+    workers = Resque::Worker.all
+    working = workers.select { |w| ghost_tables_work(w.job) }.length
+    return (workers.length > 0 && working > 0) || enqeued > 0
+  end
+
   # Looks for tables created on the user database with
   # the columns needed
   def link_ghost_tables

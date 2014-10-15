@@ -196,6 +196,9 @@ class Admin::PagesController < ApplicationController
   def public_organization(organization)
     @organization = organization
 
+    @name = ( !@organization.display_name.empty? ? @organization.display_name : @organization.name )
+    @avatar_url = @organization.avatar_url
+
     @public_org_tables_count = @organization.public_datasets_count
     @public_org_vis_count = @organization.public_visualizations_count
 
@@ -222,7 +225,7 @@ class Admin::PagesController < ApplicationController
     @tags = @organization.tags(Visualization::Member::DERIVED_TYPE)
 
     respond_to do |format|
-      format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
+      format.html { render 'public_organization', layout: 'application_public_dashboard' }
     end
   end
 
@@ -253,7 +256,7 @@ class Admin::PagesController < ApplicationController
     @tags = @organization.tags(Visualization::Member::CANONICAL_TYPE)
 
     respond_to do |format|
-      format.html { render 'datasets_organization', layout: 'application_public_organization_dashboard' }
+      format.html { render 'datasets_organization', layout: 'application_public_dashboard' }
     end
   end
 

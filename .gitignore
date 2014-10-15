@@ -45,6 +45,7 @@ npm-debug.log
 .ruby-gemset
 lib/build/dist
 lib/build/node_modules
+lib/build/.grunt/*
 lib/build/grunt-aws.json
 lib/build/app_config.js
 rubygems

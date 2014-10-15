@@ -12,6 +12,7 @@
   var table_id            = '<%= @table.id %>';
   var schema              = <%=raw @table.schema.to_json %>;
   var user_name           = '<%=raw @user.username %>';
+  var owner_username      = '<%=raw @table.owner.username %>';
   var belong_organization = <%= @table.owner.has_organization? %>;
   var map                 = <%=raw @table.map.to_json %>;
   var config              = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
@@ -33,7 +34,7 @@
     <script type="text/javascript"
       src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
     </script>
-    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'table_public.js', 'templates.js', 'public_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'templates.js', 'table_public.js' %>
   <% end %>
 
   <div class="globalerror"></div>

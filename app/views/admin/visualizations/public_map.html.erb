@@ -161,11 +161,16 @@
       <!-- <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> -->
     <% end %>
 
+    <script>
+      var owner_username = '<%= raw @visualization.user.username %>';
+      var vis_id = "<%= @visualization.id %>";
+      var vis_name = "<%= @visualization.name %>";
+    </script>
     <% if !Rails.env.production? %>
-      <%= javascript_include_tag 'cdb.js', 'public_dashboard' %>
+      <%= javascript_include_tag 'cdb.js', 'templates', 'map_public' %>
     <% else %>
       <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-      <%= javascript_include_tag 'public_dashboard' %>
+      <%= javascript_include_tag 'templates', 'map_public' %>
     <% end %>
 
     <script>
@@ -393,30 +398,6 @@
 
           }).on('error', manageError);
 
-
-          $('.fork').click(function(e) {
-            e.preventDefault();
-            var baseUrl = location.origin
-            // HACK
-            // gloabl AUTH_USERNAME is set from a javascript request. That request enables .fork button
-            // so in theory when this code is executed AUTH_USER should be set
-            // see public_dashboard.js
-            $.ajax({
-              url: baseUrl + '/u/' + window.AUTH_USER + '/api/v1/viz/',
-              type: 'POST',
-              data: JSON.stringify({
-                source_visualization_id: "<%= @visualization.id %>",
-                name: "<%= @visualization.name %> clone"
-              }),
-              dataType: 'json',
-              contentType: 'application/json',
-              success: function(vis) {
-                window.location = baseUrl + '/u/' + window.AUTH_USER + "/viz/" + vis.id
-              }
-            });
-            return false;
-          });
-
           <% if Cartodb.config[:graphite_public] %>
             if (location.protocol.indexOf('https') === -1) {
               jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
@@ -434,18 +415,6 @@
           <% end %>
       });
 
-    </script>
-
-    <%= javascript_include_tag "tipsy.js" %>
-
-    <script type="text/javascript">
-      $(function() {
-        $("span.help").tipsy({ gravity: $.fn.tipsy.autoBounds(250, 's'), fade: true });
-
-        if ($.browser.msie && parseInt($.browser.version) == 7 ) {
-          $(".comments .content").html("<p>Your browser doesn't support comments.</p>")
-        }
-      });
     </script>
 
 

@@ -996,12 +996,6 @@ describe User do
       @user.tables.where(name: table.name).first.should be_nil
     end
 
-    it "should not do anything when real tables is blank" do
-      @user.stubs(:real_tables).returns([])
-      @user.tables.count.should_not == 0
-      @user.link_ghost_tables
-      @user.tables.count.should_not == 0
-    end
   end
 
   describe '#shared_tables' do

@@ -951,10 +951,10 @@ class User < Sequel::Model
   # Looks for tables created on the user database with
   # the columns needed
   def link_ghost_tables
-    return true if self.real_tables.blank?
-    link_renamed_tables
+    no_tables = self.real_tables.blank?
+    link_renamed_tables unless no_tables
     link_deleted_tables
-    link_created_tables(search_for_cartodbfied_tables)
+    link_created_tables(search_for_cartodbfied_tables) unless no_tables
   end
 
   # this method search for tables with all the columns needed in a cartodb table.

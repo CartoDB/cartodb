@@ -22,6 +22,7 @@ module CartoDB
       OUTPUT_DELIMITER      = ','       # Normalized CSVs will use this delimiter
       ENCODING_CONFIDENCE   = 30 
       ACCEPTABLE_ENCODINGS  = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
+      REVERSE_LINE_FEED     = "\x8D"
 
 
       def initialize(filepath, job=nil)
@@ -141,7 +142,7 @@ module CartoDB
       def   parsed_line(line)
         ::CSV.parse_line(line.chomp.encode('UTF-8',
                          :fallback => {
-                             "\x8D".force_encoding("Windows-1252") => ""
+                             REVERSE_LINE_FEED.force_encoding("Windows-1252") => ""
                          }), csv_options)
       rescue => e
         nil

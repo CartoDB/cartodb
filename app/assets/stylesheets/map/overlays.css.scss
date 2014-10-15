@@ -275,20 +275,23 @@
 
 
     .stick {
+      $width: 50px;
+      $height: 2px;
       position: absolute;
       top: 13px;
-      left: -50px;
-      width: 50px;
-      height: 2px;
+      left: -$width;
+      width: $width;
+      height: $height;
       background: #333;
 
       .ball {
+        $width: 6px;
         position:absolute;
-        left: 0;
+        left: -$width;
         top: 50%;
-        margin-top: -3px;
-        width: 6px;
-        height: 6px;
+        margin-top: -$width/2;
+        width: $width;
+        height: $width;
         background: #333;
         @include border-radius(2000px)
       }

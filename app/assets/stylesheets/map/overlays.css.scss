@@ -263,7 +263,7 @@
 
   /* Annotation Overlay */
   &.annotation {
-    @include border-radius(1px);
+    @include border-radius(2px);
 
     &.selected {
       border: 1px dashed rgba(#fff, .5);

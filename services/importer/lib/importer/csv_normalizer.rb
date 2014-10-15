@@ -138,9 +138,12 @@ module CartoDB
         raise EncodingDetectionError
       end
 
-      def parsed_line(line)
-        ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
-      rescue
+      def   parsed_line(line)
+        ::CSV.parse_line(line.chomp.encode('UTF-8',
+                         :fallback => {
+                             "\x8D".force_encoding("Windows-1252") => ""
+                         }), csv_options)
+      rescue => e
         nil
       end
 
@@ -167,7 +170,7 @@ module CartoDB
       def needs_normalization?
         (!ACCEPTABLE_ENCODINGS.include?(encoding))  ||
         (delimiter != DEFAULT_DELIMITER)            ||
-        single_column?                              
+        single_column?
       end
 
       def single_column?
@@ -184,18 +187,25 @@ module CartoDB
       end
 
       def encoding
+        return @encoding unless @encoding.nil?
+
         source_file = SourceFile.new(filepath)
-        return source_file.encoding if source_file.encoding
+        if source_file.encoding
+          @encoding = source_file.encoding
+        else
+          data    = File.open(filepath, 'r')
+          sample  = data.read(SAMPLE_READ_LIMIT)
+          data.close
 
-        data    = File.open(filepath, 'r')
-        sample  = data.read(SAMPLE_READ_LIMIT)
-        data.close
-
-        result = CharlockHolmes::EncodingDetector.detect(sample)
-        if result.fetch(:confidence, 0) < ENCODING_CONFIDENCE
-          return DEFAULT_ENCODING
+          result = CharlockHolmes::EncodingDetector.detect(sample)
+          if result.fetch(:confidence, 0) < ENCODING_CONFIDENCE
+            @encoding = DEFAULT_ENCODING
+          else
+            @encoding = result.fetch(:encoding, DEFAULT_ENCODING)
+          end
         end
-        result.fetch(:encoding, DEFAULT_ENCODING)
+
+        @encoding
       rescue
         DEFAULT_ENCODING
       end

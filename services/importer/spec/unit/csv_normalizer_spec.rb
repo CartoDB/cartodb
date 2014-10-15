@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'fileutils'
 require_relative '../../lib/importer/csv_normalizer'
 
@@ -15,7 +16,7 @@ describe CartoDB::Importer2::CsvNormalizer do
       csv.run
       csv.delimiter.should eq ','
     end
-  end #run
+  end
 
   describe '#detect_delimiter' do
     it 'detects the delimiter' do
@@ -25,7 +26,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture)
     end
-  end #delimiter
+  end
 
   describe '#encoding' do
     it 'guesses the encoding' do
@@ -35,7 +36,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture)
     end
-  end #encoding
+  end
 
   describe '#encoding_utf8' do
     it 'guesses UTF-8 encoding' do
@@ -45,7 +46,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture)
     end
-  end #encoding_utf8
+  end
 
   describe '#single_column?' do
     it 'returns true if CSV header has only one column' do
@@ -61,7 +62,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       csv.single_column?.should eq false
     end
-  end #single_column?
+  end
 
   describe '#multiple_column' do
     it 'returns the passed row if it has more than one cell' do
@@ -77,7 +78,7 @@ describe CartoDB::Importer2::CsvNormalizer do
       csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.multiple_column(row).should eq (row << nil)
     end
-  end #multiple_column
+  end
 
   describe '#spaces_and_commas_delimiter_detector' do
     it 'properly detects delimiter on a CSV containing many spaces and commas' do
@@ -89,7 +90,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture)
     end
-  end #spaces_and_commas_delimiter_detector
+  end
 
   describe '#remove_newlines' do
     it 'tests the cleaning of non row-separating newlines inside CSVs' do
@@ -103,8 +104,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture_filepath)
     end
-  end #remove_newlines
-
+  end
 
   # Helpers
 
@@ -118,7 +118,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     end  
 
     return filepath
-  end #newlines_factory
+  end
 
   def utf8_factory
     filepath = get_temp_csv_fullpath
@@ -133,7 +133,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     end
 
     filepath
-  end #utf8_factory
+  end
 
   def spaces_and_commas_factory
     filepath = get_temp_csv_fullpath
@@ -148,7 +148,7 @@ describe CartoDB::Importer2::CsvNormalizer do
       end
 
       filepath
-  end #spaces_and_commas_factory
+  end
 
   def utf16le_factory
     filepath = get_temp_csv_fullpath
@@ -159,7 +159,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     end
 
     filepath
-  end #utf16le_factory
+  end
 
   def tab_delimiter_factory
     filepath = get_temp_csv_fullpath
@@ -170,7 +170,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     end
 
     filepath
-  end #tab_delimiter_factory
+  end
 
   def single_column_factory
     filepath = get_temp_csv_fullpath
@@ -181,11 +181,11 @@ describe CartoDB::Importer2::CsvNormalizer do
     end
 
     filepath
-  end #single_column_factory
+  end
 
   def get_temp_csv_fullpath
     "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
-  end #get_temp_csv_fullpath
+  end
 
-end # CartoDB::Importer2::CsvNormalizer
+end
 

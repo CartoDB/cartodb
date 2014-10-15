@@ -72,6 +72,7 @@ module ApplicationHelper
       gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
       oauth_dropbox:              Cartodb.config[:oauth]['dropbox']['app_key'],
       oauth_gdrive:               Cartodb.config[:oauth]['gdrive']['client_id'],
+      oauth_instagram:            Cartodb.config[:oauth]['instagram']['app_key'],
       datasource_search_twitter:  nil,
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],

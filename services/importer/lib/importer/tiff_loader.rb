@@ -12,6 +12,7 @@ module CartoDB
         self.job            = job
         self.source_file    = source_file
         self.raster2pgsql   = raster2pgsql
+        self.options        = {}
       end #initialize
 
       def run
@@ -38,6 +39,8 @@ module CartoDB
       def valid_table_names
         [job.table_name]
       end #valid_table_names
+
+      attr_accessor   :options
 
       private
 

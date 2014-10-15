@@ -10,8 +10,101 @@
 @import "../map/map-sprite";
 @import "../elements/elements-sprite";
 
+/* Mobile */
+.cartodb-mobile .aside {
+  width: 218px;
+}
+.cartodb-mobile .aside .layer-container .layers h3 {
+  color: #fff;
+  cursor: pointer;
+}
+
+.cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.bubble ul li {
+  margin: 0;
+}
+.cartodb-mobile .layers .cartodb-mobile-layer .cartodb-legend ul {
+  min-width: 170px;
+}
+.cartodb-mobile .cartodb-attribution {
+  max-width: 150px;
+  font:11px/1 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 {
+  @include clearfix();
+}
+.cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 span {
+  @include inline-block();
+  float: left;
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overlay-properties ul li .field .btn:active {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f3f3f3), color-stop(100%, #ffffff));
+  background: -webkit-linear-gradient(#f3f3f3,#ffffff);
+  background: -moz-linear-gradient(#f3f3f3,#ffffff);
+  background: -o-linear-gradient(#f3f3f3,#ffffff);
+  background: linear-gradient(#f3f3f3,#ffffff);
+  -webkit-box-shadow: inset 0px 2px 2px #ccc;
+  -moz-box-shadow: inset 0px 2px 2px #ccc;
+  box-shadow: inset 0px 2px 2px #ccc;
+}
+
+.overlay-properties ul li .field.double-field .btn:first-child {
+  @include border-radius(3px 0 0 3px);
+}
+.overlay-properties ul li .field.double-field .btn:last-child {
+  @include border-radius(0 3px 3px 0);
+  border-left: none;
+}
+
+.overlay-properties ul li .btn {
+  position: relative;
+  display: block;
+  float: left;
+  min-width: 25px;
+  width: auto;
+  height: 20px;
+  margin: 0;
+  border: 1px solid #9E9E9E;
+  @include border-radius(3px);
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2));
+  background: -webkit-linear-gradient(#ffffff,#f2f2f2);
+  background: -moz-linear-gradient(#ffffff,#f2f2f2);
+  background: -o-linear-gradient(#ffffff,#f2f2f2);
+  background: linear-gradient(#ffffff,#f2f2f2);
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    display: block;
+    width: 10px;
+    height: 9px;
+  }
+}
+
+.overlay-properties ul li .btn {
+  &.btn-copy:after      { @include map-sprite(overlay_duplicate); }
+  &.btn-delete:after    { @include map-sprite(overlay_delete);  }
+  &.btn-zIndexInc:after { @include map-sprite(overlay_push_to_front);  }
+  &.btn-zIndexDec:after { @include map-sprite(overlay_push_to_back);  }
+}
+
+.cartodb-mobile .cartodb-attribution-button {
+  z-index: 10001
+}
+
+/* Overlay */
 .overlay.text {
 
+  &.selected {
+    border: 3px dashed rgba(#fff, .5);
+  }
   .content > .text { 
     font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
     strong { font-weight: 700; }
@@ -48,6 +141,43 @@
   z-index: 100000;
 }
 
+.overlay-properties {
+  position: absolute;
+  top: 100px;
+  left: 35px;
+  width: 740px;
+}
+.overlay-properties ul {
+  margin: 15px 0 0 0;
+}
+.overlay-properties ul li {
+  @include inline-block();
+  padding: 0 10px;
+  border-right: 1px solid rgba(217,217,217,0.8);
+}
+.overlay-properties ul li:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+.overlay-properties ul li .field {
+  @include inline-block();
+}
+.overlay-properties ul li .field .form-view {
+  margin: 0 8px 0 0;
+}
+.overlay-properties ul li .field .form-view:last-child {
+  margin-right: 0;
+}
+.overlay-properties ul li > span {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+  color: #7A7A7A;
+  display:block;
+  font-family: "Helvetica", Arial;
+  font-weight:normal;
+  line-height:12px;
+}
+
 .header.overlay-static {
   display: none;
   width: 100%;
@@ -56,8 +186,6 @@
 
   .content:hover { cursor: default; }
   &:hover { background:rgba(#333, .5); }
-
-  @include simple-transition(all, .10s, ease-in-out);
 
   position: absolute;
   background:rgba(#333, .5);
@@ -135,6 +263,10 @@
   /* Image Overlay */
   &.image {
 
+    &.selected {
+      border: 3px dashed rgba(#fff, .5);
+    }
+
     .loader{
       display:none;
       background: rgba(#333, .5) image-url('layout/loader_transparent.gif') no-repeat 50% 50%;
@@ -210,8 +342,6 @@
   } // .open
 
   &.editable {
-
-    .hint { display: block; }
 
     .text {
 
@@ -317,7 +447,14 @@
     }
   }
 
-} // .overlay
+} 
+
+// .overlay
+.overlay.editable .content {
+  .text {
+    @include user-select(inherit);
+  }
+}
 
 .header.overlay-static .content,
 .overlay .content {
@@ -347,7 +484,7 @@
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
 
-    /* @include user-select(none); this breaks safari edition */
+     @include user-select(none); this breaks safari edition 
 
     &.text img {
       display:block;

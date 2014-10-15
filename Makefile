@@ -25,6 +25,10 @@ WORKING_SPECS_3 = \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
+  services/importer/spec/unit/loader_spec.rb \
+  services/importer/spec/unit/ogr2ogr_spec.rb \
+  services/importer/spec/unit/kml_splitter_spec.rb \
+  services/importer/spec/unit/runner_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \
@@ -40,6 +44,7 @@ WORKING_SPECS_5 = \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
+  services/importer/spec/unit/mail_notifier_spec.rb \
   services/relocator/spec/relocator_spec.rb \
   $(NULL)
 
@@ -53,6 +58,8 @@ WORKING_SPECS_6 = \
 WORKING_SPECS_7 = \
   spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
+	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
+	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
   spec/models/synchronization/member_spec.rb \
   # spec/models/synchronization/collection_spec.rb not working right now \
   spec/models/synchronization/synchronization_oauth_spec.rb \
@@ -75,6 +82,7 @@ WORKING_SPECS_9 = \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
+  services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
 
 

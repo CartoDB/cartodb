@@ -196,7 +196,7 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      drop_organization_user(org_id) unless error_happened
+      drop_organization_user(org_id, is_owner = !@org_id_for_org_wipe.nil?) unless error_happened
     else
       if User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
@@ -214,7 +214,7 @@ class User < Sequel::Model
   end
 
   # Org users share the same db, so must only delete the schema
-  def drop_organization_user(org_id)
+  def drop_organization_user(org_id, is_owner=false)
     raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
 
     Thread.new do
@@ -223,15 +223,25 @@ class User < Sequel::Model
         schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', self.database_schema] +
           User.select(:database_schema).where(:organization_id => org_id).all.collect(&:database_schema)
         schemas.uniq.each do |s|
-          drop_user_privileges_in_schema(s)
+          if is_owner
+            drop_user_privileges_in_schema(s, [CartoDB::PUBLIC_DB_USER])
+          else
+            drop_user_privileges_in_schema(s)
+          end
         end
+
+        # Only remove publicuser from current user schema (and if owner, already done above)
+        unless is_owner
+          drop_user_privileges_in_schema(self.database_schema, [CartoDB::PUBLIC_DB_USER])
+        end
+
         # Drop user quota function
         database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._cdb_userquotainbytes()})
         # If user is in an organization should never have public schema, so to be safe check
         drop_all_functions_from_schema(self.database_schema)
         unless self.database_schema == 'public'
           # Must drop all functions before or it will fail
-          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" }) unless self.database_schema == 'public'
+          database.run(%Q{ DROP SCHEMA IF EXISTS "#{self.database_schema}" })
         end
       end
 
@@ -242,8 +252,6 @@ class User < Sequel::Model
       conn.run("DROP USER \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_username}\"")
     end.join
-
-
 
     monitor_user_notification
   end
@@ -628,6 +636,10 @@ class User < Sequel::Model
 
   def hard_geocoding_limit=(val)
     self[:soft_geocoding_limit] = !val
+  end
+
+  def arcgis_datasource_enabled?
+    self.arcgis_datasource_enabled == true
   end
 
   def soft_twitter_datasource_limit?
@@ -1768,11 +1780,10 @@ TRIGGER
     ]
   end
 
-  def drop_user_privileges_in_schema(schema)
+  def drop_user_privileges_in_schema(schema, additional_accounts=[])
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-
-        [self.database_username, self.database_public_username, CartoDB::PUBLIC_DB_USER].each do |u|
+        ([self.database_username, self.database_public_username] + additional_accounts).each do |u|
           user_database.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{u}\"")
           user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{u}\"")

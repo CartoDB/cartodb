@@ -1,0 +1,63 @@
+{
+  "displayFieldName": "NAME",
+  "fieldAliases": {
+    "OBJECTID": "OBJECTID",
+    "WDPAID": "WDPAID",
+    "NAME": "NAME"
+  },
+  "geometryType": "esriGeometryPolygon",
+  "spatialReference": {
+    "wkid": 4326,
+    "latestWkid": 4326
+  },
+  "fields": [
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID",
+      "alias": "OBJECTID"
+    },
+    {
+      "name": "WDPAID",
+      "type": "esriFieldTypeInteger",
+      "alias": "WDPAID"
+    },
+    {
+      "name": "NAME",
+      "type": "esriFieldTypeString",
+      "alias": "NAME",
+      "length": 254
+    }
+  ],
+  "features": [
+    {
+      "attributes": {
+        "OBJECTID": 1,
+        "WDPAID": 991,
+        "NAME": "Name of object 1"
+      },
+      "geometry": {
+        "fake": "geom"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 2,
+        "WDPAID": 992,
+        "NAME": "Name of object 2"
+      },
+      "geometry": {
+        "fake": "geom"
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": 3,
+        "WDPAID": 993,
+        "NAME": "Name of object 3"
+      },
+      "geometry": {
+        "fake": "geom"
+      }
+    }
+  ]
+}

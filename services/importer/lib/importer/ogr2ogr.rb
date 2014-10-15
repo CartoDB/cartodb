@@ -7,50 +7,73 @@ module CartoDB
       ENCODING  = 'UTF-8'
       SCHEMA    = 'cdb_importer'
 
+      OUTPUT_FORMAT_OPTION  = '-f PostgreSQL'
+      PG_COPY_OPTION        = 'PG_USE_COPY=YES'
+      NEW_LAYER_TYPE_OPTION = '-nlt PROMOTE_TO_MULTI'
+      OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
+      APPEND_MODE_OPTION    = '-append'
+
+      DEFAULT_BINARY = 'which ogr2ogr'
+
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
         self.layer      = layer
         self.options    = options
-      end #initialize
+        self.append_mode = false
+        self.csv_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
+        self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
+      end
 
-      def command
-        "#{osm_indexing_option} #{pg_copy_option} #{client_encoding_option} " +
-        "#{shape_encoding_option} #{executable_path} #{output_format_option} " +
-        "#{postgres_options} #{projection_option} #{layer_creation_options} " +
-        "#{filepath} #{layer} #{layer_name_option} #{new_layer_type_option}"
-      end #command
+      def command_for_import
+        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
+        "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+      end
+
+      def command_for_append
+        "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
+        "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
+        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+      end
 
       def executable_path
-        `which ogr2ogr`.strip
-      end #executable_path
+        is_csv? ? `#{csv_binary}`.strip : `#{DEFAULT_BINARY}`.strip
+      end
 
-      def run(*args)
+      def command
+        append_mode ? command_for_append : command_for_import
+      end
+
+      def run(use_append_mode=false)
+        @append_mode = use_append_mode
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
         self
-      end #run
+      end
 
+      attr_accessor :append_mode, :filepath
       attr_reader   :exit_code, :command_output
 
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :pg_options, :options, :table_name, :layer
+      attr_accessor :pg_options, :options, :table_name, :layer, :csv_binary, :csv_guessing
 
-      def output_format_option
-        '-f PostgreSQL'
-      end #output_format_option
+      def is_csv?
+        filepath =~ /\.csv$/i
+      end
 
-      def pg_copy_option
-        'PG_USE_COPY=YES'
-      end #pg_copy_option
+      def guessing_option
+        # Only send parameters for
+        csv_guessing && is_csv? ? '-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=NO' : ''
+      end
 
       def client_encoding_option
         "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"
-      end #encoding_option
+      end
 
       def shape_encoding_option
         encoding = options.fetch(:shape_encoding, nil)
@@ -60,7 +83,7 @@ module CartoDB
 
       def layer_name_option
         "-nln #{SCHEMA}.#{table_name}"
-      end #layer_name_option
+      end
 
       # @see http://www.gdal.org/drv_pg.html
       # @see http://www.gdal.org/drv_pg_advanced.html
@@ -71,37 +94,17 @@ module CartoDB
         %Q{dbname=#{pg_options.fetch(:database)} }    +
         %Q{password=#{pg_options.fetch(:password)}"}
         # 'schemas=#{SCHEMA},cartodb' param is no longer needed, let the DB build the proper one
-      end #postgres_options
+      end
 
       def layer_creation_options
-        "-lco #{dimension_option} -lco #{precision_option}"
-      end #layer_creatiopn_options
+        # Dimension option, precision option
+        "-lco DIM=2 -lco PRECISION=NO"
+      end
 
       def projection_option
-        return nil if filepath =~ /\.csv/ || filepath =~ /\.ods/
-        '-t_srs EPSG:4326 '
-      end #projection_option
-
-      def the_geom_name_option
-        'GEOMETRY_NAME=the_geom'
-      end #the_geom_name_option
-
-      def dimension_option
-        'DIM=2'
-      end #dimension_option
-
-      def precision_option
-        'PRECISION=NO'
-      end #precision_option
-
-      def new_layer_type_option
-        '-nlt PROMOTE_TO_MULTI'
-      end #new_layer_type_option
-
-      def osm_indexing_option
-        'OSM_USE_CUSTOM_INDEXING=NO'
+        is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
       end
-    end # Ogr2ogr
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

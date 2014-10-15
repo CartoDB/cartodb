@@ -1,4 +1,4 @@
-# encoding: UTF-8'
+# encoding: UTF-8
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
@@ -16,6 +16,9 @@ require_relative '../connectors/importer'
 
 require_relative '../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../services/datasources/lib/datasources'
+require_relative '../../services/importer/lib/importer/unp'
+require_relative '../../services/importer/lib/importer/post_import_handler'
+require_relative '../../services/importer/lib/importer/mail_notifier'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
@@ -144,12 +147,17 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    self.success  = true
-    self.state    = STATE_SUCCESS
-    log.append "Import finished\n"
-    save
-    notify(results)
-    self
+    if log.entries =~ /Table (.*) registered/
+      self.success  = true
+      self.state    = STATE_SUCCESS
+      log.append "Import finished\n"
+      save
+      notify(results)
+      self
+    else
+      log.append "Import FAILED registering table!\n"
+      handle_failure
+    end
   end
 
   def handle_failure
@@ -311,6 +319,7 @@ class DataImport < Sequel::Model
       refresh
       self.table_id = table.id
       self.table_name = table.name
+      log.append "Table '#{table.name}' registered"
       save
       true
     else
@@ -330,40 +339,112 @@ class DataImport < Sequel::Model
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end
 
+  def ogr2ogr_options
+    options = Cartodb.config.fetch(:ogr2ogr, {})
+    if options['binary'].nil? || options['csv_guessing'].nil?
+      {}
+    else
+      {
+        ogr2ogr_binary:       options['binary'],
+        ogr2ogr_csv_guessing: options['csv_guessing']
+      }
+    end
+  end
+
   def new_importer
+    manual_fields = {}
+    had_errors = false
     log.append 'new_importer()'
 
     datasource_provider = get_datasource_provider
 
-    downloader = get_downloader(datasource_provider)
+    # If retrieving metadata we get an error, fail early
+    begin
+      downloader = get_downloader(datasource_provider)
+    rescue DataDownloadError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1012,
+        log_info: ex.to_s
+      }
+    rescue ResponseError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1011,
+        log_info: ex.to_s
+      }
+    rescue InvalidServiceError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1013,
+        log_info: ex.to_s
+      }
+    rescue => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 99999,
+        log_info: ex.to_s
+      }
+    end
 
-    tracker       = lambda { |state| self.state = state; save }
-    runner        = CartoDB::Importer2::Runner.new(
-                      pg_options, downloader, log, current_user.remaining_quota
-                    )
-    registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
-    quota_checker = CartoDB::QuotaChecker.new(current_user)
-    database      = current_user.in_database
-    destination_schema = current_user.database_schema
-    importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
-    log.append 'Before importer run'
-    importer.run(tracker)
-    log.append 'After importer run'
+    if had_errors
+      importer = runner = datasource_provider = nil
+    else
+      tracker       = lambda { |state|
+        self.state = state
+        save
+      }
 
-    self.results    = importer.results
-    self.error_code = importer.error_code
-    self.table_name = importer.table.name if importer.success? && importer.table
-    self.table_id   = importer.table.id if importer.success? && importer.table
+      post_import_handler = CartoDB::Importer2::PostImportHandler.new
+      case datasource_provider.class::DATASOURCE_NAME
+        when Url::ArcGIS::DATASOURCE_NAME
+          post_import_handler.add_fix_geometries_task
+        when Search::Twitter::DATASOURCE_NAME
+          post_import_handler.add_transform_geojson_geom_column
+      end
 
-    self.stats = ::JSON.dump(runner.stats)
+      runner        = CartoDB::Importer2::Runner.new(
+        pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
+      )
+      runner.loader_options = ogr2ogr_options
+      registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
+      quota_checker = CartoDB::QuotaChecker.new(current_user)
+      database      = current_user.in_database
+      destination_schema = current_user.database_schema
+      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
+      log.append 'Before importer run'
+      importer.run(tracker)
+      log.append 'After importer run'
+    end
 
-    update_synchronization(importer)
+    store_results(importer, runner, datasource_provider, manual_fields)
 
-    importer.success? ? set_datasource_audit_to_complete(datasource_provider, \
+    importer.nil? ? false : importer.success?
+  end
+
+  # Note: Assumes that if importer is nil an error happened
+  # @param importer CartoDB::Connector::Importer|nil
+  # @param runner CartoDB::Importer2::Runner|nil
+  # @param datasource_provider mixed|nil
+  # @param manual_fields Hash
+  def store_results(importer=nil, runner=nil, datasource_provider=nil, manual_fields={})
+    if importer.nil?
+      set_error(manual_fields.fetch(:error_code, 99999), manual_fields.fetch(:log_info, nil))
+    else
+      self.results    = importer.results
+      self.error_code = importer.error_code
+      self.table_name = importer.table.name if importer.success? && importer.table
+      self.table_id   = importer.table.id if importer.success? && importer.table
+
+      update_synchronization(importer)
+      importer.success? ? set_datasource_audit_to_complete(datasource_provider, \
                                                          importer.success? && importer.table ? importer.table.id : nil)
-                      : set_datasource_audit_to_failed(datasource_provider)
+      : set_datasource_audit_to_failed(datasource_provider)
+    end
 
-    importer.success?
+    unless runner.nil?
+      self.stats = ::JSON.dump(runner.stats)
+    end
   end
 
   def update_synchronization(importer)
@@ -398,6 +479,7 @@ class DataImport < Sequel::Model
 
   def get_downloader(datasource_provider)
     log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
     if datasource_provider.providers_download_url?
@@ -438,6 +520,7 @@ class DataImport < Sequel::Model
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
+    CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
 
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
   end
@@ -484,7 +567,8 @@ class DataImport < Sequel::Model
     begin
       oauth = current_user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
-      datasource = DatasourcesFactory.get_datasource(datasource_name, current_user, $tables_metadata)
+      datasource = DatasourcesFactory.get_datasource(
+        datasource_name, current_user, { redis_storage: $tables_metadata })
       datasource.report_component = Rollbar
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
@@ -504,14 +588,18 @@ class DataImport < Sequel::Model
     datasource
   end
 
-  def set_merge_error(error_code, log_info='')
-    log.append("Going to set merge error with code #{error_code}")
+  def set_error(error_code, log_info='')
     log.append("Additional error info: #{log_info}") unless log_info.empty?
     self.results = [CartoDB::Importer2::Result.new(
-      success: false, error_code: error_code
-    )]
+                      success: false, error_code: error_code
+                    )]
     self.error_code = error_code
     self.state = STATE_FAILURE
+  end
+
+  def set_merge_error(error_code, log_info='')
+    log.append("Going to set merge error with code #{error_code}")
+    set_error(error_code, log_info)
   end
 
   def set_datasource_audit_to_complete(datasource, table_id = nil)

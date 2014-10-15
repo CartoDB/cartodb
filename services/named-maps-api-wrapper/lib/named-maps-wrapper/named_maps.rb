@@ -14,9 +14,9 @@ module CartoDB
 				@vizjson_config = vizjson_config
         @verify_cert = tiler_config[:verifycert]
         @verify_host = tiler_config[:verifycert] ? 2 : 0
-				@host = tiler_config[:host].nil? ?
-          "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}" :
-          "#{tiler_config[:protocol]}://#{tiler_config[:host]}:#{tiler_config[:port]}"
+        domain = "#{@username}.#{tiler_config[:domain]}"
+        host_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? domain : Cartodb.config[:tiler]['internal']['host']
+				@host = "#{tiler_config[:protocol]}://#{host_ip}:#{tiler_config[:port]}"
 				@url = [ @host, 'tiles', 'template' ].join('/')
         @headers = { 
           'content-type' => 'application/json',
@@ -37,7 +37,7 @@ module CartoDB
           ssl_verifyhost: @verify_host,
           followlocation: true
 				})
-				raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)" if response.code != 200
+				raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}" if response.code != 200
 
 				::JSON.parse(response.response_body)
 			end #all
@@ -63,7 +63,7 @@ module CartoDB
 					# Request ok, template with provided name not found
 					nil
 				else
-					raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)"
+					raise HTTPResponseError, "GET:#{response.code} #{response.request.url} #{response.body}"
 				end
 			end #get
 

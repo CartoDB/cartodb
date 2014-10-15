@@ -64,7 +64,7 @@
     <%= insert_trackjs() %>
 
   </head>
-  <body>
+  <body class="embed-map">
     <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
       <div id="map"></div>
       <div id="not_supported_dialog" style="display: none">
@@ -78,9 +78,12 @@
       </div>
       <div class="cartodb-text">
         Map created by
+        <% username = @visualization.user.name.blank? ? @visualization.user.username : @visualization.user.name %>
         <a class="user" href="<%= @visualization.user.public_url %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
-          <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= @visualization.user.username %>" title="<%= @visualization.user.username %>" />
-          <span class="username"><%= @visualization.user.username %></span>
+          <% if !@visualization.user.avatar_url.blank? %>
+            <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
+          <% end %>
+          <span class="username"><%= username %></span>
         </a>
       </div>
     <% end %>
@@ -153,6 +156,10 @@
 
       $(document).ready(function(){
 
+        if ($(window).width() < 620) {
+          $("body").addClass("embed-map-small");
+        }
+
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
         , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
@@ -168,6 +175,7 @@
         };
 
         var opt = get_url_params({
+          'force_mobile': bool_fn,
           'search':       bool_fn,
           'title':        bool_fn,
           'description':  bool_fn,
@@ -195,6 +203,8 @@
          <% if hide_logo %>
             opt.cartodb_logo = false;
          <% end %>
+
+         opt.mobile_layout = true;
 
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
@@ -237,6 +247,9 @@
       <% end %>
 
     </script>
+
+    <%= render 'shared/crazyegg' %>
+
     <%= render partial: 'shared/analytics', locals: {
       ua:     Cartodb.config[:google_analytics]['embeds'],
       domain: Cartodb.config[:google_analytics]['domain'],

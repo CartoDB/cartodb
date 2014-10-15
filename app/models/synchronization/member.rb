@@ -6,8 +6,10 @@ require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
-include CartoDB::Datasources
+require_relative '../../../services/importer/lib/importer/unp'
+require_relative '../../../services/importer/lib/importer/post_import_handler'
 
+include CartoDB::Datasources
 
 module CartoDB
   module Synchronization
@@ -18,7 +20,7 @@ module CartoDB
     class Member
       include Virtus.model
 
-      MAX_RETRIES     = 5
+      MAX_RETRIES     = 10
 
       # Seconds required between manual sync now
       SYNC_NOW_TIMESPAN = 900
@@ -111,7 +113,7 @@ module CartoDB
 
       # @return bool
       def can_manually_sync?
-        self.state == STATE_SUCCESS && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
+        (self.state == STATE_SUCCESS || self.state == STATE_FAILURE) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
       end #can_manually_sync?
 
       # @return bool
@@ -133,7 +135,20 @@ module CartoDB
 
         downloader    = get_downloader
 
-        runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
+        post_import_handler = CartoDB::Importer2::PostImportHandler.new
+        unless downloader.datasource.nil?
+          case downloader.datasource.class::DATASOURCE_NAME
+            when Url::ArcGIS::DATASOURCE_NAME
+              post_import_handler.add_fix_geometries_task
+            when Search::Twitter::DATASOURCE_NAME
+              post_import_handler.add_transform_geojson_geom_column
+          end
+        end
+
+        runner        = CartoDB::Importer2::Runner.new(
+          pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
+        )
+        runner.loader_options = ogr2ogr_options
 
         runner.include_additional_errors_mapping(
           {
@@ -328,6 +343,18 @@ module CartoDB
 	          host:     user.user_database_host
           )
       end 
+
+      def ogr2ogr_options
+        options = Cartodb.config.fetch(:ogr2ogr, {})
+        if options['binary'].nil? || options['csv_guessing'].nil?
+          {}
+        else
+          {
+            ogr2ogr_binary:       options['binary'],
+            ogr2ogr_csv_guessing: options['csv_guessing']
+          }
+        end
+      end
 
       def log
         return @log unless @log.nil?

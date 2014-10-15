@@ -1,3 +1,37 @@
+3.2.5 (2014-10-13)
+------------------
+* New features
+  * ArcGIS import integration (includes new app_config.yml values)
+  * Detection of imports without tables registered and marking them as failed
+  * Adds property toolbar to style and control the image and text overlays.
+  * CSV import type guessing (performed via OGR2OGR). Disabled by default, to enable install ogr2ogr2-static-bin package and modify configuration
+
+3.2.4 (2014-10-06)
+------------------
+* New features
+  * Upon table creation no tile style call performed anymore. Still done upon layer/map change, though.
+  * Send an email upon completion of an import if it takes more than 5 minutes.
+  * Twitter search API uses geo-enrichment if present. Also there's a customized organizations list too now.
+  * The mobile editor resembles to the mobile layout of the embed maps.
+  * Removed force_mobile flag from the embed maps.
+* Fixed bugs
+  * Geocoding a table with 0 geocodificable rows throws error
+
+3.2.3 (2014-09-30)
+------------------
+* New features
+  * Added ability to disable high resolution geocoding batch api by config 
+* Fixed bugs
+  * Missing geocoding type (Admin regions, country column, polygons)
+
+3.2.2 (2014-09-29)
+------------------
+* New features
+  * Improved torque rendering on pause or static datasets
+  * Improved mobile layout
+  * Improved Geocoder UI
+  * Refactor of InternalGeocoder
+
 3.2.1 (2014-09-05)
 ------------------
 * New common data section

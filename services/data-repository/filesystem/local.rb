@@ -19,8 +19,10 @@ module DataRepository
         end if data.respond_to?(:bucket)
         
         File.open(fullpath_for(path), 'wb') do |file|
-          while chunk = data.gets
-            file.write(chunk) 
+          chunk = data.gets
+          while chunk
+            file.write(chunk)
+            chunk = data.gets
           end
         end unless data.respond_to?(:bucket)
 
@@ -34,6 +36,13 @@ module DataRepository
       def exists?(path)
         File.exists?(fullpath_for(path))
       end #exists?
+
+      # Use from controlled environments always
+      def remove(path)
+        if exists?(path)
+          File.delete(fullpath_for(path))
+        end
+      end
 
       def zip(path)
         zip_path            = "#{fullpath_for(path)}.zip"

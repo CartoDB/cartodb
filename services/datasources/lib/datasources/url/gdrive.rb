@@ -36,6 +36,8 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
+          super
+
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
           raise MissingConfigurationError.new('missing application_name', DATASOURCE_NAME)  unless config.include?('application_name')
           raise MissingConfigurationError.new('missing client_id', DATASOURCE_NAME)         unless config.include?('client_id')
@@ -62,7 +64,7 @@ module CartoDB
         # Factory method
         # @param config {}
         # @param user User
-        # @return CartoDB::Synchronizer::FileProviders::GDrive
+        # @return CartoDB::Datasources::Url::GDrive
         def self.get_new(config, user)
           new(config, user)
         end

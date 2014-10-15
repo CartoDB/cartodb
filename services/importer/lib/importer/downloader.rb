@@ -38,6 +38,7 @@ module CartoDB
         @http_options = http_options
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
+        @datasource
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -48,7 +49,11 @@ module CartoDB
           @translated_url = translator.translate(url)
           @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
         end
-      end #initialize
+      end
+
+      def provides_stream?
+        false
+      end
 
       def run(available_quota_in_bytes=nil)
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
@@ -106,6 +111,7 @@ module CartoDB
       def download_and_store
         name = ''
         download_error = false
+        error_response = nil
 
         temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
 
@@ -114,6 +120,7 @@ module CartoDB
         request.on_headers do |response|
           unless response.success?
             download_error = true
+            error_response = response
           end
         end
         request.on_body do |chunk|
@@ -130,7 +137,9 @@ module CartoDB
         end
         request.run
 
-        raise DownloadError if download_error
+        if download_error && !error_response.nil?
+          raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
+        end
 
         File.rename(temp_name, filepath(name))
 
@@ -184,6 +193,10 @@ module CartoDB
         etag
       end
 
+      def checksum
+        etag_from(headers)
+      end
+
       def last_modified_from(headers)
         last_modified =   headers.fetch('Last-Modified', nil)
         last_modified ||= headers.fetch('Last-modified', nil)
@@ -192,7 +205,11 @@ module CartoDB
         last_modified
       end
 
-      attr_reader   :source_file, :etag, :last_modified
+      def multi_resource_import_supported?
+        false
+      end
+
+      attr_reader   :source_file, :datasource, :etag, :last_modified
       attr_accessor :url
 
       private

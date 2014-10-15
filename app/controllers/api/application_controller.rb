@@ -18,13 +18,10 @@ class Api::ApplicationController < ApplicationController
 
   def link_ghost_tables
     return true unless current_user.present?
-    if current_user.search_for_cartodbfied_tables.length
+    if current_user.search_for_cartodbfied_tables.length != 0
       # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
       # test if there is a job already for this
-      working = Resque::Worker.all.select { |w|
-        w.job && w.job['payload'] && w.job['payload']['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && w.job['args'] === current_user.id
-      }.length
-      if !working
+      if !current_user.link_ghost_tables_working
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
       end
     end

@@ -2,25 +2,19 @@
 
 module CartoDB
   module NamedMapsWrapper
-		class Presenter
+    class Presenter
 
       NAMED_MAP_TYPE = 'namedmap'
 
       LAYER_TYPES_TO_DECORATE = [ 'torque' ]
 
       # @throws NamedMapsPresenterError
-			def initialize(visualization, options, configuration)
-        @visualization  = visualization
-        @options        = options
-        @configuration	= configuration
-
-        raise NamedMapsPresenterError.new('Missing internal tiler config') unless @configuration[:tiler]['internal'].present?
-        raise NamedMapsPresenterError.new('Missing public tiler config') unless @configuration[:tiler]['private'].present?
-        raise NamedMapsPresenterError.new('Missing private tiler config') unless @configuration[:tiler]['public'].present?
-
-        @named_map          = nil
-        @named_map_template = nil
-        @loaded				    = false
+      def initialize(visualization, layergroup, options, configuration)
+        @visualization    = visualization
+        @options          = options
+        @configuration    = configuration
+        @layergroup_data  = layergroup
+        @named_map_name   = NamedMap.normalize_name(@visualization.id)
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
@@ -29,19 +23,11 @@ module CartoDB
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
-        load_named_map_data unless @loaded
-        raise NamedMapsPresenterError.new("couldn't load named map template") if @named_map_template.nil?
-
-        params = {}
-        @named_map_template[:placeholders].each { |key, value|
-          params[key.to_s] = value[:default]
-        }
-
-        { 
+        {
           'named_map' =>  {
-            'name' =>         @named_map_template[:name],
+            'name' =>         @named_map_name,
             'layer_index' =>  layer_index,
-            'params' =>       params
+            'params' =>       placeholders_data
           },
           'query' => nil  #do not expose SQL query on Torque layers with named maps
         }
@@ -51,14 +37,6 @@ module CartoDB
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
       def to_poro
-      	load_named_map_data unless @loaded
-        raise NamedMapsPresenterError.new("couldn't load named map template") if @named_map_template.nil?
-
-        params = {}
-        @named_map_template[:placeholders].each { |key, value|
-          params[key] = value[:default]
-        }
-
         if @visualization.layers(:cartodb).size == 0
           # When there are no layers don't return named map data
           nil
@@ -80,9 +58,9 @@ module CartoDB
                                   @configuration[:tiler]['public']['port'],
               cdn_url:          @configuration.fetch(:cdn_url, nil),
               named_map:        {
-                name:     @named_map_template[:name],
+                name:     @named_map_name,
                 stat_tag: @visualization.id,
-                params:   params,
+                params:   placeholders_data,
                 layers:   configure_layers_data
               }
             }
@@ -91,6 +69,14 @@ module CartoDB
       end
 
       private
+
+      def placeholders_data
+        data = {}
+        @layergroup_data.each { |layer|
+          data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1: 0
+        }
+        data
+      end
 
       # Extract relevant information from layers
       def configure_layers_data
@@ -126,25 +112,6 @@ module CartoDB
         layers_data
       end
 
-      # Loads the data of a given named map
-      def load_named_map_data
-      	named_maps = NamedMaps.new(
-            {
-              name:     @options.fetch(:user_name),
-              api_key:  @options.fetch(:api_key)
-            },
-            {
-              protocol:   @configuration[:tiler]['internal']['protocol'],
-              domain:     @configuration[:tiler]['internal']['domain'],
-              port:       @configuration[:tiler]['internal']['port'],
-              verifycert: (@configuration[:tiler]['internal']['verifycert'] rescue true)
-            }
-          )
-      	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
-        @named_map_template = @named_map.template.fetch(:template) unless @named_map.nil?
-      	@loaded = true
-      end
-
-		end
-	end
+    end
+  end
 end

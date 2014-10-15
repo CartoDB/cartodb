@@ -1,10 +1,9 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
+require_relative '../doubles/log'
 
 include CartoDB::Importer2
 
@@ -16,7 +15,7 @@ describe 'geojson regression tests' do
   it 'imports a file exported from CartoDB' do
     filepath    = path_to('tm_world_borders_simpl_0_8.geojson')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
     runner.run
   end
 
@@ -24,15 +23,15 @@ describe 'geojson regression tests' do
     filepath    = 'https://raw.github.com/benbalter/dc-wifi-social/master' +
                   '/bars.geojson?foo=bar'
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
     runner.run
   end
 
   it 'imports a file with boolean values' do
-    skip
+    pending 'Need a boolean values geojson example'
     filepath    = path_to('boolean_values.geojson')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
     runner.run
 
     result      = runner.results.first
@@ -48,10 +47,10 @@ describe 'geojson regression tests' do
   it "raises if GeoJSON isn't valid" do
     filepath    = path_to('invalid.geojson')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
     runner.run
 
-    runner.results.first.error_code.must_equal 3007
+    runner.results.first.error_code.should eq 1002
   end
 
   def path_to(filepath)

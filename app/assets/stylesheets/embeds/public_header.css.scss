@@ -1,0 +1,190 @@
+
+// Public header styles // --------------------------------------------------
+
+@import "compass/css3/images";
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
+@import "../common/vars";
+@import "../plugins/tipsy";
+@import "../common/mixins";
+
+
+.cartodb-public-header {
+  position: relative;
+  display: block;
+  border: none;
+  height: 67px;
+  @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
+  margin:0;
+  font-family: $text-fonts;
+  z-index: 10;
+}
+
+// Inner block
+.cartodb-public-header .inner {
+  max-width: 1024px;
+  margin: auto;
+  clear:both;
+  overflow:hidden;
+  padding: 0 20px;
+}
+
+// Logo
+.cartodb-public-header .logo {
+  float:left;
+  display: block;
+  width: 128px;
+  height: 35px;
+  margin: 14px 0;
+  text-indent: -9999px;
+  line-height: 0px;
+  font-size: 0px;
+  text-transform: uppercase;
+  @include background(image-url('layout/cartodb_logo_with_cartofante.png') no-repeat);
+}
+
+// Options
+.cartodb-public-header .options {
+  float: right;
+  display: block;
+  width: auto;
+  height: 67px;
+  margin: 0;
+
+  li {
+    @include inline-block();
+    vertical-align: middle;
+    line-height: 64px;
+
+    &:first-child a { margin-left:0 }
+  }
+
+  // Options link
+  a {
+    padding:10px 18px;
+    font-size: 12px;
+    font-family: 'ProximaNova', Arial;
+    text-transform: uppercase;
+    text-decoration: none;
+    color:white;
+    @include border-radius(50px);
+    @include transform-style("linear");
+    @include transition-property("background");
+    @include transition-duration(150ms);
+
+    &:hover { background:rgba(0,0,0,.1) }
+  }
+
+  // Options link with border
+  a.border {
+    padding:8px 20px;
+    margin-left:10px;
+    border:2px solid white;
+
+    &:hover {
+      background:white;
+      color:#2E72A3;
+    }
+  }
+
+  // Options with old font (editor font)
+  a.editor {
+    padding:0 0 0 20px;
+    margin-left:10px;
+    border:none;
+    text-transform: none;
+    font-size:15px;
+    font-weight:300;
+    font-family: $text-fonts, Arial;
+
+    &:hover {
+      background:none;
+      text-decoration: underline;
+      color:white;
+    }
+  }
+
+  // Account link
+  a.account {
+    position:relative;
+    @include inline-block();
+    vertical-align: middle;
+    padding-right:12px;
+    line-height:18px;
+    
+    img {
+      margin-right:6px;
+      @include border-radius(18px);
+    }
+
+    span.username {
+      padding-right:6px;
+      vertical-align:top;
+      border-right:1px solid #8FB9DD;
+    }
+
+    span.icon {
+      position:absolute;
+      right:0;
+      top:9px;
+      vertical-align: middle;
+      width:0;
+      height:0;
+      border-left:3px solid transparent;
+      border-right:3px solid transparent;
+      border-top:3px solid white;
+      text-decoration:none;
+    }
+
+    &:hover {
+      text-decoration: none;
+      span.username { text-decoration:underline }
+    }
+  }
+}
+
+
+
+
+
+
+/* Hello media queries */
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (   min--moz-device-pixel-ratio: 2),
+only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (        min-device-pixel-ratio: 2),
+only screen and (                min-resolution: 192dpi),
+only screen and (                min-resolution: 2dppx) {
+  .cartodb-public-header .logo {
+    @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat!important);
+    background-size: 128px 35px!important;
+  }
+}
+
+/* iPhone portrait */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px)
+and (orientation : portrait) {
+  .cartodb-public-header {
+
+    .logo {
+      width: 96px;
+      height: 27px;
+      margin: 19px 0 0;
+      background-size: 96px 27px!important;
+    }
+
+    .options a { display:none }
+    .options .account,
+    .options .login,
+    .options .signup {
+      display:inline;
+      font-size:11px;
+      padding:8px 10px;
+    }
+  }
+}

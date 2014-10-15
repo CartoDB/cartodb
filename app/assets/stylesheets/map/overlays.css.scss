@@ -100,7 +100,8 @@
 }
 
 /* Overlay */
-.overlay.text {
+.overlay.text,
+.overlay.annotation {
 
   &.selected {
     border: 3px dashed rgba(#fff, .5);
@@ -131,7 +132,6 @@
   }
 
 }
-
 
 .cartodb-logo {
   display:none;
@@ -258,6 +258,15 @@
       margin-left: 3px;
     }
 
+  }
+
+  /* Annotation Overlay */
+  &.annotation {
+    @include border-radius(1px);
+
+    .content {
+      padding: 5px;
+    }
   }
 
   /* Image Overlay */

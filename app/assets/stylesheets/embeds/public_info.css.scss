@@ -14,24 +14,31 @@
 @import "../plugins/tipsy";
 @import "../common/mixins";
 
+
+// Public header styles
+@import "public_header";
+// Dropdown styles
+@import "public_dropdown";
+
+
 body .inner {
   width: auto;
 }
 
-@media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
-only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) {
+// @media
+// only screen and (-webkit-min-device-pixel-ratio: 2),
+// only screen and (   min--moz-device-pixel-ratio: 2),
+// only screen and (     -o-min-device-pixel-ratio: 2/1),
+// only screen and (        min-device-pixel-ratio: 2),
+// only screen and (                min-resolution: 192dpi),
+// only screen and (                min-resolution: 2dppx) {
 
-  div.cartodb-public-header .inner .logo {
-    @include background(image-url('layout/cartodb@2x.png') no-repeat!important);
-    background-size: 93px 18px!important;
-  }
+//   div.cartodb-public-header .inner .logo {
+//     @include background(image-url('layout/cartodb@2x.png') no-repeat!important);
+//     background-size: 93px 18px!important;
+//   }
 
-}
+// }
 
 @media only screen and (max-width: 350px) { }
 
@@ -79,9 +86,9 @@ only screen and (                min-resolution: 2dppx) {
     text-align: center;
   }
 
-  div.cartodb-public-header .inner .logo {
-    background-size:  50%;
-  }
+  // div.cartodb-public-header .inner .logo {
+  //   background-size:  50%;
+  // }
 
   div.cartodb-info .inner .details {
     margin-bottom: 30px;
@@ -95,14 +102,14 @@ and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : portrait) {
 
-  .cartodb-public-wrapper div.cartodb-public-header {
-    height: 50px;
+  // .cartodb-public-wrapper div.cartodb-public-header {
+  //   height: 50px;
 
-    .inner .left h1 a {
-      margin: 15px 0;
-    }
+  //   .inner .left h1 a {
+  //     margin: 15px 0;
+  //   }
 
-  }
+  // }
 
   .cartodb-public-wrapper div.separator.top {
     top: 50px;
@@ -207,7 +214,7 @@ and (orientation : landscape) {
 
 }
 
-.cartodb-public-header .inner,
+// .cartodb-public-header .inner,
 .cartodb-map-data .inner {
   max-width: 1024px;
   margin: auto;
@@ -480,74 +487,74 @@ div.cartodb-footer a:hover {
   color: #333;
 }
 
-div.cartodb-public-header .inner .options {
-  margin: 23px 0;
-}
-div.cartodb-public-header .inner .options .fork {
-  display: none;
-}
+// div.cartodb-public-header .inner .options {
+//   margin: 23px 0;
+// }
+// div.cartodb-public-header .inner .options .fork {
+//   display: none;
+// }
 
-div.cartodb-public-header .inner .options .regular {
-  margin-right: 26px;
-  color: #fff;
-  font-size: 15px;
-  font-family: $text-fonts2;
-  text-decoration:none;
-  font-weight: 200;
-  zoom: 1; *display: inline; *padding: 8px 0;
-}
+// div.cartodb-public-header .inner .options .regular {
+//   margin-right: 26px;
+//   color: #fff;
+//   font-size: 15px;
+//   font-family: $text-fonts2;
+//   text-decoration:none;
+//   font-weight: 200;
+//   zoom: 1; *display: inline; *padding: 8px 0;
+// }
 
-div.cartodb-public-header .inner .options .regular:hover {
-  text-decoration: underline;
-}
+// div.cartodb-public-header .inner .options .regular:hover {
+//   text-decoration: underline;
+// }
 
-div.cartodb-public-header a.button.green,
-div.cartodb-public-header a.button.grey {
-  padding: 8px 10px 7px;
-  font:bold 12px $title-fonts;
-  line-height: normal;
-  text-transform: uppercase;
-  text-decoration: none;
-  @include border-radius(3px);
-  border: 1px solid #1E3C54;
-  letter-spacing: 0;
-  word-spacing: 1px;
-  @include box-shadow(none);
+// div.cartodb-public-header a.button.green,
+// div.cartodb-public-header a.button.grey {
+//   padding: 8px 10px 7px;
+//   font:bold 12px $title-fonts;
+//   line-height: normal;
+//   text-transform: uppercase;
+//   text-decoration: none;
+//   @include border-radius(3px);
+//   border: 1px solid #1E3C54;
+//   letter-spacing: 0;
+//   word-spacing: 1px;
+//   @include box-shadow(none);
 
-  &:active {
-    @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(0,0,0,0.35) 0 1px 4px 0 inset);
-  }
-}
+//   &:active {
+//     @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(0,0,0,0.35) 0 1px 4px 0 inset);
+//   }
+// }
 
 
-div.cartodb-public-header .inner .logo {
-  @include background(image-url('layout/cartodb.png') no-repeat);
-  margin: 23px 0;
-  display: block;
-  width: 93px;
-  height: 18px;
-  text-indent: -9999px;
-  line-height: 0px;
-  font-size: 0px;
-  text-transform: uppercase;
-}
+// div.cartodb-public-header .inner .logo {
+//   @include background(image-url('layout/cartodb.png') no-repeat);
+//   margin: 23px 0;
+//   display: block;
+//   width: 93px;
+//   height: 18px;
+//   text-indent: -9999px;
+//   line-height: 0px;
+//   font-size: 0px;
+//   text-transform: uppercase;
+// }
 
-div.cartodb-public-header .inner .logo { float:left; }
-div.cartodb-public-header .inner .options { float:right; }
+// div.cartodb-public-header .inner .logo { float:left; }
+// div.cartodb-public-header .inner .options { float:right; }
 
-div.cartodb-public-header {
-  position: relative;
-  display: block;
-  border: none;
-  height: 67px;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-  @include background(image-url('layout/gradient.png') repeat-x center center);
-  margin:0;
-  font-family: $text-fonts;
-  z-index: 10;
-}
+// div.cartodb-public-header {
+//   position: relative;
+//   display: block;
+//   border: none;
+//   height: 67px;
+//   -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+//   -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+//   box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+//   @include background(image-url('layout/gradient.png') repeat-x center center);
+//   margin:0;
+//   font-family: $text-fonts;
+//   z-index: 10;
+// }
 
 div.separator {
   position: absolute;

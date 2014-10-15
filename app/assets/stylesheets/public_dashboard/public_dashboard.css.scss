@@ -92,8 +92,8 @@ header {
   padding: 0;
   min-height: 36px;
 
-  background: image-url('layout/gradient.png') repeat center 0 $bkgColor; // IE
-  @include background(image-url("layout/gradient.png") repeat center 0 $bkgColor);
+  background: image-url('layout/gradient.jpg') repeat center 0 $bkgColor; // IE
+  @include background(image-url("layout/gradient.jpg") repeat center 0 $bkgColor);
   @include box-shadow(none);
 
   .inner {

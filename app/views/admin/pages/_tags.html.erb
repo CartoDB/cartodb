@@ -5,24 +5,24 @@
     <% @tags.each_with_index do |tag, i| %>
       <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
         <% if params[:tag] && params[:tag] == tag %>
+
           <% if action_name == 'datasets' %>
-          <%= params[:tag] %> <%= link_to "x", "/datasets", { :class => "close" } %>
+            <%= tag.capitalize %> <%= link_to "x", "/datasets", { :class => "close" } %>
           <% else %>
-          <%= link_to "x", "/", { :class => "close" } %>
-
-          <h3><%= tag.capitalize.truncate(40) %></h3>
-        <% end %>
-
+            <%= link_to "x", "/", { :class => "close" } %>
+            <h3><%= tag.capitalize.truncate(40) %></h3>
+          <% end %>
+        
         <% else %>
 
           <% if action_name == 'datasets' %>
-          <h3><%= link_to tag.capitalize.truncate(40), public_datasets_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag"  %></h3>
+            <h3><%= link_to tag.capitalize.truncate(40), public_datasets_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag"  %></h3>
           <% else %>
-          <h3><%= link_to tag.capitalize.truncate(40), public_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag"  %></h3>
+            <h3><%= link_to tag.capitalize.truncate(40), public_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag"  %></h3>
           <% end %>
 
         <% end %>
-      <% end %>
       </li>
-    </ul>
-  <% end %>
+    <% end %>
+  </ul>
+<% end %>

@@ -87,10 +87,13 @@ class Api::Json::UsersController < Api::ApplicationController
       end
     end
 
+    user_obj = User.where(username: username).first
+
     render json: {
       urls: dashboard_urls,
       can_fork: can_fork,
-      username: username
+      username: username,
+      avatar_url: user_obj.nil? ? nil : user_obj.avatar_url 
     }
 
   end

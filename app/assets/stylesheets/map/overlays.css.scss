@@ -163,6 +163,7 @@
   @include inline-block();
 }
 .overlay-properties ul li .field .form-view {
+  @include inline-block();
   margin: 0 8px 0 0;
 }
 .overlay-properties ul li .field .form-view:last-child {

@@ -938,7 +938,9 @@ class User < Sequel::Model
 
   def link_ghost_tables_working
     # search in the first 100. This is random number
-    enqeued = Resque.peek(:users, 0, 100).find_all { |job| ghost_tables_work(job) }.length
+    enqeued = Resque.peek(:users, 0, 100).select { |job| 
+      job && job['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
+    }.length
     workers = Resque::Worker.all
     working = workers.select { |w| ghost_tables_work(w.job) }.length
     return (workers.length > 0 && working > 0) || enqeued > 0
@@ -981,6 +983,13 @@ class User < Sequel::Model
     db[sql].all.map { |t| t[:table_name] }
   end
 
+  # search in the user database for tables that are not in the metadata database
+  def search_for_modified_table_names
+    metadata_table_names = self.tables.select(:name).map(&:name)
+    real_names = real_tables.map { |t| t[:relname] }
+    return metadata_table_names.to_set != real_names.to_set
+  end
+
 
   def link_renamed_tables
     metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
@@ -1005,7 +1014,7 @@ class User < Sequel::Model
         table.user_id  = self.id
         table.name     = t[:relname]
         table.table_id = t[:oid]
-        table.migrate_existing_table = t[:relname]
+        table.register_table_only = true
         table.keep_user_database_table = true
         table.save
       rescue => e

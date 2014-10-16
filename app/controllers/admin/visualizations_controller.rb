@@ -321,11 +321,15 @@ class Admin::VisualizationsController < ApplicationController
 
   # Renders input password view
   def embed_protected
-    render 'embed_map_password', :layout => false
+    respond_to do |format|
+      format.html { render 'embed_map_password', layout: 'application_password_layout' }
+    end
   end #embed_protected
 
   def public_map_protected
-    render 'public_map_password', :layout => false
+    respond_to do |format|
+      format.html { render 'public_map_password', layout: 'application_password_layout' }
+    end
   end #public_map_protected
 
   def embed_forbidden

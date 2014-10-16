@@ -247,6 +247,9 @@
       <% end %>
 
     </script>
+
+    <%= render 'shared/crazyegg' %>
+
     <%= render partial: 'shared/analytics', locals: {
       ua:     Cartodb.config[:google_analytics]['embeds'],
       domain: Cartodb.config[:google_analytics]['domain'],

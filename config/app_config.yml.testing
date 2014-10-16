@@ -194,15 +194,17 @@ defaults: &defaults
         ratelimit_wait_secs:    0.5
       customized_user_list:     []
       customized_orgs_list:     []
+      entity_to_config_map:     [] # { user_or_org_name: 'custom_config_name'}
       customized:
-        auth_required:          false
-        username:               ''
-        password:               ''
-        search_url:             'http://fake.url.nil'
-        ratelimit_active:       false
-        ratelimit_concurrency:  3
-        ratelimit_ttl:          4
-        ratelimit_wait_secs:    0.1
+        custom1:
+            auth_required:          false
+            username:               ''
+            password:               ''
+            search_url:             'http://fake.url.nil'
+            ratelimit_active:       false
+            ratelimit_concurrency:  3
+            ratelimit_ttl:          4
+            ratelimit_wait_secs:    0.1
   signups:
     service:
       port: 0000

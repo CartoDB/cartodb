@@ -1,3 +1,8 @@
+3.2.6 (2014-10-XX)
+------------------
+* New features
+  * Import of .xlsx excel files is much faster now (requires sudo pip install xlsx2csv)
+
 3.2.5 (2014-10-13)
 ------------------
 * New features

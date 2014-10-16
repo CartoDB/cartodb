@@ -4,10 +4,12 @@ require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
+require_relative 'acceptance_helpers'
 
 include CartoDB::Importer2
 
 describe 'geojson regression tests' do
+  include AcceptanceHelpers
   before do
     @pg_options  = Factories::PGConnection.new.pg_options
   end
@@ -52,12 +54,6 @@ describe 'geojson regression tests' do
 
     runner.results.first.error_code.should eq 1002
   end
-
-  def path_to(filepath)
-    File.expand_path(
-      File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-    )
-  end #path_to
 
 end # geojson regression tests
 

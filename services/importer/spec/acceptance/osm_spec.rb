@@ -5,10 +5,12 @@ require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative 'cdb_importer_context'
+require_relative 'acceptance_helpers'
 
 include CartoDB::Importer2
 
 describe 'OSM regression tests' do
+  include AcceptanceHelpers
   include_context 'cdb_importer schema'
 
   it 'imports OSM files' do
@@ -20,12 +22,6 @@ describe 'OSM regression tests' do
 
     geometry_type_for(runner).should be
   end
-
-  def path_to(filepath)
-    File.expand_path(
-      File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-    )
-  end #path_to
 
 end # OSM regression tests
  

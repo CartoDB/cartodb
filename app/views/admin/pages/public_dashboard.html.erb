@@ -1,3 +1,11 @@
+<%= content_for(:title) do %>
+  Maps by <%= @name %> on CartoDB
+<% end %>
+
+<%= content_for(:description) do %>
+  <%= @name %> is creating maps and visualizations using CartoDB
+<% end %>
+
 <%= content_for(:js) do %>
   <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
   <% if !Rails.env.production? %>
@@ -25,14 +33,14 @@
 <div class="content<%= " empty" if @visualizations.size == 0 %>">
 
   <div class="inner">
-    <%= render(:partial => 'user_info') %>
-    <%= render(:partial => 'tags', :locals => {:collection => @tags }) %>
+    <%= render(:partial => 'admin/pages/shared/user_info') %>
+    <%= render(:partial => 'admin/pages/shared/tags', :locals => {:collection => @tags }) %>
   </div>
 
   <div class="visualizations">
     <% if @visualizations.size == 0 %>
       <div class="empty_placeholder">
-        <%= @name %> doesn't have any public maps
+        <%= @name %> <%= 'organization' if defined?(@organization) %> doesn't have any public maps
       </div>
     <% end %>
 
@@ -46,7 +54,7 @@
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
-                <h2><a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]) %>"><%= vis[:title] %></a></h2>
+                <h2><a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>"><%= vis[:title] %></a></h2>
                 <p><%= raw (vis[:description] ? vis[:description] : "") %></p>
               </div>
               <div class="gradient"></div>
@@ -61,7 +69,6 @@
                   <% end %>
                 </ul>
               <% end %>
-              <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
             </div>
             <% end %>
           </li>
@@ -107,12 +114,9 @@
 
         <% end %>
       </div>
-        <% end %>
-
+    <% end %>
   </div>
 
 </div>
-</div>
 
-
-<%= include shared/public_dashboard_js %>
+<%= render :partial => 'admin/pages/shared/public_dashboard_inline_js' %>

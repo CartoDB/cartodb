@@ -2,7 +2,7 @@
   <ul class="tags">
     <li><strong>Browse by tag</strong></li>
 
-    <% @tags.last(20).reverse.each_with_index do |tag, i| %>
+    <% @tags.last(10).reverse.each_with_index do |tag, i| %>
       <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
         <% if params[:tag] && params[:tag] == tag %>
 

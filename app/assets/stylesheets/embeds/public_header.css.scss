@@ -4,26 +4,30 @@
 @import "compass/css3/images";
 @import "compass/css3/inline-block";
 @import "compass/css3/border-radius";
+@import "compass/css3/box-shadow";
 @import "compass/css3/transform";
 @import "compass/css3/transition";
 @import "../common/vars";
 @import "../plugins/tipsy";
 @import "../common/mixins";
 
-
 .cartodb-public-header {
   position: relative;
   display: block;
-  border: none;
+  width:auto;
   height: 67px;
-  @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
   margin:0;
+  padding:0;
+  @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
+  border: none;
+  @include box-shadow(none);
   font-family: $text-fonts;
   z-index: 10;
 }
 
 // Inner block
 .cartodb-public-header .inner {
+  width: auto;
   max-width: 1024px;
   margin: auto;
   clear:both;
@@ -31,13 +35,17 @@
   padding: 0 20px;
 }
 
+// h1 reset style
+.cartodb-public-header h1 { margin:0 }
+
 // Logo
 .cartodb-public-header .logo {
   float:left;
   display: block;
   width: 128px;
-  height: 35px;
+  height: 39px;
   margin: 14px 0;
+  line-height:67px;
   text-indent: -9999px;
   line-height: 0px;
   font-size: 0px;
@@ -57,6 +65,7 @@
     @include inline-block();
     vertical-align: middle;
     line-height: 64px;
+    margin-left:0;
 
     &:first-child a { margin-left:0 }
   }
@@ -109,48 +118,25 @@
   // Account link
   a.account {
     position:relative;
-    @include inline-block();
-    vertical-align: middle;
-    padding-right:12px;
-    line-height:18px;
-    
-    img {
-      margin-right:6px;
-      @include border-radius(18px);
-    }
+    padding:0 20px 0 0;
 
-    span.username {
-      padding-right:6px;
-      vertical-align:top;
-      border-right:1px solid #8FB9DD;
-    }
-
-    span.icon {
+    span.separator {
       position:absolute;
-      right:0;
-      top:9px;
-      vertical-align: middle;
-      width:0;
-      height:0;
-      border-left:3px solid transparent;
-      border-right:3px solid transparent;
-      border-top:3px solid white;
-      text-decoration:none;
-    }
-
-    &:hover {
-      text-decoration: none;
-      span.username { text-decoration:underline }
+      top:50%;
+      right:12px;
+      margin-top:-6px;
+      width:1px;
+      height:14px;
+      background:#8FBADE;
     }
   }
 }
 
 
 
-
-
-
 /* Hello media queries */
+
+
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
@@ -162,6 +148,10 @@ only screen and (                min-resolution: 2dppx) {
     @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat!important);
     background-size: 128px 35px!important;
   }
+}
+
+@media only screen and (min-width: 351px) and (max-width: 710px) {
+  .options a.clone { display:none }
 }
 
 /* iPhone portrait */
@@ -179,7 +169,13 @@ and (orientation : portrait) {
     }
 
     .options a { display:none }
-    .options .account,
+
+    .options .account {
+      @include display-flex();
+      font-size:11px;
+      padding:8px 10px;
+    }
+
     .options .login,
     .options .signup {
       display:inline;

@@ -20,7 +20,8 @@
     <meta name="twitter:creator" content="@cartodb">
     <meta name="twitter:title" content="Maps by <%= @name %> on CartoDB">
     <meta name="twitter:description" content="<%= @name %> is creating maps and visualizations using CartoDB.">
-    <meta name="twitter:image:src" content="<%= @avatar_url %>">
+    <meta name="twitter:image" content="<%= @avatar_url %>">
+    <meta name="twitter:url" content="<%= request.fullpath %>" />
     
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
@@ -31,7 +32,6 @@
     <%= yield %>
     <%= render 'admin/shared/public_footer' %>
     <%= yield :js %>
-    <%= render 'shared/crazyegg' %>
     <%= insert_google_analytics('primary', [{title: "Public Pages", value: action_name == "datasets" ? "Other" : "Home", num: 3}] ) %>
   </body>
 </html>

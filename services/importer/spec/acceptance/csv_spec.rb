@@ -5,10 +5,12 @@ require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative 'cdb_importer_context'
+require_relative 'acceptance_helpers'
 
 include CartoDB::Importer2
 
 describe 'csv regression tests' do
+  include AcceptanceHelpers
   include_context "cdb_importer schema"
 
   it 'georeferences files with lat / lon columns' do
@@ -87,10 +89,6 @@ describe 'csv regression tests' do
       AS count
     }].first.fetch(:count).should eq 7
   end
-
-  def path_to(filepath)
-    File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-  end #path_to
 
   def sample_for(job)
     job.db[%Q{

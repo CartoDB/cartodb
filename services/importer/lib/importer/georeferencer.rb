@@ -15,9 +15,9 @@ module CartoDB
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil)
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
-        @job        = job || Job.new
+        @job        = job || Job.new(logger: logger)
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES

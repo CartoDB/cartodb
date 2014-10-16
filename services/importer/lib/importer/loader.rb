@@ -120,6 +120,10 @@ module CartoDB
         unless options[:ogr2ogr_csv_guessing].nil?
           ogr_options.merge!(ogr2ogr_csv_guessing: options[:ogr2ogr_csv_guessing])
         end
+        unless options[:quoted_fields_guessing].nil?
+          ogr_options.merge!(quoted_fields_guessing: options[:quoted_fields_guessing])
+        end
+
         if source_file.extension == '.shp'
           ogr_options.merge!(shape_encoding: shape_encoding)
         end

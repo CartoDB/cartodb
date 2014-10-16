@@ -26,9 +26,23 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
-    error_code queue_id get_error_text tables_created_count
-    synchronization_id service_name service_item_id }
+  PUBLIC_ATTRIBUTES = %W{
+    id
+    user_id
+    table_id
+    data_type
+    table_name
+    state
+    error_code
+    queue_id
+    get_error_text
+    tables_created_count
+    synchronization_id
+    service_name
+    service_item_id
+    type_guessing
+    quoted_fields_guessing
+  }
 
   STATE_SUCCESS   = 'complete'
   STATE_UPLOADING = 'uploading'
@@ -44,7 +58,7 @@ class DataImport < Sequel::Model
     instantiate_log
     self.results  = []
     self.state    ||= STATE_UPLOADING
-  end #after_initialize
+  end
 
   def before_save
     self.logger = self.log.id unless self.logger.present?
@@ -346,7 +360,8 @@ class DataImport < Sequel::Model
     else
       {
         ogr2ogr_binary:       options['binary'],
-        ogr2ogr_csv_guessing: options['csv_guessing']
+        ogr2ogr_csv_guessing: options['csv_guessing'] && self.type_guessing,
+        quoted_fields_guessing: self.quoted_fields_guessing
       }
     end
   end

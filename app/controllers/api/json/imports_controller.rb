@@ -45,15 +45,17 @@ class Api::Json::ImportsController < Api::ApplicationController
     service_item_id = params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence
 
     options = {
-        user_id:          current_user.id,
-        table_name:       params[:table_name].presence,
-        data_source:      file_uri.presence,
-        table_id:         params[:table_id].presence,
-        append:           (params[:append].presence == 'true'),
-        table_copy:       params[:table_copy].presence,
-        from_query:       params[:sql].presence,
-        service_name:     service_name.presence,
-        service_item_id:  service_item_id.presence
+        user_id:                current_user.id,
+        table_name:             params[:table_name].presence,
+        data_source:            file_uri.presence,
+        table_id:               params[:table_id].presence,
+        append:                 (params[:append].presence == 'true'),
+        table_copy:             params[:table_copy].presence,
+        from_query:             params[:sql].presence,
+        service_name:           service_name.presence,
+        service_item_id:        service_item_id.presence,
+        type_guessing:          params.fetch(:type_guessing, true),
+        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, true)
     }
 
     data_import = DataImport.create(options)

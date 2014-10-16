@@ -24,6 +24,7 @@ module CartoDB
         self.append_mode = false
         self.csv_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
+        self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
       end
 
       def command_for_import
@@ -60,15 +61,18 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :csv_binary, :csv_guessing
+      attr_accessor :pg_options, :options, :table_name, :layer, :csv_binary, :csv_guessing, :quoted_fields_guessing
 
       def is_csv?
         filepath =~ /\.csv$/i
       end
 
       def guessing_option
-        # Only send parameters for
-        csv_guessing && is_csv? ? '-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=NO' : ''
+        if csv_guessing && is_csv?
+          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' }"
+        else
+          ''
+        end
       end
 
       def client_encoding_option

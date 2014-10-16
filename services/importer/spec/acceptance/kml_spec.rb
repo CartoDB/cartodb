@@ -63,16 +63,5 @@ describe 'KML regression tests' do
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
     )
   end #path_to
-
-  def geometry_type_for(runner)
-    result      = runner.results.first
-    table_name  = result.tables.first
-    schema      = result.schema
-
-    runner.db[%Q{
-      SELECT public.GeometryType(the_geom)
-      FROM "#{schema}"."#{table_name}"
-    }].first.fetch(:geometrytype)
-  end #geometry_type_for
 end # KML regression tests
  

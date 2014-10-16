@@ -59,14 +59,5 @@ describe 'geojson regression tests' do
     )
   end #path_to
 
-  def geometry_type_for(runner)
-    result                = runner.results.first
-    qualified_table_name  = result.qualified_table_name
-
-    runner.db[%Q{
-      SELECT public.GeometryType(the_geom)
-      FROM #{qualified_table_name}
-    }].first.fetch(:geometrytype)
-  end #geometry_type_for
 end # geojson regression tests
 

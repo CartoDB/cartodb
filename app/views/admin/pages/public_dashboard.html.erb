@@ -55,7 +55,7 @@
                 <div id="map_<%= i %>" class="map"></div>
 
                 <div class="title">
-                  <h2><a href="<%= public_visualizations_public_map_url(user_domain: vis[:owner], id: vis[:id]) %>"><%= vis[:title] %></a></h2>
+                  <h2><a href="<%= public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]) %>"><%= vis[:title] %></a></h2>
                   <p><%= raw (vis[:description] ? vis[:description] : "") %></p>
                 </div>
                 <div class="gradient"></div>

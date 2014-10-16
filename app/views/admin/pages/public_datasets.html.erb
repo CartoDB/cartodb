@@ -35,80 +35,84 @@
 <div class="content<%= " empty" if @datasets.size == 0 %>">
 
   <div class="inner">
-    <%= render(:partial => 'admin/pages/shared/user_info') %>
-    <%= render(:partial => 'admin/pages/shared/tags', :locals => {:collection => @tags }) %>
-  </div>
+    
+    <div class="info">
+      <%= render(:partial => 'admin/pages/shared/user_info') %>
+      <%= render(:partial => 'admin/pages/shared/tags', :locals => {:collection => @tags }) %>
+    </div>
 
-  <div class="datasets">
-    <% if @datasets.size == 0 %>
-      <div class="empty_placeholder">
-        <%= @name %> doesn't have any public datasets
-      </div>
-    <% end %>
+    <div class="datasets">
+      <% if @datasets.size == 0 %>
+        <div class="empty_placeholder">
+          <%= @name %> doesn't have any public datasets
+        </div>
+      <% end %>
 
-    <% if @datasets.size > 0 %>
-      <ul>
-        <% @datasets.each_with_index do |dataset, i| %>
-          <li>
-            <div class="title">
-              <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
-              <h2><a href="<%= public_table_url(user_domain: dataset[:owner], id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
-              <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>
-            </div>
+      <% if @datasets.size > 0 %>
+        <ul>
+          <% @datasets.each_with_index do |dataset, i| %>
+            <li>
+              <div class="title">
+                <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
+                <h2><a href="<%= public_table_url(user_domain: dataset[:owner], id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
+                <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>
+              </div>
 
-            <% if dataset[:tags].size > 0 %>
               <% if dataset[:tags].size > 0 %>
-                <ul class="tags">
-                  <% dataset[:tags].each do |tag| %>
-                    <li><h3><%= link_to tag, public_datasets_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
-                  <% end %>
-                </ul>
+                <% if dataset[:tags].size > 0 %>
+                  <ul class="tags">
+                    <% dataset[:tags].each do |tag| %>
+                      <li><h3><%= link_to tag, public_datasets_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
+                    <% end %>
+                  </ul>
+                <% end %>
               <% end %>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-    <% end %>
-
-    <% if @datasets.length > 0 %>
-      <div class="pagination">
-        <% if @pages > 1 %>
-
-          <% if @pages > 1 && params[:page].to_i > 1 %>
-            <% p = params[:page] || 1 %>
-            <% if params[:tag] %>
-              <a class="prev" href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i-1)) %>">Prev</a>
-            <% else %>
-              <a class="prev" href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(p.to_i-1)) %>">Prev</a>
-            <% end %>
+            </li>
           <% end %>
+        </ul>
+      <% end %>
 
-          <ul>
-            <% @pages.times do |i| %>
+      <% if @datasets.length > 0 %>
+        <div class="pagination">
+          <% if @pages > 1 %>
+
+            <% if @pages > 1 && params[:page].to_i > 1 %>
+              <% p = params[:page] || 1 %>
               <% if params[:tag] %>
-                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                  <a href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (i+1)) %>"></a>
-                </li>
+                <a class="prev" href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i-1)) %>">Prev</a>
               <% else %>
-                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                  <a href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(i+1)) %>"></a>
-                </li>
+                <a class="prev" href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(p.to_i-1)) %>">Prev</a>
               <% end %>
             <% end %>
-          </ul>
 
-          <% if @pages > 1 && (params[:page].to_i < @pages) %>
-            <% p = params[:page] || 1 %>
-            <% if params[:tag] %>
-              <a class="next" href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i+1)) %>">Next</a>
-            <% else %>
-              <a class="next" href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(p.to_i+1)) %>">Next</a>
+            <ul>
+              <% @pages.times do |i| %>
+                <% if params[:tag] %>
+                  <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
+                    <a href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (i+1)) %>"></a>
+                  </li>
+                <% else %>
+                  <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
+                    <a href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(i+1)) %>"></a>
+                  </li>
+                <% end %>
+              <% end %>
+            </ul>
+
+            <% if @pages > 1 && (params[:page].to_i < @pages) %>
+              <% p = params[:page] || 1 %>
+              <% if params[:tag] %>
+                <a class="next" href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i+1)) %>">Next</a>
+              <% else %>
+                <a class="next" href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(p.to_i+1)) %>">Next</a>
+              <% end %>
             <% end %>
-          <% end %>
 
-        <% end %>
-      </div>
-    <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
   </div>
 
 </div>

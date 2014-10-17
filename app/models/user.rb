@@ -998,8 +998,9 @@ class User < Sequel::Model
     renamed_tables.each do |t|
       table = ::Table.find(:table_id => t[:oid])
       begin
-        table.keep_user_database_table = true
-        table.synchronize_name(t[:relname])
+        vis = table.table_visualization
+        vis.name = t[:relname]
+        vis.store
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
       end

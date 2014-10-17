@@ -950,6 +950,11 @@ describe User do
       new_tables = @user.tables.all.map(&:name)
       new_tables.should include('ghost_table_renamed')
       new_tables.should_not include('ghost_table_2')
+      # check visualization name
+      table = @user.tables.find(:name => 'ghost_table_renamed').first
+      table.table_visualization.name.should == 'ghost_table_renamed'
+
+
     end
 
     it "should remove reference to a removed table in the database" do

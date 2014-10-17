@@ -164,17 +164,18 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    if log.entries =~ /Table (.*) registered/
+    # TODO: This doesn't works properly, until researched do not report false negatives
+    #if log.entries =~ /Table (.*) registered/
       self.success  = true
       self.state    = STATE_SUCCESS
       log.append "Import finished\n"
       save
       notify(results)
       self
-    else
-      log.append "Import FAILED registering table!\n"
-      handle_failure
-    end
+    #else
+    #  log.append "Import FAILED registering table!\n"
+    #  handle_failure
+    #end
   end
 
   def handle_failure

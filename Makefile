@@ -29,6 +29,37 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/ogr2ogr_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/runner_spec.rb \
+  services/importer/spec/acceptance/csv_spec.rb \
+  services/importer/spec/acceptance/geojson_spec.rb \
+  services/importer/spec/acceptance/gpx_spec.rb \
+  services/importer/spec/acceptance/kml_spec.rb \
+  services/importer/spec/acceptance/mapinfo_spec.rb \
+  services/importer/spec/acceptance/osm_spec.rb \
+  services/importer/spec/acceptance/shp_spec.rb \
+  services/importer/spec/acceptance/sql_spec.rb \
+  services/importer/spec/acceptance/zip_spec.rb \
+  services/importer/spec/unit/column_spec.rb \
+  services/importer/spec/unit/csv_normalizer_spec.rb \
+  services/importer/spec/unit/downloader_spec.rb \
+  services/importer/spec/unit/georeferencer_spec.rb \
+  services/importer/spec/unit/json2csv_spec.rb \
+  services/importer/spec/unit/kml_splitter_spec.rb \
+  services/importer/spec/unit/loader_spec.rb \
+  services/importer/spec/unit/mail_notifier_spec.rb \
+  services/importer/spec/unit/ogr2ogr_spec.rb \
+  services/importer/spec/unit/osm_loader_spec.rb \
+  services/importer/spec/unit/post_import_handler_spec.rb \
+  services/importer/spec/unit/runner_spec.rb \
+  services/importer/spec/unit/source_file_spec.rb \
+  services/importer/spec/unit/sql_loader_spec.rb \
+  services/importer/spec/unit/unp_spec.rb \
+  services/importer/spec/unit/url_translator/fusion_tables_spec.rb \
+  services/importer/spec/unit/url_translator/github_spec.rb \
+  services/importer/spec/unit/url_translator/google_docs_spec.rb \
+  services/importer/spec/unit/url_translator/google_maps_spec.rb \
+  services/importer/spec/unit/url_translator/osm2_spec.rb \
+  services/importer/spec/unit/url_translator/osm_spec.rb
+
   $(NULL)
 
 WORKING_SPECS_4 = \

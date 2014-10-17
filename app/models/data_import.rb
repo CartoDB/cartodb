@@ -44,6 +44,9 @@ class DataImport < Sequel::Model
     quoted_fields_guessing
   }
 
+  # Not all constants are used, but so that we keep track of available states
+  STATE_UNPACKING = 'unpacking'
+  STATE_IMPORTING = 'importing'
   STATE_SUCCESS   = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'

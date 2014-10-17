@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://development.localhost.lan:3000/assets/2.15.8/stylesheets/embeds.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://development.localhost.lan:3000/assets/2.15.8/javascripts/cdb.js"></script>
+
+    <script>
+      function main() {
+        cartodb.createVis('map', 'http://development.localhost.lan:3000/api/v2/viz/51e1cdfe-5538-11e4-9942-003ee1fffe8b/viz.json', {
+            shareable: true,
+            title: true,
+            description: true,
+            search: true,
+            tiles_loader: true,
+            center_lat: 0,
+            center_lon: 0,
+            zoom: 2
+        })
+        .done(function(vis, layers) {
+          // layer 0 is the base layer, layer 1 is cartodb layer
+          // setInteraction is disabled by default
+          layers[1].setInteraction(true);
+          layers[1].on('featureOver', function(e, pos, latlng, data) {
+            cartodb.log.log(e, pos, latlng, data);
+          });
+
+          // you can get the native map to work with it
+          // depending if you use google maps or leaflet
+          map = vis.getNativeMap();
+
+          var annotation = new cdb.geo.ui.Annotation({
+            latlng:[40, 2],
+            text: "This works with <strong>HTML</strong>",
+            mapView: vis.mapView,
+            style: {
+              "z-index": 1000,
+              "color": "#FFF",
+              "text-align": "right",
+              "font-size": "13",
+              "font-family-name": "Helvetica",
+              "box-color": "#F84F40",
+              "box-opacity": 0.7,
+              "box-padding": 10,
+              "line-color": "#F84F40",
+              "line-width": 50,
+              "zoom-min": 0,
+              "zoom-max": 40
+            }
+          });
+
+          this.mapView.$el.find(".cartodb-map-wrapper").append(annotation.render().$el);
+
+          // now, perform any operations you need
+          // map.setZoom(3)
+          // map.setCenter(new google.maps.Latlng(...))
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

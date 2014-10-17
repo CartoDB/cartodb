@@ -3125,10 +3125,13 @@ div.cartodb-timeslider p {
   color: #fff;
   font-size:13px;
 }
-
+.cartodb-overlay.overlay-annotation {
+  display:none;
+}
 .cartodb-overlay.overlay-text,
 .cartodb-overlay.overlay-annotation {
   position:absolute;
+  display:none;
 
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -3199,8 +3202,9 @@ div.cartodb-timeslider p {
 .cartodb-overlay.overlay-annotation.align-right .stick .ball { left: auto; right: -6px; }
 .cartodb-overlay.overlay-annotation .stick {
   position: absolute;
-  top: 13px;
+  top: 50%;
   left: -50px;
+  margin-top: -1px;
   width: 50px;
   height: 2px;
   background: #333;

@@ -97,11 +97,15 @@ cdb.vis.Overlay.register('annotation', function(data, vis) {
     data.templateType || 'mustache'
   );
 
+  var options = data.options;
+
   var widget = new cdb.geo.ui.Annotation({
-    model: new cdb.core.Model(options),
-     mapView: vis.mapView,
+    className: "cartodb-overlay overlay-annotation " + options.device,
     template: template,
-    className: "cartodb-overlay overlay-annotation " + options.device
+    mapView: vis.mapView,
+    text: options.extra.rendered_text,
+    latlng: options.extra.latlng,
+    style: options.style
   });
 
   return widget.render();

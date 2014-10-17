@@ -17,7 +17,7 @@ module CartoDB
 
       def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
-        @job        = job || Job.new(logger: logger)
+        @job        = job || Job.new({  logger: logger } )
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES

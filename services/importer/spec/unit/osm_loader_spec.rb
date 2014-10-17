@@ -12,7 +12,7 @@ include CartoDB::Importer2
 describe OsmLoader do
   before do
     @pg_connection  = Factories::PGConnection.new
-    @job            = Job.new(pg_options: @pg_connection.pg_options)
+    @job            = Job.new({ pg_options: @pg_connection.pg_options })
     fixture         = File.expand_path(
                         '../fixtures/map2.osm', File.dirname(__FILE__)
                       )

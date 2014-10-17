@@ -190,8 +190,12 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
+    # We need those variable for UI rendering
+    has_logo  = @visualization.overlays.any? {|o| o.type == "logo" }
+    @hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false'))
+
     respond_to do |format|
-      format.html { render layout: false }
+      format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
   rescue
@@ -219,6 +223,10 @@ class Admin::VisualizationsController < ApplicationController
     @related_tables         = @visualization.related_tables
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    # We need those variable for UI rendering
+    has_logo  = @visualization.overlays.any? {|o| o.type == "logo" }
+    @hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false'))
 
     respond_to do |format|
       format.html { render 'public_map', layout: false }
@@ -268,8 +276,12 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
+    # We need those variable for UI rendering
+    has_logo  = @visualization.overlays.any? {|o| o.type == "logo" }
+    @hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false'))
+
     respond_to do |format|
-      format.html { render 'public_map', layout: false }
+      format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end    
   rescue
     public_map_protected
@@ -292,7 +304,7 @@ class Admin::VisualizationsController < ApplicationController
     @protected_map_tokens = @visualization.get_auth_tokens
 
     respond_to do |format|
-      format.html { render 'embed_map', layout: false }
+      format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end    
   rescue
     embed_protected
@@ -312,7 +324,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     respond_to do |format|
-      format.html { render layout: false }
+      format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'embed_map', content_type: 'application/javascript' }
     end
   rescue
@@ -321,15 +333,11 @@ class Admin::VisualizationsController < ApplicationController
 
   # Renders input password view
   def embed_protected
-    respond_to do |format|
-      format.html { render 'embed_map_password', layout: 'application_password_layout' }
-    end
+    render 'embed_map_password', :layout => 'application_password_layout'
   end #embed_protected
 
   def public_map_protected
-    respond_to do |format|
-      format.html { render 'public_map_password', layout: 'application_password_layout' }
-    end
+    render 'public_map_password', :layout => 'application_password_layout'
   end #public_map_protected
 
   def embed_forbidden

@@ -26,7 +26,7 @@ describe Ogr2ogr do
   after(:each) do
     @csv.delete
     @db.drop_table? @full_table_name
-    @db.execute('DROP SCHEMA cdb_importer')
+    @db.execute('DROP SCHEMA cdb_importer cascade')
     @db.disconnect
   end
 

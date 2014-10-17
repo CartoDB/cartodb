@@ -30,6 +30,9 @@ class DataImport < Sequel::Model
     error_code queue_id get_error_text tables_created_count
     synchronization_id service_name service_item_id }
 
+  # Not all constants are used, but so that we keep track of available states
+  STATE_UNPACKING = 'unpacking'
+  STATE_IMPORTING = 'importing'
   STATE_SUCCESS   = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'

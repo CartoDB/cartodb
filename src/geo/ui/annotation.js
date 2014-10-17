@@ -2,11 +2,24 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   className: "cartodb-overlay overlay-annotation",
 
+  defaults: {
+    style: {
+      lineColor: "#333333",
+      color: "#ffffff",
+    }
+  },
+
+  template: cdb.core.Template.compile(
+    '<div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    <div class="stick"><div class="ball"></div></div>\
+    </div>',
+    'mustache'
+  ),
+
   events: {
     "click": "stopPropagation"
   },
-
-  default_options: { },
 
   stopPropagation: function(e) {
     e.stopPropagation();
@@ -14,12 +27,15 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   initialize: function() {
 
-    _.defaults(this.options, this.default_options);
-
-    this.template = this.options.template;
+    this.template = this.options.template || this.template;
     this.mapView  = this.options.mapView;
 
-    this.extra = this.model.get("extra");
+    this._cleanStyleProperties(this.options.style);
+    _.defaults(this.options.style, this.defaults.style);
+
+    this.model = new cdb.core.Model(this.options);
+
+    this._setupModel();
 
     this.mapView.map.bind('change',      this._place, this);
     this.mapView.map.bind('change:zoom', this._applyZoomLevelStyle, this);
@@ -30,150 +46,71 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   },
 
-  _onMouseDown: function() {},
+  _setupModel: function() {
+  
+    this.model.on("change:text", this._onChangeText, this);
+  
+  },
 
-  _onMouseEnter: function() {
+  _onChangeText: function(e) {
+    this.$el.find(".text").html(this.model.get("text"));
+  },
 
-    this.$el.addClass("hover");
+  _getStandardPropertyName: function(name) {
 
-    if (this.editModel.get("mode") == "editable") {
-      if (this.timeout) clearTimeout(this.timeout);
+    if (!name) return;
+    var parts = name.split("-");
+
+    if (parts.length === 1) return name;
+    else if (parts.length === 2) {
+      return parts[0] + parts[1].slice(0, 1).toUpperCase() + parts[1].slice(1);
     }
 
   },
 
-  _onMouseLeave: function() {
-    this.$el.removeClass("hover");
+  _cleanStyleProperties: function(hash) {
 
+    var standardProperties = {};
+
+    _.each(hash, function(value, key) {
+      standardProperties[this._getStandardPropertyName(key)] = value;
+    }, this);
+
+    this.options.style = standardProperties;
+  },
+
+  show: function(callback) {
     var self = this;
-
-    if (this.editModel.get("mode") == "editable") {
-
-      this.timeout = setTimeout(function() {
-
-        self.editModel.set("mode", "");
-
-      }, 250);
-    }
-
-  },
-
-  show: function(animated) {
-
-    this.$el.show();
-
-    if (true) this.$el.addClass('animated bounceIn');
-
+    this.$el.fadeIn(150, function() {
+      self.$el.css({ width: self.$el.width() + 1, display: "inline-table" }); // tricks
+      callback && callback();
+    });
   },
 
   hide: function(callback) {
-
-    var self = this;
-
-    this.model.set("selected", false);
-
-    this.$el
-    .removeClass('animated bounceIn')
-    .addClass('animated bounceOut')
-
-    callback && _.isFunction(callback) && callback();
-
-    // unbind from the map
-    this.mapView.map.unbind('change',      this._place, this);
-    this.mapView.map.unbind('change:zoom', this._applyZoomLevelStyle, this);
-
-    // Give it some time to complete the animation
-    setTimeout(function() {
-      self.clean();
-    }, 550);
-
+    this.$el.fadeOut(150, function() {
+      callback && callback();
+    });
   },
 
   _place: function () {
 
-    var style      = this.model.get("style");
-    var lineWidth  = style["line-width"];
-    var textAlign  = style["text-align"];
+    var latlng     = this.model.get("latlng");
 
-    var
-    pos             = this.mapView.latLonToPixel(this.extra.latlng),
-    containerHeight = this.extra.height || 45,
-    containerWidth  = this.$el.width(),
-    size            = this.mapView.getSize();
+    var style      = this.model.get("style");
+    var lineWidth  = style["lineWidth"];
+    var textAlign  = style["textAlign"];
+
+    var pos        = this.mapView.latLonToPixel(latlng);
+    var size       = this.mapView.getSize();
+    var top        = pos.y - this.$el.height()/2;
+    var left       = pos.x + lineWidth;
 
     if (textAlign === "right") {
-      left = pos.x - this.extra.width - lineWidth;
-    } else {
-      left = pos.x  + lineWidth;
+      left = pos.x - this.$el.width() - lineWidth;
     }
 
-    this.$el.css({ top: pos.y - 13, left: left });
-
-  },
-
-  _onChangeDisplay: function() {
-
-    var display = this.model.get("display");
-
-    if (display) {
-      this.show();
-    } else {
-      this.$el.hide();
-    }
-
-  },
-
-
-  _applyzoomlevelstyle: function() {
-
-    var style      = this.model.get("style");
-
-    var boxColor   = style["box-color"];
-    var boxOpacity = style["box-opacity"];
-    var lineColor  = style["line-color"];
-
-    var minZoom    = style["zoom-min"];
-    var maxZoom    = style["zoom-max"];
-
-    var currentZoom = this.mapView.map.get("zoom");
-    var textOpacity = 1;
-
-    if (currentZoom >= minZoom && currentZoom <= maxZoom) {
-
-      textOpacity = 1;
-
-      var rgbaLineCol = 'rgba(' + parseInt(lineColor.slice(-6,-4),16)
-      + ',' + parseInt(lineColor.slice(-4,-2),16)
-      + ',' + parseInt(lineColor.slice(-2),16)
-      +', ' + 1 + ' )';
-
-      var rgbaBoxCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
-      + ',' + parseInt(boxColor.slice(-4,-2),16)
-      + ',' + parseInt(boxColor.slice(-2),16)
-      +', ' + boxOpacity + ' )';
-
-    } else {
-
-      textOpacity = .5;
-
-      var rgbaLineCol = 'rgba(' + parseInt(lineColor.slice(-6,-4),16)
-      + ',' + parseInt(lineColor.slice(-4,-2),16)
-      + ',' + parseInt(lineColor.slice(-2),16)
-      +', ' + .2 + ' )';
-
-      var rgbaBoxCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
-      + ',' + parseInt(boxColor.slice(-4,-2),16)
-      + ',' + parseInt(boxColor.slice(-2),16)
-      +', ' + .2 + ' )';
-
-    }
-
-    this.$el.find(".text").animate({ opacity: textOpacity }, 150);
-
-    this.$el.css("background-color", rgbaBoxCol);
-
-    this.$el.find(".stick").css("background-color", rgbaLineCol);
-    this.$el.find(".ball").css("background-color", rgbaLineCol);
+    this.$el.css({ top: top, left: left });
 
   },
 
@@ -181,26 +118,21 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     var style      = this.model.get("style");
 
-    var textAlign  = style["text-align"];
-    var boxColor   = style["box-color"];
-    var boxOpacity = style["box-opacity"];
-    var boxPadding = style["box-padding"];
+    var textAlign  = style["textAlign"];
+    var boxColor   = style["boxColor"];
+    var boxOpacity = style["boxOpacity"];
+    var boxPadding = style["boxPadding"];
+    var lineWidth  = style["lineWidth"];
+    var lineColor  = style["lineColor"];
+    var fontFamily = style["fontFamilyName"];
 
-    var lineWidth  = style["line-width"];
-    var lineColor  = style["line-color"];
-    var fontFamily = style["font-family-name"];
-
-    if (boxOpacity === 0) {
-      this.$el.addClass("border-dark");
-    } else {
-      this.$el.removeClass("border-dark");
-    }
+    this.$text = this.$el.find(".text");
 
     this.$text.css(style);
 
     this.$el.find(".content").css("padding", boxPadding);
-    this.$text.css("font-size", style["font-size"] + "px");
-    this.$el.css("z-index", style["z-index"]);
+    this.$text.css("font-size", style["fontSize"] + "px");
+    this.$el.css("z-index", style["zIndex"]);
 
     this.$el.find(".stick").css({ width: lineWidth, left: -lineWidth });
 
@@ -232,25 +164,18 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     if (save) this.model.save();
 
-    var self = this;
-
-    setTimeout(function() {
-      var width = self.$el.width();
-      self.$el.css("width", self.$el.width() + .4); // ? but it seems to work (TODO: check more browsers)
-    }, 500);
-
   },
 
   _applyZoomLevelStyle: function() {
 
     var style      = this.model.get("style");
 
-    var boxColor   = style["box-color"];
-    var boxOpacity = style["box-opacity"];
-    var lineColor  = style["line-color"];
+    var boxColor   = style["boxColor"];
+    var boxOpacity = style["boxOpacity"];
+    var lineColor  = style["lineColor"];
 
-    var minZoom    = style["zoom-min"];
-    var maxZoom    = style["zoom-max"];
+    var minZoom    = style["zoomMin"];
+    var maxZoom    = style["zoomMax"];
 
     var currentZoom = this.mapView.map.get("zoom");
     var textOpacity = 1;
@@ -293,13 +218,16 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     this.$el.find(".ball").css("background-color", rgbaLineCol);
 
   },
+
   render: function() {
 
-    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
+    this.$el.html(this.template(this.model.attributes));
 
-    this.$text = this.$el.find(".text");
+    var self = this;
 
-    this._applyStyle();
+    self._applyStyle();
+
+    setTimeout(function() { self.show(); }, 500)
 
     return this;
 

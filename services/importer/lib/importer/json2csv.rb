@@ -8,9 +8,9 @@ module CartoDB
         extension == '.json'
       end #self.supported?
 
-      def initialize(filepath, job=nil)
+      def initialize(filepath, job=nil, logger=nil)
         @filepath = filepath
-        @job      = job || Job.new
+        @job      = job || Job.new({logger: logger})
       end #initialize
 
       def run

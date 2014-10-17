@@ -103,6 +103,8 @@
 .overlay.text,
 .overlay.annotation {
 
+  display: none;
+
   &.selected {
     border: 3px dashed rgba(#fff, .5);
   }
@@ -288,7 +290,8 @@
       $width: 50px;
       $height: 2px;
       position: absolute;
-      top: 13px;
+      top: 50%;
+      margin-top: -$height/2;
       left: -$width;
       width: $width;
       height: $height;

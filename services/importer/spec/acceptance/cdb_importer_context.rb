@@ -1,9 +1,9 @@
-
+require_relative '../factories/pg_connection'
 
 shared_context "cdb_importer schema" do
 
   before do
-    pg_connection = Factories::PGConnection.new
+    pg_connection = CartoDB::Importer2::Factories::PGConnection.new
     @db = pg_connection.connection
     @pg_options  = pg_connection.pg_options
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')

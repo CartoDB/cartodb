@@ -47,7 +47,6 @@ describe('SQL api client', function() {
     expect(sqlBis._host()).toEqual('http://troloroloro.com/api/v2/sql');
   });
 
-
   it("should execute a query", function() {
     sql.execute('select * from table');
     expect(ajaxParams.url).toEqual(
@@ -72,7 +71,7 @@ describe('SQL api client', function() {
     var long_sql = []
     var i = 2000;
     while (--i) long_sql.push("10000");
-    var long_query = "q=" + encodeURIComponent('SELECT * ' + long_sql);
+    var long_query = 'q=' + encodeURIComponent('SELECT * ' + long_sql);
 
     sql.execute(long_query);
 
@@ -100,7 +99,7 @@ describe('SQL api client', function() {
     var long_sql = []
     var i = 2000;
     while (--i) long_sql.push("10000");
-    var long_query = "q=" + encodeURIComponent('SELECT * ' + long_sql);
+    var long_query = 'q=' + encodeURIComponent('SELECT * ' + long_sql);
 
     s.execute(long_query, null, {
       dp: 2
@@ -108,10 +107,16 @@ describe('SQL api client', function() {
 
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
+    //Check that we don't have params in the URI
     expect(ajaxParams.url.indexOf('&format=geojson')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&api_key=testkey')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
+    //Check that we have the params in the body
+    expect(ajaxParams.format).toEqual('geojson');
+    expect(ajaxParams.api_key).toEqual('testkey');
+    expect(ajaxParams.dp).toEqual(2);
+    expect(ajaxParams.rambo).toEqual('test');
   });
 
   it("should substitute mapnik tokens", function() {

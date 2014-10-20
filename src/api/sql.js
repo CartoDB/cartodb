@@ -94,8 +94,6 @@
     // create query
     var query = Mustache.render(sql, vars);
 
-    //codigo original...........
-    //var q = 'q=' + encodeURIComponent(query);
     var q = query;
 
     // request params
@@ -113,20 +111,17 @@
       }
     }
 
-    //Original -->
-    //var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
-    var isGetRequest = (q.length < MAX_LENGTH_GET_QUERY) ? true : false;
+    var isGetRequest = q.length < MAX_LENGTH_GET_QUERY;
 
     // generate url depending on the http method
     params.url = this._host() ;
     if(isGetRequest) {
-      q = "q=" + encodeURIComponent(q);
+      q = 'q=' + encodeURIComponent(q);
       if (extraParams) {
         q += extraParams;
       }
       params.url += '?' + q;
     } else {
-      //q = query;
       if (extraParams) {
         q += extraParams;
       }

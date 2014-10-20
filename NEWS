@@ -1,6 +1,7 @@
-3.11.17 (XX//XX//2014)
+3.11.17 (20//10//2014)
 - fixes positioning of the search and share overlays on the screen
 - fixed compatibility with mootools
+- fixes a problem with touch devices using two fingers for zooming.
 
 3.11.16 (10//10//2014)
 - applies the z-index to the text and image overlays

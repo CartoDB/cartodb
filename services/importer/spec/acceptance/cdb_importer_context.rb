@@ -7,6 +7,9 @@ shared_context "cdb_importer schema" do
     @db = pg_connection.connection
     @pg_options  = pg_connection.pg_options
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
+
+    @db.execute('CREATE EXTENSION IF NOT EXISTS postgis')
+    @db.execute('CREATE EXTENSION IF NOT EXISTS postgis_topology')
   end
 
   after(:each) do

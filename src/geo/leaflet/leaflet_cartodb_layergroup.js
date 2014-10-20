@@ -290,7 +290,11 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
   includes: [
     LayerDefinition.prototype,
-  ]
+  ],
+
+  _modelUpdated: function() {
+    this.setLayerDefinition(this.model.get('layer_definition'));
+  }
 });
 
 function layerView(base) {
@@ -424,7 +428,6 @@ L.NamedMap = L.CartoDBGroupLayerBase.extend({
   },
 
   _modelUpdated: function() {
-    console.log(this.model.get('named_map').name);
     this.setLayerDefinition(this.model.get('named_map'));
   }
 });

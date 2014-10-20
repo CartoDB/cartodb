@@ -273,12 +273,9 @@ var Vis = cdb.core.View.extend({
   },
 
   _addOverlays: function(overlays, options) {
-   
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
-
     this._createOverlays(overlays, options);
-
   },
 
   addTimeSlider: function(torqueLayer) {
@@ -492,13 +489,13 @@ var Vis = cdb.core.View.extend({
       this.addMobile(data.overlays, data.layers, options);
     }
 
-    if (!data.children) {
+    if (!data.slides) {
       // Sort the overlays by its internal order
       var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
       this._createOverlays(overlays, options);
     } else {
       //TODO: load odyssey and then slides
-      this._createSlides(data.children);
+      this._createSlides([data].concat(data.slides));
 
     }
 
@@ -539,6 +536,17 @@ var Vis = cdb.core.View.extend({
         return actions;
       }
 
+      function SwitchLegend(vis, layers) {
+        return O.Action({
+          enter: function() {
+            if (vis.legends) {
+              vis.legends.remove();
+            }
+            vis.addLegends(layers, vis.mobile_enabled);
+          }
+        });
+      }
+
       var seq = this.sequence = O.Sequential();
       this.slides = O.Story();
       
@@ -558,7 +566,7 @@ var Vis = cdb.core.View.extend({
 
         // generate states
         states.push(this.map.actions.set({
-          'center': JSON.parse(slide.center),
+          'center': typeof slide.center === 'string' ? JSON.parse(slide.center): slide.center,
           'zoom': slide.zoom
         }));
 
@@ -568,8 +576,13 @@ var Vis = cdb.core.View.extend({
           _.extend(lyr, lyr.options);
           if (lyr.options.named_map) {
             states.push(layer.actions.set(lyr));
+          } else {
+            states.push(layer.actions.set(lyr));
           }
         });
+
+        // legends
+        states.push(SwitchLegend(this, slide.layers));
 
         this.slides.addState(
           seq.step(i),

@@ -265,6 +265,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     setTimeout(function() {
       self._applyStyle();
       self._applyZoomLevelStyle();
+      self.show();
     }, 500);
 
     return this;

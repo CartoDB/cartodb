@@ -50,6 +50,12 @@
    * })
    */
   SQL.prototype.execute = function(sql, vars, options, callback) {
+
+    //Variable that defines if a query should be using get method or post method
+    var MAX_LENGTH_GET_QUERY = 1024;
+
+    var usingGetMethod = true;
+
     var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
@@ -87,28 +93,45 @@
 
     // create query
     var query = Mustache.render(sql, vars);
-    var q = 'q=' + encodeURIComponent(query);
+
+    //codigo original...........
+    //var q = 'q=' + encodeURIComponent(query);
+    var q = query;
 
     // request params
     var reqParams = ['format', 'dp', 'api_key'];
     if (options.extra_params) {
       reqParams = reqParams.concat(options.extra_params);
     }
+    var extraParams; //Extra variable if there are params, we store it in this var
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
       if(v) {
-        q += '&' + r + "=" + v;
+        //q += '&' + r + "=" + v;
+        extraParams += '&' + r + "=" + v;
       }
     }
 
-    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
+    //Original -->
+    //var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
+    var isGetRequest = (q.length < MAX_LENGTH_GET_QUERY) ? true : false;
+
     // generate url depending on the http method
     params.url = this._host() ;
     if(isGetRequest) {
-      params.url += '?' + q
+      q = "q=" + encodeURIComponent(q);
+      if (extraParams) {
+        q += extraParams;
+      }
+      params.url += '?' + q;
     } else {
+      //q = query;
+      if (extraParams) {
+        q += extraParams;
+      }
       params.data = q;
+      params.type = 'post'; //Because by default is get.
     }
 
     // wrap success and error functions

@@ -47,7 +47,6 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/loader_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
-  services/importer/spec/unit/osm_loader_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
   services/importer/spec/unit/runner_spec.rb \
   services/importer/spec/unit/source_file_spec.rb \

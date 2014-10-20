@@ -111,6 +111,7 @@ module CartoDB
       def download_and_store
         name = ''
         download_error = false
+        error_response = nil
 
         temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
 
@@ -119,6 +120,7 @@ module CartoDB
         request.on_headers do |response|
           unless response.success?
             download_error = true
+            error_response = response
           end
         end
         request.on_body do |chunk|
@@ -138,7 +140,9 @@ module CartoDB
         end
         request.run
 
-        raise DownloadError if download_error
+        if download_error && !error_response.nil?
+          raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
+        end
 
         File.rename(temp_name, filepath(name))
 

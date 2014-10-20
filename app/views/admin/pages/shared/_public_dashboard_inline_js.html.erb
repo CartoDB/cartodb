@@ -6,7 +6,7 @@
 
     <% @visualizations.map do |v| 
       urls.push(
-        :url => "//#{request.env['HTTP_HOST']}/api/v2/viz/#{v[:id]}/viz.json",
+        :url => "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: v[:id]).sub(/(http:|https:)/i, '') }.json",
         :layer_visibility => v[:layers].map{ |layer| { visible: layer.options["visible"] ? true : false } },
       )
     end %>

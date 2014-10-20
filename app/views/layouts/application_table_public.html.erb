@@ -8,14 +8,13 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
-    <%= insert_trackjs() %>
-    <%= insert_google_analytics('primary') %>
-    <%= yield :js %>
     <%= csrf_meta_tag %>
   </head>
   <body class="public">
     <%= render 'admin/shared/public_header', :clone => true, :signin => false %>
     <%= yield %>
-    <%= render 'shared/crazyegg' %>
+    <%= yield :js %>
+    <%= insert_trackjs() %>
+    <%= insert_google_analytics('primary') %>
   </body>
 </html>

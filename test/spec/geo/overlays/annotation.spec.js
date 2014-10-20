@@ -19,7 +19,8 @@ describe("cdb.geo.ui.Annotation", function() {
         text: "You are <strong>here</strong>",
         latlng: [40, 2],
         mapView: mapView,
-        //template: template,
+        minZoom: 0,
+        maxZoom: 40,
         style: {
           boxColor: "#000",
           textAlign: "left",
@@ -30,9 +31,7 @@ describe("cdb.geo.ui.Annotation", function() {
           "box-color": "#F84F40",
           boxOpacity: 0.7,
           boxPadding: 10,
-          "line-width": 50,
-          zoomMin: 0,
-          zoomMax: 40
+          "line-width": 50
         }
       });
 
@@ -54,6 +53,11 @@ describe("cdb.geo.ui.Annotation", function() {
     it("should allow to change the text", function() {
       expect(view.model.set("text", "Now you are here"));
       expect(view.$el.find(".text").html()).toEqual("Now you are here");
+    });
+
+    it("should allow to change the style", function() {
+      expect(view.setStyle("color", "#000000"));
+      expect(view.$el.find(".text").css("color")).toEqual('rgb(0, 0, 0)');
     });
 
   });

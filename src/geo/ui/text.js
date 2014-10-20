@@ -41,6 +41,8 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var boxWidth   = style["box-width"];
     var fontFamily = style["font-family-name"];
 
+    this.$text = this.$el.find(".text");
+
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
 
@@ -133,15 +135,32 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   },
 
+  show: function(callback) {
+    this.$el.fadeIn(150, function() {
+      callback && callback();
+    });
+  },
+
+  hide: function(callback) {
+    this.$el.fadeOut(150, function() {
+      callback && callback();
+    });
+  },
+
   render: function() {
 
     this._place();
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
-    this.$text = this.$el.find(".text");
-
     this._applyStyle();
+
+    var self = this;
+
+    setTimeout(function() {
+      self._applyStyle();
+      self.show();
+    }, 900);
 
     return this;
 

@@ -1987,7 +1987,7 @@ div.cartodb-timeslider p {
   -moz-hyphens: auto;
   hyphens: auto;
 
-  z-index: 99999;
+  z-index: 11;
 }
 
 .cartodb-overlay.overlay-text .content,
@@ -2070,7 +2070,7 @@ div.cartodb-timeslider p {
   -o-border-radius: 3px;
   border-radius: 3px;
 
-  z-index: 99999;
+  z-index: 11;
 }
 
 .cartodb-overlay.image-overlay .content {

@@ -104,6 +104,8 @@ cdb.vis.Overlay.register('annotation', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     text: options.extra.rendered_text,
+    minZoom: options.style["min-zoom"],
+    maxZoom: options.style["max-zoom"],
     latlng: options.extra.latlng,
     style: options.style
   });

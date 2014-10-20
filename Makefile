@@ -58,8 +58,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/url_translator/google_docs_spec.rb \
   services/importer/spec/unit/url_translator/google_maps_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
-  services/importer/spec/unit/url_translator/osm_spec.rb
-
+  services/importer/spec/unit/url_translator/osm_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \

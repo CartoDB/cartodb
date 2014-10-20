@@ -103,6 +103,7 @@ cdb.vis.Overlay.register('annotation', function(data, vis) {
     className: "cartodb-overlay overlay-annotation " + options.device,
     template: template,
     mapView: vis.mapView,
+    device: options.device,
     text: options.extra.rendered_text,
     minZoom: options.style["min-zoom"],
     maxZoom: options.style["max-zoom"],

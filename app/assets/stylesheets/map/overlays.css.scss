@@ -111,6 +111,12 @@
 
   &.selected.border-dark {
     border-color: rgba(#000, .5);
+
+    .hint { 
+      color: #000;
+      @include opacity(1);
+    }
+
   }
 
   .content > .text { 
@@ -282,7 +288,7 @@
 
     $ballWidth: 6px;
 
-    &.align-right { 
+    &.align-right {
       .stick .ball { left: auto; right: -$ballWidth; }
     }
 

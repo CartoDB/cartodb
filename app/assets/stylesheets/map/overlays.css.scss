@@ -158,7 +158,7 @@
   position: absolute;
   top: 100px;
   left: 35px;
-  width: 900px;
+  width: 950px;
 }
 .overlay-properties ul {
   margin: 15px 0 0 0;
@@ -177,10 +177,14 @@
 }
 .overlay-properties ul li .field .form-view {
   @include inline-block();
+  vertical-align: top;
   margin: 0 8px 0 0;
 }
 .overlay-properties ul li .field .form-view:last-child {
   margin-right: 0;
+}
+.overlay-properties ul li .field .form-view.margin-min {
+  margin-right: 5px;
 }
 .overlay-properties ul li > span {
   margin: 0 0 5px 0;

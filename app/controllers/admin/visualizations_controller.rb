@@ -190,9 +190,8 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
-    # We need those variable for UI rendering
-    has_logo  = @visualization.overlays.any? {|o| o.type == "logo" }
-    @hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false'))
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
       format.html { render layout: 'application_public_visualization_layout' }
@@ -224,9 +223,8 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
-    # We need those variable for UI rendering
-    has_logo  = @visualization.overlays.any? {|o| o.type == "logo" }
-    @hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false'))
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
       format.html { render 'public_map', layout: false }
@@ -276,9 +274,8 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
-    # We need those variable for UI rendering
-    has_logo  = @visualization.overlays.any? {|o| o.type == "logo" }
-    @hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false'))
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
@@ -349,6 +346,12 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render 'track', layout: false
   end #track_embed
+
+  # Check if visualization logo should be hidden or not
+  def is_logo_hidden(vis, parameters)
+    has_logo  = vis.overlays.any? {|o| o.type == "logo" }
+    true if (!has_logo && vis.user.remove_logo? && (!parameters['cartodb_logo'] || parameters['cartodb_logo'] != "true")) || (has_logo && vis.user.remove_logo? && (parameters["cartodb_logo"] == 'false'))
+  end
 
   private
 

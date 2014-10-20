@@ -1,6 +1,4 @@
 # encoding: utf-8
-#TODO: is this needed for Travis or Jenkins?
-#require 'minitest/ci' if ENV['JOB_NAME']
 
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'

@@ -8,7 +8,7 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     this.model.set({
       title:            extra.title,
-      description:      extra.description,
+      description:      this._setLinksTarget(extra.description),
       show_title:       extra.show_title,
       show_description: extra.show_description
     }, { silent: true });
@@ -31,6 +31,13 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     }
 
+  },
+
+  // Add target attribute to all links
+  _setLinksTarget: function(str) {
+    if (!str) return str;
+    var reg = new RegExp(/<(a)([^>]+)>/g);
+    return str.replace(reg, "<$1 target=\"_blank\"$2>");
   },
 
   render: function() {

@@ -274,6 +274,22 @@ describe("LayerDefinition", function() {
     });
   });
 
+  it("it should include stat_tag", function() {
+    var params, lzma;
+    layerDefinition.options.cors = false;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    layerDefinition.getLayerToken(function() {
+    });
+    waits(300);
+    runs(function() {
+      expect(params.url.indexOf("stat_tag=vis_id")).not.toEqual(-1)
+    });
+
+  });
+
   it("it should use jsonp when cors is not available", function() {
     var params, lzma;
     layerDefinition.options.cors = false;
@@ -295,7 +311,7 @@ describe("LayerDefinition", function() {
     });
     waits(300);
     runs(function() {
-      expect(params.url).toEqual(layerDefinition._tilerHost() + '/api/v1/map?map_key=test&lzma=' + encodeURIComponent(lzma));
+      expect(params.url).toEqual(layerDefinition._tilerHost() + '/api/v1/map?map_key=test&stat_tag=vis_id&lzma=' + encodeURIComponent(lzma));
     });
   });
 
@@ -786,6 +802,7 @@ describe("NamedMap", function() {
 
   it("set param without default param", function() {
     var named_map = {
+      stat_tag: 'stat_tag_named_map',
       name: 'testing',
       auth_token: 'auth_token_test',
       layers: [{}]
@@ -808,6 +825,8 @@ describe("NamedMap", function() {
     runs(function() {
       var config = "config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 1}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
+      console.log(params.url);
+      expect(params.url.indexOf("stat_tag=stat_tag_named_map")).not.toEqual(-1);
     });
   });
 

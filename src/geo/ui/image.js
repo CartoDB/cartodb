@@ -41,6 +41,7 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     var boxWidth   = style["box-width"];
 
     this.$text.css(style);
+    this.$el.css("z-index", style["z-index"]);
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)

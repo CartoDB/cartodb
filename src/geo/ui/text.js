@@ -44,6 +44,8 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
 
+    this.$el.css("z-index", style["z-index"]);
+
     var fontFamilyClass = "";
 
     if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";

@@ -211,8 +211,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
     },
 
-    pixelToLatLon: function(latlon) {
-      // TODO
+    pixelToLatLon: function(pos) {
+      return this.projector.fromContainerPixelToLatLng(new google.maps.Point(pos[0], pos[1]));
     },
 
     latLonToPixel: function(latlon) {

@@ -22732,6 +22732,8 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     this.template = this.options.template || this.template;
     this.mapView  = this.options.mapView;
 
+    this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     this._cleanStyleProperties(this.options.style);
 
     _.defaults(this.options.style, this.defaults.style);
@@ -22810,9 +22812,15 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   },
 
+  _belongsToCanvas: function() {
+  
+    var mobile = (this.options.device === "mobile") ? true : false;
+    return mobile === this.mobileEnabled;
+  },
+
   show: function(callback) {
 
-    if (this.model.get("hidden")) return;
+    if (this.model.get("hidden") || !this._belongsToCanvas()) return;
 
     var self = this;
 
@@ -33179,6 +33187,7 @@ cdb.vis.Overlay.register('annotation', function(data, vis) {
     className: "cartodb-overlay overlay-annotation " + options.device,
     template: template,
     mapView: vis.mapView,
+    device: options.device,
     text: options.extra.rendered_text,
     minZoom: options.style["min-zoom"],
     maxZoom: options.style["max-zoom"],

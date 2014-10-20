@@ -54,8 +54,6 @@
     //Variable that defines if a query should be using get method or post method
     var MAX_LENGTH_GET_QUERY = 1024;
 
-    var usingGetMethod = true;
-
     var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
@@ -94,38 +92,35 @@
     // create query
     var query = Mustache.render(sql, vars);
 
-    var q = query;
-
-    // request params
+    var isGetRequest = query.length < MAX_LENGTH_GET_QUERY;
+    // generate url depending on the http method
     var reqParams = ['format', 'dp', 'api_key'];
+    // request params
     if (options.extra_params) {
       reqParams = reqParams.concat(options.extra_params);
     }
-    var extraParams; //Extra variable if there are params, we store it in this var
-    for(var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
-      if(v) {
-        //q += '&' + r + "=" + v;
-        extraParams += '&' + r + "=" + v;
-      }
-    }
 
-    var isGetRequest = q.length < MAX_LENGTH_GET_QUERY;
-
-    // generate url depending on the http method
     params.url = this._host() ;
-    if(isGetRequest) {
-      q = 'q=' + encodeURIComponent(q);
-      if (extraParams) {
-        q += extraParams;
+    if (isGetRequest) {
+      var q = 'q=' + encodeURIComponent(query);
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if(v) {
+          q += '&' + r + "=" + v;
+        }
       }
+
       params.url += '?' + q;
     } else {
-      if (extraParams) {
-        q += extraParams;
+      var objPost = {'q': encodeURIComponent(query)};
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        objPost[r] = v;
       }
-      params.data = q;
+
+      params.data = objPost;
       params.type = 'post'; //Because by default is get.
     }
 

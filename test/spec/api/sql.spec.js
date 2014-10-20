@@ -71,14 +71,14 @@ describe('SQL api client', function() {
     var long_sql = []
     var i = 2000;
     while (--i) long_sql.push("10000");
-    var long_query = 'q=' + encodeURIComponent('SELECT * ' + long_sql);
+    var long_query = 'SELECT * ' + long_sql;
 
     sql.execute(long_query);
 
     expect(ajaxParams.url).toEqual(
       'https://' + USER + '.cartodb.com/api/v2/sql'
     )
-    expect(ajaxParams.data).toEqual(long_query);
+    expect(ajaxParams.data.q).toEqual(encodeURIComponent(long_query));
     expect(ajaxParams.type).toEqual('post');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
@@ -99,7 +99,7 @@ describe('SQL api client', function() {
     var long_sql = []
     var i = 2000;
     while (--i) long_sql.push("10000");
-    var long_query = 'q=' + encodeURIComponent('SELECT * ' + long_sql);
+    var long_query = 'SELECT * ' + long_sql;
 
     s.execute(long_query, null, {
       dp: 2
@@ -113,9 +113,10 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('&dp=2')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
     //Check that we have the params in the body
-    expect(ajaxParams.format).toEqual('geojson');
-    expect(ajaxParams.api_key).toEqual('testkey');
-    expect(ajaxParams.dp).toEqual(2);
+    expect(ajaxParams.data.q).toEqual(encodeURIComponent(long_query));
+    expect(ajaxParams.data.format).toEqual('geojson');
+    expect(ajaxParams.data.api_key).toEqual('testkey');
+    expect(ajaxParams.data.dp).toEqual(2);
     expect(ajaxParams.rambo).toEqual('test');
   });
 

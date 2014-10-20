@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.17-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f5e2de48a3bd252bc6e469925293d86c39741c7f
+// sha: f4e99a5527585e3c31558e75cdb0ddda1354157a
 (function() {
   var root = this;
 
@@ -20756,6 +20756,7 @@ this.LZMA = LZMA;
         'geo/geometry.js',
         'geo/map.js',
         'geo/ui/text.js',
+        'geo/ui/annotation.js',
         'geo/ui/image.js',
         'geo/ui/share.js',
         'geo/ui/zoom.js',
@@ -22563,6 +22564,8 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     var boxWidth   = style["box-width"];
     var fontFamily = style["font-family-name"];
 
+    this.$text = this.$el.find(".text");
+
     this.$text.css(style);
     this.$text.css("font-size", style["font-size"] + "px");
 
@@ -22655,15 +22658,307 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   },
 
+  show: function(callback) {
+    this.$el.fadeIn(150, function() {
+      callback && callback();
+    });
+  },
+
+  hide: function(callback) {
+    this.$el.fadeOut(150, function() {
+      callback && callback();
+    });
+  },
+
   render: function() {
 
     this._place();
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
+    this._applyStyle();
+
+    var self = this;
+
+    setTimeout(function() {
+      self._applyStyle();
+      self.show();
+    }, 900);
+
+    return this;
+
+  }
+
+});
+cdb.geo.ui.Annotation = cdb.core.View.extend({
+
+  className: "cartodb-overlay overlay-annotation",
+
+  defaults: {
+    minZoom: 0,
+    maxZoom: 40,
+    style: {
+      textAlign: "left",
+      zIndex: 5,
+      color: "#ffffff",
+      fontSize: "13",
+      fontFamilyName: "Helvetica",
+      boxColor: "#333333",
+      boxOpacity: 0.7,
+      boxPadding: 10,
+      lineWidth: 50,
+      lineColor: "#333333"
+    }
+  },
+
+  template: cdb.core.Template.compile(
+    '<div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    <div class="stick"><div class="ball"></div></div>\
+    </div>',
+    'mustache'
+  ),
+
+  events: {
+    "click": "stopPropagation"
+  },
+
+  stopPropagation: function(e) {
+    e.stopPropagation();
+  },
+
+  initialize: function() {
+
+    this.template = this.options.template || this.template;
+    this.mapView  = this.options.mapView;
+
+    this._cleanStyleProperties(this.options.style);
+
+    _.defaults(this.options.style, this.defaults.style);
+
+    this._setupModels();
+
+    this._bindMap();
+
+  },
+
+  _setupModels: function() {
+
+    this.model = new cdb.core.Model({ 
+      display: true,
+      hidden: false,
+      text:    this.options.text,
+      latlng:  this.options.latlng,
+      minZoom: this.options.minZoom || this.defaults.minZoom,
+      maxZoom: this.options.maxZoom || this.defaults.maxZoom
+    });
+
+    this.model.on("change:display", this._onChangeDisplay, this);
+    this.model.on("change:text",    this._onChangeText, this);
+    this.model.on('change:latlng',  this._place, this);
+
+    this.style = new cdb.core.Model(this.options.style);
+
+    this.style.on("change", this._applyStyle, this);
+
+    this.add_related_model(this.style);
+
+  },
+
+  _bindMap: function() {
+
+    this.mapView.map.bind('change', this._place, this);
+    this.mapView.map.bind('change:zoom', this._applyZoomLevelStyle, this);
+
+    this.mapView.bind('zoomstart', this.hide, this);
+    this.mapView.bind('zoomend', this.show, this);
+
+  },
+
+  _onChangeDisplay: function() {
+
+    if (this.model.get("display")) this.show();
+    else this.hide();
+
+  },
+
+  _onChangeText: function(e) {
+    this.$el.find(".text").html(this.model.get("text"));
+  },
+
+  _getStandardPropertyName: function(name) {
+
+    if (!name) return;
+    var parts = name.split("-");
+
+    if (parts.length === 1) return name;
+    else if (parts.length === 2) {
+      return parts[0] + parts[1].slice(0, 1).toUpperCase() + parts[1].slice(1);
+    }
+
+  },
+
+  _cleanStyleProperties: function(hash) {
+
+    var standardProperties = {};
+
+    _.each(hash, function(value, key) {
+      standardProperties[this._getStandardPropertyName(key)] = value;
+    }, this);
+
+    this.options.style = standardProperties;
+
+  },
+
+  show: function(callback) {
+
+    if (this.model.get("hidden")) return;
+
+    var self = this;
+
+    this.$el.stop().delay(500).fadeIn(150, function() {
+      self.$el.css({ display: "inline-table" }); // tricks
+      callback && callback();
+    });
+
+  },
+
+  hide: function(callback) {
+    this.$el.fadeOut(150, function() {
+      callback && callback();
+    });
+  },
+
+  _place: function() {
+
+    var latlng     = this.model.get("latlng");
+
+    var lineWidth  = this.style.get("lineWidth");
+    var textAlign  = this.style.get("textAlign");
+
+    var pos        = this.mapView.latLonToPixel(latlng);
+    var size       = this.mapView.getSize();
+    var top        = pos.y - this.$el.height()/2;
+    var left       = pos.x + lineWidth;
+
+    if (textAlign === "right") {
+      left = pos.x - this.$el.width() - lineWidth;
+    }
+
+    this.$el.css({ top: top, left: left });
+
+  },
+
+  setStyle: function(property, value) {
+
+    var standardProperty = this._getStandardPropertyName(property);
+
+    if (standardProperty) {
+      this.style.set(standardProperty, value);
+    }
+
+  },
+
+  _applyStyle: function() {
+
+    var textColor  = this.style.get("color");
+    var textAlign  = this.style.get("textAlign");
+    var boxColor   = this.style.get("boxColor");
+    var boxOpacity = this.style.get("boxOpacity");
+    var boxPadding = this.style.get("boxPadding");
+    var lineWidth  = this.style.get("lineWidth");
+    var lineColor  = this.style.get("lineColor");
+    var fontFamily = this.style.get("fontFamilyName");
+
     this.$text = this.$el.find(".text");
 
+    this.$text.css({ color: textColor, textAlign: textAlign });
+
+    this.$el.find(".content").css("padding", boxPadding);
+    this.$text.css("font-size", this.style.get("fontSize") + "px");
+    this.$el.css("z-index", this.style.get("zIndex"));
+
+    this.$el.find(".stick").css({ width: lineWidth, left: -lineWidth });
+
+    var fontFamilyClass = "";
+
+    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
+
+    this.$el
+    .removeClass("droid")
+    .removeClass("vollkorn")
+    .removeClass("roboto")
+    .removeClass("open_sans");
+
+    this.$el.addClass(fontFamilyClass);
+
+    if (textAlign === "right") {
+      this.$el.addClass("align-right");
+      this.$el.find(".stick").css({ left: "auto", right: -lineWidth });
+    } else {
+      this.$el.removeClass("align-right");
+    }
+
+    this._place();
+    this._applyZoomLevelStyle();
+
+  },
+
+  _getRGBA: function(color, opacity) {
+    return 'rgba(' + parseInt(color.slice(-6,-4),16)
+    + ',' + parseInt(color.slice(-4,-2),16)
+    + ',' + parseInt(color.slice(-2),16)
+    + ',' + opacity + ' )';
+  },
+
+  _applyZoomLevelStyle: function() {
+
+    var boxColor   = this.style.get("boxColor");
+    var boxOpacity = this.style.get("boxOpacity");
+    var lineColor  = this.style.get("lineColor");
+
+    var minZoom    = this.model.get("minZoom");
+    var maxZoom    = this.model.get("maxZoom");
+
+    var currentZoom = this.mapView.map.get("zoom");
+
+    if (currentZoom >= minZoom && currentZoom <= maxZoom) {
+
+      var rgbaLineCol = this._getRGBA(lineColor, 1);
+      var rgbaBoxCol  = this._getRGBA(boxColor, boxOpacity);
+
+      this.$el.find(".text").animate({ opacity: 1 }, 150);
+
+      this.$el.css("background-color", rgbaBoxCol);
+
+      this.$el.find(".stick").css("background-color", rgbaLineCol);
+      this.$el.find(".ball").css("background-color", rgbaLineCol);
+
+      this.model.set("hidden", false);
+      this.model.set("display", true);
+
+    } else {
+      this.model.set("hidden", true);
+      this.model.set("display", false);
+    }
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.model.attributes));
+
     this._applyStyle();
+
+    var self = this;
+
+    setTimeout(function() {
+      self._applyStyle();
+      self._applyZoomLevelStyle();
+      self.show();
+    }, 500);
 
     return this;
 
@@ -29209,6 +29504,11 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       return layer_view;
     },
 
+    pixelToLatLon: function(pos) {
+      var point = this.map_leaflet.containerPointToLatLng([pos[0], pos[1]]);
+      return point;
+    },
+
     latLonToPixel: function(latlon) {
       var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
       return this.map_leaflet.layerPointToContainerPoint(point);
@@ -30375,6 +30675,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
     },
 
+    pixelToLatLon: function(latlon) {
+      // TODO
+    },
 
     latLonToPixel: function(latlon) {
       return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
@@ -31786,7 +32089,7 @@ var Vis = cdb.core.View.extend({
   },
 
   _addOverlays: function(overlays, options) {
-   
+
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
 
@@ -32220,7 +32523,8 @@ var Vis = cdb.core.View.extend({
     if (!this.mobile_enabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
-           type: "search"
+           type: "search",
+           order: 3
         });
       }
     }
@@ -32258,6 +32562,7 @@ var Vis = cdb.core.View.extend({
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
+          order: 2,
           url: vizjson.url
         });
       }
@@ -32854,6 +33159,37 @@ cdb.vis.Overlay.register('text', function(data, vis) {
   return widget.render();
 
 });
+
+cdb.vis.Overlay.register('annotation', function(data, vis) {
+
+  var options = data.options;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    <div class="stick"><div class="ball"></div></div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var options = data.options;
+
+  var widget = new cdb.geo.ui.Annotation({
+    className: "cartodb-overlay overlay-annotation " + options.device,
+    template: template,
+    mapView: vis.mapView,
+    text: options.extra.rendered_text,
+    minZoom: options.style["min-zoom"],
+    maxZoom: options.style["max-zoom"],
+    latlng: options.extra.latlng,
+    style: options.style
+  });
+
+  return widget.render();
+
+});
+
 
 cdb.vis.Overlay.register('zoom_info', function(data, vis) {
   //console.log("placeholder for the zoom_info overlay");

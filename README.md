@@ -420,6 +420,12 @@ node app.js development
 sudo apt-get install imagemagick
 ```
 
+## Raster import support
+
+Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.
+
+Access to temporary dir is also needed. Depending on your installation you might also need to run `chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
+
 ## Install local instance of cold beer ##
 
 Congratulations!

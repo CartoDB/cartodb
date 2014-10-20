@@ -320,6 +320,9 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+
     respond_to do |format|
       format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'embed_map', content_type: 'application/javascript' }
@@ -350,7 +353,7 @@ class Admin::VisualizationsController < ApplicationController
   # Check if visualization logo should be hidden or not
   def is_logo_hidden(vis, parameters)
     has_logo  = vis.overlays.any? {|o| o.type == "logo" }
-    true if (!has_logo && vis.user.remove_logo? && (!parameters['cartodb_logo'] || parameters['cartodb_logo'] != "true")) || (has_logo && vis.user.remove_logo? && (parameters["cartodb_logo"] == 'false'))
+    (!has_logo && vis.user.remove_logo? && (!parameters['cartodb_logo'] || parameters['cartodb_logo'] != "true")) || (has_logo && vis.user.remove_logo? && (parameters["cartodb_logo"] == 'false'))
   end
 
   private

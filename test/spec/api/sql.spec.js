@@ -78,7 +78,8 @@ describe('SQL api client', function() {
     expect(ajaxParams.url).toEqual(
       'https://' + USER + '.cartodb.com/api/v2/sql'
     )
-    expect(ajaxParams.data.q).toEqual(encodeURIComponent(long_query));
+
+    expect(ajaxParams.data.q).toEqual(long_query);
     expect(ajaxParams.type).toEqual('post');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
@@ -113,7 +114,7 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('&dp=2')).toEqual(-1);
     expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
     //Check that we have the params in the body
-    expect(ajaxParams.data.q).toEqual(encodeURIComponent(long_query));
+    expect(ajaxParams.data.q).toEqual(long_query);
     expect(ajaxParams.data.format).toEqual('geojson');
     expect(ajaxParams.data.api_key).toEqual('testkey');
     expect(ajaxParams.data.dp).toEqual(2);

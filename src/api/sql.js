@@ -92,7 +92,9 @@
     // create query
     var query = Mustache.render(sql, vars);
 
+    // check method: if we are going to send by get or by post
     var isGetRequest = query.length < MAX_LENGTH_GET_QUERY;
+
     // generate url depending on the http method
     var reqParams = ['format', 'dp', 'api_key'];
     // request params
@@ -113,15 +115,22 @@
 
       params.url += '?' + q;
     } else {
-      var objPost = {'q': encodeURIComponent(query)};
+      var objPost = {'q': query};
       for(var i in reqParams) {
         var r = reqParams[i];
         var v = options[r];
-        objPost[r] = v;
+        if (v) {
+          objPost[r] = v;
+        }
       }
 
       params.data = objPost;
-      params.type = 'post'; //Because by default is get.
+      //Check if we are using jQuery(uncompressed) or reqwest (core)
+      if ((typeof(jQuery) !== 'undefined')) {
+        params.type = 'post';
+      } else {
+        params.method = 'post'; 
+      }
     }
 
     // wrap success and error functions

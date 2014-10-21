@@ -8,7 +8,8 @@ function Map(options) {
     cors: this.isCORSSupported(),
     btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
     MAX_GET_SIZE: 2033,
-    force_cors: false
+    force_cors: false,
+    instanciateCallback: '_cdbc'
   });
 
   this.layerToken = null;

@@ -6,7 +6,7 @@
   * Twitter datasource now allows N custom GNIP configurations, per username or per organization name.
   * Optimization: Added more DB indexes based on slow queries logs.
 * Fixed bugs
-  * Importer specs back to work.
+  * Importer specs back to work. If any fails please update GDAL and take a look at "Raster import support".
 
 3.2.5 (2014-10-13)
 ------------------

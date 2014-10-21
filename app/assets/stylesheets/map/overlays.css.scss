@@ -109,15 +109,28 @@
     border: 3px dashed rgba(#fff, .5);
   }
 
-  &.selected.border-dark {
+  &.selected.white-box {
     border-color: rgba(#000, .5);
 
-    .hint { 
+    &.editable .text { 
+      color: #000!important;
+    }
+
+    .hint {
       color: #000;
       @include opacity(1);
     }
 
   }
+
+    &.selected.border-dark {
+      border-color: rgba(#000, .5);
+
+      .hint { 
+        color: #000;
+        @include opacity(1);
+      }
+    }
 
   .content > .text { 
     font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;

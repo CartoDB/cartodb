@@ -12,7 +12,7 @@ module CartoDB
     class Runner
       QUOTA_MAGIC_NUMBER      = 0.3
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS                 = [Loader, TiffLoader, SqlLoader]
+      LOADERS                 = [Loader, TiffLoader]
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 

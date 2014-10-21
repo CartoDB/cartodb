@@ -72,6 +72,19 @@ describe("cdb.geo.ui.Annotation", function() {
 
     });
 
+    it("should unbind from the map", function() {
+      var spy = sinon.spy();
+      view.model.bind("change:latlng", spy);
+      mapView.map.setCenter(new google.maps.LatLng(53.307697, -6.222317));
+
+      view.clean();
+
+      setTimeout(function() {
+        expect(spy.called).toEqual(false);
+      }, 300);
+
+    });
+
   });
 
 });

@@ -79,9 +79,17 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     this.mapView.map.bind('change', this._place, this);
     this.mapView.map.bind('change:zoom', this._applyZoomLevelStyle, this);
-
     this.mapView.bind('zoomstart', this.hide, this);
     this.mapView.bind('zoomend', this.show, this);
+
+  },
+
+  _unbindMap: function() {
+
+    this.mapView.map.unbind('change', this._place, this);
+    this.mapView.map.unbind('change:zoom', this._applyZoomLevelStyle, this);
+    this.mapView.unbind('zoomstart', this.hide, this);
+    this.mapView.unbind('zoomend', this.show, this);
 
   },
 
@@ -262,11 +270,14 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     }
   },
 
+  clean: function() {
+    this._unbindMap();
+    cdb.core.View.prototype.clean.call(this);
+  },
+
   render: function() {
 
     this.$el.html(this.template(this.model.attributes));
-
-    this._applyStyle();
 
     var self = this;
 

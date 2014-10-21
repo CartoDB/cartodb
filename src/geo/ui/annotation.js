@@ -132,15 +132,15 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     var self = this;
 
-    this.$el.stop().delay(500).fadeIn(150, function() {
-      self.$el.css({ display: "inline-table" }); // tricks
+    this.$el.css({ opacity: 0, display: "inline-table" }); // makes the element to behave fine in the borders of the screen
+    this.$el.stop().animate({ opacity: 1 }, { duration: 150, complete: function() {
       callback && callback();
-    });
+    }});
 
   },
 
   hide: function(callback) {
-    this.$el.fadeOut(150, function() {
+    this.$el.stop().fadeOut(150, function() {
       callback && callback();
     });
   },

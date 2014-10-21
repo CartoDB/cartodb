@@ -11,7 +11,7 @@
   <script type="text/javascript"
     src="https://maps.google.com/maps/api/js?sensor=false&amp;v=3.12">
   </script>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'templates.js', 'table_public.js' %>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'public_table.js' %>
 
   <script>
     var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
@@ -98,8 +98,13 @@
         </div>
 
         <div class="export_options">
-          <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %></div>
-          <div class="download_options"></div>
+          <div class="left">
+            <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %></div>
+            <div class="download_options"></div>
+          </div>
+          <div class="right">
+            <a href="#/clone-in-cartodb" class="clone button green">Clone in CartoDB</a>
+          </div>
         </div>
 
       </div>

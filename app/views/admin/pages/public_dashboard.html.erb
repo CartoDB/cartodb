@@ -40,10 +40,6 @@
   <![endif]-->
 <% end %>
 
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag "common", "public_dashboard" %>
-  <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-<% end %>
 
 <div class="content<%= " empty" if @visualizations.size == 0 %>">
   <div class="inner">

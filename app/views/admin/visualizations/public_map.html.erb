@@ -1,21 +1,14 @@
 <%= content_for(:css) do %>
   <% if !Rails.env.production? %>
-    <%= stylesheet_link_tag 'embeds.css' %>
+    <%= stylesheet_link_tag 'cartodb.css', 'public_map.css' %>
   <% else %>
     <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
+    <%= stylesheet_link_tag 'public_map.css' %>
   <% end %>
 
-  <%= stylesheet_link_tag 'embeds/public_map', 'embeds/public_info.css' %>
+  <%#= stylesheet_link_tag 'embeds/public_map', 'embeds/public_info.css' %>
   <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 <% end %>
-
-
-<%= content_for(:conditional) do %>
-  <!--[if lt IE 9]>
-  <%= javascript_include_tag "respond.js" %>
-  <![endif]-->
-<% end %>
-
 
 <%= content_for(:body_class) do %>
   public-map
@@ -72,6 +65,13 @@
             <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
               <img src="<%= @avatar_url %>" class="avatar" />
             </a>
+          </div>
+
+          <div class="export_options">
+            <div class="user-options">
+              <a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a>
+              <a href="#/edit-in-cartodb" class="edit button grey">Edit in CartoDB</a>
+            </div>
           </div>
         </div>
       </div>
@@ -131,5 +131,59 @@
 <% end %>
 
 <%= content_for(:js) do %>
-  <%= render :partial => 'admin/visualizations/public/public_map_inline_js' %>
+  <% if @visualization.map.provider == 'googlemaps' %>
+    <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+  <% else %>
+    <!-- if you are using google maps, uncomment the following line -->
+    <!-- <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> -->
+  <% end %>
+
+  <script>
+    var user_name = '<%= raw @user_domain %>';
+    var owner_username = '<%= raw @visualization.user.username %>';
+    var vis_id = "<%= @visualization.id %>";
+    var vis_name = "<%= @visualization.name %>";
+    var belong_organization = <%= @visualization.user.has_organization? %>;
+    var config = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
+
+
+  </script>
+  
+  <% if !Rails.env.production? %>
+    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map' %>
+  <% else %>
+    <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
+    <%= javascript_include_tag 'templates.js', 'public_map' %>
+  <% end %>
+
+  <script>
+
+    $(function() {
+      <% if Cartodb.config[:graphite_public] %>
+        if (location.protocol.indexOf('https') === -1) {
+          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+            cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            })
+            // stop sending stats after 11 seconds
+            // statsc send stats in 5 secs interval so allow to send at least twice
+            setTimeout(function() {
+                cartodb.core.Profiler.backend(null);
+            }, 11*1000);
+          })
+        }
+      <% end %>
+    });
+
+  </script>
+
+  <%= insert_trackjs() %>
+
+  <%= render partial: 'shared/analytics', locals: { 
+    ua:     Cartodb.config[:google_analytics]['primary'],
+    domain: Cartodb.config[:google_analytics]['domain'],
+    custom_vars: [{title: "Public Pages", value: "Other", num: 3}],
+    page_owner: @visualization.user
+  } %>
 <% end %>

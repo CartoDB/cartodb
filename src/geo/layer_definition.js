@@ -1,4 +1,5 @@
 
+
 function Map(options) {
   var self = this;
   this.options = _.defaults(options, {
@@ -9,7 +10,9 @@ function Map(options) {
     btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
     MAX_GET_SIZE: 2033,
     force_cors: false,
-    instanciateCallback: '_cdbc'
+    instanciateCallback: function() {
+      return '_cdbc_' + cartodb.uniqueCallbackName(JSON.stringify(self.toJSON()));
+    }
   });
 
   this.layerToken = null;

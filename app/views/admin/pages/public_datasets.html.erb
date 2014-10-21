@@ -8,20 +8,11 @@
 
 <%= content_for(:js) do %>
   <% if !Rails.env.production? %>
-    <%= javascript_include_tag 'cdb.js', 'public_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
   <% else %>
     <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-    <%= javascript_include_tag 'public_dashboard' %>
+    <%= javascript_include_tag 'templates.js', 'public_dashboard' %>
   <% end %>
-
-  <!--[if lt IE 9]>
-  <%= javascript_include_tag "respond" %>
-  <script>
-    document.createElement('header');
-    document.createElement('nav');
-    document.createElement('footer');
-  </script>
-  <![endif]-->
 <% end %>
 
 <div class="content<%= " empty" if @datasets.size == 0 %>">

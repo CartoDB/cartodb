@@ -14,6 +14,7 @@ describe 'SQL regression tests' do
   include_context "cdb_importer schema"
 
   it 'imports SQL files' do
+    pending 'SQL Loader still disabled'
     filepath    = path_to('csv_with_lat_lon.sql')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)

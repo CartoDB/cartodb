@@ -60,6 +60,17 @@ describe("cdb.geo.ui.Annotation", function() {
       expect(view.$el.find(".text").css("color")).toEqual('rgb(0, 0, 0)');
     });
 
+    it("should move when the map moves", function() {
+      var spy = sinon.spy();
+      view.model.bind("change:latlng", spy);
+      mapView.map.setCenter(new google.maps.LatLng(53.307697, -6.222317));
+
+      setTimeout(function() {
+        expect(spy.called).toEqual(true);
+      }, 300);
+
+    });
+
   });
 
 });

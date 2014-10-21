@@ -22,7 +22,6 @@ describe("cdb.geo.ui.Annotation", function() {
         minZoom: 0,
         maxZoom: 40,
         style: {
-          boxColor: "#000",
           textAlign: "left",
           zIndex: 1000,
           textAlign: "right",
@@ -44,10 +43,12 @@ describe("cdb.geo.ui.Annotation", function() {
     });
 
     it("should render", function() {
-      expect(view.$el.find(".text").html()).toEqual("You are <strong>here</strong>");
-      expect(view.$el.css("background-color")).toEqual('rgba(248, 79, 64, 0.701961)');
-      expect(view.$el.find(".stick").css("background-color")).toEqual('rgb(51, 51, 51)');
-      expect(view.$el.find(".text").css("color")).toEqual('rgb(255, 255, 255)');
+      setTimeout(function() {
+        expect(view.$el.find(".text").html()).toEqual("You are <strong>here</strong>");
+        expect(view.$el.css("background-color")).toEqual('rgba(248, 79, 64, 0.701961)');
+        expect(view.$el.find(".stick").css("background-color")).toEqual('rgb(51, 51, 51)');
+        expect(view.$el.find(".text").css("color")).toEqual('rgb(0, 0, 0)');
+      }, 700);
     });
 
     it("should allow to change the text", function() {

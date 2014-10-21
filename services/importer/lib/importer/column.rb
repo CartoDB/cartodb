@@ -133,7 +133,7 @@ module CartoDB
           qualified_table_name,
           job,
           'Removing too big bounding boxes',
-          @capture_exceptions
+          capture_exceptions=false
         )
 
         # 5) grab random point inside valid bounding boxes and store into the_geom
@@ -157,7 +157,7 @@ module CartoDB
               qualified_table_name,
               job,
               'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
-              @capture_exceptions
+              capture_exceptions=false
           )
         rescue => exception
           job.log "Error generating points inside bounding boxes: #{exception.to_s}"

@@ -11,7 +11,6 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
-require_relative './exceptions'
 
 module CartoDB
   module Importer2

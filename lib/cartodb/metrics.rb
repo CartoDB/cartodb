@@ -170,7 +170,7 @@ module CartoDB
       Rollbar.report_message(
         "Failed to send metric to Ducksboard",
         "error",
-        error_info: args.join('-')
+        error_info: "#{id} - #{body}"
       )
       self
     end #ducksboard_post

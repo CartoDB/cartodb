@@ -83,8 +83,8 @@ describe Runner do
       fake_log = Doubles::Log.new
 
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new, fake_log)
-      job         = Job.new({ pg_options: @pg_options, logger: fake_log })
+      runner      = CartoDB::Importer2::Runner.new(@pg_options, Object.new, fake_log)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: fake_log })
 
       def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
@@ -99,11 +99,11 @@ describe Runner do
       fake_log = Doubles::Log.new
 
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new, fake_log)
-      job         = Job.new({ pg_options: @pg_options, logger: fake_log })
+      runner      = CartoDB::Importer2::Runner.new(@pg_options, Object.new, fake_log)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: fake_log })
 
       fake_loader = self.fake_loader_for(job, source_file)
-      def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
+      def fake_loader.run(post_import_handler = nil); raise 'Unleash the Kraken!!!!'; end
 
       runner.import(source_file, nil, job, fake_loader)
       result = runner.results.first

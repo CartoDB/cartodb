@@ -16,9 +16,9 @@ module CartoDB
       DEFAULT_SCHEMA  = 'cdb_importer'
       RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
                             AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
-                            COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE 
+                            COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE
                             CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
-                            CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO 
+                            CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO
                             ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
                             GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT
                             INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
@@ -289,7 +289,7 @@ module CartoDB
       def records_with_data
         @records_with_data ||= db[%Q{
           SELECT #{column_name} FROM "#{schema}"."#{table_name}"
-          WHERE #{column_name} IS NOT NULL 
+          WHERE #{column_name} IS NOT NULL
           AND #{column_name} != ''
         }]
       end
@@ -308,7 +308,7 @@ module CartoDB
 
       def geometry_type
         sample = db[%Q{
-          SELECT public.GeometryType(ST_Force_2D(#{column_name})) 
+          SELECT public.GeometryType(ST_Force_2D(#{column_name}))
           AS type
           FROM #{schema}.#{table_name}
           WHERE #{column_name} IS NOT NULL
@@ -319,8 +319,8 @@ module CartoDB
 
       def drop
         db.run(%Q{
-          ALTER TABLE #{qualified_table_name} 
-          DROP COLUMN IF EXISTS #{column_name} 
+          ALTER TABLE #{qualified_table_name}
+          DROP COLUMN IF EXISTS #{column_name}
         })
       end
 

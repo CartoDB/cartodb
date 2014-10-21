@@ -1,7 +1,7 @@
 # encoding: utf-8
 require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
-require_relative '../../../../services/importer/spec/doubles/log'
+require_relative '../doubles/log'
 
 include CartoDB::Importer2
 
@@ -9,6 +9,9 @@ describe Column do
   before do
     @db           = Factories::PGConnection.new.connection
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
+
+    @db.execute('CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public')
+    @db.execute('CREATE EXTENSION IF NOT EXISTS postgis_topology')
     @db.execute('SET search_path TO cdb_importer,public')
 
     @table_name   = create_table(@db)
@@ -20,6 +23,7 @@ describe Column do
   after do
     @db.drop_table?(@table_name.to_sym)
     @db.execute('DROP SCHEMA cdb_importer CASCADE')
+    @db.execute('DROP EXTENSION postgis CASCADE')
     @db.disconnect
   end
 
@@ -327,7 +331,7 @@ describe Column do
                           -112.262073428656,36.08626019085147,2357
                           -112.2633204928495,36.08621519860091,2357
                           -112.2644963846444,36.08627897945274,2357
-                          -112.2656969554589,36.08649599090644,2357 
+                          -112.2656969554589,36.08649599090644,2357
                         </coordinates>
                       </LineString>
                     },

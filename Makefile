@@ -5,6 +5,7 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS_1 = \
+  spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
@@ -13,22 +14,19 @@ WORKING_SPECS_1 = \
   $(NULL)
 
 WORKING_SPECS_2 = \
+  spec/rspec_configuration.rb \
   spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
-  $(NULL)
-
-WORKING_SPECS_3 = \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
-  services/importer/spec/unit/csv_normalizer_spec.rb \
-  services/importer/spec/unit/loader_spec.rb \
-  services/importer/spec/unit/ogr2ogr_spec.rb \
-  services/importer/spec/unit/kml_splitter_spec.rb \
-  services/importer/spec/unit/runner_spec.rb \
+  $(NULL)
+
+WORKING_SPECS_3 = \
+  spec/rspec_configuration.rb \
   services/importer/spec/acceptance/csv_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
@@ -46,11 +44,10 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
+  services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
   services/importer/spec/unit/runner_spec.rb \
-  services/importer/spec/unit/source_file_spec.rb \
-  services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/unp_spec.rb \
   services/importer/spec/unit/url_translator/fusion_tables_spec.rb \
   services/importer/spec/unit/url_translator/github_spec.rb \
@@ -58,9 +55,11 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/url_translator/google_maps_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
+  services/importer/spec/unit/source_file_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \
+  spec/rspec_configuration.rb \
   services/wms/spec/unit/wms_spec.rb \
   services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
@@ -68,6 +67,7 @@ WORKING_SPECS_4 = \
   $(NULL)
 
 WORKING_SPECS_5 = \
+  spec/rspec_configuration.rb \
   spec/requests/api/imports_spec.rb \
   spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
@@ -78,6 +78,7 @@ WORKING_SPECS_5 = \
   $(NULL)
 
 WORKING_SPECS_6 = \
+  spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
@@ -85,6 +86,7 @@ WORKING_SPECS_6 = \
   $(NULL)
 
 WORKING_SPECS_7 = \
+  spec/rspec_configuration.rb \
   spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
@@ -99,6 +101,7 @@ WORKING_SPECS_7 = \
   $(NULL)
 
 WORKING_SPECS_8 = \
+  spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
   spec/requests/superadmin/users_spec.rb \
@@ -108,12 +111,12 @@ WORKING_SPECS_8 = \
   $(NULL)
 
 WORKING_SPECS_9 = \
+  spec/rspec_configuration.rb \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
-
 
 CDB_PATH=lib/assets/javascripts/cdb
 

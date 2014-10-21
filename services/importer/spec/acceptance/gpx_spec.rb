@@ -9,7 +9,7 @@ require_relative 'acceptance_helpers'
 
 include CartoDB::Importer2
 
-describe 'SHP regression tests' do
+describe 'GPX regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
 

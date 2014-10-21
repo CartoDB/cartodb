@@ -30,6 +30,7 @@ module CartoDB
         @job      = job || Job.new
         @delimiter = nil
         @force_normalize = false
+        @encoding = nil
       end
 
       def force_normalize
@@ -124,7 +125,6 @@ module CartoDB
 
       def normalize(temporary_filepath)
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER)
-
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line|
           row = parsed_line(line)

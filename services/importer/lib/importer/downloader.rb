@@ -129,6 +129,7 @@ module CartoDB
         request.on_complete do |response|
           unless response.success?
             download_error = true
+            error_response = response
           end
           downloaded_file.close
 

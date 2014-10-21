@@ -124,7 +124,7 @@ module CartoDB
         tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
 
-        if downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
+        if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           job.log "Streaming import load"
           loader.streamed_run_init
 

@@ -524,9 +524,14 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
 
-      if (type === 'image' || type === 'text') {
+      // Decide to create or not the custom overlays
+      if (type === 'image' || type === 'text' || type === 'annotation') {
+
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
+
+        if (!options[type] && options[type] !== undefined) return;
+
       }
 
       // We add the overlay

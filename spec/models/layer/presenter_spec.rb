@@ -44,5 +44,28 @@ describe CartoDB::Layer::Presenter do
       poro.fetch(:options).fetch(:sql)
         .should == 'bogus template select the_geom from bogus_table'
     end
+
+    it 'keeps the visible attribute when rendering' do
+      layer = OpenStruct.new(
+        kind:           'torque',
+        options: {
+          'query'         => 'select the_geom from bogus_table',
+          'tile_style'    => '',
+          'interactivity' => '',
+          'style_version' => '',
+          'table_name'    => 'bogus_table',
+          'query_wrapper' => 'bogus template <%= sql %>',
+          'visible' => true
+        },
+      )
+
+      options = {
+        visualization_id: '',
+        sql: '',
+      }
+
+      vizjson = CartoDB::Layer::Presenter.new(layer, options).to_vizjson_v2
+      vizjson[:options]['visible'].should == true
+    end
   end
 end # Layer::Presenter

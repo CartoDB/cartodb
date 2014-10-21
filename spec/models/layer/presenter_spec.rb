@@ -22,8 +22,8 @@ describe CartoDB::Layer::Presenter do
         }
       )
 
-      poro = CartoDB::Layer::Presenter.new(layer).to_vizjson_v2
-      poro.fetch(:options).fetch(:sql)
+      vizjson = CartoDB::Layer::Presenter.new(layer).to_vizjson_v2
+      vizjson.fetch(:options).fetch(:sql)
         .should == 'bogus template select * from bogus_table'
 
       layer = OpenStruct.new(
@@ -40,8 +40,8 @@ describe CartoDB::Layer::Presenter do
         }
       )
 
-      poro = CartoDB::Layer::Presenter.new(layer).to_vizjson_v2
-      poro.fetch(:options).fetch(:sql)
+      vizjson = CartoDB::Layer::Presenter.new(layer).to_vizjson_v2
+      vizjson.fetch(:options).fetch(:sql)
         .should == 'bogus template select the_geom from bogus_table'
     end
 

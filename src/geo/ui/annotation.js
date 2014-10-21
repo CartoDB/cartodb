@@ -158,7 +158,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     var left       = pos.x + lineWidth;
 
     if (textAlign === "right") {
-      left = pos.x - this.$el.width() - lineWidth;
+      left = pos.x - this.$el.width() - lineWidth - this.$el.find(".ball").width();
     }
 
     this.$el.css({ top: top, left: left });

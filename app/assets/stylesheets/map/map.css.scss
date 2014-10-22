@@ -320,7 +320,7 @@ div.map {
 
   .map-options {
     @include position(false, false, 18px, 18px);
-    z-index: 10;
+    z-index: 100;
   }
 
   .option-button {
@@ -534,7 +534,7 @@ div.map {
       position:relative;
       float:right;
       margin: 20px 20px 0 0;
-      z-index: 5;
+      z-index: 105;
     }
 
     div.cartodb-tiles-loader {

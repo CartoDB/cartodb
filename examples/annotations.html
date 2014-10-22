@@ -13,13 +13,13 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://development.localhost.lan:3000/assets/2.15.8/stylesheets/embeds.css" />
+    <link rel="stylesheet" href="http://development.localhost.lan:3000/assets/2.15.9/stylesheets/embeds.css" />
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://development.localhost.lan:3000/assets/2.15.8/javascripts/cdb.js"></script>
+    <script src="http://development.localhost.lan:3000/assets/2.15.9/javascripts/cdb.js"></script>
 
     <script>
       function main() {
@@ -64,6 +64,7 @@
           });
 
           this.mapView.$el.append(annotation.render().$el);
+          annotation.show();
 
           window.annotation = annotation = new cdb.geo.ui.Annotation({
             latlng:[14, 3],
@@ -72,6 +73,7 @@
           });
 
           this.mapView.$el.append(annotation.render().$el);
+          annotation.show();
 
         })
         .error(function(err) {

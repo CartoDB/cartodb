@@ -20,10 +20,15 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   def create
+    default_type_guessing   = true
+    default_fields_guessing = true
+
     member_attributes = payload.merge(
-        name:       params[:table_name],
-        user_id:    current_user.id,
-        state:      Synchronization::Member::STATE_CREATED
+        name:                   params[:table_name],
+        user_id:                current_user.id,
+        state:                  Synchronization::Member::STATE_CREATED,
+        type_guessing:          params.fetch(:type_guessing, default_type_guessing),
+        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing)
     )
 
     if from_sync_file_provider?
@@ -46,7 +51,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       data_source:        params[:url],
       synchronization_id: member.id,
       service_name:       service_name,
-      service_item_id:    service_item_id
+      service_item_id:    service_item_id,
+      type_guessing:          params.fetch(:type_guessing, default_type_guessing),
+      quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing)
     }
       
     data_import = DataImport.create(options)

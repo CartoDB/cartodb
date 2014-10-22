@@ -17,7 +17,6 @@ module CartoDB
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
-        FEATURE_DATA_URL = '%s/query?objectIds=%s&outFields=%s&outSR=4326&f=json'
         FEATURE_DATA_POST_URL = '%s/query'
         LAYERS_URL       = '%s/layers?f=json'
 
@@ -29,9 +28,7 @@ module CartoDB
         # Amount to multiply or divide
         BLOCK_FACTOR = 2
         MIN_BLOCK_SIZE = 1
-        # If using GET, lots of ids can generate too long urls. This size, with a dozen fields fits up to 6 digit ids
-        # @see http://www.iis.net/configreference/system.webserver/security/requestfiltering/requestlimits
-        # Also, even for POST GeoJSON can get too big in memory, warning with allowing too much
+        # GeoJSON can get too big in memory, warning with allowing too many fields
         MAX_BLOCK_SIZE = 500
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying

@@ -26,10 +26,27 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
-    error_code queue_id get_error_text tables_created_count
-    synchronization_id service_name service_item_id }
+  PUBLIC_ATTRIBUTES = %W{
+    id
+    user_id
+    table_id
+    data_type
+    table_name
+    state
+    error_code
+    queue_id
+    get_error_text
+    tables_created_count
+    synchronization_id
+    service_name
+    service_item_id
+    type_guessing
+    quoted_fields_guessing
+  }
 
+  # Not all constants are used, but so that we keep track of available states
+  STATE_UNPACKING = 'unpacking'
+  STATE_IMPORTING = 'importing'
   STATE_SUCCESS   = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
@@ -44,7 +61,7 @@ class DataImport < Sequel::Model
     instantiate_log
     self.results  = []
     self.state    ||= STATE_UPLOADING
-  end #after_initialize
+  end
 
   def before_save
     self.logger = self.log.id unless self.logger.present?
@@ -147,17 +164,18 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    if log.entries =~ /Table (.*) registered/
+    # TODO: This doesn't works properly, until researched do not report false negatives
+    #if log.entries =~ /Table (.*) registered/
       self.success  = true
       self.state    = STATE_SUCCESS
       log.append "Import finished\n"
       save
       notify(results)
       self
-    else
-      log.append "Import FAILED registering table!\n"
-      handle_failure
-    end
+    #else
+    #  log.append "Import FAILED registering table!\n"
+    #  handle_failure
+    #end
   end
 
   def handle_failure
@@ -346,7 +364,8 @@ class DataImport < Sequel::Model
     else
       {
         ogr2ogr_binary:       options['binary'],
-        ogr2ogr_csv_guessing: options['csv_guessing']
+        ogr2ogr_csv_guessing: options['csv_guessing'] && self.type_guessing,
+        quoted_fields_guessing: self.quoted_fields_guessing
       }
     end
   end

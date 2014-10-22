@@ -20,6 +20,7 @@ module CartoDB
         query
         tile_style
         named_map
+        visible
       )
 
       INFOWINDOW_KEYS = %w(

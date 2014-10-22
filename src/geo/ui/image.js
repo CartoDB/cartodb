@@ -68,7 +68,12 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
     this.$text = this.$el.find(".text");
 
-    this._applyStyle();
+    var self = this;
+    setTimeout(function() {
+      self._applyStyle();
+      self.show();
+    }, 900);
+
 
     return this;
 

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.17-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 1897639d110583a292b9528e31514dc9e9bdd381
+// sha: e3cbba3037bb73263bc734576309ecb3cd37b82b
 (function() {
   var root = this;
 
@@ -22771,9 +22771,17 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     this.mapView.map.bind('change', this._place, this);
     this.mapView.map.bind('change:zoom', this._applyZoomLevelStyle, this);
-
     this.mapView.bind('zoomstart', this.hide, this);
     this.mapView.bind('zoomend', this.show, this);
+
+  },
+
+  _unbindMap: function() {
+
+    this.mapView.map.unbind('change', this._place, this);
+    this.mapView.map.unbind('change:zoom', this._applyZoomLevelStyle, this);
+    this.mapView.unbind('zoomstart', this.hide, this);
+    this.mapView.unbind('zoomend', this.show, this);
 
   },
 
@@ -22824,15 +22832,15 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     var self = this;
 
-    this.$el.stop().delay(500).fadeIn(150, function() {
-      self.$el.css({ display: "inline-table" }); // tricks
+    this.$el.css({ opacity: 0, display: "inline-table" }); // makes the element to behave fine in the borders of the screen
+    this.$el.stop().animate({ opacity: 1 }, { duration: 150, complete: function() {
       callback && callback();
-    });
+    }});
 
   },
 
   hide: function(callback) {
-    this.$el.fadeOut(150, function() {
+    this.$el.stop().fadeOut(150, function() {
       callback && callback();
     });
   },
@@ -22850,7 +22858,7 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     var left       = pos.x + lineWidth;
 
     if (textAlign === "right") {
-      left = pos.x - this.$el.width() - lineWidth;
+      left = pos.x - this.$el.width() - lineWidth - this.$el.find(".ball").width();
     }
 
     this.$el.css({ top: top, left: left });
@@ -22954,11 +22962,14 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     }
   },
 
+  clean: function() {
+    this._unbindMap();
+    cdb.core.View.prototype.clean.call(this);
+  },
+
   render: function() {
 
     this.$el.html(this.template(this.model.attributes));
-
-    this._applyStyle();
 
     var self = this;
 
@@ -32348,9 +32359,14 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
 
-      if (type === 'image' || type === 'text') {
+      // Decide to create or not the custom overlays
+      if (type === 'image' || type === 'text' || type === 'annotation') {
+
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
+
+        if (!options[type] && options[type] !== undefined) return;
+
       }
 
       // We add the overlay

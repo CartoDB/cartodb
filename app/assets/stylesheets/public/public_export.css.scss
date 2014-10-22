@@ -120,6 +120,7 @@
 
 
 @media only screen and (max-width: 710px) {
+  body.public-map .export_options,
   body.public .export_options {
     
     .download_options {
@@ -138,6 +139,7 @@
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
+  body.public-map .export_options,
   body.public .export_options {
     
     .download_options {

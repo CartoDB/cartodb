@@ -149,14 +149,14 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   render: function() {
 
-    this._place();
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
     var self = this;
-
+    
     setTimeout(function() {
       self._applyStyle();
+      self._place();
       self.show();
     }, 900);
 

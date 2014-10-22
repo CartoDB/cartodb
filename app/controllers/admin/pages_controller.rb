@@ -39,6 +39,7 @@ class Admin::PagesController < ApplicationController
     end
 
     @tags             = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
+    @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
@@ -145,6 +146,7 @@ class Admin::PagesController < ApplicationController
     end
 
     @tags             = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
+    @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description

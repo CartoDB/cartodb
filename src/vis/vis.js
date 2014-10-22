@@ -308,6 +308,8 @@ var Vis = cdb.core.View.extend({
         _.each(lyr.options.named_map.layers, function(l) {
           options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
         });
+      } else if (lyr.type === 'torque') {
+        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true ) })
       }
 
     });

@@ -6,6 +6,7 @@ require_relative '../doubles/loader'
 require_relative '../doubles/log'
 require_relative '../doubles/indexer'
 require_relative '../factories/pg_connection'
+require_relative '../../spec/doubles/cartodb_stats'
 
 include CartoDB::Importer2
 
@@ -108,6 +109,17 @@ describe Runner do
       runner.import(source_file, nil, job, fake_loader)
       result = runner.results.first
       result.success?.should eq false
+    end
+
+    it 'logs spent time' do
+      fake_log = Doubles::Log.new
+
+      downloader  = Downloader.new(@filepath)
+      statsd_double = CartoDB::Doubles::CartodbStats.new
+      runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker, nil, statsd_double)
+      runner.run
+
+      statsd_double.timed_block('importer').should be_true
     end
   end
 

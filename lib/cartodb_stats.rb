@@ -71,4 +71,8 @@ class CartodbStats
   
   end
 
+  def timing(key)
+    yield
+  end
+
 end

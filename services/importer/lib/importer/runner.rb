@@ -7,6 +7,7 @@ require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
 require_relative './result'
+require_relative '../../../../lib/cartodb_stats'
 
 module CartoDB
   module Importer2
@@ -23,7 +24,7 @@ module CartoDB
       # @param available_quota int|nil
       # @param unpacker Unp|nil
       # @param post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil)
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil, statsd=CartodbStats.new)
         @pg_options          = pg_options
         @downloader          = downloader
         @log                 = log             || new_logger
@@ -33,6 +34,7 @@ module CartoDB
         @stats               = []
         @post_import_handler = post_import_handler || nil
         @loader_options      = {}
+        @statsd              = statsd
       end
 
       def loader_options=(value)
@@ -53,6 +55,13 @@ module CartoDB
       end
 
       def run(&tracker_block)
+        @statsd.timing('importer') do
+          run_import(&tracker_block)
+        end
+      end
+
+      def run_import(&tracker_block)
+
         @tracker = tracker_block
         tracker.call('uploading')
 

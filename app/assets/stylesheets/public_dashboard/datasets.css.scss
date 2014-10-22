@@ -77,6 +77,7 @@
   .edit.button {
     position:relative;
     float:right;
+    display:none;
     padding:7px 10px;
     margin:2px 0 0 8px;
     text-transform:uppercase;
@@ -155,7 +156,7 @@
   .datasets > ul > li {
     .title {
       & > a { float:left; @include text-overflow(); width: 100%; text-align:left; }
-      .edit { float:left; display:block; width:auto; margin-left:0 }
+      .edit { float:left; width:auto; margin-left:0 }
       span.date { float: left; width:100%; display:block; margin: 0 0 15px 0; text-align:left; }
     }
   }

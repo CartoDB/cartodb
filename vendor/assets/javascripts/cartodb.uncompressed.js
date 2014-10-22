@@ -22676,8 +22676,6 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
-    this._applyStyle();
-
     var self = this;
 
     setTimeout(function() {
@@ -23054,7 +23052,12 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
     this.$text = this.$el.find(".text");
 
-    this._applyStyle();
+    var self = this;
+    setTimeout(function() {
+      self._applyStyle();
+      self.show();
+    }, 900);
+
 
     return this;
 

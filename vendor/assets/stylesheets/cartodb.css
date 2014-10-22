@@ -3225,6 +3225,7 @@ div.cartodb-timeslider p {
 }
 
 .cartodb-overlay.image-overlay {
+  display:none;
   position:absolute;
 
   -webkit-border-radius: 3px;

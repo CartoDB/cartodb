@@ -335,6 +335,8 @@
   /* Image Overlay */
   &.image {
 
+    display: none;
+
     &.selected {
       border: 3px dashed rgba(#fff, .5);
     }

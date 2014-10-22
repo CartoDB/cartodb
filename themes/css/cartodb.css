@@ -2485,7 +2485,6 @@ div.cartodb-zoom {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  z-index: 105;
   background: white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -2493,6 +2492,7 @@ div.cartodb-zoom {
   -o-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #999999;
+  z-index: 105;
 }
 
 div.cartodb-zoom a {
@@ -2572,7 +2572,6 @@ div.cartodb-zoom-info {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  z-index: 105;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
@@ -2580,6 +2579,7 @@ div.cartodb-zoom-info {
   border-radius: 4px;
   border: 1px solid #999999;
   background: white;
+  z-index: 105;
 }
 
 
@@ -2604,7 +2604,6 @@ div.cartodb-tiles-loader div.loader {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  z-index: 105;
   background: url('../img/loader.gif') no-repeat center center white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -2612,8 +2611,8 @@ div.cartodb-tiles-loader div.loader {
   -o-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #999999;
+  z-index: 105;
 }
-
 
 /* CartoDB layer selector box */
 
@@ -2629,7 +2628,6 @@ div.cartodb-layer-selector-box {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  z-index: 105;
   background: white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;

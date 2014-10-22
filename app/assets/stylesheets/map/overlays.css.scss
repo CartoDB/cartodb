@@ -100,11 +100,38 @@
 }
 
 /* Overlay */
-.overlay.text {
+.overlay.text,
+.overlay.annotation {
+
+  display: none;
 
   &.selected {
     border: 3px dashed rgba(#fff, .5);
   }
+
+  &.selected.white-box {
+    border-color: rgba(#000, .5);
+
+    &.editable .text { 
+      color: #000!important;
+    }
+
+    .hint {
+      color: #000;
+      @include opacity(1);
+    }
+
+  }
+
+    &.selected.border-dark {
+      border-color: rgba(#000, .5);
+
+      .hint { 
+        color: #000;
+        @include opacity(1);
+      }
+    }
+
   .content > .text { 
     font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
     strong { font-weight: 700; }
@@ -132,7 +159,6 @@
 
 }
 
-
 .cartodb-logo {
   display:none;
   position:absolute;
@@ -145,7 +171,7 @@
   position: absolute;
   top: 100px;
   left: 35px;
-  width: 740px;
+  width: 950px;
 }
 .overlay-properties ul {
   margin: 15px 0 0 0;
@@ -163,10 +189,15 @@
   @include inline-block();
 }
 .overlay-properties ul li .field .form-view {
+  @include inline-block();
+  vertical-align: top;
   margin: 0 8px 0 0;
 }
 .overlay-properties ul li .field .form-view:last-child {
   margin-right: 0;
+}
+.overlay-properties ul li .field .form-view.margin-min {
+  margin-right: 5px;
 }
 .overlay-properties ul li > span {
   margin: 0 0 5px 0;
@@ -237,7 +268,7 @@
 
   max-width: 800px;
 
-  z-index: 999;
+  z-index: 4;
 
   &:hover { 
     background:rgba(#333, .7);
@@ -260,8 +291,51 @@
 
   }
 
+  /* Annotation Overlay */
+  &.annotation {
+    @include border-radius(2px);
+
+    &.selected {
+      border: 1px dashed rgba(#fff, .5);
+    }
+
+    .content {
+      padding: 5px;
+    }
+
+    $ballWidth: 6px;
+
+    &.align-right {
+      .stick .ball { left: auto; right: -$ballWidth; }
+    }
+
+    .stick {
+      $width: 50px;
+      $height: 2px;
+      position: absolute;
+      top: 50%;
+      margin-top: -$height/2;
+      left: -$width;
+      width: $width;
+      height: $height;
+      background: #333;
+    }
+    .stick .ball {
+      position:absolute;
+      left: -$ballWidth;
+      top: 50%;
+      margin-top: -$ballWidth/2;
+      width: $ballWidth;
+      height: $ballWidth;
+      background: #333;
+      @include border-radius(2000px)
+    }
+  }
+
   /* Image Overlay */
   &.image {
+
+    display: none;
 
     &.selected {
       border: 3px dashed rgba(#fff, .5);

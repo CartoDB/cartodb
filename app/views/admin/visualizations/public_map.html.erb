@@ -6,7 +6,6 @@
     <%= stylesheet_link_tag 'public_map.css' %>
   <% end %>
 
-  <%#= stylesheet_link_tag 'embeds/public_map', 'embeds/public_info.css' %>
   <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 <% end %>
 
@@ -68,11 +67,13 @@
           </div>
 
           <div class="export_options">
+            <div class="left"></div>
             <div class="user-options">
               <a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a>
               <a href="#/edit-in-cartodb" class="edit button grey">Edit in CartoDB</a>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -139,6 +140,25 @@
   <% end %>
 
   <script>
+    function get_url_params(conversion) {
+      conversion = conversion || {};
+
+      var tokens = location.search.slice(1).split('&');
+      var params = {};
+
+      for (var i = 0; i < tokens.length; ++i) {
+
+        var tk = tokens[i].split('=');
+        var fn = conversion[tk[0]] || function(v) { return v };
+
+        if (tk.length === 2) {
+          params[tk[0]] = fn(decodeURIComponent(tk[1]));
+        }
+      }
+
+      return params;
+    }
+
     var user_name = '<%= raw @user_domain %>';
     var owner_username = '<%= raw @visualization.user.username %>';
     var vis_id = "<%= @visualization.id %>";
@@ -146,6 +166,50 @@
     var belong_organization = <%= @visualization.user.has_organization? %>;
     var config = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
 
+    var vizjson = <%= raw @visualization.to_vizjson.to_json %>
+
+    // Generating map options
+    var bool_fn = function(v) { return v == 'true' };
+    var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+    var logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' };
+    var layer_fn = function(v) {
+      if (!v || !v.length) {
+        return null;
+      }
+      return _.map(v.split("|"), function(v) {
+        return { visible: !!parseInt(v, 10) }
+      });
+    };
+
+    var map_options = get_url_params({
+      'search':           bool_fn,
+      'title':            bool_fn,
+      'description':      bool_fn,
+      'shareable':        bool_fn,
+      'fullscreen':       bool_fn,
+      'cartodb_logo':     bool_fn,
+      'scrollwheel':      bool_fn,
+      'sublayer_options': layer_fn,
+      'layer_selector':   bool_fn,
+      'legends':          bool_fn
+    });
+
+    <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
+      map_options.auth_token = [];
+      <% @protected_map_tokens.each do |token| %>
+          map_options.auth_token.push('<%= token %>');
+      <% end %>
+      map_options.https = true; // when auth_token is used tiles should be fetch using https
+    <% end %>
+
+    <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
+      map_options.no_cdn = true;
+    <% end %>
+
+    // Logo MUST be hidden in this view
+    map_options.cartodb_logo  = false;
+    map_options.scrollwheel   = false;
+    map_options.mobile_layout = true;
 
   </script>
   

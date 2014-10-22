@@ -58,11 +58,13 @@
 
     a { 
       @include inline-block();
-      margin: 0 0 0 0;
-      padding: 7px 8px;
-      font-size: 11px;
+      margin:0;
+      padding:0 11px;
       text-transform: uppercase;
-      font-weight: bold;
+      text-shadow: none;
+      font-family:'Arial';
+      font-size:11px;
+      line-height:27px;
     }
 
     h2 {

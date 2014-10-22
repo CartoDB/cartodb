@@ -290,6 +290,7 @@ module CartoDB
           SELECT #{column_name} FROM "#{schema}"."#{table_name}"
           WHERE #{column_name} IS NOT NULL 
           AND #{column_name} != ''
+          LIMIT 1
         }]
       end
 

@@ -27,7 +27,7 @@ class Api::Json::UsersController < Api::ApplicationController
     if referer_match.nil?
       render status: 400 and return
     else
-      subdomain = referer_match[1].gsub(CartoDB.session_domain, '')
+      subdomain = referer_match[1].gsub(CartoDB.session_domain, '').downcase
       organization_username = referer_match[5]
     end
 
@@ -38,24 +38,27 @@ class Api::Json::UsersController < Api::ApplicationController
         # The user is seeing its own dashboard
         if authenticated_users.include?(subdomain)
           dashboard_base_url = CartoDB.base_url(subdomain)
-          username = authenticated_users.first
+          can_fork = can_org_user_fork_resource(referer, User.where(username: subdomain).first)
+          username = subdomain
         # The user is authenticated but seeing another user dashboard
         else
           user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
+          can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
+          username = authenticated_users.first
           # The first user in session does not belong to any organization
           if user_belongs_to_organization.nil?
             dashboard_base_url = CartoDB.base_url(authenticated_users.first)
           else
             dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
-            username = authenticated_users.first
           end
         end
       else
+        organization_username = organization_username.downcase
         # The user is seeing its own organization dashboard
         if authenticated_users.include?(organization_username)
           dashboard_base_url = CartoDB.base_url(subdomain, organization_username)
-          can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
-          username = authenticated_users.first
+          can_fork = can_org_user_fork_resource(referer, User.where(username: organization_username).first)
+          username = organization_username
         # The user is seeing a organization dashboard, but not its one
         else
           # Get all users on the referer organization and intersect with the authenticated users list

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.17-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e3cbba3037bb73263bc734576309ecb3cd37b82b
+// sha: b5ea5496264f7249d4b213c057a1990332331f44
 (function() {
   var root = this;
 
@@ -22672,14 +22672,14 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
   render: function() {
 
-    this._place();
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
     var self = this;
-
+    
     setTimeout(function() {
       self._applyStyle();
+      self._place();
       self.show();
     }, 900);
 
@@ -23042,8 +23042,6 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
   render: function() {
 
-    this._place();
-
     var content = this.model.get("extra").rendered_text;
 
     if (this.model.get("extra").has_default_image) content = '<img src="' + this.model.get("extra").public_default_image_url + '" />';
@@ -23053,8 +23051,10 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
     this.$text = this.$el.find(".text");
 
     var self = this;
+
     setTimeout(function() {
       self._applyStyle();
+      self._place();
       self.show();
     }, 900);
 

@@ -1095,6 +1095,12 @@ var Vis = cdb.core.View.extend({
     });
   },
 
+  getOverlaysByType: function(type) {
+    return _(this.overlays).filter(function(v) {
+      return v.type == type;
+    });
+  },
+
   _onResize: function() {
 
     $(window).unbind('resize', this._onResize);

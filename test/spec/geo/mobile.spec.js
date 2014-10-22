@@ -1,10 +1,13 @@
 describe("cdb.geo.ui.Mobile", function() {
 
-  var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2;
+  var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
 
   beforeEach(function() {
 
     map = new cdb.geo.Map();
+
+    torque = new cdb.geo.TorqueLayer();
+
 
     l1 = new cdb.geo.CartoDBLayer({ type: "Tiled", visible: true, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
 
@@ -820,4 +823,32 @@ describe("cdb.geo.ui.Mobile", function() {
     });
 
   });
+
+
+  describe("with a torque layer", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+      mobile = new cdb.geo.ui.Mobile({
+        template: template,
+        mapView: mapView,
+        overlays: overlays,
+        torqueLayer: torque,
+        map: map,
+        visibility_options: {
+          title: false,
+          description: false,
+        }
+      });
+
+    });
+
+    it("should render properly", function() {
+      mobile.render();
+      expect(mobile.$el.find(".aside").length).toBe(1);
+    });
+  });
+
 });

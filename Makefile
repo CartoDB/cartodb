@@ -8,6 +8,7 @@ WORKING_SPECS_1 = \
   spec/models/table_spec.rb \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
+  spec/models/layer/presenter_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
   $(NULL)
@@ -58,6 +59,8 @@ WORKING_SPECS_6 = \
 WORKING_SPECS_7 = \
   spec/requests/api/synchronizations_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
+	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
+	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
   spec/models/synchronization/member_spec.rb \
   # spec/models/synchronization/collection_spec.rb not working right now \
   spec/models/synchronization/synchronization_oauth_spec.rb \

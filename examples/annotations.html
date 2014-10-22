@@ -13,19 +13,19 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://development.localhost.lan:3000/assets/2.15.9/stylesheets/embeds.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://development.localhost.lan:3000/assets/2.15.9/javascripts/cdb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
     <script>
       function main() {
         cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
             shareable: true,
-            title: true,
+            title: false,
             description: true,
             search: true,
             tiles_loader: true,
@@ -46,8 +46,8 @@
           map = vis.getNativeMap();
 
           var annotation = new cdb.geo.ui.Annotation({
-            latlng:[20, 4],
-            text: "This works with <strong>HTML</strong>",
+            latlng:[-20, -54],
+            text: "Hi, I'm <strong>here</strong>",
             mapView: vis.mapView,
             style: {
               "z-index": 1000,
@@ -64,16 +64,18 @@
           });
 
           this.mapView.$el.append(annotation.render().$el);
-          annotation.show();
 
           window.annotation = annotation = new cdb.geo.ui.Annotation({
-            latlng:[14, 3],
-            text: "Oh, nice",
+            latlng:[14, 34],
+            text: "… and I'm here :)",
+            style: {
+              boxColor: "#FEB24C",
+              lineColor: "#FEB24C"
+            },
             mapView: vis.mapView
           });
 
           this.mapView.$el.append(annotation.render().$el);
-          annotation.show();
 
         })
         .error(function(err) {

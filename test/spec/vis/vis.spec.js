@@ -267,6 +267,40 @@ describe("Vis", function() {
   });
 
 
+  it("should retrieve the overlays of a given type", function() {
+    var v = this.vis.addOverlay({
+      type: 'tooltip',
+      template: 'test',
+      layer: new L.CartoDBGroupLayer({
+        layer_definition: {version: '1.0.0', layers: [] }
+      })
+    });
+    var v1 = this.vis.addOverlay({
+      type: 'tooltip',
+      template: 'test',
+      layer: new L.CartoDBGroupLayer({
+        layer_definition: {version: '1.0.0', layers: [] }
+      })
+    });
+    var v2 = this.vis.addOverlay({
+      type: 'tooltip',
+      template: 'test',
+      layer: new L.CartoDBGroupLayer({
+        layer_definition: {version: '1.0.0', layers: [] }
+      })
+    });
+
+    var tooltips = this.vis.getOverlaysByType('tooltip');
+    expect(tooltips.length).toEqual(3);
+    expect(tooltips[0]).toEqual(v);
+    expect(tooltips[1]).toEqual(v1);
+    expect(tooltips[2]).toEqual(v2);
+    v.clean();
+    v1.clean();
+    v2.clean();
+    expect(this.vis.getOverlaysByType("tooltip").length).toEqual(0);
+  });
+
   it("should add an overlay", function() {
     var v = this.vis.addOverlay({
       type: 'tooltip',

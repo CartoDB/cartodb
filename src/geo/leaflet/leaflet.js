@@ -234,6 +234,11 @@
       return layer_view;
     },
 
+    pixelToLatLon: function(pos) {
+      var point = this.map_leaflet.containerPointToLatLng([pos[0], pos[1]]);
+      return point;
+    },
+
     latLonToPixel: function(latlon) {
       var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
       return this.map_leaflet.layerPointToContainerPoint(point);

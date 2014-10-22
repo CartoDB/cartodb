@@ -73,6 +73,18 @@
     }
   } // .title p
 
+
+  .edit.button {
+    position:relative;
+    float:right;
+    padding:7px 10px;
+    margin:2px 0 0 8px;
+    text-transform:uppercase;
+    font-size:11px;
+    font-family:'Arial';
+    z-index:20;
+  }
+
 } // .datasets ul li
 
 
@@ -143,6 +155,7 @@
   .datasets > ul > li {
     .title {
       & > a { float:left; @include text-overflow(); width: 100%; text-align:left; }
+      .edit { float:left; display:block; width:auto; margin-left:0 }
       span.date { float: left; width:100%; display:block; margin: 0 0 15px 0; text-align:left; }
     }
   }

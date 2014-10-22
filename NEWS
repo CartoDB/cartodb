@@ -1,8 +1,17 @@
+3.11.18 (22//10//2014)
+- adds annotation overlays
+
+3.11.17 (20//10//2014)
+- fixes positioning of the search and share overlays on the screen
+- fixed compatibility with mootools
+- fixes a problem with touch devices using two fingers for zooming.
+
 3.11.16 (10//10//2014)
 - applies the z-index to the text and image overlays
 
 3.11.15 (07//10//2014)
 - fixes a display issue with overlays in desktop.
+- fixed compatibility with mootools
 
 3.11.14 (06//10//2014)
 - adds stats_tag for all request in the url

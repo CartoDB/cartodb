@@ -1,5 +1,5 @@
-// version: 3.11.16
-// sha: 7d2093587ff59c1759be70744f2ea53f6f01afd3
+// version: 3.11.18
+// sha: b741c44c05fa3ec00f460013725d069ec0ab6ba9
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.16';
+    cdb.VERSION = '3.11.18';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1199,6 +1199,7 @@ var Mustache;
         'geo/geometry.js',
         'geo/map.js',
         'geo/ui/text.js',
+        'geo/ui/annotation.js',
         'geo/ui/image.js',
         'geo/ui/share.js',
         'geo/ui/zoom.js',

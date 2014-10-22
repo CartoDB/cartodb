@@ -4,10 +4,10 @@ CartoDB offers a simple unified JavaScript library called CartoDB.js that let yo
 
 When you add CartoDB.js to your websites you get some great new tools to make maps or power your content with data. Let’s take a look.
 
+
 ## Getting started
 
 The simplest way to use a visualization created in CartoDB on an external site is at follows...
-
 
 <div class="code-title">Create a simple visualization</div>
 {% highlight html %}
@@ -40,6 +40,7 @@ With a similar source code you can create a visualization like this one:
 </div>
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
+
 
 ## Using the library
 
@@ -155,6 +156,7 @@ cartodb.createLayer(map, {
 
 Want further information? [Check out the complete API method list](#api-methods).
 
+
 ## Usage examples
 
 If you want to start playing with the library, the best way to do it might be to take a look to some of the examples below:
@@ -165,7 +167,8 @@ If you want to start playing with the library, the best way to do it might be to
 + Customizing infowindow data - ([view live](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)).
 + An example using a layer selector - ([view live](http://cartodb.github.com/cartodb.js/examples/layer_selector.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/layer_selector.html)).
 + The Hobbit map done with the library - ([view live](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) / [source code](https://github.com/CartoDB/cartodb.js/tree/develop/examples/TheHobbitLocations)).
-  
+
+
 ## API methods
 
 The documentation below reflects CartoDB.js for the v3 library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library.
@@ -258,6 +261,20 @@ An overlay is a control shown on top of the map.
 Overlay objects are always created using method **addOverlay** of cartodb.Vis object.
 
 An overlay is internally a **Backbone.View** so if you know how backbone works you can use it. If you want to use plain DOM objects you can access to **overlay.el** (**overlay.$el** for jQuery object).
+
+#### vis.addInfoWindow(_map, layer, fields [, options]_)
+
+Adds an infowindow to the map controlled by layer events. It enables interaction and overrides the layer interacivity.
+
+##### Arguments
+ 
+  - **map**: native map object or leaflet
+  - **layer**: cartodb layer (or sublayer)
+  - **fields**: array of column names
+
+##### Returns
+
+An infowindow object, see [sublayer.infowindow](#sublayerinfowindow)
 
 #### cartodb.createLayer(_map, layerSource [, options] [, callback]_)
 
@@ -380,6 +397,25 @@ var sublayer = layer.getSubLayer(0);
 sublayer.setSQL('SELECT * FROM table_name limit 10');
 {% endhighlight %}
 
+#### layer.getSubLayerCount()
+
+Get the number of sublayers in layer.
+
+##### Returns
+
+Number of sublayers.
+
+##### Example
+
+<div class="code-title">Hide layers using layer.getSubLayerCount</div>
+{% highlight javascript %}
+var num_sublayers = layer.getSubLayerCount();
+
+for (var i = 0; i < num_sublayers; i++) {
+  layer.getSubLayer(i).hide();
+}
+{% endhighlight %}
+
 #### layer.createSubLayer(_layerDefinition_)
 
 Adds a new data to the current layer. With this method data from multiple tables can be easily visualized. New in V3.
@@ -487,7 +523,7 @@ self object
 sublayer.set({
   sql: "SELECT * FROM table_name WHERE cartodb_id < 100",
   cartocss: "#layer { marker-fill: red }",
-  interactivity: "cartodb_id,the_geom,magnitude"
+  interactivity: "cartodb_id, the_geom, magnitude"
 });
 {% endhighlight %}
 
@@ -522,6 +558,12 @@ Remove the sublayer. If a method is called after removing it an exception is thr
 #### sublayer.setInteraction(_true_)
 
 Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
+
+#### sublayer.setInteractivity('cartodb_id, name, ...')
+
+Shortcut for `set({'interactivity': 'cartodb_id, name, ...' })`
+
+Sets the columns which data will be available via the interaction with the sublayer.
 
 ##### Arguments
 
@@ -575,6 +617,7 @@ Remove temporally the sublayer from the layer. The layer is refreshed after call
 {% endhighlight %}
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
+
 
 ## Events
 
@@ -662,6 +705,7 @@ Same as `layer.mouseover()` but sublayer specific.
 
 Same as `layer.mouseover()` but sublayer specific.
 
+
 ## Specific UI functions
 
 There are a few functions in CartoDB.js for creating, enabling, and disabling pieces of the user-interface.
@@ -720,6 +764,7 @@ vis.addOverlay({ type: 'zoom' });
 #### cartodb.geo.ui.Zoom.show()
 
 #### cartodb.geo.ui.Zoom.hide()
+
 
 ## Getting data with SQL
 
@@ -816,6 +861,7 @@ sql.getBounds('select * from table').done(function(bounds) {
 });
 {% endhighlight %}
 
+
 ## Core API functionallity
 
 In case you are not using Google Maps or Leaflet or you want to implement your own layer object cartodb provide a way to get the tiles url for a layer definition. 
@@ -897,6 +943,7 @@ cartodb.Tiles.getTiles(layerData, function(tiles, err) {
 }
 {% endhighlight %}
 
+
 ## Versions
 
 Keep in mind the version of CartoDB.js you are using for development. For any live code, we recommend you link directly to the tested CartoDB.js version from your development. You can find the version at anytime as follows:
@@ -904,6 +951,7 @@ Keep in mind the version of CartoDB.js you are using for development. For any li
 ### cartodb.VERSION
 
 Contains the library version, should be something like `3.0.1`.
+
 
 ## Other important stuff
 

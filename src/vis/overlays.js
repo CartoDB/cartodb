@@ -84,6 +84,38 @@ cdb.vis.Overlay.register('text', function(data, vis) {
 
 });
 
+cdb.vis.Overlay.register('annotation', function(data, vis) {
+
+  var options = data.options;
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+    <div class="content">\
+    <div class="text widget_text">{{{ text }}}</div>\
+    <div class="stick"><div class="ball"></div></div>\
+    </div>',
+    data.templateType || 'mustache'
+  );
+
+  var options = data.options;
+
+  var widget = new cdb.geo.ui.Annotation({
+    className: "cartodb-overlay overlay-annotation " + options.device,
+    template: template,
+    mapView: vis.mapView,
+    device: options.device,
+    text: options.extra.rendered_text,
+    minZoom: options.style["min-zoom"],
+    maxZoom: options.style["max-zoom"],
+    latlng: options.extra.latlng,
+    style: options.style
+  });
+
+  return widget.render();
+
+});
+
+
 cdb.vis.Overlay.register('zoom_info', function(data, vis) {
   //console.log("placeholder for the zoom_info overlay");
 });

@@ -215,12 +215,10 @@ var Vis = cdb.core.View.extend({
 
 
   _addLayers: function(layers, options) {
-
-    for(var i in layers) {
+    for(var i = 0; i < layers.length; ++i) {
       var layerData = layers[i];
       this.loadLayer(layerData, options);
     }
-
   },
 
   addLegends: function(layers, mobile_enabled) {
@@ -275,7 +273,7 @@ var Vis = cdb.core.View.extend({
   },
 
   _addOverlays: function(overlays, options) {
-   
+
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
 
@@ -526,9 +524,14 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
 
-      if (type === 'image' || type === 'text') {
+      // Decide to create or not the custom overlays
+      if (type === 'image' || type === 'text' || type === 'annotation') {
+
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
+
+        if (!options[type] && options[type] !== undefined) return;
+
       }
 
       // We add the overlay
@@ -709,7 +712,8 @@ var Vis = cdb.core.View.extend({
     if (!this.mobile_enabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
-           type: "search"
+           type: "search",
+           order: 3
         });
       }
     }
@@ -747,6 +751,7 @@ var Vis = cdb.core.View.extend({
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
+          order: 2,
           url: vizjson.url
         });
       }
@@ -1086,6 +1091,12 @@ var Vis = cdb.core.View.extend({
 
   getOverlay: function(type) {
     return _(this.overlays).find(function(v) {
+      return v.type == type;
+    });
+  },
+
+  getOverlaysByType: function(type) {
+    return _(this.overlays).filter(function(v) {
       return v.type == type;
     });
   },

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.17-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b5ea5496264f7249d4b213c057a1990332331f44
+// sha: e2f4bdf66281eb0fe6ce24b6131b481483a9e478
 (function() {
   var root = this;
 
@@ -32929,6 +32929,12 @@ var Vis = cdb.core.View.extend({
 
   getOverlay: function(type) {
     return _(this.overlays).find(function(v) {
+      return v.type == type;
+    });
+  },
+
+  getOverlaysByType: function(type) {
+    return _(this.overlays).filter(function(v) {
       return v.type == type;
     });
   },

@@ -262,6 +262,20 @@ Overlay objects are always created using method **addOverlay** of cartodb.Vis ob
 
 An overlay is internally a **Backbone.View** so if you know how backbone works you can use it. If you want to use plain DOM objects you can access to **overlay.el** (**overlay.$el** for jQuery object).
 
+#### vis.addInfoWindow(_map, layer, fields [, options]_)
+
+Adds an infowindow to the map controlled by layer events. It enables interaction and overrides the layer interacivity.
+
+##### Arguments
+ 
+  - **map**: native map object or leaflet
+  - **layer**: cartodb layer (or sublayer)
+  - **fields**: array of column names
+
+##### Returns
+
+An infowindow object, see [sublayer.infowindow](#sublayerinfowindow)
+
 #### cartodb.createLayer(_map, layerSource [, options] [, callback]_)
 
 With visualizations already created through the CartoDB console, you can simply use the **createLayer** function to add them into your web pages. Unlike **createVis**, this method requires an already activated **map** object and it does not load a basemap for you. The method works the same whether your map object is [Google Maps](https://developers.google.com/maps/documentation/javascript/) or [Leaflet](http://leafletjs.com).

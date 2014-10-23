@@ -101,7 +101,7 @@ describe Runner do
       result.success?.should eq false
     end
 
-    it 'logs spent time at' do
+    it 'logs import time at' do
       statsd_spy = CartoDB::Doubles::CartodbStats.new
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, statsd_spy)
       runner.run

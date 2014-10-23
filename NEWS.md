@@ -1,3 +1,12 @@
+3.2.8 (2014-XX-XX)
+------------------
+
+
+3.2.7 (2014-10-23)
+------------------
+* Public pages reviewed
+* New header in public pages
+
 3.2.6 (2014-10-22)
 ------------------
 * New features

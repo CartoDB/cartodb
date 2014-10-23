@@ -70,10 +70,6 @@
   // On load...
   $(function(){
 
-    if ($(window).width() < 620) {
-      $("body").addClass("embed-map-small");
-    }
-
     var bool_fn = function(v) { return v == 'true' };
     var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
     var logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' };
@@ -136,6 +132,7 @@
 
       window.vis = vis;
 
+      // fixes default position of the overlays
       setTimeout(function() {
         $(window).trigger("map_resized");
       }, 400);

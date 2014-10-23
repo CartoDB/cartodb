@@ -37,50 +37,49 @@ class Api::Json::UsersController < Api::ApplicationController
       if organization_username.nil?
         # The user is seeing its own dashboard
         if authenticated_users.include?(subdomain)
-          dashboard_base_url = CartoDB.base_url(subdomain)
-          can_fork = can_org_user_fork_resource(referer, User.where(username: subdomain).first)
           username = subdomain
+          dashboard_base_url = CartoDB.base_url(username)
         # The user is authenticated but seeing another user dashboard
         else
-          user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
-          can_fork = can_org_user_fork_resource(referer, User.where(username: authenticated_users.first).first)
           username = authenticated_users.first
-          # The first user in session does not belong to any organization
+          user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(username)
           if user_belongs_to_organization.nil?
-            dashboard_base_url = CartoDB.base_url(authenticated_users.first)
+            dashboard_base_url = CartoDB.base_url(username)
           else
-            dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
+            dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, username)
           end
         end
+        can_fork = can_user_fork_resource(referer, User.where(username: username).first)
       else
         organization_username = organization_username.downcase
         # The user is seeing its own organization dashboard
         if authenticated_users.include?(organization_username)
-          dashboard_base_url = CartoDB.base_url(subdomain, organization_username)
-          can_fork = can_org_user_fork_resource(referer, User.where(username: organization_username).first)
           username = organization_username
+          dashboard_base_url = CartoDB.base_url(subdomain, username)
+          can_fork = can_user_fork_resource(referer, User.where(username: username).first)
         # The user is seeing a organization dashboard, but not its one
         else
           # Get all users on the referer organization and intersect with the authenticated users list
           requested_organization_users = User.select(:username)
                                           .from('users', 'organizations')
-                                          .where("organizations.id=users.organization_id and organizations.name='#{subdomain}'")
+                                          .where("organizations.id=users.organization_id AND organizations.name='#{subdomain}'")
                                           .collect(&:username)
           users_intersection = requested_organization_users & authenticated_users
           # The user is authenticated with a user of the organization
           if !users_intersection.empty?
-            dashboard_base_url = CartoDB.base_url(subdomain, users_intersection.first)
-            can_fork = can_org_user_fork_resource(referer, User.where(username: users_intersection.first).first)
             username = users_intersection.first
+            dashboard_base_url = CartoDB.base_url(subdomain, username)
+            can_fork = can_user_fork_resource(referer, User.where(username: username).first)
           # The user is authenticated with a user not belonging to the requested organization dashboard
           # Let's get the first user in the session
           else
-            user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(authenticated_users.first)
+            username = authenticated_users.first
+            user_belongs_to_organization = CartoDB::UserOrganization.user_belongs_to_organization?(username)
             # The first user in session does not belong to any organization
             if user_belongs_to_organization.nil?
-              dashboard_base_url = CartoDB.base_url(authenticated_users.first)
+              dashboard_base_url = CartoDB.base_url(username)
             else
-              dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, authenticated_users.first)
+              dashboard_base_url = CartoDB.base_url(user_belongs_to_organization, username)
             end
           end
         end
@@ -104,7 +103,7 @@ class Api::Json::UsersController < Api::ApplicationController
   private
 
   # get visualization from url
-  def can_org_user_fork_resource(url, current_user)
+  def can_user_fork_resource(url, current_user)
     referer_match = /tables\/([^\/]+)\/public/.match(url)
     res = nil
     if referer_match.nil?

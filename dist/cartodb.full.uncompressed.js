@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.18
+// cartodb.js version: 3.11.19
 // uncompressed version: cartodb.uncompressed.js
-// sha: b741c44c05fa3ec00f460013725d069ec0ab6ba9
+// sha: da0b60768f2137151cd18f9b13840124b2c8de2f
 (function() {
   var root = this;
 
@@ -20705,7 +20705,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.18';
+    cdb.VERSION = '3.11.19';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22764,6 +22764,9 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     this.model.on("change:text",    this._onChangeText, this);
     this.model.on('change:latlng',  this._place, this);
 
+    this.model.on('change:minZoom',  this._applyZoomLevelStyle, this);
+    this.model.on('change:maxZoom',  this._applyZoomLevelStyle, this);
+
     this.style = new cdb.core.Model(this.options.style);
 
     this.style.on("change", this._applyStyle, this);
@@ -22858,15 +22861,43 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     var textAlign  = this.style.get("textAlign");
 
     var pos        = this.mapView.latLonToPixel(latlng);
-    var size       = this.mapView.getSize();
-    var top        = pos.y - this.$el.height()/2;
-    var left       = pos.x + lineWidth;
 
-    if (textAlign === "right") {
-      left = pos.x - this.$el.width() - lineWidth - this.$el.find(".ball").width();
+    if (pos) {
+
+      var top        = pos.y - this.$el.height()/2;
+      var left       = pos.x + lineWidth;
+
+      if (textAlign === "right") {
+        left = pos.x - this.$el.width() - lineWidth - this.$el.find(".ball").width();
+      }
+
+      this.$el.css({ top: top, left: left });
+
     }
 
-    this.$el.css({ top: top, left: left });
+  },
+
+  setMinZoom: function(zoom) {
+
+    this.model.set("minZoom", zoom);
+
+  },
+
+  setMaxZoom: function(zoom) {
+
+    this.model.set("maxZoom", zoom);
+
+  },
+
+  setPosition: function(latlng) {
+
+    this.model.set("latlng", latlng);
+
+  },
+
+  setText: function(text) {
+
+    this.model.set("text", text);
 
   },
 

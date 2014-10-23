@@ -1,3 +1,5 @@
+require 'statsd'
+
 class CartodbStats
 
   class << self
@@ -72,7 +74,9 @@ class CartodbStats
   end
 
   def timing(key)
-    yield
+    Statsd.timing(key) do
+      yield
+    end
   end
 
 end

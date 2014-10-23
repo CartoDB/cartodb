@@ -111,15 +111,15 @@ describe Runner do
       result.success?.should eq false
     end
 
-    it 'logs spent time' do
+    it 'logs spent time at' do
       fake_log = Doubles::Log.new
 
       downloader  = Downloader.new(@filepath)
-      statsd_double = CartoDB::Doubles::CartodbStats.new
-      runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker, nil, statsd_double)
+      statsd_spy = CartoDB::Doubles::CartodbStats.new
+      runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker, nil, statsd_spy)
       runner.run
 
-      statsd_double.timed_block('importer').should be_true
+      statsd_spy.timed_block('importer.run').should be_true
     end
   end
 

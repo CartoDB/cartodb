@@ -55,7 +55,7 @@ module CartoDB
       end
 
       def run(&tracker_block)
-        @statsd.timing('importer') do
+        @statsd.timing('importer.run') do
           run_import(&tracker_block)
         end
       end

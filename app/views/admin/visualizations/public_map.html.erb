@@ -70,7 +70,7 @@
             <div class="left"></div>
             <div class="user-options">
               <!--a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a-->
-              <a href="<%= public_visualizations_show_url(user_domain: @user_domain, id: @visualization.id) %>" class="edit button grey">Edit in CartoDB</a>
+              <a href="<%= public_visualizations_show_url(user_domain: @visualization.user.username, id: @visualization.id) %>" class="edit button grey">Edit in CartoDB</a>
             </div>
           </div>
 

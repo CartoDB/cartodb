@@ -62,7 +62,7 @@
                 </div>
                 <div class="gradient"></div>
 
-                <a href="#/edit" class="edit button grey small">edit it</a>
+                <a href="<%= public_visualizations_show_url(user_domain: params[:user_domain], id: vis[:id]) %>" class="edit button grey small">edit it</a>
               </div>
 
               <% if vis[:tags].size > 0 %>

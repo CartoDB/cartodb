@@ -40,7 +40,7 @@
           <% @datasets.each_with_index do |dataset, i| %>
             <li>
               <div class="title">
-                <a href="#/edit" class="edit button grey small">edit it</a>
+                <a href="<%= public_tables_show_url(user_domain: params[:user_domain], id: dataset[:title]) %>" class="edit button grey small">edit it</a>
                 <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
                 <h2><a href="<%= public_table_url(user_domain: params[:user_domain], id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
                 <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>

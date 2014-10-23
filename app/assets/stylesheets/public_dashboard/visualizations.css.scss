@@ -8,6 +8,8 @@
 @import "compass/css3/border-radius";
 @import "compass/css3/images";
 @import "compass/css3/opacity";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
 @import "../common/mixins";
 @import "../common/vars";
 
@@ -124,6 +126,16 @@
       font-size:11px;
       font-family:'Arial';
       z-index:70;
+      @include opacity(0);
+      @include transform-style("linear");
+      @include transition-property("opacity");
+      @include transition-duration(250ms);
+
+      &.active { @include inline-block }
+    }
+
+    &:hover {
+      .edit.button { @include opacity(1) }
     }
 
   } // map-wrapper

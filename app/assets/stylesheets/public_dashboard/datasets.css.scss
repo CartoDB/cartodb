@@ -5,6 +5,9 @@
  */
 
 
+@import "compass/css3/opacity";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
 @import "../common/vars";
 @import "../common/mixins";
 
@@ -17,7 +20,7 @@
 
 
 .datasets > ul > li {
-
+  position:relative;
   @include box-sizing(border-box);
   @include clearfix();
 
@@ -79,11 +82,22 @@
     float:right;
     display:none;
     padding:7px 10px;
-    margin:2px 0 0 8px;
+    margin:2px 8px 0 0;
     text-transform:uppercase;
     font-size:11px;
     font-family:'Arial';
     z-index:20;
+    @include opacity(0);
+    @include transform-style("linear");
+    @include transition-property("opacity");
+    @include transition-duration(250ms);
+    
+
+    &.active { display:inline-block }
+  }
+
+  &:hover {
+    .edit.button { @include opacity(1); }
   }
 
 } // .datasets ul li
@@ -155,8 +169,9 @@
 
   .datasets > ul > li {
     .title {
-      & > a { float:left; @include text-overflow(); width: 100%; text-align:left; }
-      .edit { float:left; width:auto; margin-left:0 }
+      h2 { float:left; display:block; width:100%; }
+      & > a { @include text-overflow(); width: 100%; text-align:left; }
+      .edit { position:absolute; top:30px; right:0; width:auto; }
       span.date { float: left; width:100%; display:block; margin: 0 0 15px 0; text-align:left; }
     }
   }

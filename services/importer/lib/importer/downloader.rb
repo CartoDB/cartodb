@@ -127,6 +127,10 @@ module CartoDB
           downloaded_file.write(chunk)
         end
         request.on_complete do |response|
+          unless response.success?
+            download_error = true
+            error_response = response
+          end
           downloaded_file.close
 
           headers = response.headers

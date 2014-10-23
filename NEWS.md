@@ -2,12 +2,14 @@
 ------------------
 * New features
   * Annotation overlay.
+  * Stamen basemaps.
   * Optimization: Map creation no longer performs tiler calls to set the tile style.
   * Optimization: viz.json rendering now doesn't requests for named map if needs to, using the visualization and layers to recreate required fields.
   * Twitter datasource now allows N custom GNIP configurations, per username or per organization name.
   * Optimization: Added more DB indexes based on slow queries logs.
 * Fixed bugs
   * Send the visibility status of the torque layer in the vizjson
+  * Importer specs back to work. If any fails please update GDAL and take a look at "Raster import support".
 
 3.2.5 (2014-10-13)
 ------------------

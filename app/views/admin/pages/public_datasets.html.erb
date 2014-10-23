@@ -38,11 +38,14 @@
       <% if @datasets.size > 0 %>
         <ul>
           <% @datasets.each_with_index do |dataset, i| %>
+
+            <% domain = dataset[:owner].organization ? dataset[:owner].username : nil %>
+
             <li>
               <div class="title">
                 <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
-                <a href="<%= public_tables_show_url(user_domain: dataset[:owner], id: dataset[:title]) %>" class="edit button grey small">edit it</a>
-                <h2><a href="<%= public_table_url(user_domain: dataset[:owner], id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
+                <a href="<%= public_tables_show_url(user_domain: domain, id: dataset[:title]) %>" class="edit button grey small">edit it</a>
+                <h2><a href="<%= public_table_url(user_domain: domain, id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
                 <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>
               </div>
 

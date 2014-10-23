@@ -72,6 +72,7 @@ class Admin::PagesController < ApplicationController
           title:        dataset.name,
           description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
+          owner:        dataset.user,
           tags:         dataset.tags
         }
       )
@@ -182,7 +183,8 @@ class Admin::PagesController < ApplicationController
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
           mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
-          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
+          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
+          owner:        vis.user
         }
       )
     end
@@ -224,7 +226,7 @@ class Admin::PagesController < ApplicationController
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
           url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
-          owner:        vis.user.username
+          owner:        vis.user
         }
       )
     end
@@ -260,7 +262,7 @@ class Admin::PagesController < ApplicationController
           description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
           tags:         dataset.tags,
-          owner:        dataset.user.username
+          owner:        dataset.user
         }
       )
     end

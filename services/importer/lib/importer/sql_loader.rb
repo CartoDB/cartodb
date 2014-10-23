@@ -14,14 +14,16 @@ module CartoDB
       def initialize(job, source_file)
         self.job          = job
         self.source_file  = source_file
+        @post_import_handler = nil
       end #initialize
 
-      def run
-        job.log.append "Using database connection #{job.concealed_pg_options}"
+      def run(post_import_handler_instance=nil)
+        @post_import_handler = post_import_handler_instance
 
+        job.log "Using database connection #{job.concealed_pg_options}"
         psql.run
-        job.log.append "psql output:    #{psql.command_output}"
-        job.log.append "psql exit code: #{psql.exit_code}"
+        job.log "psql output:    #{psql.command_output}"
+        job.log "psql exit code: #{psql.exit_code}"
 
         #raise LoadError if psql.exit_code != 0
         drop_the_geom_webmercator
@@ -38,12 +40,18 @@ module CartoDB
       end #psql
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(job.db, job.table_name)
+        @georeferencer ||= Georeferencer.new(job.db, job.table_name, Georeferencer::DEFAULT_SCHEMA, nil, nil, job.logger)
       end #georeferencer
+
+      def post_import_handler
+        @post_import_handler ||= PostImportHandler.new
+      end
 
       def drop_the_geom_webmercator
         georeferencer.drop_the_geom_webmercator
       end #drop_the_geom_webmercator
+
+      attr_accessor :options
         
       private
 

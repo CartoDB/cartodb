@@ -102,6 +102,8 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
+        self.here_maps_enabled          = self.organization.here_maps_enabled
+        self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
@@ -1116,7 +1118,7 @@ class User < Sequel::Model
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |db|
-      
+
       if !cartodb_extension_version_pre_mu? && has_organization?
         db.run("DROP FUNCTION IF EXISTS public._cdb_userquotainbytes();")
       end
@@ -1613,7 +1615,7 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil)
 
-    cdb_extension_target_version = '0.4.0' # TODO: optionally take as parameter?
+    cdb_extension_target_version = '0.4.1' # TODO: optionally take as parameter?
 
     add_python
 

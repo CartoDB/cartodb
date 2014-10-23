@@ -175,7 +175,10 @@ defaults: &defaults
     max_file_size: 5242880 # 5.megabytes 
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
-  avatars_base_url: 'cartodb-assets-staging.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
+  avatars:
+    base_url: 'example.com/avatars'
+    kinds: ['stars', 'mountains']
+    colors: ['red', 'blue']
   dropbox_api_key: ""
   gdrive: 
     api_key: ""
@@ -241,6 +244,9 @@ test:
     host: '127.0.0.1'
     port: 6335
   enforce_non_empty_layer_css: false
+  api_requests_es_service:
+    url: "http://api-calls-service.localhost.lan/search"
+    body: ""
 
 staging:
   <<: *defaults

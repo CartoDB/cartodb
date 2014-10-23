@@ -589,6 +589,7 @@ Remove temporally the sublayer from the layer. The layer is refreshed after call
 
 <div class="code-title">sublayer.infowindow.set</div>
 {% highlight html %}
+{% raw %}
 <div id="map"></div>
 
 <script>
@@ -614,6 +615,7 @@ Remove temporally the sublayer from the layer. The layer is refreshed after call
      <div class="cartodb-popup-tip-container"></div>
   </div>
 </script>
+{% endraw %}
 {% endhighlight %}
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
@@ -716,10 +718,12 @@ Shows a small tooltip on hover:
 
 <div class="code-title">cartodb.geo.ui.Tooltip</div>
 {% highlight javascript %}
+{% raw %}
 var tooltip = vis.addOverlay({
   type: 'tooltip'
   template: '<p>{{variable}}</p>' // mustache template
 });
+{% endraw %}
 {% endhighlight %}
 
 #### cartodb.geo.ui.Tooltip.enable
@@ -736,12 +740,14 @@ Show an small box when the user hovers on a map feature. The position is fixed:
 
 <div class="code-title">cartodb.geo.ui.InfoBox</div>
 {% highlight javascript %}
+{% raw %}
 var box = vis.addOverlay({
   type: 'infobox',
   template: '<p>{{name_to_display}}</p>'
   width: 200, // width of the box
   position: 'bottom|right' // top, bottom, left and right are available
 });
+{% endraw %}
 {% endhighlight %}
 
 #### cartodb.geo.ui.InfoBox.enable
@@ -776,6 +782,7 @@ CartoDB offers a powerful SQL API for you to query and retreive data from your C
 
 <div class="code-title">cartodb.SQL</div>
 {% highlight javascript %}
+{% raw %}
 var sql = new cartodb.SQL({ user: 'cartodb_user' });
 sql.execute("SELECT * FROM table_name WHERE id > {{id}}", { id: 3 })
   .done(function(data) {
@@ -785,6 +792,7 @@ sql.execute("SELECT * FROM table_name WHERE id > {{id}}", { id: 3 })
     // errors contains a list of errors
     console.log("errors:" + errors);
   })
+{% endraw %}
 {% endhighlight %}
 
 It accepts the following options:
@@ -801,7 +809,7 @@ It executes a sql query.
 
 ##### Arguments
 
-+ **sql**: a string with the sql query to be executed. You can specify template variables like {{variable}} which will be filled with **vars** object.
++ **sql**: a string with the sql query to be executed. You can specify template variables like {% raw %}{{variable}}{% endraw %} which will be filled with **vars** object.
 + **vars**: a map with the variables to be interpolated in the sql query.
 + **options**: accepts **format**, **dp** and **jsonp**. This object also overrides the params passed to $.ajax.
 

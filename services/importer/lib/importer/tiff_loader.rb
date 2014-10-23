@@ -15,12 +15,14 @@ module CartoDB
         self.options        = {}
       end #initialize
 
-      def run
-        job.log.append "Using database connection with #{job.concealed_pg_options}"
+      def run(post_import_handler_instance=nil)
+        @post_import_handler = post_import_handler_instance
+
+        job.log "Using database connection with #{job.concealed_pg_options}"
 
         raster2pgsql.run
-        job.log.append "raster2pgsql output:    #{raster2pgsql.command_output}"
-        job.log.append "raster2pgsql exit code: #{raster2pgsql.exit_code}"
+        job.log "raster2pgsql output:    #{raster2pgsql.command_output}"
+        job.log "raster2pgsql exit code: #{raster2pgsql.exit_code}"
 
         job.db.run(%Q{
           ALTER TABLE #{job.qualified_table_name}

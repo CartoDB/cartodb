@@ -8,6 +8,7 @@
   * Optimization: Added more DB indexes based on slow queries logs.
 * Fixed bugs
   * Send the visibility status of the torque layer in the vizjson
+  * Importer specs back to work. If any fails please update GDAL and take a look at "Raster import support".
 
 3.2.5 (2014-10-13)
 ------------------

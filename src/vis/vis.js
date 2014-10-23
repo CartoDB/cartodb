@@ -489,13 +489,13 @@ var Vis = cdb.core.View.extend({
       this.addMobile(data.overlays, data.layers, options);
     }
 
-    if (!data.slides) {
+    if (!data.children) {
       // Sort the overlays by its internal order
       var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
       this._createOverlays(overlays, options);
     } else {
       //TODO: load odyssey and then slides
-      this._createSlides([data].concat(data.slides));
+      this._createSlides([data].concat(data.children));
 
     }
 
@@ -549,7 +549,7 @@ var Vis = cdb.core.View.extend({
 
       var seq = this.sequence = O.Sequential();
       this.slides = O.Story();
-      
+
       // transition - debug, remove
       O.Keys().left().then(seq.prev, seq);
       O.Keys().right().then(seq.next, seq);

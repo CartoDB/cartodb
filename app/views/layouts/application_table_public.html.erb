@@ -6,16 +6,39 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title><%= yield :page_title %>CartoDB</title>
     <%= favicon_link_tag "/favicons/favicon.ico" %>
+
+    <meta name="description" content="<%= @table.description || @table.name.gsub(/_/," ") %>">
+    <meta name="keywords" content="Map,cartodb,<%= @table.name.gsub(/_/,",").gsub(/ /,",") %>">
+    <meta name="author" content="CartoDB">
+    <meta name="DC.title" content="<%= yield :page_title %> | CartoDB">
+    
+    <meta property="og:title" content="<%= yield :page_title %> | CartoDB"/>
+    <meta property="og:description" content="<%= @table.description || @table.name.gsub(/_/," ") %>"/>
+    <meta property="og:type" content="Visualization"/>
+    <meta property="og:url" content="<%= request.fullpath %>" />
+    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@cartodb">
+    <meta name="twitter:creator" content="@cartodb">
+    <meta name="twitter:title" content="<%= yield :page_title %> | CartoDB">
+    <meta name="twitter:description" content="<%= @table.description || @table.name.gsub(/_/," ") %>">
+    <meta name="twitter:image" content="<%= image_path "layout/cartofante_blue.png" %>">
+    <meta name="twitter:url" content="<%= request.fullpath %>" />
+
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
-    <%= insert_trackjs() %>
-    <%= insert_google_analytics('primary') %>
-    <%= yield :js %>
     <%= csrf_meta_tag %>
+
+    <!--[if lt IE 9]>
+      <%= javascript_include_tag 'modernizr' %>
+    <![endif]-->
   </head>
   <body class="public">
     <%= render 'admin/shared/public_header', :clone => true, :signin => false %>
     <%= yield %>
-    <%= render 'shared/crazyegg' %>
+    <%= yield :js %>
+    <%= insert_trackjs() %>
+    <%= insert_google_analytics('primary') %>
   </body>
 </html>

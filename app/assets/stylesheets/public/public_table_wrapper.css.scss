@@ -1,0 +1,191 @@
+
+/**
+ *  Styles for public table showed in public table
+ *
+ */
+
+@import "compass/css3/opacity";
+@import "compass/css3/inline-block";
+@import "../common/vars";
+@import "../common/mixins";
+
+
+
+body.public { /* Public table CSS */
+
+  &.table .panes { top: 67px; }
+  &.map .panes   { top: 0px; overflow-x: hidden; }
+
+  .panes .emptyTableContainer {
+    position:relative;
+  }
+
+  min-width: inherit;
+  
+  .dialog {
+
+    position:relative;
+    z-index: 10000;
+
+    .block.modal.api {
+
+      .content {
+        padding: 0;
+        position:relative;
+      }
+
+      .inner {
+        padding: 28px 40px 0 40px;
+        position:relative;
+      }
+
+      .shadow {
+        position: absolute;
+        height: 60px;
+        bottom: 0;
+        width: 100%;
+        @extend .white-gradient-shadow-bottom;
+      }
+
+      code {
+        color: #666666;
+        font-size: 13px;
+        line-height: 120%;
+      }
+
+      .sample {
+        padding: 23px 40px;
+        background: #F2F2F2;
+        border-bottom: 1px solid #E5E5E5;
+
+        p {
+          font-size: 13px;
+          color: #999999;
+        }
+
+      }
+
+      h4 {
+        margin: 0 0 5px 0;
+        color: #666666;
+        text-transform: uppercase;
+        font-family: $text-fonts;
+        font-size:11px;
+      }
+
+      .foot {
+
+        padding: 38px;
+
+        p {
+          float:left;
+          width: 357px;
+          color: #666666;
+          font-size: 13px;
+          line-height: 120%;
+          padding: 5px 0;
+          a { text-decoration: underline; }
+        }
+      }
+    }
+  }
+
+  div.separator.bottom {
+    display:none;
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #E5E5E5;
+  }
+
+  div.separator_shadow {
+    display:none;
+    position: relative;
+    height: 20px;
+    margin-top: -20px;
+    width: 100%;
+    @extend .black-gradient-shadow-bottom;
+    z-index: 100;
+  }
+
+
+  div.table table thead tr th>div label.interactuable .coloptions:after {
+    display:none;
+  }
+
+  .navigation {
+
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+
+    position:relative;
+    z-index: 100;
+    @include opacity(0);
+
+    pointer-events: none;
+
+    ul {
+
+      max-width: 1024px;
+      margin: auto;
+      @include clearfix();
+
+      li {
+
+        float: left;
+        list-style:none;
+        margin: 0 1px 0 0;
+        pointer-events:all;
+
+        &:first-child a { @include border-radius(2px 0 0 2px); }
+        &:last-child  a { @include border-radius(0 2px 2px 0); }
+
+        a {
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+          font-family: $text-fonts;
+
+          display:block;
+          padding: 9px 10px 10px 10px;
+          background: rgba(#000000, .7);
+          font-size: 11px;
+          font-weight:bold;
+          color: #FFFFFF;
+          text-transform: uppercase;
+        }
+
+        a.selected { 
+          text-decoration: none;
+          color: rgba(#fff, .7);
+          cursor:default;
+        }
+
+      }
+    }
+  }
+
+  div.table table thead tr th>div p.auto {
+    @include opacity(0);
+  }
+
+  .cartodb-map-data {
+    position: relative;
+    top: 300px;
+    z-index: 100;
+  }
+
+  div.panes {
+    overflow-y:hidden;
+    overflow-x:scroll;
+    clear:both;
+
+    div.shadow { display:none; }
+
+    div.table table thead tr th > div > div {
+      position:relative;
+    }
+  }
+}

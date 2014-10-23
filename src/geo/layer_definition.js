@@ -777,6 +777,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
+      jsonpCallback: '_cdbi_layer_attributes',
       success: function(data) {
         loadingTime.end()
         callback(data);

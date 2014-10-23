@@ -649,6 +649,7 @@ describe("NamedMap", function() {
       expect(data).toEqual({test: 1});
       expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345')
       expect(params.dataType).toEqual('jsonp');
+      expect(params.jsonpCallback).toEqual('_cdbi_layer_attributes');
     });
     namedMap.options.tiler_protocol = 'https';
     namedMap.setAuthToken('test');
@@ -657,6 +658,7 @@ describe("NamedMap", function() {
       expect(data).toEqual({test: 1});
       expect(params.url).toEqual('https://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345?auth_token=test')
       expect(params.dataType).toEqual('jsonp');
+      expect(params.jsonpCallback).toEqual('_cdbi_layer_attributes');
     });
 
   })

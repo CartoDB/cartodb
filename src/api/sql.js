@@ -69,6 +69,7 @@
 
     if(options.jsonp) {
       delete params.crossDomain;
+      params.jsonpCallback = '_cdbi_sql';
       params.dataType = 'jsonp';
     }
 

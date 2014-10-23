@@ -172,12 +172,14 @@ describe('SQL api client', function() {
     $.support.cors = false;
     s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     expect(s.options.jsonp).toEqual(true);
+    expect(s.options.jsonpCallback).toEqual('_cdbi_sql');
     s.execute('select * from rambo', null, {
       dp: 2
     })
     expect(ajaxParams.dataType).toEqual('jsonp');
     expect(ajaxParams.crossDomain).toEqual(undefined);
     expect(ajaxParams.jsonp).toEqual(undefined);
+    expect(s.options.jsonpCallback).toEqual(undefined);
     $.support.cors = true;
   });
 

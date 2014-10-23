@@ -8,6 +8,7 @@ require_relative './column'
 require_relative './exceptions'
 require_relative './result'
 require_relative '../../../../lib/cartodb_stats'
+require_relative '../../../datasources/lib/datasources/datasources_factory'
 
 module CartoDB
   module Importer2
@@ -70,27 +71,29 @@ module CartoDB
 
           # [ {:id, :title} ]
           @downloader.item_metadata[:subresources].each { |subresource|
-            # TODO: Support sending user and options to the datasource factory
-            datasource = DatasourcesFactory.get_datasource(@downloader.datasource.class::DATASOURCE_NAME, nil, nil)
-            item_metadata = datasource.get_resource_metadata(subresource[:id])
+            @statsd.timing('importer.run.subresource') do
+              # TODO: Support sending user and options to the datasource factory
+              datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(@downloader.datasource.class::DATASOURCE_NAME, nil, nil)
+              item_metadata = datasource.get_resource_metadata(subresource[:id])
 
-            subres_downloader = @downloader.class.new(
-              datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
+              subres_downloader = @downloader.class.new(
+                datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
 
-            subres_downloader.run(available_quota)
-            next unless remote_data_updated?
-            log.append "Starting import for #{subres_downloader.source_file.fullpath}"
-            raise_if_over_storage_quota(subres_downloader.source_file)
+              subres_downloader.run(available_quota)
+              next unless remote_data_updated?
+              log.append "Starting import for #{subres_downloader.source_file.fullpath}"
+              raise_if_over_storage_quota(subres_downloader.source_file)
 
-            tracker.call('unpacking')
-            source_file = subres_downloader.source_file
-            log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-            @stats << {
-              type: source_file.extension,
-              size: source_file.size
-            }
-            import(source_file, subres_downloader)
-            subres_downloader.clean_up
+              tracker.call('unpacking')
+              source_file = subres_downloader.source_file
+              log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+              @stats << {
+                type: source_file.extension,
+                size: source_file.size
+              }
+              import(source_file, subres_downloader)
+              subres_downloader.clean_up
+            end
           }
         else
           @downloader.run(available_quota)

@@ -7,6 +7,7 @@ require_relative '../doubles/log'
 require_relative '../doubles/indexer'
 require_relative '../factories/pg_connection'
 require_relative '../../spec/doubles/cartodb_stats'
+require_relative '../doubles/downloader'
 
 include CartoDB::Importer2
 
@@ -24,6 +25,7 @@ describe Runner do
 
     @fake_log = Doubles::Log.new
     @downloader = Downloader.new(@filepath)
+    @fake_multiple_downloader_2 = Doubles::MultipleDownloaderFake.instance(2)
   end
 
   describe '#initialize' do
@@ -101,12 +103,20 @@ describe Runner do
       result.success?.should eq false
     end
 
-    it 'logs import time at' do
+    it 'logs import time' do
       statsd_spy = CartoDB::Doubles::CartodbStats.new
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, statsd_spy)
       runner.run
 
-      statsd_spy.timed_block('importer.run').should be_true
+      statsd_spy.timed_block('importer.run').should eq 1
+    end
+
+    it 'logs multiple subresource import times' do
+      statsd_spy = CartoDB::Doubles::CartodbStats.new
+      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, statsd_spy)
+      runner.run
+
+      statsd_spy.timed_block('importer.run.subresource').should eq 2
     end
   end
 

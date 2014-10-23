@@ -103,20 +103,45 @@ describe Runner do
       result.success?.should eq false
     end
 
-    it 'logs import time' do
-      statsd_spy = CartoDB::Doubles::CartodbStats.new
-      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, statsd_spy)
-      runner.run
+  end
 
-      statsd_spy.timed_block('importer.run').should eq 1
+  describe 'stats logger' do
+
+    before(:each) do
+      @statsd_spy = CartoDB::Doubles::CartodbStats.new
+    end
+
+    it 'logs total import time' do
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, @statsd_spy)
+      runner.run
+      @statsd_spy.timed_block('importer.run').should eq 1
+    end
+
+    it 'logs single resource import flow time' do
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, @statsd_spy)
+      runner.run
+      @statsd_spy.timed_block('importer.run.resource').should eq 1
+      @statsd_spy.timed_block('importer.run.resource.download').should eq 1
+      @statsd_spy.timed_block('importer.run.resource.quota_check').should eq 1
+      @statsd_spy.timed_block('importer.run.resource.unpack').should eq 1
+      @statsd_spy.timed_block('importer.run.resource.import').should eq 1
+      @statsd_spy.timed_block('importer.run.resource.cleanup').should eq 1
     end
 
     it 'logs multiple subresource import times' do
-      statsd_spy = CartoDB::Doubles::CartodbStats.new
-      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, statsd_spy)
+      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, @statsd_spy)
       runner.run
+      @statsd_spy.timed_block('importer.run.subresource').should eq 2
+    end
 
-      statsd_spy.timed_block('importer.run.subresource').should eq 2
+    it 'logs multiple subresource import flow times' do
+      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, @statsd_spy)
+      runner.run
+      @statsd_spy.timed_block('importer.run.subresource.datasource_metadata').should eq 2
+      @statsd_spy.timed_block('importer.run.subresource.download').should eq 2
+      @statsd_spy.timed_block('importer.run.subresource.quota_check').should eq 2
+      @statsd_spy.timed_block('importer.run.subresource.import').should eq 2
+      @statsd_spy.timed_block('importer.run.subresource.cleanup').should eq 2
     end
   end
 
@@ -130,12 +155,16 @@ describe Runner do
   end
 
   def fake_unpacker()
-    Class.new { 
+    Class.new {
+      def initialize
+        @sourcefile = SourceFile.new('/var/tmp/foo.txt')
+      end
       def run(*args)
+        puts ''
       end
 
       def source_files
-        [@filepath]
+        [@sourcefile]
       end
 
       def clean_up

@@ -1,4 +1,5 @@
 require 'statsd'
+require_relative '../services/importer/lib/importer'
 
 class CartodbStats
 

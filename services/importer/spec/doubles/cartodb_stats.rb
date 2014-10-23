@@ -3,6 +3,11 @@
 module CartoDB
   module Doubles
     class CartodbStats
+      TEST_HOST = '172.28.128.3'
+      TEST_PORT = 8125
+
+      Statsd.host = TEST_HOST
+      Statsd.port = TEST_PORT
 
       def initialize
         @timed_blocks = Hash.new(0)

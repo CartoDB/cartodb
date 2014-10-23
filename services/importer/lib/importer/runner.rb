@@ -68,53 +68,92 @@ module CartoDB
 
         if @downloader.multi_resource_import_supported?
           log.append "Starting multi-resources import"
-
           # [ {:id, :title} ]
           @downloader.item_metadata[:subresources].each { |subresource|
             @statsd.timing('importer.run.subresource') do
-              # TODO: Support sending user and options to the datasource factory
-              datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(@downloader.datasource.class::DATASOURCE_NAME, nil, nil)
-              item_metadata = datasource.get_resource_metadata(subresource[:id])
 
-              subres_downloader = @downloader.class.new(
+              datasource = nil
+              item_metadata = nil
+              subres_downloader = nil
+
+              @statsd.timing('importer.run.subresource.datasource_metadata') do
+                # TODO: Support sending user and options to the datasource factory
+                datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(@downloader.datasource.class::DATASOURCE_NAME, nil, nil)
+                item_metadata = datasource.get_resource_metadata(subresource[:id])
+              end
+
+              @statsd.timing('importer.run.subresource.download') do
+                subres_downloader = @downloader.class.new(
                 datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
 
-              subres_downloader.run(available_quota)
-              next unless remote_data_updated?
-              log.append "Starting import for #{subres_downloader.source_file.fullpath}"
-              raise_if_over_storage_quota(subres_downloader.source_file)
+                subres_downloader.run(available_quota)
+                next unless remote_data_updated?
+              end
 
-              tracker.call('unpacking')
-              source_file = subres_downloader.source_file
-              log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-              @stats << {
-                type: source_file.extension,
-                size: source_file.size
-              }
-              import(source_file, subres_downloader)
-              subres_downloader.clean_up
+              @statsd.timing('importer.run.subresource.quota_check') do
+                log.append "Starting import for #{subres_downloader.source_file.fullpath}"
+                raise_if_over_storage_quota(subres_downloader.source_file)
+              end
+
+              @statsd.timing('importer.run.subresource.import') do
+                tracker.call('unpacking')
+                source_file = subres_downloader.source_file
+                log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+                @stats << {
+                  type: source_file.extension,
+                  size: source_file.size
+                }
+
+                import(source_file, subres_downloader)
+              end
+
+              @statsd.timing('importer.run.subresource.cleanup') do
+                subres_downloader.clean_up
+              end
             end
           }
         else
-          @downloader.run(available_quota)
-          return self unless remote_data_updated?
-          log.append "Starting import for #{@downloader.source_file.fullpath}"
-          raise_if_over_storage_quota(@downloader.source_file)
+          @statsd.timing('importer.run.resource') do
 
-          log.append "Unpacking #{@downloader.source_file.fullpath}"
-          tracker.call('unpacking')
-          unpacker.run(@downloader.source_file.fullpath)
-          unpacker.source_files.each { |source_file|
-            # TODO: Move this stats inside import, for streaming scenarios, or differentiate
-            log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-            @stats << {
-              type: source_file.extension,
-              size: source_file.size
-            }
-            import(source_file, @downloader)
-          }
-          unpacker.clean_up
-          @downloader.clean_up
+            @statsd.timing('importer.run.resource.download') do
+              @downloader.run(available_quota)
+              return self unless remote_data_updated?
+            end
+
+            @statsd.timing('importer.run.resource.quota_check') do
+              log.append "Starting import for #{@downloader.source_file.fullpath}"
+              raise_if_over_storage_quota(@downloader.source_file)
+            end
+
+
+            @statsd.timing('importer.run.resource.unpack') do
+              log.append "Unpacking #{@downloader.source_file.fullpath}"
+              tracker.call('unpacking')
+              unpacker.run(@downloader.source_file.fullpath)
+            end
+
+            @statsd.timing('importer.run.resource.import') do
+              begin
+              unpacker.source_files.each { |source_file|
+                # TODO: Move this stats inside import, for streaming scenarios, or differentiate
+                log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+                @stats << {
+                  type: source_file.extension,
+                  size: source_file.size
+                }
+                import(source_file, @downloader)
+              }
+              rescue => exception
+              raise exception
+                end
+            end
+
+            @statsd.timing('importer.run.resource.cleanup') do
+              unpacker.clean_up
+              @downloader.clean_up
+            end
+
+          end
         end
 
         self

@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../lib/importer/source_file'
 
 module CartoDB
 
@@ -46,7 +47,7 @@ module CartoDB
         end
 
 
-        attr_reader :datasource, :item_metadata, :options, :logger, :repository, :number_of_subresources
+        attr_reader :datasource, :item_metadata, :options, :logger, :repository, :number_of_subresources, :source_file
 
         def initialize(datasource, item_metadata, options, logger, repository, number_of_subresources = 1)
           @datasource = datasource
@@ -60,6 +61,8 @@ module CartoDB
             { :id => i }
           end
           @item_metadata ||= { :subresources => subresources }
+
+          @source_file = SourceFile.new('/var/tmp/foo.txt')
         end
 
         def multi_resource_import_supported?
@@ -73,6 +76,10 @@ module CartoDB
 
         def modified?
           false
+        end
+
+        def clean_up
+
         end
 
       end

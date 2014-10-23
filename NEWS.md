@@ -2,6 +2,7 @@
 ------------------
 * New features
   * Annotation overlay.
+  * Stamen basemaps.
   * Optimization: Map creation no longer performs tiler calls to set the tile style.
   * Optimization: viz.json rendering now doesn't requests for named map if needs to, using the visualization and layers to recreate required fields.
   * Twitter datasource now allows N custom GNIP configurations, per username or per organization name.

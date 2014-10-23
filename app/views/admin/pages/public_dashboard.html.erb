@@ -28,7 +28,7 @@
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard' %>
   <% else %>
     <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-    <%= javascript_include_tag 'templates', 'public_dashboard' %>
+    <%= javascript_include_tag 'app.js', 'templates', 'public_dashboard' %>
   <% end %>
 <% end %>
 
@@ -65,7 +65,7 @@
                 </div>
                 <div class="gradient"></div>
 
-                <a href="<%= public_visualizations_show_url(user_domain: domain, id: vis[:id]) %>" class="edit button grey small">edit it</a>
+                <a href="<%= public_visualizations_show_url(user_domain: domain, id: vis[:id]) %>" class="edit button grey small">edit this</a>
               </div>
 
               <% if vis[:tags].size > 0 %>

@@ -21,6 +21,9 @@ describe Runner do
     @filepath.write('...')
     @filepath.close
     @pg_options      = Factories::PGConnection.new.pg_options
+
+    @fake_log = Doubles::Log.new
+    @downloader = Downloader.new(@filepath)
   end
 
   describe '#initialize' do
@@ -36,15 +39,12 @@ describe Runner do
 
   describe '#run' do
     it 'calls import for each file to process' do
-      fake_log = Doubles::Log.new
-
-      downloader  = Downloader.new(@filepath)
       source_file = SourceFile.new(@filepath)
 
       fake_loader = self.fake_loader_for(nil, source_file)
       def fake_loader.run(args); end
 
-      runner = Runner.new(@pg_options, downloader, fake_log, nil, fake_loader)
+      runner = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_loader)
 
       runner.stubs(:import)
 
@@ -54,10 +54,7 @@ describe Runner do
     end
 
     it 'logs the file path to be imported' do
-      fake_log = Doubles::Log.new
-
-      downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker)
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker)
 
       runner.run
       (runner.report =~ /#{@filepath.path}/).should_not eq nil
@@ -66,11 +63,8 @@ describe Runner do
 
   describe '#tracker' do
     it 'returns the block passed at initialization' do
-      fake_log = Doubles::Log.new
-
       data_import = OpenStruct.new
-      downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, fake_log, fake_unpacker)
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, fake_unpacker)
 
       def runner.import(*args); end
 
@@ -81,11 +75,9 @@ describe Runner do
 
   describe '#import' do
     it 'creates a sucessful result if all import steps completed' do
-      fake_log = Doubles::Log.new
-
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new, fake_log)
-      job         = Job.new({ pg_options: @pg_options, logger: fake_log })
+      runner      = Runner.new(@pg_options, Object.new, @fake_log)
+      job         = Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
@@ -97,11 +89,9 @@ describe Runner do
     end
 
     it 'creates a failed result if an exception raised during import' do
-      fake_log = Doubles::Log.new
-
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new, fake_log)
-      job         = Job.new({ pg_options: @pg_options, logger: fake_log })
+      runner      = Runner.new(@pg_options, Object.new, @fake_log)
+      job         = Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
@@ -112,11 +102,8 @@ describe Runner do
     end
 
     it 'logs spent time at' do
-      fake_log = Doubles::Log.new
-
-      downloader  = Downloader.new(@filepath)
       statsd_spy = CartoDB::Doubles::CartodbStats.new
-      runner      = Runner.new(@pg_options, downloader, fake_log, nil, fake_unpacker, nil, statsd_spy)
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, statsd_spy)
       runner.run
 
       statsd_spy.timed_block('importer.run').should be_true

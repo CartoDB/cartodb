@@ -45,6 +45,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
       no_cdn: layerModel.get('no_cdn'),
+      dynamic_cdn: layerModel.get('dynamic_cdn'),
       instanciateCallback: function() {
         var cartocss = layerModel.get('cartocss') || layerModel.get('tile_style');
 

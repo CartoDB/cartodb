@@ -68,33 +68,5 @@ describe CartoDB::Layer::Presenter do
       vizjson[:options]['visible'].should == true
     end
 
-    it 'includes dynamic_cdn option' do
-      layer = OpenStruct.new(
-        kind:           'torque',
-        options: {
-          'query'         => 'select the_geom from bogus_table',
-          'tile_style'    => '',
-          'style_version' => '',
-          'table_name'    => 'bogus_table',
-          'visible' => true
-        },
-      )
-      options = {
-        visualization_id: '',
-        :viewer_user => OpenStruct.new(
-          dynamic_cdn_enabled: true
-        )
-      }
-      vizjson = CartoDB::Layer::Presenter.new(layer, options).to_vizjson_v2
-      vizjson[:options][:dynamic_cdn].should == true
-      options = {
-        visualization_id: '',
-        :viewer_user => OpenStruct.new(
-          dynamic_cdn_enabled: false
-        )
-      }
-      vizjson = CartoDB::Layer::Presenter.new(layer, options).to_vizjson_v2
-      vizjson[:options][:dynamic_cdn].should == false
-    end
   end
 end # Layer::Presenter

@@ -362,17 +362,24 @@ class Admin::VisualizationsController < ApplicationController
   # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
   def get_corrected_url_if_proceeds(for_table=true)
     url = nil
-    if CartoDB.extract_subdomain(request) != CartoDB.extract_real_subdomain(request)
+    org_name = CartoDB.extract_real_subdomain(request)
+    if CartoDB.extract_subdomain(request) != org_name
       # Might be an org url, try getting the org
-      organization = Organization.where(name: CartoDB.extract_real_subdomain(request)).first
+      organization = Organization.where(name: org_name).first
       unless organization.nil?
         authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
         authenticated_users.each { |username|
-          if url.nil? && !User.where(username:username).first.nil?
-            if for_table
-              url = public_tables_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
-            else
-              url = public_visualizations_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+          user = User.where(username:username).first
+          if url.nil? && !user.nil? && !user.organization.nil?
+            if user.organization.id == organization.id
+              url = CartoDB.user_url(org_name, username)
+              if for_table
+                url += public_tables_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
+                                               redirected:true)
+              else
+                url += public_visualizations_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
+                                                       redirected:true)
+              end
             end
           end
         }

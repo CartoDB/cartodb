@@ -1,7 +1,9 @@
+3.11.20 (24//10//2014)
+- enabled fixed callback for layergroups and infowindows
+
 3.11.19 (23//10//2014)
 - fixes annotation specs
 - adds several methods to set the annotation properties.
-- enabled fixed callback for layergroups and infowindows
 
 3.11.18 (22//10//2014)
 - adds annotation overlays

@@ -1,5 +1,7 @@
 3.2.8 (2014-XX-XX)
 ------------------
+* New features
+  * Added dynamic_cdn_enabled flag to the users
 
 
 3.2.7 (2014-10-23)

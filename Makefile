@@ -26,6 +26,7 @@ WORKING_SPECS_3 = \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
+  services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \

@@ -778,13 +778,13 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       jsonpCallback: '_cdbi_layer_attributes',
-      cache: false,
+      cache: true,
       success: function(data) {
-        loadingTime.end()
+        loadingTime.end();
         callback(data);
       },
       error: function(data) {
-        loadingTime.end()
+        loadingTime.end();
         cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
@@ -1016,6 +1016,10 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
+    }, {
+      cache: true, // don't include timestamp
+      jsonpCallback: '_cdbi_layer_attributes',
+      jsonp: true
     }).done(function(interact_data) {
       loadingTime.end();
       if (interact_data.rows.length === 0 ) {

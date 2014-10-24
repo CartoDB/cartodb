@@ -67,14 +67,15 @@
       crossDomain: true
     };
 
-    if(options.cache) {
+    if(options.cache !== undefined) {
       params.cache = options.cache; 
     }
 
     if(options.jsonp) {
       delete params.crossDomain;
-      params.jsonpCallback = '_cdbi_sql';
-      params.cache = false;
+      if (options.jsonpCallback) {
+        params.jsonpCallback = options.jsonpCallback;
+      }
       params.dataType = 'jsonp';
     }
 

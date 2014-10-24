@@ -372,7 +372,7 @@ class Admin::VisualizationsController < ApplicationController
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id
-              url = CartoDB.user_url(org_name, username)
+              url = CartoDB.base_url(organization.name)
               if for_table
                 url += public_tables_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
                                                redirected:true)

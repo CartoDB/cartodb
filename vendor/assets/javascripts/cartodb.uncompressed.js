@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.21-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: bcfa8436e84cd3d289660c3b70aa62b1d61a8620
+// sha: 8cd8cc46331f5936cecf3ababb807e2271a14a36
 (function() {
   var root = this;
 
@@ -27436,7 +27436,7 @@ Map.prototype = {
     compressor(json, 3, function(encoded) {
       params.push(encoded);
       var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
-      var host = self.options.dynamic_cdn ? self._host('0'): self._tilerHost();
+      var host = self.options.dynamic_cdn ? self._host(): self._tilerHost();
       ajax({
         dataType: 'jsonp',
         url: host + endPoint + '?' + params.join('&'),
@@ -27875,7 +27875,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this.options.dynamic_cdn ? this._host('0'): this._tilerHost();
+    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
     var url = [
       host,
       //'api',

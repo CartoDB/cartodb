@@ -67,14 +67,15 @@
       crossDomain: true
     };
 
+    if(options.cache) {
+      params.cache = options.cache; 
+    }
+
     if(options.jsonp) {
       delete params.crossDomain;
       params.jsonpCallback = '_cdbi_sql';
+      params.cache = false;
       params.dataType = 'jsonp';
-    }
-
-    if(options.cache) {
-      params.cache = options.cache; 
     }
 
     // Substitute mapnik tokens

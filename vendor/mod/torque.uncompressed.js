@@ -2139,12 +2139,13 @@ exports.Profiler = Profiler;
     _fetchMap: function(callback) {
       var self = this;
       var layergroup = {};
-      var url = this._tilerHost() + "/api/v1/map";
+      var host = this.options.dynamic_cdn ? this.url().replace('{s}', '0'): this._tilerHost();
+      var url = host + "/api/v1/map";
       var named = this.options.named_map;
 
       if(named) {
         //tiles/template
-        url = this._tilerHost() + "/api/v1/map/named/" + named.name + "/jsonp"
+        url = host + "/api/v1/map/named/" + named.name + "/jsonp";
       } else {
         layergroup = {
           "version": "1.0.1",

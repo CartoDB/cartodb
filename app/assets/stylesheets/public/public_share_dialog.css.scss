@@ -1,0 +1,23 @@
+
+/**
+ *  Share dialog for public views
+ *
+ */
+
+@import "../common/vars";
+
+.cartodb-share-dialog .block.modal .head h3 {
+  font-family: $title-fonts;
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
+  line-height: normal;
+}
+
+.cartodb-share-dialog .block.modal h4 {
+  font-family: $title-fonts;
+}
+
+.cartodb-share-dialog .block .buttons li a {
+  font-family: $title-fonts;
+}

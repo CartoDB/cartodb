@@ -1,4 +1,7 @@
 defaults: &defaults
+  users_dumps:
+    service:
+      port: 0000
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false

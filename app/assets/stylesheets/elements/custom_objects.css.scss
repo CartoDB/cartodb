@@ -236,7 +236,6 @@
     */
   }
 
-
   .form_align {
 
     clear:both;
@@ -244,14 +243,22 @@
 
     a.align {
 
+      border-top:1px solid #9E9E9E;
+      border-bottom:1px solid #9E9E9E;
+
+      &:nth-child(2) {
+        border-right:1px solid #9E9E9E;
+      }
+
       &:first-child {
+        border-left:1px solid #9E9E9E;
+        border-right:1px solid #9E9E9E;
         @include border-radius(3px 0 0 3px);
-        border-right:0;
       }
 
       &:last-child {
+        border-right:1px solid #9E9E9E;
         @include border-radius(0 3px 3px 0);
-        border-left:0;
       }
 
       &.align-left:after {
@@ -296,7 +303,6 @@
       width:auto;
       height:20px;
       margin:0;
-      border:1px solid #9E9E9E;
       @include border-radius(0);
       @include background(linear-gradient(#FFF,#F2F2F2));
     }
@@ -325,6 +331,37 @@
     border:1px solid #9E9E9E;
     @include border-radius(3px);
     @include background(linear-gradient(#FFF,#F2F2F2));
+
+    &.with-label {
+      margin: 0;
+      padding: 0;
+      height: auto;
+      border: none;
+      @include border-radius(0);
+      background: none;
+
+      .label { 
+        margin: 0 4px 0 0;
+        font-size: 11px;
+        color: #797979;
+        cursor: default;
+      }
+
+      .input {
+        position:relative;
+        @include inline-block();
+        min-width:20px;
+        width:auto!important;
+        padding:2px 19px 2px 4px;
+        height:15px;
+        margin:0;
+        border:1px solid #9E9E9E;
+        @include border-radius(3px);
+        @include background(linear-gradient(#FFF,#F2F2F2));
+      }
+
+  }
+
 
     &:hover {
       cursor:pointer;

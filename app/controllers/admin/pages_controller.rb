@@ -39,6 +39,7 @@ class Admin::PagesController < ApplicationController
     end
 
     @tags             = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
+    @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
@@ -71,6 +72,7 @@ class Admin::PagesController < ApplicationController
           title:        dataset.name,
           description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
+          owner:        dataset.user,
           tags:         dataset.tags
         }
       )
@@ -79,7 +81,7 @@ class Admin::PagesController < ApplicationController
     @tables_num = @datasets.size
     
     respond_to do |format|
-      format.html { render 'datasets', layout: 'application_public_dashboard' }
+      format.html { render 'public_datasets', layout: 'application_public_dashboard' }
     end
 
   end #datasets
@@ -145,6 +147,7 @@ class Admin::PagesController < ApplicationController
     end
 
     @tags             = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
+    @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description
@@ -180,13 +183,14 @@ class Admin::PagesController < ApplicationController
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
           mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
-          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS)
+          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
+          owner:        vis.user
         }
       )
     end
 
     respond_to do |format|
-      format.html { render 'public', layout: 'application_public_dashboard' }
+      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
     end
 
   end #public
@@ -196,17 +200,25 @@ class Admin::PagesController < ApplicationController
   def public_organization(organization)
     @organization = organization
 
-    @public_org_tables_count = @organization.public_datasets_count
-    @public_org_vis_count = @organization.public_visualizations_count
+    @name = ( !@organization.display_name.empty? ? @organization.display_name : @organization.name )
+    @avatar_url = @organization.avatar_url
+
+    @twitter_username = @organization.twitter_username 
+    @description      = @organization.description
+    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : @organization.website
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+
+    @tables_num = @organization.public_datasets_count
+    @vis_num = @organization.public_visualizations_count
 
     page = params[:page].nil? ? 1 : params[:page]
     vis_list = @organization.public_visualizations(page, VISUALIZATIONS_PER_PAGE, params[:tag])
 
     @pages = (vis_list.total_entries / VISUALIZATIONS_PER_PAGE).ceil
 
-    @public_org_visualizations = []
+    @visualizations = []
     vis_list.each do |vis|
-      @public_org_visualizations.push(
+      @visualizations.push(
         {
           title:        vis.name,
           description:  vis.description_clean,
@@ -214,7 +226,7 @@ class Admin::PagesController < ApplicationController
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
           url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
-          owner: vis.user.username
+          owner:        vis.user
         }
       )
     end
@@ -222,15 +234,20 @@ class Admin::PagesController < ApplicationController
     @tags = @organization.tags(Visualization::Member::DERIVED_TYPE)
 
     respond_to do |format|
-      format.html { render 'public_organization', layout: 'application_public_organization_dashboard' }
+      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
     end
   end
 
   def datasets_organization(organization)
     @organization = organization
 
-    @public_org_tables_count = @organization.public_datasets_count
-    @public_org_vis_count = @organization.public_visualizations_count
+    @twitter_username = @organization.twitter_username 
+    @description      = @organization.description
+    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : @organization.website
+    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+
+    @tables_num = @organization.public_datasets_count
+    @vis_num = @organization.public_visualizations_count
 
     page = params[:page].nil? ? 1 : params[:page]
     vis_list = @organization.public_datasets(page, DATASETS_PER_PAGE, params[:tag])
@@ -245,7 +262,7 @@ class Admin::PagesController < ApplicationController
           description:  dataset.description_clean,
           updated_at:   dataset.updated_at,
           tags:         dataset.tags,
-          owner:        dataset.user.username
+          owner:        dataset.user
         }
       )
     end
@@ -253,7 +270,7 @@ class Admin::PagesController < ApplicationController
     @tags = @organization.tags(Visualization::Member::CANONICAL_TYPE)
 
     respond_to do |format|
-      format.html { render 'datasets_organization', layout: 'application_public_organization_dashboard' }
+      format.html { render 'public_datasets', layout: 'application_public_dashboard' }
     end
   end
 

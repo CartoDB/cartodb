@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative './loader'
-require_relative './osm_loader'
 require_relative './tiff_loader'
 require_relative './sql_loader'
 require_relative './unp'
@@ -15,7 +14,7 @@ module CartoDB
     class Runner
       QUOTA_MAGIC_NUMBER      = 0.3
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS                 = [Loader, OsmLoader, TiffLoader]
+      LOADERS                 = [Loader, TiffLoader]
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
@@ -172,8 +171,7 @@ module CartoDB
       end
       
       def import(source_file, downloader, job=nil, loader_object=nil)
-        job     ||= Job.new(logger: log, pg_options: pg_options)
-
+        job     ||= Job.new({ logger: log, pg_options: pg_options })
         loader = loader_object || loader_for(source_file).new(job, source_file)
         loader.options = @loader_options
 
@@ -182,7 +180,7 @@ module CartoDB
         tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
 
-        if downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
+        if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           job.log "Streaming import load"
           loader.streamed_run_init
 
@@ -222,7 +220,7 @@ module CartoDB
       end
 
       def loader_for(source_file)
-        LOADERS.find(DEFAULT_LOADER) { |loader_klass| 
+        LOADERS.find(DEFAULT_LOADER) { |loader_klass|
           loader_klass.supported?(source_file.extension)
         }
       end

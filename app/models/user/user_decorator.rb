@@ -56,7 +56,11 @@ module CartoDB
           arcgis_datasource: self.arcgis_datasource_enabled?
         },
         notification: self.notification,
-        avatar_url: self.avatar_url
+        avatar_url: self.avatar_url,
+        available_basemaps: {
+          here: self.here_maps_enabled,
+          stamen: self.stamen_maps_enabled
+        }
       }
 
       data[:organization] = self.organization.to_poro(self) if self.organization.present?

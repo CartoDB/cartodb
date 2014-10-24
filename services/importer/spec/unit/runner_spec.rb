@@ -78,8 +78,8 @@ describe Runner do
   describe '#import' do
     it 'creates a sucessful result if all import steps completed' do
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new, @fake_log)
-      job         = Job.new({ pg_options: @pg_options, logger: @fake_log })
+      runner      = CartoDB::Importer2::Runner.new(@pg_options, Object.new, @fake_log)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
@@ -91,9 +91,11 @@ describe Runner do
     end
 
     it 'creates a failed result if an exception raised during import' do
+      fake_log = Doubles::Log.new
+
       source_file = SourceFile.new(@filepath)
-      runner      = Runner.new(@pg_options, Object.new, @fake_log)
-      job         = Job.new({ pg_options: @pg_options, logger: @fake_log })
+      runner      = CartoDB::Importer2::Runner.new(@pg_options, Object.new, @fake_log)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
@@ -170,7 +172,6 @@ describe Runner do
         @sourcefile = SourceFile.new('/var/tmp/foo.txt')
       end
       def run(*args)
-        puts ''
       end
 
       def source_files
@@ -181,5 +182,6 @@ describe Runner do
       end
     }.new
   end
+
 end
 

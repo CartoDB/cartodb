@@ -67,13 +67,16 @@
       crossDomain: true
     };
 
-    if(options.jsonp) {
-      delete params.crossDomain;
-      params.dataType = 'jsonp';
+    if(options.cache !== undefined) {
+      params.cache = options.cache; 
     }
 
-    if(options.cache) {
-      params.cache = options.cache; 
+    if(options.jsonp) {
+      delete params.crossDomain;
+      if (options.jsonpCallback) {
+        params.jsonpCallback = options.jsonpCallback;
+      }
+      params.dataType = 'jsonp';
     }
 
     // Substitute mapnik tokens

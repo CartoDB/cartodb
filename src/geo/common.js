@@ -1,4 +1,5 @@
 
+
 /*
  *  common functions for cartodb connector
  */
@@ -266,3 +267,4 @@ cdb.geo.common.CartoDBLogo = {
     },( timeout || 0 ));
   }
 };
+

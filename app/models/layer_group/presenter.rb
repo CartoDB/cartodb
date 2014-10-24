@@ -26,7 +26,7 @@ module CartoDB
             sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             cdn_url:            configuration.fetch(:cdn_url, nil),
-            dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled),
+            dynamic_cdn:        @options.fetch(:dynamic_cdn_enabled, false),
             layer_definition:   {
               stat_tag:           options.fetch(:visualization_id),
               version:            LAYER_GROUP_VERSION,

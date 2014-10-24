@@ -2,11 +2,11 @@
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
+require_relative '../doubles/importer_stats'
 require_relative '../doubles/loader'
 require_relative '../doubles/log'
 require_relative '../doubles/indexer'
 require_relative '../factories/pg_connection'
-require_relative '../../spec/doubles/cartodb_stats'
 require_relative '../doubles/downloader'
 
 include CartoDB::Importer2
@@ -108,41 +108,51 @@ describe Runner do
   describe 'stats logger' do
 
     before(:each) do
-      @statsd_spy = CartoDB::Doubles::CartodbStats.new
+      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
     end
 
     it 'logs total import time' do
-      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, @statsd_spy)
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
+      spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @statsd_spy.timed_block('importer.run').should eq 1
+      @importer_stats_spy.timed_block('run').should eq 1
     end
 
     it 'logs single resource import flow time' do
-      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, @statsd_spy)
+      runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
+      spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @statsd_spy.timed_block('importer.run.resource').should eq 1
-      @statsd_spy.timed_block('importer.run.resource.download').should eq 1
-      @statsd_spy.timed_block('importer.run.resource.quota_check').should eq 1
-      @statsd_spy.timed_block('importer.run.resource.unpack').should eq 1
-      @statsd_spy.timed_block('importer.run.resource.import').should eq 1
-      @statsd_spy.timed_block('importer.run.resource.cleanup').should eq 1
+      @importer_stats_spy.timed_block('run.resource').should eq 1
+      @importer_stats_spy.timed_block('run.resource.download').should eq 1
+      @importer_stats_spy.timed_block('run.resource.quota_check').should eq 1
+      @importer_stats_spy.timed_block('run.resource.unpack').should eq 1
+      @importer_stats_spy.timed_block('run.resource.import').should eq 1
+      @importer_stats_spy.timed_block('run.resource.cleanup').should eq 1
     end
 
     it 'logs multiple subresource import times' do
-      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, @statsd_spy)
+      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, nil)
+      spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @statsd_spy.timed_block('importer.run.subresource').should eq 2
+      @importer_stats_spy.timed_block('run.subresource').should eq 2
     end
 
     it 'logs multiple subresource import flow times' do
-      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, @statsd_spy)
+      runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, nil)
+      spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @statsd_spy.timed_block('importer.run.subresource.datasource_metadata').should eq 2
-      @statsd_spy.timed_block('importer.run.subresource.download').should eq 2
-      @statsd_spy.timed_block('importer.run.subresource.quota_check').should eq 2
-      @statsd_spy.timed_block('importer.run.subresource.import').should eq 2
-      @statsd_spy.timed_block('importer.run.subresource.cleanup').should eq 2
+      @importer_stats_spy.timed_block('run.subresource.datasource_metadata').should eq 2
+      @importer_stats_spy.timed_block('run.subresource.download').should eq 2
+      @importer_stats_spy.timed_block('run.subresource.quota_check').should eq 2
+      @importer_stats_spy.timed_block('run.subresource.import').should eq 2
+      @importer_stats_spy.timed_block('run.subresource.cleanup').should eq 2
     end
+  end
+
+  def spy_runner_importer_stats(runner, importer_stats_spy)
+    runner.instance_eval {
+      @importer_stats = importer_stats_spy
+    }
   end
 
   def fake_loader_for(job, source_file)

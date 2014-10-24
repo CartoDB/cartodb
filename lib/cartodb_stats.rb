@@ -1,6 +1,3 @@
-require 'statsd'
-require_relative '../services/importer/lib/importer'
-
 class CartodbStats
 
   class << self
@@ -72,12 +69,6 @@ class CartodbStats
       end
     end
   
-  end
-
-  def timing(key)
-    Statsd.timing(key) do
-      yield
-    end
   end
 
 end

@@ -1,0 +1,989 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="stylesheet" type="text/css" href=".grunt/grunt-contrib-jasmine/jasmine.css">
+
+
+  
+  <script src=".grunt/grunt-contrib-jasmine/es5-shim.js"></script>
+  
+  <script src=".grunt/grunt-contrib-jasmine/jasmine.js"></script>
+  
+  <script src=".grunt/grunt-contrib-jasmine/jasmine-html.js"></script>
+  
+  <script src=".grunt/grunt-contrib-jasmine/boot.js"></script>
+  
+  <script src="http://maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+  
+  <script src="../assets/test/lib/sinon-1.3.4.js"></script>
+  
+  <script src="../assets/test/spec/SpecHelper.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/cartodb.uncompressed.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/cartodb.mod.torque.uncompressed.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/app.js"></script>
+  
+  <script src="app_config.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery.tipsy.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/table.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/tabledata.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/sqlview.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/cartodb_layer.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/map.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/user.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/organization.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/carto/category.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/carto/torque.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/carto/torque_cat.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/assets.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/carto.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/color_ramps.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/common_tables.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/file.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/filter.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/geocodings.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/permissions.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/synchronization.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/tags.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/vis.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/models/wkt.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/d3.v2.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/select2.min.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/moment.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.effects.core.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.effects.ui.blind.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.effects.ui.highlight.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.autocomplete.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.core.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.draggable.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.droppable.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.mouse.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.position.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.slider.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.sortable.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery-ui/jquery.ui.widget.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery.fileupload.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery.fileupload-fp.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery.fileupload-ui.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/markdown.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/datepicker.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/dropdown_menu.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/string_field.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/widgets.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/import_info.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/background_importer.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/base_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_dialog/create_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_dialog/create_dialog_actions.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_dialog/create_dialog_content.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_dialog/create_dialog_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_dialog/create_dialog_states.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_dialog/create_dialog_uploader.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_error_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/create_table.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/custom_scroll.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/delete_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/delete_visualization_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/error_stats.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/export_table_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/export_table_options.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/filter_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/boolean_field.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/color_picker.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/date_field.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/edit_in_place.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/filters_combo.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/form.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/geometry_field.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/interval_combo.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/number_field.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/spinner_slider.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/forms/text_custom_combo.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/global_click.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/globalerror.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/header.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/hotkeys.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/custom_datepicker.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_arcgis_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_dropbox_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_empty_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_error_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_file_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_gdrive_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/arcgis_import_info.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/dropbox_import_info.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/gdrive_import_info.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/import_info_message.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/import_info_sync.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_info/service_import_info.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_layer_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_message_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_service_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_service_pane_instagram.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_service_states.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_success_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/import_twitter_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/service/service_item.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/service/service_list.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/service/service_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/service/service_oauth.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/import/service/service_token.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/localStorage.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/lock_visualization_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/mamufas_magic.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/mixpanel.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/privacy/new_privacy_selector.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/privacy/privacy_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/privacy/privacy_password.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/privacy/user_list_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/scrollpane_gradient.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/share_private_tables_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/small_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/table_column_selector.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/table_privacy_warning.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/tabs.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/tipsy_tooltip.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/tooltip_trails.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/twitter_categories/twitter_categories.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/twitter_categories/twitter_categories_collection.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/twitter_categories/twitter_categories_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/twitter_categories/twitter_category.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/upgrade_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/upload_states.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/user_settings_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/users_list_warning.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/utils.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/visualizations_combo.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common/wizard_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/control/control_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard_aside.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard_messages.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard_more_data_bar.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard_router.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard_support.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/dashboard_user_stats.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/filters/dashboard_paginator.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/filters/paginator_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/filters/sortable.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/filters/tag_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/header/dashboard_header.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/header/dashboard_posts_widget.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/tables/table_item.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/tables/table_list.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/tables/tables.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/users/d3stats.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/users/simpled3Stats.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/visualizations/name_visualization_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/visualizations/new_visualization_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/visualizations/visualization_item.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/visualizations/visualizations.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/visualizations/visualizations_list.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/dashboard/welcome_view.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/codemirror.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/show-hint.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/anyword-hint.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/custom-list-hint.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/custom-list-with-type-hint.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery.faviconNotify.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/rgbcolor.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/crossfilter.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/jquery.caret.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/ZeroClipboard.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/tag-it.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/colorpicker.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/leaflet.draw.js"></script>
+  
+  <script src="../assets/javascripts/utils/postgres.codemirror.js"></script>
+  
+  <script src="../assets/javascripts/utils/xml.codemirror.js"></script>
+  
+  <script src="../assets/javascripts/utils/draggable.js"></script>
+  
+  <script src="../assets/javascripts/utils/carto.codemirror.js"></script>
+  
+  <script src="../assets/javascripts/utils/color.keywords.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/overlays.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/text.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/right_menu.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/default_layers.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_module.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/carto_editor.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/carto_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/actions_menu.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/asset_item.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/assets_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/maki_icons.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/pin_maps.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/simpleicon.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/static_assets_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/asset_manager/upload_asset_states.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/background_geocoder.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/backgroundview.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/basemap_chooser_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/basemap_chooser_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/mapbox_basemap_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/nasa_basemap_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/wms_basemap_layers_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/wms_basemap_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dialog/zxy_basemap_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dropdown/add_basemap_button.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dropdown/basemap_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dropdown/color_basemap.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dropdown/custom_basemap.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dropdown/gmaps_basemap.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/basemap/basemap_dropdown/pattern_basemap.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/column_type_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/create_layer_dialog/create_layer_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/create_layer_dialog/create_layer_dialog_actions.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/create_layer_dialog/create_layer_dialog_content.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/create_layer_dialog/create_layer_dialog_states.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/doc_info_dialogs.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/editor_small_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/filter_column_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoder_working.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog_address_column_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog_available_geometries_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog_content.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog_countries_collection.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog_estimation_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/geocoding_dialog_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_address.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_address_additional.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_address_additional_item.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_admin.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_default_geocoder.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_ip.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_lonlat.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_pane_postal.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_panes_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_dialog/panes/geocoding_dialog_styles.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_message_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geocoding_result.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/geom_editor.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/create_visualization_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/duplicate_table_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/duplicate_visualization_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/geocoder_user_stats.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/georeference_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/georeference_nodata_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/header_sync_info.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/merge_tables_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/options_menu.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/share_controller.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/share_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/share_private_vis_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/sync_now_modal.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header/sync_settings_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/header_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/infowindow.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/layer_panel_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/map/draw_geometry.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/map/edit_feature_fields_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/map/layerview_from_layergroup.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/map/map_options_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/mapview.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/carto_wizard_forms.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/codemirror_color_picker.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/filters.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/filters/histogram.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/filters/selection.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/html_editor_help.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_base_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_field.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_field_item.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_fields_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_html_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_tab.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/infowindow_title_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/infowindow/tooltip_tab.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legend_editor.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/bubble_legend.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/category_legend.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/choropleth_legend.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/color_legend.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/density_legend.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/intensity_legend.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/legend_fields_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/legends/legend_html_pane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/sql.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/bubble_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/category_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/choropleth_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/cluster_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/density_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/intensity_wizard.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/torque.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/menu_modules/wizards/torque_category.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/metadata_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/new_column_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/new_geom_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/noGeoRefData_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/annotation.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/canvas_setup_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/code.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/fullscreen.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/header.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/image.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/layer_selector.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/loader.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/logo.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/mobile.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/overlay_properties_bar.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/overlay_properties_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/overlays_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/search.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/share.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/overlays/zoom.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/row_header_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/row_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/shared_tables_combo.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/stop_edit_dialog.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/table.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/table_big_loader.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/table_router.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/tableview.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/tooltip.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/watching_notifier_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/table/watching_notifier_view.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-aside/common_data_aside.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-aside/common_data_extra.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-aside/common_data_tag.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-aside/common_data_tags.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_content.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_latest.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_table.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_tables_index.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_tables_tag.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_title.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common-data-tables/common_data_viewall.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common_data.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common_data_empty.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common_data_loader.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common_data_models.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common_data_router.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/common_data/common_data_static_tables.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public/authenticated_user.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public/public_dropdown.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public/public_header.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public/public_vis_model.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_dashboard/public_dashboard.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/modernizr-min.js"></script>
+  
+  <script src="../assets/javascripts/cdb/src/ui/common/tabpane.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/CartoDBTableMetadata_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/header_dropdown_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/header_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/header_view_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/infowindow_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/mapview_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/public_table.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/public_table_window.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/row_view_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/table_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/table_router_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_table/tableview_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_map/map_public.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_map/public_map.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_map/public_map_window.js"></script>
+  
+  <script src="../assets/javascripts/cartodb/public_map/public_vis.js"></script>
+  
+  <script src="../../vendor/assets/javascripts/statsc.min.js"></script>
+  
+  <script src="user_data.js"></script>
+  
+  <script src="../../public/assets/2.15.13/javascripts/templates_mustache.js"></script>
+  
+  <script src="../../public/assets/2.15.13/javascripts/templates.js"></script>
+  
+  <script src="test_init.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/create_dialog/create_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/delete_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/export_table_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/boolean_field.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/color_picker.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/date_field.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/edit_in_place.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/geometry_field.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/number_field.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/string_field.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/forms/widgets.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_arcgis_pane.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_dropbox_pane.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_file_pane.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_gdrive_pane.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_info/import_info.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_info/import_info_message.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/import/import_info/import_info_sync.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/localStorage.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/lock_visualization_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/share_private_tables_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/tabs.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/tags_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/tipsy_tooltip.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/user_menu.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/utils.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common/visualizations-selector.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/common_data/common_data.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/dashboard.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/dashboard_control_view.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/dashboard_paginator.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/dashboard_user_messages.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/dashboard_user_stats.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/filter_view.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/name_visualization_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/new_visualization_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/sortable.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/table_list.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/tables.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/upgrade_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/dashboard/visualizations.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/keys/apikeys.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/mocks/sqlApi.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/carto.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/filters.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/geocodings.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/map.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/organization.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/permissions.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/synchronization.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/table.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/user.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/vis.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/models/wizards.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/public/public_header.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/actions_menu.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/asset_manager.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/background_geocoder.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/backgroundview.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/basemap_chooser_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/basemap_dropdown.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/basemapview.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/column_type_dropdown.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/edit_feature_fields_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/geocoding_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/geom_editor.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/grouplayermapview.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/create_visualization_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/duplicate_table_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/duplicate_vis_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/export_table.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/geocoder_user_stats.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/georeference_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/header.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/header_sync_info.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/merge_tables_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/metadata_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/options_menu.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/share_controller.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/share_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/header/share_private_vis_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/layer_panel_view.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/map/draw_geometry.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/mapview.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/carto.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/carto_wizard.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/filters.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/infowindow.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/legend_editor.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/legends/legend_html_pane.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/menu_modules/sql.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/overlay.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/overlay_properties_bar.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/privacy_dialog/privacy_dialog.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/privacy_dialog/user_list_view.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/right_menu.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/row_view.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/shared_tables_combo.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/table.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/tableview.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/tooltip.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table/watching_notifier.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table_public/mapview_public.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table_public/row_view_public.spec.js"></script>
+  
+  <script src="../assets/test/spec/cartodb/table_public/tableview_public.spec.js"></script>
+  
+  <script src=".grunt/grunt-contrib-jasmine/reporter.js"></script>
+  
+
+</head>
+<body>
+</body>
+</html>

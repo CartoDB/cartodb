@@ -21,7 +21,7 @@ The procedure to run them is as follows:
 If you want to run specific tests, rather than all of them, you
 can specify them on the `rspec` command line, like:
 
-  bundle exec spec/lib/sql_test_spec.rb
+  bundle exec rspec spec/lib/sql_test_spec.rb
 
 Troubleshooting
 ---------------

@@ -1,3 +1,6 @@
+3.11.21 (24//10//2014)
+- enabled dynamic_cdn to route layergroup calls though the CDN
+
 3.11.20 (24//10//2014)
 - enabled fixed callback for layergroups and infowindows
 

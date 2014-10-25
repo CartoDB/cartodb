@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.20
+// cartodb.js version: 3.11.21
 // uncompressed version: cartodb.uncompressed.js
-// sha: 62a22057f230bc1bff64344b3603001e8bacb5c4
+// sha: 7b134a19a5c5e954aeb84f7541c7034790b99474
 (function() {
   var root = this;
 
@@ -20705,7 +20705,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.20';
+    cdb.VERSION = '3.11.21';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -27436,9 +27436,10 @@ Map.prototype = {
     compressor(json, 3, function(encoded) {
       params.push(encoded);
       var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
+      var host = self.options.dynamic_cdn ? self._host(): self._tilerHost();
       ajax({
         dataType: 'jsonp',
-        url: self._tilerHost() + endPoint + '?' + params.join('&'),
+        url: host + endPoint + '?' + params.join('&'),
         jsonpCallback: self.options.instanciateCallback,
         cache: !!self.options.instanciateCallback,
         success: function(data) {
@@ -27722,6 +27723,7 @@ Map.prototype = {
     return url_params.join('&')
   },
 
+
   _tilerHost: function() {
     var opts = this.options;
     return opts.tiler_protocol +
@@ -27873,8 +27875,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
+    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
     var url = [
-      this._tilerHost(),
+      host,
       //'api',
       //'v1',
       Map.BASE_URL.slice(1),
@@ -34351,4 +34354,3 @@ Layers.register('torque', function(vis, data) {
 
 
 })();
-// uncompressed version: cartodb.uncompressed.js

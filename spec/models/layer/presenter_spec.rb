@@ -67,5 +67,6 @@ describe CartoDB::Layer::Presenter do
       vizjson = CartoDB::Layer::Presenter.new(layer, options).to_vizjson_v2
       vizjson[:options]['visible'].should == true
     end
+
   end
 end # Layer::Presenter

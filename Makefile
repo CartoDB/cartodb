@@ -125,7 +125,12 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
-
+  
+WIP = \
+  services/importer/spec/unit/importer_stats_spec.rb \
+  services/importer/spec/unit/runner_spec.rb \
+  services/importer/spec/acceptance/csv_spec.rb \
+  $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
 
@@ -157,6 +162,8 @@ check-8:
 	bundle exec rspec $(WORKING_SPECS_8)
 check-9:
 	bundle exec rspec $(WORKING_SPECS_9)
+check-wip:
+	bundle exec rspec $(WIP)
 
 check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9
 

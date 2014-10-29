@@ -38,20 +38,36 @@ module CartoDB
         self.georeferencer  = georeferencer
         self.options        = {}
         @post_import_handler = nil
+        @importer_stats = nil
+      end
+
+      def set_importer_specs(importer_stats)
+        @importer_stats = importer_stats
       end
 
       def run(post_import_handler_instance=nil)
-        @post_import_handler = post_import_handler_instance
+        @importer_stats.timing('run.resource.import.loader') do
 
-        normalize
-        job.log "Detected encoding #{encoding}"
-        job.log "Using database connection with #{job.concealed_pg_options}"
+          @post_import_handler = post_import_handler_instance
 
-        run_ogr2ogr
+          @importer_stats.timing('run.resource.import.loader.normalize') do
+            normalize
+          end
 
-        post_ogr2ogr_tasks
+          job.log "Detected encoding #{encoding}"
+          job.log "Using database connection with #{job.concealed_pg_options}"
 
-        self
+          @importer_stats.timing('run.resource.import.loader.ogr2ogr') do
+            run_ogr2ogr
+          end
+
+          @importer_stats.timing('run.resource.import.loader.post_ogr2ogr_tasks') do
+            post_ogr2ogr_tasks
+          end
+
+          self
+
+        end
       end
 
       def streamed_run_init

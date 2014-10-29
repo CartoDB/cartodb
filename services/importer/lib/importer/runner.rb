@@ -173,6 +173,7 @@ module CartoDB
       def import(source_file, downloader, job=nil, loader_object=nil)
         job     ||= Job.new({ logger: log, pg_options: pg_options })
         loader = loader_object || loader_for(source_file).new(job, source_file)
+        loader.set_importer_specs(@importer_stats)
         loader.options = @loader_options
 
         raise EmptyFileError if source_file.empty?

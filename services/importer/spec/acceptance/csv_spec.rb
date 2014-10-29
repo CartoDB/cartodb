@@ -6,6 +6,7 @@ require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
+require_relative '../../spec/doubles/importer_stats'
 
 include CartoDB::Importer2
 
@@ -101,3 +102,22 @@ describe 'csv regression tests' do
   end #sample_for
 end # csv regression tests
 
+describe 'stats logger' do
+  include AcceptanceHelpers
+  include_context "cdb_importer schema"
+
+  before(:each) do
+    @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+  end
+
+  it 'logs stats' do
+    filepath    = path_to('in_cell_line_breaks.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    @importer_stats_spy.spy_runner(runner)
+    runner.run
+    @importer_stats_spy.timed_block('run.resource.import.loader').should eq 1
+    @importer_stats_spy.timed_block_prefix('run.resource.import.loader.').should >= 1
+  end
+
+end

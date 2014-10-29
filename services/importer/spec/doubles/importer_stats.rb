@@ -29,6 +29,17 @@ module CartoDB
         @timed_blocks[key]
       end
 
+      def timed_block_prefix(prefix)
+        @timed_blocks.each_key.find_all { | item | !Regexp.new("^#{prefix}").match(item).nil? }.size
+      end
+
+      def spy_runner(runner)
+        importer_self = self
+        runner.instance_eval {
+          @importer_stats = importer_self
+        }
+      end
+
     end
   end
 end

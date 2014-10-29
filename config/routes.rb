@@ -313,7 +313,6 @@ CartoDB::Application.routes.draw do
 
   scope :module => 'superadmin', :format => :json do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
-    post '/superadmin/get_databases_info' => 'platform#databases_info'
   end
 
 end

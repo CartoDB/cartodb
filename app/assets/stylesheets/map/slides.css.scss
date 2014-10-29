@@ -123,17 +123,18 @@
     }
 
     .info {
+      $width: 59px;
       margin: auto;
-      $width: 39px;
       height: 16px;
       @include absolute-landscape-center($width);
       bottom: -20px;
       padding: 0px;
-      line-height: 80%;
       background: #333;
-      text-align: center;
       @include border-radius(2px);
       @include box-sizing(border-box);
+
+      line-height: 80%;
+      text-align: center;
 
       a {
         text-transform: uppercase;
@@ -166,7 +167,7 @@
     display: block;
     width: 104px;
     height: 63px;
-    margin: 0 auto 25px auto;
+    margin: 0 auto 35px auto;
     position: relative;
     padding: 11px;
 
@@ -182,6 +183,16 @@
     background: -ms-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
     background: linear-gradient(to bottom, #eeeeee 0%,#e5e5e5 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
+  }
+
+  .slide_transition_dropdown {
+    width: 109px;
+
+    li { 
+      padding: 10px;
+      a { padding: 0; }
+    }
+    li.seconds { text-align: center; }
   }
 
 }

@@ -8,7 +8,7 @@ module CartoDB
 
       private_class_method :new
 
-      def self.instance(host, port)
+      def self.instance(host = nil, port = nil)
         if host && port
           Statsd.host = host
           Statsd.port = port

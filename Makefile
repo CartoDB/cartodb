@@ -127,9 +127,11 @@ WORKING_SPECS_9 = \
   $(NULL)
   
 WIP = \
+  spec/rspec_configuration.rb \
   services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/runner_spec.rb \
   services/importer/spec/acceptance/csv_spec.rb \
+  services/importer/spec/unit/loader_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

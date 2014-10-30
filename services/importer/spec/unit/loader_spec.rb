@@ -4,6 +4,7 @@ require_relative '../../lib/importer/source_file'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
+require_relative '../../spec/doubles/importer_stats'
 
 include CartoDB::Importer2
 
@@ -64,5 +65,30 @@ describe Loader do
       loader.ogr2ogr.class.name.should eq 'CartoDB::Importer2::Ogr2ogr'
     end
   end
+
+  describe 'stats logger' do
+    before do
+      @job            = Doubles::Job.new
+      @source_file    = SourceFile.new('/var/tmp/foo')
+      @ogr2ogr        = Doubles::Ogr2ogr.new
+      @georeferencer  = Doubles::Georeferencer.new
+      @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+    end
+
+    it 'logs stats' do
+      loader  = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      loader.set_importer_specs(@importer_stats_spy)
+      loader.run
+      @importer_stats_spy.timed_block('importer.loader').should eq 1
+      @importer_stats_spy.timed_block_prefix('importer.loader.').should >= 1
+      @importer_stats_spy.timed_block('importer.loader.normalize').should eq 1
+      @importer_stats_spy.timed_block('importer.loader.ogr2ogr').should eq 1
+      @importer_stats_spy.timed_block('importer.loader.post_ogr2ogr_tasks').should eq 1
+
+    end
+
+  end
+
 end
 

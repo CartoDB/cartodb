@@ -18,24 +18,16 @@ module CartoDB
       end
 
       describe '#timing' do
-        it "sends key with importer preffix" do
+        it "sends key with importer prefix" do
           expected_send("importer.#{TIMING_TEST_KEY}")
-          ImporterStats.instance(TEST_HOST, TEST_PORT).timing(TIMING_TEST_KEY) do
-            sleep 0.001
-          end
+          ImporterStats.instance(TEST_HOST, TEST_PORT).timing(TIMING_TEST_KEY) do foo end
         end
 
         it "doesn't send anything if host or port are not met" do
           expected_send_nothing
-          ImporterStats.instance(nil, nil).timing(TIMING_TEST_KEY) do
-            sleep 0.001
-          end
-          ImporterStats.instance(TEST_HOST, nil).timing(TIMING_TEST_KEY) do
-            sleep 0.001
-          end
-          ImporterStats.instance(nil, TEST_PORT).timing(TIMING_TEST_KEY) do
-            sleep 0.001
-          end
+          ImporterStats.instance(nil, nil).timing(TIMING_TEST_KEY) do foo end
+          ImporterStats.instance(TEST_HOST, nil).timing(TIMING_TEST_KEY) do foo end
+          ImporterStats.instance(nil, TEST_PORT).timing(TIMING_TEST_KEY) do foo end
         end
 
         it "runs block even without host or port" do
@@ -51,6 +43,11 @@ module CartoDB
           end
           count.should eq 3
         end
+
+      end
+
+      def foo
+        sleep 0.001
       end
 
       def expected_send(buf)

@@ -19,10 +19,20 @@ module CartoDB
         end
       end
 
+      def initialize
+        @timing_stack = [PREFIX]
+      end
+
       def timing(key)
-        Statsd.timing("#{PREFIX}.#{key}") do
+        @timing_stack.push(key)
+        Statsd.timing(timing_chain) do
           yield
         end
+        @timing_stack.pop
+      end
+
+      def timing_chain
+        @timing_stack.join('.')
       end
 
     end

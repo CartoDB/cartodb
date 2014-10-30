@@ -117,37 +117,37 @@ describe Runner do
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('run').should eq 1
+      @importer_stats_spy.timed_block('importer.run').should eq 1
     end
 
     it 'logs single resource import flow time' do
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('run.resource').should eq 1
-      @importer_stats_spy.timed_block('run.resource.download').should eq 1
-      @importer_stats_spy.timed_block('run.resource.quota_check').should eq 1
-      @importer_stats_spy.timed_block('run.resource.unpack').should eq 1
-      @importer_stats_spy.timed_block('run.resource.import').should eq 1
-      @importer_stats_spy.timed_block('run.resource.cleanup').should eq 1
+      @importer_stats_spy.timed_block('importer.run.resource').should eq 1
+      @importer_stats_spy.timed_block('importer.run.resource.download').should eq 1
+      @importer_stats_spy.timed_block('importer.run.resource.quota_check').should eq 1
+      @importer_stats_spy.timed_block('importer.run.resource.unpack').should eq 1
+      @importer_stats_spy.timed_block('importer.run.resource.import').should eq 1
+      @importer_stats_spy.timed_block('importer.run.resource.cleanup').should eq 1
     end
 
     it 'logs multiple subresource import times' do
       runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('run.subresource').should eq 2
+      @importer_stats_spy.timed_block('importer.run.subresource').should eq 2
     end
 
     it 'logs multiple subresource import flow times' do
       runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('run.subresource.datasource_metadata').should eq 2
-      @importer_stats_spy.timed_block('run.subresource.download').should eq 2
-      @importer_stats_spy.timed_block('run.subresource.quota_check').should eq 2
-      @importer_stats_spy.timed_block('run.subresource.import').should eq 2
-      @importer_stats_spy.timed_block('run.subresource.cleanup').should eq 2
+      @importer_stats_spy.timed_block('importer.run.subresource.datasource_metadata').should eq 2
+      @importer_stats_spy.timed_block('importer.run.subresource.download').should eq 2
+      @importer_stats_spy.timed_block('importer.run.subresource.quota_check').should eq 2
+      @importer_stats_spy.timed_block('importer.run.subresource.import').should eq 2
+      @importer_stats_spy.timed_block('importer.run.subresource.cleanup').should eq 2
     end
   end
 

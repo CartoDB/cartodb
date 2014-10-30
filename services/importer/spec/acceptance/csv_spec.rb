@@ -116,8 +116,8 @@ describe 'stats logger' do
     runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
     @importer_stats_spy.spy_runner(runner)
     runner.run
-    @importer_stats_spy.timed_block('run.resource.import.loader').should eq 1
-    @importer_stats_spy.timed_block_prefix('run.resource.import.loader.').should >= 1
+    @importer_stats_spy.timed_block('importer.run.resource.import.loader').should eq 1
+    @importer_stats_spy.timed_block_prefix('importer.run.resource.import.loader.').should >= 1
   end
 
 end

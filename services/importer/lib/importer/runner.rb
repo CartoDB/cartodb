@@ -74,19 +74,19 @@ module CartoDB
           log.append "Starting multi-resources import"
           # [ {:id, :title} ]
           @downloader.item_metadata[:subresources].each { |subresource|
-            @importer_stats.timing('run.subresource') do
+            @importer_stats.timing('subresource') do
 
               datasource = nil
               item_metadata = nil
               subres_downloader = nil
 
-              @importer_stats.timing('run.subresource.datasource_metadata') do
+              @importer_stats.timing('datasource_metadata') do
                 # TODO: Support sending user and options to the datasource factory
                 datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(@downloader.datasource.class::DATASOURCE_NAME, nil, nil)
                 item_metadata = datasource.get_resource_metadata(subresource[:id])
               end
 
-              @importer_stats.timing('run.subresource.download') do
+              @importer_stats.timing('download') do
                 subres_downloader = @downloader.class.new(
                 datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
 
@@ -94,12 +94,12 @@ module CartoDB
                 next unless remote_data_updated?
               end
 
-              @importer_stats.timing('run.subresource.quota_check') do
+              @importer_stats.timing('quota_check') do
                 log.append "Starting import for #{subres_downloader.source_file.fullpath}"
                 raise_if_over_storage_quota(subres_downloader.source_file)
               end
 
-              @importer_stats.timing('run.subresource.import') do
+              @importer_stats.timing('import') do
                 tracker.call('unpacking')
                 source_file = subres_downloader.source_file
                 log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
@@ -111,32 +111,32 @@ module CartoDB
                 import(source_file, subres_downloader)
               end
 
-              @importer_stats.timing('run.subresource.cleanup') do
+              @importer_stats.timing('cleanup') do
                 subres_downloader.clean_up
               end
             end
           }
         else
-          @importer_stats.timing('run.resource') do
+          @importer_stats.timing('resource') do
 
-            @importer_stats.timing('run.resource.download') do
+            @importer_stats.timing('download') do
               @downloader.run(available_quota)
               return self unless remote_data_updated?
             end
 
-            @importer_stats.timing('run.resource.quota_check') do
+            @importer_stats.timing('quota_check') do
               log.append "Starting import for #{@downloader.source_file.fullpath}"
               raise_if_over_storage_quota(@downloader.source_file)
             end
 
 
-            @importer_stats.timing('run.resource.unpack') do
+            @importer_stats.timing('unpack') do
               log.append "Unpacking #{@downloader.source_file.fullpath}"
               tracker.call('unpacking')
               unpacker.run(@downloader.source_file.fullpath)
             end
 
-            @importer_stats.timing('run.resource.import') do
+            @importer_stats.timing('import') do
               begin
               unpacker.source_files.each { |source_file|
                 # TODO: Move this stats inside import, for streaming scenarios, or differentiate
@@ -148,11 +148,11 @@ module CartoDB
                 import(source_file, @downloader)
               }
               rescue => exception
-              raise exception
-                end
+                raise exception
+              end
             end
 
-            @importer_stats.timing('run.resource.cleanup') do
+            @importer_stats.timing('cleanup') do
               unpacker.clean_up
               @downloader.clean_up
             end

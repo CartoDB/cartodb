@@ -2,7 +2,8 @@
 
 module CartoDB
   module Doubles
-    class ImporterStats
+    class ImporterStats < CartoDB::Importer2::ImporterStats
+
       TEST_HOST = '172.28.128.3'
       TEST_PORT = 8125
 
@@ -19,10 +20,19 @@ module CartoDB
       attr_writer :timed_blocks
 
       def timing(key)
-        if(block_given?)
-          @timed_blocks[key] = @timed_blocks[key] + 1
-          yield
+        @timing_stack.push(key)
+
+        begin
+
+          if(block_given?)
+            @timed_blocks[timing_chain] = @timed_blocks[timing_chain] + 1
+            yield
+          end
+
+        ensure
+          @timing_stack.pop
         end
+
       end
 
       def timed_block(key)

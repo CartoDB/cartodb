@@ -11,7 +11,9 @@ module CartoDB
     describe ImporterStats do
       TEST_HOST = '172.28.128.3'
       TEST_PORT = 8125
-      TIMING_TEST_KEY = 'test.timing'
+      TIMING_TEST_KEY_A = 'test'
+      TIMING_TEST_KEY_B = 'timing'
+      TIMING_TEST_KEY = "#{TIMING_TEST_KEY_A}.#{TIMING_TEST_KEY_B}"
 
       RSpec.configure do |config|
         config.mock_with :mocha
@@ -42,6 +44,17 @@ module CartoDB
             count += 1
           end
           count.should eq 3
+        end
+
+        it "nested timing" do
+          expected_send("importer.#{TIMING_TEST_KEY_A}")
+          expected_send("importer.#{TIMING_TEST_KEY}")
+          importer_stats = ImporterStats.instance(TEST_HOST, TEST_PORT)
+          importer_stats.timing(TIMING_TEST_KEY_A) do
+            importer_stats.timing(TIMING_TEST_KEY_B) do
+              foo
+            end
+          end
         end
 
       end

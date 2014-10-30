@@ -46,22 +46,22 @@ module CartoDB
       end
 
       def run(post_import_handler_instance=nil)
-        @importer_stats.timing('run.resource.import.loader') do
+        @importer_stats.timing('loader') do
 
           @post_import_handler = post_import_handler_instance
 
-          @importer_stats.timing('run.resource.import.loader.normalize') do
+          @importer_stats.timing('normalize') do
             normalize
           end
 
           job.log "Detected encoding #{encoding}"
           job.log "Using database connection with #{job.concealed_pg_options}"
 
-          @importer_stats.timing('run.resource.import.loader.ogr2ogr') do
+          @importer_stats.timing('ogr2ogr') do
             run_ogr2ogr
           end
 
-          @importer_stats.timing('run.resource.import.loader.post_ogr2ogr_tasks') do
+          @importer_stats.timing('post_ogr2ogr_tasks') do
             post_ogr2ogr_tasks
           end
 

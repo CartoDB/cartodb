@@ -8,6 +8,7 @@ require_relative '../doubles/log'
 require_relative '../doubles/indexer'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/downloader'
+require_relative '../../../importer/spec/doubles/loader'
 
 include CartoDB::Importer2
 
@@ -120,6 +121,17 @@ describe Runner do
       @importer_stats_spy.timed_block('importer.run').should eq 1
     end
 
+    it 'does not fail if loader does not support logging' do
+      source_file = SourceFile.new(@filepath)
+      runner      = CartoDB::Importer2::Runner.new(@pg_options, Object.new, @fake_log)
+      spy_runner_importer_stats(runner, @importer_stats_spy)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+
+      fake_loader = CartoDB::Importer2::Doubles::Loader.new
+      runner.import(source_file, nil, job, fake_loader)
+      runner.results.first.success?.should == true
+    end
+
     it 'logs single resource import flow time' do
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
@@ -159,7 +171,7 @@ describe Runner do
 
   def fake_loader_for(job, source_file)
     OpenStruct.new(
-      job:                job, 
+      job:                job,
       source_file:        source_file,
       source_files:       [source_file],
       valid_table_names:  []

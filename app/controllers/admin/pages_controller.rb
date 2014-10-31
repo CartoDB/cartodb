@@ -205,7 +205,7 @@ class Admin::PagesController < ApplicationController
 
     @twitter_username = @organization.twitter_username 
     @description      = @organization.description
-    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : @organization.website
+    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{@organization.website}" : @organization.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
     @tables_num = @organization.public_datasets_count
@@ -243,7 +243,7 @@ class Admin::PagesController < ApplicationController
 
     @twitter_username = @organization.twitter_username 
     @description      = @organization.description
-    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : @organization.website
+    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{@organization.website}" : @organization.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
     @tables_num = @organization.public_datasets_count

@@ -78,7 +78,7 @@ describe Loader do
 
     it 'logs stats' do
       loader  = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
-      loader.set_importer_specs(@importer_stats_spy)
+      loader.set_importer_stats(@importer_stats_spy)
       loader.run
       @importer_stats_spy.timed_block_suffix_count('loader').should eq 1
       @importer_stats_spy.timed_block_suffix_count('loader.normalize').should eq 1

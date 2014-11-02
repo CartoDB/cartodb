@@ -42,7 +42,7 @@ module CartoDB
         @importer_stats = ImporterStats.instance
       end
 
-      def set_importer_specs(importer_stats)
+      def set_importer_stats(importer_stats)
         @importer_stats = importer_stats
       end
 

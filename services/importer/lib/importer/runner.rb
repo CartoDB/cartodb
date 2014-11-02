@@ -173,8 +173,8 @@ module CartoDB
       def import(source_file, downloader, job=nil, loader_object=nil)
         job     ||= Job.new({ logger: log, pg_options: pg_options })
         loader = loader_object || loader_for(source_file).new(job, source_file)
-        if(loader.respond_to?(:set_importer_specs))
-          loader.set_importer_specs(@importer_stats)
+        if(loader.respond_to?(:set_importer_stats))
+          loader.set_importer_stats(@importer_stats)
         end
         loader.options = @loader_options
 

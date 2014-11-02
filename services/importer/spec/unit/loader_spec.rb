@@ -80,11 +80,10 @@ describe Loader do
       loader  = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
       loader.set_importer_specs(@importer_stats_spy)
       loader.run
-      @importer_stats_spy.timed_block('importer.loader').should eq 1
-      @importer_stats_spy.timed_block_prefix('importer.loader.').should >= 1
-      @importer_stats_spy.timed_block('importer.loader.normalize').should eq 1
-      @importer_stats_spy.timed_block('importer.loader.ogr2ogr').should eq 1
-      @importer_stats_spy.timed_block('importer.loader.post_ogr2ogr_tasks').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.normalize').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.ogr2ogr').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.post_ogr2ogr_tasks').should eq 1
 
     end
 

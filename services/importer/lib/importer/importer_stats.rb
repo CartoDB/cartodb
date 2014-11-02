@@ -8,19 +8,19 @@ module CartoDB
 
       private_class_method :new
 
-      def self.instance(host = nil, port = nil)
+      def self.instance(host = nil, port = nil, host_info = nil)
         if host && port
           Statsd.host = host
           Statsd.port = port
 
-          return new
+          return new(host_info)
         else
           NullImporterStats.new
         end
       end
 
-      def initialize
-        @timing_stack = [PREFIX]
+      def initialize(host_info)
+        @timing_stack = ["#{PREFIX}.#{host_info}"]
       end
 
       def timing(key)

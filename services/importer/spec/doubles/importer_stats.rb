@@ -12,7 +12,7 @@ module CartoDB
       def self.instance
         Statsd.host = TEST_HOST
         Statsd.port = TEST_PORT
-        importer_stats_double = new
+        importer_stats_double = new('importer-stats-double')
         importer_stats_double.timed_blocks = Hash.new(0)
         importer_stats_double
       end
@@ -39,8 +39,16 @@ module CartoDB
         @timed_blocks[key]
       end
 
-      def timed_block_prefix(prefix)
-        @timed_blocks.each_key.find_all { | item | !Regexp.new("^#{prefix}").match(item).nil? }.size
+      def timed_block_prefix_count(prefix)
+        matching_timed_blocks_count("^#{prefix}")
+      end
+
+      def timed_block_suffix_count(suffix)
+        matching_timed_blocks_count("#{suffix}$")
+      end
+
+      def matching_timed_blocks_count(regexp)
+        @timed_blocks.each_key.find_all { | key | !Regexp.new(regexp).match(key).nil? }.map { |key| @timed_blocks[key] }.reduce(0, :+)
       end
 
       def spy_runner(runner)

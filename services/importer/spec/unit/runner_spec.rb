@@ -118,7 +118,7 @@ describe Runner do
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('importer.run').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run').should eq 1
     end
 
     it 'does not fail if loader does not support logging' do
@@ -136,30 +136,30 @@ describe Runner do
       runner      = Runner.new(@pg_options, @downloader, @fake_log, nil, fake_unpacker, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('importer.run.resource').should eq 1
-      @importer_stats_spy.timed_block('importer.run.resource.download').should eq 1
-      @importer_stats_spy.timed_block('importer.run.resource.quota_check').should eq 1
-      @importer_stats_spy.timed_block('importer.run.resource.unpack').should eq 1
-      @importer_stats_spy.timed_block('importer.run.resource.import').should eq 1
-      @importer_stats_spy.timed_block('importer.run.resource.cleanup').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run.resource').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run.resource.download').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run.resource.quota_check').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run.resource.unpack').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run.resource.import').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('run.resource.cleanup').should eq 1
     end
 
     it 'logs multiple subresource import times' do
       runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('importer.run.subresource').should eq 2
+      @importer_stats_spy.timed_block_suffix_count('run.subresource').should eq 2
     end
 
     it 'logs multiple subresource import flow times' do
       runner = Runner.new(@pg_options, @fake_multiple_downloader_2, @fake_log, nil, nil, nil, nil)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
-      @importer_stats_spy.timed_block('importer.run.subresource.datasource_metadata').should eq 2
-      @importer_stats_spy.timed_block('importer.run.subresource.download').should eq 2
-      @importer_stats_spy.timed_block('importer.run.subresource.quota_check').should eq 2
-      @importer_stats_spy.timed_block('importer.run.subresource.import').should eq 2
-      @importer_stats_spy.timed_block('importer.run.subresource.cleanup').should eq 2
+      @importer_stats_spy.timed_block_suffix_count('run.subresource.datasource_metadata').should eq 2
+      @importer_stats_spy.timed_block_suffix_count('run.subresource.download').should eq 2
+      @importer_stats_spy.timed_block_suffix_count('run.subresource.quota_check').should eq 2
+      @importer_stats_spy.timed_block_suffix_count('run.subresource.import').should eq 2
+      @importer_stats_spy.timed_block_suffix_count('run.subresource.cleanup').should eq 2
     end
   end
 

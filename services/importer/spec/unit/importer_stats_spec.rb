@@ -14,6 +14,9 @@ module CartoDB
       TIMING_TEST_KEY_A = 'test'
       TIMING_TEST_KEY_B = 'timing'
       TIMING_TEST_KEY = "#{TIMING_TEST_KEY_A}.#{TIMING_TEST_KEY_B}"
+      HOST_INFO = "fake-test-queue"
+
+      EXPECTED_PREFIX = "importer.#{HOST_INFO}"
 
       RSpec.configure do |config|
         config.mock_with :mocha
@@ -21,8 +24,8 @@ module CartoDB
 
       describe '#timing' do
         it "sends key with importer prefix" do
-          expected_send("importer.#{TIMING_TEST_KEY}")
-          ImporterStats.instance(TEST_HOST, TEST_PORT).timing(TIMING_TEST_KEY) do foo end
+          expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
+          ImporterStats.instance(TEST_HOST, TEST_PORT, HOST_INFO).timing(TIMING_TEST_KEY) do foo end
         end
 
         it "doesn't send anything if host or port are not met" do
@@ -47,9 +50,9 @@ module CartoDB
         end
 
         it "nested timing" do
-          expected_send("importer.#{TIMING_TEST_KEY_A}")
-          expected_send("importer.#{TIMING_TEST_KEY}")
-          importer_stats = ImporterStats.instance(TEST_HOST, TEST_PORT)
+          expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY_A}")
+          expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
+          importer_stats = ImporterStats.instance(TEST_HOST, TEST_PORT, HOST_INFO)
           importer_stats.timing(TIMING_TEST_KEY_A) do
             importer_stats.timing(TIMING_TEST_KEY_B) do
               foo

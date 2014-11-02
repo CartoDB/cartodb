@@ -1,22 +1,17 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest'
 require 'rake/testtask'
 
 Rake::TestTask.new do |t|
-  gem_spec  = Gem.loaded_specs.fetch('minitest')
   t.libs << "test"
   t.pattern = "spec/**/*_spec.rb"
 end
 
 Rake::TestTask.new('test:unit') do |t|
-  gem_spec  = Gem.loaded_specs.fetch('minitest')
   t.libs << "test"
   t.pattern = "spec/unit/**/*_spec.rb"
 end
 
 Rake::TestTask.new('test:acceptance') do |t|
-  gem_spec  = Gem.loaded_specs.fetch('minitest')
   t.libs << "test"
   t.pattern = "spec/acceptance/**/*_spec.rb"
 end

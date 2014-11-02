@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'rspec'
 
 # Unp includes reference to kml_splitter
 require_relative '../../lib/importer/unp'

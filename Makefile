@@ -128,9 +128,6 @@ WORKING_SPECS_9 = \
   
 CDB_PATH=lib/assets/javascripts/cdb
 
-all:
-	@echo "Try make check"
-
 prepare-test-db:
 ifdef JENKINS_URL
 	cp .rspec_ci .rspec

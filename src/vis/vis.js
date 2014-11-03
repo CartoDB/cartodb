@@ -382,6 +382,11 @@ var Vis = cdb.core.View.extend({
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
 
+    //Force using GMaps
+    if ( (this.forceGMaps) && (data.map_provider === "leaflet") ) {
+      data.map_provider = 'googlemaps';
+    }
+
     var mapConfig = {
       title: data.title,
       description: data.description,
@@ -659,7 +664,8 @@ var Vis = cdb.core.View.extend({
       loaderControl: true,
       infowindow: true,
       tooltip: true,
-      time_slider: true
+      time_slider: true,
+      forceGMaps: false // is it necessary???
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -688,6 +694,10 @@ var Vis = cdb.core.View.extend({
 
     if (opt.https) {
       this.https = true;
+    }
+
+    if (opt.forceGMaps) {
+      this.forceGMaps = true;
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

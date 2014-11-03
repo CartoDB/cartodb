@@ -18,7 +18,7 @@ describe 'zip regression tests' do
   it 'returns empty results if no supported files in the bundle' do
     filepath    = path_to('one_unsupported.zip')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     runner.results.length.should eq 0
@@ -27,7 +27,7 @@ describe 'zip regression tests' do
   it 'ignores unsupported files in the bundle' do
     filepath    = path_to('one_unsupported_one_valid.zip')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     runner.results.length.should eq 1

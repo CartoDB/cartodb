@@ -24,9 +24,9 @@ describe Runner do
     @filepath.close
     @pg_options      = Factories::PGConnection.new.pg_options
 
-    @fake_log = Doubles::Log.new
+    @fake_log = CartoDB::Importer2::Doubles::Log.new
     @downloader = Downloader.new(@filepath)
-    @fake_multiple_downloader_2 = Doubles::MultipleDownloaderFake.instance(2)
+    @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
 
   describe '#initialize' do
@@ -92,7 +92,7 @@ describe Runner do
     end
 
     it 'creates a failed result if an exception raised during import' do
-      fake_log = Doubles::Log.new
+      fake_log = CartoDB::Importer2::Doubles::Log.new
 
       source_file = SourceFile.new(@filepath)
       runner      = CartoDB::Importer2::Runner.new(@pg_options, Object.new, @fake_log)

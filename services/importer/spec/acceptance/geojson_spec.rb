@@ -19,7 +19,7 @@ describe 'geojson regression tests' do
   it 'imports a file exported from CartoDB' do
     filepath    = path_to('tm_world_borders_simpl_0_8.geojson')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
   end
 
@@ -27,7 +27,7 @@ describe 'geojson regression tests' do
     filepath    = 'https://raw.github.com/benbalter/dc-wifi-social/master' +
                   '/bars.geojson?foo=bar'
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
   end
 
@@ -35,7 +35,7 @@ describe 'geojson regression tests' do
     pending 'Need a boolean values geojson example'
     filepath    = path_to('boolean_values.geojson')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     result      = runner.results.first
@@ -51,7 +51,7 @@ describe 'geojson regression tests' do
   it "raises if GeoJSON isn't valid" do
     filepath    = path_to('invalid.geojson')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     runner.results.first.error_code.should eq 1002

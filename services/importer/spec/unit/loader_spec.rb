@@ -6,18 +6,16 @@ require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
 require_relative '../../spec/doubles/importer_stats'
 
-include CartoDB::Importer2
-
 RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-describe Loader do
+describe CartoDB::Importer2::Loader do
   before do
-    @job            = Doubles::Job.new
-    @source_file    = SourceFile.new('/var/tmp/foo')
-    @ogr2ogr        = Doubles::Ogr2ogr.new
-    @georeferencer  = Doubles::Georeferencer.new
+    @job            = CartoDB::Importer2::Doubles::Job.new
+    @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
+    @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
+    @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
     @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
   end
 
@@ -68,10 +66,10 @@ describe Loader do
 
   describe 'stats logger' do
     before do
-      @job            = Doubles::Job.new
-      @source_file    = SourceFile.new('/var/tmp/foo')
-      @ogr2ogr        = Doubles::Ogr2ogr.new
-      @georeferencer  = Doubles::Georeferencer.new
+      @job            = CartoDB::Importer2::Doubles::Job.new
+      @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
+      @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
+      @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
       @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
       @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
     end

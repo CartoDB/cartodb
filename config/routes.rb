@@ -311,4 +311,8 @@ CartoDB::Application.routes.draw do
     resources :synchronizations
   end
 
+  scope :module => 'superadmin', :format => :json do
+    get '/superadmin/get_databases_info' => 'platform#databases_info'
+  end
+
 end

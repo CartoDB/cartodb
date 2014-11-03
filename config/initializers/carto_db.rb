@@ -19,7 +19,11 @@ module CartoDB
 
   # Actually the two previous methods return the requested username, not the real subdomain
   def self.extract_real_subdomain(request)
-      request.host.to_s.gsub(self.session_domain, '')
+    request.host.to_s.gsub(self.session_domain, '')
+  end
+
+  def self.user_url(username, organization = nil)
+    organization.nil? ? self.base_url(username) : self.base_url(organization, username)
   end
 
   def self.base_url(subdomain, org_username=nil)

@@ -50,3 +50,4 @@ lib/build/.grunt/*
 lib/build/grunt-aws.json
 lib/build/app_config.js
 rubygems
+lib/build/_SpecRunner.html

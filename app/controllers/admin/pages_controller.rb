@@ -48,7 +48,7 @@ class Admin::PagesController < ApplicationController
 
     @avatar_url = viewed_user.avatar
 
-    #@tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
+    @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.public_visualization_count
 
     datasets = Visualization::Collection.new.fetch({
@@ -77,8 +77,6 @@ class Admin::PagesController < ApplicationController
         }
       )
     end
-    
-    @tables_num = @datasets.size
     
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'application_public_dashboard' }
@@ -205,7 +203,7 @@ class Admin::PagesController < ApplicationController
 
     @twitter_username = @organization.twitter_username 
     @description      = @organization.description
-    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : @organization.website
+    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{@organization.website}" : @organization.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
     @tables_num = @organization.public_datasets_count
@@ -243,7 +241,7 @@ class Admin::PagesController < ApplicationController
 
     @twitter_username = @organization.twitter_username 
     @description      = @organization.description
-    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : @organization.website
+    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{@organization.website}" : @organization.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
 
     @tables_num = @organization.public_datasets_count

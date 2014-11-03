@@ -1,7 +1,10 @@
-3.2.8 (2014-XX-XX)
+3.2.8 (2014-11-03)
 ------------------
 * New features
   * Added dynamic_cdn_enabled flag to the users
+  * Improved emails upon import completion
+* Fixed bugs
+  * Added retries system to Named Maps update actions, so if hits a tiler template lock tries again.
 
 
 3.2.7 (2014-10-23)

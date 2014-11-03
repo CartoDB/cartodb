@@ -543,7 +543,7 @@ Installing the full stack might not always be smooth due to other component upda
 
 ### Testing ###
 
-See TESTING
+See TESTING.md
 
 ### Contributors ###
 

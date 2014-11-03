@@ -985,48 +985,54 @@ describe Table do
       resp = table.add_column!(:name => column_name, :type => "number")
       resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
       table.reload
-      table.schema(:cartodb_types => false).should include([:_action, "double precision"])
+      table.schema(:cartodb_types => false).should include([sanitized_column_name.to_sym, "double precision"])
     end
 
     it "can have a column with a reserved psql word as its name" do
+      column_name = "where"
+      sanitized_column_name = "_where"
+
       table = create_table(:user_id => @user.id)
 
-      resp = table.add_column!(:name => "where", :type => "number")
-      resp.should == {:name => "where", :type => "double precision", :cartodb_type => "number"}
+      resp = table.add_column!(:name => column_name, :type => "number")
+      resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
       table.reload
-      table.schema(:cartodb_types => false).should include([:where, "double precision"])
+      table.schema(:cartodb_types => false).should include([sanitized_column_name.to_sym, "double precision"])
     end
 
     it 'nullifies the collumn when converting from boolean to date' do
+      column_name = "new"
+      sanitized_column_name = "_new"
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'new', type: 'boolean')
-      table.insert_row!(new: 't')
-      table.modify_column!(name: 'new', type: 'date')
+
+      table.add_column!(name: column_name, type: 'boolean')
+      table.insert_row!(sanitized_column_name.to_sym => 't')
+      table.modify_column!(name: sanitized_column_name, type: 'date')
       
-      table.records[:rows][0][:new].should be_nil
+      table.records[:rows][0][sanitized_column_name.to_sym].should be_nil
 
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'new', type: 'boolean')
-      table.insert_row!(new: 'f')
-      table.modify_column!(name: 'new', type: 'date')
+      table.add_column!(name: sanitized_column_name, type: 'boolean')
+      table.insert_row!(sanitized_column_name.to_sym => 'f')
+      table.modify_column!(name: sanitized_column_name, type: 'date')
       
-      table.records[:rows][0][:new].should be_nil
+      table.records[:rows][0][sanitized_column_name.to_sym].should be_nil
     end
 
     it 'nullifies the collumn when converting from number to date' do
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'number', type: 'double precision')
-      table.insert_row!(number: 12345.67)
-      table.modify_column!(name: 'number', type: 'date')
+      table.add_column!(name: 'numeric_col', type: 'double precision')
+      table.insert_row!(numeric_col: 12345.67)
+      table.modify_column!(name: 'numeric_col', type: 'date')
       
-      table.records[:rows][0][:number].should be_nil
+      table.records[:rows][0][:numeric_col].should be_nil
 
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'number', type: 'double precision')
-      table.insert_row!(number: 12345)
-      table.modify_column!(name: 'number', type: 'date')
+      table.add_column!(name: 'numeric_col', type: 'double precision')
+      table.insert_row!(numeric_col: 12345)
+      table.modify_column!(name: 'numeric_col', type: 'date')
       
-      table.records[:rows][0][:number].should be_nil
+      table.records[:rows][0][:numeric_col].should be_nil
     end
 
     it 'normalizes digit separators when converting from string to number' do

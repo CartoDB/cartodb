@@ -1002,7 +1002,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def add_column!(options)
-    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
+    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     column_name = options[:name].to_s.sanitize_column_name
@@ -1029,6 +1029,7 @@ class Table < Sequel::Model(:user_tables)
     raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_name.to_s)
 
     if new_name.present? && new_name != old_name
+      new_name = new_name.sanitize_column_name
       rename_column(old_name, new_name)
     end
 
@@ -1053,7 +1054,7 @@ class Table < Sequel::Model(:user_tables)
     raise 'Please provide a column name' if new_name.empty?
     raise 'This column cannot be renamed' if CARTODB_COLUMNS.include?(old_name.to_s)
 
-    if new_name =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
+    if new_name =~ /^[0-9]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
       raise CartoDB::InvalidColumnName, 'That column name is reserved, please choose a different one'
     end
 

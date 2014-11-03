@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.19
+// cartodb.js version: 3.11.22
 // uncompressed version: cartodb.uncompressed.js
-// sha: da0b60768f2137151cd18f9b13840124b2c8de2f
+// sha: 9dc7dc1329817f177a31562ac0b7d397a264fdea
 (function() {
   var root = this;
 
@@ -20705,7 +20705,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.19';
+    cdb.VERSION = '3.11.22';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26697,7 +26697,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       }, this);
 
       this.$el.find(".torque").append(this.slider.render().$el);
-      this.$el.addClass("with-torque");
+
+      if (this.options.torqueLayer.hidden) this.slider.hide();
+      else this.$el.addClass("with-torque");
     }
 
   },
@@ -27128,6 +27130,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
 });
 
+
 function Map(options) {
   var self = this;
   this.options = _.defaults(options, {
@@ -27137,7 +27140,10 @@ function Map(options) {
     cors: this.isCORSSupported(),
     btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
     MAX_GET_SIZE: 2033,
-    force_cors: false
+    force_cors: false,
+    instanciateCallback: function() {
+      return '_cdbc_' + cartodb.uniqueCallbackName(JSON.stringify(self.toJSON()));
+    }
   });
 
   this.layerToken = null;
@@ -27432,9 +27438,10 @@ Map.prototype = {
     compressor(json, 3, function(encoded) {
       params.push(encoded);
       var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
+      var host = self.options.dynamic_cdn ? self._host(): self._tilerHost();
       ajax({
         dataType: 'jsonp',
-        url: self._tilerHost() + endPoint + '?' + params.join('&'),
+        url: host + endPoint + '?' + params.join('&'),
         jsonpCallback: self.options.instanciateCallback,
         cache: !!self.options.instanciateCallback,
         success: function(data) {
@@ -27718,6 +27725,7 @@ Map.prototype = {
     return url_params.join('&')
   },
 
+
   _tilerHost: function() {
     var opts = this.options;
     return opts.tiler_protocol +
@@ -27869,8 +27877,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
+    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
     var url = [
-      this._tilerHost(),
+      host,
       //'api',
       //'v1',
       Map.BASE_URL.slice(1),
@@ -27902,12 +27911,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
+      jsonpCallback: '_cdbi_layer_attributes',
+      cache: true,
       success: function(data) {
-        loadingTime.end()
+        loadingTime.end();
         callback(data);
       },
       error: function(data) {
-        loadingTime.end()
+        loadingTime.end();
         cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
@@ -28139,6 +28150,10 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
+    }, {
+      cache: true, // don't include timestamp
+      jsonpCallback: '_cdbi_layer_attributes',
+      jsonp: true
     }).done(function(interact_data) {
       loadingTime.end();
       if (interact_data.rows.length === 0 ) {
@@ -28288,6 +28303,40 @@ SubLayer.prototype = {
 
 // give events capabilitues
 _.extend(SubLayer.prototype, Backbone.Events);
+
+/** utility methods to calculate hash */
+cartodb._makeCRCTable = function() {
+    var c;
+    var crcTable = [];
+    for(var n = 0; n < 256; ++n){
+        c = n;
+        for(var k = 0; k < 8; ++k){
+            c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+        }
+        crcTable[n] = c;
+    }
+    return crcTable;
+}
+
+cartodb.crc32 = function(str) {
+    var crcTable = cartodb._crcTable || (cartodb._crcTable = cartodb._makeCRCTable());
+    var crc = 0 ^ (-1);
+
+    for (var i = 0, l = str.length; i < l; ++i ) {
+        crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+    }
+
+    return (crc ^ (-1)) >>> 0;
+};
+
+cartodb.uniqueCallbackName = function(str) {
+  cartodb._callback_c = cartodb._callback_c || 0;
+  ++cartodb._callback_c;
+  return cartodb.crc32(str) + "_" + cartodb._callback_c;
+};
+
+
+
 
 /*
  *  common functions for cartodb connector
@@ -28556,6 +28605,7 @@ cdb.geo.common.CartoDBLogo = {
     },( timeout || 0 ));
   }
 };
+
 
 (function() {
   /**
@@ -32186,6 +32236,8 @@ var Vis = cdb.core.View.extend({
         _.each(lyr.options.named_map.layers, function(l) {
           options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
         });
+      } else if (lyr.type === 'torque') {
+        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true ) })
       }
 
     });
@@ -34008,13 +34060,16 @@ Layers.register('torque', function(vis, data) {
       crossDomain: true
     };
 
-    if(options.jsonp) {
-      delete params.crossDomain;
-      params.dataType = 'jsonp';
+    if(options.cache !== undefined) {
+      params.cache = options.cache; 
     }
 
-    if(options.cache) {
-      params.cache = options.cache; 
+    if(options.jsonp) {
+      delete params.crossDomain;
+      if (options.jsonpCallback) {
+        params.jsonpCallback = options.jsonpCallback;
+      }
+      params.dataType = 'jsonp';
     }
 
     // Substitute mapnik tokens

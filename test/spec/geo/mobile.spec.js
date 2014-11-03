@@ -1,10 +1,12 @@
 describe("cdb.geo.ui.Mobile", function() {
 
-  var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2;
+  var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
 
   beforeEach(function() {
 
     map = new cdb.geo.Map();
+
+    torque = new cdb.geo.TorqueLayer({ type: "torque", visible: false, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
 
     l1 = new cdb.geo.CartoDBLayer({ type: "Tiled", visible: true, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
 
@@ -282,17 +284,6 @@ describe("cdb.geo.ui.Mobile", function() {
       mobile.render();
       expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
     });
-
-    //it("should hide the attribution when clicking on the backdrop", function() {
-      //mobile.render();
-      //mobile.$el.find(".cartodb-attribution-button").click();
-      //mobile.$el.find(".cartodb-attribution-button .backdrop").click();
-
-      //setTimeout(function() {
-        //expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
-      //}, 350);
-
-    //});
 
   });
 
@@ -820,4 +811,33 @@ describe("cdb.geo.ui.Mobile", function() {
     });
 
   });
+
+
+  describe("with a hidden torque layer", function() {
+
+    var mobile;
+
+    beforeEach(function() {
+
+      torque.options = { steps: 3 };
+      torque.hidden  = true;
+      torque.getStep = function() {};
+
+      mobile = new cdb.geo.ui.Mobile({
+        template: template,
+        mapView: mapView,
+        overlays: overlays,
+        torqueLayer: torque,
+        map: map
+      });
+
+    });
+
+    it("should hide the timeslider", function() {
+      mobile.render();
+      expect(mobile.$el.find(".cartodb-timeslider").length).toBe(1);
+      expect(mobile.$el.find(".cartodb-timeslider").css("display")).toBe("none");
+    });
+  });
+
 });

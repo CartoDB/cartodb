@@ -1,3 +1,12 @@
+3.11.22 (03//11//2014)
+- fixes a bug that made the hidden Torque layers visible
+
+3.11.21 (24//10//2014)
+- enabled dynamic_cdn to route layergroup calls though the CDN
+
+3.11.20 (24//10//2014)
+- enabled fixed callback for layergroups and infowindows
+
 3.11.19 (23//10//2014)
 - fixes annotation specs
 - adds several methods to set the annotation properties.

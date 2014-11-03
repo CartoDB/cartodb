@@ -772,11 +772,10 @@ describe Table do
       resp.should == {:name => "name", :type => "double precision", :cartodb_type => "number"}
     end
 
-    it "should not modify the name of a column to a number" do
+    it "should not modify the name of a column to a number, sanitizing it to make it valid" do
       table = create_table(:user_id => @user.id)
-      lambda {
-        table.modify_column!(:name => "name", :new_name => "1")
-      }.should raise_error(CartoDB::InvalidColumnName)
+      resp = table.modify_column!(:name => "name", :new_name => "1")
+      resp.should == {:name => "_1", :type => "text", :cartodb_type => "string"}
     end
 
     it "can modify its schema" do
@@ -1238,15 +1237,16 @@ describe Table do
       table.records[:rows].first[:description].should be == "Description 123"
     end
 
-    it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
-      table = create_table(:name => 'where', :user_id => @user.id)
-      table.add_column!(:name => 'where', :type => 'string')
+    # No longer used, now we automatically rename reserved word columns
+    #it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
+      #table = create_table(:name => 'where', :user_id => @user.id)
+      #table.add_column!(:name => 'where', :type => 'string')
 
-      pk1 = table.insert_row!({:where => 'random string'})
+      #pk1 = table.insert_row!({:_where => 'random string'})
 
-      table.records[:rows].should have(1).rows
-      table.records[:rows].first[:where].should be == 'random string'
-    end
+      #table.records[:rows].should have(1).rows
+      #table.records[:rows].first[:_where].should be == 'random string'
+    #end
   end
 
   context "preimport tests" do
@@ -1360,11 +1360,10 @@ describe Table do
       }.should raise_error(CartoDB::InvalidColumnName)
     end
 
-    it "should raise an error when renaming a column with reserved name" do
+    it "should not raise an error when renaming a column with reserved name" do
       table = create_table(:user_id => @user.id)
-      lambda {
-        table.modify_column!(:name => "name", :new_name => "xmin")
-      }.should raise_error(CartoDB::InvalidColumnName)
+      resp = table.modify_column!(:name => "name", :new_name => "xmin")
+      resp.should == {:name => "_xmin", :type => "text", :cartodb_type => "string"}
     end
 
     it "should add a cartodb_id serial column as primary key when importing a

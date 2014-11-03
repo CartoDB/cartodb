@@ -968,12 +968,14 @@ class User < Sequel::Model
     sql = %Q{
       WITH a as (
         SELECT table_name, count(column_name::text) cdb_columns_count
-        FROM information_schema.columns 
+        FROM information_schema.columns c, pg_tables t
         WHERE
+        t.tablename = c.table_name AND
+        t.tableowner = '#{database_username}' AND
     }
 
     if metadata_table_names.length != 0
-      sql += "table_name not in (#{metadata_table_names}) AND"
+      sql += "c.table_name not in (#{metadata_table_names}) AND"
     end
 
     sql += %Q{
@@ -988,6 +990,7 @@ class User < Sequel::Model
   # search in the user database for tables that are not in the metadata database
   def search_for_modified_table_names
     metadata_table_names = self.tables.select(:name).map(&:name)
+    #TODO: filter real tables by ownership
     real_names = real_tables.map { |t| t[:relname] }
     return metadata_table_names.to_set != real_names.to_set
   end
@@ -1010,7 +1013,7 @@ class User < Sequel::Model
   end
 
   def link_created_tables(table_names)
-    created_tables = real_tables.select {|t| table_names }
+    created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
     created_tables.each do |t|
       begin
         table = Table.new

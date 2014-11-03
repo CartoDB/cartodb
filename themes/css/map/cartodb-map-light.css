@@ -761,6 +761,7 @@ only screen and (                min-resolution: 2dppx) {
   border: 1px solid #1A1108;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend ul li {
+  height: auto;
   padding: 0;
   font-size: 12px;
   color: #fff;
@@ -1061,7 +1062,6 @@ div.cartodb-legend.color ul li {
   font-family: "Helvetica", Arial;
   text-transform: uppercase;
   text-align: left;
-  line-height: normal;
   height: 10px;
   line-height: 10px;
   vertical-align:middle;
@@ -1341,7 +1341,6 @@ div.cartodb-zoom a {
   font: bold 20px "Arial";
   color: #999999;
   text-align: center;
-  line-height: normal;
   text-decoration: none;
   text-indent: -9999px;
   line-height: 0;

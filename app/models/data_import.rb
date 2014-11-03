@@ -426,7 +426,7 @@ class DataImport < Sequel::Model
         pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
       runner.loader_options = ogr2ogr_options
-      runner.set_importer_stats_options(Cartodb.config[:graphite]['host'], Cartodb.config[:graphite]['port'], id)
+      runner.set_importer_stats_options(Cartodb.config[:graphite]['host'], Cartodb.config[:graphite]['port'], Socket.gethostname)
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database

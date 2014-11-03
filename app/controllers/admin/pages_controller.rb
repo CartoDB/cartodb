@@ -48,7 +48,8 @@ class Admin::PagesController < ApplicationController
 
     @avatar_url = viewed_user.avatar
 
-    #@tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
+    @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
+    #@tables_num = @datasets.size
     @vis_num    = viewed_user.public_visualization_count
 
     datasets = Visualization::Collection.new.fetch({
@@ -77,8 +78,6 @@ class Admin::PagesController < ApplicationController
         }
       )
     end
-    
-    @tables_num = @datasets.size
     
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'application_public_dashboard' }

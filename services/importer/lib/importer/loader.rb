@@ -106,14 +106,17 @@ module CartoDB
       def normalize
         converted_filepath = normalizers_for(source_file.extension)
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
-            normalizer = normalizer_klass.new(filepath, job)
 
-            FORCE_NORMALIZER_REGEX.each { |regex|
-              normalizer.force_normalize if regex =~ source_file.path
-            }
+            @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
+              normalizer = normalizer_klass.new(filepath, job)
 
-            normalizer.run
-                      .converted_filepath
+              FORCE_NORMALIZER_REGEX.each { |regex|
+                normalizer.force_normalize if regex =~ source_file.path
+              }
+
+              normalizer.run
+                        .converted_filepath
+            end
           }
         layer = source_file.layer
         @source_file = SourceFile.new(converted_filepath)

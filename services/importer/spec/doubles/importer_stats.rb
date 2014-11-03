@@ -23,16 +23,18 @@ module CartoDB
         @timing_stack.push(key)
 
         begin
+          return_value = nil
 
           if(block_given?)
             @timed_blocks[timing_chain] = @timed_blocks[timing_chain] + 1
-            yield
+            return_value = yield
           end
 
         ensure
           @timing_stack.pop
         end
 
+        return_value
       end
 
       def timed_block(key)

@@ -6,6 +6,7 @@
 * Fixed bugs
   * Added retries system to Named Maps update actions, so if hits a tiler template lock tries again.
   * Added some invalid column names to the reserved words list(s), but now upon importing or renaming columns, we rename to _xxxxx if xxxxx is a reserved word.
+  * Trim columns to be able to geocode columns/strings with leading/trailing whitespaces
 
 3.2.7 (2014-10-23)
 ------------------

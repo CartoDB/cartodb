@@ -1,8 +1,6 @@
 # encoding: UTF-8
 
-require 'rspec'
 require_relative '../../lib/importer/mail_notifier'
-require 'ruby-debug' #TODO remove
 
 RSpec.configure do |config|
   config.mock_with :mocha

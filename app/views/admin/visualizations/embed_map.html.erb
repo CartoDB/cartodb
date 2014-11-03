@@ -1,256 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
-    <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
-    <meta name="description" content="<%= @visualization.description_clean || @visualization.name.gsub(/_/," ") %>">
-    <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">
-    <meta name="author" content="CartoDB">
-    <meta name="DC.title" content="<%= @visualization.description_clean %> | CartoDB">
-    <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
-    <meta property="og:description" content="<%= @visualization.description_clean || @visualization.name.gsub(/_/," ") %>"/>
-    <meta property="og:type" content="Visualization"/>
-    <meta property="og:url" content="<%= request.fullpath %>" />
-    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
+<%= content_for(:css) do %>
+  <%= render :partial => 'admin/visualizations/public/embed_map_inline_css' %>
+<% end %>
 
-    <style type="text/css">
-      html, body, #map {height: 100%; padding: 0; margin: 0;}
-      /* footer */
-      .cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999; border-top:1px solid #CCC; border-top:1px solid rgba(0,0,0,0); box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -webkit-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -moz-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -o-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; line-height:29px; z-index:2; }
-      .cartodb-text a {color:#397DB8; text-decoration:underline;}
-      .cartodb-text a.user { text-decoration:none }
-      .cartodb-text img {display:inline-block; *display:inline; vertical-align:middle; border-radius:16px; -webkit-border-radius:16px; -moz-border-radius:16px; zoom:1; text-decoration:none }
-      .cartodb-text span.username { text-decoration:underline }
+<%= content_for(:body_class) do %>
+  embed-map
+<% end %>
 
-      /* not supported dialog */ 
-      #not_supported_dialog {position:absolute; width:356px; height:213px; top:50%; left:50%; margin-top:-107px; margin-left:-178px; padding:0; background-color:#FFF; text-align:center; font-family:'Helvetica', Arial; color:#666666; z-index:10000;}
-      #not_supported_dialog h2 {display:inline-block; width:77px; margin:30px 0 0; padding-bottom:16px; font-size:13px; font-weight:bold; border-bottom:1px solid #D9D9D9; vertical-align:top; zoom:1; *display:inline;}
-      #not_supported_dialog p {display:block; padding:0 40px; margin:12px 0 0; font-size:15px;}
-      #not_supported_dialog ul {position:absolute; bottom:0; left:0; right:0; display:block; margin:0; padding:0; list-style:none; border-top:1px solid #D9D9D9;}
-      #not_supported_dialog ul li {float:left; margin:0; padding:0; border-right:1px solid #D9D9D9;}
-      #not_supported_dialog ul li a {display:block; width:118px; height:74px; background-repeat:no-repeat; background-position:center center; font-size:0; line-height:0; text-indent:-9999px;}
-      #not_supported_dialog ul li.last {border:none;}
-      #not_supported_dialog a.safari {background-image:url('<%= image_path "layout/safari.png" %>');}
-      #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
-      #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
+<%= content_for(:content) do %>
+  <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
+    <div id="map"></div>
 
-      <% has_logo  = @visualization.overlays.any? {|o| o.type == "logo" } %>
-      <% hide_logo = true if (!has_logo && @visualization.user.remove_logo? && (!params['cartodb_logo'] || params['cartodb_logo'] != "true")) || (has_logo && @visualization.user.remove_logo? && (params["cartodb_logo"] == 'false')) %>
+    <div id="not_supported_dialog" style="display: none">
+      <h2>CartoDB</h2>
+      <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
+      <ul>
+        <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
+        <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
+        <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+      </ul>
+    </div>
 
-      <% if hide_logo %>
-      <% else %>
-        /* Styles showing up new cartodb text */
-      <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
-        <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
-          .cartodb-map-wrapper {bottom:30px!important;}
-          .cartodb-text {display:block;}
+    <div class="cartodb-text">
+      Map created by
+      <% username = @visualization.user.name.blank? ? @visualization.user.username : @visualization.user.name %>
+      <a class="user" href="<%= @visualization.user.public_url %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
+        <% if !@visualization.user.avatar_url.blank? %>
+          <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
         <% end %>
-      <% else %>
-        .cartodb-map-wrapper {bottom:30px!important;}
-        .cartodb-text {display:block;}
-      <% end %>
-    <% end %>
+        <span class="username"><%= username %></span>
+      </a>
+    </div>
+  <% end %>
+<% end %>
 
-    </style>
-
-    <% if !Rails.env.production? %>
-      <%= stylesheet_link_tag 'embeds.css' %>
-    <% else %>
-        <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-    <% end %>
-
-    <%= insert_trackjs() %>
-
-  </head>
-  <body class="embed-map">
-    <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
-      <div id="map"></div>
-      <div id="not_supported_dialog" style="display: none">
-        <h2>CartoDB</h2>
-        <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
-        <ul>
-          <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
-          <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
-          <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
-        </ul>
-      </div>
-      <div class="cartodb-text">
-        Map created by
-        <% username = @visualization.user.name.blank? ? @visualization.user.username : @visualization.user.name %>
-        <a class="user" href="<%= @visualization.user.public_url %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
-          <% if !@visualization.user.avatar_url.blank? %>
-            <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
-          <% end %>
-          <span class="username"><%= username %></span>
-        </a>
-      </div>
-    <% end %>
-
-    <% if @visualization.map.provider == 'googlemaps' %>
-      <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
-    <% else %>
-      <!-- if you are using google maps, uncomment the following line -->
-      <!-- <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> -->
-    <% end %>
-
-    <% if !Rails.env.production? %>
-      <%= javascript_include_tag 'cdb.js' %>
-    <% else %>
-      <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-    <% end %>
-
-    <script>
-
-      function get_url_params(conversion) {
-
-        conversion = conversion || {};
-
-        var tokens = location.search.slice(1).split('&');
-        var params = {};
-
-        for (var i = 0; i < tokens.length; ++i) {
-
-          var tk = tokens[i].split('=');
-          var fn = conversion[tk[0]] || function(v) { return v };
-
-          if (tk.length === 2) {
-            params[tk[0]] = fn(decodeURIComponent(tk[1]));
-          }
-        }
-
-        return params;
-      }
-
-      function manageError(err, layer) {
-          if(layer && layer.get('type') === 'torque') {
-              $('#not_supported_dialog').show();
-              // hide all the overlays
-              var overlays = this.getOverlays()
-              for (var i = 0; i < overlays.length; ++i) {
-                  var o = overlays[i];
-                  o.hide && o.hide();
-              }
-          }
-      }
-
-      function stats() {
-          var browser;
-          var ua = navigator.userAgent;
-          var checks = [
-              ['MSIE 10.0', 'ms10'],
-              ['MSIE 9.0', 'ms9'],
-              ['MSIE 8.0', 'ms8'],
-              ['MSIE 7.0','ms7'],
-              ['Chrome', 'chr'],
-              ['Firefox', 'ff'],
-              ['Safari', 'ff']
-          ]
-          for(var i = 0; i < checks.length && !browser; ++i) {
-            if(ua.indexOf(checks[i][0]) !== -1) browser = checks[i][1];
-          }
-          browser = browser || 'none';
-          cartodb.core.Profiler.metric('cartodb-js.embed.' + browser).inc();
-      }
-
-      $(document).ready(function(){
-
-        if ($(window).width() < 620) {
-          $("body").addClass("embed-map-small");
-        }
-
-        var bool_fn = function(v) { return v == 'true' }
-        , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
-        , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
-        , layer_fn = function(v) {
-          if(!v || !v.length) {
-              return null;
-          }
-
-          return _.map(v.split("|"), function(v) {
-            return { visible: !!parseInt(v, 10) }
-          });
-
-        };
-
-        var opt = get_url_params({
-          'force_mobile': bool_fn,
-          'search':       bool_fn,
-          'title':        bool_fn,
-          'description':  bool_fn,
-          'shareable':    bool_fn,
-          'fullscreen':   bool_fn,
-          'cartodb_logo': logo_fn,
-          'scrollwheel':  bool_fn,
-          'sublayer_options': layer_fn,
-          'layer_selector': bool_fn,
-          'legends': bool_fn
-        });
-
-        <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
-            opt.auth_token = [];
-            <% @protected_map_tokens.each do |token| %>
-                opt.auth_token.push('<%= token %>');
-            <% end %>
-            opt.https = true; // when auth_token is used tiles should be fetch using https
-        <% end %>
-
-        <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-          opt.no_cdn = true;
-        <% end %>
-
-         <% if hide_logo %>
-            opt.cartodb_logo = false;
-         <% end %>
-
-         opt.mobile_layout = true;
-
-        cartodb.config.set({
-          cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
-          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
-        })
-
-        var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
-        var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
-
-        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
-          visReadyTime.end();
-          vis.on('load', function() {
-            loadingTime.end();
-          });
-
-          window.vis = vis;
-
-          setTimeout(function() {
-          $(window).trigger("map_resized");
-          }, 400);
-          // some stats
-          stats();
-        }).on('error', manageError);
-      });
-      //<!-- load stats -->
-      <% if Cartodb.config[:graphite_public] %>
-        if (location.protocol.indexOf('https') === -1) {
-          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
-            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-            cartodb.core.Profiler.backend(function () {
-              statsc.send.apply(statsc, arguments);
-            })
-            // stop sending stats after 11 seconds
-            // statsc send stats in 5 secs interval so allow to send at least twice
-            setTimeout(function() {
-                cartodb.core.Profiler.backend(null);
-            }, 11*1000);
-          })
-        }
-      <% end %>
-
-    </script>
-    <%= render partial: 'shared/analytics', locals: {
-      ua:     Cartodb.config[:google_analytics]['embeds'],
-      domain: Cartodb.config[:google_analytics]['domain'],
-      page_owner: @visualization.user
-    } %>
-  </body>
-</html>
+<%= content_for(:js) do %>
+  <%= render :partial => 'admin/visualizations/public/embed_map_inline_js' %>
+<% end %>

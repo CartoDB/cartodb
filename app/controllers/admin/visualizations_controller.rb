@@ -190,8 +190,11 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+
     respond_to do |format|
-      format.html { render layout: false }
+      format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
   rescue
@@ -219,6 +222,9 @@ class Admin::VisualizationsController < ApplicationController
     @related_tables         = @visualization.related_tables
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
 
     respond_to do |format|
       format.html { render 'public_map', layout: false }
@@ -268,8 +274,11 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+
     respond_to do |format|
-      format.html { render 'public_map', layout: false }
+      format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end    
   rescue
     public_map_protected
@@ -292,7 +301,7 @@ class Admin::VisualizationsController < ApplicationController
     @protected_map_tokens = @visualization.get_auth_tokens
 
     respond_to do |format|
-      format.html { render 'embed_map', layout: false }
+      format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end    
   rescue
     embed_protected
@@ -311,8 +320,11 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
+    # We need to know if visualization logo is visible or not
+    @hide_logo = is_logo_hidden(@visualization, params)
+
     respond_to do |format|
-      format.html { render layout: false }
+      format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'embed_map', content_type: 'application/javascript' }
     end
   rescue
@@ -321,11 +333,11 @@ class Admin::VisualizationsController < ApplicationController
 
   # Renders input password view
   def embed_protected
-    render 'embed_map_password', :layout => false
+    render 'embed_map_password', :layout => 'application_password_layout'
   end #embed_protected
 
   def public_map_protected
-    render 'public_map_password', :layout => false
+    render 'public_map_password', :layout => 'application_password_layout'
   end #public_map_protected
 
   def embed_forbidden
@@ -338,23 +350,36 @@ class Admin::VisualizationsController < ApplicationController
     render 'track', layout: false
   end #track_embed
 
+  # Check if visualization logo should be hidden or not
+  def is_logo_hidden(vis, parameters)
+    has_logo  = vis.overlays.any? {|o| o.type == "logo" }
+    (!has_logo && vis.user.remove_logo? && (!parameters['cartodb_logo'] || parameters['cartodb_logo'] != "true")) || (has_logo && vis.user.remove_logo? && (parameters["cartodb_logo"] == 'false'))
+  end
+
   private
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
   # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
   def get_corrected_url_if_proceeds(for_table=true)
     url = nil
-    if CartoDB.extract_subdomain(request) != CartoDB.extract_real_subdomain(request)
+    org_name = CartoDB.extract_real_subdomain(request)
+    if CartoDB.extract_subdomain(request) != org_name
       # Might be an org url, try getting the org
-      organization = Organization.where(name: CartoDB.extract_real_subdomain(request)).first
+      organization = Organization.where(name: org_name).first
       unless organization.nil?
         authenticated_users = request.session.select { |k,v| k.start_with?("warden.user") }.values
         authenticated_users.each { |username|
-          if url.nil? && !User.where(username:username).first.nil?
-            if for_table
-              url = public_tables_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
-            else
-              url = public_visualizations_show_url(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+          user = User.where(username:username).first
+          if url.nil? && !user.nil? && !user.organization.nil?
+            if user.organization.id == organization.id
+              url = CartoDB.base_url(organization.name)
+              if for_table
+                url += public_tables_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
+                                               redirected:true)
+              else
+                url += public_visualizations_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
+                                                       redirected:true)
+              end
             end
           end
         }

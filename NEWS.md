@@ -1,9 +1,36 @@
-3.2.X (2014-XX-XX)
+3.2.8 (2014-XX-XX)
+------------------
+* New features
+  * Added dynamic_cdn_enabled flag to the users
+* Fixed bugs
+  * Added retries system to Named Maps update actions, so if hits a tiler template lock tries again.
+
+
+3.2.7 (2014-10-23)
+------------------
+* Public pages reviewed
+* New header in public pages
+
+3.2.6 (2014-10-22)
+------------------
+* New features
+  * Annotation overlay.
+  * Stamen basemaps.
+  * Optimization: Map creation no longer performs tiler calls to set the tile style.
+  * Optimization: viz.json rendering now doesn't requests for named map if needs to, using the visualization and layers to recreate required fields.
+  * Twitter datasource now allows N custom GNIP configurations, per username or per organization name.
+  * Optimization: Added more DB indexes based on slow queries logs.
+* Fixed bugs
+  * Send the visibility status of the torque layer in the vizjson
+  * Importer specs back to work. If any fails please update GDAL and take a look at "Raster import support".
+
+3.2.5 (2014-10-13)
 ------------------
 * New features
   * ArcGIS import integration (includes new app_config.yml values)
   * Detection of imports without tables registered and marking them as failed
   * Adds property toolbar to style and control the image and text overlays.
+  * CSV import type guessing (performed via OGR2OGR). Disabled by default, to enable install ogr2ogr2-static-bin package and modify configuration
 
 3.2.4 (2014-10-06)
 ------------------

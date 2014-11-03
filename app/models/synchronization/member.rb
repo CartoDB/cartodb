@@ -32,25 +32,27 @@ module CartoDB
 
       STATES                        = %w{ success failure syncing }
 
-      attribute :id,              String
-      attribute :name,            String
-      attribute :interval,        Integer,  default: 3600
-      attribute :url,             String
-      attribute :state,           String,   default: STATE_CREATED
-      attribute :user_id,         String
-      attribute :created_at,      Time
-      attribute :updated_at,      Time
-      attribute :run_at,          Time     
-      attribute :ran_at,          Time
-      attribute :modified_at,     Time
-      attribute :etag,            String
-      attribute :checksum,        String
-      attribute :log_id,          String
-      attribute :error_code,      Integer
-      attribute :error_message,   String
-      attribute :retried_times,   Integer,  default: 0
-      attribute :service_name,    String
-      attribute :service_item_id, String
+      attribute :id,                      String
+      attribute :name,                    String
+      attribute :interval,                Integer,  default: 3600
+      attribute :url,                     String
+      attribute :state,                   String,   default: STATE_CREATED
+      attribute :user_id,                 String
+      attribute :created_at,              Time
+      attribute :updated_at,              Time
+      attribute :run_at,                  Time
+      attribute :ran_at,                  Time
+      attribute :modified_at,             Time
+      attribute :etag,                    String
+      attribute :checksum,                String
+      attribute :log_id,                  String
+      attribute :error_code,              Integer
+      attribute :error_message,           String
+      attribute :retried_times,           Integer,  default: 0
+      attribute :service_name,            String
+      attribute :service_item_id,         String
+      attribute :type_guessing,           Boolean, default: true
+      attribute :quoted_fields_guessing,  Boolean, default: true
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -76,8 +78,9 @@ module CartoDB
         "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{log.id}\" " \
         "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\" " \
         "url:\"#{@url}\" error_code:\"#{@error_code}\" error_message:\"#{@error_message}\" modified_at:\"#{@modified_at}\" " \
-        " user_id:\"#{@user_id}\" >"
-      end #to_s
+        " user_id:\"#{@user_id}\" type_guessing:\"#{@type_guessing}\" " \
+        "quoted_fields_guessing:\"#{@quoted_fields_guessing}\">"
+      end
 
       def interval=(seconds=3600)
         super(seconds.to_i)
@@ -114,12 +117,12 @@ module CartoDB
       # @return bool
       def can_manually_sync?
         (self.state == STATE_SUCCESS || self.state == STATE_FAILURE) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
-      end #can_manually_sync?
+      end
 
       # @return bool
       def should_auto_sync?
         self.state == STATE_SUCCESS && (self.run_at < Time.now)
-      end #should_run?
+      end
 
       def run
         importer = nil
@@ -148,6 +151,7 @@ module CartoDB
         runner        = CartoDB::Importer2::Runner.new(
           pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
         )
+        runner.loader_options = ogr2ogr_options
 
         runner.include_additional_errors_mapping(
           {
@@ -342,6 +346,19 @@ module CartoDB
 	          host:     user.user_database_host
           )
       end 
+
+      def ogr2ogr_options
+        options = Cartodb.config.fetch(:ogr2ogr, {})
+        if options['binary'].nil? || options['csv_guessing'].nil?
+          {}
+        else
+          {
+            ogr2ogr_binary:         options['binary'],
+            ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
+            quoted_fields_guessing: @quoted_fields_guessing
+          }
+        end
+      end
 
       def log
         return @log unless @log.nil?

@@ -241,7 +241,8 @@ module CartoDB
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
-          viewer_user: user
+          viewer_user: user,
+          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
         }
         VizJSON.new(self, options, configuration).to_poro
       end

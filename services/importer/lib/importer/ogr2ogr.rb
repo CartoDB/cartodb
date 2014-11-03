@@ -13,6 +13,8 @@ module CartoDB
       OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
       APPEND_MODE_OPTION    = '-append'
 
+      DEFAULT_BINARY = 'which ogr2ogr'
+
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
@@ -20,11 +22,14 @@ module CartoDB
         self.layer      = layer
         self.options    = options
         self.append_mode = false
+        self.csv_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
+        self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
+        self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
       end
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{postgres_options} #{projection_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} #{postgres_options} #{projection_option} " +
         "#{layer_creation_options} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
@@ -35,7 +40,7 @@ module CartoDB
       end
 
       def executable_path
-        `which ogr2ogr`.strip
+        is_csv? ? `#{csv_binary}`.strip : `#{DEFAULT_BINARY}`.strip
       end
 
       def command
@@ -56,7 +61,19 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer
+      attr_accessor :pg_options, :options, :table_name, :layer, :csv_binary, :csv_guessing, :quoted_fields_guessing
+
+      def is_csv?
+        filepath =~ /\.csv$/i
+      end
+
+      def guessing_option
+        if csv_guessing && is_csv?
+          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' }"
+        else
+          ''
+        end
+      end
 
       def client_encoding_option
         "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"
@@ -89,7 +106,7 @@ module CartoDB
       end
 
       def projection_option
-        filepath =~ /\.csv/ || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
+        is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
       end
     end
   end

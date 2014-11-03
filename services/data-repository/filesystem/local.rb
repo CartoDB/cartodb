@@ -11,6 +11,10 @@ module DataRepository
         @base_directory = base_directory
       end #initialize
 
+      def create_base_directory
+        FileUtils.mkpath @base_directory unless exists? @base_directory
+      end
+
       def store(path, data)
         FileUtils.mkpath( File.dirname( fullpath_for(path) ) )
 

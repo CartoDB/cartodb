@@ -21,7 +21,7 @@ module CartoDB
 
         MAX_CATEGORIES = 4
 
-        DEBUG_FLAG = true
+        DEBUG_FLAG = false
 
         # Used for each query page size, not as total
         FILTER_MAXRESULTS     = :maxResults
@@ -269,9 +269,8 @@ module CartoDB
 
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
         def report_error(message, additional_data)
-          if @error_report_component.nil?
-            log("Error: #{message} Additional Info: #{additional_data}")
-          else
+          log("Error: #{message} Additional Info: #{additional_data}")
+          unless @error_report_component.nil?
             @error_report_component.report_message(message, 'error', error_info: additional_data)
           end
         end
@@ -333,10 +332,12 @@ module CartoDB
         def search_by_category(api, base_filters, category, csv_dumper=nil)
           api.params = base_filters
 
+          exception = nil
           next_results_cursor = nil
           total_results = 0
 
           begin
+            exception = nil
             out_of_quota = false
 
             @user_semaphore.synchronize {
@@ -351,6 +352,7 @@ module CartoDB
               begin
                 results_page = api.fetch_results(next_results_cursor)
               rescue TwitterSearch::TwitterHTTPException => e
+                exception = e
                 report_error(e.to_s, e.backtrace)
                 # Stop gracefully to not break whole import process
                 results_page = {
@@ -367,11 +369,32 @@ module CartoDB
               }
 
               total_results += dumped_items_count
-
             end
-          end while (!next_results_cursor.nil? && !out_of_quota)
+          end while (!next_results_cursor.nil? && !out_of_quota && !exception)
 
           log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
+
+          # If fails on the first request, do not fail silently
+          if !exception.nil? && total_results == 0
+            log("ERROR: 0 results & exception: #{exception} (HTTP #{exception.http_code}) #{exception.additional_data}")
+            # @see http://support.gnip.com/apis/search_api/api_reference.html
+            if exception.http_code == 422 && exception.additional_data =~ /request usage cap exceeded/i
+              raise OutOfQuotaError.new(exception.to_s, DATASOURCE_NAME)
+            end
+            if [401, 404].include?(exception.http_code)
+              raise MissingConfigurationError.new(exception.to_s, DATASOURCE_NAME)
+            end
+            if [400, 422].include?(exception.http_code)
+              raise InvalidInputDataError.new(exception.to_s, DATASOURCE_NAME)
+            end
+            if exception.http_code == 429
+              raise CartoDB::Datasources::ResponseError.new(exception.to_s, DATASOURCE_NAME)
+            end
+            if [502, 503].include?(exception.http_code)
+              raise ExternalServiceError.new(exception.to_s, DATASOURCE_NAME)
+            end
+            raise DatasourceBaseError.new(exception.to_s, DATASOURCE_NAME)
+          end
 
           total_results
         end

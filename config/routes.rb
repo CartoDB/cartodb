@@ -138,7 +138,7 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/tables/:id/table'         => 'visualizations#show',            as: :public_tables_table,     constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     get '(/u/:user_domain)/tables/:id/public'        => 'visualizations#public_table',    as: :public_table,            constraints: { id: /[^\/]+/ }
     get '(/u/:user_domain)/tables/:id/public/table'  => 'visualizations#public_table',    as: :public_table_table,      constraints: { id: /[^\/]+/ }
-    get '(/u/:user_domain)/tables/:id/public/map'    => 'visualizations#public_map',    as: :public_table_map,        constraints: { id: /[^\/]+/ }
+    get '(/u/:user_domain)/tables/:id/public/map'    => 'visualizations#public_table',    as: :public_table_map,        constraints: { id: /[^\/]+/ }
     get '(/u/:user_domain)/tables/:id/embed_map'     => 'visualizations#embed_map',       as: :public_tables_embed_map, constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     # Public visualizations
     get '(/u/:user_domain)/'                         => 'pages#public',                   as: :public_visualizations_home, defaults: { dont_rewrite: true }
@@ -309,6 +309,10 @@ CartoDB::Application.routes.draw do
     end
     resources :organizations
     resources :synchronizations
+  end
+
+  scope :module => 'superadmin', :format => :json do
+    get '/superadmin/get_databases_info' => 'platform#databases_info'
   end
 
 end

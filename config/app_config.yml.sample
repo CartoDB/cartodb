@@ -1,4 +1,7 @@
 defaults: &defaults
+  ogr2ogr:
+    binary:           'which ogr2ogr'
+    csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
@@ -172,7 +175,10 @@ defaults: &defaults
     max_file_size: 5242880 # 5.megabytes 
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
-  avatars_base_url: 'cartodb-assets-staging.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
+  avatars:
+    base_url: 'example.com/avatars'
+    kinds: ['stars', 'mountains']
+    colors: ['red', 'blue']
   dropbox_api_key: ""
   gdrive: 
     api_key: ""
@@ -208,15 +214,17 @@ defaults: &defaults
         ratelimit_wait_secs:    0.5
       customized_user_list:     []
       customized_orgs_list:     []
+      entity_to_config_map:     [] # { user_or_org_name: 'custom_config_name'}
       customized:
-        auth_required:          false
-        username:               ''
-        password:               ''
-        search_url:             'http://fake.url.nil'
-        ratelimit_active:       false
-        ratelimit_concurrency:  3
-        ratelimit_ttl:          4
-        ratelimit_wait_secs:    0.1
+        custom1:
+            auth_required:          false
+            username:               ''
+            password:               ''
+            search_url:             'http://fake.url.nil'
+            ratelimit_active:       false
+            ratelimit_concurrency:  3
+            ratelimit_ttl:          4
+            ratelimit_wait_secs:    0.1
 
 development:
   <<: *defaults
@@ -236,6 +244,9 @@ test:
     host: '127.0.0.1'
     port: 6335
   enforce_non_empty_layer_css: false
+  api_requests_es_service:
+    url: "http://api-calls-service.localhost.lan/search"
+    body: ""
 
 staging:
   <<: *defaults

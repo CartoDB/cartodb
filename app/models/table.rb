@@ -467,8 +467,6 @@ class Table < Sequel::Model(:user_tables)
 
       self.schema(reload:true)
       self.cartodbfy
-
-      user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD PRIMARY KEY (cartodb_id)})
     end
 
   end

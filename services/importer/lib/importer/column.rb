@@ -14,6 +14,8 @@ module CartoDB
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
       DEFAULT_SCHEMA  = 'cdb_importer'
+      # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
+      # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
       RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
                             AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
                             COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE
@@ -26,7 +28,9 @@ module CartoDB
                             OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING
                             PRIMARY REFERENCES RIGHT SELECT SESSION_USER SIMILAR
                             SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION
-                            UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX }
+                            UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX
+                            FORMAT CONTROLLER ACTION
+                          }
 
       def initialize(db, table_name, column_name, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})

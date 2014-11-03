@@ -976,13 +976,16 @@ describe Table do
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
 
-    it "can add a column called 'action'" do
+    it "can add a column called 'action' but gets renamed" do
+      column_name = "action"
+      sanitized_column_name = "_action"
+
       table = create_table(:user_id => @user.id)
 
-      resp = table.add_column!(:name => "action", :type => "number")
-      resp.should == {:name => "action", :type => "double precision", :cartodb_type => "number"}
+      resp = table.add_column!(:name => column_name, :type => "number")
+      resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
       table.reload
-      table.schema(:cartodb_types => false).should include([:action, "double precision"])
+      table.schema(:cartodb_types => false).should include([:_action, "double precision"])
     end
 
     it "can have a column with a reserved psql word as its name" do

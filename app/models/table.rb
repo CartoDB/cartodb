@@ -32,6 +32,8 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
+  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
+  # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
       :id                           => :id,
@@ -1003,9 +1005,10 @@ class Table < Sequel::Model(:user_tables)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
-    owner.in_database.add_column name, options[:name].to_s.sanitize, type
+    column_name = options[:name].to_s.sanitize_column_name
+    owner.in_database.add_column name, column_name, type
     self.invalidate_varnish_cache
-    return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
+    return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^(PG::Error|PGError)/
       raise CartoDB::InvalidType, e.message

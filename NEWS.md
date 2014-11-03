@@ -2,6 +2,8 @@
 ------------------
 * New features
   * Added dynamic_cdn_enabled flag to the users
+* Fixed bugs
+  * Added retries system to Named Maps update actions, so if hits a tiler template lock tries again.
 
 
 3.2.7 (2014-10-23)

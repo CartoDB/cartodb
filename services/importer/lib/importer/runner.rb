@@ -35,15 +35,15 @@ module CartoDB
         @post_import_handler = post_import_handler || nil
         @loader_options      = {}
         importer_stats_options ||= { host: nil, port: nil}
-        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port])
+        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port], importer_stats_options[:queue_id])
       end
 
       def loader_options=(value)
         @loader_options = value
       end
 
-      def set_importer_stats_options(host, port)
-        @importer_stats = ImporterStats.instance(host, port)
+      def set_importer_stats_options(host, port, queue_id)
+        @importer_stats = ImporterStats.instance(host, port, queue_id)
       end
 
       def new_logger

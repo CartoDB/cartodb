@@ -6,6 +6,8 @@
 
 function CartoDBLayerCommon() {
 
+  this.visible = true;
+
 }
 
 CartoDBLayerCommon.prototype = {
@@ -31,8 +33,7 @@ CartoDBLayerCommon.prototype = {
 
   toggle: function() {
 
-    if (this.isVisible() == undefined) return this.hide();
-    else this.isVisible() ? this.hide() : this.show();
+    this.isVisible() ? this.hide() : this.show();
 
     return this.isVisible();
   },

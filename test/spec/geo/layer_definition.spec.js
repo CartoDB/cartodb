@@ -449,9 +449,28 @@ describe("LayerDefinition", function() {
     it("should show/hide", function() {
       layerDefinition.getSubLayer(0).hide();
       expect(layerDefinition.toJSON().layers.length).toEqual(1);
+      expect(layerDefinition.getSubLayer(0).get('hidden')).toEqual(true);
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
       layerDefinition.getSubLayer(0).show();
+      expect(layerDefinition.getSubLayer(0).get('hidden')).toEqual(false);
       expect(layerDefinition.toJSON().layers.length).toEqual(2);
+      expect(layerDefinition.getSubLayerCount()).toEqual(2);
+    });
+
+    it("should toggle the visibility", function() {
+      layerDefinition.getSubLayer(0).hide();
+      var visibility = layerDefinition.getSubLayer(0).toggle();
+
+      expect(visibility).toEqual(true);
+      expect(layerDefinition.getSubLayer(0).get('hidden')).toEqual(false);
+      expect(layerDefinition.toJSON().layers.length).toEqual(2);
+      expect(layerDefinition.getSubLayerCount()).toEqual(2);
+
+      visibility = layerDefinition.getSubLayer(0).toggle();
+
+      expect(visibility).toEqual(false);
+      expect(layerDefinition.getSubLayer(0).get('hidden')).toEqual(true);
+      expect(layerDefinition.toJSON().layers.length).toEqual(1);
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
     });
 

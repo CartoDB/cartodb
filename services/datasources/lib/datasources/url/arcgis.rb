@@ -28,8 +28,10 @@ module CartoDB
         # Amount to multiply or divide
         BLOCK_FACTOR = 2
         MIN_BLOCK_SIZE = 1
-        # GeoJSON can get too big in memory, warning with allowing too many fields
-        MAX_BLOCK_SIZE = 500
+        # GeoJSON can get too big in memory, or ArcGIS have mem problems, so keep reasonable number
+        MAX_BLOCK_SIZE = 100
+        # In seconds, use 0 to disable
+        BLOCK_SLEEP_TIME = 1
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying
         MAX_RETRIES = 0
@@ -141,6 +143,7 @@ module CartoDB
             @last_stream_status = @current_stream_status
             @current_stream_status = true
             retries = 0
+            sleep(BLOCK_SLEEP_TIME) unless BLOCK_SLEEP_TIME == 0
           rescue ExternalServiceError => exception
             if @block_size == MIN_BLOCK_SIZE && retries >= MAX_RETRIES
               if SKIP_FAILED_IDS
@@ -378,16 +381,24 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-          prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(','))
+          if ids.length == 1
+            ids_field = {objectIds: ids.first}
+          else
+            ids_field = {where: "OBJECTID >=#{ids.first} AND OBJECTID <=#{ids.last}"}
+          end
+
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
 
           prepared_url = FEATURE_DATA_POST_URL % [url]
+          # @see http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#/Query_Map_Service_Layer/02r3000000p1000000/
           params_data = {
-            objectIds:  prepared_ids,
             outFields:  prepared_fields,
             outSR:      4326,
             f:          'json'
           }
+
+          params_data.merge! ids_field
+
           puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
           response = Typhoeus.post(prepared_url, http_options(params_data, :post))
 

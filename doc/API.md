@@ -366,6 +366,10 @@ Hides the cartodb layer from the map.
 
 Show the cartodb layer in the map if it was previously added. 
 
+#### layer.toggle()
+
+Toggles the visibility of the layer and returns a boolean that indicates the new status (true if the layer is shown, false if it is hidden)
+
 #### layer.setOpacity(_opacity_)
 
 Change the opacity of the layer.
@@ -576,6 +580,10 @@ Show a previously hidden sublayer. The layer is refreshed after calling this fun
 #### sublayer.hide
 
 Remove temporally the sublayer from the layer. The layer is refreshed after calling this function.
+
+#### sublayer.toggle()
+
+Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is shown, false if it is hidden)
 
 #### sublayer.infowindow
 

@@ -47,7 +47,6 @@ describe('SQL api client', function() {
     expect(sqlBis._host()).toEqual('http://troloroloro.com/api/v2/sql');
   });
 
-
   it("should execute a query", function() {
     sql.execute('select * from table');
     expect(ajaxParams.url).toEqual(
@@ -65,6 +64,61 @@ describe('SQL api client', function() {
     expect(ajaxParams.url).toEqual(
       'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent('select * from rambo')
     )
+  });
+
+  it("should execute a long query", function() {
+    //Generating a giant query
+    var long_sql = []
+    var i = 2000;
+    while (--i) long_sql.push("10000");
+    var long_query = 'SELECT * ' + long_sql;
+
+    sql.execute(long_query);
+
+    expect(ajaxParams.url).toEqual(
+      'https://' + USER + '.cartodb.com/api/v2/sql'
+    )
+
+    expect(ajaxParams.data.q).toEqual(long_query);
+    expect(ajaxParams.type).toEqual('post');
+    expect(ajaxParams.dataType).toEqual('json');
+    expect(ajaxParams.crossDomain).toEqual(true);
+  });
+
+  it("should execute a long query with params", function() {
+    s = new cartodb.SQL({
+      user: 'rambo',
+      format: 'geojson',
+      protocol: 'http',
+      host: 'charlies.com',
+      api_key: 'testkey',
+      rambo: 'test',
+      ajax: ajax
+    })
+
+    //Generating a giant query
+    var long_sql = []
+    var i = 2000;
+    while (--i) long_sql.push("10000");
+    var long_query = 'SELECT * ' + long_sql;
+
+    s.execute(long_query, null, {
+      dp: 2
+    })
+
+    expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
+    //Check that we don't have params in the URI
+    expect(ajaxParams.url.indexOf('&format=geojson')).toEqual(-1);
+    expect(ajaxParams.url.indexOf('&api_key=testkey')).toEqual(-1);
+    expect(ajaxParams.url.indexOf('&dp=2')).toEqual(-1);
+    expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
+    //Check that we have the params in the body
+    expect(ajaxParams.data.q).toEqual(long_query);
+    expect(ajaxParams.data.format).toEqual('geojson');
+    expect(ajaxParams.data.api_key).toEqual('testkey');
+    expect(ajaxParams.data.dp).toEqual(2);
+    expect(ajaxParams.rambo).toEqual('test');
   });
 
   it("should substitute mapnik tokens", function() {
@@ -201,6 +255,7 @@ describe('SQL api client', function() {
     s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
     expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });
+
 });
 
 describe('sql.table', function() {

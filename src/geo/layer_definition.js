@@ -1065,6 +1065,11 @@ SubLayer.prototype = {
     this._added = false;
   },
 
+  toggle: function() {
+    this.get('hidden') ? this.show() : this.hide();
+    return !this.get('hidden');
+  },
+
   show: function() {
     if(this.get('hidden')) {
       this.set({

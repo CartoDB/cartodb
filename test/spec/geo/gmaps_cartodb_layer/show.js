@@ -65,4 +65,28 @@ describe('Show funcionality', function() {
       expect(cdb_layer.visible).toBeFalsy();
     });
   });
+
+  it('toggle layer from hidden state should work', function() {
+
+    waits(500);
+
+    runs(function () {
+      cdb_layer.show();
+      visibility = cdb_layer.toggle();
+    });
+
+    waits(500);
+
+    runs(function() {
+      var $tile = $(div).find("img[gtilekey]").first()
+        , opacity = cdb_layer.options.opacity
+        , before_opacity = cdb_layer.options.previous_opacity;
+
+      expect(cdb_layer.visible).toBeFalsy();
+      expect(visibility).toBeFalsy();
+      expect($tile.css("opacity")).toEqual('0');
+      expect(opacity).toEqual(0);
+      expect(before_opacity).not.toEqual(0);
+    });
+  });
 });

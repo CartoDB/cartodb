@@ -266,7 +266,7 @@
 .overlay {
 
   display: none;
-  position: absolute!important;
+  position: absolute!important; // !important required to work on IE10.
   background:rgba(#333, .5);
 
   @include border-radius(3px);

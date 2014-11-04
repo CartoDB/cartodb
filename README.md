@@ -344,8 +344,8 @@ to handle multiple versions in the same system.
 
 Then you can install and use any version, for example:
 ```bash
-nvm install v0.8.9
-nvm use 0.8.9
+nvm install v0.10
+nvm use 0.10
 ```
 
 

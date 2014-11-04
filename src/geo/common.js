@@ -5,6 +5,7 @@
  */
 
 function CartoDBLayerCommon() {
+
 }
 
 CartoDBLayerCommon.prototype = {
@@ -15,6 +16,7 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this._interactionDisabled = false;
+    this.visible = true;
   },
 
   hide: function() {
@@ -24,6 +26,15 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(0);
     // disable here interaction for all the layers
     this._interactionDisabled = true;
+    this.visible = false;
+  },
+
+  toggle: function() {
+
+    if (this.isVisible() == undefined) return this.hide();
+    else this.isVisible() ? this.hide() : this.show();
+
+    return this.isVisible();
   },
 
   /**

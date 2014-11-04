@@ -1,4 +1,4 @@
-3.11.23 ()
+3.11.23 (04//11//2014)
 - fixes rendering issue with category legends that contain long names
 - adds .toggle() method to layers and sublayers to change their visibility
 

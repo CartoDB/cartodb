@@ -267,7 +267,7 @@
 
   display: none;
   position: absolute;
-
+  top: 0; left: 0;
   background:rgba(#333, .5);
 
   @include border-radius(3px);

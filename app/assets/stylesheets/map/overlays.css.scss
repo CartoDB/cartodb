@@ -77,6 +77,10 @@
   background: -o-linear-gradient(#ffffff,#f2f2f2);
   background: linear-gradient(#ffffff,#f2f2f2);
 
+  &:hover {
+   @include background(linear-gradient(#F3F3F3, #FFF));
+  }
+
   &:after {
     content: '';
     position: absolute;
@@ -192,6 +196,9 @@
   @include inline-block();
   vertical-align: top;
   margin: 0 8px 0 0;
+}
+.overlay-properties ul li .field .form-view:hover span {
+  color: #333;
 }
 .overlay-properties ul li .field .form-view:last-child {
   margin-right: 0;

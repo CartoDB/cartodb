@@ -383,8 +383,15 @@ var Vis = cdb.core.View.extend({
     data.minZoom || (data.minZoom = 0);
 
     //Force using GMaps
-    if ( (this.forceGMaps) && (data.map_provider === "leaflet") ) {
+    if ( (this.force_gmaps) && (data.map_provider === "leaflet") ) {
       data.map_provider = 'googlemaps';
+
+      if (data.layers) {
+        data.layers[0].options.type = 'GMapsBase';
+        data.layers[0].options.base_type = this.force_gmaps_base_type;
+        data.layers[0].options.className = this.force_gmaps_base_type;
+        data.layers[0].options.name = this.force_gmaps_base_type;
+      }
     }
 
     var mapConfig = {
@@ -665,7 +672,7 @@ var Vis = cdb.core.View.extend({
       infowindow: true,
       tooltip: true,
       time_slider: true,
-      forceGMaps: false // is it necessary???
+      force_gmaps: false // is it necessary???
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -696,8 +703,12 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    if (opt.forceGMaps) {
-      this.forceGMaps = true;
+    if (opt.force_gmaps) {
+      this.force_gmaps = true;
+    }
+
+    if (opt.force_gmaps_base_type) {
+      this.force_gmaps_base_type = opt.force_gmaps_base_type;
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

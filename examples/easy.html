@@ -1,11 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
-    <title>Easy example | CartoDB.js</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
-    <style>
+    <meta charset="UTF-8">
+    <title>Test forceGMaps</title>
+
+  <!-- Loading google maps library -->
+    <script type="text/javascript" src="http://www.maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+
+    <link rel="stylesheet" href="../themes/css/cartodb.css" />
+    <script src="../src/cartodb.js"></script>
+    <script type="text/javascript">
+      function main() {
+
+        cdb.load('../src/', function() {
+          //var vizjson_url = "http://development.localhost.lan:3000/api/v2/viz/fdc76b62-5cb7-11e3-928e-003ee1fffe8b/viz.json";
+          var vizjson_url = "http://team.cartodb.com/api/v2/viz/9f130ef2-6371-11e4-a0fd-0e9d821ea90d/viz.json";
+          //var vizjson_url = "http://javi.cartodb.com/api/v2/viz/9ae31b56-1269-11e3-83c9-3085a9a9563c/viz.json";
+
+          //cartodb.createVis("map", vizjson_url, { share: true, title: true, description: true, search: true }).done(function(vis, layers) {
+          cartodb.createVis("map", vizjson_url, { share: true, title: true, description: true, search: true, force_gmaps: true, force_gmaps_base_type: 'satellite' }).done(function(vis, layers) {
+
+
+          });
+        });
+      }
+      
+    </script>
+    <style type="text/css">
       html, body, #map {
         height: 100%;
         padding: 0;
@@ -13,48 +34,35 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
   </head>
-  <body>
+  <body onload="main();">
     <div id="map"></div>
 
-    <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script id="base_template" type="text/template">
+      <div class="mamufas">
+        <section class="block modal <%= modal_type %>">
+          <a href="#close" class="close">x</a>
+          <div class="head">
+            <h3><%= title %></h3>
+          </div>
+          <div class="content">
+            <div class="buttons">
+              <h4>Social</h4>
+              <ul>
+                <li><a class="facebook">Facebook</a></li>
+                <li><a class="twitter">Twitter</a></li>
+              </ul>
+            </div> 
+           <div class="embed_code">
+             <h4>Embed this map</h4>
+             <textarea id="" name="" cols="30" rows="10"><iframe src="//player.vimeo.com/video/43595116?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff” width="500"></iframe></textarea>
+           </div>
+          </div>
+        </div>
+      </div>
 
-    <script>
-      function main() {
-        cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
-            shareable: true,
-            title: true,
-            description: true,
-            search: true,
-            tiles_loader: true,
-            center_lat: 0,
-            center_lon: 0,
-            zoom: 2
-        })
-        .done(function(vis, layers) {
-          // layer 0 is the base layer, layer 1 is cartodb layer
-          // setInteraction is disabled by default
-          layers[1].setInteraction(true);
-          layers[1].on('featureOver', function(e, pos, latlng, data) {
-            cartodb.log.log(e, pos, latlng, data);
-          });
 
-          // you can get the native map to work with it
-          // depending if you use google maps or leaflet
-          map = vis.getNativeMap();
 
-          // now, perform any operations you need
-          // map.setZoom(3)
-          // map.setCenter(new google.maps.Latlng(...))
-        })
-        .error(function(err) {
-          console.log(err);
-        });
-      }
-
-      window.onload = main;
     </script>
   </body>
 </html>

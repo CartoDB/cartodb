@@ -381,10 +381,10 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-          if ids.length > 1
-            ids_field = "OBJECTID >=#{ids.first} AND OBJECTID <=#{ids.last}"
+          if ids.length == 1
+            ids_field = {objectIds: ids.first}
           else
-            ids_field = ids.first
+            ids_field = {where: "OBJECTID >=#{ids.first} AND OBJECTID <=#{ids.last}"}
           end
 
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
@@ -397,7 +397,7 @@ module CartoDB
             f:          'json'
           }
 
-          params_data[ids.length == 1 ? :objectIds : :where] = ids_field
+          params_data.merge! ids_field
 
           puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
           response = Typhoeus.post(prepared_url, http_options(params_data, :post))

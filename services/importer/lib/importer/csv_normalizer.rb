@@ -189,7 +189,6 @@ module CartoDB
 
       def encoding
         return @encoding unless @encoding.nil?
-	debugger
 
         source_file = SourceFile.new(filepath)
         if source_file.encoding

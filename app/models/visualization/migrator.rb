@@ -30,7 +30,7 @@ module CartoDB
           String    :license
           String    :source
           String    :title
-
+          String    :kind
         end
 
         @db.run(%Q{

@@ -534,7 +534,8 @@ describe Visualization::Member do
       active_layer_id: random,
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      kind:         attrigbutes.fetch(:kind, Visualization::Member::KIND_GEOM)
     }
   end #random_attributes
 end # Visualization

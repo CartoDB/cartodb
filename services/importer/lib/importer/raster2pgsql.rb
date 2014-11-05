@@ -5,61 +5,76 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Raster2Pgsql
-      SCHEMA        = 'cdb_importer'
-      DEFAULT_SRID  = 4326
-      BLOCKSIZE     = '256x256'
-      NORMALIZER_RELATIVE_PATH = '../../../../../lib/importer/misc/shp_normalizer.py'
+      SCHEMA                        = 'cdb_importer'
+      PROJECTION                    = 3857
+      BLOCKSIZE                     = '128x128'
+      WEBMERCATOR_FILENAME          = '%s_webmercator.tif'
+      ALIGNED_WEBMERCATOR_FILENAME  = '%s_aligned_webmercator.tif'
+      SQL_FILENAME                  = '%s%s.sql'
 
       def initialize(table_name, filepath, pg_options)
-        self.filepath   = filepath
-        self.pg_options = pg_options
-        self.table_name = table_name
-      end #initialize
+        self.filepath             = filepath
+        self.basepath             = filepath.slice(0, filepath.rindex('/')+1)
+        self.webmercator_filepath = WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
+        self.aligned_filepath     = ALIGNED_WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
+        self.sql_filepath         = SQL_FILENAME % [ basepath, table_name ]
+        self.pg_options           = pg_options
+        self.table_name           = table_name
+        self.exit_code            = nil
+        self.command_output       = nil
+      end
+
+      attr_reader   :exit_code, :command_output
 
       def run
-        stdout, stderr, status  = Open3.capture3(command)
+        normalize
+        stdout, stderr, status  = Open3.capture3(raster2pgsql_command)
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
+        output_message = "(#{exit_code}) |#{command_output}| Command: #{raster2pgsql_command}"
 
-        output_message = "(#{exit_code}) |#{command_output}| Command: #{command}"
-
-        raise UnknownSridError.new(output_message)          if command_output =~ /invalid SRID/
+        raise UnknownSridError.new(output_message)          if command_output =~ /invalid srid/i
         raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
-        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /failure/
+        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /failure/i
+
+        stdout, stderr, status  = Open3.capture3(psql_command)
+        self.command_output     = stdout + stderr
+        self.exit_code          = status.to_i
+        output_message = "(#{exit_code}) |#{command_output}| Command: #{psql_command}"
+
+        raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
+        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /error/i || command_output =~ /aborted/i
+
         self
-      end #run
-
-      def command
-        %Q(#{raster2pgsql_command} | #{psql_command })
-      end #command
-
-      def raster2pgsql_command
-        %Q(#{raster2pgsql_path} -I -s 4326 -Y -t #{BLOCKSIZE} ) +
-        %Q(#{filepath} #{table_name})
-      end #raster_to_pgsql_command
-
-      attr_reader   :exit_code, :command_output, :normalizer_output
+      end
 
       private
 
-      attr_writer   :exit_code, :command_output, :normalizer_output
-      attr_accessor :filepath, :pg_options, :table_name
+      attr_writer   :exit_code, :command_output
+      attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, :sql_filepath, \
+                    :basepath
 
-      def raster2pgsql_path
-        `which raster2pgsql`.strip
-      end #raster2pgsql_path
+      def normalize
+        stdout, stderr, status  = Open3.capture3(gdalwarp_command)
+        self.command_output     = stdout + stderr
+        self.exit_code          = status.to_i
+        output_message = "(#{exit_code}) |#{command_output}| Command: #{gdalwarp_command}"
 
-      def psql_path
-        `which psql`.strip
-      end #psql_path
+        raise TiffToSqlConversionError.new(output_message) if exit_code != 0
+      end
 
-      def statement_timeout
-        "echo 'set statement_timeout=600000;';"
-      end #statement_timeout
+      # TODO: build overviews
+      def overviews
+        # -l 2,4,8,16 etc
+        ""
+      end
 
-      def pg_copy_option
-        'PG_USE_COPY=YES'
-      end #pg_copy_option
+      def raster2pgsql_command
+        # TODO: Use aligned_filepath
+        # We currently won't apply any constraint
+        %Q(#{raster2pgsql_path} -I -Y -s #{PROJECTION} -t #{BLOCKSIZE} #{overviews} #{webmercator_filepath} ) +
+        %Q(#{SCHEMA}.#{table_name} > #{sql_filepath})
+      end
 
       def psql_command
         host      = pg_options.fetch(:host)
@@ -67,64 +82,26 @@ module CartoDB
         user      = pg_options.fetch(:user)
         database  = pg_options.fetch(:database)
 
-        %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -w -d #{database})
-      end #psql_command
+        %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} -f #{sql_filepath})
+      end
 
-      def normalize
-        stdout, stderr, status  = Open3.capture3(normalizer_command)
-        output                  = stdout.strip.split(/, */, 4)
-        self.normalizer_output  = {
-          projection:   output[0],
-          encoding:     output[1],
-          source:       output[2],
-          destination:  output[3]
-        }
+      def gdalwarp_command
+        %Q(#{gdalwarp_path} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+      end
 
-        raise ShpNormalizationError unless status.to_i == 0 
-        raise ShpNormalizationError unless normalized?
-        self
-      end #normalize
+      def raster2pgsql_path
+        `which raster2pgsql`.strip
+      end
 
-      def normalized?
-        normalizer_output && detected_projection
-      end #normalize?
+      def psql_path
+        `which psql`.strip
+      end
 
-      def detected_projection
-        projection = normalizer_output.fetch(:projection)
-        return nil if projection == 'None'
-        projection.to_i
-      end #detected_projection
+      def gdalwarp_path
+        `which gdalwarp`.strip
+      end
 
-      def detected_encoding
-        encoding = normalizer_output.fetch(:encoding)
-        return 'LATIN1' if encoding == 'None' 
-        return codepage_for(encoding) if windows?(encoding)
-        encoding
-      end #detected_encoding
-
-      def normalizer_command
-        %Q(#{python_bin_path} -Wignore #{normalizer_path} ) +
-        %Q("#{filepath}" #{table_name})
-      end #normalizer_command
-
-      def python_bin_path
-        `which python`.strip
-      end #python_bin_path
-
-      def normalizer_path
-        File.expand_path(NORMALIZER_RELATIVE_PATH, __FILE__) 
-      end #normalizer_path
-
-      def codepage_for(encoding)
-        encoding.gsub(/windows-/, 'CP')
-      end #codepage_for
-
-      def probably_wrongly_detected_codepage?(encoding)
-        !!(encoding =~ /windows/)
-      end #probably_wrongly_detected_codepage?
-
-      alias_method :windows?, :probably_wrongly_detected_codepage?
-    end # Raster2Pgsql
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

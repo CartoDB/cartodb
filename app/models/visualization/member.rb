@@ -29,6 +29,10 @@ module CartoDB
 
       CANONICAL_TYPE  = 'table'
       DERIVED_TYPE    =  'derived'
+
+      KIND_GEOM   = 'geom'
+      KIND_RASTER = 'raster'
+
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -64,6 +68,7 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :kind,                String, default: KIND_GEOM
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE

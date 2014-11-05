@@ -9,7 +9,7 @@ module CartoDB
       DEFAULT_BATCH_SIZE = 50000
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat }
-      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
+      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
@@ -33,8 +33,9 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        create_the_geom_from_geometry_column  || 
+        create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
+        create_the_geom_from_country_guessing ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -80,7 +81,7 @@ module CartoDB
         column.empty_lines_to_nulls
         column.geometrify
         unless column_exists_in?(table_name, :the_geom)
-          column.rename_to(:the_geom) 
+          column.rename_to(:the_geom)
         end
         handle_multipoint(qualified_table_name) if multipoint?
         self
@@ -122,6 +123,66 @@ module CartoDB
           job,
           'Populating the_geom from latitude / longitude'
         )
+      end
+
+      def create_the_geom_from_country_guessing
+        job.log 'Trying country guessing...'
+        column_query = %Q(
+          SELECT column_name, data_type
+          FROM information_schema.columns
+          WHERE table_name = '#{table_name}' AND table_schema = '#{schema}'
+        )
+        db[column_query].each do |column|
+          if ['character varying', 'varchar', 'text'].include? column[:data_type]
+            success = try_country_guessing_on column[:column_name].to_sym
+            return true if success
+          end
+        end
+        return false
+      end
+
+      def try_country_guessing_on(column_name_sym)
+        matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
+        proportion = matches.to_f / sample.count
+        if proportion > 0.8 # TODO do not hardcode
+          job.log "Found country column: #{column_name_sym.to_s}"
+          create_the_geom_in(table_name)
+          config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
+            table_schema: schema,
+            table_name: table_name,
+            qualified_table_name: qualified_table_name,
+            connection: db,
+            formatter: column_name_sym.to_s,
+            geometry_type: 'polygon',
+            kind: 'admin0',
+            max_rows: nil,
+            country_column: nil
+          )
+          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+          geocoder.run
+          return geocoder.state == 'completed'
+        end
+        return false
+      end
+
+      def sample
+        return @sample if @sample
+        sample_size = 400 #TODO calculate based on params
+        sample_query = %Q(SELECT * FROM #{qualified_table_name} ORDER BY random() LIMIT #{sample_size})
+        @sample = db[sample_query].all
+      end
+
+      def countries
+        return @countries if @countries
+        #TODO this must be injected
+        sql_api_config = Cartodb.config.fetch(:geocoder).deep_symbolize_keys.fetch(:internal)
+        sql_api = CartoDB::SQLApi.new(sql_api_config)
+        query = 'SELECT synonyms FROM country_decoder'
+        @countries = Set.new()
+        sql_api.fetch(query).each do |country|
+          @countries.merge country['synonyms']
+        end
+        @countries
       end
 
       def create_the_geom_in(table_name)
@@ -178,7 +239,7 @@ module CartoDB
 
       def find_column_in(table_name, possible_names)
         sample = db[%Q{
-          SELECT  column_name 
+          SELECT  column_name
           FROM    information_schema.columns
           WHERE   table_name = '#{table_name}'
           AND     table_schema = '#{schema}'
@@ -227,4 +288,3 @@ module CartoDB
     end
   end
 end
-

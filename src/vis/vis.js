@@ -383,18 +383,18 @@ var Vis = cdb.core.View.extend({
     data.minZoom || (data.minZoom = 0);
 
     //Force using GMaps ?
-    if ( (this.force_gmaps_base_type) && (data.map_provider === "leaflet") ) {
+    if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
 
       //Check if base_type is correct
       var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
-      if (_.contains(typesAllowed, this.force_gmaps_base_type)) {
+      if (_.contains(typesAllowed, this.gmaps_base_type)) {
         if (data.layers) {
           data.layers[0].options.type = 'GMapsBase';
-          data.layers[0].options.base_type = this.force_gmaps_base_type;
-          data.layers[0].options.name = this.force_gmaps_base_type;
+          data.layers[0].options.base_type = this.gmaps_base_type;
+          data.layers[0].options.name = this.gmaps_base_type;
 
-          if (this.force_gmaps_style) {
-            data.layers[0].options.style = JSON.parse(this.force_gmaps_style);  
+          if (this.gmaps_style) {
+            data.layers[0].options.style = JSON.parse(this.gmaps_style);  
           }
 
           data.map_provider = 'googlemaps';
@@ -402,7 +402,7 @@ var Vis = cdb.core.View.extend({
           console.error ('No base map loaded. Using Leaflet.');
         }
       } else {
-        console.error('GMaps base_type "' + this.force_gmaps_base_type + ' is not supported. Using leaflet.');
+        console.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
       }
     }
 
@@ -714,12 +714,12 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    if (opt.force_gmaps_base_type) {
-      this.force_gmaps_base_type = opt.force_gmaps_base_type;
+    if (opt.gmaps_base_type) {
+      this.gmaps_base_type = opt.gmaps_base_type;
     }
 
-    if (opt.force_gmaps_style) {
-      this.force_gmaps_style = opt.force_gmaps_style;
+    if (opt.gmaps_style) {
+      this.gmaps_style = opt.gmaps_style;
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

@@ -346,7 +346,7 @@ describe("Vis", function() {
     }]
 
     var opts = {
-      force_gmaps_base_type: 'dark_roadmap'
+      gmaps_base_type: 'dark_roadmap'
     };
 
     layers = null;

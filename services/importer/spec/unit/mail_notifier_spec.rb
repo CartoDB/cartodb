@@ -29,8 +29,8 @@ describe CartoDB::Importer2::MailNotifier do
       @data_import.stubs(:synchronization_id).once.returns(nil)
       set_import_duration(CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
       @data_import.stubs(:user_id).once.returns(:any_user_id)
-      @result.stubs(:success).once.returns(true)
-      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1).returns(true)
+      @result.stubs(:success).returns(true)
+      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil).returns(true)
 
       @mail_notifier.notify_if_needed
 
@@ -64,8 +64,8 @@ describe CartoDB::Importer2::MailNotifier do
   describe '#send!' do
     it 'should inconditionally send a mail to the user who triggered the import' do
       @data_import.stubs(:user_id).once.returns(:any_user_id)
-      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1).returns(true)
-      @result.stubs(:success).once.returns(true)
+      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil).returns(true)
+      @result.stubs(:success).returns(true)
       @mail_notifier.send!
       @mail_notifier.mail_sent?.should == true
     end

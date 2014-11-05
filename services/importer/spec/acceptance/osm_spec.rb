@@ -16,7 +16,7 @@ describe 'OSM regression tests' do
   it 'imports OSM files' do
     filepath    = path_to('map2.osm')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, Doubles::Log.new)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
     puts runner.report
 

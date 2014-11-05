@@ -55,7 +55,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
       query = query_generator.search_terms_query(0)
 
-      query.squish.should == 'SELECT DISTINCT(quote_nullable(city)) AS city FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
+      query.squish.should == 'SELECT DISTINCT(quote_nullable(trim(city))) AS city FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
     end
   end
 
@@ -72,7 +72,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
         UPDATE "public"."untitled_table" AS dest
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM any_temp_table AS orig
-        WHERE any_column_name::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
+        WHERE trim(any_column_name::text) = orig.geocode_string AND dest.cartodb_georef_status IS NULL
       }.squish
     end
   end
@@ -89,8 +89,8 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
       query_generator.search_terms_query(0).squish.should == %Q{
         SELECT DISTINCT
-          quote_nullable(region_column_name) as region,
-          quote_nullable(country_column_name) as country
+          quote_nullable(trim(region_column_name)) as region,
+          quote_nullable(trim(country_column_name)) as country
         FROM any_table_name
         WHERE cartodb_georef_status IS NULL
         LIMIT 10 OFFSET 0
@@ -110,8 +110,8 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
         UPDATE any_table_name AS dest
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           FROM any_temp_tablename AS orig
-          WHERE dest.region_column_name::text = orig.geocode_string
-            AND dest.country_column_name::text = orig.country
+          WHERE trim(dest.region_column_name::text) = orig.geocode_string
+            AND trim(dest.country_column_name::text) = orig.country
             AND dest.cartodb_georef_status IS NULL
       }.squish
     end

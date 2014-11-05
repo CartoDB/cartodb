@@ -8,6 +8,9 @@
   @import "../elements/elements-sprite";
   @import "../common/mixins";
 
+  .select2-container:hover .select2-choice {
+    border-color: #7E7E7E!Important;
+  }
 
   // Choice
   .form_custom_text_combo {

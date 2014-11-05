@@ -11,6 +11,7 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
+require_relative 'importer_stats'
 
 module CartoDB
   module Importer2
@@ -38,20 +39,35 @@ module CartoDB
         self.georeferencer  = georeferencer
         self.options        = {}
         @post_import_handler = nil
+        @importer_stats = ImporterStats.instance
+      end
+
+      def set_importer_stats(importer_stats)
+        @importer_stats = importer_stats
       end
 
       def run(post_import_handler_instance=nil)
-        @post_import_handler = post_import_handler_instance
+        @importer_stats.timing('loader') do
 
-        normalize
-        job.log "Detected encoding #{encoding}"
-        job.log "Using database connection with #{job.concealed_pg_options}"
+          @post_import_handler = post_import_handler_instance
 
-        run_ogr2ogr
+          @importer_stats.timing('normalize') do
+            normalize
+          end
 
-        post_ogr2ogr_tasks
+          job.log "Detected encoding #{encoding}"
+          job.log "Using database connection with #{job.concealed_pg_options}"
 
-        self
+          @importer_stats.timing('ogr2ogr') do
+            run_ogr2ogr
+          end
+
+          @importer_stats.timing('post_ogr2ogr_tasks') do
+            post_ogr2ogr_tasks
+          end
+
+          self
+        end
       end
 
       def streamed_run_init
@@ -90,14 +106,17 @@ module CartoDB
       def normalize
         converted_filepath = normalizers_for(source_file.extension)
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
-            normalizer = normalizer_klass.new(filepath, job)
 
-            FORCE_NORMALIZER_REGEX.each { |regex|
-              normalizer.force_normalize if regex =~ source_file.path
-            }
+            @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
+              normalizer = normalizer_klass.new(filepath, job)
 
-            normalizer.run
-                      .converted_filepath
+              FORCE_NORMALIZER_REGEX.each { |regex|
+                normalizer.force_normalize if regex =~ source_file.path
+              }
+
+              normalizer.run
+                        .converted_filepath
+            end
           }
         layer = source_file.layer
         @source_file = SourceFile.new(converted_filepath)

@@ -92,7 +92,12 @@ $ git clone --recursive https://github.com/CartoDB/cartodb.git
 Or you can just [download the CartoDB zip
 file](https://github.com/CartoDB/cartodb/archive/master.zip).
 
-## Add CartoDB PPAs ##
+## Add CartoDB [PPA](https://help.ubuntu.com/community/PPA)s ##
+
+First install python software properties to be able to run `add-apt-repository`
+```
+sudo apt-get install python-software-properties
+```
 
 Add CartoDB Base PPA
 ```bash
@@ -134,6 +139,17 @@ sudo apt-get update
 ```
 
 ## Some dependencies ##
+
+Installations assume you use UTF8, you can set it like this:
+```bash
+echo -e 'LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8' | sudo tee /etc/default/locale
+source /etc/default/locale
+```
+
+[make](https://help.ubuntu.com/community/CompilingEasyHowTo) is required to compile sources
+```bash
+sudo apt-get install build-essential checkinstall
+```
 
 unp is required for archive file upload support
 
@@ -192,7 +208,8 @@ sudo apt-get install postgresql-plpython-9.3
 Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
 
 ```bash
-/etc/postgresql/9.3/main$ sudo vim pg_hba.conf
+cd /etc/postgresql/9.3/main
+sudo vim pg_hba.conf
 ```
 
 And change inside all local connections from peer/md5/... to trust.
@@ -270,16 +287,24 @@ sudo make all install
 sudo PGUSER=postgres make installcheck # to run tests
 ```
 
-NOTE: if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
-You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf
+**NOTE:** if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
+You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
+
+```
+vim /etc/postgresql/9.3/main/postgresql.conf
+...
+shared_preload_libraries = 'schema_triggers.so'
+```
+
+After this change the 2nd installcheck of cartodb-postresql should be OK.
 
 Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
 ## Install Ruby ##
 
-We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.3. You can use rvm:
+We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby 1.9.3. You can use rvm, rbenv or a system install, up to you. For rvm and rbenv:
 
+### rvm
 ```bash
 sudo curl -L https://get.rvm.io | bash
 sudo su
@@ -296,27 +321,31 @@ sudo apt-get install ruby-bundler
 sudo apt-get install rubygems
 ```
 
+### rbenv
+Follow the official guide on https://github.com/sstephenson/rbenv#installation
+
+For bundler simply run:
+
+```bash
+gem install bundler
+```
+
 ## Install Node.js ##
 The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 
 ```bash
 sudo apt-get install nodejs npm
 sudo add-apt-repository ppa:cartodb/nodejs-010
-sudo apt-get update; sudo apt-get upgrade
-sudo apt-get dist-upgrade
+sudo apt-get update
 ```
 
-We currently run our node apps against version 0.10. You can install NVM 
-to handle multiple versions in the same system:
-
-```bash
-curl https://raw.github.com/creationix/nvm/master/install.sh | sh
-```
+We currently run our node apps against version 0.10. You can install [NVM](https://github.com/creationix/nvm) 
+to handle multiple versions in the same system.
 
 Then you can install and use any version, for example:
 ```bash
-nvm install v0.8.9
-nvm use 0.8.9
+nvm install v0.10
+nvm use 0.10
 ```
 
 
@@ -364,7 +393,7 @@ accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API.
 
 ```bash
-sudo apt-get install varnish=2.1.0-2cdb~precise1
+sudo apt-get install varnish=2.1.5-2~cdb2 #or any version <3.x
 ```
 
 Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
@@ -420,8 +449,13 @@ node app.js development
 sudo apt-get install imagemagick
 ```
 
-## Raster import support
+## Optional
+These are not strictly required to run CartoDB, but if you are installing CartoDB to do change something you might need them:
 
+### Frontend assets
+Have their own README and tools since they don't run on the Rails, see [lib/build/README.md](lib/build/README.md).
+
+### Raster import support
 Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.
 
 Access to temporary dir is also needed. Depending on your installation you might also need to run `chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
@@ -455,19 +489,21 @@ redis-server
 
 # If you are using rvm, create a new gemset
 rvm use 1.9.3@cartodb --create && bundle install
-
 # If it's a system wide installation
 sudo bundle install
-
 # Make the created gemset your default one
 rvm use 1.9.3@cartodb --default
 
+# If you are using rbenv simply run:
+rbenv global ruby 1.9.3-p547
+bundle install
+
 # Configure the application constants
-mv config/app_config.yml.sample config/app_config.yml
+cp config/app_config.yml.sample config/app_config.yml
 vim config/app_config.yml
 
 # Configure your postgres database connection details
-mv config/database.yml.sample config/database.yml
+cp config/database.yml.sample config/database.yml
 vim config/database.yml
 
 # Add entries to /etc/hosts needed in development
@@ -543,7 +579,7 @@ Installing the full stack might not always be smooth due to other component upda
 
 ### Testing ###
 
-See TESTING
+See TESTING.md
 
 ### Contributors ###
 

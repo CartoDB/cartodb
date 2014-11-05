@@ -612,6 +612,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
+
+    kind = CartoDB::Visualization::Member::KIND_GEOM
+    unless self.data_import_id.nil?
+      data_import = DataImport.where(id: data_import_id).first
+      kind = CartoDB::Visualization::Member::KIND_RASTER if data_import.is_raster?
+    end
+
     member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
@@ -619,7 +626,8 @@ class Table < Sequel::Model(:user_tables)
       description:  self.description,
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
-      user_id:      self.owner.id
+      user_id:      self.owner.id,
+      kind:         kind
     )
 
     member.store

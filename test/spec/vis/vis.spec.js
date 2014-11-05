@@ -338,12 +338,26 @@ describe("Vis", function() {
 
   it ("should force GMaps", function() {
     this.mapConfig.map_provider = "leaflet";
+    this.mapConfig.layers = [{
+      kind: 'tiled',
+      options: {
+        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+      }
+    }]
 
     var opts = {
-      force_gmaps_base_type: 'satellite'
+      force_gmaps_base_type: 'dark_roadmap'
     };
-    this.vis.load(this.mapConfig, opts);
-    expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined); 
+
+    layers = null;
+    runs(function() {
+      this.vis.load(this.mapConfig, opts).done(function(vis, lys){  layers = lys;});
+    })
+    waits(100);
+
+    runs(function() {
+      expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
+    });
   })
 
 });

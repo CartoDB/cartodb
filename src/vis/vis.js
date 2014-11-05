@@ -382,15 +382,27 @@ var Vis = cdb.core.View.extend({
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
 
-    //Force using GMaps
-    if ( (this.force_gmaps) && (data.map_provider === "leaflet") ) {
-      data.map_provider = 'googlemaps';
+    //Force using GMaps ?
+    if ( (this.force_gmaps_base_type) && (data.map_provider === "leaflet") ) {
 
-      if (data.layers) {
-        data.layers[0].options.type = 'GMapsBase';
-        data.layers[0].options.base_type = this.force_gmaps_base_type;
-        data.layers[0].options.className = this.force_gmaps_base_type;
-        data.layers[0].options.name = this.force_gmaps_base_type;
+      //Check if base_type is correct
+      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
+      if (_.contains(typesAllowed, this.force_gmaps_base_type)) {
+        if (data.layers) {
+          data.layers[0].options.type = 'GMapsBase';
+          data.layers[0].options.base_type = this.force_gmaps_base_type;
+          data.layers[0].options.name = this.force_gmaps_base_type;
+
+          if (this.force_gmaps_style) {
+            data.layers[0].options.style = JSON.parse(this.force_gmaps_style);  
+          }
+
+          data.map_provider = 'googlemaps';
+        } else {
+          console.error ('No base map loaded. Using Leaflet.');
+        }
+      } else {
+        console.error('GMaps base_type "' + this.force_gmaps_base_type + ' is not supported. Using leaflet.');
       }
     }
 
@@ -672,7 +684,6 @@ var Vis = cdb.core.View.extend({
       infowindow: true,
       tooltip: true,
       time_slider: true,
-      force_gmaps: false // is it necessary???
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -703,12 +714,12 @@ var Vis = cdb.core.View.extend({
       this.https = true;
     }
 
-    if (opt.force_gmaps) {
-      this.force_gmaps = true;
-    }
-
     if (opt.force_gmaps_base_type) {
       this.force_gmaps_base_type = opt.force_gmaps_base_type;
+    }
+
+    if (opt.force_gmaps_style) {
+      this.force_gmaps_style = opt.force_gmaps_style;
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

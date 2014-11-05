@@ -8,10 +8,10 @@ module.exports = {
   task: function() {
     return {
       options: {
-        assetsDirs: '<%= config.dist %>',
+        assetsDirs: '<%= config.dist %>/<%= config.app %>',
       },
-      html: ['<%= config.dist %>/**/*.html'],
-      css: ['<%= config.dist %>/css/**/*.css']
+      html: ['<%= config.dist %>/<%= config.app %>/**/*.html'],
+      css: ['<%= config.dist %>/<%= config.app %>/css/**/*.css']
     }
   }
 }

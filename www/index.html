@@ -28,16 +28,11 @@
     <!-- build:css(www) /css/main.css -->
       <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
     <!-- endbuild -->
-
-
-    <!-- build:js(www) /js/modernizr.js -->
-      <script src="js/main.js" type="text/javascript"></script>
-    <!-- endbuild -->
   <body>
     <ul>
-      <li>CartoDB.js last bugfixing version: {{ last-bugfixing-version }}</li>
-      <li>CartoDB.js last minor version: {{ last-minor-version }}</li>
-      <li>CartoDB.js last major version: {{ last-version }}</li>
+      <li>CartoDB.js last bugfixing version: <%= last_bugfixing_version %></li>
+      <li>CartoDB.js last minor version: <%= last_minor_version %></li>
+      <li>CartoDB.js last major version: <%= last_major_version %></li>
     </ul>
 
     <!-- build:js(www) /js/app.js -->

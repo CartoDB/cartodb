@@ -21,7 +21,7 @@ module.exports = {
       },
       dist: {
         options: {
-          generatedImagesDir: '<%= config.dist %>/img/generated'
+          generatedImagesDir: '<%= config.dist %>/<%= config.app %>/img/generated'
         }
       },
       server: {

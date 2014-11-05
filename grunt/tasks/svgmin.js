@@ -10,9 +10,9 @@ module.exports = {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= config.dist %>',
+          cwd: '<%= config.dist %>/<%= config.app %>',
           src: '**/*.svg',
-          dest: '<%= config.dist %>'
+          dest: '<%= config.dist %>/<%= config.app %>'
         }]
       }
     }

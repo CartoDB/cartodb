@@ -11,14 +11,25 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
+  var pkg = grunt.file.readJSON('package.json');
+  var version = pkg.version.split('.');
+
   var config = {
-    dist: 'dist/www',
-    app:  'www',
-    pkg:  grunt.file.readJSON('package.json')
+    dist:     'dist',
+    app:      'www',
+    version: {
+      major:      version[0],
+      minor:      version[0] + '.' + version[1],
+      bugfixing:  pkg.version
+    },
+    pkg:  pkg
   };
 
   grunt.initConfig({
     config: config,
+    aws: grunt.file.readJSON('secrets.json'),
+    gitinfo: {},
+    s3: require('./grunt/tasks/s3').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(),
     clean: require('./grunt/tasks/clean').task(),
@@ -27,8 +38,8 @@ module.exports = function(grunt) {
     useminPrepare: require('./grunt/tasks/useminPrepare').task(),
     usemin: require('./grunt/tasks/usemin').task(),
     htmlmin: require('./grunt/tasks/htmlmin').task(),
-    concat: {},
-    uglify: {},
+    concat: require('./grunt/tasks/concat').task(grunt, config),
+    uglify: require('./grunt/tasks/uglify').task(),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
     svgmin: require('./grunt/tasks/svgmin').task(),
@@ -46,11 +57,11 @@ module.exports = function(grunt) {
   - [X] server | serve => serve static cartodb.js webpage
   - [ ] release => 
   - [ ] publish => publish cartodb.js library
-  - [ ] dist === build
-  - [ ] clean
+  - [X] dist
+  - [X] clean
   - [ ] invalidate
   - [ ] test
-  - [ ] build
+  - [X] build
   - [X] deploy => deploy static cartodb.js webpage
 
   */
@@ -87,11 +98,16 @@ module.exports = function(grunt) {
 
   ]);
 
+  grunt.registerTask('publish', [
+    's3'
+  ]);
+
   grunt.registerTask('deploy', [
     'buildcontrol:pages'
   ]);
 
   grunt.registerTask('build', [
+    'gitinfo',
     'clean:dist',
     'concurrent:dist',
     'useminPrepare',
@@ -104,6 +120,12 @@ module.exports = function(grunt) {
     'filerev',
     'usemin',
     'htmlmin'
+  ]);
+
+  grunt.registerTask('dist', [
+    'gitinfo',
+    'concat',
+    'uglify'
   ]);
 
   grunt.registerTask('default', [

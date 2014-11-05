@@ -4,16 +4,18 @@
  *
  */
 
+var __ = require('underscore');
+
 module.exports = {
   task: function(grunt, config) {
     return {
       options: {
         process: function (content, srcpath) {
-          var version_arr = config.pkg.version.split('.');
-          return content
-            .replace(/\{\{ last-bugfixing-version \}\}/g, version_arr.join('.'))
-            .replace(/\{\{ last-minor-version \}\}/g, version_arr[0] + '.' + version_arr[1])
-            .replace(/\{\{ last-version \}\}/g, version_arr[0]);
+          return __.template(content)({
+            last_bugfixing_version: config.version.bugfixing,
+            last_minor_version:     config.version.minor,
+            last_major_version:     config.version.major
+          });
         }
       },
 
@@ -31,7 +33,7 @@ module.exports = {
             '!**/_*{,/**}',
             'favicon.ico'
           ],
-          dest: '<%= config.dist %>'
+          dest: '<%= config.dist %>/<%= config.app %>'
         }]
       },
 

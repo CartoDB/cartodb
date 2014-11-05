@@ -13,9 +13,9 @@ module.exports = {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= config.dist %>/css',
+          cwd: '<%= config.dist %>/<%= config.app %>/css',
           src: '**/*.css',
-          dest: '<%= config.dist %>/css'
+          dest: '<%= config.dist %>/<%= config.app %>/css'
         }]
       },
       server: {

@@ -16,9 +16,9 @@ module.exports = {
         },
         files: [{
           expand: true,
-          cwd: '<%= config.dist %>',
+          cwd: '<%= config.dist %>/<%= config.app %>',
           src: '**/*.html',
-          dest: '<%= config.dist %>'
+          dest: '<%= config.dist %>/<%= config.app %>'
         }]
       }
     }

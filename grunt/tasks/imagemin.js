@@ -13,9 +13,9 @@ module.exports = {
         },
         files: [{
           expand: true,
-          cwd: '<%= config.dist %>',
+          cwd: '<%= config.dist %>/<%= config.app %>',
           src: ['*.{png,jpg,gif}'],
-          dest: '<%= config.dist %>'
+          dest: '<%= config.dist %>/<%= config.app %>'
         }]
       }
     }

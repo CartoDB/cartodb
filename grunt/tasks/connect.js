@@ -26,7 +26,7 @@ module.exports = {
         options: {
           open: true,
           base: [
-            '<%= config.dist %>'
+            '<%= config.dist %>/<%= config.app %>'
           ]
         }
       },

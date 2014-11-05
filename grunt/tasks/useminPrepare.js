@@ -8,10 +8,10 @@ module.exports = {
   task: function() {
     return {
       options: {
-        dest: '<%= config.dist %>'
+        dest: '<%= config.dist %>/<%= config.app %>'
       },
       html: [
-        '<%= config.dist %>/**/*.html',
+        '<%= config.dist %>/<%= config.app %>/**/*.html',
       ]
     }
   }

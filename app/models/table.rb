@@ -32,6 +32,8 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
+  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
+  # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
       :id                           => :id,
@@ -630,25 +632,6 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 
-
-
-  ##
-  # Post the style to the tiler
-  #
-  def send_tile_style_request(data_layer=nil)
-    data_layer ||= self.map.data_layers.first
-    url = "/tiles/#{self.name}/style?map_key=#{owner.api_key}"
-    data = {
-      'style_version' => data_layer.options['style_version'],
-      'style'         => data_layer.options['tile_style']
-    }
-    tile_request('POST', url, data)
-  rescue => exception
-    CartoDB::Logger.info('Table#send_tile_style_request Error', \
-      "Error sending tile request: #{url} #{data} #{exception}")
-    raise exception if Rails.env.production? || Rails.env.staging?
-  end
-
   def before_destroy
     @table_visualization                = table_visualization
     if @table_visualization
@@ -1005,12 +988,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def add_column!(options)
-    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
+    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
-    owner.in_database.add_column name, options[:name].to_s.sanitize, type
+    column_name = options[:name].to_s.sanitize_column_name
+    owner.in_database.add_column name, column_name, type
     self.invalidate_varnish_cache
-    return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
+    return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^(PG::Error|PGError)/
       raise CartoDB::InvalidType, e.message
@@ -1031,6 +1015,7 @@ class Table < Sequel::Model(:user_tables)
     raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_name.to_s)
 
     if new_name.present? && new_name != old_name
+      new_name = new_name.sanitize_column_name
       rename_column(old_name, new_name)
     end
 
@@ -1055,7 +1040,7 @@ class Table < Sequel::Model(:user_tables)
     raise 'Please provide a column name' if new_name.empty?
     raise 'This column cannot be renamed' if CARTODB_COLUMNS.include?(old_name.to_s)
 
-    if new_name =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
+    if new_name =~ /^[0-9]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
       raise CartoDB::InvalidColumnName, 'That column name is reserved, please choose a different one'
     end
 

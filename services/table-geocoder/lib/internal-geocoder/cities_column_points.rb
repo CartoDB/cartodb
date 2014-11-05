@@ -10,8 +10,8 @@ module CartoDB
       def search_terms_query(page)
         %Q{
           SELECT DISTINCT
-            quote_nullable(#{@internal_geocoder.column_name}) as city,
-            quote_nullable(#{@internal_geocoder.country_column}) as country
+            quote_nullable(trim(#{@internal_geocoder.column_name})) as city,
+            quote_nullable(trim(#{@internal_geocoder.country_column})) as country
           FROM #{@internal_geocoder.qualified_table_name}
           WHERE cartodb_georef_status IS NULL
           LIMIT #{@internal_geocoder.batch_size} OFFSET #{page * @internal_geocoder.batch_size}
@@ -29,8 +29,8 @@ module CartoDB
           UPDATE #{@internal_geocoder.qualified_table_name} AS dest
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE #{@internal_geocoder.column_name}::text = orig.geocode_string
-            AND dest.#{@internal_geocoder.country_column}::text = orig.country
+          WHERE trim(#{@internal_geocoder.column_name}::text) = orig.geocode_string
+            AND trim(dest.#{@internal_geocoder.country_column}::text) = orig.country
             AND dest.cartodb_georef_status IS NULL
         }
       end

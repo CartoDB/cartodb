@@ -170,8 +170,9 @@ class String
   end
   
   def sanitize_column_name
-    temporal_name = self.sanitize
-    if temporal_name !~ /^[a-zA-Z_]/ || CartoDB::POSTGRESQL_RESERVED_WORDS.include?(self.upcase)
+    temporal_name = self.sanitize || ''
+    if temporal_name !~ /^[a-zA-Z_]/ || CartoDB::POSTGRESQL_RESERVED_WORDS.include?(self.upcase) \
+       || CartoDB::RESERVED_COLUMN_NAMES.include?(self.upcase)
       return '_' + temporal_name
     else
       temporal_name

@@ -17,7 +17,7 @@ module CartoDB
 				raise NamedMapDataError, 'Name empty' if name.nil? or name.length == 0
 				@name = name
 
-				raise NamedMapDataError, 'Invalid parent named maps instance' unless parent.kind_of?( CartoDB::NamedMapsWrapper::NamedMaps)
+				raise NamedMapDataError, 'Invalid parent named maps instance' if parent.nil?
 				@parent = parent
 
 				@template = template_data
@@ -48,15 +48,27 @@ module CartoDB
 			def update( visualization )
         @template = NamedMap.get_template_data( visualization, @parent )
 
-				response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
-					headers: @parent.headers,
-					body: ::JSON.dump( @template ),
-          ssl_verifypeer: @parent.verify_cert,
-          ssl_verifyhost: @parent.verify_host,
-          followlocation: true
-				} )
+        retries = 0
+        success = true
+        begin
+          response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
+            headers: @parent.headers,
+            body: ::JSON.dump( @template ),
+            ssl_verifypeer: @parent.verify_cert,
+            ssl_verifyhost: @parent.verify_host,
+            followlocation: true
+          } )
 
-        raise HTTPResponseError, "PUT:#{response.code} #{response.request.url}  #{response.body}" unless response.code == 200
+          if response.code == 200
+            success = true
+          elsif response.code == 400 && response.body =~ /is locked/i && retries < 3
+            sleep(2**retries)
+            ## We hit a Tiler lock, wait and retry
+            retries += 1
+          else
+            raise HTTPResponseError, "PUT:#{response.code} #{response.request.url}  #{response.body}"
+          end
+        end until success
         @template
 			end #update
 

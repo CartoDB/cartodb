@@ -9,7 +9,7 @@ module CartoDB
 
       def search_terms_query(page)
         %Q{
-          SELECT DISTINCT(quote_nullable(#{@internal_geocoder.column_name})) AS postalcode
+          SELECT DISTINCT(quote_nullable(trim(#{@internal_geocoder.column_name}))) AS postalcode
           FROM #{@internal_geocoder.qualified_table_name}
           WHERE cartodb_georef_status IS NULL
           LIMIT #{@internal_geocoder.batch_size} OFFSET #{page * @internal_geocoder.batch_size}
@@ -26,7 +26,7 @@ module CartoDB
           UPDATE #{@internal_geocoder.qualified_table_name} AS dest
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE #{@internal_geocoder.column_name}::text = orig.geocode_string AND dest.cartodb_georef_status IS NULL
+          WHERE trim(#{@internal_geocoder.column_name}::text) = orig.geocode_string AND dest.cartodb_georef_status IS NULL
         }
       end
 

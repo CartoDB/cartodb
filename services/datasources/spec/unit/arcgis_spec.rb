@@ -425,7 +425,7 @@ describe Url::ArcGIS do
       end
 
       Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |response|
-        if response.options[:body][:objectIds] == "1"
+        if response.options[:body][:objectIds].to_i == 1
           # First item fetch of a layer
           body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
           body = ::JSON.parse(body)
@@ -433,7 +433,7 @@ describe Url::ArcGIS do
           feature_names.push body['features'][0]['attributes']['NAME']
           body['features'] = [ body['features'][0] ]
         else
-          # Remaining items fetch of a layer
+          # Remaining items fetch of a layer, will not use :objectIds
           body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
           body = ::JSON.parse(body)
 

@@ -48,7 +48,7 @@ gem 'rubyzip',                 '0.9.9'
 gem 'builder',                 '3.0.0'
 gem 'state_machine',           '1.1.2'
 gem 'typhoeus',                '0.6.7'
-gem 'charlock_holmes',         '0.6.9.4'
+gem 'charlock_holmes',         '0.7.2'
 gem 'dbf',                     '2.0.6'
 
 # Sync tables

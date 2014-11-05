@@ -210,13 +210,13 @@ module CartoDB
           job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
           job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
         end
-
+debugger
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
         raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
 
         if ogr2ogr.exit_code != 0
           # OOM
-          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/
+          if ( (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || (ogr2ogr.exit_code == 35072 && ogr2ogr.command_output =~ /Killed/) )
             raise FileTooBigError.new(job.logger)
           end
           # Could be OOM, could be wrong input

@@ -47,7 +47,7 @@ class DataImport < Sequel::Model
   # Not all constants are used, but so that we keep track of available states
   STATE_UNPACKING = 'unpacking'
   STATE_IMPORTING = 'importing'
-  STATE_SUCCESS   = 'complete'
+  STATE_COMPLETE   = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
 
@@ -75,7 +75,7 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_SUCCESS || state == STATE_FAILURE)
+    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE)
     values
   end
 
@@ -167,7 +167,7 @@ class DataImport < Sequel::Model
     # TODO: This doesn't works properly, until researched do not report false negatives
     #if log.entries =~ /Table (.*) registered/
       self.success  = true
-      self.state    = STATE_SUCCESS
+      self.state    = STATE_COMPLETE
       log.append "Import finished\n"
       save
       notify(results)

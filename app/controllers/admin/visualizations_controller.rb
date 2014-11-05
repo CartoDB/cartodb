@@ -111,7 +111,7 @@ class Admin::VisualizationsController < ApplicationController
     @user_domain = user_domain_variable(request)
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
 
     @non_dependent_visualizations = @table.non_dependent_visualizations.select{
         |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -187,7 +187,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @user_domain = user_domain_variable(request)
 
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     # We need to know if visualization logo is visible or not
@@ -220,7 +220,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     # We need to know if visualization logo is visible or not
@@ -271,7 +271,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     # We need to know if visualization logo is visible or not

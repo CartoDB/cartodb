@@ -20,7 +20,7 @@ module CartoDB
       DEFAULT_ENCODING      = 'UTF-8'
       DEFAULT_QUOTE         = '"'
       OUTPUT_DELIMITER      = ','       # Normalized CSVs will use this delimiter
-      ENCODING_CONFIDENCE   = 30 
+      ENCODING_CONFIDENCE   = 28
       ACCEPTABLE_ENCODINGS  = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
       REVERSE_LINE_FEED     = "\x8D"
 

@@ -49,6 +49,7 @@ module CartoDB
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/models/visualization/collection_spec.rb -> random_attributes
       # spec/models/visualization/member_spec.rb -> random_attributes
+      # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String

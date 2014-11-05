@@ -1050,14 +1050,22 @@ class User < Sequel::Model
     end
   end
 
+  def public_table_count
+    table_count({
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      exclude_raster: true
+    })
+  end
+
   # Only returns owned tables (not shared ones)
-  def table_count(privacy_filter=nil)
-    filter = {
-        user_id: self.id
-    }
-    filter[:privacy] = privacy_filter unless privacy_filter.nil?
-    ::Table.filter(filter).count
-  end #table_count
+  def table_count(filters={})
+    filters.merge!(
+      type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+      exclude_shared: true
+    )
+
+    visualization_count(filters)
+  end
 
   def failed_import_count
     DataImport.where(user_id: self.id, state: 'failure').count
@@ -1073,25 +1081,32 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count(
-      CartoDB::Visualization::Member::DERIVED_TYPE,
-      CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-      true
-    )
-  end #public_visualization_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    })
+  end
 
-  # Get a count of visualizations with optional type and privacy filters
-  def visualization_count(type_filter=nil, privacy_filter=nil, exclude_shared=false)
+  # Get a count of visualizations with some optional filters
+  def visualization_count(filters = {})
+    type_filter           = filters.fetch(:type, nil)
+    privacy_filter        = filters.fetch(:privacy, nil)
+    exclude_shared_filter = filters.fetch(:exclude_shared, false)
+    exclude_raster_filter = filters.fetch(:exclude_raster, false)
+
     parameters = {
-      user_id: self.id
+      user_id:        self.id,
+      per_page:       CartoDB::Visualization::Collection::ALL_RECORDS,
+      exclude_shared: exclude_shared_filter,
+      exclude_raster: exclude_raster_filter
     }
-    parameters[:type] = type_filter unless type_filter.nil?
-    parameters[:privacy] = privacy_filter unless privacy_filter.nil?
-    parameters[:exclude_shared] = true if exclude_shared
-    parameters[:per_page] = CartoDB::Visualization::Collection::ALL_RECORDS
 
+    parameters.merge!(type: type_filter)      unless type_filter.nil?
+    parameters.merge!(privacy: privacy_filter)   unless privacy_filter.nil?
     CartoDB::Visualization::Collection.new.fetch(parameters).count
-  end #visualization_count
+  end
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
@@ -1112,7 +1127,8 @@ class User < Sequel::Model
   def update_visualization_metrics
     update_gauge("visualizations.total", maps.count)
     update_gauge("visualizations.table", table_count)
-    update_gauge("visualizations.derived", visualization_count(nil,nil,true))
+
+    update_gauge("visualizations.derived", visualization_count({ exclude_shared: true, exclude_raster: true }))
   end
 
   def rebuild_quota_trigger

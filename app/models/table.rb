@@ -627,25 +627,6 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 
-
-
-  ##
-  # Post the style to the tiler
-  #
-  def send_tile_style_request(data_layer=nil)
-    data_layer ||= self.map.data_layers.first
-    url = "/tiles/#{self.name}/style?map_key=#{owner.api_key}"
-    data = {
-      'style_version' => data_layer.options['style_version'],
-      'style'         => data_layer.options['tile_style']
-    }
-    tile_request('POST', url, data)
-  rescue => exception
-    CartoDB::Logger.info('Table#send_tile_style_request Error', \
-      "Error sending tile request: #{url} #{data} #{exception}")
-    raise exception if Rails.env.production? || Rails.env.staging?
-  end
-
   def before_destroy
     @table_visualization                = table_visualization
     if @table_visualization

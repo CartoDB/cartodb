@@ -336,4 +336,14 @@ describe("Vis", function() {
     });
   });
 
+  it ("should force GMaps", function() {
+    this.mapConfig.map_provider = "leaflet";
+
+    var opts = {
+      force_gmaps_base_type: 'satellite'
+    };
+    this.vis.load(this.mapConfig, opts);
+    expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined); 
+  })
+
 });

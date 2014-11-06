@@ -15,11 +15,11 @@ module CartoDB
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
-      def initialize(db, table_name, geometry_guessing_options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
+      def initialize(db, table_name, content_guessing_options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
         @job        = job || Job.new({  logger: logger } )
         @table_name = table_name
-        @geometry_guessing_options = geometry_guessing_options
+        @content_guessing_options = content_guessing_options
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
@@ -145,7 +145,7 @@ module CartoDB
       def try_country_guessing_on(column_name_sym)
         matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
         proportion = matches.to_f / sample.count
-        threshold = @geometry_guessing_options[:threshold]
+        threshold = @content_guessing_options[:threshold]
         if proportion > threshold
           job.log "Found country column: #{column_name_sym.to_s}"
           create_the_geom_in(table_name)
@@ -170,7 +170,7 @@ module CartoDB
 
       def sample
         return @sample if @sample
-        sample_size = @geometry_guessing_options[:sample_size]
+        sample_size = @content_guessing_options[:sample_size]
         sample_query = %Q(SELECT * FROM #{qualified_table_name} ORDER BY random() LIMIT #{sample_size})
         @sample = db[sample_query].all
       end

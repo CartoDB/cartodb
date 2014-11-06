@@ -373,12 +373,12 @@ class DataImport < Sequel::Model
     end
   end
 
-  def geometry_guessing_options
-    guessing_config = Cartodb.config.fetch(:importer).deep_symbolize_keys.fetch(:geometry_guessing, {})
+  def content_guessing_options
+    guessing_config = Cartodb.config.fetch(:importer).deep_symbolize_keys.fetch(:content_guessing, {})
     if not guessing_config[:enabled]
-      { geometry_guessing: { enabled: false } }
+      { content_guessing: { enabled: false } }
     else
-      { geometry_guessing: guessing_config }
+      { content_guessing: guessing_config }
     end
   end
 
@@ -437,7 +437,7 @@ class DataImport < Sequel::Model
       runner        = CartoDB::Importer2::Runner.new(
         pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
-      runner.loader_options = ogr2ogr_options.merge geometry_guessing_options
+      runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]
       if(!graphite_conf.nil?)
         runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)

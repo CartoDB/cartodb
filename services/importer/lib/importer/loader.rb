@@ -165,11 +165,11 @@ module CartoDB
       end
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(job.db, job.table_name, geometry_guessing_options, SCHEMA, job, geometry_columns)
+        @georeferencer ||= Georeferencer.new(job.db, job.table_name, content_guessing_options, SCHEMA, job, geometry_columns)
       end
 
-      def geometry_guessing_options
-        guessing_options = options[:geometry_guessing]
+      def content_guessing_options
+        guessing_options = options[:content_guessing]
         guessing_options
       end
 

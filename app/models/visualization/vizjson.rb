@@ -39,14 +39,14 @@ module CartoDB
           zoom:           map.zoom,
           updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
-          overlays:       overlays_for(visualization)
+          overlays:       overlays_for(visualization),
+          children:       children_for(visualization)
         }
       end
 
       def layer_group_for(visualization)
         LayerGroup::Presenter.new(visualization.layers(:cartodb), options, configuration).to_poro
       end
-
 
       def other_layers_for(visualization, named_maps_presenter = nil)
         layer_index = visualization.layers(:cartodb).size
@@ -123,6 +123,12 @@ module CartoDB
       def overlays_for(visualization)
         ordered_overlays_for(visualization).map do |overlay|
           Overlay::Presenter.new(overlay).to_poro
+        end
+      end
+
+      def children_for(visualization)
+        visualization.children.map do |vis|
+          vis.to_vizjson
         end
       end
 

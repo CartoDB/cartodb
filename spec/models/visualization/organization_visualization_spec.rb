@@ -160,7 +160,7 @@ describe Visualization::Member do
     vis = Visualization::Member.new(
         name:     'wadus_vis',
         map_id:   map.id,
-        type:     Visualization::Member::DERIVED_TYPE,
+        type:     Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
         user_id:  user.id
     )
@@ -185,7 +185,7 @@ describe Visualization::Member do
     table.reload
 
     # table = create_table(user_id: user.id, name: 'wadus_table')
-    table.table_visualization.type.should eq Visualization::Member::CANONICAL_TYPE
+    table.table_visualization.type.should eq Visualization::Member::TYPE_CANONICAL
 
     table
   end

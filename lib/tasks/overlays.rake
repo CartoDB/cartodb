@@ -42,7 +42,7 @@ namespace :cartodb do
       ok = 0
       failed = 0
       count = 0
-      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::CANONICAL_TYPE, per_page: 999999 }).each { |vis|
+      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::TYPE_CANONICAL, per_page: 999999 }).each { |vis|
           if vis.user
             begin
               if args[:clear_overlays]
@@ -67,7 +67,7 @@ namespace :cartodb do
           end
       }
 
-      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::DERIVED_TYPE, per_page: 999999 }).each { |vis|
+      CartoDB::Visualization::Collection.new.fetch({ type: CartoDB::Visualization::Member::TYPE_DERIVED, per_page: 999999 }).each { |vis|
           if vis.user
             begin
               if args[:clear_overlays]

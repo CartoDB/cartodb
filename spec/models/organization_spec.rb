@@ -370,7 +370,7 @@ describe Organization do
         description:  attributes.fetch(:description, "description #{random}"),
         privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
         tags:         attributes.fetch(:tags, ['tag 1']),
-        type:         attributes.fetch(:type, Visualization::Member::DERIVED_TYPE),
+        type:         attributes.fetch(:type, Visualization::Member::TYPE_DERIVED),
         user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
     }
   end #random_attributes

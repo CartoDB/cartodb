@@ -19,7 +19,7 @@ module CartoDB
             CartoDB::Visualization::Member.new(
               name: table.name, 
               map_id: table.map_id, 
-              type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+              type: CartoDB::Visualization::Member::TYPE_CANONICAL,
               description: table.description,
               tags: table.tags.to_s.split(','),
               privacy: (table.privacy == ::Table::PRIVACY_PUBLIC ? ::Table::PRIVACY_PUBLIC_TEXT : ::Table::PRIVACY_PRIVATE_TEXT)

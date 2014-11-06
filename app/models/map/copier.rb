@@ -3,52 +3,70 @@
 module CartoDB
   module Map
     class Copier
-      def copy(map)
+      def copy(map, layers=true, create_as_children=false)
         new_map = new_map_from(map).save
-        copy_layers(map, new_map)
+        if layers
+          copy_layers(map, new_map, create_as_children)
+        end
 
         new_map
-      end #copy
+      end
 
       def new_map_from(map)
         @new_map ||= ::Map.new(map.to_hash.select { |k, v| k != :id })
-      end #new_map
+      end
 
-      def copy_layers(origin_map, destination_map)
-        layer_copies_from(origin_map).map do |layer|
+      def copy_layers(origin_map, destination_map, create_as_children=false)
+        layer_copies_from(origin_map, create_as_children).map do |layer|
           link(destination_map, layer)
         end
-      end #copy_layers
+      end
 
-      def copy_base_layer(origin_map, destination_map)
-        origin_map.user_layers.map do |layer| 
-          link(destination_map, layer.copy)
+      def copy_base_layer(origin_map, destination_map, create_as_children=false)
+        origin_map.user_layers.map do |layer|
+          if create_as_children
+            link(destination_map, layer.copy({'parent_id' => layer.id}))
+          else
+            link(destination_map, layer.copy)
+          end
         end
-      end #copy_base_layer
+      end
 
-      def copy_data_layers(origin_map, destination_map)
-        data_layer_copies_from(origin_map).map do |layer|
+      def copy_data_layers(origin_map, destination_map, create_as_children=false)
+        data_layer_copies_from(origin_map, create_as_children).map do |layer|
           link(destination_map, layer)
         end
-      end #copy_data_layers
+      end
 
       private
 
       attr_reader :map
 
-      def data_layer_copies_from(map)
-        map.carto_and_torque_layers.map { |layer| layer.copy }
-      end #data_layer_copies_from
+      def data_layer_copies_from(map, create_as_children=false)
+        map.carto_and_torque_layers.map { |layer|
+          if create_as_children
+            layer.copy({'parent_id' => layer.id})
+          else
+            layer.copy
+          end
+        }
+      end
 
-      def layer_copies_from(map)
-        map.layers.map { |layer| layer.copy }
-      end #new_layers
+      def layer_copies_from(map, create_as_children=false)
+        map.layers.map { |layer|
+          if create_as_children
+            layer.copy({'parent_id' => layer.id})
+          else
+            layer.copy
+          end
+        }
+      end
 
       def link(map, layer)
         layer.save
         layer.add_map(map)
         layer.save
-      end #link
+      end
     end
   end
 end

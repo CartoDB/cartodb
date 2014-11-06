@@ -154,6 +154,8 @@ describe Visualization::Member do
 
   describe '#delete' do
     it 'deletes this member data from the data repository' do
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
+
       member = Visualization::Member.new(random_attributes).store
       member.fetch
       member.name.should_not be_nil
@@ -165,6 +167,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache' do
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
       member      = Visualization::Member.new(random_attributes)
       member.store
 
@@ -229,7 +232,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE,
+          type: Visualization::Member::TYPE_CANONICAL,
           user_id: @user.id
       )
       visualization.store
@@ -331,34 +334,52 @@ describe Visualization::Member do
 
   describe '#derived?' do
     it 'returns true if type is derived' do
-      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.derived?.should be_true
       visualization.table?.should be_false
+      visualization.type_slide?.should be_false
 
       visualization.type = 'bogus'
       visualization.derived?.should be_false
       visualization.table?.should be_false
+      visualization.type_slide?.should be_false
     end
-  end #derived?
+  end
 
   describe '#table?' do
     it "returns true if type is 'table'" do
-      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_CANONICAL)
       visualization.derived?.should be_false
       visualization.table?.should be_true
+      visualization.type_slide?.should be_false
 
       visualization.type = 'bogus'
       visualization.derived?.should be_false
       visualization.table?.should be_false
+      visualization.type_slide?.should be_false
     end
-  end #table?
+  end
+
+  describe '#type_slide?' do
+    it "returns true if type is 'slide'" do
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_SLIDE)
+      visualization.derived?.should be_false
+      visualization.table?.should be_false
+      visualization.type_slide?.should be_true
+
+      visualization.type = 'bogus'
+      visualization.derived?.should be_false
+      visualization.table?.should be_false
+      visualization.type_slide?.should be_false
+    end
+  end
 
   describe '#password' do
     it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
       password_value = '123456'
       password_second_value = '456789'
 
-      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
 
       visualization.password = password_value
@@ -392,7 +413,7 @@ describe Visualization::Member do
     it 'checks different privacy options to make sure exceptions are raised when they should' do
       user_id = UUIDTools::UUID.timestamp_create.to_s
 
-      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.name = 'test'
       visualization.user_id = user_id
 
@@ -420,7 +441,7 @@ describe Visualization::Member do
 
       # -------------
 
-      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_CANONICAL)
       visualization.name = 'test'
       visualization.user_id = user_id
       # No private maps allowed
@@ -442,7 +463,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name:     'test',
-          type:     Visualization::Member::CANONICAL_TYPE,
+          type:     Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
       visualization.user_data = { actions: { private_maps: true } }
@@ -475,7 +496,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_LINK,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE,
+          type: Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
       visualization.user_data = { actions: { private_maps: false } }
@@ -499,7 +520,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE,
+          type: Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
 
@@ -509,7 +530,7 @@ describe Visualization::Member do
       user_mock.stubs(:private_tables_enabled).returns(false)
       visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_PUBLIC
     end
-  end #default_privacy_values
+  end
 
   it 'should not allow to change permission from the outside' do
     @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
@@ -522,6 +543,52 @@ describe Visualization::Member do
     @user.destroy
   end
 
+  it 'checks that slides can have a parent_id' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    expected_errors = { parent_id: 'Slides must have a parent' }
+
+    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED }))
+    member.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.parent_id.should be nil
+    member.parent.should be nil
+
+    child_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE }))
+    # Can't save a children of type slide without parent_id
+    expect {
+      child_member.store
+    }.to raise_exception InvalidMember
+    child_member.valid?.should eq false
+    child_member.errors.should eq expected_errors
+
+    child_member = Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id
+    }))
+    child_member.store
+
+    child_member = Visualization::Member.new(id: child_member.id).fetch
+    child_member.type.should eq Visualization::Member::TYPE_SLIDE
+    child_member.parent_id.should eq member.id
+    child_member.parent.id.should eq member.id
+
+    # Allowed but unused
+    table_member = Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_CANONICAL,
+      parent_id:  member.id
+    }))
+    table_member.store
+    table_member = Visualization::Member.new(random_attributes({
+      type:       Visualization::Member::TYPE_CANONICAL,
+      parent_id:  member.id
+    }))
+    table_member.store
+  end
+
+  protected
+
   def random_attributes(attributes={})
     random = UUIDTools::UUID.timestamp_create.to_s
     {
@@ -529,13 +596,14 @@ describe Visualization::Member do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
+      type:         attributes.fetch(:type, Visualization::Member::TYPE_CANONICAL),
       user_id:      attributes.fetch(:user_id, @user_mock.id),
       active_layer_id: random,
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      parent_id:    attributes.fetch(:parent_id, nil)
     }
-  end #random_attributes
-end # Visualization
+  end
+end
 

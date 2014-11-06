@@ -20,7 +20,7 @@ module Cartodb
       response = self.class.get "#{ @host }/api/organizations/#{ organization_name }/users", options
 
       unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
       response.parsed_response
     end # get_organization_users
@@ -30,7 +30,7 @@ module Cartodb
       response = self.class.get "#{ @host }/api/organizations/#{ organization_name }/users/#{ username }", options
 
       unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
       response.parsed_response
     end # get_organization_user
@@ -41,7 +41,7 @@ module Cartodb
       response = self.class.post "#{ @host }/api/organizations/#{ organization_name }/users", options
 
       unless response.code == 201
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
 
       response.parsed_response
@@ -53,7 +53,7 @@ module Cartodb
       response = self.class.send :put, "#{ @host }/api/organizations/#{ organization_name }/users/#{ username }", options
 
       unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
     end # update_organization_user
 
@@ -62,7 +62,7 @@ module Cartodb
       response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization_name }/users/#{username}", options
 
       unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
     end # delete_organization_user
 
@@ -73,7 +73,7 @@ module Cartodb
       options = { basic_auth: @auth, timeout: 600 , verify: Rails.env.production? }
       response = self.class.get "#{ @host }/api/organizations", options
       unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
       response.parsed_response
     end # get_organizations
@@ -82,7 +82,7 @@ module Cartodb
       options = { basic_auth: @auth, verify: Rails.env.production? }
       response = self.class.get "#{ @host }/api/organizations/#{ organization_name }", options
       unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
       response.parsed_response
     end # get_organization
@@ -95,7 +95,7 @@ module Cartodb
       response = self.class.send :post, "#{ @host }/api/organizations", options
 
       unless response.code == 201
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
       response.parsed_response
     end # create_organization
@@ -105,7 +105,7 @@ module Cartodb
 
       response = self.class.send :put, "#{ @host }/api/organizations/#{ organization_name }", options
       unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
     end # update_organization
 
@@ -113,7 +113,7 @@ module Cartodb
       options = { basic_auth: @auth, verify: Rails.env.production? }
       response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization_name }", options
       unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
     end # delete_organization
 

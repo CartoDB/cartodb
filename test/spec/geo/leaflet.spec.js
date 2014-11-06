@@ -193,30 +193,6 @@ describe('LeafletMapView', function() {
     //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
   });
 
-  // DEPRECATED (by now)
-  // it("should not insert map boundaries when not defined by the user", function() {
-  //   expect(mapView.map_leaflet.options.maxBounds).toBeFalsy();
-  // });
-
-  // it("should insert the boundaries when provided", function() {
-  //   var container = $('<div>').css('height', '200px');
-  //   var map = new cdb.geo.Map({bounding_box_sw: [1,2], bounding_box_ne: [3,5]});
-
-  //   var mapView = new cdb.geo.LeafletMapView({
-  //     el: this.container,
-  //     map: map
-  //   });
-  //   expect(map.get('bounding_box_sw')).toEqual([1,2]);
-  //   expect(map.get('bounding_box_ne')).toEqual([3,5]);
-  //   expect(mapView.map_leaflet.options.maxBounds).toBeTruthy();
-  //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lat).toEqual(3);
-  //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lng).toEqual(5);
-  //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lat).toEqual(1);
-  //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lng).toEqual(2);
-
-  // })
-
-
   it("shoule remove all layers when map view is cleaned", function() {
 
     var id1 = map.addLayer(new cdb.geo.CartoDBLayer({
@@ -294,15 +270,14 @@ describe('LeafletMapView', function() {
     var layer2 = new cdb.geo.TileLayer({ urlTemplate:'test2'});
     var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
     var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
-    console.log(layerView1.options.zIndex,layerView2.options.zIndex)
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });
 
-   it("should swicth layer", function() {
-      map.addLayer(layer);
-      layer.set('type', 'torque');
-      expect(mapView.layers[layer.cid] instanceof  L.TorqueLayer).toEqual(true);
-   });
+  it("should switch layer", function() {
+    map.addLayer(layer);
+    layer.set('type', 'torque');
+    expect(mapView.layers[layer.cid] instanceof L.TorqueLayer).toEqual(true);
+  });
 
 });
 

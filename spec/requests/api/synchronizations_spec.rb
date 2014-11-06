@@ -61,9 +61,6 @@ describe Api::Json::SynchronizationsController do
       response.fetch('name').should_not be_empty
     end
 
-    it 'makes the related table unmodifiable' do
-    end
-
     it 'schedules an import' do
       payload = {
         table_name: 'table_1',
@@ -78,8 +75,6 @@ describe Api::Json::SynchronizationsController do
       response.fetch('data_import').should_not be_empty
     end
 
-    it 'returns 401 unless user has an appropriate plan' do
-    end
   end
 
   describe 'GET /api/v1/synchronizations' do

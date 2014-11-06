@@ -4,5 +4,7 @@
 - Install grunt, ```npm install grunt cli```.
 - Install dependencies ```npm install```.
 - Choose your desired ruby version and ```bundle install``` (we need it for compass gem).
+- Install bower: ```npm install -g bower```
+- Install bower dependencies: ```bower install```
 - Start the server: ```grunt serve```.
 - Happy editing!

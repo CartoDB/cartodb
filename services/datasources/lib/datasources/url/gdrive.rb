@@ -159,7 +159,7 @@ module CartoDB
             batch_request.add(
               api_method: @drive.files.list,
               parameters: {
-                trashed:  'false',
+                trashed:  false,
                 q:        "mime_type = '#{mime_type}'",
                 fields:   FIELDS_TO_RETRIEVE
               }

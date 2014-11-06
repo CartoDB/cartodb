@@ -102,6 +102,10 @@ defaults: &defaults
       api_key: ''
       table_name: ''
   importer:
+    guessing:         # Depends on geocoder
+      enabled: false  # Disabled if false or not present
+      threshold: 0.8  # 80% or more matches
+      tolerance: 0.05 # +-5% error tolerance
     s3:
       access_key_id:
       secret_access_key:

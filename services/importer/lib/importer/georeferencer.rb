@@ -144,7 +144,9 @@ module CartoDB
       def try_country_guessing_on(column_name_sym)
         matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
         proportion = matches.to_f / sample.count
-        if proportion > 0.8 # TODO do not hardcode
+        # TODO inject config
+        threshold = Cartodb.config.deep_symbolize_keys[:importer][:guessing][:threshold]
+        if proportion > threshold
           job.log "Found country column: #{column_name_sym.to_s}"
           create_the_geom_in(table_name)
           config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(

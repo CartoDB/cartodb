@@ -31,7 +31,7 @@ module.exports = function(grunt) {
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
-    connect: require('./grunt/tasks/connect').task(),
+    connect: require('./grunt/tasks/connect').task(config),
     clean: require('./grunt/tasks/clean').task(),
     compass: require('./grunt/tasks/compass').task(),
     autoprefixer: require('./grunt/tasks/autoprefixer').task(),

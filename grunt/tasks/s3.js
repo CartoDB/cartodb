@@ -31,7 +31,7 @@ module.exports = {
             src: [
               '*.js',
               '!_*.js',
-              'themes/**'
+              'themes/**/*'
             ],
             dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
           }, {
@@ -41,7 +41,7 @@ module.exports = {
             src: [
               '*.js',
               '!_*.js',
-              'themes/**'
+              'themes/**/*'
             ],
             dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }

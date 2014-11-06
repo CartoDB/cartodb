@@ -1,5 +1,6 @@
 3.2.X ()
 * New features
+  * Implemented raster import into the editor. Only table import, yet no viewer/editor.
   * Enabled ghost tables. Tables created with SQL API are visible in the editor
 
 3.2.8 (2014-11-03)

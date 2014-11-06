@@ -27,24 +27,22 @@ module CartoDB
       attr_reader   :exit_code, :command_output
 
       def run
-        normalize
-        stdout, stderr, status  = Open3.capture3(raster2pgsql_command)
-        self.command_output     = stdout + stderr
-        self.exit_code          = status.to_i
-        output_message = "(#{exit_code}) |#{command_output}| Command: #{raster2pgsql_command}"
+        reproject_raster
 
-        raise UnknownSridError.new(output_message)          if command_output =~ /invalid srid/i
-        raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
-        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /failure/i
+        size = extract_raster_size
+        overviews_list = calculate_raster_overviews(size)
 
-        stdout, stderr, status  = Open3.capture3(psql_command)
-        self.command_output     = stdout + stderr
-        self.exit_code          = status.to_i
-        output_message = "(#{exit_code}) |#{command_output}| Command: #{psql_command}"
+        pixel_size = extract_pixel_size
 
-        raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
-        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /error/i || command_output =~ /aborted/i
+        debugger
 
+        scale_rasters(pixel_size)
+
+        # scale #{webmercator_filepath}
+
+        run_raster2pgsql
+
+        run_psql
         self
       end
 
@@ -54,7 +52,9 @@ module CartoDB
       attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, :sql_filepath, \
                     :basepath
 
-      def normalize
+      def reproject_raster
+        gdalwarp_command = %Q(#{gdalwarp_path} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
@@ -63,16 +63,72 @@ module CartoDB
         raise TiffToSqlConversionError.new(output_message) if exit_code != 0
       end
 
-      # TODO: build overviews
-      def overviews
-        # -l 2,4,8,16 etc
-        ""
+      def extract_pixel_size
+        gdalinfo_command = %Q(#{gdalinfo_path} #{webmercator_filepath})
+
+        stdout, stderr, status  = Open3.capture3(gdalinfo_command)
+        output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
+        raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
+
+        matches = output_message.match(/pixel size = \((.*)?,/i)
+        raise TiffToSqlConversionError.new("Error obtaining raster pixel size: #{output_message}") unless matches[1]
+        matches[1].to_f
+      end
+
+      def extract_raster_size
+        gdalinfo_command = %Q(#{gdalinfo_path} #{webmercator_filepath})
+
+        stdout, stderr, status  = Open3.capture3(gdalinfo_command)
+        output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
+        raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
+
+        matches = output_message.match(/size is (.*)?\n/i)
+        raise TiffToSqlConversionError.new("Error obtaining raster size: #{output_message}") unless matches[1]
+        matches[1].split(', ')
+                  .map{ |value| value.to_i }
+      end
+
+      def run_raster2pgsql
+        stdout, stderr, status  = Open3.capture3(raster2pgsql_command)
+        output = stdout + stderr
+        output_message = "(#{status}) |#{output}| Command: #{raster2pgsql_command}"
+
+        raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
+        raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
+        raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
+      end
+
+      def run_psql
+        stdout, stderr, status  = Open3.capture3(psql_command)
+        self.command_output     = stdout + stderr
+        self.exit_code          = status.to_i
+        output_message = "(#{exit_code}) |#{command_output}| Command: #{psql_command}"
+
+        raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
+        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /error/i || command_output =~ /aborted/i
+      end
+
+      def scale_rasters(pixel_size)
+        # TODO: fill
+      end
+
+      def calculate_raster_overviews(raster_size)
+        bigger_size = raster_size.max
+
+        max_power = (Math::log(bigger_size/256, 2)).ceil.to_i
+
+        range = Range.new(1, max_power+1)
+
+        overviews = range.map{ |x| 2**x }
+                         .select { |x| x <= 1000 }
+
+        overviews.join(',')
       end
 
       def raster2pgsql_command
-        # TODO: Use aligned_filepath
-        # We currently won't apply any constraint
-        %Q(#{raster2pgsql_path} -I -Y -s #{PROJECTION} -t #{BLOCKSIZE} #{overviews} #{webmercator_filepath} ) +
+        # We currently we don't apply any constraint
+        # TODO: Use aligned_filepath, and add overviews list
+        %Q(#{raster2pgsql_path} -I -Y -s #{PROJECTION} -t #{BLOCKSIZE} #{webmercator_filepath} ) +
         %Q(#{SCHEMA}.#{table_name} > #{sql_filepath})
       end
 
@@ -85,10 +141,6 @@ module CartoDB
         %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} -f #{sql_filepath})
       end
 
-      def gdalwarp_command
-        %Q(#{gdalwarp_path} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
-      end
-
       def raster2pgsql_path
         `which raster2pgsql`.strip
       end
@@ -99,6 +151,10 @@ module CartoDB
 
       def gdalwarp_path
         `which gdalwarp`.strip
+      end
+
+      def gdalinfo_path
+        `which gdalinfo`.strip
       end
 
     end

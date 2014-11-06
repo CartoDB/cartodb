@@ -43,6 +43,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \
+  services/importer/spec/acceptance/raster2pgsql_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \

@@ -64,8 +64,8 @@ module CartoDB
         Visualization::Collection.new.fetch(params.merge(filters)).first
       rescue KeyError
         nil
-      end #get_by_name
-    end # Locator
-  end # Visualization
-end # CartoDB
+      end
+    end
+  end
+end
 

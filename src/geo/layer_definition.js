@@ -11,7 +11,7 @@ function Map(options) {
     MAX_GET_SIZE: 2033,
     force_cors: false,
     instanciateCallback: function() {
-      return '_cdbc_' + cartodb.uniqueCallbackName(JSON.stringify(self.toJSON()));
+      return '_cdbc_' + self._callbackName();
     }
   });
 
@@ -110,6 +110,10 @@ Map.prototype = {
 
   _encodeBase64Native: function (input) {
     return btoa(input)
+  },
+
+  _callbackName: function() {
+    return cartodb.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
   // given number inside layergroup 
@@ -775,12 +779,13 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
+    this._attrCallbackName = this._attrCallbackName || this._callbackName();
     var ajax = this.options.ajax;
     var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
-      jsonpCallback: '_cdbi_layer_attributes',
+      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
       cache: true,
       success: function(data) {
         loadingTime.end();
@@ -1007,6 +1012,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var layer = this.getLayer(layer_index);
     var sql = this._getSqlApi(this.options);
+    this._attrCallbackName = this._attrCallbackName || this._callbackName();
 
     // prepare columns with double quotes
     columnNames = _.map(columnNames, function(n) {
@@ -1021,7 +1027,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       sql: layer.options.sql
     }, {
       cache: true, // don't include timestamp
-      jsonpCallback: '_cdbi_layer_attributes',
+      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
       jsonp: true
     }).done(function(interact_data) {
       loadingTime.end();

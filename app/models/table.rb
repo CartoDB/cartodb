@@ -132,6 +132,7 @@ class Table < Sequel::Model(:user_tables)
                 :importing_encoding,
                 :temporal_the_geom_type,
                 :migrate_existing_table,
+                :register_table_only,
                 :new_table,
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
                 :keep_user_database_table
@@ -459,7 +460,7 @@ class Table < Sequel::Model(:user_tables)
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
           # only reset the sequence on real imports.
-          # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns
+          
           if max_cartodb_id
             user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
           end
@@ -505,13 +506,17 @@ class Table < Sequel::Model(:user_tables)
       set_table_id
       @data_import.save
     else
-      create_table_in_database!
-      set_table_id
-      unless self.temporal_the_geom_type.blank?
-        self.the_geom_type = self.temporal_the_geom_type
-        self.temporal_the_geom_type = nil
+      if register_table_only.present?
+        set_table_id
+      else
+        create_table_in_database!
+        set_table_id
+        unless self.temporal_the_geom_type.blank?
+          self.the_geom_type = self.temporal_the_geom_type
+          self.temporal_the_geom_type = nil
+        end
+        set_the_geom_column!(self.the_geom_type)
       end
-      set_the_geom_column!(self.the_geom_type)
     end
   rescue => e
     self.handle_creation_error(e)

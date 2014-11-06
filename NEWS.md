@@ -1,3 +1,7 @@
+3.2.X ()
+* New features
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor
+
 3.2.8 (2014-11-03)
 ------------------
 * New features

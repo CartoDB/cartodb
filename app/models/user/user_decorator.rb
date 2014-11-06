@@ -60,7 +60,7 @@ module CartoDB
         available_basemaps: {
           here: self.here_maps_enabled,
           stamen: self.stamen_maps_enabled,
-          rainbow: false # to be done!
+          rainbow: self.rainbow_maps_enabled
         }
       }
 

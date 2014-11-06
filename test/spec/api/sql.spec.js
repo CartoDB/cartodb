@@ -144,32 +144,29 @@ describe('SQL api client', function() {
     )
   });
 
-  it("should call promise", function() {
+  it("should call promise", function(done) {
     var data;
     var data_callback;
-    runs(function() {
-      sql.execute('select * from bla', function(data) { data_callback = data }).done(function(d) {
-        data = d;
-      });
+    
+    sql.execute('select * from bla', function(data) { data_callback = data }).done(function(d) {
+      data = d;
     });
-    waits(1);
-    runs(function() {
+
+    setTimeout(function() {
       expect(data).toEqual(TEST_DATA);
       expect(data_callback).toEqual(TEST_DATA);
-    });
+      done()
+    }, 1);
   });
   it("should call promise on error", function() {
     throwError = true;
     var err = false;
-    runs(function() {
-      sql.execute('select * from bla').error(function(d) {
-        err = true;
-      });
+    sql.execute('select * from bla').error(function(d) {
+      err = true;
     });
-    waits(10);
-    runs(function() {
+    setTimeout(function() {
       expect(err).toEqual(true);
-    });
+    },10);
   });
 
   it("should include url params", function() {

@@ -4,15 +4,12 @@
 <head>
   <title>CartoDB Spec Runner</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.2.0/jasmine_favicon.png">
-  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-2.0.3/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-2.0.3/jasmine.css">
 
-  <script type="text/javascript"
-      src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
-  </script>
+  <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
 
   <script type="text/javascript" src="../vendor/jquery.min.js"></script>
-  <script type="text/javascript" src="../vendor/jquery.faviconNotify.js"></script>
 
   <script type="text/javascript" src="../vendor/underscore-min.js"></script>
   <script type="text/javascript" src="../vendor/backbone.js"></script>
@@ -32,8 +29,9 @@
   <script type="text/javascript" src="../vendor/mod/jquery-ui/jquery.ui.mouse.js"></script>
   <script type="text/javascript" src="../vendor/mod/jquery-ui/jquery.ui.slider.js"></script>
     
-  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
-  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/jasmine-2.0.3/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine-2.0.3/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/jasmine-2.0.3/boot.js"></script>
   <script type="text/javascript" src="lib/sinon-1.3.4.js"></script>
   <script type="text/javascript" src="lib/sinon-ie.js"></script>
 
@@ -163,8 +161,6 @@
 
     (function() {
       // Let's start
-      $.faviconNotify('../src/tests/cartofante_grey.png');
-
       var jasmineEnv = jasmine.getEnv();
       var htmlReporter = new jasmine.HtmlReporter();
       var reportRunnerResults = htmlReporter.reportRunnerResults;
@@ -183,14 +179,6 @@
             assertionCount.passed += specResults.passedCount;
             assertionCount.failed += specResults.failedCount;
           }
-        }
-
-        if (assertionCount.failed > 0) {
-          // Buhh!
-          $.faviconNotify('../src/tests/cartofante_red.png');
-        } else {
-          // Yay!
-         $.faviconNotify('../src/tests/cartofante_green.png');
         }
 
       };

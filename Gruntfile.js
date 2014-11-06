@@ -48,7 +48,8 @@ module.exports = function(grunt) {
     buildcontrol: require('./grunt/tasks/buildcontrol').task(),
     jshint: require('./grunt/tasks/jshint').task(),
     csslint: require('./grunt/tasks/csslint').task(),
-    concurrent: require('./grunt/tasks/concurrent').task()
+    concurrent: require('./grunt/tasks/concurrent').task(),
+    jasmine: require('./grunt/tasks/jasmine').task()
   });
 
 
@@ -60,9 +61,10 @@ module.exports = function(grunt) {
   - [X] dist
   - [X] clean
   - [ ] invalidate
-  - [ ] test
+  - [X] test
   - [X] build
   - [X] deploy => deploy static cartodb.js webpage
+  - [ ] watch => special watch for cartodb.js library ;)
 
   */
 
@@ -94,17 +96,15 @@ module.exports = function(grunt) {
     'csslint:check'
   ]);
 
+  grunt.registerTask('test', [ 'jasmine' ]);
+
   grunt.registerTask('release', [
 
   ]);
 
-  grunt.registerTask('publish', [
-    's3'
-  ]);
+  grunt.registerTask('publish', [ 's3' ]);
 
-  grunt.registerTask('deploy', [
-    'buildcontrol:pages'
-  ]);
+  grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
     'gitinfo',

@@ -6,9 +6,9 @@ describe("common.ui.Table", function() {
     beforeEach(function() {
     });
 
-    it("", function() {
+    // it("", function() {
 
-    });
+    // });
   });
 
   describe("TableData", function() {

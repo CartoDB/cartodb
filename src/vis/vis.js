@@ -394,16 +394,16 @@ var Vis = cdb.core.View.extend({
           data.layers[0].options.name = this.gmaps_base_type;
 
           if (this.gmaps_style) {
-            data.layers[0].options.style = JSON.parse(this.gmaps_style);  
+            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style): this.gmaps_style;
           }
 
           data.map_provider = 'googlemaps';
           data.layers[0].options.attribution = ''; //GMaps has its own attribution
         } else {
-          console.error ('No base map loaded. Using Leaflet.');
+          cdb.log.error('No base map loaded. Using Leaflet.');
         }
       } else {
-        console.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
+        cdb.log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
       }
     }
 
@@ -684,7 +684,7 @@ var Vis = cdb.core.View.extend({
       loaderControl: true,
       infowindow: true,
       tooltip: true,
-      time_slider: true,
+      time_slider: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];

@@ -90,7 +90,7 @@ describe Ogr2ogr do
       record.fetch(:cartodb_id).should eq '5'
     end
 
-    it 'Does not detect header if one column is numerical' do
+    it 'Does not create header if one column is numerical' do
       header = ["id", "2"]
       data   = ["5", "cell_#{rand(999)}"]
       csv    = Factories::CSV.new.write(header, data)
@@ -99,9 +99,9 @@ describe Ogr2ogr do
       @wrapper.run
 
       record    = @dataset.first
-      debugger
       record.fetch(:field_1).should eq 'id'
     end
+
   end
 
   describe '#command_output' do

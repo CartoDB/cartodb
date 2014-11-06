@@ -8,6 +8,7 @@ require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
+require_relative '../../../lib/cartodb/errors'
 
 include CartoDB::Datasources
 
@@ -21,6 +22,7 @@ module CartoDB
       include Virtus.model
 
       MAX_RETRIES     = 10
+      MIN_INTERVAL_SECONDS = 15 * 60
 
       # Seconds required between manual sync now
       SYNC_NOW_TIMESPAN = 900
@@ -71,6 +73,9 @@ module CartoDB
         self.service_name     ||= nil
         self.service_item_id  ||= nil
         self.checksum         ||= ''
+
+        raise InvalidInterval.new unless self.interval >= MIN_INTERVAL_SECONDS
+
       end
 
       def to_s

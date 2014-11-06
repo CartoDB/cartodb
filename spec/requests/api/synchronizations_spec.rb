@@ -49,7 +49,7 @@ describe Api::Json::SynchronizationsController do
     it 'creates a synchronization' do
       payload = {
         table_name: 'table_1',
-        interval:   500,
+        interval:   3600,
         url:        'http://www.foo.com'
       }
 
@@ -61,10 +61,22 @@ describe Api::Json::SynchronizationsController do
       response.fetch('name').should_not be_empty
     end
 
+    it 'respond error 400 if interval is beneath 15 minutes' do
+      payload = {
+        table_name: 'table_1',
+        interval: 60,
+        url: 'http://www.foo.com'
+      }
+
+      post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
+      last_response.status.should eq 400
+      last_response.body.to_str.should match /15 minutes/
+    end
+
     it 'schedules an import' do
       payload = {
         table_name: 'table_1',
-        interval:   500,
+        interval:   3600,
         url:        'http://www.foo.com'
       }
 
@@ -81,7 +93,7 @@ describe Api::Json::SynchronizationsController do
     it 'returns a synchronization record' do
       payload = {
         table_name: 'table_1',
-        interval:   500,
+        interval:   3600,
         url:        'http://www.foo.com'
       }
 

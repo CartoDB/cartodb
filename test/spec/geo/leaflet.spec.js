@@ -279,5 +279,101 @@ describe('LeafletMapView', function() {
     expect(mapView.layers[layer.cid] instanceof L.TorqueLayer).toEqual(true);
   });
 
+  // Test cases for gmaps substitutes since the support is deprecated.
+  _({ // GMaps basemap base_type: expected substitute data
+    ""/*gray_roadmap is the default fallback*/: { // Nokia Day Gray
+      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+    },
+    roadmap: { // Nokia Day
+      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+    },
+    dark_roadmap: { // CartoDB Dark
+      url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-dark/{z}/{x}/{y}.png',
+      subdomains: ['a','b','c','d'],
+      minZoom: 0,
+      maxZoom: 10,
+      attribution: ""
+    },
+    hybrid: { // Nokia Hybrid Day
+      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+    },
+    terrain: { // Nokia Terrain Day
+      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/terrain.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+    },
+    satellite: { // Nokia Satellite Day
+      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+    }
+  }).map(function(substitute, baseType) {
+    var layerOpts, testContext;
+
+    if (baseType) {
+      layerOpts = { base_type: baseType};
+      testContext = 'with basemap "'+ baseType +'"';
+    } else {
+      testContext = 'with default basemap "gray_roadmap"';
+    }
+
+    describe("given a GMaps layer model "+ testContext, function () {
+      var view;
+
+      beforeEach(function() {
+        var layer = new cdb.geo.GMapsBaseLayer(layerOpts);
+        view = mapView.createLayer(layer);
+      });
+
+      it("should have a tileUrl based on substitute's template URL", function() {
+        expect(view.getTileUrl({ x: 101, y: 202, z: 303 })).toMatch(substitute.tileUrlRegexp);
+      });
+
+      it("should have substitute's attribution", function() {
+        expect(view.options.attribution).toEqual(substitute.attribution);
+      });
+
+      it("should have substitute's minZoom", function() {
+        expect(view.options.minZoom).toEqual(substitute.minZoom);
+      });
+
+      it("should have substitute's maxZoom", function() {
+        expect(view.options.maxZoom).toEqual(substitute.maxZoom);
+      });
+
+      it("shouldn't have any opacity since gmaps basemap didn't have any", function() {
+        expect(view.options.opacity).toEqual(1);
+      });
+
+      it("should match substitute's subdomains", function() {
+        expect(view.options.subdomains).toEqual(substitute.subdomains);
+      });
+
+      it("shouldn't have an errorTileUrl since gmaps didn't have any", function() {
+        expect(view.options.errorTileUrl).toEqual('');
+      });
+
+      it("shouldn't use osgeo's TMS setting", function() {
+        expect(view.options.tms).toEqual(false);
+      });
+    });
+  });
+
 });
 

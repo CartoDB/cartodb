@@ -5,21 +5,23 @@
  */
 
 module.exports = {
-  task: function() {
+  task: function(config) {
     return {
       options: {
-        port: 9000,
-        livereload: 35729,
+        port: 9001,
+        livereload: 35730,
         // change this to '0.0.0.0' to access the server from outside
         hostname: '0.0.0.0'
       },
       livereload: {
         options: {
-          open: true,
-          base: [
-            '.tmp',
-            '<%= config.app %>'
-          ]
+          middleware: function(connect) {
+            return [
+              connect.static('.tmp'),
+              connect().use('/bower_components', connect.static('./bower_components')),
+              connect.static(config.app)
+            ];
+          }
         }
       },
       dist: {

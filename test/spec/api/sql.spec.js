@@ -158,7 +158,7 @@ describe('SQL api client', function() {
       done()
     }, 1);
   });
-  it("should call promise on error", function() {
+  it("should call promise on error", function(done) {
     throwError = true;
     var err = false;
     sql.execute('select * from bla').error(function(d) {
@@ -166,6 +166,7 @@ describe('SQL api client', function() {
     });
     setTimeout(function() {
       expect(err).toEqual(true);
+      done();
     },10);
   });
 

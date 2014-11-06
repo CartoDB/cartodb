@@ -14,9 +14,14 @@ module.exports = function(grunt) {
   var pkg = grunt.file.readJSON('package.json');
   var version = pkg.version.split('.');
 
+  // Checking if version is correctly defined
+  if (version.length !== 3) {
+    grunt.fail.fatal('Package version not correctly specified, it should be (xx.xx.xx or xx.xx.xx-dev)' , 1)
+  }
+
   var config = {
-    dist:     'dist',
-    app:      'www',
+    dist: 'dist',
+    app:  'www',
     version: {
       major:      version[0],
       minor:      version[0] + '.' + version[1],
@@ -27,9 +32,10 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     config: config,
-    aws: grunt.file.readJSON('secrets.json'),
+    secrets: grunt.file.readJSON('secrets.json'),
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
+    fastly: require('./grunt/tasks/fastly').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
     clean: require('./grunt/tasks/clean').task(),
@@ -56,11 +62,11 @@ module.exports = function(grunt) {
   /* -> Tasks
 
   - [X] server | serve => serve static cartodb.js webpage
-  - [ ] release => 
+  - [x] release => build
   - [ ] publish => publish cartodb.js library
   - [X] dist
   - [X] clean
-  - [ ] invalidate
+  - [X] invalidate
   - [X] test
   - [X] build
   - [X] deploy => deploy static cartodb.js webpage
@@ -99,10 +105,17 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [ 'jasmine' ]);
 
   grunt.registerTask('release', [
-
+    'build'
   ]);
 
-  grunt.registerTask('publish', [ 's3' ]);
+  grunt.registerTask('publish', [
+    // 'jasmine',
+    's3'
+  ]);
+
+  grunt.registerTask('invalidate', [
+    'fastly'
+  ]);
 
   grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
 

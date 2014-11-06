@@ -5,17 +5,20 @@
  */
 
 module.exports = {
-  task: function(grunt, config, aws) {
+  task: function(grunt, config) {
     
     return {
       options: {
-        accessKeyId: "<%= aws.S3_KEY %>",
-        secretAccessKey: "<%= aws.S3_SECRET %>",
-        bucket: "<%= aws.S3_BUCKET %>",
-        dryRun: false
+        accessKeyId: "<%= secrets.S3_KEY %>",
+        secretAccessKey: "<%= secrets.S3_SECRET %>",
+        bucket: "<%= secrets.S3_BUCKET %>",
+        params: {
+          ContentEncoding: 'gzip'
+        },
+        dryRun: true
       },
 
-      testing: {
+      dist: {
         options: {
           overwrite: false,
           params: {

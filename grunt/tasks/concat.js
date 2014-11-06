@@ -132,7 +132,6 @@ module.exports = {
         }  
       }
 
-      // Full uncompressed?
       // CartoDB.js css (themes?)
 
     }

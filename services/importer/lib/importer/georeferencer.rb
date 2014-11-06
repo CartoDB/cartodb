@@ -2,6 +2,7 @@
 require_relative './column'
 require_relative './job'
 require_relative './query_batcher'
+require_relative './content_guesser'
 
 module CartoDB
   module Importer2
@@ -19,10 +20,11 @@ module CartoDB
         @db         = db
         @job        = job || Job.new({  logger: logger } )
         @table_name = table_name
-        @content_guessing_options = content_guessing_options
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
+        #TODO inject??
+        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @job, content_guessing_options)
       end
 
       def mark_as_from_geojson_with_transform
@@ -34,9 +36,9 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        create_the_geom_from_geometry_column  ||
-        create_the_geom_from_latlon           ||
-        create_the_geom_from_country_guessing ||
+        create_the_geom_from_geometry_column                   ||
+        create_the_geom_from_latlon                            ||
+        @content_guesser.create_the_geom_from_country_guessing ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -124,67 +126,6 @@ module CartoDB
           job,
           'Populating the_geom from latitude / longitude'
         )
-      end
-
-      def create_the_geom_from_country_guessing
-        return false if not @content_guessing_options[:guessing][:enabled]
-        job.log 'Trying country guessing...'
-        column_query = %Q(
-          SELECT column_name, data_type
-          FROM information_schema.columns
-          WHERE table_name = '#{table_name}' AND table_schema = '#{schema}'
-        )
-        db[column_query].each do |column|
-          if ['character varying', 'varchar', 'text'].include? column[:data_type]
-            success = try_country_guessing_on column[:column_name].to_sym
-            return true if success
-          end
-        end
-        return false
-      end
-
-      def try_country_guessing_on(column_name_sym)
-        matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
-        proportion = matches.to_f / sample.count
-        threshold = @content_guessing_options[:guessing][:threshold]
-        if proportion > threshold
-          job.log "Found country column: #{column_name_sym.to_s}"
-          create_the_geom_in(table_name)
-          config = @content_guessing_options[:geocoder].merge(
-            table_schema: schema,
-            table_name: table_name,
-            qualified_table_name: qualified_table_name,
-            connection: db,
-            formatter: column_name_sym.to_s,
-            geometry_type: 'polygon',
-            kind: 'admin0',
-            max_rows: nil,
-            country_column: nil
-          )
-          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-          geocoder.run
-          return geocoder.state == 'completed'
-        end
-        return false
-      end
-
-      def sample
-        return @sample if @sample
-        sample_size = @content_guessing_options[:guessing][:sample_size]
-        sample_query = %Q(SELECT * FROM #{qualified_table_name} ORDER BY random() LIMIT #{sample_size})
-        @sample = db[sample_query].all
-      end
-
-      def countries
-        return @countries if @countries
-        geocoder_sql_api_config = @content_guessing_options[:geocoder][:internal]
-        geocoder_sql_api = CartoDB::SQLApi.new(geocoder_sql_api_config)
-        query = 'SELECT synonyms FROM country_decoder'
-        @countries = Set.new()
-        geocoder_sql_api.fetch(query).each do |country|
-          @countries.merge country['synonyms']
-        end
-        @countries
       end
 
       def create_the_geom_in(table_name)

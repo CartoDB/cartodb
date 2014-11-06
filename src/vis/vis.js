@@ -398,6 +398,7 @@ var Vis = cdb.core.View.extend({
           }
 
           data.map_provider = 'googlemaps';
+          data.layers[0].options.attribution = ''; //GMaps has its own attribution
         } else {
           console.error ('No base map loaded. Using Leaflet.');
         }

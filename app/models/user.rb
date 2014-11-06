@@ -1099,12 +1099,12 @@ class User < Sequel::Model
     parameters = {
       user_id:        self.id,
       per_page:       CartoDB::Visualization::Collection::ALL_RECORDS,
-      exclude_shared: exclude_shared_filter,
-      exclude_raster: exclude_raster_filter
+      exclude_shared: exclude_shared_filter
     }
 
     parameters.merge!(type: type_filter)      unless type_filter.nil?
     parameters.merge!(privacy: privacy_filter)   unless privacy_filter.nil?
+    parameters.merge!(exclude_raster: exclude_raster_filter) if exclude_raster_filter
     CartoDB::Visualization::Collection.new.fetch(parameters).count
   end
 

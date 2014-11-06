@@ -76,7 +76,7 @@ module CartoDB
           dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
           dataset = filter_by_tags(dataset, tags_from(filters))
           dataset = filter_by_partial_match(dataset, filters.delete(:q))
-          dataset = filter_by_kind(dataset, filters)
+          dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
           dataset = order(dataset, filters.delete(:o))
 
           @total_entries = dataset.count
@@ -128,8 +128,8 @@ module CartoDB
         dataset.where(PARTIAL_MATCH_QUERY, pattern, "%#{pattern}%")
       end
 
-      def filter_by_kind(dataset, filters)
-        return dataset unless filters[:exclude_raster].present? && filters[:exclude_raster].to_s == 'true'
+      def filter_by_kind(dataset, filter_value)
+        return dataset if filter_value.nil? || !filter_value
         dataset.where('kind=?', Member::KIND_GEOM)
       end
 

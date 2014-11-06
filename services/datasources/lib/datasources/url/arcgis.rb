@@ -3,6 +3,7 @@
 require 'typhoeus'
 require 'json'
 require 'addressable/uri'
+require_relative '../base_direct_stream'
 
 module CartoDB
   module Datasources

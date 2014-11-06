@@ -60,7 +60,7 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
-    charlock_holmes (0.6.9.4)
+    charlock_holmes (0.7.2)
     childprocess (0.5.1)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.10.2)
@@ -356,7 +356,7 @@ DEPENDENCIES
   bartt-ssl_requirement (~> 1.4.0)
   builder (= 3.0.0)
   capybara (= 1.1.2)
-  charlock_holmes (= 0.6.9.4)
+  charlock_holmes (= 0.7.2)
   ci_reporter
   compass (= 0.12.3)
   dbf (= 2.0.6)

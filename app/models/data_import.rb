@@ -168,6 +168,9 @@ class DataImport < Sequel::Model
     #if log.entries =~ /Table (.*) registered/
       self.success  = true
       self.state    = STATE_COMPLETE
+      table_names = results.map { |result| result.name }.sort
+      self.table_names = table_names.join(' ')
+      self.tables_created_count = table_names.size
       log.append "Import finished\n"
       save
       notify(results)
@@ -430,6 +433,10 @@ class DataImport < Sequel::Model
         pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
       runner.loader_options = ogr2ogr_options
+      graphite_conf = Cartodb.config[:graphite]
+      if(!graphite_conf.nil?)
+        runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
+      end
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database

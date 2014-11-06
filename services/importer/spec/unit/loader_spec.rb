@@ -4,19 +4,18 @@ require_relative '../../lib/importer/source_file'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
-
-include CartoDB::Importer2
+require_relative '../../spec/doubles/importer_stats'
 
 RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-describe Loader do
+describe CartoDB::Importer2::Loader do
   before do
-    @job            = Doubles::Job.new
-    @source_file    = SourceFile.new('/var/tmp/foo')
-    @ogr2ogr        = Doubles::Ogr2ogr.new
-    @georeferencer  = Doubles::Georeferencer.new
+    @job            = CartoDB::Importer2::Doubles::Job.new
+    @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
+    @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
+    @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
     @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
   end
 
@@ -64,5 +63,29 @@ describe Loader do
       loader.ogr2ogr.class.name.should eq 'CartoDB::Importer2::Ogr2ogr'
     end
   end
+
+  describe 'stats logger' do
+    before do
+      @job            = CartoDB::Importer2::Doubles::Job.new
+      @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
+      @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
+      @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
+      @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+    end
+
+    it 'logs stats' do
+      loader  = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      loader.set_importer_stats(@importer_stats_spy)
+      loader.run
+      @importer_stats_spy.timed_block_suffix_count('loader').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.normalize').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.ogr2ogr').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.post_ogr2ogr_tasks').should eq 1
+
+    end
+
+  end
+
 end
 

@@ -4,8 +4,16 @@ module CartoDB
   module Importer2
     module Doubles
       class Loader
-        def run; Object.new; end
+        attr_accessor :options
+
+        def run(post_import_handler); Object.new; end
+
         def exit_code; 0; end
+
+        def valid_table_names
+          ['fake_table']
+        end
+
       end # Loader
     end # Doubles
   end # Importer2

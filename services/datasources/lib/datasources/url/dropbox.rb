@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'dropbox_sdk'
+require_relative '../base_oauth'
 
 module CartoDB
   module Datasources

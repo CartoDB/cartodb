@@ -47,6 +47,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
+  services/importer/spec/unit/importer_stats_spec.rb \
   services/importer/spec/unit/json2csv_spec.rb \
   services/importer/spec/unit/kml_splitter_spec.rb \
   services/importer/spec/unit/loader_spec.rb \
@@ -124,7 +125,7 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
-
+  
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:

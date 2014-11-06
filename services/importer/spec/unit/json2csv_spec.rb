@@ -12,7 +12,7 @@ describe Json2Csv do
   end
 
   def json2csv_instance(filepath)
-    Json2Csv.new(filepath, nil, Doubles::Log.new)
+    Json2Csv.new(filepath, nil, CartoDB::Importer2::Doubles::Log.new)
   end
 
   describe '#run' do

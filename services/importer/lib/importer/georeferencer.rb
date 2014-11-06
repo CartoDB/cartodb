@@ -169,7 +169,8 @@ module CartoDB
 
       def sample
         return @sample if @sample
-        sample_size = 400 #TODO calculate based on params
+        # TODO inject config
+        sample_size = Cartodb.config.deep_symbolize_keys[:importer][:guessing][:sample_size]
         sample_query = %Q(SELECT * FROM #{qualified_table_name} ORDER BY random() LIMIT #{sample_size})
         @sample = db[sample_query].all
       end

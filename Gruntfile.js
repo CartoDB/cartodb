@@ -64,7 +64,7 @@ module.exports = function(grunt) {
   - [X] server | serve => serve static cartodb.js webpage
   - [x] release => build
   - [ ] publish => publish cartodb.js library
-  - [X] dist
+  - [X] dist == build
   - [X] clean
   - [X] invalidate
   - [X] test
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('publish', [
-    // 'jasmine',
+    // 'jasmine', // Don't comment this line unless you have a GOOD REASON
     's3'
   ]);
 
@@ -136,9 +136,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('dist', [
-    'gitinfo',
-    'concat',
-    'uglify'
+    'build'
   ]);
 
   grunt.registerTask('default', [

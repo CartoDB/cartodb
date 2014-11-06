@@ -12,15 +12,13 @@ module.exports = {
         accessKeyId: "<%= secrets.S3_KEY %>",
         secretAccessKey: "<%= secrets.S3_SECRET %>",
         bucket: "<%= secrets.S3_BUCKET %>",
-        params: {
-          ContentEncoding: 'gzip'
-        },
-        dryRun: true
+        dryRun: false
       },
 
       dist: {
         options: {
-          overwrite: false,
+          overwrite: true,
+          cache: false,
           params: {
             ContentEncoding: 'gzip'
           }
@@ -30,13 +28,21 @@ module.exports = {
             'action': 'upload',
             expand: true,
             cwd: 'dist',
-            src: ['**'],
+            src: [
+              '*.js',
+              '!_*.js',
+              'themes/**'
+            ],
             dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
           }, {
             'action': 'upload',
             expand: true,
             cwd: 'dist',
-            src: ['**'],
+            src: [
+              '*.js',
+              '!_*.js',
+              'themes/**'
+            ],
             dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }
         ]

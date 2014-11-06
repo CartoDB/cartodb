@@ -17,7 +17,31 @@ module.exports = {
           src: ['*.{png,jpg,gif}'],
           dest: '<%= config.dist %>/<%= config.app %>'
         }]
-      }
+      },
+
+      distCSSImages: {
+        options: {
+          progressive: true
+        },
+        files: [{
+          expand: true,
+          cwd: 'themes/css',
+          src: [ 'images/**/*.{png,jpg,gif}' ],
+          dest: '<%= config.dist %>/themes/css'
+        }]
+      },
+
+      distImages: {
+        options: {
+          progressive: true
+        },
+        files: [{
+          expand: true,
+          cwd: 'themes/img',
+          src: [ '**/*.{png,jpg,gif}' ],
+          dest: '<%= config.dist %>/themes/img'
+        }]
+      },
     }
   }
 }

@@ -134,7 +134,6 @@ module CartoDB
           downloaded_file.close
 
           headers = response.headers
-
           name            = name_from(headers, url, @custom_filename)
           @etag           = etag_from(headers)
           @last_modified  = last_modified_from(headers)
@@ -142,7 +141,11 @@ module CartoDB
         request.run
 
         if download_error && !error_response.nil?
-          raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
+          if error_response.headers['Error'] && error_response.headers['Error'] =~ /too many nodes/
+            raise TooManyNodesError.new(error_response.headers['Error'])
+          else 
+            raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
+          end
         end
 
         File.rename(temp_name, filepath(name))

@@ -7,5 +7,6 @@ secrets.json
 v3/*
 test/*.xml
 .sass-cache
+bower_components
 .tmp
 Gemfile.lock

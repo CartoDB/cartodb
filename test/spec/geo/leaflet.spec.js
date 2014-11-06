@@ -41,23 +41,22 @@ describe('LeafletMapView', function() {
     expect(map.getViewBounds).not.toHaveBeenCalled();
   });
 
-  it("should change center and zoom when bounds are changed", function() {
+  it("should change center and zoom when bounds are changed", function(done) {
     var s = sinon.spy();
     mapView.getSize = function() { return {x: 200, y: 200}; }
     map.bind('change:center', s);
     spyOn(mapView, '_setCenter');
     mapView._bindModel();
-    runs(function() {
-      map.set({
-        'view_bounds_ne': [1, 1],
-        'view_bounds_sw': [-0.3, -1.2]
-      })
-    });
-    waits(1000);
-    runs(function() {
+
+    map.set({
+      'view_bounds_ne': [1, 1],
+      'view_bounds_sw': [-0.3, -1.2]
+    })
+
+    setTimeout(function() {
       expect(mapView._setCenter).toHaveBeenCalled();
-      //expect(s.called).toEqual(true);
-    });
+      done();
+    }, 1000);
   });
 
   it("should allow adding a layer", function() {
@@ -137,37 +136,35 @@ describe('LeafletMapView', function() {
     expect(layerView.getLayerCount()).toEqual(1);
   });
 
-  it("should create the cartodb logo", function() {
-    runs(function() {
-      layer = new cdb.geo.CartoDBLayer({ 
-        table_name: "INVENTADO",
-        user_name: 'test',
-        tile_style: 'test'
-      });
-      var lyr = map.addLayer(layer);
-      var layerView = mapView.getLayerByCid(lyr);
+  it("should create the cartodb logo", function(done) {
+    layer = new cdb.geo.CartoDBLayer({ 
+      table_name: "INVENTADO",
+      user_name: 'test',
+      tile_style: 'test'
     });
-    waits(1);
-    runs(function() {
+    var lyr = map.addLayer(layer);
+    var layerView = mapView.getLayerByCid(lyr);
+
+    setTimeout(function() {
       expect(container.find("div.cartodb-logo").length).toEqual(1);
-    });
+      done();
+    }, 1);
   });
 
-  it("should not add the cartodb logo when cartodb_logo = false", function() {
-    runs(function() {
-      layer = new cdb.geo.CartoDBLayer({ 
-        table_name: "INVENTADO",
-        user_name: 'test',
-        tile_style: 'test',
-        cartodb_logo: false
-      });
-      var lyr = map.addLayer(layer);
-      var layerView = mapView.getLayerByCid(lyr);
+  it("should not add the cartodb logo when cartodb_logo = false", function(done) {
+    layer = new cdb.geo.CartoDBLayer({ 
+      table_name: "INVENTADO",
+      user_name: 'test',
+      tile_style: 'test',
+      cartodb_logo: false
     });
-    waits(1);
-    runs(function() {
+    var lyr = map.addLayer(layer);
+    var layerView = mapView.getLayerByCid(lyr);
+
+    setTimeout(function() {
       expect(container.find("div.cartodb-logo").length).toEqual(0);
-    });
+      done();
+    }, 1);
   });
 
   it("should create a PlaiLayer when the layer is cartodb", function() {
@@ -189,7 +186,7 @@ describe('LeafletMapView', function() {
     var b = new cdb.geo.TileLayer({urlTemplate: 'test'});
     map.addLayer(b, {at: 0});
 
-    expect(mapView.map_leaflet.addLayer.mostRecentCall.args[0].model).toEqual(layer);
+    expect(mapView.map_leaflet.addLayer.calls.mostRecent().args[0].model).toEqual(layer);
     //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
   });
 
@@ -276,16 +273,15 @@ describe('LeafletMapView', function() {
 
   });
 
-  it("should save automatically when the zoom or center changes", function() {
+  it("should save automatically when the zoom or center changes", function(done) {
     spyOn(map, 'save');
-    runs(function() {
-      mapView.setAutoSaveBounds();
-      map.set('center', [1,2]);
-    });
-    waits(1500);
-    runs(function() {
+    mapView.setAutoSaveBounds();
+    map.set('center', [1,2]);
+
+    setTimeout(function() {
       expect(map.save).toHaveBeenCalled();
-    });
+      done();
+    }, 1500);
 
   });
 

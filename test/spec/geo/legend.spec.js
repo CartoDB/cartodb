@@ -127,18 +127,17 @@ describe("common.geo.ui.Legend", function() {
       expect(legend.$el.css('display')).toEqual('none');
     });
 
-    it("should hide the legend", function() {
+    it("should hide the legend", function(done) {
 
       legend.model.set({ type: "bubble" });
 
       legend.show();
       legend.hide();
 
-      waits(300);
-
-      runs(function () {
+      setTimeout(function () {
         expect(legend.$el.css('display')).toEqual('none');
-      });
+        done();
+      }, 300);
 
     });
 

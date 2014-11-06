@@ -734,15 +734,33 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
     });
 
-    it("should hide the attribution when clicking on the backdrop", function() {
+    it("should hide the attribution when clicking on the backdrop", function(done) {
       mobile.render();
       mobile.$el.find(".cartodb-attribution-button").click();
-      mobile.$el.find(".cartodb-attribution-button .backdrop").click();
-
+      
       setTimeout(function() {
-        expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
-      }, 450);
+        expect(mobile.$el.find(".backdrop").css("display")).toBe("block");
 
+        spyOn($.fn, 'fadeOut');
+
+        mobile.$el.find(".backdrop").click();
+
+        setTimeout(function() {
+          // FadeOut tests are the hell!!
+          expect($.fn.fadeOut).toHaveBeenCalled();
+          expect($.fn.fadeOut.calls.count()).toBe(2);
+
+          var elements_class = ['backdrop', 'cartodb-attribution'];
+          expect(
+            _.every($.fn.fadeOut.calls.all(), function(item, pos) {
+              return _.contains(elements_class, $(item.object).attr('class'))
+            })
+          ).toBeTruthy();
+
+          done();
+        }, 500);
+
+      }, 500);
     });
 
   });

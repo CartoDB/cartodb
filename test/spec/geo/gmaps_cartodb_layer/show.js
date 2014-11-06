@@ -33,36 +33,30 @@ describe('Show funcionality', function() {
   });
 
 
-  it('If layer is visible, show shouldn\'t do anything', function() {
-
-    waits(500);
-
-    runs(function () {
+  it('If layer is visible, show shouldn\'t do anything', function(done) {
+    setTimeout(function () {
       expect(cdb_layer.show).toThrow();
       var opacity = cdb_layer.options.opacity;
       expect(cdb_layer.options.visible).toBeTruthy();
-    });
+      done();
+    }, 500);
   });
 
-  it('Shows layer after hide it', function() {
-
-    waits(500);
-
-    runs(function () {
+  it('Shows layer after hide it', function(done) {
+    setTimeout(function () {
       cdb_layer.hide();
       cdb_layer.show();
       expect(cdb_layer.options.visible).toBeTruthy();
-    });
+      done();
+    }, 500);
   });
 
-  it('If hides layer and set an opacity greater than 0, layer shouln\'t be visible', function() {
-
-    waits(500);
-
-    runs(function () {
+  it('If hides layer and set an opacity greater than 0, layer shouln\'t be visible', function(done) {
+    setTimeout(function () {
       cdb_layer.hide();
       cdb_layer.setOpacity(0.2);
       expect(cdb_layer.visible).toBeFalsy();
-    });
+      done();
+    }, 500);
   });
 });

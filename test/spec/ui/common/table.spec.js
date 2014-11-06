@@ -269,7 +269,7 @@ describe("common.ui.Table", function() {
         mean += t1 - t0;
       }
       // God please, forgive me.
-      expect(mean/count).toBeLessThan(2000);
+      expect(mean/count).toBeLessThan(10000);
 
     });
 

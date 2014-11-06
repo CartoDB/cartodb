@@ -374,11 +374,15 @@ class DataImport < Sequel::Model
   end
 
   def content_guessing_options
-    guessing_config = Cartodb.config.fetch(:importer).deep_symbolize_keys.fetch(:content_guessing, {})
-    if not guessing_config[:enabled]
-      { content_guessing: { enabled: false } }
+    guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
+    geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
+    if not guessing_config[:enabled] or not geocoder_config
+      { guessing: { enabled: false } }
     else
-      { content_guessing: guessing_config }
+      {
+        guessing: guessing_config,
+        geocoder: geocoder_config
+      }
     end
   end
 
@@ -652,4 +656,3 @@ class DataImport < Sequel::Model
   end
 
 end
-

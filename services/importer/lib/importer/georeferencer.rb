@@ -127,6 +127,7 @@ module CartoDB
       end
 
       def create_the_geom_from_country_guessing
+        return false if not @content_guessing_options[:guessing][:enabled]
         job.log 'Trying country guessing...'
         column_query = %Q(
           SELECT column_name, data_type
@@ -145,12 +146,11 @@ module CartoDB
       def try_country_guessing_on(column_name_sym)
         matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
         proportion = matches.to_f / sample.count
-        threshold = @content_guessing_options[:threshold]
+        threshold = @content_guessing_options[:guessing][:threshold]
         if proportion > threshold
           job.log "Found country column: #{column_name_sym.to_s}"
           create_the_geom_in(table_name)
-          #TODO review which part of this is needed and inject
-          config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
+          config = @content_guessing_options[:geocoder].merge(
             table_schema: schema,
             table_name: table_name,
             qualified_table_name: qualified_table_name,
@@ -170,19 +170,18 @@ module CartoDB
 
       def sample
         return @sample if @sample
-        sample_size = @content_guessing_options[:sample_size]
+        sample_size = @content_guessing_options[:guessing][:sample_size]
         sample_query = %Q(SELECT * FROM #{qualified_table_name} ORDER BY random() LIMIT #{sample_size})
         @sample = db[sample_query].all
       end
 
       def countries
         return @countries if @countries
-        #TODO this must be injected
-        sql_api_config = Cartodb.config.fetch(:geocoder).deep_symbolize_keys.fetch(:internal)
-        sql_api = CartoDB::SQLApi.new(sql_api_config)
+        geocoder_sql_api_config = @content_guessing_options[:geocoder][:internal]
+        geocoder_sql_api = CartoDB::SQLApi.new(geocoder_sql_api_config)
         query = 'SELECT synonyms FROM country_decoder'
         @countries = Set.new()
-        sql_api.fetch(query).each do |country|
+        geocoder_sql_api.fetch(query).each do |country|
           @countries.merge country['synonyms']
         end
         @countries

@@ -26,16 +26,12 @@ describe Api::Json::OverlaysController do
   end
 
   before(:each) do
-    @db = Sequel.sqlite
+    @db = Rails::Sequel.connectionSequel.sqlite
     Sequel.extension(:pagination)
 
-    CartoDB::Visualization::Migrator.new(@db).migrate
-    CartoDB::Visualization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    CartoDB::Overlay::Migrator.new(@db).migrate
-    CartoDB::Overlay.repository        =
-      DataRepository::Backend::Sequel.new(@db, :overlays)
+    CartoDB::Overlay.repository = DataRepository::Backend::Sequel.new(@db, :overlays)
 
     delete_user_data @user
     @headers = { 

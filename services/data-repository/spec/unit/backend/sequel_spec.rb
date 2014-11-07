@@ -7,7 +7,7 @@ include CartoDB
 
 describe DataRepository::Backend::Sequel do
   before do
-    db = Sequel.sqlite
+    db = Rails::Sequel.connection
     db.create_table :visualizations do
       String    :id, primary_key: true
       String    :name

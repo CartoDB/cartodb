@@ -14,7 +14,7 @@ module CartoDB
         longitudedecimal longitud long decimallongitude decimallong }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
-      THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
+      THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
 
       def initialize(db, table_name, content_guessing_options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
@@ -36,9 +36,9 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        create_the_geom_from_geometry_column                   ||
-        create_the_geom_from_latlon                            ||
-        @content_guesser.create_the_geom_from_country_guessing ||
+        create_the_geom_from_geometry_column  ||
+        create_the_geom_from_latlon           ||
+        create_the_geom_from_country_guessing ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -101,6 +101,36 @@ module CartoDB
           end
         end
         false
+      end
+
+      def create_the_geom_from_country_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying country guessing...'
+        country_column_name = @content_guesser.country_column
+        if country_column
+          create_the_geom_in table_name
+          job.log "Found country column: #{column_name_sym.to_s}"
+          return geocode_countries country_column_name
+        end
+        return false
+      end
+
+      def geocode_countries country_column_name
+        create_the_geom_in(table_name)
+        config = @options[:geocoder].merge(
+          table_schema: schema,
+          table_name: table_name,
+          qualified_table_name: qualified_table_name,
+          connection: db,
+          formatter: country_column_name,
+          geometry_type: 'polygon',
+          kind: 'admin0',
+          max_rows: nil,
+          country_column: nil
+        )
+        geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+        geocoder.run
+        geocoder.state == 'completed'
       end
 
       # Note: Performs a really simple ',' to '.' normalization.

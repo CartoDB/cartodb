@@ -110,7 +110,6 @@ class Admin::VisualizationsController < ApplicationController
 
     @user_domain = user_domain_variable(request)
 
-    @available_for_hire     = @visualization.user.available_for_hire
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
@@ -170,7 +169,6 @@ class Admin::VisualizationsController < ApplicationController
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
     @avatar_url             = @visualization.user.avatar
 
-    @available_for_hire     = @visualization.user.available_for_hire
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables

@@ -81,7 +81,7 @@ group :development, :test do
   gem 'selenium-webdriver',    '>= 2.5.0'
 
   gem 'mocha',                 '0.10.5'
-  gem 'ci_reporter'
+  gem 'ci_reporter',           '1.8.4'
 
   gem 'debugger',              '1.6.5'
 

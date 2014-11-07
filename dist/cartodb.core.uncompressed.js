@@ -1,5 +1,5 @@
-// version: 3.11.22
-// sha: 9dc7dc1329817f177a31562ac0b7d397a264fdea
+// version: 3.11.23
+// sha: 86e2dcdfc7966bc34d8f80352f68d218df6d2369
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1149,7 +1149,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.22';
+    cdb.VERSION = '3.11.23';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1663,6 +1663,10 @@ exports.Profiler = Profiler;
    * })
    */
   SQL.prototype.execute = function(sql, vars, options, callback) {
+
+    //Variable that defines if a query should be using get method or post method
+    var MAX_LENGTH_GET_QUERY = 1024;
+
     var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
@@ -1703,28 +1707,46 @@ exports.Profiler = Profiler;
 
     // create query
     var query = Mustache.render(sql, vars);
-    var q = 'q=' + encodeURIComponent(query);
 
-    // request params
+    // check method: if we are going to send by get or by post
+    var isGetRequest = query.length < MAX_LENGTH_GET_QUERY;
+
+    // generate url depending on the http method
     var reqParams = ['format', 'dp', 'api_key'];
+    // request params
     if (options.extra_params) {
       reqParams = reqParams.concat(options.extra_params);
     }
-    for(var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
-      if(v) {
-        q += '&' + r + "=" + v;
-      }
-    }
 
-    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
-    // generate url depending on the http method
     params.url = this._host() ;
-    if(isGetRequest) {
-      params.url += '?' + q
+    if (isGetRequest) {
+      var q = 'q=' + encodeURIComponent(query);
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if(v) {
+          q += '&' + r + "=" + v;
+        }
+      }
+
+      params.url += '?' + q;
     } else {
-      params.data = q;
+      var objPost = {'q': query};
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if (v) {
+          objPost[r] = v;
+        }
+      }
+
+      params.data = objPost;
+      //Check if we are using jQuery(uncompressed) or reqwest (core)
+      if ((typeof(jQuery) !== 'undefined')) {
+        params.type = 'post';
+      } else {
+        params.method = 'post'; 
+      }
     }
 
     // wrap success and error functions
@@ -2985,6 +3007,11 @@ SubLayer.prototype = {
     this._parent.removeLayer(this._position);
     this._unbindInteraction();
     this._added = false;
+  },
+
+  toggle: function() {
+    this.get('hidden') ? this.show() : this.hide();
+    return !this.get('hidden');
   },
 
   show: function() {

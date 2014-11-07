@@ -89,7 +89,6 @@ group :development, :test do
   gem 'delorean'
   gem 'rack',                  '1.4.1'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
-  gem 'foreman',               '0.46.0', require: false
   gem 'factory_girl_rails',    '~> 4.0.0'
 
   # Guard

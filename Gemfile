@@ -17,7 +17,6 @@ gem 'oauth-plugin',            '0.4.0.pre4'
 gem 'htmlentities',            '4.3.1' # Encoding and decoding of named or numerical entities
 
 gem 'redis',                   '2.2.2'
-gem 'yajl-ruby',               '1.1.0', require: 'yajl'
 gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'

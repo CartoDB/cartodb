@@ -18,10 +18,20 @@ describe 'OSM regression tests' do
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
-    puts runner.report
 
     geometry_type_for(runner).should be
   end
+
+  it 'displays a specific error message for too many nodes requested' do
+    filepath = 'http://api.openstreetmap.org/api/0.6/map?bbox=-73.996,40.7642,-73.8624,40.8202'
+    downloader = Downloader.new(filepath)
+    runner = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    runner.run
+
+    result = runner.results.first
+    result.error_code.should eq 1007
+  end
+
 
 end # OSM regression tests
  

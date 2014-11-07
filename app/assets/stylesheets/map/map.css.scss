@@ -853,3 +853,18 @@ div.cartodb-edit-buttons {
   @include border-radius(6px);
   border:1px solid #397DBA;
 }
+
+:-webkit-full-screen { 
+  top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
+}
+:-moz-full-screen { 
+  top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
+}
+:-ms-fullscreen { 
+  top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
+}
+:fullscreen { 
+  top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
+}
+
+

@@ -168,6 +168,10 @@ module CartoDB
       title: 'Invalid SHP file',
       what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, <a href='mailto:support@cartodb.com?subject=Invalid SHP file'>contact us</a>."
     },
+    1007 => {
+      title: 'Too many nodes',
+      what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.'
+    },
     1008 => {
       title: 'Unable to download file',
       what_about: "We couldn't download your file, check the URL and try again."

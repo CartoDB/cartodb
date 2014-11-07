@@ -6,6 +6,7 @@
 @import "../elements/dropdown";
 
 div.dropdown {
+  -webkit-transform: translate3d(0, 0, 10px) translateZ(10px);
   z-index:1000;
   
   a {

@@ -28,6 +28,12 @@ module CartoDB
 
   class TableError < StandardError; end
 
+  class InvalidInterval < StandardError
+    def detail
+      Cartodb.error_codes[:invalid_interval]
+    end
+  end
+
   # importer errors
   class EmptyFile < StandardError
     def detail

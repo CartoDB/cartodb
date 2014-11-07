@@ -19,6 +19,9 @@ gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 
+# It's used in the dataimport and arcgis. Just two calls. 
+# It's a replacement for the ruby uri that it's supposed to 
+# perform better parsing of a URI
 gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'

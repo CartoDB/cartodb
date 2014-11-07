@@ -1,6 +1,7 @@
 3.11.24 ()
 - don't render the fullscreen overlay for unsupported versions of IE
 - fixed using same callback name when there are more than one layer (#186)
+- Added new params options to cartodb.createVis(): gmaps_base_type and gmaps_style
 - deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#188)
 
 3.11.23 (04//11//2014)

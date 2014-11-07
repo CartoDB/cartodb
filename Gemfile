@@ -107,7 +107,6 @@ group :development, :test do
   #gem 'minitest-ci',            '~> 3.0.1', :require => false
   # Server
   gem 'thin',                           require: false
-  gem 'parallel_tests'
 end
 
 # Load optional engines

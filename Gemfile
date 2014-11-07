@@ -88,7 +88,6 @@ group :development, :test do
   gem 'capybara',              '1.1.2'
   gem 'delorean'
   gem 'rack',                  '1.4.1'
-  gem 'rack-reverse-proxy',    '0.4.4',  require: 'rack/reverse_proxy'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'foreman',               '0.46.0', require: false
   gem 'factory_girl_rails',    '~> 4.0.0'

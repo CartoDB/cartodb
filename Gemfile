@@ -40,7 +40,6 @@ end
 
 # Importer
 gem 'roo',                     '1.13.2'
-gem 'spreadsheet',             '0.6.5.9'
 gem 'google-spreadsheet-ruby', '0.1.8'
 gem 'rubyzip',                 '0.9.9'
 gem 'builder',                 '3.0.0'
@@ -51,7 +50,6 @@ gem 'dbf',                     '2.0.6'
 
 # Sync tables
 gem 'faraday',                 '0.9.0'
-gem 'retriable',               '1.4.1'
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'

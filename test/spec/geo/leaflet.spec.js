@@ -119,11 +119,11 @@ describe('LeafletMapView', function() {
   });
 
   it("should create a CartoDBLayerGroup when the layer is LayerGroup", function() {
-    layer = new cdb.geo.CartoDBGroupLayer({ 
+    layer = new cdb.geo.CartoDBGroupLayer({
       layer_definition: {
           version: '1.0.0',
           layers: [{
-             type: 'cartodb', 
+             type: 'cartodb',
              options: {
                sql: 'select * from ne_10m_populated_places_simple',
                cartocss: '#layer { marker-fill: red; }',
@@ -139,7 +139,7 @@ describe('LeafletMapView', function() {
 
   it("should create the cartodb logo", function() {
     runs(function() {
-      layer = new cdb.geo.CartoDBLayer({ 
+      layer = new cdb.geo.CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test'
@@ -155,7 +155,7 @@ describe('LeafletMapView', function() {
 
   it("should not add the cartodb logo when cartodb_logo = false", function() {
     runs(function() {
-      layer = new cdb.geo.CartoDBLayer({ 
+      layer = new cdb.geo.CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test',
@@ -178,7 +178,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should insert layers in specified order", function() {
-    var layer = new cdb.geo.CartoDBLayer({ 
+    var layer = new cdb.geo.CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test'
@@ -280,51 +280,42 @@ describe('LeafletMapView', function() {
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.
+  var expectedSubstituteDefault = { // New Stamen basemaps
+    tileUrlRegex: /.+[a-d]\.basemaps\.cartocdn\.com\/(light|dark)_all\/303\/101\/202.+/,
+    subdomains: ['a','b','c','d'],
+    minZoom: 0,
+    maxZoom: 18,
+    attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+  };
   _({ // GMaps basemap base_type: expected substitute data
-    ""/*gray_roadmap is the default fallback*/: { // Nokia Day Gray
-      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
-      subdomains: ['1','2','3','4'],
-      minZoom: 0,
-      maxZoom: 21,
-      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-    },
-    roadmap: { // Nokia Day
-      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
-      subdomains: ['1','2','3','4'],
-      minZoom: 0,
-      maxZoom: 21,
-      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
-    },
-    dark_roadmap: { // CartoDB Dark
-      url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-dark/{z}/{x}/{y}.png',
-      subdomains: ['a','b','c','d'],
-      minZoom: 0,
-      maxZoom: 10,
-      attribution: ""
-    },
+    //empty = defaults to gray_roadmap
+    "": expectedSubstituteDefault,
+    roadmap: expectedSubstituteDefault,
+    dark_roadmap: expectedSubstituteDefault,
     hybrid: { // Nokia Hybrid Day
-      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      tileUrlRegex: /https:\/\/[1-4]\.maps\.nlp\.nokia\.com\/maptile\/\d+\.\d+\/maptile\/newest\/hybrid\.day\/303\/101\/202\/.+/,
       subdomains: ['1','2','3','4'],
       minZoom: 0,
       maxZoom: 21,
-      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
     },
     terrain: { // Nokia Terrain Day
-      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/terrain.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      tileUrlRegex: /https:\/\/[1-4]\.maps\.nlp\.nokia\.com\/maptile\/\d+\.\d+\/maptile\/newest\/terrain\.day\/303\/101\/202\/.+/,
       subdomains: ['1','2','3','4'],
       minZoom: 0,
       maxZoom: 21,
-      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
     },
     satellite: { // Nokia Satellite Day
-      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      tileUrlRegex: /https:\/\/[1-4]\.maps\.nlp\.nokia\.com\/maptile\/\d+\.\d+\/maptile\/newest\/satellite\.day\/303\/101\/202\/.+/,
       subdomains: ['1','2','3','4'],
       minZoom: 0,
       maxZoom: 21,
-      attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
     }
   }).map(function(substitute, baseType) {
-    var layerOpts, testContext;
+    var layerOpts;
+    var testContext;
 
     if (baseType) {
       layerOpts = { base_type: baseType};
@@ -342,7 +333,7 @@ describe('LeafletMapView', function() {
       });
 
       it("should have a tileUrl based on substitute's template URL", function() {
-        expect(view.getTileUrl({ x: 101, y: 202, z: 303 })).toMatch(substitute.tileUrlRegexp);
+        expect(view.getTileUrl({ x: 101, y: 202, z: 303 })).toMatch(substitute.tileUrlRegex);
       });
 
       it("should have substitute's attribution", function() {

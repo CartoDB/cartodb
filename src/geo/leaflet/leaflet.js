@@ -294,8 +294,10 @@
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
-      // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView,
+
+      // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
+      "gmapsbase": cdb.geo.LeafLetGmapsTiledLayerView,
+
       "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
       "namedmap": cdb.geo.LeafLetCartoDBNamedMapView,
       "torque": function(layer, map) {

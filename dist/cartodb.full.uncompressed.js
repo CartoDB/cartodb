@@ -34357,6 +34357,1281 @@ Layers.register('torque', function(vis, data) {
   };
 
 })();
+/**
+ * tabbed pane.
+ * if contains n views inside it and shows only one at once
+ *
+ * usage:
+ *
+ * var pane = new cdb.ui.common.TabPane({
+ *   el: $("#container")
+ * });
+ *
+ * pane.addTab('tab1', new OtherView());
+ * pane.addTab('tab2', new OtherView2());
+ * pane.addTab('tab3', new OtherView3());
+ *
+ * pane.active('tab1');
+ *
+ * pane.bind('tabEnabled', function(tabName, tabView) {
+ * pane.bind('tabDisabled', function(tabName, tabView) {
+ * });
+ */
+cdb.ui.common.TabPane = cdb.core.View.extend({
+
+  initialize: function() {
+      this.tabs = {};
+      this.activeTab  = null;
+      this.activePane = null;
+  },
+
+  addTab: function(name, view, options) {
+    options = options || { active: true };
+    if(this.tabs[name] !== undefined) {
+      cdb.log.debug(name + "already added");
+    } else {
+      this.tabs[name] = view.cid;
+      this.addView(view);
+      if(options.after !== undefined) {
+        var e = this.$el.children()[options.after];
+        view.$el.insertAfter(e);
+      } else if(options.prepend) {
+        this.$el.prepend(view.el);
+      } else {
+        this.$el.append(view.el);
+      }
+      this.trigger('tabAdded', name, view);
+      if(options.active) {
+        this.active(name);
+      } else {
+        view.hide();
+      }
+    }
+  },
+
+  getPreviousPane: function() {
+    var tabs  = _.toArray(this.tabs);
+    var panes = _.toArray(this._subviews);
+
+    var i = _.indexOf(tabs, this.activePane.cid) - 1;
+    if (i < 0) i = panes.length - 1;
+
+    return panes[i];
+  },
+
+  getNextPane: function() {
+    var tabs  = _.toArray(this.tabs);
+    var panes = _.toArray(this._subviews);
+
+    var i = 1 + _.indexOf(tabs, this.activePane.cid);
+    if (i > panes.length - 1) i = 0;
+
+    return panes[i];
+  },
+
+  getPane: function(name) {
+    var vid = this.tabs[name];
+    return this._subviews[vid];
+  },
+
+  getActivePane: function() {
+    return this.activePane;
+  },
+
+  size: function() {
+    return _.size(this.tabs);
+  },
+
+  clean: function() {
+    this.removeTabs();
+    cdb.core.View.prototype.clean.call(this)
+  },
+
+  removeTab: function(name) {
+    if (this.tabs[name] !== undefined) {
+      var vid = this.tabs[name];
+      this._subviews[vid].clean();
+      delete this.tabs[name];
+
+      if (this.activeTab == name) {
+        this.activeTab = null;
+      }
+
+      if (_.size(this.tabs)) {
+        this.active(_.keys(this.tabs)[0]);
+      }
+    }
+  },
+
+  removeTabs: function() {
+    for(var name in this.tabs) {
+      var vid = this.tabs[name];
+      this._subviews[vid].clean();
+      delete this.tabs[name];
+    }
+    this.activeTab = null;
+  },
+
+  active: function(name) {
+    var
+    self = this,
+    vid  = this.tabs[name];
+
+    if (vid !== undefined) {
+
+      if (this.activeTab !== name) {
+
+        var v = this._subviews[vid];
+
+        if (this.activeTab) {
+          var vid_old  = this._subviews[this.tabs[this.activeTab]];
+
+          vid_old.hide();
+          self.trigger('tabDisabled', this.activeTab , vid_old);
+          self.trigger('tabDisabled:' + this.activeTab,  vid_old);
+          if(vid_old.deactivated) {
+            vid_old.deactivated();
+          }
+        }
+
+        v.show();
+        if(v.activated) {
+          v.activated();
+        }
+
+        this.activeTab = name;
+        this.activePane = v;
+
+        self.trigger('tabEnabled', name, v);
+        self.trigger('tabEnabled:' + name,  v);
+      }
+
+      return this.activePane;
+    }
+  },
+
+  render: function() {
+      return this;
+  },
+
+  each: function(fn) {
+    var self = this;
+    _.each(this.tabs, function(cid, tab) {
+      fn(tab, self.getPane(tab));
+    });
+  }
+
+});
+/**
+ * generic dialog
+ *
+ * this opens a dialog in the middle of the screen rendering
+ * a dialog using cdb.templates 'common/dialog' or template_base option.
+ *
+ * inherit class should implement render_content (it could return another widget)
+ *
+ * usage example:
+ *
+ *    var MyDialog = cdb.ui.common.Dialog.extend({
+ *      render_content: function() {
+ *        return "my content";
+ *      },
+ *    })
+ *    var dialog = new MyDialog({
+ *        title: 'test',
+ *        description: 'long description here',
+ *        template_base: $('#base_template').html(),
+ *        width: 500
+ *    });
+ *
+ *    $('body').append(dialog.render().el);
+ *    dialog.open();
+ *
+ * TODO: implement draggable
+ * TODO: modal
+ * TODO: document modal_type
+ */
+
+cdb.ui.common.Dialog = cdb.core.View.extend({
+
+  tagName: 'div',
+  className: 'dialog',
+
+  events: {
+    'click .ok': '_ok',
+    'click .cancel': '_cancel',
+    'click .close': '_cancel'
+  },
+
+  default_options: {
+    title: 'title',
+    description: '',
+    ok_title: 'Ok',
+    cancel_title: 'Cancel',
+    width: 300,
+    height: 200,
+    clean_on_hide: false,
+    enter_to_confirm: false,
+    template_name: 'common/views/dialog_base',
+    ok_button_classes: 'button green',
+    cancel_button_classes: '',
+    modal_type: '',
+    modal_class: '',
+    include_footer: true,
+    additionalButtons: []
+  },
+
+  initialize: function() {
+    _.defaults(this.options, this.default_options);
+
+    _.bindAll(this, 'render', '_keydown');
+
+    // Keydown bindings for the dialog
+    $(document).bind('keydown', this._keydown);
+
+    // After removing the dialog, cleaning other bindings
+    this.bind("clean", this._reClean);
+
+    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
+  },
+
+  render: function() {
+    var $el = this.$el;
+
+    $el.html(this.template_base(this.options));
+
+    $el.find(".modal").css({
+      width: this.options.width
+      //height: this.options.height
+      //'margin-left': -this.options.width>>1,
+      //'margin-top': -this.options.height>>1
+    });
+
+    if(this.render_content) {
+
+      this.$('.content').append(this.render_content());
+    }
+
+    if(this.options.modal_class) {
+      this.$el.addClass(this.options.modal_class);
+    }
+
+    return this;
+  },
+
+
+  _keydown: function(e) {
+    // If clicks esc, goodbye!
+    if (e.keyCode === 27) {
+      this._cancel();
+    // If clicks enter, same as you click on ok button.
+    } else if (e.keyCode === 13 && this.options.enter_to_confirm) {
+      this._ok();
+    }
+  },
+
+  /**
+   * helper method that renders the dialog and appends it to body
+   */
+  appendToBody: function() {
+    $('body').append(this.render().el);
+    return this;
+  },
+
+  _ok: function(ev) {
+
+   if(ev) ev.preventDefault();
+
+    if (this.ok) {
+      this.ok(this.result);
+    }
+
+    this.hide();
+
+  },
+
+  _cancel: function(ev) {
+
+    if (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+
+    if (this.cancel) {
+      this.cancel();
+    }
+
+    this.hide();
+
+  },
+
+  hide: function() {
+
+    this.$el.hide();
+
+    if (this.options.clean_on_hide) {
+      this.clean();
+    }
+
+  },
+
+  open: function() {
+
+    this.$el.show();
+
+  },
+
+  _reClean: function() {
+
+    $(document).unbind('keydown', this._keydown);
+
+  }
+
+});
+/**
+ * generic embbed notification, like twitter "new notifications"
+ *
+ * it shows slowly the notification with a message and a close button.
+ * Optionally you can set a timeout to close
+ *
+ * usage example:
+ *
+      var notification = new cdb.ui.common.Notificaiton({
+          el: "#notification_element",
+          msg: "error!",
+          timeout: 1000
+      });
+      notification.show();
+      // close it
+      notification.close();
+*/
+
+cdb.ui.common.Notification = cdb.core.View.extend({
+
+  tagName: 'div',
+  className: 'dialog',
+
+  events: {
+    'click .close': 'hide'
+  },
+
+  default_options: {
+      timeout: 0,
+      msg: '',
+      hideMethod: '',
+      duration: 'normal'
+  },
+
+  initialize: function() {
+    this.closeTimeout = -1;
+    _.defaults(this.options, this.default_options);
+    this.template = this.options.template ? _.template(this.options.template) : cdb.templates.getTemplate('common/notification');
+
+    this.$el.hide();
+  },
+
+  render: function() {
+    var $el = this.$el;
+    $el.html(this.template(this.options));
+    if(this.render_content) {
+      this.$('.content').append(this.render_content());
+    }
+    return this;
+  },
+
+  hide: function(ev) {
+    var self = this;
+    if (ev)
+      ev.preventDefault();
+    clearTimeout(this.closeTimeout);
+    if(this.options.hideMethod != '' && this.$el.is(":visible") ) {
+      this.$el[this.options.hideMethod](this.options.duration, 'swing', function() {
+        self.$el.html('');
+        self.trigger('notificationDeleted');
+        self.remove();
+      });
+    } else {
+      this.$el.hide();
+      self.$el.html('');
+      self.trigger('notificationDeleted');
+      self.remove();
+    }
+
+  },
+
+  open: function(method, options) {
+    this.render();
+    this.$el.show(method, options);
+    if(this.options.timeout) {
+        this.closeTimeout = setTimeout(_.bind(this.hide, this), this.options.timeout);
+    }
+  }
+
+});
+
+/**
+ * generic table
+ *
+ * this class creates a HTML table based on Table model (see below) and modify it based on model changes
+ *
+ * usage example:
+ *
+      var table = new Table({
+          model: table
+      });
+
+      $('body').append(table.render().el);
+
+  * model should be a collection of Rows
+
+ */
+
+/**
+ * represents a table row
+ */
+cdb.ui.common.Row = cdb.core.Model.extend({
+});
+
+cdb.ui.common.TableData = Backbone.Collection.extend({
+    model: cdb.ui.common.Row,
+    fetched: false,
+
+    initialize: function() {
+      var self = this;
+      this.bind('reset', function() {
+        self.fetched = true;
+      })
+    },
+
+    /**
+     * get value for row index and columnName
+     */
+    getCell: function(index, columnName) {
+      var r = this.at(index);
+      if(!r) {
+        return null;
+      }
+      return r.get(columnName);
+    },
+
+    isEmpty: function() {
+      return this.length === 0;
+    }
+
+});
+
+/**
+ * contains information about the table, mainly the schema
+ */
+cdb.ui.common.TableProperties = cdb.core.Model.extend({
+
+  columnNames: function() {
+    return _.map(this.get('schema'), function(c) {
+      return c[0];
+    });
+  },
+
+  columnName: function(idx) {
+    return this.columnNames()[idx];
+  }
+});
+
+/**
+ * renders a table row
+ */
+cdb.ui.common.RowView = cdb.core.View.extend({
+  tagName: 'tr',
+
+  initialize: function() {
+
+    this.model.bind('change', this.render, this);
+    this.model.bind('destroy', this.clean, this);
+    this.model.bind('remove', this.clean, this);
+    this.model.bind('change', this.triggerChange, this);
+    this.model.bind('sync', this.triggerSync, this);
+    this.model.bind('error', this.triggerError, this);
+
+    this.add_related_model(this.model);
+    this.order = this.options.order;
+  },
+
+  triggerChange: function() {
+    this.trigger('changeRow');
+  },
+
+  triggerSync: function() {
+    this.trigger('syncRow');
+  },
+
+  triggerError: function() {
+    this.trigger('errorRow')
+  },
+
+  valueView: function(colName, value) {
+    return value;
+  },
+
+  render: function() {
+    var self = this;
+    var row = this.model;
+
+    var tr = '';
+
+    var tdIndex = 0;
+    var td;
+    if(this.options.row_header) {
+        td = '<td class="rowHeader" data-x="' + tdIndex + '">';
+    } else {
+        td = '<td class="EmptyRowHeader" data-x="' + tdIndex + '">';
+    }
+    var v = self.valueView('', '');
+    if(v.html) {
+      v = v[0].outerHTML;
+    }
+    td += v;
+    td += '</td>';
+    tdIndex++;
+    tr += td
+
+    var attrs = this.order || _.keys(row.attributes);
+    var tds = '';
+    var row_attrs = row.attributes;
+    for(var i = 0, len = attrs.length; i < len; ++i) {
+      var key = attrs[i];
+      var value = row_attrs[key];
+      if(value !== undefined) {
+        var td = '<td id="cell_' + row.id + '_' + key + '" data-x="' + tdIndex + '">';
+        var v = self.valueView(key, value);
+        if(v.html) {
+          v = v[0].outerHTML;
+        }
+        td += v;
+        td += '</td>';
+        tdIndex++;
+        tds += td;
+      }
+    }
+    tr += tds;
+    this.$el.html(tr).attr('id', 'row_' + row.id);
+    return this;
+  },
+
+  getCell: function(x) {
+    var childNo = x;
+    if(this.options.row_header) {
+      ++x;
+    }
+    return this.$('td:eq(' + x + ')');
+  },
+
+  getTableView: function() {
+    return this.tableView;
+  }
+
+});
+
+/**
+ * render a table
+ * this widget needs two data sources
+ * - the table model which contains information about the table (columns and so on). See TableProperties
+ * - the model with the data itself (TableData)
+ */
+cdb.ui.common.Table = cdb.core.View.extend({
+
+  tagName: 'table',
+  rowView: cdb.ui.common.RowView,
+
+  events: {
+      'click td': '_cellClick',
+      'dblclick td': '_cellDblClick'
+  },
+
+  default_options: {
+  },
+
+  initialize: function() {
+    var self = this;
+    _.defaults(this.options, this.default_options);
+    this.dataModel = this.options.dataModel;
+    this.rowViews = [];
+
+    // binding
+    this.setDataSource(this.dataModel);
+    this.model.bind('change', this.render, this);
+    this.model.bind('change:dataSource', this.setDataSource, this);
+
+    // assert the rows are removed when table is removed
+    this.bind('clean', this.clear_rows, this);
+
+    // prepare for cleaning
+    this.add_related_model(this.dataModel);
+    this.add_related_model(this.model);
+
+    // we need to use custom signals to make the tableview aware of a row being deleted,
+    // because when you delete a point from the map view, sometimes it isn't on the dataModel
+    // collection, so its destroy doesn't bubble throught there.
+    // Also, the only non-custom way to acknowledge that a row has been correctly deleted from a server is with
+    // a sync, that doesn't bubble through the table
+    this.model.bind('removing:row', function() {
+      self.rowsBeingDeleted = self.rowsBeingDeleted ? self.rowsBeingDeleted +1 : 1;
+      self.rowDestroying();
+    });
+    this.model.bind('remove:row', function() {
+      if(self.rowsBeingDeleted > 0) {
+        self.rowsBeingDeleted--;
+        self.rowDestroyed();
+        if(self.dataModel.length == 0) {
+          self.emptyTable();
+        }
+      }
+    });
+
+  },
+
+  headerView: function(column) {
+      return column[0];
+  },
+
+  setDataSource: function(dm) {
+    if(this.dataModel) {
+      this.dataModel.unbind(null, null, this);
+    }
+    this.dataModel = dm;
+    this.dataModel.bind('reset', this._renderRows, this);
+    this.dataModel.bind('error', this._renderRows, this);
+    this.dataModel.bind('add', this.addRow, this);
+  },
+
+  _renderHeader: function() {
+    var self = this;
+    var thead = $("<thead>");
+    var tr = $("<tr>");
+    if(this.options.row_header) {
+      tr.append($("<th>").append(self.headerView(['', 'header'])));
+    } else {
+      tr.append($("<th>").append(self.headerView(['', 'header'])));
+    }
+    _(this.model.get('schema')).each(function(col) {
+      tr.append($("<th>").append(self.headerView(col)));
+    });
+    thead.append(tr);
+    return thead;
+  },
+
+  /**
+   * remove all rows
+   */
+  clear_rows: function() {
+    this.$('tfoot').remove();
+    this.$('tr.noRows').remove();
+
+    // unbind rows before cleaning them when all are gonna be removed
+    var rowView = null;
+    while(rowView = this.rowViews.pop()) {
+      // this is a hack to avoid all the elements are removed one by one
+      rowView.unbind(null, null, this);
+      // each element removes itself from rowViews
+      rowView.clean();
+    }
+    // clean all the html at the same time
+    this.rowViews = [];
+  },
+
+  /**
+   * add rows
+   */
+  addRow: function(row, collection, options) {
+    var self = this;
+    var tr = new self.rowView({
+      model: row,
+      order: this.model.columnNames(),
+      row_header: this.options.row_header
+    });
+    tr.tableView = this;
+
+    tr.bind('clean', function() {
+      var idx = _.indexOf(self.rowViews, tr);
+      self.rowViews.splice(idx, 1);
+      // update index
+      for(var i = idx; i < self.rowViews.length; ++i) {
+        self.rowViews[i].$el.attr('data-y', i);
+      }
+    }, this);
+    tr.bind('changeRow', this.rowChanged, this);
+    tr.bind('saved', this.rowSynched, this);
+    tr.bind('errorSaving', this.rowFailed, this);
+    tr.bind('saving', this.rowSaving, this);
+    this.retrigger('saving', tr);
+
+    tr.render();
+    if(options && options.index !== undefined && options.index != self.rowViews.length) {
+
+      tr.$el.insertBefore(self.rowViews[options.index].$el);
+      self.rowViews.splice(options.index, 0, tr);
+      //tr.$el.attr('data-y', options.index);
+      // change others view data-y attribute
+      for(var i = options.index; i < self.rowViews.length; ++i) {
+        self.rowViews[i].$el.attr('data-y', i);
+      }
+    } else {
+      // at the end
+      tr.$el.attr('data-y', self.rowViews.length);
+      self.$el.append(tr.el);
+      self.rowViews.push(tr);
+    }
+
+    this.trigger('createRow');
+  },
+
+  /**
+  * Callback executed when a row change
+  * @method rowChanged
+  * @abstract
+  */
+  rowChanged: function() {},
+
+  /**
+  * Callback executed when a row is sync
+  * @method rowSynched
+  * @abstract
+  */
+  rowSynched: function() {},
+
+  /**
+  * Callback executed when a row fails to reach the server
+  * @method rowFailed
+  * @abstract
+  */
+  rowFailed: function() {},
+
+  /**
+  * Callback executed when a row send a POST to the server
+  * @abstract
+  */
+  rowSaving: function() {},
+
+  /**
+  * Callback executed when a row is being destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroying: function() {},
+
+  /**
+  * Callback executed when a row gets destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroyed: function() {},
+
+  /**
+  * Callback executed when a row gets destroyed and the table data is empty
+  * @method emptyTable
+  * @abstract
+  */
+  emptyTable: function() {},
+
+  /**
+  * Checks if the table is empty
+  * @method isEmptyTable
+  * @returns boolean
+  */
+  isEmptyTable: function() {
+    return (this.dataModel.length === 0 && this.dataModel.fetched)
+  },
+
+  /**
+   * render only data rows
+   */
+  _renderRows: function() {
+    this.clear_rows();
+    if(! this.isEmptyTable()) {
+      if(this.dataModel.fetched) {
+        var self = this;
+
+        this.dataModel.each(function(row) {
+          self.addRow(row);
+        });
+      } else {
+        this._renderLoading();
+      }
+    } else {
+      this._renderEmpty();
+    }
+
+  },
+
+  _renderLoading: function() {
+  },
+
+  _renderEmpty: function() {
+  },
+
+  /**
+  * Method for the children to redefine with the table behaviour when it has no rows.
+  * @method addEmptyTableInfo
+  * @abstract
+  */
+  addEmptyTableInfo: function() {
+    // #to be overwrite by descendant classes
+  },
+
+  /**
+   * render table
+   */
+  render: function() {
+    var self = this;
+
+    // render header
+    self.$el.html(self._renderHeader());
+
+    // render data
+    self._renderRows();
+
+    return this;
+
+  },
+
+  /**
+   * return jquery cell element of cell x,y
+   */
+  getCell: function(x, y) {
+    if(this.options.row_header) {
+      ++y;
+    }
+    return this.rowViews[y].getCell(x);
+  },
+
+  _cellClick: function(e, evtName) {
+    evtName = evtName || 'cellClick';
+    e.preventDefault();
+    var cell = $(e.currentTarget || e.target);
+    var x = parseInt(cell.attr('data-x'), 10);
+    var y = parseInt(cell.parent().attr('data-y'), 10);
+    this.trigger(evtName, e, cell, x, y);
+  },
+
+  _cellDblClick: function(e) {
+    this._cellClick(e, 'cellDblClick');
+  }
+
+
+});
+(function() {
+
+/**
+ * this module implements all the features related to overlay geometries
+ * in leaflet: markers, polygons, lines and so on
+ */
+
+
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
+      //TODO: create marker depending on the visualizacion options
+      var p = L.marker(latLng,{
+        icon: L.icon({
+          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+          iconAnchor: [11, 11]
+        })
+      });
+
+      var i;
+      for(i = 0; i < events.length; ++i) {
+        var e = events[i];
+        p.on(e, self._eventHandler(e));
+      }
+      return p;
+  });
+
+  this.bind('dragend', function(e, pos) { 
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        //geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype.edit = function() {
+  this.geom.dragging.enable();
+};
+
+/**
+ * returns a function to handle events fot evtType
+ */
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.target.getLatLng();
+      var s = [latlng.lat, latlng.lng];
+      self.trigger(evtType, e.originalEvent, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
+  this.geom.setStyle(geometryModel.get('style'));
+
+  
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.prototype._leafletLayers = function() {
+  // check if this is a multi-feature or single-feature
+  if (this.geom.getLayers) {
+    return this.geom.getLayers();
+  }
+  return [this.geom];
+};
+
+
+PathView.prototype.enableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.setStyle(self.model.get('style'));
+    g.on('edit', function() {
+      self.model.set('geojson', self.geom.toGeoJSON().geometry);
+    }, self);
+  });
+};
+
+PathView.prototype.disableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.off('edit', null, self);
+  });
+};
+
+PathView.prototype.edit = function(enable) {
+  var self = this;
+  var fn = enable ? 'enable': 'disable';
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.editing[fn]();
+    enable ? self.enableEdit(): self.disableEdit();
+  });
+};
+
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
+
+
+})();
+(function() {
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  var style = _.clone(geometryModel.get('style')) || {};
+  //style.path = google.maps.SymbolPath.CIRCLE;
+  //style.scale = style.weight;
+  //style.strokeColor = "ff0000";
+  //style.strokeOpacity = 1;
+  //style.strokeWeight = 1;
+  //style.fillColor = '00000';
+  //style.fillOpacity = 0.5;
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    {
+      icon: {
+          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
+          anchor: {x: 10, y: 10}
+      },
+      raiseOnDrag: false,
+      crossOnDrag: false
+    }
+  );
+
+  // bind events
+  var i;
+  for(i = 0; i < events.length; ++i) {
+    var e = events[i];
+    google.maps.event.addListener(this.geom, e, self._eventHandler(e));
+  }
+
+  // link dragging
+  this.bind('dragend', function(e, pos) {
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        // geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.latLng;
+      var s = [latlng.lat(), latlng.lng()];
+      self.trigger(evtType, e, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+PointView.prototype.edit = function(enable) {
+  this.geom.setDraggable(enable);
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  
+
+  var style = _.clone(geometryModel.get('style')) || {};
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    style
+  );
+
+  /*_.each(this.geom._layers, function(g) {
+    g.setStyle(geometryModel.get('style'));
+    g.on('edit', function() {
+      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+    }, self);
+  });
+  */
+
+  _.bindAll(this, '_updateModel');
+  var self = this;
+
+  function bindPath(p) {
+    google.maps.event.addListener(p, 'insert_at', self._updateModel);
+    /*
+    google.maps.event.addListener(p, 'remove_at', this._updateModel);
+    google.maps.event.addListener(p, 'set_at', this._updateModel);
+    */
+  }
+
+  // TODO: check this conditions
+
+  if(this.geom.getPaths) {
+    var paths = this.geom.getPaths();
+
+    if (paths && paths[0]) {
+      // More than one path
+      for(var i = 0; i < paths.length; ++i) {
+        bindPath(paths[i]);
+      }
+    } else {
+      // One path
+      bindPath(paths);
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  } else {
+    // More than one path
+    if (this.geom.length) {
+      for(var i = 0; i < this.geom.length; ++i) {
+        bindPath(this.geom[i].getPath());
+        google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+      }
+    } else {
+      // One path
+      bindPath(this.geom.getPath());
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  }
+
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.getGeoJSON = function(geom, gType) {
+
+  var coordFn = {
+    'Polygon': 'getPath',
+    'MultiPolygon': 'getPath',
+    'LineString': 'getPath',
+    'MultiLineString': 'getPath',
+    'Point': 'getPosition',
+    'MultiPoint': 'getPosition'
+  };
+
+  function _coord(latlng) {
+    return [latlng.lng(), latlng.lat()];
+  }
+
+  function _coords(latlngs) {
+    var c = [];
+    for(var i = 0; i < latlngs.length; ++i) {
+      c.push(_coord(latlngs.getAt(i)));
+    }
+    return c;
+  }
+
+  // single
+  if(!geom.length || geom.length == 1) {
+    var g = geom.length ? geom[0]: geom;
+    var coords;
+    if(gType == 'Point') {
+      coords = _coord(g.getPosition());
+    } else if(gType == 'MultiPoint') {
+      coords = [_coord(g.getPosition())]
+    } else if(gType == 'Polygon') {
+      coords = [_coords(g.getPath())];
+      coords[0].push(_coord(g.getPath().getAt(0)));
+    } else if(gType == 'MultiPolygon') {
+      coords = [];
+      for(var p = 0; p < g.getPaths().length; ++p) {
+        var c = _coords(g.getPaths().getAt(p));
+        c.push(_coord(g.getPaths().getAt(p).getAt(0)));
+        coords.push(c);
+      }
+      coords = [coords]
+    } else if(gType == 'LineString') {
+      coords = _coords(g.getPath());
+    } else if(gType == 'MultiLineString') {
+      //TODO: redo
+      coords = [_coords(g.getPath())];
+    }
+    return {
+      type: gType,
+      coordinates: coords
+    }
+  } else {
+    // poly
+    var c = [];
+    for(var i = 0; i < geom.length; ++i) {
+      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
+    }
+    return  {
+      type: gType,
+      coordinates: c
+    }
+  }
+}
+
+PathView.prototype._updateModel = function(e) {
+  var self = this;
+  setTimeout(function() {
+  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
+  }, 100)
+}
+
+PathView.prototype.edit = function(enable) {
+
+  var fn = enable ? 'enable': 'disable';
+  var g = this.geom.length ? this.geom: [this.geom];
+  for(var i = 0; i < g.length; ++i) {
+    g[i].setEditable(enable);
+  }
+  if(!enable) {
+    this.model.set('geojson', PathView.getGeoJSON(this.geom, this.model.get('geojson').type));
+  }
+};
+
+cdb.geo.gmaps = cdb.geo.gmaps || {};
+
+cdb.geo.gmaps.PointView = PointView;
+cdb.geo.gmaps.PathView = PathView;
+
+
+
+})();
 
 
     cdb.$ = $;

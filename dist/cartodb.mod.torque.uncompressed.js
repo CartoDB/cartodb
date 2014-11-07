@@ -1,6 +1,3 @@
-// version: 3.11.23-dev
-// sha: 83f786867a472c5adad3b41795bd1c6a89e2ccb5
-
 
 var assert = {
   ok: function(value, message) {
@@ -5253,7 +5250,6 @@ if(typeof(module) !== 'undefined') {
 
 
 })(require('../carto'));
-
 (function(exports) {
 
   exports.torque = exports.torque || {};
@@ -9997,7 +9993,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
 } //L defined
 
-
 (function() {
 
 if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
@@ -10102,7 +10097,6 @@ cdb.geo.GMapsTorqueLayerView = GMapsTorqueLayerView;
 
 
 })();
-
 
 (function() {
 
@@ -10216,7 +10210,6 @@ _.extend(LeafLetTorqueLayer.prototype, cdb.geo.LeafLetLayerView.prototype);
 cdb.geo.LeafLetTorqueLayer = LeafLetTorqueLayer;
 
 })();
-
 cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
@@ -10387,7 +10380,6 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   }
 
 });
-
 
 /*!
  * jQuery UI 1.8.23
@@ -10723,7 +10715,6 @@ $.extend( $.ui, {
 });
 
 })( jQuery );
-
 /*!
  * jQuery UI Widget 1.8.23
  *
@@ -10996,7 +10987,6 @@ $.Widget.prototype = {
 };
 
 })( jQuery );
-
 /*!
  * jQuery UI Mouse 1.8.23
  *
@@ -11164,7 +11154,6 @@ $.widget("ui.mouse", {
 });
 
 })(jQuery);
-
 /*
  * jQuery UI Touch Punch 0.2.2
  *
@@ -11842,4 +11831,5 @@ $.extend( $.ui.slider, {
 
 cartodb.moduleLoad('torque', torque);
 
-Profiler = cartodb.core.Profiler;
+Profiler = cartodb.core.Profiler
+

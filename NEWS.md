@@ -3,6 +3,9 @@
 * New features
   - Mapviews graph for everybody.
   - New rainbow basemaps.
+* Fixed bugs
+  - Made lib/sql git submodule point to 0.4.1 tag
+  - Batch internal geocoder update queries to avoid db timeouts
 
 3.2.9 (2014-11-03)
 ------------------

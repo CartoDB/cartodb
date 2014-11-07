@@ -2,6 +2,7 @@
 * New features
   * Enabled ghost tables. Tables created with SQL API are visible in the editor
   * Enables fullscreen for IE11.
+  * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 
 3.2.8 (2014-11-03)
 ------------------

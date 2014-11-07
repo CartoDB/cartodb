@@ -1,4 +1,11 @@
-3.2.X ()
+3.2.10 (2014-11-07)
+------------------
+* New features
+  - Mapviews graph for everybody.
+  - New rainbow basemaps.
+
+3.2.9 (2014-11-03)
+------------------
 * New features
   * Enabled ghost tables. Tables created with SQL API are visible in the editor
   * Enables fullscreen for IE11.

@@ -81,7 +81,6 @@ group :development, :test do
   gem 'webrick',               '1.3.1'
   gem 'sqlite3',               '1.3.7'
   gem 'poltergeist',           '>= 1.0.0'
-  #gem 'minitest',              '5.0.6', require: false
   gem 'selenium-webdriver',    '>= 2.5.0'
 
   gem 'mocha',                 '0.10.5'
@@ -103,8 +102,7 @@ group :development, :test do
   gem 'rb-fsevent',                     require: false
   gem 'rb-fchange',                     require: false
   gem 'guard',                 '1.8.1'
-  #gem 'guard-minitest',         '1.0.1'
-  #gem 'minitest-ci',            '~> 3.0.1', :require => false
+
   # Server
   gem 'thin',                           require: false
 end

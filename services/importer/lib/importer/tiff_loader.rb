@@ -32,6 +32,10 @@ module CartoDB
         self
       end
 
+      def additional_tables?
+        raster2pgsql
+      end
+
       def raster2pgsql
         @raster2pgsql ||= Raster2Pgsql.new(job.table_name, source_file.fullpath, job.pg_options)
       end

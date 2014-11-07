@@ -24,7 +24,8 @@ module CartoDB
       # @param available_quota int|nil
       # @param unpacker Unp|nil
       # @param post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil, importer_stats_options = nil)
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil, \
+                     importer_stats_options = nil)
         @pg_options          = pg_options
         @downloader          = downloader
         @log                 = log             || new_logger
@@ -35,7 +36,8 @@ module CartoDB
         @post_import_handler = post_import_handler || nil
         @loader_options      = {}
         importer_stats_options ||= { host: nil, port: nil}
-        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port], importer_stats_options[:queue_id])
+        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port], \
+                                                     importer_stats_options[:queue_id])
       end
 
       def loader_options=(value)
@@ -173,7 +175,7 @@ module CartoDB
       def import(source_file, downloader, job=nil, loader_object=nil)
         job     ||= Job.new({ logger: log, pg_options: pg_options })
         loader = loader_object || loader_for(source_file).new(job, source_file)
-        if(loader.respond_to?(:set_importer_stats))
+        if loader.respond_to?(:set_importer_stats)
           loader.set_importer_stats(@importer_stats)
         end
         loader.options = @loader_options

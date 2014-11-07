@@ -11,6 +11,7 @@ module CartoDB
       WEBMERCATOR_FILENAME          = '%s_webmercator.tif'
       ALIGNED_WEBMERCATOR_FILENAME  = '%s_aligned_webmercator.tif'
       SQL_FILENAME                  = '%s%s.sql'
+      OVERLAY_TABLENAME             = 'o_%s_%s'
 
       def initialize(table_name, filepath, pg_options)
         self.filepath             = filepath
@@ -21,7 +22,8 @@ module CartoDB
         self.pg_options           = pg_options
         self.table_name           = table_name
         self.exit_code            = nil
-        self.command_output       = nil
+        self.command_output       = ''
+        self.additional_tables    = []
       end
 
       attr_reader   :exit_code, :command_output
@@ -43,17 +45,25 @@ module CartoDB
         self
       end
 
+      # Returns a list of additional support tables created, that should go to the user DB
+      # but not get cartodbfied/shown on the dashboard
+      def additional_support_tables
+        additional_tables.map { |scale| OVERLAY_TABLENAME % [scale, table_name] }
+      end
+
       private
 
       attr_writer   :exit_code, :command_output
       attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, :sql_filepath, \
-                    :basepath
+                    :basepath, :additional_tables
 
       def align_raster(scale)
         gdalwarp_command = %Q(#{gdalwarp_path} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
 
@@ -62,6 +72,8 @@ module CartoDB
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
 
@@ -71,6 +83,8 @@ module CartoDB
 
         stdout, stderr, status  = Open3.capture3(gdalinfo_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
 
         matches = output_message.match(/pixel size = \((.*)?,/i)
@@ -83,6 +97,8 @@ module CartoDB
 
         stdout, stderr, status  = Open3.capture3(gdalinfo_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
 
         matches = output_message.match(/size is (.*)?\n/i)
@@ -95,6 +111,8 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3(raster2pgsql_command(overviews_list))
         output = stdout + stderr
         output_message = "(#{status}) |#{output}| Command: #{raster2pgsql_command(overviews_list)}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
 
         raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
         raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
@@ -103,12 +121,13 @@ module CartoDB
 
       def run_psql
         stdout, stderr, status  = Open3.capture3(psql_command)
-        self.command_output     = stdout + stderr
-        self.exit_code          = status.to_i
-        output_message = "(#{exit_code}) |#{command_output}| Command: #{psql_command}"
+        output_message = stdout + stderr
+        output_message = "(#{status}) |#{output_message}| Command: #{psql_command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
 
         raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
-        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /error/i || command_output =~ /aborted/i
+        raise TiffToSqlConversionError.new(output_message)  if output_message =~ /error/i || output_message =~ /aborted/i
       end
 
       def calculate_raster_scale(pixel_size)
@@ -134,12 +153,13 @@ module CartoDB
         overviews = range.map{ |x| 2 ** x }
                          .select { |x| x <= 1000 }
 
+        self.additional_tables = overviews
+
         overviews.join(',')
       end
 
       def raster2pgsql_command(overviews_list)
         # We currently we don't apply any constraint
-        # TODO: Use aligned_filepath, and add overviews list
         %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -Y -I -f the_raster_webmercator ) +
         %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name} > #{sql_filepath})
       end

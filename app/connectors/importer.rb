@@ -78,10 +78,9 @@ module CartoDB
       def rename(current_name, new_name, rename_attempts=0)
         new_name = table_registrar.get_valid_table_name(new_name)
 
-        if (rename_attempts > 0)
+        if rename_attempts > 0
           new_name = "#{new_name}_#{rename_attempts}"
         end
-
         rename_attempts = rename_attempts + 1
 
         database.execute(%Q{
@@ -90,6 +89,9 @@ module CartoDB
         })
 
         rename_the_geom_index_if_exists(current_name, new_name)
+
+        # TODO: Rename overlays if raster
+
         new_name
       rescue
         retry unless rename_attempts > MAX_RENAME_RETRIES

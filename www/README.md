@@ -1,4 +1,4 @@
-# How to start developing in the CartoDB.js landing page
+## How to start developing in the CartoDB.js landing page
 
 - Install node.js, from 0.10 version (http://nodejs.org/download/).
 - Install grunt, ```npm install grunt cli```.

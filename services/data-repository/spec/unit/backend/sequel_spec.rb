@@ -35,10 +35,8 @@ describe DataRepository::Backend::Sequel do
       String    :visualization_id,  index: true
     end
 
-    Visualization.repository = 
-      DataRepository::Backend::Sequel.new(db, :visualizations)
-    Overlay.repository = 
-      DataRepository::Backend::Sequel.new(db, :overlays)
+    Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
+    Overlay.repository = DataRepository::Backend::Sequel.new(db, :overlays)
   end
 
   describe '#store' do

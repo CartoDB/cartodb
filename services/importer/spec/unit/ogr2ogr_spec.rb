@@ -89,6 +89,19 @@ describe Ogr2ogr do
       record    = @dataset.first
       record.fetch(:cartodb_id).should eq '5'
     end
+
+    it 'Does not create header if one column is numerical' do
+      header = ["id", "2"]
+      data   = ["5", "cell_#{rand(999)}"]
+      csv    = Factories::CSV.new.write(header, data)
+
+      @wrapper = CartoDB::Importer2::Ogr2ogr.new(@full_table_name, csv.filepath, @pg_options)
+      @wrapper.run
+
+      record    = @dataset.first
+      record.fetch(:field_1).should eq 'id'
+    end
+
   end
 
   describe '#command_output' do

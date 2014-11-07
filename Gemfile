@@ -36,8 +36,6 @@ group :assets do
 end
 
 # Importer
-gem 'ruby-ole',                '1.2.11.3'
-gem 'rchardet19',              '1.3.5'
 gem 'roo',                     '1.13.2'
 gem 'spreadsheet',             '0.6.5.9'
 gem 'google-spreadsheet-ruby', '0.1.8'

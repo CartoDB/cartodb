@@ -92,7 +92,7 @@ cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
   });
 {% endhighlight %}
 
-If you are using Google Maps for you basemap in your CartoDB account, using createViz requires that you load the **Google Maps V3** JavaScript libarary in the HEAD of your HTML. If you use other basemaps, cartodb.js will load the Leaflet library for you automatically.
+If you are using Google Maps for you basemap in your CartoDB account, using createVis requires that you load the **Google Maps V3** JavaScript library in the HEAD of your HTML. If you use other basemaps, cartodb.js will load the Leaflet library for you automatically.
 
 ### Adding cartodb layers to an existing map
 
@@ -212,6 +212,8 @@ cartodb.createVis('map', url)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
   - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)
   - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
+  - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'. 
+  - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ### cartodb.Vis

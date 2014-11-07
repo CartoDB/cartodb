@@ -61,4 +61,27 @@ describe('Hide funcionality', function() {
       done();
     }, 500);
   });
+
+  it('toggle layer from a visible state should work', function() {
+
+    waits(500);
+
+    runs(function () {
+      cdb_layer.hide();
+      visibility = cdb_layer.toggle();
+    });
+
+    waits(500);
+
+    runs(function() {
+      var $tile = $(div).find("img[gtilekey]").first()
+        , opacity = cdb_layer.options.opacity;
+
+      expect(visibility).toBeTruthy();
+      expect(cdb_layer.visible).toBeTruthy();
+      expect($tile.css("opacity")).toEqual('0.99');
+      expect(opacity).toEqual(0.99);
+    });
+  });
+
 });

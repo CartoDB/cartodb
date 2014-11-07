@@ -382,6 +382,31 @@ var Vis = cdb.core.View.extend({
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
 
+    //Force using GMaps ?
+    if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
+
+      //Check if base_type is correct
+      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
+      if (_.contains(typesAllowed, this.gmaps_base_type)) {
+        if (data.layers) {
+          data.layers[0].options.type = 'GMapsBase';
+          data.layers[0].options.base_type = this.gmaps_base_type;
+          data.layers[0].options.name = this.gmaps_base_type;
+
+          if (this.gmaps_style) {
+            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style): this.gmaps_style;
+          }
+
+          data.map_provider = 'googlemaps';
+          data.layers[0].options.attribution = ''; //GMaps has its own attribution
+        } else {
+          cdb.log.error('No base map loaded. Using Leaflet.');
+        }
+      } else {
+        cdb.log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
+      }
+    }
+
     var mapConfig = {
       title: data.title,
       description: data.description,
@@ -525,6 +550,9 @@ var Vis = cdb.core.View.extend({
       // We don't render certain overlays if we are in mobile
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
+
+      // IE<10 doesn't support the Fullscreen API
+      if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
@@ -688,6 +716,14 @@ var Vis = cdb.core.View.extend({
 
     if (opt.https) {
       this.https = true;
+    }
+
+    if (opt.gmaps_base_type) {
+      this.gmaps_base_type = opt.gmaps_base_type;
+    }
+
+    if (opt.gmaps_style) {
+      this.gmaps_style = opt.gmaps_style;
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

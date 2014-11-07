@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.23-dev
+// cartodb.js version: 3.11.24-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: fed6a5be92f2f44946df2089f99b0e3879a605a3
+// sha: 32508e0ffe15e4b72a1c24b70e1b6b509cebb753
 (function() {
   var root = this;
 
@@ -20705,7 +20705,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.23-dev';
+    cdb.VERSION = '3.11.24-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20786,6 +20786,7 @@ this.LZMA = LZMA;
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_gmaps_tiledlayer.js',
         'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
@@ -27093,12 +27094,12 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
       docEl = $(this.options.doc)[0];
     }
 
-    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
-    var cancelFullScreen  = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
     var mapView = this.options.mapView;
 
-    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
 
       requestFullScreen.call(docEl);
 
@@ -27142,7 +27143,7 @@ function Map(options) {
     MAX_GET_SIZE: 2033,
     force_cors: false,
     instanciateCallback: function() {
-      return '_cdbc_' + cartodb.uniqueCallbackName(JSON.stringify(self.toJSON()));
+      return '_cdbc_' + self._callbackName();
     }
   });
 
@@ -27241,6 +27242,10 @@ Map.prototype = {
 
   _encodeBase64Native: function (input) {
     return btoa(input)
+  },
+
+  _callbackName: function() {
+    return cartodb.uniqueCallbackName(JSON.stringify(this.toJSON()));
   },
 
   // given number inside layergroup 
@@ -27906,12 +27911,13 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
+    this._attrCallbackName = this._attrCallbackName || this._callbackName();
     var ajax = this.options.ajax;
     var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
-      jsonpCallback: '_cdbi_layer_attributes',
+      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
       cache: true,
       success: function(data) {
         loadingTime.end();
@@ -28138,6 +28144,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var layer = this.getLayer(layer_index);
     var sql = this._getSqlApi(this.options);
+    this._attrCallbackName = this._attrCallbackName || this._callbackName();
 
     // prepare columns with double quotes
     columnNames = _.map(columnNames, function(n) {
@@ -28152,7 +28159,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       sql: layer.options.sql
     }, {
       cache: true, // don't include timestamp
-      jsonpCallback: '_cdbi_layer_attributes',
+      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
       jsonp: true
     }).done(function(interact_data) {
       loadingTime.end();
@@ -28194,6 +28201,11 @@ SubLayer.prototype = {
     this._parent.removeLayer(this._position);
     this._unbindInteraction();
     this._added = false;
+  },
+
+  toggle: function() {
+    this.get('hidden') ? this.show() : this.hide();
+    return !this.get('hidden');
   },
 
   show: function() {
@@ -28343,6 +28355,9 @@ cartodb.uniqueCallbackName = function(str) {
  */
 
 function CartoDBLayerCommon() {
+
+  this.visible = true;
+
 }
 
 CartoDBLayerCommon.prototype = {
@@ -28353,6 +28368,7 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this._interactionDisabled = false;
+    this.visible = true;
   },
 
   hide: function() {
@@ -28362,6 +28378,14 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(0);
     // disable here interaction for all the layers
     this._interactionDisabled = true;
+    this.visible = false;
+  },
+
+  toggle: function() {
+
+    this.isVisible() ? this.hide() : this.show();
+
+    return this.isVisible();
   },
 
   /**
@@ -28714,7 +28738,7 @@ var LeafLetTiledLayerView = L.TileLayer.extend({
     L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
       tms:          layerModel.get('tms'),
       attribution:  layerModel.get('attribution'),
-      minZoom:      layerModel.get('minZomm'),
+      minZoom:      layerModel.get('minZoom'),
       maxZoom:      layerModel.get('maxZoom'),
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
@@ -28740,6 +28764,69 @@ _.extend(LeafLetTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
 });
 
 cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
+
+})();
+
+(function() {
+
+  if(typeof(L) == "undefined")
+    return;
+
+  var defaultSubstitute = function defaultSubstitute(lightOrDark) {
+    return {
+      url: 'http://{s}.basemaps.cartocdn.com/'+ (lightOrDark || "light") +'_all/{z}/{x}/{y}.png',
+      subdomains: 'abcd',
+      minZoom: 0,
+      maxZoom: 18,
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+    };
+  };
+  
+  var nokiaSubstitute = function nokiaSubstitute(type) {
+    return {
+      url: 'https://{s}.maps.nlp.nokia.com/maptile/2.1/maptile/newest/'+ type +'.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24',
+      subdomains: '1234',
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+    };
+  };
+
+  var substitutes = {
+    roadmap: defaultSubstitute(),
+    gray_roadmap: defaultSubstitute(),
+    dark_roadmap: defaultSubstitute('dark'),
+    hybrid: nokiaSubstitute('hybrid'),
+    terrain: nokiaSubstitute('terrain'),
+    satellite: nokiaSubstitute('satellite')
+  };
+
+  var LeafLetGmapsTiledLayerView = L.TileLayer.extend({
+    initialize: function(layerModel, leafletMap) {
+      var substitute = substitutes[layerModel.get('base_type')];
+      L.TileLayer.prototype.initialize.call(this, substitute.url, {
+        tms:          false,
+        attribution:  substitute.attribution,
+        minZoom:      substitute.minZoom,
+        maxZoom:      substitute.maxZoom,
+        subdomains:   substitute.subdomains,
+        errorTileUrl: '',
+        opacity:      1
+      });
+      cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+    }
+
+  });
+
+  _.extend(LeafLetGmapsTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
+
+    _modelUpdated: function() {
+      throw new Error("A GMaps baselayer should never be updated");
+    }
+
+  });
+
+  cdb.geo.LeafLetGmapsTiledLayerView = LeafLetGmapsTiledLayerView;
 
 })();
 
@@ -29676,8 +29763,10 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
-      // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView,
+
+      // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
+      "gmapsbase": cdb.geo.LeafLetGmapsTiledLayerView,
+
       "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
       "namedmap": cdb.geo.LeafLetCartoDBNamedMapView,
       "torque": function(layer, map) {
@@ -32310,6 +32399,31 @@ var Vis = cdb.core.View.extend({
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
 
+    //Force using GMaps ?
+    if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
+
+      //Check if base_type is correct
+      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
+      if (_.contains(typesAllowed, this.gmaps_base_type)) {
+        if (data.layers) {
+          data.layers[0].options.type = 'GMapsBase';
+          data.layers[0].options.base_type = this.gmaps_base_type;
+          data.layers[0].options.name = this.gmaps_base_type;
+
+          if (this.gmaps_style) {
+            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style): this.gmaps_style;
+          }
+
+          data.map_provider = 'googlemaps';
+          data.layers[0].options.attribution = ''; //GMaps has its own attribution
+        } else {
+          cdb.log.error('No base map loaded. Using Leaflet.');
+        }
+      } else {
+        cdb.log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
+      }
+    }
+
     var mapConfig = {
       title: data.title,
       description: data.description,
@@ -32453,6 +32567,9 @@ var Vis = cdb.core.View.extend({
       // We don't render certain overlays if we are in mobile
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
+
+      // IE<10 doesn't support the Fullscreen API
+      if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
@@ -32616,6 +32733,14 @@ var Vis = cdb.core.View.extend({
 
     if (opt.https) {
       this.https = true;
+    }
+
+    if (opt.gmaps_base_type) {
+      this.gmaps_base_type = opt.gmaps_base_type;
+    }
+
+    if (opt.gmaps_style) {
+      this.gmaps_style = opt.gmaps_style;
     }
 
     this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

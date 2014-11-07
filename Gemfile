@@ -91,12 +91,6 @@ group :development, :test do
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
 
-  # Guard
-  gem 'rb-inotify',            '0.9.0', require: false
-  gem 'rb-fsevent',                     require: false
-  gem 'rb-fchange',                     require: false
-  gem 'guard',                 '1.8.1'
-
   # Server
   gem 'thin',                           require: false
 end

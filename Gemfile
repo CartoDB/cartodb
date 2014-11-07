@@ -14,13 +14,14 @@ gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
-gem 'htmlentities',            '4.3.1' # Encoding and decoding of named or numerical entities
-
 gem 'redis',                   '2.2.2'
 gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 
+# It's used in the dataimport and arcgis. Just two calls. 
+# It's a replacement for the ruby uri that it's supposed to 
+# perform better parsing of a URI
 gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'

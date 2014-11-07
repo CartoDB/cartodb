@@ -1,7 +1,7 @@
 # What is CartoDB? #
 
-[![Build Status](http://travis-ci.org/CartoDB/cartodb.png)]
-(http://travis-ci.org/CartoDB/cartodb)
+[![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-master-testing)]
+(http://clinker.cartodb.net/jenkins/job/CartoDB-master-testing)
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
 
 CartoDB is an open source tool that allows for the storage and

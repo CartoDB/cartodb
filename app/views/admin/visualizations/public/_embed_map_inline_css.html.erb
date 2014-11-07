@@ -19,6 +19,12 @@
   #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
   #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
 
+
+  :-webkit-full-screen .cartodb-map-wrapper { height: 100%!important; }
+  :-moz-full-screen .cartodb-map-wrapper { height: 100%!important; }
+  :-ms-fullscreen .cartodb-map-wrapper { height: 100%!important; }
+  :fullscreen .cartodb-map-wrapper { height: 100%!important; }
+
   <% if @hide_logo %>
   <% else %>
     /* Styles showing up new cartodb text */

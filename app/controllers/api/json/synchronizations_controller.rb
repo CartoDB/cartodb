@@ -73,6 +73,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     render_jsonp({ errors: member.full_errors }, 400)
     puts exception.to_s
     puts exception.backtrace
+  rescue CartoDB::InvalidInterval => exception
+    render_jsonp({ errors: "#{exception.detail['message']}: #{exception.detail['hint']}" }, 400)
   end
 
   def sync(from_sync_now=false)

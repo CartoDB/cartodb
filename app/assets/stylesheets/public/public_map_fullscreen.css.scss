@@ -27,6 +27,7 @@
 :-ms-fullscreen {
   .cartodb-public-header { display:none; }
   .separator { display: none;}
+  #map { height: 100%!important; }
 }
  
 :fullscreen {

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.21-dev
+// cartodb.js version: 3.11.24-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8cd8cc46331f5936cecf3ababb807e2271a14a36
+// sha: da3fe647150673da68a8bc796668c4f3fb152148
 (function() {
   var root = this;
 
@@ -20705,7 +20705,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.21-dev';
+    cdb.VERSION = '3.11.24-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26697,7 +26697,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       }, this);
 
       this.$el.find(".torque").append(this.slider.render().$el);
-      this.$el.addClass("with-torque");
+
+      if (this.options.torqueLayer.hidden) this.slider.hide();
+      else this.$el.addClass("with-torque");
     }
 
   },
@@ -27091,12 +27093,12 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
       docEl = $(this.options.doc)[0];
     }
 
-    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
-    var cancelFullScreen  = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
     var mapView = this.options.mapView;
 
-    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
 
       requestFullScreen.call(docEl);
 
@@ -28194,6 +28196,11 @@ SubLayer.prototype = {
     this._added = false;
   },
 
+  toggle: function() {
+    this.get('hidden') ? this.show() : this.hide();
+    return !this.get('hidden');
+  },
+
   show: function() {
     if(this.get('hidden')) {
       this.set({
@@ -28341,6 +28348,9 @@ cartodb.uniqueCallbackName = function(str) {
  */
 
 function CartoDBLayerCommon() {
+
+  this.visible = true;
+
 }
 
 CartoDBLayerCommon.prototype = {
@@ -28351,6 +28361,7 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this._interactionDisabled = false;
+    this.visible = true;
   },
 
   hide: function() {
@@ -28360,6 +28371,14 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(0);
     // disable here interaction for all the layers
     this._interactionDisabled = true;
+    this.visible = false;
+  },
+
+  toggle: function() {
+
+    this.isVisible() ? this.hide() : this.show();
+
+    return this.isVisible();
   },
 
   /**
@@ -32234,6 +32253,8 @@ var Vis = cdb.core.View.extend({
         _.each(lyr.options.named_map.layers, function(l) {
           options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
         });
+      } else if (lyr.type === 'torque') {
+        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true ) })
       }
 
     });
@@ -32449,6 +32470,9 @@ var Vis = cdb.core.View.extend({
       // We don't render certain overlays if we are in mobile
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
+
+      // IE<10 doesn't support the Fullscreen API
+      if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
@@ -34039,6 +34063,10 @@ Layers.register('torque', function(vis, data) {
    * })
    */
   SQL.prototype.execute = function(sql, vars, options, callback) {
+
+    //Variable that defines if a query should be using get method or post method
+    var MAX_LENGTH_GET_QUERY = 1024;
+
     var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
@@ -34079,28 +34107,46 @@ Layers.register('torque', function(vis, data) {
 
     // create query
     var query = Mustache.render(sql, vars);
-    var q = 'q=' + encodeURIComponent(query);
 
-    // request params
+    // check method: if we are going to send by get or by post
+    var isGetRequest = query.length < MAX_LENGTH_GET_QUERY;
+
+    // generate url depending on the http method
     var reqParams = ['format', 'dp', 'api_key'];
+    // request params
     if (options.extra_params) {
       reqParams = reqParams.concat(options.extra_params);
     }
-    for(var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
-      if(v) {
-        q += '&' + r + "=" + v;
-      }
-    }
 
-    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
-    // generate url depending on the http method
     params.url = this._host() ;
-    if(isGetRequest) {
-      params.url += '?' + q
+    if (isGetRequest) {
+      var q = 'q=' + encodeURIComponent(query);
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if(v) {
+          q += '&' + r + "=" + v;
+        }
+      }
+
+      params.url += '?' + q;
     } else {
-      params.data = q;
+      var objPost = {'q': query};
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if (v) {
+          objPost[r] = v;
+        }
+      }
+
+      params.data = objPost;
+      //Check if we are using jQuery(uncompressed) or reqwest (core)
+      if ((typeof(jQuery) !== 'undefined')) {
+        params.type = 'post';
+      } else {
+        params.method = 'post'; 
+      }
     }
 
     // wrap success and error functions

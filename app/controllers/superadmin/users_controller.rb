@@ -75,8 +75,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       {
         id: entry.id,
         data_type: entry.data_type,
-        date: entry.updated_at
-        }
+        date: entry.updated_at,
+        status: entry.success
+      }
     })
   end
 

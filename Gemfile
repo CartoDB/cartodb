@@ -76,7 +76,6 @@ gem 'resque',                '1.23.0'
 group :development, :test do
   gem 'rb-readline'
   gem 'webrick',               '1.3.1'
-  gem 'sqlite3',               '1.3.7'
   gem 'poltergeist',           '>= 1.0.0'
   gem 'selenium-webdriver',    '>= 2.5.0'
 

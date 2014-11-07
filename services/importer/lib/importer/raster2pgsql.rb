@@ -30,17 +30,14 @@ module CartoDB
         reproject_raster
 
         size = extract_raster_size
-        overviews_list = calculate_raster_overviews(size)
-
         pixel_size = extract_pixel_size
 
-        debugger
+        overviews_list = calculate_raster_overviews(size)
+        scale = calculate_raster_scale(pixel_size)
 
-        scale_rasters(pixel_size)
+        align_raster(scale)
 
-        # scale #{webmercator_filepath}
-
-        run_raster2pgsql
+        run_raster2pgsql(overviews_list)
 
         run_psql
         self
@@ -52,17 +49,23 @@ module CartoDB
       attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, :sql_filepath, \
                     :basepath
 
+      def align_raster(scale)
+        gdalwarp_command = %Q(#{gdalwarp_path} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
+
+        stdout, stderr, status  = Open3.capture3(gdalwarp_command)
+        output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
+        raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
+      end
+
       def reproject_raster
         gdalwarp_command = %Q(#{gdalwarp_path} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
-        self.command_output     = stdout + stderr
-        self.exit_code          = status.to_i
-        output_message = "(#{exit_code}) |#{command_output}| Command: #{gdalwarp_command}"
-
-        raise TiffToSqlConversionError.new(output_message) if exit_code != 0
+        output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
+        raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
 
+      # Returns only X pixel size/scale
       def extract_pixel_size
         gdalinfo_command = %Q(#{gdalinfo_path} #{webmercator_filepath})
 
@@ -88,10 +91,10 @@ module CartoDB
                   .map{ |value| value.to_i }
       end
 
-      def run_raster2pgsql
-        stdout, stderr, status  = Open3.capture3(raster2pgsql_command)
+      def run_raster2pgsql(overviews_list)
+        stdout, stderr, status  = Open3.capture3(raster2pgsql_command(overviews_list))
         output = stdout + stderr
-        output_message = "(#{status}) |#{output}| Command: #{raster2pgsql_command}"
+        output_message = "(#{status}) |#{output}| Command: #{raster2pgsql_command(overviews_list)}"
 
         raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
         raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
@@ -108,28 +111,37 @@ module CartoDB
         raise TiffToSqlConversionError.new(output_message)  if command_output =~ /error/i || command_output =~ /aborted/i
       end
 
-      def scale_rasters(pixel_size)
-        # TODO: fill
+      def calculate_raster_scale(pixel_size)
+        z0 = 156543.03515625
+
+        factor = z0 / pixel_size
+
+        pw = Math::log(factor) / Math::log(2)
+        pow2 = (pw / 1).truncate
+
+        out_scale = z0 / (2 ** pow2)
+
+        out_scale - (out_scale * 0.0001)
       end
 
       def calculate_raster_overviews(raster_size)
         bigger_size = raster_size.max
 
-        max_power = (Math::log(bigger_size/256, 2)).ceil.to_i
+        max_power = (Math::log(bigger_size / 256, 2)).ceil.to_i
 
-        range = Range.new(1, max_power+1)
+        range = Range.new(1, max_power + 1)
 
-        overviews = range.map{ |x| 2**x }
+        overviews = range.map{ |x| 2 ** x }
                          .select { |x| x <= 1000 }
 
         overviews.join(',')
       end
 
-      def raster2pgsql_command
+      def raster2pgsql_command(overviews_list)
         # We currently we don't apply any constraint
         # TODO: Use aligned_filepath, and add overviews list
-        %Q(#{raster2pgsql_path} -I -Y -s #{PROJECTION} -t #{BLOCKSIZE} #{webmercator_filepath} ) +
-        %Q(#{SCHEMA}.#{table_name} > #{sql_filepath})
+        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -Y -I -f the_raster_webmercator ) +
+        %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name} > #{sql_filepath})
       end
 
       def psql_command

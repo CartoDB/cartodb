@@ -15,7 +15,7 @@ describe 'raster2pgsql acceptance tests' do
 
 
   it 'tests extracting size from a tif' do
-    expected_size = [1620, 810]
+    expected_size = [2430, 1215]
 
     rasterizer = Raster2Pgsql.new(@table_name, @filepath, @pg_options)
 
@@ -41,6 +41,17 @@ describe 'raster2pgsql acceptance tests' do
 
     overviews = rasterizer.send(:calculate_raster_overviews, raster_3_size)
     overviews.should eq expected_overviews_3
+  end
+
+  it 'tests calculating raster scale' do
+    pixel_size = 3667.822831377844
+
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, @pg_options)
+
+    scale = rasterizer.send(:calculate_raster_scale, pixel_size)
+    # 4891.480651647949  but just in case decimals change
+    scale.should > 4891
+    scale.should < 4892
   end
 
 end

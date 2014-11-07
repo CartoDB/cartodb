@@ -40,8 +40,6 @@ end
 
 # Importer
 gem 'roo',                     '1.13.2'
-gem 'google-spreadsheet-ruby', '0.1.8'
-gem 'builder',                 '3.0.0'
 gem 'state_machine',           '1.1.2'
 gem 'typhoeus',                '0.6.7'
 gem 'charlock_holmes',         '0.7.2'
@@ -49,7 +47,7 @@ gem 'dbf',                     '2.0.6'
 
 # Sync tables
 gem 'faraday',                 '0.9.0'
-gem 'retriable',               '1.4.1'  # google-api-client
+gem 'retriable',               '1.4.1'  # google-api-client needs this
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'

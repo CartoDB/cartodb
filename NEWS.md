@@ -3,6 +3,8 @@
 * New features
   - Mapviews graph for everybody.
   - New rainbow basemaps.
+* Fixed bugs
+  - Made lib/sql git submodule point to 0.4.1 tag
 
 3.2.9 (2014-11-03)
 ------------------

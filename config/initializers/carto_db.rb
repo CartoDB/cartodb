@@ -196,6 +196,10 @@ module CartoDB
       title: 'Invalid ArcGIS version',
       what_about: "The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards."
     },
+    1014 => {
+      title: 'Invalid name',
+      what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."

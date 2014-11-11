@@ -3,23 +3,23 @@
     "version": "3.11.24",
     "description": "CartoDB javascript library",
     "repository": {
-        "type": "git",
-        "url": "git://github.com/CartoDB/cartodb.js.git"
+      "type": "git",
+      "url": "git://github.com/CartoDB/cartodb.js.git"
     },
     "author": {
-        "name": "CartoDB",
-        "url": "http://cartodb.com/",
-        "email": "wadus@cartodb.com"
+      "name": "CartoDB",
+      "url": "http://cartodb.com/",
+      "email": "wadus@cartodb.com"
     },
     "contributors": [
-        "Javier Alvarez <jmedina@cartodb.com>",
-        "Javier Alvarez <xabel@vizzuality.com>",
-        "Javier Arce <javierarce@cartodb.com>",
-        "Javier Santana <jsantana@cartodb.com>",
-        "Raul Ochoa <rochoa@cartodb.com>",
-        "Carlos Matallín <matallo@cartodb.com>",
-        "Jaime Chapinal <jaime.chapinal@cartodb.com>",
-        "Nicklas Gummesson <nicklas@cartodb.com>"
+      "Javier Álvarez <jmedina@cartodb.com>",
+      "Javier Álvarez <xabel@vizzuality.com>",
+      "Javier Arce <javierarce@cartodb.com>",
+      "Javier Santana <jsantana@cartodb.com>",
+      "Raul Ochoa <rochoa@cartodb.com>",
+      "Carlos Matallín <matallo@cartodb.com>",
+      "Jaime Chapinal <jaime.chapinal@cartodb.com>",
+      "Nicklas Gummesson <nicklas@cartodb.com>"
     ],
     "licenses": [{
       "type": "BSD"

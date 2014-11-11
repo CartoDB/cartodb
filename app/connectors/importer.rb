@@ -47,7 +47,7 @@ module CartoDB
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result)
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
-        move_to_schema(name, ORIGIN_SCHEMA, @destination_schema)
+        move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(name, data_import_id)
         runner.log.append("Table '#{name}' registered")
@@ -67,12 +67,23 @@ module CartoDB
         self
       end
 
-      def move_to_schema(table_name, origin_schema, destination_schema)
+      def move_to_schema(result, table_name, origin_schema, destination_schema)
         return self if origin_schema == destination_schema
+
         database.execute(%Q{
           ALTER TABLE "#{origin_schema}"."#{table_name}"
           SET SCHEMA "#{destination_schema}"
         })
+
+        result.support_tables.each { |support_table_name|
+          database.execute(%Q{
+            ALTER TABLE "#{origin_schema}"."#{support_table_name}"
+            SET SCHEMA "#{destination_schema}"
+          })
+          # Delayed up to this point because constraint schemas are not automatically updated
+          # so else we'd need to recreate them twice (once per overview rename, once per schema change)
+          recreate_raster_constraints_if_exists(support_table_name, table_name, destination_schema)
+        }
       end
 
       def rename(result)
@@ -84,14 +95,12 @@ module CartoDB
         @rename_attempts += 1
 
         database.execute(%Q{
-          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{result.table_name}"
-          RENAME TO "#{new_name}"
+          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{result.table_name}" RENAME TO "#{new_name}"
         })
 
         rename_the_geom_index_if_exists(result.table_name, new_name)
 
         support_tables_new_names = []
-
         result.support_tables.each { |support_table_name|
           new_support_table_name = support_table_name.dup
           # CONVENTION: support_tables will always end in "_tablename", so we substitute
@@ -99,44 +108,18 @@ module CartoDB
           new_support_table_name = "#{new_support_table_name}#{new_name}"
 
           database.execute(%Q{
-            ALTER TABLE "#{ORIGIN_SCHEMA}"."#{support_table_name}"
-            RENAME TO "#{new_support_table_name}"
+            ALTER TABLE "#{ORIGIN_SCHEMA}"."#{support_table_name}" RENAME TO "#{new_support_table_name}"
           })
-
-          recreate_raster_constraints_if_exists(new_support_table_name, new_name)
 
           support_tables_new_names.push(new_support_table_name)
         }
 
         @rename_attempts = 0
-
         result.update_support_tables(support_tables_new_names)
-
         new_name
       rescue => exception
         retry unless @rename_attempts > MAX_RENAME_RETRIES
         @rename_attempts = 0
-      end
-
-      # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews
-      def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name)
-        constraint = database.fetch(%Q{
-          SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
-          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
-        }).first
-        return if constraint.nil?
-
-        # @see http://postgis.net/docs/RT_DropOverviewConstraints.html
-        database.execute(%Q{
-          SELECT DropOverviewConstraints('#{ORIGIN_SCHEMA}', '#{constraint[:o_table_name]}',
-                                         '#{constraint[:o_raster_column]}')
-        })
-        # @see http://postgis.net/docs/manual-dev/RT_AddOverviewConstraints.html
-        database.execute(%Q{
-          SELECT AddOverviewConstraints('#{ORIGIN_SCHEMA}', '#{constraint[:o_table_name]}',
-                                        '#{constraint[:o_raster_column]}', '#{ORIGIN_SCHEMA}', '#{raster_table_name}',
-                                        '#{constraint[:r_raster_column]}', #{constraint[:overview_factor]});
-        })
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)
@@ -169,6 +152,30 @@ module CartoDB
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
+
+      # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews
+      def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name, new_schema)
+        constraint = database.fetch(%Q{
+          SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
+          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
+        }).first
+        return if constraint.nil?
+
+        database.transaction do
+          # @see http://postgis.net/docs/RT_DropOverviewConstraints.html
+          database.execute(%Q{
+            SELECT DropOverviewConstraints('#{new_schema}', '#{constraint[:o_table_name]}',
+                                           '#{constraint[:o_raster_column]}')
+          })
+          # @see http://postgis.net/docs/manual-dev/RT_AddOverviewConstraints.html
+          database.execute(%Q{
+            SELECT AddOverviewConstraints('#{new_schema}', '#{constraint[:o_table_name]}',
+                                          '#{constraint[:o_raster_column]}', '#{new_schema}', '#{raster_table_name}',
+                                          '#{constraint[:r_raster_column]}', #{constraint[:overview_factor]});
+          })
+        end
+      end
+
     end
   end
 end

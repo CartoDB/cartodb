@@ -54,4 +54,3 @@ module CartoDB
     end
   end
 end
-

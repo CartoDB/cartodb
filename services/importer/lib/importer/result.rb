@@ -30,7 +30,7 @@ module CartoDB
       def update_support_tables(new_list)
         @support_tables = new_list
       end
-    end # Result
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

@@ -2,7 +2,6 @@ source 'http://rubygems.org'
 
 gem 'rails',                   '3.2.2'
 
-
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.13.2'
 gem 'sequel',                  '3.42.0'
@@ -14,14 +13,14 @@ gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
-gem 'htmlentities',            '4.3.1' # Encoding and decoding of named or numerical entities
-
 gem 'redis',                   '2.2.2'
-gem 'yajl-ruby',               '1.1.0', require: 'yajl'
 gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 
+# It's used in the dataimport and arcgis. Just two calls. 
+# It's a replacement for the ruby uri that it's supposed to 
+# perform better parsing of a URI
 gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
@@ -39,13 +38,7 @@ group :assets do
 end
 
 # Importer
-gem 'ruby-ole',                '1.2.11.3'
-gem 'rchardet19',              '1.3.5'
 gem 'roo',                     '1.13.2'
-gem 'spreadsheet',             '0.6.5.9'
-gem 'google-spreadsheet-ruby', '0.1.8'
-gem 'rubyzip',                 '0.9.9'
-gem 'builder',                 '3.0.0'
 gem 'state_machine',           '1.1.2'
 gem 'typhoeus',                '0.6.7'
 gem 'charlock_holmes',         '0.7.2'
@@ -53,7 +46,7 @@ gem 'dbf',                     '2.0.6'
 
 # Sync tables
 gem 'faraday',                 '0.9.0'
-gem 'retriable',               '1.4.1'
+gem 'retriable',               '1.4.1'  # google-api-client needs this
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'
@@ -66,13 +59,9 @@ gem 'em-pg-client',            '0.2.1'
 gem 'virtus',                   '1.0.0.beta3' #, git: 'https://github.com/solnic/virtus.git'
 gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.3'
-gem 'sinatra',                  '1.3.4', require: 'sinatra/base'
 
 # Markdown
 gem 'redcarpet', '3.1.1'
-
-# CartoDB Central client
-gem 'httparty',                 '0.9'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
@@ -86,13 +75,11 @@ gem 'resque',                '1.23.0'
 group :development, :test do
   gem 'rb-readline'
   gem 'webrick',               '1.3.1'
-  gem 'sqlite3',               '1.3.7'
   gem 'poltergeist',           '>= 1.0.0'
-  #gem 'minitest',              '5.0.6', require: false
   gem 'selenium-webdriver',    '>= 2.5.0'
 
   gem 'mocha',                 '0.10.5'
-  gem 'ci_reporter'
+  gem 'ci_reporter',           '1.8.4'
 
   gem 'debugger',              '1.6.5'
 
@@ -100,21 +87,11 @@ group :development, :test do
   gem 'capybara',              '1.1.2'
   gem 'delorean'
   gem 'rack',                  '1.4.1'
-  gem 'rack-reverse-proxy',    '0.4.4',  require: 'rack/reverse_proxy'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
-  gem 'foreman',               '0.46.0', require: false
   gem 'factory_girl_rails',    '~> 4.0.0'
 
-  # Guard
-  gem 'rb-inotify',            '0.9.0', require: false
-  gem 'rb-fsevent',                     require: false
-  gem 'rb-fchange',                     require: false
-  gem 'guard',                 '1.8.1'
-  #gem 'guard-minitest',         '1.0.1'
-  #gem 'minitest-ci',            '~> 3.0.1', :require => false
   # Server
   gem 'thin',                           require: false
-  gem 'parallel_tests'
 end
 
 # Load optional engines
@@ -122,6 +99,5 @@ end
 # Dir['engines' + '/*/*.gemspec'].each do |gemspec_file|
 #   dir_name = File.dirname(gemspec_file)
 #   gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
-
 #   gem gem_name, :path => dir_name, :require => false
 # end

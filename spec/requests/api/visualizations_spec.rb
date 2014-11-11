@@ -616,7 +616,7 @@ describe Api::Json::VisualizationsController do
       get "/api/v1/viz/#{table_id}/viz?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 200
-      response = Yajl::Parser.new.parse(last_response.body)
+      response = ::JSON.parse(last_response.body)
       response.keys.length.should > 1
       response.fetch('description').should_not be_empty
     end
@@ -630,7 +630,7 @@ describe Api::Json::VisualizationsController do
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 200
-      Yajl::Parser.new.parse(last_response.body).keys.length.should > 1
+      ::JSON.parse(last_response.body).keys.length.should > 1
     end
   end # GET /api/v2/viz/:id/viz
 

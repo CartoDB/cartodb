@@ -1,5 +1,3 @@
-require 'httparty'
-
 module Concerns
   module CartodbCentralSynchronizable
 

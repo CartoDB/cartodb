@@ -554,6 +554,11 @@ bundle exec rake -T
 # Using foreman #
 
 You can also use foreman to run the full stack (cartodb server, sql api, tiler, redis and resque), using a single command:
+IMPORTANT: You need to install foreman by yourself. It's not included in the Gemfile. Run this:
+
+```
+bundle exec gem install foreman
+```
 
 ```
 bundle exec foreman start -p $PORT

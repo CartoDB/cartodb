@@ -24,7 +24,7 @@ describe Admin::TablesController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    @db = Sequel.sqlite
+    @db = Rails::Sequel.connection
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',

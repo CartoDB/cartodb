@@ -62,26 +62,24 @@ describe('Hide funcionality', function() {
     }, 500);
   });
 
-  it('toggle layer from a visible state should work', function() {
+  it('toggle layer from a visible state should work', function(done) {
 
-    waits(500);
-
-    runs(function () {
+    setTimeout(function () {
       cdb_layer.hide();
       visibility = cdb_layer.toggle();
-    });
 
-    waits(500);
+      setTimeout(function() {
+        var $tile = $(div).find("img[gtilekey]").first()
+          , opacity = cdb_layer.options.opacity;
 
-    runs(function() {
-      var $tile = $(div).find("img[gtilekey]").first()
-        , opacity = cdb_layer.options.opacity;
+        expect(visibility).toBeTruthy();
+        expect(cdb_layer.visible).toBeTruthy();
+        expect($tile.css("opacity")).toEqual('0.99');
+        expect(opacity).toEqual(0.99);
+        done();
+      }, 500);
 
-      expect(visibility).toBeTruthy();
-      expect(cdb_layer.visible).toBeTruthy();
-      expect($tile.css("opacity")).toEqual('0.99');
-      expect(opacity).toEqual(0.99);
-    });
+    }, 500);
   });
 
 });

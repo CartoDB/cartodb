@@ -157,7 +157,7 @@
       setTimeout(function() {
         expect(container.find("div.cartodb-logo").length).toEqual(1);
         done();
-      }, 2000);
+      }, 3000);
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {

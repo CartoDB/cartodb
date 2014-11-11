@@ -348,14 +348,9 @@ describe("Vis", function() {
     };
 
     layers = null;
-    runs(function() {
-      this.vis.load(this.mapConfig, opts).done(function(vis, lys){  layers = lys;});
-    })
-    waits(100);
-
-    runs(function() {
-      expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
-    });
-  })
+    
+    this.vis.load(this.mapConfig, opts);
+    expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
+  });
 
 });

@@ -47,7 +47,7 @@ describe("cdb.geo.ui.Annotation", function() {
       setTimeout(function(){
         expect(spy.calls.count()).toEqual(1);
         done();
-      }, 500);
+      }, 1000);
 
     });
 

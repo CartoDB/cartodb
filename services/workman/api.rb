@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'sinatra/base'
+#require 'sinatra/base'
 require 'json'
 require_relative './job/presenter'
 require_relative './dispatcher'

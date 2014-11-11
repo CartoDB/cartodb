@@ -1,7 +1,7 @@
 3.2.11 (2014-11-XX)
 ------------------
 * New features
-  - 
+  - Removal of 19 unused or no longer needed gems
 * Fixed bugs
   - Fixed internal geocoder for org users
 

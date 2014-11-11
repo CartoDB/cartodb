@@ -1,6 +1,5 @@
 # encoding: utf-8 
 require 'fileutils'
-require 'zip/zip'
 
 module DataRepository
   module Filesystem
@@ -47,28 +46,6 @@ module DataRepository
           File.delete(fullpath_for(path))
         end
       end
-
-      def zip(path)
-        zip_path            = "#{fullpath_for(path)}.zip"
-        zip_base_directory  = File.dirname(fullpath_for(path))
-
-        Zip::ZipFile.open(zip_path, 1) do |zip|
-          targets_for(path).each do |path|
-            zip.add(relative_path_for(path, zip_base_directory), path)
-          end
-        end
-
-        relative_path_for(zip_path, base_directory)
-      end #zip
-
-      def unzip(zip_path)
-        Zip::ZipFile.open(fullpath_for(zip_path)) do |zipfile|
-          zipfile.each do |entry|
-            next if entry.directory?
-            self.store(entry.name, entry.get_input_stream)
-          end
-        end
-      end #unzip
 
       def fullpath_for(path)
         File.join(base_directory, path)

@@ -10,12 +10,19 @@ module.exports = {
   task: function(grunt, config) {
     return {
       options: {
+        noProcess: ['**/*.{png,gif,jpg,ico}'],
         process: function (content, srcpath) {
-          return __.template(content)({
-            last_bugfixing_version: config.version.bugfixing,
-            last_minor_version:     config.version.minor,
-            last_major_version:     config.version.major
-          });
+
+          // Replace string task corrupts images
+          if(srcpath.substr(srcpath.length - 3) === '.js') {
+            return __.template(content)({
+              last_bugfixing_version: config.version.bugfixing,
+              last_minor_version:     config.version.minor,
+              last_major_version:     config.version.major
+            });
+          }
+
+          return content;
         }
       },
 
@@ -62,6 +69,16 @@ module.exports = {
             'favicon.ico'
           ],
           dest: '.tmp'
+        }]
+      },
+
+      distStatic: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: 'themes/img',
+          src: [ '**/*.{png,jpg,gif}' ],
+          dest: '<%= config.dist %>/themes/img'
         }]
       }
     }

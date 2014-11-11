@@ -52,6 +52,8 @@ module.exports = {
           "src/geo/leaflet/leaflet_base.js",
           "src/geo/leaflet/leaflet_plainlayer.js",
           "src/geo/leaflet/leaflet_tiledlayer.js",
+          "src/geo/leaflet/leaflet_gmaps_tiledlayer.js",
+          "src/geo/leaflet/leaflet_wmslayer.js",
           "src/geo/leaflet/leaflet_cartodb_layergroup.js",
           "src/geo/leaflet/leaflet_cartodb_layer.js",
           "src/geo/leaflet/torque.js",
@@ -80,6 +82,8 @@ module.exports = {
           "src/api/vis.js"
         ],
         options: {
+          keepRunner: true,
+          outfile: 'test/SpecRunner.html',
           specs: 'test/spec/**/*.js',
           helpers: 'spec/*Helper.js',
           vendor: [ "https://maps.googleapis.com/maps/api/js?v=3.exp" ],

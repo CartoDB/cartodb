@@ -15,33 +15,130 @@ module.exports = {
         dryRun: false
       },
 
-      dist: {
+      'js-dist': {
         options: {
           overwrite: true,
           cache: false,
-          params: {
-            ContentEncoding: 'gzip'
+          gzip: true,
+          headers: {
+            ContentType: 'application/x-javascript'
           }
         },
         files: [
           {
-            'action': 'upload',
+            // Bug fixing version
+            action: 'upload',
             expand: true,
             cwd: 'dist',
             src: [
               '*.js',
-              '!_*.js',
-              'themes/**/*'
+              '!_*.js'
             ],
             dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }, {
-            'action': 'upload',
+          },{
+            // Minor version
+            action: 'upload',
             expand: true,
             cwd: 'dist',
             src: [
               '*.js',
-              '!_*.js',
-              'themes/**/*'
+              '!_*.js'
+            ],
+            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+          }
+        ]
+      },
+
+      'css-dist': {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: true,
+          headers: {
+            ContentType: 'text/css'
+          }
+        },
+        files: [
+          {
+            // Bug fixing version
+            action: 'upload',
+            expand: true,
+            cwd: 'dist',
+            src: [
+              'themes/**/*.css'
+            ],
+            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+          },{
+            // Minor version
+            action: 'upload',
+            expand: true,
+            cwd: 'dist',
+            src: [
+              'themes/**/*.css'
+            ],
+            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+          }
+        ]
+      },
+
+      'png-dist': {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: false,
+          headers: {
+            ContentType: 'image/png'
+          }
+        },
+        files: [
+          {
+            // Bug fixing version
+            action: 'upload',
+            expand: true,
+            cwd: 'dist',
+            src: [
+              'themes/**/*.png'
+            ],
+            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+          },{
+            // Minor version
+            action: 'upload',
+            expand: true,
+            cwd: 'dist',
+            src: [
+              'themes/**/*.png'
+            ],
+            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+          }
+        ]
+      },
+
+      'gif-dist': {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: false,
+          headers: {
+            ContentType: 'image/gif'
+          }
+        },
+        files: [
+          {
+            // Bug fixing version
+            action: 'upload',
+            expand: true,
+            cwd: 'dist',
+            src: [
+              'themes/**/*.gif'
+            ],
+            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+          },{
+            // Minor version
+            action: 'upload',
+            expand: true,
+            cwd: 'dist',
+            src: [
+              'themes/**/*.gif'
             ],
             dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }

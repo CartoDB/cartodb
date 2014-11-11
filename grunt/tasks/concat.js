@@ -7,6 +7,25 @@
 module.exports = {
   task: function(grunt, config) {
 
+    // Get src and vendor js files
+    require('../../src/cartodb');
+
+    cdb.files.splice(0, 0, 'cartodb.js');
+
+    var files = cdb.files;
+    var vendor_files = [];
+    var cdb_files = [];
+
+    for(var i = 0; i < files.length; ++i) {
+      var f = files[i];
+      if(f.indexOf('vendor') === -1) {
+        cdb_files.push('./src/' + f);
+      } else {
+        vendor_files.push('./vendor/' + f.split('/')[2]);
+      }
+    }
+
+
     return {
 
       standard: {
@@ -25,13 +44,12 @@ module.exports = {
         },
         files: {
           // Standard library
-          '<%= config.dist %>/cartodb.uncompressed.js': [
-            'grunt/templates/wrapper_header.js',
-            'vendor/*.js',
-            'grunt/templates/wrapper_middle.js',
-            'src/**/*.js',
-            'grunt/templates/wrapper_footer.js'
-          ]
+          '<%= config.dist %>/cartodb.uncompressed.js':
+            ['grunt/templates/wrapper_header.js']
+            .concat(vendor_files)
+            .concat(['grunt/templates/wrapper_middle.js'])
+            .concat(cdb_files)
+            .concat(['grunt/templates/wrapper_footer.js'])
         }
       },
 
@@ -73,14 +91,15 @@ module.exports = {
         },
         files: {
           // Library without jQuery library
-          '<%= config.dist %>/_cartodb_nojquery.js': [
-            'grunt/templates/wrapper_header.js',
-            'vendor/*.js',
-            '!vendor/jquery.min.js',
-            'grunt/templates/wrapper_middle.js',
-            'src/**/*.js',
-            'grunt/templates/wrapper_footer.js'
-          ]
+          '<%= config.dist %>/_cartodb_nojquery.js':
+            ['grunt/templates/wrapper_header.js']
+            .concat(vendor_files)
+            .concat([
+              '!./vendor/jquery.min.js',
+              'grunt/templates/wrapper_middle.js'
+            ])
+            .concat(cdb_files)
+            .concat(['grunt/templates/wrapper_footer.js'])
         }
       },
 
@@ -100,14 +119,16 @@ module.exports = {
         },
         files: {
           // Library without Leaflet library
-          '<%= config.dist %>/_cartodb_noleaflet.js': [
-            'grunt/templates/wrapper_header.js',
-            'vendor/*.js',
-            '!vendor/leaflet.js',
-            'grunt/templates/wrapper_middle.js',
-            'src/**/*.js',
-            'grunt/templates/wrapper_footer.js'
-          ]
+          '<%= config.dist %>/_cartodb_noleaflet.js':
+
+            ['grunt/templates/wrapper_header.js']
+            .concat(vendor_files)
+            .concat([
+              '!./vendor/leaflet.js',
+              'grunt/templates/wrapper_middle.js'
+            ])
+            .concat(cdb_files)
+            .concat(['grunt/templates/wrapper_footer.js'])
         }
       },
 

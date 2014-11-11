@@ -14,11 +14,6 @@ module.exports = function(grunt) {
   var pkg = grunt.file.readJSON('package.json');
   var version = pkg.version.split('.');
 
-  // Checking if version is correctly defined
-  if (version.length !== 3) {
-    grunt.fail.fatal('Package version not correctly specified, it should be (xx.xx.xx or xx.xx.xx-dev)' , 1)
-  }
-
   var config = {
     dist: 'dist',
     app:  'www',
@@ -35,6 +30,8 @@ module.exports = function(grunt) {
     secrets: grunt.file.readJSON('secrets.json'),
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
+    prompt: require('./grunt/tasks/prompt').task(grunt, config),
+    'string-replace': require('./grunt/tasks/replace').task(grunt, config),
     fastly: require('./grunt/tasks/fastly').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
@@ -94,10 +91,21 @@ module.exports = function(grunt) {
     'build'
   ]);
 
-  grunt.registerTask('publish', [
-    'jasmine', // Don't comment this line unless you have a GOOD REASON
-    's3'
-  ]);
+  grunt.registerTask('publish', function (target) {
+    if (
+        !grunt.config('secrets') ||
+        !grunt.config('secrets').S3_KEY ||
+        !grunt.config('secrets').S3_SECRET ||
+        !grunt.config('secrets').S3_BUCKET
+      ) {
+      grunt.fail.fatal('Secret keys not specified in secrets.json' , 1);
+    }
+
+    grunt.task.run([
+      'jasmine', // Don't comment this line unless you have a GOOD REASON
+      's3'
+    ]);
+  });
 
   grunt.registerTask('invalidate', [
     'fastly'
@@ -106,6 +114,8 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
+    'prompt:bump',
+    'string-replace',
     'gitinfo',
     'clean:dist',
     'concurrent:dist',
@@ -113,12 +123,13 @@ module.exports = function(grunt) {
     'concat',
     'autoprefixer:dist',
     'cssmin',
-    'uglify',
+    'copy:distStatic',
     'imagemin',
     'svgmin',
     'filerev',
     'usemin',
-    'htmlmin'
+    'htmlmin',
+    'uglify'
   ]);
 
   grunt.registerTask('dist', [

@@ -216,7 +216,7 @@ module CartoDB
 
         if ogr2ogr.exit_code != 0
           # OOM
-          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/
+          if ( (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || (ogr2ogr.exit_code == 35072 && ogr2ogr.command_output =~ /Killed/) )
             raise FileTooBigError.new(job.logger)
           end
           # Could be OOM, could be wrong input

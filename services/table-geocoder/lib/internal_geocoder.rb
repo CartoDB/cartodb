@@ -92,7 +92,7 @@ module CartoDB
         CartoDB::Importer2::QueryBatcher::execute(
           connection,
           @query_generator.copy_results_to_table_query,
-          table_name,
+          qualified_table_name,
           nil, # use default logger
           'InternalGeocoder::copy_results_to_table',
           true, # let the batcher take care of exceptions

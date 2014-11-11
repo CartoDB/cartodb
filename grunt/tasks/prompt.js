@@ -79,7 +79,7 @@ module.exports = {
                   name:    'README.md'
                 },
                 {
-                  value:   'contributing',
+                  value:   'releasing',
                   name:    'RELEASING.md'
                 }
               ]

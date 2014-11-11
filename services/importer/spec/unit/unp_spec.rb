@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'fileutils'
-require 'zip/zip'
 require_relative '../../lib/importer/unp'
 
 RSpec.configure do |config|

@@ -91,6 +91,7 @@ module CartoDB
         rename_the_geom_index_if_exists(current_name, new_name)
         new_name
       rescue => exception
+        runner.log.append("Silently retrying renaming #{current_name} to #{new_name}. ")
         if rename_attempts <= MAX_RENAME_RETRIES
           retry
         else
@@ -103,6 +104,8 @@ module CartoDB
           ALTER INDEX IF EXISTS "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
+      rescue => exception
+        runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
       end
 
       def persist_metadata(name, data_import_id)

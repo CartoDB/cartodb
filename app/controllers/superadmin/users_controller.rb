@@ -76,7 +76,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         id: entry.id,
         data_type: entry.data_type,
         date: entry.updated_at,
-        status: entry.success
+        status: entry.success.nil? ? false : entry.success
       }
     })
   end

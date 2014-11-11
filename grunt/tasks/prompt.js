@@ -61,7 +61,7 @@ module.exports = {
             {
               config:  'bump.files',
               type:    'checkbox',
-              default: ['package', 'cartodb', 'readme'],
+              default: ['package', 'cartodb', 'readme', 'releasing'],
               message: 'What should get the new version:',
               choices: [
                 {
@@ -77,6 +77,10 @@ module.exports = {
                 {
                   value:   'readme',
                   name:    'README.md'
+                },
+                {
+                  value:   'contributing',
+                  name:    'RELEASING.md'
                 }
               ]
             }
@@ -95,6 +99,9 @@ module.exports = {
               }
               bump.version = version;
             }
+
+            var version_arr = bump.version.split('.');
+            bump.minor = version_arr[0] + '.' + version_arr[1];
             
             grunt.config.set('bump', bump);
             done();

@@ -26,6 +26,18 @@ module.exports = {
             cwd: '.',
             src: 'README.md',
             dest: '.'
+          },
+          {
+            expand: true,
+            cwd: '.',
+            src: 'RELEASING.md',
+            dest: '.'
+          },
+          {
+            expand: true,
+            cwd: '.',
+            src: 'RELEASING.md',
+            dest: '.'
           }
         ],
         options: {
@@ -37,7 +49,13 @@ module.exports = {
             replacement: "cdb.VERSION = '<%= grunt.config(\'bump.version\') %>'",
           }, {
             pattern: "(v<%= config.version.bugfixing %>)",
-            replacement: "(v<%= grunt.config(\'bump.version\') %>)",
+            replacement: "(v<%= grunt.config('bump.version') %>)",
+          }, {
+            pattern: "<%= config.version.minor %>",
+            replacement: "<%= grunt.config('bump.minor') %>",
+          }, {
+            pattern: "<%= config.version.bugfixing %>",
+            replacement: "<%= grunt.config('bump.version') %>",
           }]
         }
       }

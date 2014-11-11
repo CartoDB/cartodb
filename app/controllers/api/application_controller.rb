@@ -2,7 +2,7 @@
 class Api::ApplicationController < ApplicationController
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?, :verify_authenticity_token
-  before_filter :api_authorization_required
+  before_filter :api_authorization_required, :link_ghost_tables
 
   protected
 
@@ -16,8 +16,21 @@ class Api::ApplicationController < ApplicationController
     render options
   end
 
+  # only check ghost tables when the endpoint request tables or visualizations
+  # TODO: remove this when we have the sync with the database
+  def check_ghost_tables
+    params[:controller] == "api/json/visualizations" and params[:action] == "index"
+  end
+
   def link_ghost_tables
     return true unless current_user.present?
-    current_user.link_ghost_tables
+
+    if check_ghost_tables && current_user.ghost_tables_enabled && current_user.search_for_modified_table_names
+      # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
+      # test if there is a job already for this
+      if !current_user.link_ghost_tables_working
+        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
+      end
+    end
   end
 end

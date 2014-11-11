@@ -27,6 +27,7 @@ module CartoDB
     class UnsupportedFormatError                < StandardError; end
     class UploadError                           < StandardError; end
     class DownloadError                         < StandardError; end
+    class TooManyNodesError                     < StandardError; end
     class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
     class XLSXFormatError                       < StandardError; end
@@ -43,6 +44,7 @@ module CartoDB
       XLSXFormatError                       => 1004,
       EmptyFileError                        => 1005,
       InvalidShpError                       => 1006,
+      TooManyNodesError                     => 1007,
       GDriveNotPublicError                  => 1010,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,

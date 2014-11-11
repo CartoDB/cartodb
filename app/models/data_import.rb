@@ -168,6 +168,9 @@ class DataImport < Sequel::Model
     #if log.entries =~ /Table (.*) registered/
       self.success  = true
       self.state    = STATE_SUCCESS
+      table_names = results.map { |result| result.name }.sort
+      self.table_names = table_names.join(' ')
+      self.tables_created_count = table_names.size
       log.append "Import finished\n"
       save
       notify(results)

@@ -51,10 +51,10 @@ module.exports = {
             pattern: "(v<%= config.version.bugfixing %>)",
             replacement: "(v<%= grunt.config('bump.version') %>)",
           }, {
-            pattern: "<%= config.version.minor %>",
-            replacement: "<%= grunt.config('bump.minor') %>",
+            pattern: "/<%= config.version.minor %>\//g",
+            replacement: "<%= grunt.config('bump.minor') %>/",
           }, {
-            pattern: "<%= config.version.bugfixing %>",
+            pattern: "/<%= config.version.bugfixing %>/g",
             replacement: "<%= grunt.config('bump.version') %>",
           }]
         }

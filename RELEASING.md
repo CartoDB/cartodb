@@ -1,7 +1,7 @@
 ## How to release a new CartoDB.js version
 
-1. [Release a new version](#Release a new version)
-2. [Rollback to a previous version](#Rollback to a previous version)
+1. [Release a new version](#release-a-new-version)
+2. [Rollback to a previous version](#rollback-to-a-previous-version)
 
 ---
 
@@ -67,7 +67,7 @@ grunt build
 grunt publish
 ```
 
-For example, if we are in 3.11.23 and we want to go back to 3.11.22
+For example, if we are in 3.11.24 and we want to go back to 3.11.22
 
 ```
 git checkout 3.11.22

@@ -1,3 +1,11 @@
+3.2.10 (2014-11-XX)
+------------------
+* New features
+  - 
+* Fixed bugs
+  - Fixed internal geocoder for org users
+
+
 3.2.10 (2014-11-07)
 ------------------
 * New features

@@ -16,15 +16,15 @@ module CartoDB
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
 
-      def initialize(db, table_name, content_guessing_options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
+      def initialize(db, table_name, options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
         @job        = job || Job.new({  logger: logger } )
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
-        #TODO inject??
-        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @job, content_guessing_options)
+        @options = options
+        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options)
       end
 
       def mark_as_from_geojson_with_transform
@@ -107,9 +107,9 @@ module CartoDB
         return false if not @content_guesser.enabled?
         job.log 'Trying country guessing...'
         country_column_name = @content_guesser.country_column
-        if country_column
+        if country_column_name
           create_the_geom_in table_name
-          job.log "Found country column: #{column_name_sym.to_s}"
+          job.log "Found country column: #{country_column_name}"
           return geocode_countries country_column_name
         end
         return false

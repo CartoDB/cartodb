@@ -94,7 +94,7 @@ describe CartoDB::Importer2::ContentGuesser do
       guesser.is_country_column_type?(column).should eq false
     end
 
-    it 'returns false if the column type is of a compatible type' do
+    it 'returns true if the column type is of a compatible type' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       column = {data_type: 'text'}
       guesser.is_country_column_type?(column).should eq true

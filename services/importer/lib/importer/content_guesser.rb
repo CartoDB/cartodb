@@ -58,7 +58,7 @@ module CartoDB
       end
 
       def sample
-        @sample ||= db[%Q(
+        @sample ||= @db[%Q(
           SELECT * FROM #{qualified_table_name}
           ORDER BY random() LIMIT #{sample_size}
         )].all
@@ -84,7 +84,7 @@ module CartoDB
       attr_writer :geocoder_sql_api
 
       def qualified_table_name
-        %Q("#{schema}"."#{table_name}")
+        %Q("#{@schema}"."#{@table_name}")
       end
 
     end

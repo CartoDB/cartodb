@@ -12,7 +12,7 @@ module.exports = {
         accessKeyId: "<%= secrets.S3_KEY %>",
         secretAccessKey: "<%= secrets.S3_SECRET %>",
         bucket: "<%= secrets.S3_BUCKET %>",
-        dryRun: false
+        dryRun: true
       },
 
       'js-dist': {
@@ -34,7 +34,7 @@ module.exports = {
               '*.js',
               '!_*.js'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
           },{
             // Minor version
             action: 'upload',
@@ -44,7 +44,7 @@ module.exports = {
               '*.js',
               '!_*.js'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }
         ]
       },
@@ -67,7 +67,7 @@ module.exports = {
             src: [
               'themes/**/*.css'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
           },{
             // Minor version
             action: 'upload',
@@ -76,7 +76,7 @@ module.exports = {
             src: [
               'themes/**/*.css'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }
         ]
       },
@@ -99,7 +99,7 @@ module.exports = {
             src: [
               'themes/**/*.png'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
           },{
             // Minor version
             action: 'upload',
@@ -108,7 +108,7 @@ module.exports = {
             src: [
               'themes/**/*.png'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }
         ]
       },
@@ -131,7 +131,7 @@ module.exports = {
             src: [
               'themes/**/*.gif'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
           },{
             // Minor version
             action: 'upload',
@@ -140,7 +140,7 @@ module.exports = {
             src: [
               'themes/**/*.gif'
             ],
-            dest: "testing/cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
           }
         ]
       }

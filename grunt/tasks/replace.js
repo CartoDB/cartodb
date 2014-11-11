@@ -20,6 +20,12 @@ module.exports = {
             cwd: 'src/',
             src: 'cartodb.js',
             dest: 'src/'
+          },
+          {
+            expand: true,
+            cwd: '.',
+            src: 'README.md',
+            dest: '.'
           }
         ],
         options: {
@@ -29,6 +35,9 @@ module.exports = {
           }, {
             pattern: "cdb.VERSION = '<%= config.version.bugfixing %>'",
             replacement: "cdb.VERSION = '<%= grunt.config(\'bump.version\') %>'",
+          }, {
+            pattern: "(v<%= config.version.bugfixing %>)",
+            replacement: "(v<%= grunt.config(\'bump.version\') %>)",
           }]
         }
       }

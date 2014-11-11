@@ -61,7 +61,7 @@ module.exports = {
             {
               config:  'bump.files',
               type:    'checkbox',
-              default: ['package', 'cartodb'],
+              default: ['package', 'cartodb', 'readme'],
               message: 'What should get the new version:',
               choices: [
                 {
@@ -73,6 +73,10 @@ module.exports = {
                 {
                   value:   'cartodb',
                   name:    'src/cartodb.js'
+                },
+                {
+                  value:   'readme',
+                  name:    'README.md'
                 }
               ]
             }

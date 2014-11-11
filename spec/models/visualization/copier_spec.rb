@@ -11,24 +11,18 @@ include CartoDB
 
 describe Visualization::Copier do
   before do
-    @db   = Sequel.sqlite
-    CartoDB::Overlay::Migrator.new(@db).migrate
-    CartoDB::Overlay.repository        =
-      DataRepository::Backend::Sequel.new(@db, :overlays)
-
-    Visualization::Migrator.new(@db).migrate
-    Visualization.repository = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    @db = Rails::Sequel.connection
+    CartoDB::Overlay.repository = DataRepository::Backend::Sequel.new(@db, :overlays)
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @user = create_user
-
-
-    #@user = OpenStruct.new(id: rand(999), maps: [])
   end
 
   describe '#initialize' do
     it 'requires a @user and a visualization' do
-      lambda { Visualization::Copier.new }.should raise_error ArgumentError
+      lambda {
+        Visualization::Copier.new
+      }.should raise_error ArgumentError
     end
   end #initialize
 

@@ -291,9 +291,11 @@ sudo PGUSER=postgres make installcheck # to run tests
 You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
 
 ```
-vim /etc/postgresql/9.3/main/postgresql.conf
+$ sudo vim /etc/postgresql/9.3/main/postgresql.conf
 ...
 shared_preload_libraries = 'schema_triggers.so'
+
+$ sudo service postgresql restart # restart postgres
 ```
 
 After this change the 2nd installcheck of cartodb-postresql should be OK.
@@ -554,6 +556,11 @@ bundle exec rake -T
 # Using foreman #
 
 You can also use foreman to run the full stack (cartodb server, sql api, tiler, redis and resque), using a single command:
+IMPORTANT: You need to install foreman by yourself. It's not included in the Gemfile. Run this:
+
+```
+bundle exec gem install foreman
+```
 
 ```
 bundle exec foreman start -p $PORT

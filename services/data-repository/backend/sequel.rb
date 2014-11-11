@@ -9,7 +9,7 @@ module DataRepository
       PER_PAGE      = 300
       ARRAY_RE      = %r{\[.*\]}
 
-      def initialize(db=Sequel.sqlite, relation=nil)
+      def initialize(db, relation=nil)
         @db         = db
         @relation   = relation.to_sym
         ::Sequel.extension(:pagination)

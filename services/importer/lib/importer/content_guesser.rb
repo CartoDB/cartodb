@@ -4,6 +4,8 @@ module CartoDB
   module Importer2
     class ContentGuesser
 
+      COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
+
       def initialize(db, table_name, schema, options)
         @db         = db
         @table_name = table_name
@@ -12,7 +14,7 @@ module CartoDB
       end
 
       def enabled?
-        @options[:guessing][:enabled]
+        @options[:guessing][:enabled] rescue false
       end
 
       def country_column
@@ -24,10 +26,10 @@ module CartoDB
       end
 
       def columns
-        @columns ||= db[%Q(
+        @columns ||= @db[%Q(
           SELECT column_name, data_type
           FROM information_schema.columns
-          WHERE table_name = '#{table_name}' AND table_schema = '#{schema}'
+          WHERE table_name = '#{@table_name}' AND table_schema = '#{@schema}'
         )]
       end
 
@@ -68,15 +70,18 @@ module CartoDB
 
       def countries
         return @countries if @countries
-        geocoder_sql_api_config = @options[:geocoder][:internal]
-        geocoder_sql_api = CartoDB::SQLApi.new(geocoder_sql_api_config)
-        query = 'SELECT synonyms FROM country_decoder'
         @countries = Set.new()
-        geocoder_sql_api.fetch(query).each do |country|
+        geocoder_sql_api.fetch(COUNTRIES_QUERY).each do |country|
           @countries.merge country['synonyms']
         end
         @countries
       end
+
+      def geocoder_sql_api
+        @geocoder_sql_api ||= CartoDB::SQLApi.new(@options[:geocoder][:internal])
+      end
+
+      attr_writer :geocoder_sql_api
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")

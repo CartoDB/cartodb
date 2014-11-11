@@ -29,6 +29,12 @@ module CartoDB
         })
     end
 
+    def register_support_tables(tables_list)
+      return if tables_list.empty?
+
+      # TODO: mark tables as dependant from raster parent
+    end
+
     attr_reader :user, :table
 
     private

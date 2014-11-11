@@ -203,7 +203,7 @@ module CartoDB
         job.log "Finished importing data from #{source_file.fullpath}"
 
         job.success_status = true
-        @results.push(result_for(job, source_file, loader.valid_table_names))
+        @results.push(result_for(job, source_file, loader.valid_table_names, loader.additional_support_tables))
       rescue => exception
         job.log "Errored importing data from #{source_file.fullpath}:"
         job.log "#{exception.class.to_s}: #{exception.to_s}"
@@ -211,7 +211,8 @@ module CartoDB
         job.log exception.backtrace
         job.log '----------------------------------------------------'
         job.success_status = false
-        @results.push(result_for(job, source_file, loader.valid_table_names, exception.class))
+        @results.push(
+          result_for(job, source_file, loader.valid_table_names, loader.additional_support_tables, exception.class))
       end
 
       def report
@@ -264,7 +265,7 @@ module CartoDB
       attr_reader :pg_options, :unpacker, :available_quota
       attr_writer :results, :tracker
 
-      def result_for(job, source_file, table_names, exception_klass=nil)
+      def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
         Result.new(
           name:           source_file.name,
           schema:         source_file.target_schema,
@@ -275,7 +276,8 @@ module CartoDB
           tables:         table_names,
           success:        job.success_status,
           error_code:     error_for(exception_klass),
-          log_trace:      job.logger.to_s
+          log_trace:      job.logger.to_s,
+          support_tables: support_table_names
         )
       end
 

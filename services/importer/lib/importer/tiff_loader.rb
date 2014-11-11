@@ -32,8 +32,9 @@ module CartoDB
         self
       end
 
-      def additional_tables?
-        raster2pgsql
+      # CONVENTION: support_tables will always end in "_tablename"
+      def additional_support_tables
+        raster2pgsql.additional_support_tables
       end
 
       def raster2pgsql

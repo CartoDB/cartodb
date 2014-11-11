@@ -21,6 +21,7 @@ module CartoDB
         @database         = database
         @data_import_id   = data_import_id
         @destination_schema = destination_schema ? destination_schema : DESTINATION_SCHEMA
+        @rename_attempts  = 0
       end
 
       def run(tracker)
@@ -44,13 +45,12 @@ module CartoDB
 
       def register(result)
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
-        name = rename(result.table_name, result.name)
+        name = rename(result)
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(name, data_import_id)
         runner.log.append("Table '#{name}' registered")
-      rescue
       end
 
       def success?
@@ -71,30 +71,72 @@ module CartoDB
         return self if origin_schema == destination_schema
         database.execute(%Q{
           ALTER TABLE "#{origin_schema}"."#{table_name}"
-          SET SCHEMA \"#{destination_schema}\"
+          SET SCHEMA "#{destination_schema}"
         })
       end
 
-      def rename(current_name, new_name, rename_attempts=0)
-        new_name = table_registrar.get_valid_table_name(new_name)
+      def rename(result)
+        new_name = table_registrar.get_valid_table_name(result.name)
 
-        if rename_attempts > 0
-          new_name = "#{new_name}_#{rename_attempts}"
+        if @rename_attempts > 0
+          new_name = "#{new_name}_#{@rename_attempts}"
         end
-        rename_attempts = rename_attempts + 1
+        @rename_attempts += 1
 
         database.execute(%Q{
-          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}"
+          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{result.table_name}"
           RENAME TO "#{new_name}"
         })
 
-        rename_the_geom_index_if_exists(current_name, new_name)
+        rename_the_geom_index_if_exists(result.table_name, new_name)
 
-        # TODO: Rename overlays if raster
+        support_tables_new_names = []
+
+        result.support_tables.each { |support_table_name|
+          new_support_table_name = support_table_name.dup
+          # CONVENTION: support_tables will always end in "_tablename", so we substitute
+          new_support_table_name.slice!(-result.table_name.length, result.table_name.length)
+          new_support_table_name = "#{new_support_table_name}#{new_name}"
+
+          database.execute(%Q{
+            ALTER TABLE "#{ORIGIN_SCHEMA}"."#{support_table_name}"
+            RENAME TO "#{new_support_table_name}"
+          })
+
+          recreate_raster_constraints_if_exists(new_support_table_name, new_name)
+
+          support_tables_new_names.push(new_support_table_name)
+        }
+
+        @rename_attempts = 0
+
+        result.update_support_tables(support_tables_new_names)
 
         new_name
-      rescue
-        retry unless rename_attempts > MAX_RENAME_RETRIES
+      rescue => exception
+        retry unless @rename_attempts > MAX_RENAME_RETRIES
+        @rename_attempts = 0
+      end
+
+      # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews
+      def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name)
+        constraint = database.fetch(%Q{
+          SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
+          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
+        }).first
+        return if constraint.nil?
+
+        # @see http://postgis.net/docs/RT_DropOverviewConstraints.html
+        database.execute(%Q{
+          SELECT DropOverviewConstraints('#{ORIGIN_SCHEMA}', '#{constraint[:o_table_name]}',
+                                         '#{constraint[:o_raster_column]}')
+        })
+        # @see http://postgis.net/docs/manual-dev/RT_AddOverviewConstraints.html
+        database.execute(%Q{
+          SELECT AddOverviewConstraints('#{ORIGIN_SCHEMA}', '#{constraint[:o_table_name]}',
+                                        '#{constraint[:o_raster_column]}', '#{ORIGIN_SCHEMA}', '#{raster_table_name}',
+                                        '#{constraint[:r_raster_column]}', #{constraint[:overview_factor]});
+        })
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

@@ -194,6 +194,11 @@ module CartoDB
         source_file.extension =~ /\.osm/
       end
 
+      # Not used for now, but for compatibility with tiff_loader
+      def additional_support_tables
+        []
+      end
+
       attr_accessor   :source_file, :options
 
       private

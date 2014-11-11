@@ -38,9 +38,11 @@ describe CartoDB::Connector::Importer do
     desired_table_name = 'european_countries'
 
     importer = CartoDB::Connector::Importer.new(runner, table_registrar, quota_checker, database, id, destination_schema)
-    new_table_name = importer.rename(importer_table_name, desired_table_name)
+    new_table_name = importer.rename(OpenStruct.new(table_name: importer_table_name, name: desired_table_name))
     new_table_name.should_not == nil
   end
 
 end
+
+
 

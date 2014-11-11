@@ -434,7 +434,7 @@ class DataImport < Sequel::Model
       )
       runner.loader_options = ogr2ogr_options
       graphite_conf = Cartodb.config[:graphite]
-      if(!graphite_conf.nil?)
+      unless graphite_conf.nil?
         runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
       end
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)

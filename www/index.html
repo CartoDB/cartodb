@@ -34,7 +34,7 @@
       <link href="css/main.css" rel="stylesheet" />
     <!-- endbuild -->
     <!-- build:js(www) /js/vendor/modernizr.js -->
-    <script src='js/vendor/modernizr-2.6.2.min.js'></script>
+    <script src='../bower_components/modernizr/modernizr.js'></script>
     <!-- endbuild -->
   </head>
   <body>
@@ -65,8 +65,7 @@
         <div class="Header-inner h-malign h-iblock">
           <h1 class="Header-title">CartoDB<strong>&lt;js&gt;</strong></h1>
           <p class="Header-description">CartoDB offers a simple unified JavaScript library called CartoDB.js that let you interact with the CartoDB service.</p>
-
-          <a href="" class="Header-downloadLink h-iblock Btn Btn--l Btn--highlight"><span>Download v2.3</span></a>
+          <a href="https://github.com/CartoDB/cartodb.js/archive/<%= last_bugfixing_version %>.zip" class="Header-downloadLink h-iblock Btn Btn--l Btn--highlight"><span>Download v<%= last_minor_version %></span></a>
         </div>
       </header>
 

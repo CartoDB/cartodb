@@ -14,7 +14,7 @@ module.exports = {
         process: function (content, srcpath) {
 
           // Replace string task corrupts images
-          if(srcpath.substr(srcpath.length - 3) === '.js') {
+          if(srcpath.substr(srcpath.length - 3) === '.js' || srcpath.substr(srcpath.length - 5) === '.html') {
             return __.template(content)({
               last_bugfixing_version: config.version.bugfixing,
               last_minor_version:     config.version.minor,

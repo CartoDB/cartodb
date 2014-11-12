@@ -30,23 +30,82 @@
     <meta name="twitter:url" content="" />
     
     <!-- build:css(www) /css/main.css -->
-      <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
+      <link href="../bower_components/cdbui/dist/css/cdbui-lib.css" rel="stylesheet" />
+      <link href="css/main.css" rel="stylesheet" />
     <!-- endbuild -->
     <!-- build:js(www) /js/vendor/modernizr.js -->
     <script src='js/vendor/modernizr-2.6.2.min.js'></script>
     <!-- endbuild -->
   </head>
   <body>
-    <ul>
-      <li>CartoDB.js last bugfixing version: <%= last_bugfixing_version %></li>
-      <li>CartoDB.js last minor version: <%= last_minor_version %></li>
-      <li>CartoDB.js last major version: <%= last_major_version %></li>
-    </ul>
+    <div class="js-Offcanvas Offcanvas">
+    <div class="Offcanvas-inner">
+      <div class="Offcanvas-collapse">
+        <div class="Offcanvas-collapseInner">
+          <div class="Offcanvas-menu">
+            <h3 class="Offcanvas-title">Javascript API</h3>
+            <ul>
+              <li class="Offcanvas-menuItem"><a href="#" class="Offcanvas-menuLink">Install</a></li>
+            </ul>
+          </div>
+
+          <div class="Offcanvas-menu">
+            <h3 class="Offcanvas-title">Javascript API</h3>
+            <ul>
+            <li class="Offcanvas-menuItem"><a href="#" class="Offcanvas-menuLink">Install</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <header class="Header js-Header h-valign">
+        <a href="/#menu" class="Header-menu js-Header-menu"></a>
+        <a href="https://github.com/CartoDB/cartodb.js" class="Header-link Btn Btn--m Btn--white"><span>GitHub</span></a>
+
+        <div class="Header-inner h-malign h-iblock">
+          <h1 class="Header-title">CartoDB<strong>&lt;js&gt;</strong></h1>
+          <p class="Header-description">CartoDB offers a simple unified JavaScript library called CartoDB.js that let you interact with the CartoDB service.</p>
+
+          <a href="" class="Header-downloadLink h-iblock Btn Btn--l Btn--highlight"><span>Download v2.3</span></a>
+        </div>
+      </header>
+
+      <nav class="Navbar">
+        <div class="inner">
+          <div class="Navbar-inner">
+            <div class="Navbar-brand h-valign">
+              <a href="/#menu" class="Header-menu js-Header-menu h-iblock h-malign"></a>
+              <a href="/" class="Navbar-title h-iblock h-malign">CartoDB<strong>&lt;js&gt;</strong></a>
+            </div>
+
+            <a href="https://github.com/CartoDB/cartodb.js" class="Btn Btn--m">GitHub</a>
+          </div>
+        </div>
+      </nav>
+-      <li>CartoDB.js last bugfixing version: <%= last_bugfixing_version %></li>
+-      <li>CartoDB.js last minor version: <%= last_minor_version %></li>
+-      <li>CartoDB.js last major version: <%= last_major_version %></li>
+
+
+      <div class="Content">
+        <section class="Section">
+        </section>
+
+        <section class="Section">
+        </section>
+
+        <section class="Section">
+        </section>
+      </div>
+    </div>
+    </div>
 
     <!-- build:js(www) /js/vendor.js -->
     <script src="../bower_components/jquery/dist/jquery.js"></script>
     <script src="../bower_components/underscore/underscore.js"></script>
     <script src="../bower_components/backbone/backbone.js"></script>
+    <script src="../bower_components/backbone/backbone.js"></script>
+    <script src="../bower_components/cdbui/dist/js/cdbui-lib.js"></script>
     <!-- endbuild -->
 
     <!-- build:js(www) /js/main.js -->
@@ -54,7 +113,7 @@
       <script src="js/main.js"></script>
     <!-- endbuild -->
 
-    <script>
+    <!-- script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -62,7 +121,7 @@
 
       ga('create', 'UA-20934186-21', 'cartodb.github.io');
       ga('send', 'pageview');
-    </script>
+    </script -->
   </body>
 </html>
 

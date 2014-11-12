@@ -12,7 +12,7 @@ module.exports = {
         accessKeyId: "<%= secrets.S3_KEY %>",
         secretAccessKey: "<%= secrets.S3_SECRET %>",
         bucket: "<%= secrets.S3_BUCKET %>",
-        dryRun: true
+        dryRun: false
       },
 
       'js-dist': {

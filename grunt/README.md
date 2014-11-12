@@ -10,7 +10,7 @@ These are the tasks(*) we provide:
 [X] ```grunt test```        => run library test suite (it will generate a SpecRunner.html file in test folder).
 [X] ```grunt build```       => generate library and website in dist folder.
 [X] ```grunt dist```        => same as build task.
-[X] ```grunt deploy```      => deploy static cartodb.js webpage to gh-pages.
+[X] ```grunt pages```       => deploy static cartodb.js webpage to gh-pages.
 [ ] ```grunt watch```       => special watch for cartodb.js library (in progress).
 
 *Remember to install all the things you need, check main README.md, how to build section.

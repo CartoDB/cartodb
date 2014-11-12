@@ -134,7 +134,7 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
+  grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
       'prompt:bump',

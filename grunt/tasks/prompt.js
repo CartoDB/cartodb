@@ -20,8 +20,8 @@ module.exports = {
               choices: [
                 {
                   value: 'build',
-                  name:  'Build:  '.yellow + (config.version.bugfixing + '-?').yellow +
-                    ' Unstable, betas, and release candidates.'
+                  name:  'Build:  '.yellow + (config.version.bugfixing).yellow +
+                    '   Current version.'
                 },
                 {
                   value: 'patch',
@@ -41,7 +41,7 @@ module.exports = {
                 {
                   value: 'custom',
                   name:  'Custom: ?.?.?'.yellow +
-                    '   Specify version...'
+                    '   Specify version... (eg. 3.0.0-beta)'
                 }
               ]
             },

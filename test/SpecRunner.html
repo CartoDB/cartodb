@@ -1,220 +1,257 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <title>CartoDB Spec Runner</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.2.0/jasmine_favicon.png">
-  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner</title>
+  <link rel="shortcut icon" type="image/png" href=".grunt/grunt-contrib-jasmine/jasmine_favicon.png">
 
-  <script type="text/javascript"
-      src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
-  </script>
+  <link rel="stylesheet" type="text/css" href="../.grunt/grunt-contrib-jasmine/jasmine.css">
 
-  <script type="text/javascript" src="../vendor/jquery.min.js"></script>
-  <script type="text/javascript" src="../vendor/jquery.faviconNotify.js"></script>
-
-  <script type="text/javascript" src="../vendor/underscore-min.js"></script>
-  <script type="text/javascript" src="../vendor/backbone.js"></script>
-  <script type="text/javascript" src="../vendor/leaflet.js"></script>
-  <!--<script type="text/javascript" src="../vendor/wax.g.js"></script>-->
-  <script type="text/javascript" src="../vendor/wax.cartodb.js"></script>
-  <!--<script type="text/javascript" src="../vendor/cartodb-gmapsv3.js"></script>-->
-  <script type="text/javascript" src="../vendor/mustache.js"></script>
-  <script type="text/javascript" src="../vendor/GeoJSON.js"></script>
-  <script type="text/javascript" src="../vendor/jscrollpane.js"></script>
-  <script type="text/javascript" src="../vendor/spin.js"></script>
-  <script type="text/javascript" src="../vendor/lzma.js"></script>
-  <script type="text/javascript" src="../vendor/mod/carto.js"></script>
-  <script type="text/javascript" src="../vendor/mod/torque.uncompressed.js"></script>
-  <script type="text/javascript" src="../vendor/mod/jquery-ui/jquery.ui.core.js"></script>
-  <script type="text/javascript" src="../vendor/mod/jquery-ui/jquery.ui.widget.js"></script>
-  <script type="text/javascript" src="../vendor/mod/jquery-ui/jquery.ui.mouse.js"></script>
-  <script type="text/javascript" src="../vendor/mod/jquery-ui/jquery.ui.slider.js"></script>
-    
-  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
-  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
-  <script type="text/javascript" src="lib/sinon-1.3.4.js"></script>
-  <script type="text/javascript" src="lib/sinon-ie.js"></script>
-
-  <!-- SOURCE -->
-  <script type="text/javascript" src="../src/cartodb.js"></script>
-
-  <!-- Core source -->
-  <script type="text/javascript" src="../src/core/decorator.js"></script>
-  <script type="text/javascript" src="../src/core/config.js"></script>
-  <script type="text/javascript" src="../src/core/log.js"></script>
-  <script type="text/javascript" src="../src/core/profiler.js"></script>
-  <script type="text/javascript" src="../src/core/template.js"></script>
-  <script type="text/javascript" src="../src/core/model.js"></script>
-  <script type="text/javascript" src="../src/core/view.js"></script>
-
-  <!-- Geo source -->
-  <script type="text/javascript" src="../src/geo/geometry.js"></script>
-  <script type="text/javascript" src="../src/geo/map.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/header.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/legend.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/infobox.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/infowindow.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/search.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/mobile.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/annotation.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/layer_selector.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/share.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/zoom_info.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/tiles_loader.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/zoom.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/tooltip.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/time_slider.js"></script>
-  <script type="text/javascript" src="../src/geo/ui/fullscreen.js"></script>
-
-  <script type="text/javascript" src="../src/geo/layer_definition.js"></script>
-  <script type="text/javascript" src="../src/geo/common.js"></script>
-
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet.geometry.js"></script>
-
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet_base.js"></script>
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet_plainlayer.js"></script>
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet_tiledlayer.js"></script>
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet_cartodb_layergroup.js"></script>
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet_cartodb_layer.js"></script>
-  <script type="text/javascript" src="../src/geo/leaflet/torque.js"></script>
-  <script type="text/javascript" src="../src/geo/leaflet/leaflet.js"></script>
-
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps.geometry.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps_base.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps_baselayer.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps_plainlayer.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps_tiledlayer.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps_cartodb_layergroup.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps_cartodb_layer.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/torque.js"></script>
-  <script type="text/javascript" src="../src/geo/gmaps/gmaps.js"></script>
-  <script type="text/javascript" src="../src/geo/geocoder.js"></script>
-
-  <!-- Common source -->
-  <script type="text/javascript" src="../src/ui/common/dialog.js"></script>
-  <script type="text/javascript" src="../src/ui/common/share.js"></script>
-  <script type="text/javascript" src="../src/ui/common/notification.js"></script>
-  <script type="text/javascript" src="../src/ui/common/table.js"></script>
-  <script type="text/javascript" src="../src/ui/common/tabpane.js"></script>
-  <script type="text/javascript" src="../src/ui/common/dropdown.js"></script>
-
-  <!-- vis -->
-  <script type="text/javascript" src="../src/vis/vis.js"></script>
-  <script type="text/javascript" src="../src/vis/layers.js"></script>
-  <script type="text/javascript" src="../src/vis/overlays.js"></script>
-
-  <!-- api -->
-  <script type="text/javascript" src="../src/api/layers.js"></script>
-  <script type="text/javascript" src="../src/api/sql.js"></script>
-  <script type="text/javascript" src="../src/api/vis.js"></script>
-
-  <!-- SPECS -->
-  <!-- Core specs -->
-  <script type="text/javascript" src="spec/core/decorators.spec.js"></script>
-  <script type="text/javascript" src="spec/core/config.spec.js"></script>
-  <script type="text/javascript" src="spec/core/log.spec.js"></script>
-  <script type="text/javascript" src="spec/core/model.spec.js"></script>
-  <script type="text/javascript" src="spec/core/view.spec.js"></script>
-  <script type="text/javascript" src="spec/core/template.spec.js"></script>
-
-  <!-- Common specs -->
-  <script type="text/javascript" src="spec/ui/common/dialog.spec.js"></script>
-  <script type="text/javascript" src="spec/ui/common/notification.spec.js"></script>
-  <script type="text/javascript" src="spec/ui/common/table.spec.js"></script>
-  <script type="text/javascript" src="spec/ui/common/tabpane.spec.js"></script>
-
-  <!-- Geo specs -->
-  <script type="text/javascript" src="spec/geo/layer_definition.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/common.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/ui/tooltip.spec.js"></script>
-
-  <script type="text/javascript" src="spec/geo/map.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/leaflet.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/geometry.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/legend.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/ui/header.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/overlays/annotation.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/infowindow.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/mobile.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/layer_selector.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/gmaps.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/geocoder.spec.js"></script>
-
-  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/hide.js"></script>
-  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/interaction.js"></script>
-  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/opacity.js"></script>
-  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/show.js"></script>
-
-  <!-- vis -->
-  <script type="text/javascript" src="spec/vis/layers.spec.js"></script>
-  <script type="text/javascript" src="spec/vis/vis.spec.js"></script>
-
-  <!-- api -->
-  <script type="text/javascript" src="spec/api/layers.spec.js"></script>
-  <script type="text/javascript" src="spec/api/layers/cartodb.spec.js"></script>
-  <script type="text/javascript" src="spec/api/sql.spec.js"></script>
-
-  <script type="text/javascript" src="lib/jasmine.junit_reporter.js"></script>
-  <script type="text/javascript" src="jasmine.console_reporter.js"></script>
-
-  <script type="text/javascript">
-
-    (function() {
-      // Let's start
-      $.faviconNotify('../src/tests/cartofante_grey.png');
-
-      var jasmineEnv = jasmine.getEnv();
-      var htmlReporter = new jasmine.HtmlReporter();
-      var reportRunnerResults = htmlReporter.reportRunnerResults;
-
-      htmlReporter.reportRunnerResults = function(runner) {
-        reportRunnerResults(runner);
-
-        var specs = runner.specs();
-        var specResults;
-        var assertionCount = {total: 0, passed: 0, failed: 0};
-
-        for (var i = 0; i < specs.length; ++i) {
-          if (this.specFilter(specs[i])) {
-            specResults = specs[i].results();
-            assertionCount.total  += specResults.totalCount;
-            assertionCount.passed += specResults.passedCount;
-            assertionCount.failed += specResults.failedCount;
-          }
-        }
-
-        if (assertionCount.failed > 0) {
-          // Buhh!
-          $.faviconNotify('../src/tests/cartofante_red.png');
-        } else {
-          // Yay!
-         $.faviconNotify('../src/tests/cartofante_green.png');
-        }
-
-      };
-
-      if (location.search.indexOf('console') !== -1) {
-        jasmineEnv.addReporter(new jasmine.TrivialReporter());
-        jasmineEnv.addReporter(new jasmine.JUnitXmlReporter());
-        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-      } else {
-        jasmineEnv.addReporter(htmlReporter);
-      }
-      jasmineEnv.specFilter = function(spec) {
-        return htmlReporter.specFilter(spec);
-      };
-
-      window.onload = function() {
-        jasmineEnv.execute();
-      };
-
-    })();
-  </script>
 
 </head>
-
 <body>
+
+  
+  <script src="../.grunt/grunt-contrib-jasmine/es5-shim.js"></script>
+  
+  <script src="../.grunt/grunt-contrib-jasmine/jasmine.js"></script>
+  
+  <script src="../.grunt/grunt-contrib-jasmine/jasmine-html.js"></script>
+  
+  <script src="../.grunt/grunt-contrib-jasmine/json2.js"></script>
+  
+  <script src="../.grunt/grunt-contrib-jasmine/boot.js"></script>
+  
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  
+  <script src="../spec/*Helper.js"></script>
+  
+  <script src="../vendor/jquery.min.js"></script>
+  
+  <script src="../vendor/underscore-min.js"></script>
+  
+  <script src="../vendor/backbone.js"></script>
+  
+  <script src="../vendor/leaflet.js"></script>
+  
+  <script src="../vendor/wax.cartodb.js"></script>
+  
+  <script src="../vendor/mustache.js"></script>
+  
+  <script src="../vendor/GeoJSON.js"></script>
+  
+  <script src="../vendor/jscrollpane.js"></script>
+  
+  <script src="../vendor/spin.js"></script>
+  
+  <script src="../vendor/lzma.js"></script>
+  
+  <script src="../vendor/mod/carto.js"></script>
+  
+  <script src="../vendor/mod/torque.uncompressed.js"></script>
+  
+  <script src="../vendor/mod/jquery-ui/jquery.ui.core.js"></script>
+  
+  <script src="../vendor/mod/jquery-ui/jquery.ui.widget.js"></script>
+  
+  <script src="../vendor/mod/jquery-ui/jquery.ui.mouse.js"></script>
+  
+  <script src="../vendor/mod/jquery-ui/jquery.ui.slider.js"></script>
+  
+  <script src="lib/sinon-1.3.4.js"></script>
+  
+  <script src="lib/sinon-ie.js"></script>
+  
+  <script src="../src/cartodb.js"></script>
+  
+  <script src="../src/core/config.js"></script>
+  
+  <script src="../src/core/decorator.js"></script>
+  
+  <script src="../src/core/log.js"></script>
+  
+  <script src="../src/core/model.js"></script>
+  
+  <script src="../src/core/profiler.js"></script>
+  
+  <script src="../src/core/template.js"></script>
+  
+  <script src="../src/core/view.js"></script>
+  
+  <script src="../src/geo/geometry.js"></script>
+  
+  <script src="../src/geo/map.js"></script>
+  
+  <script src="../src/geo/ui/header.js"></script>
+  
+  <script src="../src/geo/ui/legend.js"></script>
+  
+  <script src="../src/geo/ui/infobox.js"></script>
+  
+  <script src="../src/geo/ui/infowindow.js"></script>
+  
+  <script src="../src/geo/ui/search.js"></script>
+  
+  <script src="../src/geo/ui/mobile.js"></script>
+  
+  <script src="../src/geo/ui/annotation.js"></script>
+  
+  <script src="../src/geo/ui/layer_selector.js"></script>
+  
+  <script src="../src/geo/ui/share.js"></script>
+  
+  <script src="../src/geo/ui/zoom_info.js"></script>
+  
+  <script src="../src/geo/ui/tiles_loader.js"></script>
+  
+  <script src="../src/geo/ui/zoom.js"></script>
+  
+  <script src="../src/geo/ui/tooltip.js"></script>
+  
+  <script src="../src/geo/ui/time_slider.js"></script>
+  
+  <script src="../src/geo/ui/fullscreen.js"></script>
+  
+  <script src="../src/geo/layer_definition.js"></script>
+  
+  <script src="../src/geo/common.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet.geometry.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_base.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_plainlayer.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_tiledlayer.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_gmaps_tiledlayer.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_wmslayer.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_cartodb_layergroup.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet_cartodb_layer.js"></script>
+  
+  <script src="../src/geo/leaflet/torque.js"></script>
+  
+  <script src="../src/geo/leaflet/leaflet.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps.geometry.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps_base.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps_baselayer.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps_plainlayer.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps_tiledlayer.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps_cartodb_layergroup.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps_cartodb_layer.js"></script>
+  
+  <script src="../src/geo/gmaps/torque.js"></script>
+  
+  <script src="../src/geo/gmaps/gmaps.js"></script>
+  
+  <script src="../src/geo/geocoder.js"></script>
+  
+  <script src="../src/ui/common/dialog.js"></script>
+  
+  <script src="../src/ui/common/share.js"></script>
+  
+  <script src="../src/ui/common/notification.js"></script>
+  
+  <script src="../src/ui/common/table.js"></script>
+  
+  <script src="../src/ui/common/tabpane.js"></script>
+  
+  <script src="../src/ui/common/dropdown.js"></script>
+  
+  <script src="../src/vis/vis.js"></script>
+  
+  <script src="../src/vis/layers.js"></script>
+  
+  <script src="../src/vis/overlays.js"></script>
+  
+  <script src="../src/api/layers.js"></script>
+  
+  <script src="../src/api/sql.js"></script>
+  
+  <script src="../src/api/vis.js"></script>
+  
+  <script src="spec/SpecHelper.js"></script>
+  
+  <script src="spec/api/layers.spec.js"></script>
+  
+  <script src="spec/api/layers/cartodb.spec.js"></script>
+  
+  <script src="spec/api/sql.spec.js"></script>
+  
+  <script src="spec/core/config.spec.js"></script>
+  
+  <script src="spec/core/decorators.spec.js"></script>
+  
+  <script src="spec/core/log.spec.js"></script>
+  
+  <script src="spec/core/model.spec.js"></script>
+  
+  <script src="spec/core/template.spec.js"></script>
+  
+  <script src="spec/core/view.spec.js"></script>
+  
+  <script src="spec/geo/common.spec.js"></script>
+  
+  <script src="spec/geo/geocoder.spec.js"></script>
+  
+  <script src="spec/geo/geometry.spec.js"></script>
+  
+  <script src="spec/geo/gmaps.spec.js"></script>
+  
+  <script src="spec/geo/gmaps_cartodb_layer/hide.js"></script>
+  
+  <script src="spec/geo/gmaps_cartodb_layer/interaction.js"></script>
+  
+  <script src="spec/geo/gmaps_cartodb_layer/opacity.js"></script>
+  
+  <script src="spec/geo/gmaps_cartodb_layer/show.js"></script>
+  
+  <script src="spec/geo/infowindow.spec.js"></script>
+  
+  <script src="spec/geo/layer_definition.spec.js"></script>
+  
+  <script src="spec/geo/layer_selector.spec.js"></script>
+  
+  <script src="spec/geo/leaflet.spec.js"></script>
+  
+  <script src="spec/geo/legend.spec.js"></script>
+  
+  <script src="spec/geo/map.spec.js"></script>
+  
+  <script src="spec/geo/mobile.spec.js"></script>
+  
+  <script src="spec/geo/overlays/annotation.spec.js"></script>
+  
+  <script src="spec/geo/ui/header.spec.js"></script>
+  
+  <script src="spec/geo/ui/infobox.js"></script>
+  
+  <script src="spec/geo/ui/tooltip.spec.js"></script>
+  
+  <script src="spec/ui/common/dialog.spec.js"></script>
+  
+  <script src="spec/ui/common/notification.spec.js"></script>
+  
+  <script src="spec/ui/common/table.spec.js"></script>
+  
+  <script src="spec/ui/common/tabpane.spec.js"></script>
+  
+  <script src="spec/vis/layers.spec.js"></script>
+  
+  <script src="spec/vis/vis.spec.js"></script>
+  
+  <script src="../.grunt/grunt-contrib-jasmine/reporter.js"></script>
+  
+
 </body>
 </html>

@@ -130,21 +130,18 @@ describe("Vis", function() {
     expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined);
   });
 
-  it("should not invalidate map if map height is 0", function() {
+  it("should not invalidate map if map height is 0", function(done) {
     var container = $('<div>').css('height', '0');
     var vis = new cdb.vis.Vis({el: container});
     this.mapConfig.map_provider = "googlemaps";
 
     vis.load(this.mapConfig);
 
-    waitsFor(function() {
-      return vis.mapView;
-    }, "MapView element never created :(", 10000);
-
-    runs(function () {
+    setTimeout(function () {
       spyOn(vis.mapView, 'invalidateSize');
       expect(vis.mapView.invalidateSize).not.toHaveBeenCalled();
-    });
+      done();
+    }, 4000);
   });
 
   it("should bind resize changes when map height is 0", function() {
@@ -202,7 +199,7 @@ describe("Vis", function() {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
   })
 
-  it("load should call done", function() {
+  it("load should call done", function(done) {
     this.mapConfig.layers = [{
       kind: 'tiled',
       options: {
@@ -210,13 +207,13 @@ describe("Vis", function() {
       }
     }]
     layers = null;
-    runs(function() {
-      this.vis.load(this.mapConfig, { }).done(function(vis, lys){  layers = lys;});
-    })
-    waits(100);
-    runs(function() {
+
+    this.vis.load(this.mapConfig, { }).done(function(vis, lys){  layers = lys;});
+
+    setTimeout(function() {
       expect(layers.length).toEqual(1);
-    });
+      done();
+    }, 100);
 
   });
 
@@ -315,16 +312,16 @@ describe("Vis", function() {
     expect(this.vis.getOverlays().length).toEqual(0);
   });
 
-  it ("should load modules", function() {
-    var self = this;
+  it ("should load modules", function(done) {
+    // var self = this;
+    console.log(this.vis);
     this.mapConfig.layers = [
       {kind: 'torque', options: { tile_style: 'test', user_name: 'test', table_name: 'test'}}
     ];
-    runs(function() {
-      self.vis.load(this.mapConfig);
-    })
-    waits(20);
-    runs(function() {
+
+    this.vis.load(this.mapConfig);
+    
+    setTimeout(function() {
       var scripts = document.getElementsByTagName('script'),
           torqueRe = /\/cartodb\.mod\.torque\.js/;
       var found = false;
@@ -333,7 +330,27 @@ describe("Vis", function() {
         found = !!src.match(torqueRe);
       }
       expect(found).toEqual(true);
-    });
+      done()
+    }, 20);
+  });
+
+  it ("should force GMaps", function() {
+    this.mapConfig.map_provider = "leaflet";
+    this.mapConfig.layers = [{
+      kind: 'tiled',
+      options: {
+        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+      }
+    }]
+
+    var opts = {
+      gmaps_base_type: 'dark_roadmap'
+    };
+
+    layers = null;
+    
+    this.vis.load(this.mapConfig, opts);
+    expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
 
 });

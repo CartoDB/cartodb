@@ -36,7 +36,7 @@ describe("cdb.geo.ui.Annotation", function() {
       container.remove();
     });
 
-    it("should unbind from the map", function() {
+    it("should unbind from the map", function(done) {
 
       mapView.map.bind('change', spy, view);
 
@@ -44,12 +44,10 @@ describe("cdb.geo.ui.Annotation", function() {
 
       mapView.map.set('center', [10, 10]);
 
-      waits(500);
-
-      runs(function(){
-        expect(spy.wasCalled).toEqual(true);
-        expect(spy.callCount).toEqual(1);
-      });
+      setTimeout(function(){
+        expect(spy.calls.count()).toEqual(1);
+        done();
+      }, 1000);
 
     });
 
@@ -89,17 +87,15 @@ describe("cdb.geo.ui.Annotation", function() {
       container.remove();
     });
 
-    it("should move when the map moves", function() {
+    it("should move when the map moves", function(done) {
 
       mapView.map.bind('change', spy);
       mapView.map.set('center', [10, 10]);
 
-      waits(200);
-
-      runs(function(){
-        expect(spy.wasCalled).toEqual(true);
-        expect(spy.callCount).toEqual(2);
-      });
+      setTimeout(function(){
+        expect(spy.calls.count()).toEqual(2);
+        done();
+      }, 200);
 
     });
 
@@ -147,14 +143,14 @@ describe("cdb.geo.ui.Annotation", function() {
       container.remove();
     });
 
-    it("should render", function() {
-      waits(700);
-      runs(function() {
+    it("should render", function(done) {
+      setTimeout(function() {
         expect(view.$el.find(".text").html()).toEqual("You are <strong>here</strong>");
-        expect(view.$el.css("background-color")).toEqual('rgba(248, 79, 64, 0.701961)');
+        expect(view.$el.css("background-color").indexOf('rgba(248, 79, 64')).toEqual(0);
         expect(view.$el.find(".stick").css("background-color")).toEqual('rgb(51, 51, 51)');
         expect(view.$el.find(".text").css("color")).toEqual('rgb(255, 255, 255)');
-      });
+        done();
+      }, 700);
     });
 
     it("should allow to change the text", function() {

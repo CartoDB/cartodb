@@ -20,14 +20,14 @@ describe('cdb.geo.Tooltip', function() {
       name: 'huracan'
     }]);
     tooltip.enable();
-    layer.trigger('mouseover', new Event('e'), [0,0], [0, 0], {
+    layer.trigger('mouseover', new $.Event('e'), [0,0], [0, 0], {
       test1: 'test1',
       test2: 'test2',
       huracan: 'huracan'
     });
     expect(tooltip.$el.html()).toEqual('test2,test1,huracan,');
     tooltip.options.columns_order = null;
-    layer.trigger('mouseover', new Event('e'), [0,0], [0, 0], {
+    layer.trigger('mouseover', new $.Event('e'), [0,0], [0, 0], {
       test1: 'test1',
       test2: 'test2',
       huracan: 'hurecan'
@@ -52,7 +52,7 @@ describe('cdb.geo.Tooltip', function() {
       'test1': 'testnamed'
     };
     tooltip.enable();
-    layer.trigger('mouseover', new Event('e'), [0,0], [0, 0], {
+    layer.trigger('mouseover', new $.Event('e'), [0,0], [0, 0], {
       test1: 'test1',
       test2: 'test2',
       huracan: 'huracan'

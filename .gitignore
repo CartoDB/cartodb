@@ -5,4 +5,12 @@ themes/css/all.css
 themes/css/cartodb.ie.css
 secrets.json
 v3/*
+dist
 test/*.xml
+.sass-cache
+bower_components
+.tmp
+Gemfile.lock
+.grunt
+test/SpecRunner.html
+.rvmrc

@@ -95,6 +95,9 @@ module.exports = {
               }
               bump.version = version;
             }
+
+            var version_arr = bump.version.split('.');
+            bump.minor = version_arr[0] + '.' + version_arr[1];
             
             grunt.config.set('bump', bump);
             done();

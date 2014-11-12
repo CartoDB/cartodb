@@ -36,8 +36,8 @@ module.exports = {
             pattern: "cdb.VERSION = '<%= config.version.bugfixing %>'",
             replacement: "cdb.VERSION = '<%= grunt.config(\'bump.version\') %>'",
           }, {
-            pattern: "(v<%= config.version.bugfixing %>)",
-            replacement: "(v<%= grunt.config('bump.version') %>)",
+            pattern: "<%= config.version.minor %>",
+            replacement: "<%= grunt.config('bump.minor') %>",
           }]
         }
       }

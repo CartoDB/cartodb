@@ -25,7 +25,7 @@ grunt build
 - Update the NEWS file and commit the changes.
 
 ```
-git commit -am "Files changed for 3.11.24"
+git commit -am "Files changed for version 3.11.24"
 ```
 
 - Release it.

@@ -101,9 +101,9 @@ describe Importer2::Georeferencer do
 
       dataset.first.fetch(:the_geom).should be_nil
       georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
-      dataset.first.fetch(:the_geom).should be_nil
+      dataset.first.fetch(:the_geom).should_not be_nil
     end
-  end #georeference
+  end
 
   describe '#create_the_geom_in' do
     before do

@@ -53,7 +53,7 @@ module Concerns
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
-        :database_timeout, :description, :disqus_shortname, :email,
+        :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
         :geocoding_block_price, :geocoding_quota, :map_view_block_price,
         :map_view_quota, :max_layers, :name, :notification, :organization_id,
         :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
@@ -78,7 +78,7 @@ module Concerns
         end
       elsif self.is_a?(User)
         attrs = self.values.slice(:account_type, :admin, :crypted_password,
-          :database_host, :database_timeout, :description, :disqus_shortname,
+          :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers, :name, :notification, :organization_id,
           :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,

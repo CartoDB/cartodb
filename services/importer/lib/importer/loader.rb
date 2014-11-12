@@ -172,10 +172,6 @@ module CartoDB
         options.select { |key, value| [:guessing, :geocoder].include? key }
       end
 
-      def geocoder_options
-        options.fetch(:geocoder) if options.fetch(:content_guessing)[:enabled]
-      end
-
       def post_import_handler
         @post_import_handler ||= PostImportHandler.new
       end

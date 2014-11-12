@@ -31,7 +31,7 @@ module.exports = function(grunt) {
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
-    'string-replace': require('./grunt/tasks/replace').task(grunt, config),
+    replace: require('./grunt/tasks/replace').task(grunt, config),
     fastly: require('./grunt/tasks/fastly').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
@@ -115,7 +115,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'prompt:bump',
-    'string-replace',
+    'replace',
     'gitinfo',
     'clean:dist',
     'concurrent:dist',

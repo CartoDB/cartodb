@@ -85,6 +85,41 @@ describe CartoDB::Importer2::ContentGuesser do
 
       guesser.is_country_column?(column).should eq true
     end
+
+    it 'returns false if sample.count == 0' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns []
+      guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
+      guesser.stubs(:threshold).returns 0.5
+
+      guesser.is_country_column?(column).should eq false
+    end
+
+    it 'returns false if countries.count == 0' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: 'USA'},
+         {candidate_column_name: 'Spain'},
+         {candidate_column_name: 'not a country'}
+      ]
+      guesser.stubs(:countries).returns Set.new []
+      guesser.stubs(:threshold).returns 0.5
+
+      guesser.is_country_column?(column).should eq false
+    end
+
+    it 'returns false if sample.count == 0 and countries.count == 0' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns []
+      guesser.stubs(:countries).returns Set.new []
+      guesser.stubs(:threshold).returns 0.5
+
+      guesser.is_country_column?(column).should eq false
+    end
+
   end
 
   describe '#is_country_column_type?' do

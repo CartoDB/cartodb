@@ -56,6 +56,26 @@ module.exports = {
         }]
       },
 
+      api: {
+        options: {
+          patterns: [{
+            match: '/\/<%= config.version.minor %>\//gi',
+            replacement: "/<%= grunt.config('bump.minor') %>/",
+            expression: true
+          },{
+            match: '/<%= config.version.bugfixing %>/gi',
+            replacement: "<%= grunt.config('bump.version') %>",
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['doc/API.md'],
+          dest: 'doc/'
+        }]
+      },
+
       releasing: {
         options: {
           patterns: [{

@@ -22,7 +22,7 @@ git flow release start 3.11.24
 grunt build
 ```
 
-- Update the NEWS file and commit the changes.
+- Update the NEWS file and commit the changes. Take into account that new CartoDB.js version will be replaced in ```API.md```, ```RELEASING.md```, ```README.md```, ```package.json``` and ```cartodb.js``` files.
 
 ```
 git commit -am "Files changed for version 3.11.24"

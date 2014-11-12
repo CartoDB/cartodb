@@ -1,7 +1,10 @@
 {
   "name": "cartodb.js",
   "version": "0.0.1",
-  "dependencies": {
-    
+  "dependencies": {},
+  "devDependencies": {
+    "backbone": "~1.1.2",
+    "modernizr": "~2.8.3",
+    "jquery": "~2.1.1"
   }
 }

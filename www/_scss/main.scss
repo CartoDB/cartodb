@@ -1,2 +1,42 @@
+// Header
+// --------------------------------------------------
 
-  body { background: white }
+.Header {
+  background: url('../img/header-bg.png') center;
+  background-size: cover;
+  text-align: center;
+  color: #fff;
+}
+
+.Header-inner {
+  width: 400px;
+}
+
+.Header-title {
+  position: relative;
+  margin-bottom: 40px;
+  font-weight: 100;
+  font-size: 40px;
+
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: -20px;
+    margin-left: -36px;
+    width: 72px;
+    height: 1px;
+    background: rgba(#fff, .5);
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+.Header-description {
+  margin-bottom: 30px;
+  font-size: 15px;
+  line-height: 22px;
+}

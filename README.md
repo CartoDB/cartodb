@@ -7,7 +7,6 @@ This library allows to embed you visualizations created with CartoDB in your map
 
 
 ## Quick start
-============
 
   1. Add cartodb.js and css to your site:
 
@@ -40,14 +39,11 @@ This library allows to embed you visualizations created with CartoDB in your map
     ```
 
 ## Examples and documentation
-============
 Examples and documentation are available in [CartoDB.js website](http://cartodb.github.io/cartodb.js/).
 
 
 ## How to build
-============
-
-  Build CartoDB.js library:
+Build CartoDB.js library:
     
   - Install [node.js](http://nodejs.org/download/), from 0.10 version
   - Install grunt: ```npm install -g grunt-cli```

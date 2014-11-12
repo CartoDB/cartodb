@@ -2,7 +2,10 @@
 module CartoDB
   module Importer2
 
-    # WARNING: Doesn't works with CTEs, only pure UPDATEs
+    # WARNING1: Doesn't work with CTEs, only pure UPDATEs.
+    # WARNING2: Do not use an alias for the target table. E.g:
+    #   use 'UPDATE table_name SET ...'
+    #   instead of 'UPDATE table_name AS alias SET ...'
     class QueryBatcher
       DEFAULT_BATCH_SIZE = 20000
       # If present, will concat there the additional where condition required for batching
@@ -16,9 +19,8 @@ module CartoDB
       # @param log_message string
       # @param capture_exceptions bool
       # @param batch_size int
-      # @param id_column string Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
       def self.execute(db_object, query, table_name, logger, log_message, capture_exceptions=false,
-                       batch_size=DEFAULT_BATCH_SIZE, id_column='ogc_fid')
+                       batch_size=DEFAULT_BATCH_SIZE)
         log = logger.nil? ? ConsoleLog.new : logger
 
         log.log log_message
@@ -33,8 +35,8 @@ module CartoDB
           , #{temp_column} = TRUE
         }
         limit_subquery_fragment = %Q{
-           #{id_column} IN (
-            SELECT #{id_column} FROM #{table_name} WHERE #{temp_column} != TRUE LIMIT #{batch_size}
+           #{table_name}.CTID IN (
+            SELECT CTID FROM #{table_name} WHERE #{temp_column} != TRUE LIMIT #{batch_size}
           )
         }
 

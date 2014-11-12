@@ -113,24 +113,35 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
 
-  grunt.registerTask('build', [
-    'prompt:bump',
-    'replace',
-    'gitinfo',
-    'clean:dist',
-    'concurrent:dist',
-    'useminPrepare',
-    'concat',
-    'autoprefixer:dist',
-    'cssmin',
-    'copy:distStatic',
-    'imagemin',
-    'svgmin',
-    'filerev',
-    'usemin',
-    'htmlmin',
-    'uglify'
-  ]);
+  grunt.registerTask('build', function (target) {
+    if (
+        !grunt.config('secrets') ||
+        !grunt.config('secrets').S3_KEY ||
+        !grunt.config('secrets').S3_SECRET ||
+        !grunt.config('secrets').S3_BUCKET
+      ) {
+      grunt.fail.fatal('Secret keys not specified in secrets.json' , 1);
+    }
+
+    grunt.task.run([
+      'prompt:bump',
+      'replace',
+      'gitinfo',
+      'clean:dist',
+      'concurrent:dist',
+      'useminPrepare',
+      'concat',
+      'autoprefixer:dist',
+      'cssmin',
+      'copy:distStatic',
+      'imagemin',
+      'svgmin',
+      'filerev',
+      'usemin',
+      'htmlmin',
+      'uglify'
+    ]);
+  });
 
   grunt.registerTask('dist', [
     'build'

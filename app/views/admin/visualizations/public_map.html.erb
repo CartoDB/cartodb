@@ -208,12 +208,8 @@
     map_options.mobile_layout = true;
 
   </script>
-  
-  <% if !Rails.env.production? %>
-    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map' %>
-  <% else %>
-    <%= javascript_include_tag 'cdb.js', 'app.js', 'templates.js', 'public_map' %>
-  <% end %>
+
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map' %>
 
   <script>
 

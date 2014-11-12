@@ -11,11 +11,7 @@
     var user_name = '<%= @username %>';
   </script>
 
-  <% if !Rails.env.production? %>
-    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
-  <% else %>
-    <%= javascript_include_tag 'cdb.js', 'app.js', 'templates.js', 'public_dashboard' %>
-  <% end %>
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
 <% end %>
 
 <div class="content<%= " empty" if @datasets.size == 0 %>">

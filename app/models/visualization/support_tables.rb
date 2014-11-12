@@ -13,6 +13,10 @@ module CartoDB
         @tables_list = nil
       end
 
+      def reset
+        @tables_list = nil
+      end
+
       # Only intended to be used if from the Visualization Relator (who will set the parent)
       def load_actual_list
         return [] if @parent.nil? || @parent.kind != Visualization::Member::KIND_RASTER
@@ -72,6 +76,7 @@ module CartoDB
       def tables=(new_list)
         @tables_list = new_list
       end
+
 
       private
 

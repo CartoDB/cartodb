@@ -47,6 +47,7 @@ module CartoDB
       end
 
       def register(result)
+        @support_tables_helper.reset
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result)
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")

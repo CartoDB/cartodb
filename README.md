@@ -49,11 +49,12 @@ Examples and documentation are available in [CartoDB.js website](http://cartodb.
 
   Build CartoDB.js library:
     
-  - Install node.js, from 0.10 version (http://nodejs.org/download/).
-  - Install grunt, ```npm install -g grunt-cli```.
-  - Install dependencies ```npm install```.
-  - Choose your desired ruby version and ```bundle install``` (necessary for compass gem).
+  - Install [node.js](http://nodejs.org/download/), from 0.10 version
+  - Install grunt: ```npm install -g grunt-cli```
+  - Install node dependencies: ```npm install```
   - Install bower: ```npm install -g bower```
   - Install bower dependencies: ```bower install```
-  - Start the server: ```grunt build```.
+  - Install [ruby](https://www.ruby-lang.org/en/installation/) and [bundler](https://github.com/bundler/bundler)
+  - Install ruby dependencies: ```bundle install``` (necessary for compass gem)
+  - Start the server: ```grunt build```
   - Happy mapping!

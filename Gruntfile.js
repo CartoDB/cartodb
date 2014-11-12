@@ -105,7 +105,7 @@ module.exports = function(grunt) {
         !grunt.config('secrets').S3_SECRET ||
         !grunt.config('secrets').S3_BUCKET
       ) {
-      grunt.fail.fatal('Secret keys not specified in secrets.json' , 1);
+      grunt.fail.fatal('S3 keys not specified in secrets.json' , 1);
     }
 
     grunt.task.run([
@@ -114,9 +114,25 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('invalidate', [
-    'fastly'
-  ]);
+  grunt.registerTask('invalidate', function(){
+    if (!grunt.file.exists('secrets.json')) {
+      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
+    }
+
+    // Read secrets 
+    grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
+
+    if (!grunt.config('secrets') ||
+        !grunt.config('secrets').FASTLY_API_KEY ||
+        !grunt.config('secrets').FASTLY_CARTODB_SERVICE
+      ) {
+      grunt.fail.fatal('Fastly keys not specified in secrets.json' , 1);
+    }
+
+    grunt.task.run([
+      'fastly'
+    ]);
+  });
 
   grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
 

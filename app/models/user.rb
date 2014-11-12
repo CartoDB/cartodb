@@ -399,9 +399,7 @@ class User < Sequel::Model
     configuration = get_db_configuration_for(options[:as])
 
     connection = $pool.fetch(configuration) do
-      db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
-      end)))
+      db = get_database(options, configuration)
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
@@ -412,6 +410,20 @@ class User < Sequel::Model
     else
       connection
     end
+  end
+
+  def connection(options = {})
+    configuration = get_db_configuration_for(options[:as])
+
+    $pool.fetch(configuration) do
+      get_database(options, configuration)
+    end
+  end
+
+  def get_database(options, configuration)
+      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
+      end)))
   end
 
   def get_db_configuration_for(user = nil)

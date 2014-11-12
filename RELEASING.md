@@ -51,6 +51,8 @@ git push --all
 git push --tags
 ```
 
+- If possible, don't forget to change CartoDB.js docs.
+
 - Done. Celebrate! :)
 
 ---

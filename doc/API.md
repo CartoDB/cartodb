@@ -11,7 +11,7 @@ The simplest way to use a visualization created in CartoDB on an external site i
 
 <div class="code-title">Create a simple visualization</div>
 {% highlight html %}
-<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
 
 ...
 
@@ -19,7 +19,7 @@ The simplest way to use a visualization created in CartoDB on an external site i
 
 ...
 
-<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 <script>
 // get the viz.json url from the CartoDB Editor
 // - click on visualize
@@ -54,8 +54,8 @@ To start using CartoDB.js just paste this piece of code within the HEAD tags of 
 
 <div class="code-title">Linking cartodb.js on your html file</div>
 {% highlight html %}
-<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 {% endhighlight %}
 
 ### Create a visualization from scratch 
@@ -888,7 +888,7 @@ If you want to use this functionallity you only need to load cartodb.core.js fro
 
 <div class="code-title">Core API functionallity</div>
 {% highlight html %}
-<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.core.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.core.js"></script>
 {% endhighlight %}
 
 An example using this funcionallity can be found in modestmaps example: [view live](http://cartodb.github.com/cartodb.js/examples/modestmaps.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/modestmaps.html).
@@ -1053,8 +1053,8 @@ If you want to use [Leaflet](http://leafletjs.com) it gets even easier, CartoDB.
 
 <div class="code-title">Leaflet integration</div>
 {% highlight html %}
-<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 {% endhighlight %}
 
 #### HTTPS support
@@ -1065,8 +1065,8 @@ You can use all the functionality of cartodb.js with HTTPs support. Be sure to a
 {% highlight html %}
 <div id="map"></div>
 
-<link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
+<link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.11/cartodb.js"></script>
 
 <script>
   var map = new L.Map('map', { 
@@ -1085,10 +1085,10 @@ You can use all the functionality of cartodb.js with HTTPs support. Be sure to a
 
 We are committed to making sure your website works as intended no matter what changes in the future. While we may find more efficient or more useful features to add to the library as time progresses. We never want to break things you have already developed, for this reason, we make versioned CartoDB.js libraries available to you, meaning that the way they function will never unexpectedly change on you.
 
-We recommend that you always develop against the most recent version of CartoDB.js, always found at:
+We recommend that you always develop against the most recent version of CartoDB.js, right now:
 
 {% highlight html %}
-<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.24/cartodb.js"></script>
 {% endhighlight %}
 
 Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:

@@ -13,3 +13,4 @@ bower_components
 Gemfile.lock
 .grunt
 test/SpecRunner.html
+.rvmrc

@@ -1,3 +1,8 @@
+3.2.XX (2014-11-XX)
+------------------
+* Fixed bugs
+  - Remove cumulative option for torque cat. wizard #903
+
 3.2.11 (2014-11-11)
 ------------------
 * New features

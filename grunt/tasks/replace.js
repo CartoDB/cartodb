@@ -7,40 +7,95 @@
 module.exports = {
   task: function(grunt, config) {
     return {
-      dist: {
-        files: [
-          {
-            expand: true,
-            cwd: '.',
-            src: 'package.json',
-            dest: '.'
-          },
-          {
-            expand: true,
-            cwd: 'src/',
-            src: 'cartodb.js',
-            dest: 'src/'
-          },
-          {
-            expand: true,
-            cwd: '.',
-            src: 'README.md',
-            dest: '.'
-          }
-        ],
+      
+      cdb: {
         options: {
-          replacements: [{
-            pattern: '"version": "<%= config.version.bugfixing %>",',
-            replacement: '"version": "<%= grunt.config(\'bump.version\') %>",'
-          }, {
-            pattern: "cdb.VERSION = '<%= config.version.bugfixing %>'",
-            replacement: "cdb.VERSION = '<%= grunt.config(\'bump.version\') %>'",
-          }, {
-            pattern: "<%= config.version.minor %>",
-            replacement: "<%= grunt.config('bump.minor') %>",
+          patterns: [{
+            match: '/cdb.VERSION = "<%= config.version.bugfixing %>"/g',
+            replacement: 'cdb.VERSION = "<%= grunt.config(\'bump.version\') %>"',
+            expression: true
           }]
-        }
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['src/cartodb.js'],
+          dest: 'src/'
+        }]
+      },
+
+      pkg: {
+        options: {
+          patterns: [{
+            match: '/"version": "<%= config.version.bugfixing %>"/g',
+            replacement: '"version": "<%= grunt.config(\'bump.version\') %>"',
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['package.json'],
+          dest: ''
+        }]
+      },
+
+      readme: {
+        options: {
+          patterns: [{
+            match: '/<%= config.version.minor %>/gi',
+            replacement: "<%= grunt.config('bump.minor') %>",
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['README.md'],
+          dest: ''
+        }]
+      },
+
+      releasing: {
+        options: {
+          patterns: [{
+            match: '/\/<%= config.version.minor %>\//gi',
+            replacement: "/<%= grunt.config('bump.minor') %>/",
+            expression: true
+          },{
+            match: '/<%= config.version.bugfixing %>/gi',
+            replacement: "<%= grunt.config('bump.version') %>",
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['RELEASING.md'],
+          dest: ''
+        }]
       }
     }
   }
 }
+
+          // {
+          //   expand: true,
+          //   cwd: '.',
+          //   src: 'package.json',
+          //   dest: '.'
+          // },
+          // {
+          //   expand: true,
+          //   cwd: 'src/',
+          //   src: 'cartodb.js',
+          //   dest: 'src/'
+          // },
+
+          // {
+          //   match: '"version": "<%= config.version.bugfixing %>",',
+          //   replacement: '"version": "<%= grunt.config(\'bump.version\') %>",'
+          // }, {
+          //   match: "cdb.VERSION = '<%= config.version.bugfixing %>'",
+          //   replacement: "cdb.VERSION = '<%= grunt.config(\'bump.version\') %>'",
+          // },

@@ -57,28 +57,6 @@ module.exports = {
                 return valid || 'Must be a valid semver, such as 1.2.3-rc1. See ' +
                   'http://semver.org/'.blue.underline + ' for more details.';
               }
-            },
-            {
-              config:  'bump.files',
-              type:    'checkbox',
-              default: ['package', 'cartodb', 'readme'],
-              message: 'What should get the new version:',
-              choices: [
-                {
-                  value:   'package',
-                  name:    'package.json' +
-                    (!grunt.file.isFile('package.json') ? ' file not found, will create one'.grey : ''),
-                  checked: grunt.file.isFile('package.json')
-                },
-                {
-                  value:   'cartodb',
-                  name:    'src/cartodb.js'
-                },
-                {
-                  value:   'readme',
-                  name:    'README.md'
-                }
-              ]
             }
           ],
           then: function(results, done) {

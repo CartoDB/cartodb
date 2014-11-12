@@ -50,11 +50,7 @@ module CartoDB
       end
 
       def is_country_column_type? column
-        if ['character varying', 'varchar', 'text'].include? column[:data_type]
-          return true
-        else
-          return false
-        end
+        ['character varying', 'varchar', 'text'].include? column[:data_type]
       end
 
       def sample

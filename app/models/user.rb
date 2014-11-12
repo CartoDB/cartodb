@@ -104,6 +104,7 @@ class User < Sequel::Model
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
         self.here_maps_enabled          = self.organization.here_maps_enabled
         self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
+        self.rainbow_maps_enabled       = self.organization.rainbow_maps_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true

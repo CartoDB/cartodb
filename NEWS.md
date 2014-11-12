@@ -1,4 +1,22 @@
-3.2.X ()
+3.2.11 (2014-11-XX)
+------------------
+* New features
+  - Removal of 19 unused or no longer needed gems
+* Fixed bugs
+  - Fixed internal geocoder for org users
+
+
+3.2.10 (2014-11-07)
+------------------
+* New features
+  - Mapviews graph for everybody.
+  - New rainbow basemaps.
+* Fixed bugs
+  - Made lib/sql git submodule point to 0.4.1 tag
+  - Batch internal geocoder update queries to avoid db timeouts
+
+3.2.9 (2014-11-03)
+------------------
 * New features
   * Enabled ghost tables. Tables created with SQL API are visible in the editor
   * Enables fullscreen for IE11.

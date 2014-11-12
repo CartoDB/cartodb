@@ -27,4 +27,20 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
     respond_with(dbs)
   end
 
+  def total_users
+    respond_with({:count => CartoDB::Stats::Platform.new.users})
+  end
+  
+  def total_datasets
+    respond_with({:count => CartoDB::Stats::Platform.new.datasets})
+  end
+
+  def total_seats_among_orgs
+    respond_with(CartoDB::Stats::Platform.new.seats_among_orgs)
+  end
+  
+  def total_shared_objects_among_orgs
+    respond_with(CartoDB::Stats::Platform.new.shared_objects_among_orgs)
+  end
+
 end # Superadmin::PlatformController

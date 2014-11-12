@@ -41,7 +41,8 @@ module CartoDB
         avatar_url:        self.avatar_url,
         available_basemaps: {
           here: self.here_maps_enabled,
-          stamen: self.stamen_maps_enabled
+          stamen: self.stamen_maps_enabled,
+          rainbow_maps_enabled: self.rainbow_maps_enabled
         }
       }
     end

@@ -1,10 +1,10 @@
 ## How to contribute to CartoDB.js
 
-1. [CartoDB.js quick start](#CartoDB.js-framework-quick-start)
-2. [Being part of CartoDB.js](#Being-part-of-CartoDB.js)
-3. [Filling a ticket](#Filling-a-ticket)
-4. [Contributing code](#Contributing-code)
-5. [Completing documentation](#Completing-documentation)
+1. [CartoDB.js quick start](#cartodbjs-framework-quick-start)
+2. [Being part of CartoDB.js](#being-part-of-cartodbjs)
+3. [Filling a ticket](#filling-a-ticket)
+4. [Contributing code](#contributing-code)
+5. [Completing documentation](#completing-documentation)
 
 
 ### CartoDB.js quick start

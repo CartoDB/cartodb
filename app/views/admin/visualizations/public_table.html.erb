@@ -3,13 +3,7 @@
 <% end %>
 
 <% content_for(:css) do %>
-  <% if !Rails.env.production? %>
-    <%= stylesheet_link_tag 'cartodb.css', 'public_table.css', :media => 'all' %>
-  <% else %>
-    <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-    <%= stylesheet_link_tag 'public_table.css', :media => 'all' %>
-  <% end %>
-
+  <%= stylesheet_link_tag 'cartodb.css', 'public_table.css', :media => 'all' %>
   <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 <% end %>
 
@@ -21,8 +15,7 @@
   <% if !Rails.env.production? %>
     <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_table.js' %>
   <% else %>
-    <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-    <%= javascript_include_tag 'app.js', 'templates.js', 'public_table.js' %>
+    <%= javascript_include_tag 'cdb.js', 'app.js', 'templates.js', 'public_table.js' %>
   <% end %>
 
   <script>

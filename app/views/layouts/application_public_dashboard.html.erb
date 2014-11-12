@@ -22,13 +22,8 @@
     <meta name="twitter:description" content="<%= @name %> is creating maps and visualizations using CartoDB.">
     <meta name="twitter:image" content="<%= @avatar_url %>">
     <meta name="twitter:url" content="<%= request.fullpath %>" />
-    
-    <% if !Rails.env.production? %>
-      <%= stylesheet_link_tag "cartodb.css", "public_dashboard" %>
-    <% else %>
-      <%= stylesheet_link_tag "public_dashboard" %>
-      <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-    <% end %>
+
+    <%= stylesheet_link_tag "cartodb.css", "public_dashboard" %>
 
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
     <%= csrf_meta_tag %>

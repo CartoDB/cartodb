@@ -56,7 +56,7 @@
   /**
    * create a layer for the specified map
    *
-   * @param map should be a L.Map or google.maps.Map object
+   * @param map should be a L.Map object, or equivalent depending on what provider you have.
    * @param layer should be an url or a javascript object with the data to create the layer
    * @param options layer options
    *

@@ -48,7 +48,7 @@ CartoDB.js can be used when you want to embed and use a visualization you have d
 
 You can also use CartoDB API to create visualization without having to define them using the UI. This can be useful when the visualizations react to user interactions. To read more about it jump to, create [create visualizations at runtime](#creating-visualizations-at-runtime).
 
-We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or Google Maps your CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online.
+We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or something else, our CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online.
 
 To start using CartoDB.js just paste this piece of code within the HEAD tags of your HTML:
 
@@ -83,16 +83,13 @@ cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
     });
 
     // you can get the native map to work with it
-    // depending if you use google maps or leaflet
-    map = vis.getNativeMap();
+    var map = vis.getNativeMap();
 
-    // now, perform any operations you need
-    // map.setZoom(3)
-    // map.setCenter(new google.maps.Latlng(...))
+    // now, perform any operations you need, e.g. assuming map is a L.Map object:
+    // map.setZoom(3);
+    // map.panTo([50.5, 30.5]);
   });
 {% endhighlight %}
-
-If you are using Google Maps for you basemap in your CartoDB account, using createVis requires that you load the **Google Maps V3** JavaScript library in the HEAD of your HTML. If you use other basemaps, cartodb.js will load the Leaflet library for you automatically.
 
 ### Adding cartodb layers to an existing map
 
@@ -163,7 +160,6 @@ If you want to start playing with the library, the best way to do it might be to
 
 + An easy example using the library - ([view live](http://cartodb.github.com/cartodb.js/examples/easy.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)).
 + Leaflet integration - ([view live](http://cartodb.github.com/cartodb.js/examples/leaflet.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/leaflet.html)).
-+ Google Maps V3 integration - ([view live](http://cartodb.github.com/cartodb.js/examples/gmaps.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/gmaps.html)).  
 + Customizing infowindow data - ([view live](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)).
 + An example using a layer selector - ([view live](http://cartodb.github.com/cartodb.js/examples/layer_selector.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/layer_selector.html)).
 + The Hobbit map done with the library - ([view live](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) / [source code](https://github.com/CartoDB/cartodb.js/tree/develop/examples/TheHobbitLocations)).
@@ -212,8 +208,6 @@ cartodb.createVis('map', url)
   - **fullscreen**: if true adds a button to toggle the map fullscreen
   - **mobile_layout**: if true enables a custom layout for mobile devices (default: false)
   - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
-  - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'. 
-  - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ### cartodb.Vis
@@ -254,7 +248,7 @@ Returns a list of overlays currently on the screen (see overlays description).
 
 #### vis.getNativeMap()
 
-Returns the native map object being used. It can be google.maps.Map or L.Map depending on the provider you setup in the UI.
+Returns the native map object being used (e.g. a L.Map object for Leaflet).
 
 #### vis.Overlays
 
@@ -280,11 +274,11 @@ An infowindow object, see [sublayer.infowindow](#sublayerinfowindow)
 
 #### cartodb.createLayer(_map, layerSource [, options] [, callback]_)
 
-With visualizations already created through the CartoDB console, you can simply use the **createLayer** function to add them into your web pages. Unlike **createVis**, this method requires an already activated **map** object and it does not load a basemap for you. The method works the same whether your map object is [Google Maps](https://developers.google.com/maps/documentation/javascript/) or [Leaflet](http://leafletjs.com).
+With visualizations already created through the CartoDB console, you can simply use the **createLayer** function to add them into your web pages. Unlike **createVis**, this method requires an already activated **map** object and it does not load a basemap for you.
 
 ##### Arguments
 
-- **map**: Leaflet L.Map or Google Maps google.maps.Map object. The map should be initialized before calling this function.
+- **map**: Leaflet L.Map object. The map should be initialized before calling this function.
 
 - **layerSource**: contains information about the layer. It can be specified in 2 ways:
 
@@ -332,10 +326,9 @@ You can call to `addTo(map[, position]) in the promise so when the layer is read
 var map;
 var mapOptions = {
   zoom: 5,
-  center: new google.maps.LatLng(43, 0),
-  mapTypeId: google.maps.MapTypeId.ROADMAP
-}; 
-map = new google.maps.Map(document.getElementById('map'),  mapOptions);
+  center: [43, 0]
+};
+map = new L.Map('map', mapOptions);
 
 cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
   .addTo(map)
@@ -854,9 +847,9 @@ sql.getBounds('select * from table').done(function(bounds) {
 
 + **sql**: a string with the sql query to calculate the bounds from.
 
-##### Application of getBounds in Leaflet and GMaps
+##### Application of getBounds in Leaflet
 
-You can use the `getBounds` results to center data on your maps using Leaflet and GMaps. 
+You can use the `getBounds` results to center data on your maps using Leaflet.
 
 - **getBounds and Leaflet**
 
@@ -867,22 +860,9 @@ sql.getBounds('select * from table').done(function(bounds) {
 });
 {% endhighlight %}
 
-- **getBounds and GMaps v3**
-
-<div class="code-title">sql.getBounds</div>
-{% highlight javascript %}
-sql.getBounds('select * from table').done(function(bounds) {
-  var google_bounds = new google.maps.LatLngBounds();
-  google_bounds.extend(new google.maps.LatLng(bounds[0][0], bounds[0][1]));
-  google_bounds.extend(new google.maps.LatLng(bounds[1][0], bounds[1][1]));
-  map.fitBounds(google_bounds);
-});
-{% endhighlight %}
-
-
 ## Core API functionallity
 
-In case you are not using Google Maps or Leaflet or you want to implement your own layer object cartodb provide a way to get the tiles url for a layer definition. 
+In case you are not using Leaflet, or you want to implement your own layer object, cartodb provide a way to get the tiles url for a layer definition.
 
 If you want to use this functionallity you only need to load cartodb.core.js from our cdn, no css is needed:
 

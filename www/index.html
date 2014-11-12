@@ -96,6 +96,17 @@
         <section class="Section">
         </section>
       </div>
+
+      <ul>
+        <% _.each(examples, function(item, i) { %> 
+          <li>
+            <img src="" alt="" src="" />
+            <h3><a href="http://jsfiddle.net/gh/get/mootools/1.3/cartodb/cartodb.js/tree/master/examples/<%= item.dir %>"><%= item.name %></a></h3>
+            <p><%= item.description %></p>
+          </li>
+        <% }) %>
+      </ul>
+
     </div>
     </div>
 

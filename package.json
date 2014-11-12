@@ -54,7 +54,8 @@
       "grunt-aws": "^0.4.0",
       "grunt-fastly": "~0.1.3",
       "grunt-gitinfo": "~0.1.7",
-      "underscore": "~1.7.0"
+      "underscore": "~1.7.0",
+      "findup-sync": "0.1.3"
     },
     "files": ["dist"],
     "main": "cartodb.js"

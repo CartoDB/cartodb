@@ -501,6 +501,9 @@ module CartoDB
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)
+        if name_changed
+          support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
+        end
         self
       rescue => exception
         revert_name_change(old_name) if name_changed

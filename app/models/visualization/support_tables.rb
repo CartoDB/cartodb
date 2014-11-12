@@ -6,10 +6,10 @@ module CartoDB
   module Visualization
     class SupportTables
 
-      def initialize(database_connection, parent=nil)
+      def initialize(database_connection, parent_id=nil, parent_kind=nil)
         @database = database_connection
-        @parent = parent
-
+        @parent_id = parent_id
+        @parent_kind = parent_kind
         @tables_list = nil
       end
 
@@ -18,12 +18,14 @@ module CartoDB
       end
 
       # Only intended to be used if from the Visualization Relator (who will set the parent)
-      def load_actual_list
-        return [] if @parent.nil? || @parent.kind != Visualization::Member::KIND_RASTER
+      def load_actual_list(parent_name=nil)
+        return [] if @parent_id.nil? || @parent_kind != Visualization::Member::KIND_RASTER
+        parent = Visualization::Member.new(id:@parent_id).fetch
         table_data = @database.fetch(%Q{
           SELECT o_table_schema AS schema, o_table_name AS name
           FROM raster_overviews
-          WHERE r_table_schema = '#{@parent.user.database_schema}' AND r_table_name = '#{@parent.name}'
+          WHERE r_table_schema = '#{parent.user.database_schema}'
+          AND r_table_name = '#{parent_name.nil? ? parent.name : parent_name}'
         }).all
 
         table_data.nil? ? [] : table_data
@@ -37,10 +39,16 @@ module CartoDB
         }
       end
 
-      def rename(existing_parent_name, new_parent_name)
+      # @param existing_parent_name String
+      # @param new_parent_name String
+      # @param seek_parent_name String|nil If specified, seeking of tables will be performed using this name
+      def rename(existing_parent_name, new_parent_name, recreate_constraints=true, seek_parent_name=nil)
         begin
+          schema = nil
           support_tables_new_names = []
-          tables.each { |item|
+          tables_list = tables(seek_parent_name)
+          tables_list.each { |item|
+            schema = item[:schema]
             new_support_table_name = item[:name].dup
             # CONVENTION: support_tables will always end in "_tablename", so we substitute using parent name
             new_support_table_name.slice!(-existing_parent_name.length, existing_parent_name.length)
@@ -55,6 +63,12 @@ module CartoDB
           renamed = true
         rescue
           renamed = false
+        end
+
+        if renamed && recreate_constraints
+          support_tables_new_names.each { |table_name|
+            recreate_raster_constraints_if_exists(table_name, new_parent_name, schema)
+          }
         end
 
         { success: renamed, names: support_tables_new_names }
@@ -80,12 +94,12 @@ module CartoDB
 
       private
 
-      def tables
-        @tables_list ||= load_actual_list
+      def tables(seek_parent_name=nil)
+        @tables_list ||= load_actual_list(seek_parent_name)
       end
 
       # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews
-      def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name, new_schema)
+      def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name, schema)
         constraint = @database.fetch(%Q{
           SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
           FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
@@ -95,13 +109,13 @@ module CartoDB
         @database.transaction do
           # @see http://postgis.net/docs/RT_DropOverviewConstraints.html
           @database.execute(%Q{
-            SELECT DropOverviewConstraints('#{new_schema}', '#{constraint[:o_table_name]}',
+            SELECT DropOverviewConstraints('#{schema}', '#{constraint[:o_table_name]}',
                                            '#{constraint[:o_raster_column]}')
           })
           # @see http://postgis.net/docs/manual-dev/RT_AddOverviewConstraints.html
           @database.execute(%Q{
-            SELECT AddOverviewConstraints('#{new_schema}', '#{constraint[:o_table_name]}',
-                                          '#{constraint[:o_raster_column]}', '#{new_schema}', '#{raster_table_name}',
+            SELECT AddOverviewConstraints('#{schema}', '#{constraint[:o_table_name]}',
+                                          '#{constraint[:o_raster_column]}', '#{schema}', '#{raster_table_name}',
                                           '#{constraint[:r_raster_column]}', #{constraint[:overview_factor]});
           })
         end

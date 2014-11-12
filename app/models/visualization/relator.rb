@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_relative './stats'
-require_relative '../overlay/collection'
+require_relative './support_tables'
 
 module CartoDB
   module Visualization
@@ -25,7 +25,7 @@ module CartoDB
       end
 
       def support_tables
-        @support_tables ||= Visualization::SupportTables.new(user.in_database, Visualization::Member.new(id:@id).fetch)
+        @support_tables ||= Visualization::SupportTables.new(user.in_database, @id, @kind)
       end
 
       def overlays

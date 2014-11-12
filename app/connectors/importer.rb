@@ -1,6 +1,8 @@
 # encoding: utf-8
 require 'uuidtools'
 
+require_relative '../models/visualization/support_tables'
+
 module CartoDB
   module Connector
     class Importer
@@ -14,14 +16,15 @@ module CartoDB
       # @param table_registrar CartoDB::TableRegistrar
       # @param, quota_checker CartoDB::QuotaChecker
       def initialize(runner, table_registrar, quota_checker, database, data_import_id, destination_schema = nil)
-        @aborted          = false
-        @runner           = runner
-        @table_registrar  = table_registrar
-        @quota_checker    = quota_checker
-        @database         = database
-        @data_import_id   = data_import_id
-        @destination_schema = destination_schema ? destination_schema : DESTINATION_SCHEMA
-        @rename_attempts  = 0
+        @aborted                = false
+        @runner                 = runner
+        @table_registrar        = table_registrar
+        @quota_checker          = quota_checker
+        @database               = database
+        @data_import_id         = data_import_id
+        @destination_schema     = destination_schema ? destination_schema : DESTINATION_SCHEMA
+        @rename_attempts        = 0
+        @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database)
       end
 
       def run(tracker)
@@ -49,7 +52,7 @@ module CartoDB
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
-        persist_metadata(name, data_import_id)
+        persist_metadata(result, name, data_import_id)
         runner.log.append("Table '#{name}' registered")
       end
 
@@ -75,15 +78,10 @@ module CartoDB
           SET SCHEMA "#{destination_schema}"
         })
 
-        result.support_tables.each { |support_table_name|
-          database.execute(%Q{
-            ALTER TABLE "#{origin_schema}"."#{support_table_name}"
-            SET SCHEMA "#{destination_schema}"
-          })
-          # Delayed up to this point because constraint schemas are not automatically updated
-          # so else we'd need to recreate them twice (once per overview rename, once per schema change)
-          recreate_raster_constraints_if_exists(support_table_name, table_name, destination_schema)
+        @support_tables_helper.tables = result.support_tables.map { |table|
+          { schema: origin_schema, name: table }
         }
+        @support_tables_helper.change_schema(destination_schema, table_name)
       end
 
       def rename(result)
@@ -98,31 +96,27 @@ module CartoDB
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{result.table_name}" RENAME TO "#{new_name}"
         })
 
-        rename_the_geom_index_if_exists(result.table_name, new_name)
+        rename_the_geom_index_if_exists(result.table_name)
 
-        support_tables_new_names = []
-        result.support_tables.each { |support_table_name|
-          new_support_table_name = support_table_name.dup
-          # CONVENTION: support_tables will always end in "_tablename", so we substitute
-          new_support_table_name.slice!(-result.table_name.length, result.table_name.length)
-          new_support_table_name = "#{new_support_table_name}#{new_name}"
-
-          database.execute(%Q{
-            ALTER TABLE "#{ORIGIN_SCHEMA}"."#{support_table_name}" RENAME TO "#{new_support_table_name}"
-          })
-
-          support_tables_new_names.push(new_support_table_name)
+        @support_tables_helper.tables = result.support_tables.map { |table|
+          { schema: ORIGIN_SCHEMA, name: table }
         }
+        results = @support_tables_helper.rename(result.table_name, new_name)
+
+        if results[:success]
+          result.update_support_tables(results[:names])
+        else
+          raise 'unsuccessful support tables renaming'
+        end
 
         @rename_attempts = 0
-        result.update_support_tables(support_tables_new_names)
         new_name
       rescue => exception
         retry unless @rename_attempts > MAX_RENAME_RETRIES
         @rename_attempts = 0
       end
 
-      def rename_the_geom_index_if_exists(current_name, new_name)
+      def rename_the_geom_index_if_exists(current_name)
         database.execute(%Q{
           ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
@@ -130,7 +124,7 @@ module CartoDB
       rescue
       end
 
-      def persist_metadata(name, data_import_id)
+      def persist_metadata(result, name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
         self
@@ -152,29 +146,6 @@ module CartoDB
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
-
-      # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews
-      def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name, new_schema)
-        constraint = database.fetch(%Q{
-          SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
-          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
-        }).first
-        return if constraint.nil?
-
-        database.transaction do
-          # @see http://postgis.net/docs/RT_DropOverviewConstraints.html
-          database.execute(%Q{
-            SELECT DropOverviewConstraints('#{new_schema}', '#{constraint[:o_table_name]}',
-                                           '#{constraint[:o_raster_column]}')
-          })
-          # @see http://postgis.net/docs/manual-dev/RT_AddOverviewConstraints.html
-          database.execute(%Q{
-            SELECT AddOverviewConstraints('#{new_schema}', '#{constraint[:o_table_name]}',
-                                          '#{constraint[:o_raster_column]}', '#{new_schema}', '#{raster_table_name}',
-                                          '#{constraint[:r_raster_column]}', #{constraint[:overview_factor]});
-          })
-        end
-      end
 
     end
   end

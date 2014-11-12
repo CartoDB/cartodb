@@ -156,6 +156,8 @@ module CartoDB
           end
         end
 
+        support_tables.delete_all
+
         invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)

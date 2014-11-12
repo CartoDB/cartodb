@@ -27,7 +27,6 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     config: config,
-    secrets: grunt.file.readJSON('secrets.json'),
     gitinfo: {},
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
@@ -92,6 +91,14 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('publish', function (target) {
+
+    if (!grunt.file.exists('secrets.json')) {
+      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
+    }
+
+    // Read secrets 
+    grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
+
     if (
         !grunt.config('secrets') ||
         !grunt.config('secrets').S3_KEY ||
@@ -113,17 +120,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', [ 'buildcontrol:pages' ]);
 
-  grunt.registerTask('build', function (target) {
-    if (
-        !grunt.config('secrets') ||
-        !grunt.config('secrets').S3_KEY ||
-        !grunt.config('secrets').S3_SECRET ||
-        !grunt.config('secrets').S3_BUCKET
-      ) {
-      grunt.fail.fatal('Secret keys not specified in secrets.json' , 1);
-    }
-
-    grunt.task.run([
+  grunt.registerTask('build', [
       'prompt:bump',
       'replace',
       'gitinfo',
@@ -140,8 +137,7 @@ module.exports = function(grunt) {
       'usemin',
       'htmlmin',
       'uglify'
-    ]);
-  });
+  ]);
 
   grunt.registerTask('dist', [
     'build'

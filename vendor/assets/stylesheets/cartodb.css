@@ -1933,6 +1933,9 @@ only screen and (                min-resolution: 2dppx) {
   text-transform: none;
   line-height: normal;
 }
+.cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.intensity ul li.graph {
+  height: 22px;
+}
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend ul li .bullet {
   margin-top: 2px;
 }

@@ -40,7 +40,7 @@
       "grunt-contrib-imagemin": "~0.5.0",
       "grunt-contrib-jshint": "~0.8.0",
       "grunt-contrib-uglify": "~0.3.0",
-      "grunt-string-replace": "~1.0.0",
+      "grunt-replace-withinit": "~0.6.2",
       "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
       "grunt-contrib-jasmine": "~0.8.1",
       "grunt-filerev": "~0.2.0",

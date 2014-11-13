@@ -1,5 +1,7 @@
-3.2.XX (2014-11-XX)
+3.2.12 (2014-11-13)
 ------------------
+* New features
+  - Country guessing on import. Figure out if any column contains country information and automatically geocode the table. Depends on the geocoder. Take a look at the entry `content_guessing:` in `config/app_config.yml.sample`
 * Fixed bugs
   - Remove cumulative option for torque cat. wizard #903
 

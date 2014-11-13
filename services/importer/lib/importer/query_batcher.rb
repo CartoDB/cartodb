@@ -27,8 +27,6 @@ module CartoDB
 
         batched_query = query
 
-        total_rows_processed = 0
-        affected_rows_count = 0
         temp_column = "cartodb_processed_#{table_name.hash.abs}"
 
         where_fragment = %Q{
@@ -52,8 +50,23 @@ module CartoDB
           batched_query << ' WHERE ' + limit_subquery_fragment
         end
 
-        add_processed_column(db_object, table_name, temp_column)
+        begin
+          add_processed_column(db_object, table_name, temp_column)
+          process_batched_query(db_object, batched_query, log, capture_exceptions)
+          remove_processed_column(db_object, table_name, temp_column)
+        rescue => exception
+          raise exception unless capture_exceptions
+          log.log "QUERY:\n#{batched_query}\n---------------------------"
+          log.log "#{exception.to_s}\n---------------------------"
+          log.log "#{exception.backtrace}\n---------------------------"
+        end
 
+        log.log "FINISHED: #{log_message}"
+      end #self.execute
+
+      def self.process_batched_query(db_object, batched_query, log, capture_exceptions)
+        total_rows_processed = 0
+        affected_rows_count = 0
         begin
           begin
             affected_rows_count = db_object.execute(batched_query)
@@ -67,11 +80,7 @@ module CartoDB
             affected_rows_count = -1
           end
         end while affected_rows_count > 0
-
-        remove_processed_column(db_object, table_name, temp_column)
-
-        log.log "FINISHED: #{log_message}"
-      end #self.execute
+      end
 
       def self.add_processed_column(db_object, table_name, column_name)
         db_object.run(%Q{

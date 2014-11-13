@@ -137,7 +137,6 @@ module CartoDB
             end
 
             @importer_stats.timing('import') do
-              begin
               unpacker.source_files.each { |source_file|
                 # TODO: Move this stats inside import, for streaming scenarios, or differentiate
                 log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
@@ -147,9 +146,6 @@ module CartoDB
                 }
                 import(source_file, @downloader)
               }
-              rescue => exception
-                raise exception
-              end
             end
 
             @importer_stats.timing('cleanup') do

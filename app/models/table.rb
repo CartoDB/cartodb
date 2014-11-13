@@ -489,7 +489,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import  = DataImport.find(:id=>self.data_import_id)
       end
 
-      importer_result_name = import_to_cartodb
+      importer_result_name = import_to_cartodb(name)
 
       @data_import.reload
       @data_import.table_name = importer_result_name
@@ -1497,6 +1497,7 @@ class Table < Sequel::Model(:user_tables)
     name_candidates = self.owner.tables.select_map(:name) if owner
 
     options.merge!(name_candidates: name_candidates)
+    options.merge!(connection: self.owner.connection) unless self.owner.nil?
     unless options[:database_schema].present? || self.owner.nil?
       options.merge!(database_schema: self.owner.database_schema)
     end
@@ -1525,8 +1526,9 @@ class Table < Sequel::Model(:user_tables)
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
-    existing_names = options[:name_candidates] || \
-      options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname)
+    # 
+    existing_names = []
+    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0

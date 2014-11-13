@@ -39,6 +39,7 @@ class Admin::UsersController < ApplicationController
     @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner?
 
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
+    @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
     @user.set_fields(attributes, [:name]) if attributes[:name].present?
     @user.set_fields(attributes, [:website]) if attributes[:website].present?
     @user.set_fields(attributes, [:description]) if attributes[:description].present?

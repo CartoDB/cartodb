@@ -297,7 +297,7 @@ class DataImport < Sequel::Model
 
     candidates =  current_user.tables.select_map(:name)
     table_name = ::Table.get_valid_table_name(name, {
-        name_candidates: candidates,
+        connection: current_user.in_database,
         database_schema: current_user.database_schema
     })
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})

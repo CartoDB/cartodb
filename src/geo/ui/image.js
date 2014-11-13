@@ -58,8 +58,6 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
   render: function() {
 
-    this._place();
-
     var content = this.model.get("extra").rendered_text;
 
     if (this.model.get("extra").has_default_image) content = '<img src="' + this.model.get("extra").public_default_image_url + '" />';
@@ -68,7 +66,14 @@ cdb.geo.ui.Image = cdb.geo.ui.Text.extend({
 
     this.$text = this.$el.find(".text");
 
-    this._applyStyle();
+    var self = this;
+
+    setTimeout(function() {
+      self._applyStyle();
+      self._place();
+      self.show();
+    }, 900);
+
 
     return this;
 

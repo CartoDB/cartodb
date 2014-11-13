@@ -40,23 +40,22 @@
       expect(map.getViewBounds).not.toHaveBeenCalled();
     });
 
-    it("should change center and zoom when bounds are changed", function() {
+    it("should change center and zoom when bounds are changed", function(done) {
       var s = sinon.spy();
       mapView.getSize = function() { return {x: 200, y: 200}; }
       map.bind('change:center', s);
       spyOn(mapView, '_setCenter');
       mapView._bindModel();
-      runs(function() {
-        map.set({
-          'view_bounds_ne': [1, 1],
-          'view_bounds_sw': [-0.3, -1.2]
-        })
+
+      map.set({
+        'view_bounds_ne': [1, 1],
+        'view_bounds_sw': [-0.3, -1.2]
       });
-      waits(1000);
-      runs(function() {
+
+      setTimeout(function() {
         expect(mapView._setCenter).toHaveBeenCalled();
-        //expect(s.called).toEqual(true);
-      });
+        done();
+      }, 1000);
     });
 
     it("should allow to disable the scroll wheel", function() {
@@ -150,16 +149,15 @@
       expect(cdb.geo.GMapsCartoDBLayerGroupView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
-    it("should create a cartodb logo when layer is cartodb", function() {
-      runs(function() {
-        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
-        var lyr = map.addLayer(layer);
-        var layerView = mapView.getLayerByCid(lyr);
-      });
-      waits(2000);
-      runs(function() {
+    it("should create a cartodb logo when layer is cartodb", function(done) {
+      layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+
+      setTimeout(function() {
         expect(container.find("div.cartodb-logo").length).toEqual(1);
-      });
+        done();
+      }, 3000);
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {

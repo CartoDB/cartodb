@@ -35,34 +35,51 @@ describe('Hide funcionality', function() {
   });
 
 
-  it('if hides layers should work', function() {
+  it('if hides layers should work', function(done) {
 
-    waits(500);
-
-    runs(function () {
+    setTimeout(function () {
       cdb_layer.hide();
-    });
 
-    waits(500);
+      setTimeout(function() {
+        var $tile = $(div).find("img[gtilekey]").first()
+          , opacity = cdb_layer.options.opacity
+          , before_opacity = cdb_layer.options.previous_opacity;
 
-    runs(function() {
-      var $tile = $(div).find("img[gtilekey]").first()
-        , opacity = cdb_layer.options.opacity
-        , before_opacity = cdb_layer.options.previous_opacity;
-
-      expect(cdb_layer.visible).toBeFalsy();
-      expect($tile.css("opacity")).toEqual('0');
-      expect(opacity).toEqual(0);
-      expect(before_opacity).not.toEqual(0);
-    });
+        expect(cdb_layer.visible).toBeFalsy();
+        expect($tile.css("opacity")).toEqual('0');
+        expect(opacity).toEqual(0);
+        expect(before_opacity).not.toEqual(0);
+        done();
+      }, 500);  
+    }, 500);
   });
 
-  it('If sets opacity to 0, layer should be visible', function() {
-    waits(500);
-
-    runs(function () {
+  it('If sets opacity to 0, layer should be visible', function(done) {
+    setTimeout(function () {
       cdb_layer.setOpacity(0);
       expect(cdb_layer.options.visible).toBeTruthy();
-    });
+      done();
+    }, 500);
   });
+
+  it('toggle layer from a visible state should work', function(done) {
+
+    setTimeout(function () {
+      cdb_layer.hide();
+      visibility = cdb_layer.toggle();
+
+      setTimeout(function() {
+        var $tile = $(div).find("img[gtilekey]").first()
+          , opacity = cdb_layer.options.opacity;
+
+        expect(visibility).toBeTruthy();
+        expect(cdb_layer.visible).toBeTruthy();
+        expect($tile.css("opacity")).toEqual('0.99');
+        expect(opacity).toEqual(0.99);
+        done();
+      }, 500);
+
+    }, 500);
+  });
+
 });

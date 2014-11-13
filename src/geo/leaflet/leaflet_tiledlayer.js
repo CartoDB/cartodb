@@ -9,7 +9,7 @@ var LeafLetTiledLayerView = L.TileLayer.extend({
     L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
       tms:          layerModel.get('tms'),
       attribution:  layerModel.get('attribution'),
-      minZoom:      layerModel.get('minZomm'),
+      minZoom:      layerModel.get('minZoom'),
       maxZoom:      layerModel.get('maxZoom'),
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),

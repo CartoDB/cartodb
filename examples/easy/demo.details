@@ -1,0 +1,11 @@
+---
+name: Easy example with CartoDB.js
+description: Create an easy visualization with CartoDB.js
+authors:
+  - CartoDB
+resources:
+  - http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js
+  - http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css
+normalize_css: no
+lang_css: CSS
+...

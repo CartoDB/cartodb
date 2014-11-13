@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.17';
+    cdb.VERSION = "3.11.24";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -63,6 +63,7 @@
         'geo/geometry.js',
         'geo/map.js',
         'geo/ui/text.js',
+        'geo/ui/annotation.js',
         'geo/ui/image.js',
         'geo/ui/share.js',
         'geo/ui/zoom.js',
@@ -85,6 +86,7 @@
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_gmaps_tiledlayer.js',
         'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',

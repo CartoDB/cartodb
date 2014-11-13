@@ -33,36 +33,52 @@ describe('Show funcionality', function() {
   });
 
 
-  it('If layer is visible, show shouldn\'t do anything', function() {
-
-    waits(500);
-
-    runs(function () {
+  it('If layer is visible, show shouldn\'t do anything', function(done) {
+    setTimeout(function () {
       expect(cdb_layer.show).toThrow();
       var opacity = cdb_layer.options.opacity;
       expect(cdb_layer.options.visible).toBeTruthy();
-    });
+      done();
+    }, 500);
   });
 
-  it('Shows layer after hide it', function() {
-
-    waits(500);
-
-    runs(function () {
+  it('Shows layer after hide it', function(done) {
+    setTimeout(function () {
       cdb_layer.hide();
       cdb_layer.show();
       expect(cdb_layer.options.visible).toBeTruthy();
-    });
+      done();
+    }, 500);
   });
 
-  it('If hides layer and set an opacity greater than 0, layer shouln\'t be visible', function() {
-
-    waits(500);
-
-    runs(function () {
+  it('If hides layer and set an opacity greater than 0, layer shouln\'t be visible', function(done) {
+    setTimeout(function () {
       cdb_layer.hide();
       cdb_layer.setOpacity(0.2);
       expect(cdb_layer.visible).toBeFalsy();
-    });
+      done();
+    }, 500);
+  });
+
+  it('toggle layer from hidden state should work', function(done) {
+
+    setTimeout(function () {
+      cdb_layer.show();
+      visibility = cdb_layer.toggle();
+
+      setTimeout(function() {
+        var $tile = $(div).find("img[gtilekey]").first()
+          , opacity = cdb_layer.options.opacity
+          , before_opacity = cdb_layer.options.previous_opacity;
+
+        expect(cdb_layer.visible).toBeFalsy();
+        expect(visibility).toBeFalsy();
+        expect($tile.css("opacity")).toEqual('0');
+        expect(opacity).toEqual(0);
+        expect(before_opacity).not.toEqual(0);
+        done();
+      }, 500);
+
+    }, 500);
   });
 });

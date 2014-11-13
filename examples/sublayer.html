@@ -45,9 +45,9 @@
           map.addLayer(layer);
 
           // create and add a new sublayer
-          layer.createSubLayer({
+          sublayer = layer.createSubLayer({
             sql: "select * from european_countries_e limit 200",
-            cartocss: '#european_countries_e {marker-fill: #F0F0F0;}'
+            cartocss: '#european_countries_e {marker-fill: red;}'
           });
 
           // change the query for the first layer

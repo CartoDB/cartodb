@@ -22,6 +22,7 @@ _.extend(
   google.maps.ImageMapType.prototype, {
 
     getTileUrl: function(tile, zoom) {
+      console.log("jamon");
       var y = tile.y;
       var tileRange = 1 << zoom;
       if (y < 0 || y  >= tileRange) {

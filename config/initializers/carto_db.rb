@@ -95,6 +95,12 @@ module CartoDB
     VERSION_1 = "v1"
   end
 
+  begin
+    CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
+  rescue
+    CARTODB_REV = nil
+  end
+
   PUBLIC_DB_USER  = 'publicuser'
   PUBLIC_DB_USER_PASSWORD  = 'publicuser'
   TILE_DB_USER    = 'tileuser'

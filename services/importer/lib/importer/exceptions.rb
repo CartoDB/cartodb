@@ -16,6 +16,7 @@ module CartoDB
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
+    class InvalidNameError                      < StandardError; end
     class LoadError                             < StandardError; end
     class MissingProjectionError                < StandardError; end
     class ShpNormalizationError                 < StandardError; end
@@ -46,6 +47,7 @@ module CartoDB
       InvalidShpError                       => 1006,
       TooManyNodesError                     => 1007,
       GDriveNotPublicError                  => 1010,
+      InvalidNameError                      => 1014,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,

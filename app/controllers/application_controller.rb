@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
   after_filter  :remove_flash_cookie
+  after_filter  :add_revision_header
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
@@ -166,6 +167,10 @@ class ApplicationController < ActionController::Base
     if rewrite_url && !current_user.nil? && !current_user.organization.nil? && CartoDB.extract_real_subdomain(request) == current_user.username
       redirect_to CartoDB.base_url(current_user.organization.name, current_user.username) << request.fullpath
     end
+  end
+
+  def add_revision_header
+    response.headers['X-CartoDB-Rev'] = CartoDB::CARTODB_REV unless CartoDB::CARTODB_REV.nil?
   end
 
   def current_user

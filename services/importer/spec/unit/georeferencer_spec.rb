@@ -181,9 +181,7 @@ describe Importer2::Georeferencer do
   # Attempts to create a new database schema
   # Does not raise exception if the schema already exists
   def create_schema(db, schema)
-    db.run(%Q{CREATE SCHEMA #{schema}})
-  rescue Sequel::DatabaseError => e
-    raise unless e.message =~ /schema .* already exists/
+    db.run(%Q{CREATE SCHEMA IF NOT EXISTS #{schema}})
   end #create_schema
 
   def create_table(db, options={})

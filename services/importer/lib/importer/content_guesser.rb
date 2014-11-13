@@ -35,14 +35,13 @@ module CartoDB
 
       def is_country_column?(column)
         return false unless is_country_column_type? column
+        return country_proportion(column) > threshold
+      end
+
+      def country_proportion(column)
         column_name_sym = column[:column_name].to_sym
         matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
-        proportion = matches.to_f / sample.count
-        if proportion > threshold
-          return true
-        else
-          return false
-        end
+        matches.to_f / sample.count
       end
 
       def threshold

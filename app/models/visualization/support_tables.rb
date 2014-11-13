@@ -23,9 +23,10 @@ module CartoDB
         return [] if @parent_id.nil? || @parent_kind != Visualization::Member::KIND_RASTER
         parent = Visualization::Member.new(id:@parent_id).fetch
         table_data = @database.fetch(%Q{
-          SELECT o_table_schema AS schema, o_table_name AS name
+          SELECT o_table_catalog AS catalog, o_table_schema AS schema, o_table_name AS name
           FROM raster_overviews
-          WHERE r_table_schema = '#{parent.user.database_schema}'
+          WHERE r_table_catalog = '#{parent.user.database_name}'
+          AND r_table_schema = '#{parent.user.database_schema}'
           AND r_table_name = '#{parent_name.nil? ? parent.name : parent_name}'
         }).all
 
@@ -70,7 +71,7 @@ module CartoDB
         if renamed && recreate_relations
           support_tables_new_names.each { |table_name|
             recreate_raster_constraints_if_exists(table_name, new_parent_name, schema)
-            update_permissions(table_name, @public_user_roles_list)
+            update_permissions(table_name, @public_user_roles_list, schema)
           }
         end
 
@@ -85,7 +86,7 @@ module CartoDB
           })
           # Constraints are not automatically updated upon schema change or table renaming
           recreate_raster_constraints_if_exists(item[:name], parent_table_name, new_schema)
-          update_permissions(item[:name], @public_user_roles_list)
+          update_permissions(item[:name], @public_user_roles_list, new_schema)
         }
       end
 
@@ -102,10 +103,12 @@ module CartoDB
         @tables_list ||= load_actual_list(seek_parent_name)
       end
 
-      def update_permissions(overview_table_name, db_roles_list)
+      def update_permissions(overview_table_name, db_roles_list, schema)
         overviews = @database.fetch(%Q{
           SELECT o_table_name, o_table_schema
-          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
+          FROM raster_overviews
+          WHERE o_table_name = '#{overview_table_name}'
+          AND o_table_schema = '#{schema}'
         }).first
         return if overviews.nil?
 
@@ -122,7 +125,9 @@ module CartoDB
       def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name, schema)
         constraint = @database.fetch(%Q{
           SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
-          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
+          FROM raster_overviews
+          WHERE o_table_name = '#{overview_table_name}'
+          AND o_table_schema = '#{schema}'
         }).first
         return if constraint.nil?
 

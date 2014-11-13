@@ -9,7 +9,7 @@ module CartoDB
 
       def search_terms_query(page)
         %Q{
-          SELECT DISTINCT(quote_nullable(trim(#{@internal_geocoder.column_name}))) AS city
+          SELECT DISTINCT(quote_nullable(trim("#{@internal_geocoder.column_name}"))) AS city
           FROM #{@internal_geocoder.qualified_table_name}
           WHERE cartodb_georef_status IS NULL
           LIMIT #{@internal_geocoder.batch_size} OFFSET #{page * @internal_geocoder.batch_size}
@@ -27,7 +27,7 @@ module CartoDB
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
           #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
           FROM #{@internal_geocoder.temp_table_name} AS orig
-          WHERE trim(#{@internal_geocoder.column_name}::text) = orig.geocode_string AND #{dest_table}.cartodb_georef_status IS NULL
+          WHERE trim("#{@internal_geocoder.column_name}"::text) = orig.geocode_string AND #{dest_table}.cartodb_georef_status IS NULL
           #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
         }
       end

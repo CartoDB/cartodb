@@ -6,10 +6,11 @@ module CartoDB
   module Visualization
     class SupportTables
 
-      def initialize(database_connection, parent_id=nil, parent_kind=nil)
+      def initialize(database_connection, config={})
         @database = database_connection
-        @parent_id = parent_id
-        @parent_kind = parent_kind
+        @parent_id = config.fetch(:parent_id, nil)
+        @parent_kind = config.fetch(:parent_kind, nil)
+        @public_user_roles_list = config.fetch(:public_user_roles)
         @tables_list = nil
       end
 
@@ -69,8 +70,7 @@ module CartoDB
         if renamed && recreate_relations
           support_tables_new_names.each { |table_name|
             recreate_raster_constraints_if_exists(table_name, new_parent_name, schema)
-            # TODO: Test only, need proper one from user
-            update_permissions(table_name, ['publicuser'])
+            update_permissions(table_name, @public_user_roles_list)
           }
         end
 
@@ -85,8 +85,7 @@ module CartoDB
           })
           # Constraints are not automatically updated upon schema change or table renaming
           recreate_raster_constraints_if_exists(item[:name], parent_table_name, new_schema)
-          # TODO: Test only, need proper one from user
-          update_permissions(item[:name], ['publicuser'])
+          update_permissions(item[:name], @public_user_roles_list)
         }
       end
 

@@ -14,17 +14,23 @@ module CartoDB
 
       # @param runner CartoDB::Importer2::Runner
       # @param table_registrar CartoDB::TableRegistrar
-      # @param, quota_checker CartoDB::QuotaChecker
-      def initialize(runner, table_registrar, quota_checker, database, data_import_id, destination_schema = nil)
+      # @param quota_checker CartoDB::QuotaChecker
+      # @param database
+      # @param data_import_id String UUID
+      # @param destination_schema String|nil
+      # @param public_user_roles Array|nil
+      def initialize(runner, table_registrar, quota_checker, database, data_import_id,
+                     destination_schema = DESTINATION_SCHEMA, public_user_roles=[CartoDB::PUBLIC_DB_USER])
         @aborted                = false
         @runner                 = runner
         @table_registrar        = table_registrar
         @quota_checker          = quota_checker
         @database               = database
         @data_import_id         = data_import_id
-        @destination_schema     = destination_schema ? destination_schema : DESTINATION_SCHEMA
+        @destination_schema     = destination_schema
         @rename_attempts        = 0
-        @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database)
+        @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
+                                                                            {public_user_roles: public_user_roles})
       end
 
       def run(tracker)

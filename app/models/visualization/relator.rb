@@ -25,7 +25,8 @@ module CartoDB
       end
 
       def support_tables
-        @support_tables ||= Visualization::SupportTables.new(user.in_database, @id, @kind)
+        @support_tables ||= Visualization::SupportTables.new(user.in_database,
+                                     { parent_id: @id, parent_kind: @kind, public_user_roles: user.public_user_roles})
       end
 
       def overlays

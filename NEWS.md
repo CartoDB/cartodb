@@ -1,3 +1,10 @@
+3.2.X (2014-XX-XX)
+------------------
+* New features
+  - Raster import: Drag & drop geotif files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS.
+    This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
+
 3.2.10 (2014-11-07)
 ------------------
 * New features

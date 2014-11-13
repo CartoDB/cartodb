@@ -86,6 +86,10 @@ class User < Sequel::Model
     end
   end
 
+  def public_user_roles
+    self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
+  end
+
   ## Callbacks
   def before_create
     super
@@ -1433,6 +1437,23 @@ class User < Sequel::Model
     )
   end
 
+  def set_raster_privileges
+    queries = [
+      "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+      "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+    ]
+    unless self.organization.nil?
+      queries.merge! [
+        "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_overviews\" TO \"#{database_public_username}\"",
+        "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_columns\" TO \"#{database_public_username}\"",
+      ]
+    end
+    self.run_queries_in_transaction(
+      queries,
+      true
+    )
+  end
+
   def set_user_privileges # MU
     self.set_user_privileges_in_cartodb_schema
     self.set_user_privileges_in_public_schema
@@ -1440,6 +1461,7 @@ class User < Sequel::Model
     self.set_user_privileges_in_importer_schema
     self.set_user_privileges_in_geocoding_schema
     self.set_privileges_to_publicuser_in_own_schema
+    self.set_raster_privileges
   end
 
 

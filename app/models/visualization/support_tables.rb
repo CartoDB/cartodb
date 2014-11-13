@@ -41,8 +41,9 @@ module CartoDB
 
       # @param existing_parent_name String
       # @param new_parent_name String
+      # @param recreate_relations Bool If true will recreate constraints and permissions from overviews
       # @param seek_parent_name String|nil If specified, seeking of tables will be performed using this name
-      def rename(existing_parent_name, new_parent_name, recreate_constraints=true, seek_parent_name=nil)
+      def rename(existing_parent_name, new_parent_name, recreate_relations=true, seek_parent_name=nil)
         begin
           schema = nil
           support_tables_new_names = []
@@ -65,9 +66,11 @@ module CartoDB
           renamed = false
         end
 
-        if renamed && recreate_constraints
+        if renamed && recreate_relations
           support_tables_new_names.each { |table_name|
             recreate_raster_constraints_if_exists(table_name, new_parent_name, schema)
+            # TODO: Test only, need proper one from user
+            update_permissions(table_name, ['publicuser'])
           }
         end
 
@@ -82,6 +85,8 @@ module CartoDB
           })
           # Constraints are not automatically updated upon schema change or table renaming
           recreate_raster_constraints_if_exists(item[:name], parent_table_name, new_schema)
+          # TODO: Test only, need proper one from user
+          update_permissions(item[:name], ['publicuser'])
         }
       end
 
@@ -96,6 +101,22 @@ module CartoDB
 
       def tables(seek_parent_name=nil)
         @tables_list ||= load_actual_list(seek_parent_name)
+      end
+
+      def update_permissions(overview_table_name, db_roles_list)
+        overviews = @database.fetch(%Q{
+          SELECT o_table_name, o_table_schema
+          FROM raster_overviews WHERE o_table_name = '#{overview_table_name}'
+        }).first
+        return if overviews.nil?
+
+        @database.transaction do
+          db_roles_list.each { |role_name|
+            @database.execute(%Q{
+              GRANT SELECT ON TABLE "#{overviews[:o_table_schema]}"."#{overviews[:o_table_name]}" TO "#{role_name}"
+            })
+          }
+        end
       end
 
       # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews

@@ -14,4 +14,4 @@ Gemfile.lock
 .grunt
 test/SpecRunner.html
 .rvmrc
-css/
+css/*

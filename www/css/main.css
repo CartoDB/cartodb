@@ -17,8 +17,9 @@
   margin-bottom: 40px;
   font-weight: 100;
   font-size: 40px;
+  text-transform: uppercase;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000321}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000322}}
 .Header-title:after {
   content: "";
   display: block;
@@ -30,44 +31,44 @@
   height: 1px;
   background: rgba(255, 255, 255, 0.5);
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000333}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000334}}
 .Header-title strong {
   font-weight: 700;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000338}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000339}}
 .Header-description {
   margin-bottom: 30px;
   font-size: 15px;
   line-height: 22px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000348}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000349}}
 .TabPanes {
   margin: 20px 0 40px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000356}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000357}}
 .Tabs {
   margin-bottom: 5px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000360}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000361}}
 .Tab {
   margin-left: 5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000363}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000364}}
 .Tab:first-child {
   margin-left: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000369}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000370}}
 .Tab.is-selected .Tab-link, .Tab:hover .Tab-link {
   background: #666;
   color: #fff;
   text-decoration: none;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000377}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000378}}
 .Tab-link {
   display: block;
   padding: 0 10px;
@@ -79,7 +80,7 @@
   transition: all .15s;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000392}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\0000393}}
 .CodeMirror {
   height: auto !important;
   font: 13px Consolas, Menlo, Courier, monospace;
@@ -91,7 +92,7 @@
   border-radius: 4px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003103}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003104}}
 pre {
   overflow: auto;
   line-height: 19px;
@@ -99,18 +100,18 @@ pre {
   padding: 18px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003114}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003115}}
 .Examples {
   margin-left: -10px;
   margin-right: -10px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003119}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003120}}
 .Example {
   width: 300px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003123}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003124}}
 .Example-inner {
   display: block;
   overflow: hidden;
@@ -120,25 +121,25 @@ pre {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
   transition: all .15s;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003132}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003133}}
 .Example-inner:hover {
   text-decoration: none;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003138}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003139}}
 .Example-content {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
   padding: 10px 20px 20px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003143}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003144}}
 .Example-img {
   display: block;
   border-radius: 4px 4px 0 0;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003148}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003149}}
 .Example-title {
   width: 50%;
   margin-bottom: 10px;
@@ -147,14 +148,14 @@ pre {
   color: #111;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003156}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003157}}
 .Example-description {
   font-size: 13px;
   line-height: 1.4;
   color: #999;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003162}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003163}}
 .Example-type {
   display: inline-block;
   float: right;
@@ -168,38 +169,13 @@ pre {
   text-transform: uppercase;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003179}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003180}}
 .Components {
   padding-left: 82px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003183}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003184}}
 .Component-item {
   float: left;
   margin-left: -82px;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003192}}
-.Footer {
-  padding: 100px 0;
-  font-size: 12px;
-  background: #35454B;
-  color: #999;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003199}}
-.Footer-description {
-  text-align: center;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/matallo\/workspace\/cartodb\.js\/www\/_scss\/main\.scss}line{font-family:\00003203}}
-.Footer-brand {
-  display: inline-block;
-  position: relative;
-  top: -2px;
-  margin-left: 5px;
-  width: 79px;
-  height: 28px;
-  background: url("/img/footer-brand.png") center;
-  vertical-align: middle;
 }

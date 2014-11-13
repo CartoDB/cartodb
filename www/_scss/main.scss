@@ -17,6 +17,7 @@
   margin-bottom: 40px;
   font-weight: 100;
   font-size: 40px;
+  text-transform: uppercase;
 
   &:after {
     content: "";
@@ -183,30 +184,4 @@ pre {
 .Component-item {
   float: left;
   margin-left: -82px;
-}
-
-
-// Footer
-// --------------------------------------------------
-
-.Footer {
-  padding: 100px 0;
-  font-size: 12px;
-  background: #35454B;
-  color: #999;
-}
-
-.Footer-description {
-  text-align: center;
-}
-
-.Footer-brand {
-  display: inline-block;
-  position: relative;
-  top: -2px;
-  margin-left: 5px;
-  width: 79px;
-  height: 28px;
-  background: url("/img/footer-brand.png") center;
-  vertical-align: middle;
 }

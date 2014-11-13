@@ -101,9 +101,9 @@ describe Importer2::Georeferencer do
 
       dataset.first.fetch(:the_geom).should be_nil
       georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
-      dataset.first.fetch(:the_geom).should be_nil
+      dataset.first.fetch(:the_geom).should_not be_nil
     end
-  end #georeference
+  end
 
   describe '#create_the_geom_in' do
     before do
@@ -175,7 +175,8 @@ describe Importer2::Georeferencer do
   end #find_column_in
 
   def georeferencer_instance(db = @db, table_name = @table_name)
-    Importer2::Georeferencer.new(@db, table_name, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=CartoDB::Importer2::Doubles::Log.new)
+    options = { guessing: {enabled: false} }
+    Importer2::Georeferencer.new(@db, table_name, options, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=CartoDB::Importer2::Doubles::Log.new)
   end
 
   # Attempts to create a new database schema

@@ -31,6 +31,7 @@
     
     <!-- build:css(www) /css/main.css -->
       <link href="../bower_components/cdbui/dist/css/cdbui-lib.css" rel="stylesheet" />
+      <link href="css/vendor/codemirror.css" rel="stylesheet" />
       <link href="css/main.css" rel="stylesheet" />
     <!-- endbuild -->
     <!-- build:js(www) /js/vendor/modernizr.js -->
@@ -81,20 +82,59 @@
           </div>
         </div>
       </nav>
--      <li>CartoDB.js last bugfixing version: <%= last_bugfixing_version %></li>
--      <li>CartoDB.js last minor version: <%= last_minor_version %></li>
--      <li>CartoDB.js last major version: <%= last_major_version %></li>
-
 
       <div class="Content">
-        <section class="Section">
-        </section>
+        <div class="inner">
+          <section class="Section">
+            <h2 class="Title">Quick start</h2>
+            <p class="Section-description">To start using CartoDB.js just paste this piece of code within the HEAD tags of your HTML:</p>
 
-        <section class="Section">
-        </section>
+            <div class="TabPanes js-TabPanes">
+              <div class="Tabs js-Tabs">
+                <ul class="inb-list">
+                  <li class="Tab js-Tab is-selected h-iblock"><a href="#/http" class="Tab-link js-Tab-link">HTTP</a></li>
+                  <li class="Tab js-Tab h-iblock"><a href="#/https" class="Tab-link js-Tab-link">HTTPS</a></li>
+                </ul>
+              </div>
 
-        <section class="Section">
-        </section>
+              <div class="Panes js-Panes">
+                <div class="Pane js-Pane" id="http">
+                  <textarea id="Highlight-0" class="js-Highlight">
+<link rel="stylesheet" href="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/themes/css/cartodb.css" />
+<script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/cartodb.js"></script></textarea>
+                </div>
+
+                <div class="Pane js-Pane" id="https">
+                  <textarea id="Highlight-1" class="js-Highlight">
+<link rel="stylesheet" href="https://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/themes/css/cartodb.css" />
+<script src="https://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/cartodb.js"></script></textarea>
+                </div>
+              </div>
+            </div>
+
+            <p class="Section-description">Create a map and add a CartoDB layer:</p>
+
+            <div class="TabPanes">
+              <div class="Panes">
+                <div class="Pane">
+                  <textarea id="Highlight-2" class="js-Highlight">
+<link rel="stylesheet" href="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/themes/css/cartodb.css" />
+<script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/cartodb.js"></script></textarea>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="Section">
+            <h2 class="Title">Examples</h2>
+
+          </section>
+
+          <section class="Section">
+            <h2 class="Title">Components</h2>
+
+          </section>
+        </div>
       </div>
 
       <ul>
@@ -114,8 +154,8 @@
     <script src="../bower_components/jquery/dist/jquery.js"></script>
     <script src="../bower_components/underscore/underscore.js"></script>
     <script src="../bower_components/backbone/backbone.js"></script>
-    <script src="../bower_components/backbone/backbone.js"></script>
     <script src="../bower_components/cdbui/dist/js/cdbui-lib.js"></script>
+    <script src="js/vendor/codemirror.js"></script>
     <!-- endbuild -->
 
     <!-- build:js(www) /js/main.js -->

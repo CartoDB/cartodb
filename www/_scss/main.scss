@@ -2,7 +2,7 @@
 // --------------------------------------------------
 
 .Header {
-  background: url('../img/header-bg.png') center;
+  background: url('/img/header-bg.png') center;
   background-size: cover;
   text-align: center;
   color: #fff;
@@ -39,4 +39,70 @@
   margin-bottom: 30px;
   font-size: 15px;
   line-height: 22px;
+}
+
+
+// Tabs
+// --------------------------------------------------
+
+.TabPanes {
+  margin: 20px 0 40px;
+}
+
+
+// Tabs
+// --------------------------------------------------
+
+.Tabs {
+  margin-bottom: 5px;
+}
+
+.Tab {
+  margin-left: 5px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &.is-selected,
+  &:hover {
+    .Tab-link {
+      background: #666;
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+}
+
+.Tab-link {
+  display: block;
+  padding: 0 10px;
+  border: 1px solid #666;
+  font: 13px/23px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #666;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: all .15s;
+}
+
+
+// Panes
+// --------------------------------------------------
+
+.CodeMirror {
+  height: auto !important;
+  font: 13px Consolas, Menlo, Courier, monospace;
+  padding: 2px;
+  margin: 0;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  color: #666;
+  border-radius: 4px;
+}
+
+pre {
+  overflow: auto;
+  line-height: 19px;
+  margin-bottom: 24px;
+  padding: 18px;
 }

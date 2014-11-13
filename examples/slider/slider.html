@@ -6,16 +6,18 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
 
+    <!-- CartoDB library -->
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-    <script type="text/javascript" src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
+    <script type="text/javascript" src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.11/cartodb.js"></script>
 
-    <!--<link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />-->
-
+    <!-- JQuery library -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 
+    <!-- Before/after-map -->
     <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="js/jquery.beforeafter-map-0.11.js"></script>
+
   </head>
 
   <body onload="main();">
@@ -62,6 +64,7 @@
 
         return mapa;
       }
+      
 
       function main() {
         var before = _generate_map("before"),

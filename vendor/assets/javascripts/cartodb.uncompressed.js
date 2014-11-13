@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.24
 // uncompressed version: cartodb.uncompressed.js
-// sha: d693028a412e32f21a866aa225dc8da5d9593ee1
+// sha: b8f6a07ae7ca84149686992274d9761580e825c9
 (function() {
   var root = this;
 
@@ -33952,7 +33952,7 @@ Layers.register('torque', function(vis, data) {
   /**
    * create a layer for the specified map
    *
-   * @param map should be a L.Map or google.maps.Map object
+   * @param map should be a L.Map object, or equivalent depending on what provider you have.
    * @param layer should be an url or a javascript object with the data to create the layer
    * @param options layer options
    *

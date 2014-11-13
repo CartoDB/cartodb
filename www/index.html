@@ -30,23 +30,132 @@
     <meta name="twitter:url" content="" />
     
     <!-- build:css(www) /css/main.css -->
-      <link href="css/main.css" media="all" rel="stylesheet" type="text/css" />
+      <link href="../bower_components/cdbui/dist/css/cdbui-lib.css" rel="stylesheet" />
+      <link href="css/vendor/codemirror.css" rel="stylesheet" />
+      <link href="css/main.css" rel="stylesheet" />
     <!-- endbuild -->
     <!-- build:js(www) /js/vendor/modernizr.js -->
-    <script src='js/vendor/modernizr-2.6.2.min.js'></script>
+    <script src='../bower_components/modernizr/modernizr.js'></script>
     <!-- endbuild -->
   </head>
   <body>
-    <ul>
-      <li>CartoDB.js last bugfixing version: <%= last_bugfixing_version %></li>
-      <li>CartoDB.js last minor version: <%= last_minor_version %></li>
-      <li>CartoDB.js last major version: <%= last_major_version %></li>
-    </ul>
+    <div class="js-Offcanvas Offcanvas">
+    <div class="Offcanvas-inner">
+      <div class="Offcanvas-collapse">
+        <div class="Offcanvas-collapseInner">
+          <div class="Offcanvas-menu">
+            <h3 class="Offcanvas-title">Javascript API</h3>
+            <ul>
+              <li class="Offcanvas-menuItem"><a href="#" class="Offcanvas-menuLink">Install</a></li>
+            </ul>
+          </div>
+
+          <div class="Offcanvas-menu">
+            <h3 class="Offcanvas-title">Javascript API</h3>
+            <ul>
+            <li class="Offcanvas-menuItem"><a href="#" class="Offcanvas-menuLink">Install</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <header class="Header js-Header h-valign">
+        <a href="/#menu" class="Header-menu js-Header-menu"></a>
+        <a href="https://github.com/CartoDB/cartodb.js" class="Header-link Btn Btn--m Btn--white"><span>GitHub</span></a>
+
+        <div class="Header-inner h-malign h-iblock">
+          <h1 class="Header-title">CartoDB<strong>&lt;js&gt;</strong></h1>
+          <p class="Header-description">CartoDB offers a simple unified JavaScript library called CartoDB.js that let you interact with the CartoDB service.</p>
+          <a href="https://github.com/CartoDB/cartodb.js/archive/<%= last_bugfixing_version %>.zip" class="Header-downloadLink h-iblock Btn Btn--l Btn--highlight"><span>Download v<%= last_minor_version %></span></a>
+        </div>
+      </header>
+
+      <nav class="Navbar">
+        <div class="inner">
+          <div class="Navbar-inner">
+            <div class="Navbar-brand h-valign">
+              <a href="/#menu" class="Header-menu js-Header-menu h-iblock h-malign"></a>
+              <a href="/" class="Navbar-title h-iblock h-malign">CartoDB<strong>&lt;js&gt;</strong></a>
+            </div>
+
+            <a href="https://github.com/CartoDB/cartodb.js" class="Btn Btn--m">GitHub</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="Content">
+        <div class="inner">
+          <section class="Section">
+            <h2 class="Title">Quick start</h2>
+            <p class="Section-description">To start using CartoDB.js just paste this piece of code within the HEAD tags of your HTML:</p>
+
+            <div class="TabPanes js-TabPanes">
+              <div class="Tabs js-Tabs">
+                <ul class="inb-list">
+                  <li class="Tab js-Tab is-selected h-iblock"><a href="#/http" class="Tab-link js-Tab-link">HTTP</a></li>
+                  <li class="Tab js-Tab h-iblock"><a href="#/https" class="Tab-link js-Tab-link">HTTPS</a></li>
+                </ul>
+              </div>
+
+              <div class="Panes js-Panes">
+                <div class="Pane js-Pane" id="http">
+                  <textarea id="Highlight-0" class="js-Highlight">
+<link rel="stylesheet" href="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/themes/css/cartodb.css" />
+<script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/cartodb.js"></script></textarea>
+                </div>
+
+                <div class="Pane js-Pane" id="https">
+                  <textarea id="Highlight-1" class="js-Highlight">
+<link rel="stylesheet" href="https://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/themes/css/cartodb.css" />
+<script src="https://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/cartodb.js"></script></textarea>
+                </div>
+              </div>
+            </div>
+
+            <p class="Section-description">Create a map and add a CartoDB layer:</p>
+
+            <div class="TabPanes">
+              <div class="Panes">
+                <div class="Pane">
+                  <textarea id="Highlight-2" class="js-Highlight">
+<link rel="stylesheet" href="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/themes/css/cartodb.css" />
+<script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/<%= last_minor_version %>/cartodb.js"></script></textarea>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="Section">
+            <h2 class="Title">Examples</h2>
+
+          </section>
+
+          <section class="Section">
+            <h2 class="Title">Components</h2>
+
+          </section>
+        </div>
+      </div>
+
+      <ul>
+        <% _.each(examples, function(item, i) { %> 
+          <li>
+            <img src="" alt="" src="" />
+            <h3><a href="http://jsfiddle.net/gh/get/mootools/1.3/cartodb/cartodb.js/tree/master/examples/<%= item.dir %>"><%= item.name %></a></h3>
+            <p><%= item.description %></p>
+          </li>
+        <% }) %>
+      </ul>
+
+    </div>
+    </div>
 
     <!-- build:js(www) /js/vendor.js -->
     <script src="../bower_components/jquery/dist/jquery.js"></script>
     <script src="../bower_components/underscore/underscore.js"></script>
     <script src="../bower_components/backbone/backbone.js"></script>
+    <script src="../bower_components/cdbui/dist/js/cdbui-lib.js"></script>
+    <script src="js/vendor/codemirror.js"></script>
     <!-- endbuild -->
 
     <!-- build:js(www) /js/main.js -->
@@ -54,7 +163,7 @@
       <script src="js/main.js"></script>
     <!-- endbuild -->
 
-    <script>
+    <!-- script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -62,7 +171,7 @@
 
       ga('create', 'UA-20934186-21', 'cartodb.github.io');
       ga('send', 'pageview');
-    </script>
+    </script -->
   </body>
 </html>
 

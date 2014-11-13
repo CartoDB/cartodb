@@ -1,6 +1,6 @@
 var layer;
 
-function main() {
+$(document).ready(function(){
 
   var map = L.map('map', { 
     zoomControl: false,
@@ -30,6 +30,4 @@ function main() {
     }).on('error', function() {
       console.log("some error occurred");
     });
-}
-
-window.onload = main;
+});

@@ -42,12 +42,11 @@
           });
 
           // you can get the native map to work with it
-          // depending if you use google maps or leaflet
-          map = vis.getNativeMap();
+          var map = vis.getNativeMap();
 
           // now, perform any operations you need
-          // map.setZoom(3)
-          // map.setCenter(new google.maps.Latlng(...))
+          // map.setZoom(3);
+          // map.panTo([50.5, 30.5]);
         })
         .error(function(err) {
           console.log(err);

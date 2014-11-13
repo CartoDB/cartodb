@@ -5,6 +5,7 @@ module CartoDB
     class ContentGuesser
 
       COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
+      MINIMUM_ENTROPY = 0.8
 
       def initialize(db, table_name, schema, options)
         @db         = db
@@ -35,7 +36,35 @@ module CartoDB
 
       def is_country_column?(column)
         return false unless is_country_column_type? column
+        return false unless metric_entropy(column) > MINIMUM_ENTROPY
         return country_proportion(column) > threshold
+      end
+
+      # See http://en.wikipedia.org/wiki/Entropy_(information_theory)
+      # See http://www.shannonentropy.netmark.pl/
+      #
+      # Returns 0.0 if all elements in the column are repeated
+      # Returns 1.0 if all elements in the column are different
+      def metric_entropy(column)
+        shannon_entropy(column) / Math.log(sample.count)
+      end
+
+      def shannon_entropy(column)
+        sum = 0.0
+        frequencies(column).each { |freq| sum += (freq * Math.log(freq)) }
+        return -sum
+      end
+
+      # Returns an array with the relative frequencies of the elements of that column
+      def frequencies(column)
+        frequency_table = {}
+        column_name_sym = column[:column_name].to_sym
+        sample.each do |row|
+          elem = row[column_name_sym]
+          frequency_table[elem] += 1 rescue frequency_table[elem] = 1
+        end
+        length = sample.count.to_f
+        frequency_table.map { |key, value| value / length }
       end
 
       def country_proportion(column)

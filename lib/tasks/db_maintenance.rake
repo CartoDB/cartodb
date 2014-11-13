@@ -768,6 +768,24 @@ namespace :cartodb do
       end
     end
 
+    desc "Grant general raster permissions"
+      task :grant_general_raster_permissions => :environment do
+        users = User.all
+        count = users.count
+        users.each_with_index do |user, i|
+          begin
+            user.set_raster_privileges
+            message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+            print message
+            log(message, :reload_users_avatars.to_s)
+          rescue => e
+            message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+            print message
+            log(message, :reload_users_avatars.to_s)
+          end
+      end
+    end
+
     desc "Enable oracle_fdw extension in database"
     task :enable_oracle_fdw_extension, [:username, :oracle_url, :remote_user, :remote_password, :remote_schema, :table_definition_json_path] => :environment do |t, args|
       u = User.where(:username => args[:username].to_s).first

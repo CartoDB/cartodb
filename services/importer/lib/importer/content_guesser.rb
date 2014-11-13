@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'ipaddr'
+
 module CartoDB
   module Importer2
     class ContentGuesser
@@ -26,6 +28,14 @@ module CartoDB
         nil
       end
 
+      def ip_column
+        return nil if not enabled?
+        columns.each do |column|
+          return column[:column_name] if is_ip_column? column
+        end
+        nil
+      end
+
       def columns
         @columns ||= @db[%Q(
           SELECT column_name, data_type
@@ -35,10 +45,17 @@ module CartoDB
       end
 
       def is_country_column?(column)
-        return false unless is_country_column_type? column
+        return false unless is_text_type? column
         return false unless metric_entropy(column) > MINIMUM_ENTROPY
         return country_proportion(column) > threshold
       end
+
+      def is_ip_column?(column)
+        return false unless is_text_type? column
+        return false unless metric_entropy(column) > MINIMUM_ENTROPY
+        return ip_proportion(column) > threshold
+      end
+
 
       # See http://en.wikipedia.org/wiki/Entropy_(information_theory)
       # See http://www.shannonentropy.netmark.pl/
@@ -73,11 +90,22 @@ module CartoDB
         matches.to_f / sample.count
       end
 
+      def ip_proportion(column)
+        column_name_sym = column[:column_name].to_sym
+        matches = sample.count { |row| is_ip(row[column_name_sym]) }
+        matches.to_f / sample.count
+      end
+
+      def is_ip(str)
+        (IPAddr.new(str) && true) rescue false
+      end
+
+
       def threshold
         @options[:guessing][:threshold]
       end
 
-      def is_country_column_type? column
+      def is_text_type? column
         ['character varying', 'varchar', 'text'].include? column[:data_type]
       end
 

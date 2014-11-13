@@ -40,6 +40,7 @@ module CartoDB
         create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
         create_the_geom_from_country_guessing ||
+        create_the_geom_from_ip_guessing      ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -110,9 +111,21 @@ module CartoDB
         @tracker.call('guessing')
         country_column_name = @content_guesser.country_column
         if country_column_name
-          create_the_geom_in table_name
           job.log "Found country column: #{country_column_name}"
           return geocode_countries country_column_name
+        end
+        return false
+      end
+
+      #TODO these two methods are very similar, refactor
+      def create_the_geom_from_ip_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying ip guessing...'
+        @tracker.call('guessing')
+        ip_column_name = @content_guesser.ip_column
+        if ip_column_name
+          job.log "Found ip column: #{ip_column_name}"
+          return geocode_ips ip_column_name
         end
         return false
       end
@@ -137,6 +150,28 @@ module CartoDB
         job.log "Geocoding finished"
         geocoder.state == 'completed'
       end
+
+      def geocode_ips ip_column_name
+        job.log "Geocoding ips..."
+        @tracker.call('geocoding')
+        create_the_geom_in(table_name)
+        config = @options[:geocoder].merge(
+          table_schema: schema,
+          table_name: table_name,
+          qualified_table_name: qualified_table_name,
+          connection: db,
+          formatter: ip_column_name,
+          geometry_type: 'point',
+          kind: 'ipaddress',
+          max_rows: nil,
+          country_column: nil
+        )
+        geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+        geocoder.run
+        job.log "Geocoding finished"
+        geocoder.state == 'completed'
+      end
+
 
       # Note: Performs a really simple ',' to '.' normalization.
       # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"

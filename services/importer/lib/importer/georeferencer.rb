@@ -24,6 +24,7 @@ module CartoDB
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
         @options = options
+        @tracker = @options[:tracker] || lambda { |state| state }
         @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options)
       end
 
@@ -106,6 +107,7 @@ module CartoDB
       def create_the_geom_from_country_guessing
         return false if not @content_guesser.enabled?
         job.log 'Trying country guessing...'
+        @tracker.call('guessing')
         country_column_name = @content_guesser.country_column
         if country_column_name
           create_the_geom_in table_name
@@ -116,6 +118,8 @@ module CartoDB
       end
 
       def geocode_countries country_column_name
+        job.log "Geocoding countries..."
+        @tracker.call('geocoding')
         create_the_geom_in(table_name)
         config = @options[:geocoder].merge(
           table_schema: schema,
@@ -130,6 +134,7 @@ module CartoDB
         )
         geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
         geocoder.run
+        job.log "Geocoding finished"
         geocoder.state == 'completed'
       end
 

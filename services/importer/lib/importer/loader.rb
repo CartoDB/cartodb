@@ -165,11 +165,11 @@ module CartoDB
       end
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(job.db, job.table_name, content_guessing_options, SCHEMA, job, geometry_columns)
+        @georeferencer ||= Georeferencer.new(job.db, job.table_name, georeferencer_options, SCHEMA, job, geometry_columns)
       end
 
-      def content_guessing_options
-        options.select { |key, value| [:guessing, :geocoder].include? key }
+      def georeferencer_options
+        options.select { |key, value| [:guessing, :geocoder, :tracker].include? key }
       end
 
       def post_import_handler

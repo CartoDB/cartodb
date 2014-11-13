@@ -5,7 +5,7 @@ module CartoDB
     class ContentGuesser
 
       COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
-      MINIMUM_ENTROPY = 0.8
+      MINIMUM_ENTROPY = 0.9
 
       def initialize(db, table_name, schema, options)
         @db         = db

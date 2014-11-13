@@ -2,7 +2,10 @@
 module CartoDB
   module Importer2
 
-    # WARNING: Doesn't works with CTEs, only pure UPDATEs
+    # WARNING1: Doesn't work with CTEs, only pure UPDATEs.
+    # WARNING2: Do not use an alias for the target table. E.g:
+    #   use 'UPDATE table_name SET ...'
+    #   instead of 'UPDATE table_name AS alias SET ...'
     class QueryBatcher
       DEFAULT_BATCH_SIZE = 20000
       # If present, will concat there the additional where condition required for batching
@@ -16,25 +19,22 @@ module CartoDB
       # @param log_message string
       # @param capture_exceptions bool
       # @param batch_size int
-      # @param id_column string Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
       def self.execute(db_object, query, table_name, logger, log_message, capture_exceptions=false,
-                       batch_size=DEFAULT_BATCH_SIZE, id_column='ogc_fid')
+                       batch_size=DEFAULT_BATCH_SIZE)
         log = logger.nil? ? ConsoleLog.new : logger
 
         log.log log_message
 
         batched_query = query
 
-        total_rows_processed = 0
-        affected_rows_count = 0
         temp_column = "cartodb_processed_#{table_name.hash.abs}"
 
         where_fragment = %Q{
           , #{temp_column} = TRUE
         }
         limit_subquery_fragment = %Q{
-           #{id_column} IN (
-            SELECT #{id_column} FROM #{table_name} WHERE #{temp_column} != TRUE LIMIT #{batch_size}
+           #{table_name}.CTID IN (
+            SELECT CTID FROM #{table_name} WHERE #{temp_column} != TRUE LIMIT #{batch_size}
           )
         }
 
@@ -50,8 +50,23 @@ module CartoDB
           batched_query << ' WHERE ' + limit_subquery_fragment
         end
 
-        add_processed_column(db_object, table_name, temp_column)
+        begin
+          add_processed_column(db_object, table_name, temp_column)
+          process_batched_query(db_object, batched_query, log, capture_exceptions)
+          remove_processed_column(db_object, table_name, temp_column)
+        rescue => exception
+          raise exception unless capture_exceptions
+          log.log "QUERY:\n#{batched_query}\n---------------------------"
+          log.log "#{exception.to_s}\n---------------------------"
+          log.log "#{exception.backtrace}\n---------------------------"
+        end
 
+        log.log "FINISHED: #{log_message}"
+      end #self.execute
+
+      def self.process_batched_query(db_object, batched_query, log, capture_exceptions)
+        total_rows_processed = 0
+        affected_rows_count = 0
         begin
           begin
             affected_rows_count = db_object.execute(batched_query)
@@ -65,11 +80,7 @@ module CartoDB
             affected_rows_count = -1
           end
         end while affected_rows_count > 0
-
-        remove_processed_column(db_object, table_name, temp_column)
-
-        log.log "FINISHED: #{log_message}"
-      end #self.execute
+      end
 
       def self.add_processed_column(db_object, table_name, column_name)
         db_object.run(%Q{

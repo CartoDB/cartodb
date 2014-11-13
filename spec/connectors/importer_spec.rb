@@ -18,6 +18,9 @@ describe CartoDB::Connector::Importer do
     # if you remove that rescue this test will fail
 
     runner = mock
+    log = mock
+    runner.stubs(:log).returns(log)
+    log.expects(:append).at_least(0)
     quota_checker = mock
     id = UUIDTools::UUID.timestamp_create.to_s
     destination_schema = 'public'

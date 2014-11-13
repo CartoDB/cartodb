@@ -65,6 +65,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/source_file_spec.rb \
+  services/importer/spec/unit/content_guesser_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \
@@ -110,6 +111,7 @@ WORKING_SPECS_7 = \
   $(NULL)
 
 WORKING_SPECS_8 = \
+  spec/models/asset_spec.rb \
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \

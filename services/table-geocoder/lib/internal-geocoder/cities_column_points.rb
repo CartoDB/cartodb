@@ -26,12 +26,14 @@ module CartoDB
 
       def copy_results_to_table_query
         %Q{
-          UPDATE #{@internal_geocoder.qualified_table_name} AS dest
+          UPDATE #{dest_table}
           SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
+          #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
           FROM #{@internal_geocoder.temp_table_name} AS orig
           WHERE trim(#{@internal_geocoder.column_name}::text) = orig.geocode_string
-            AND trim(dest.#{@internal_geocoder.country_column}::text) = orig.country
-            AND dest.cartodb_georef_status IS NULL
+            AND trim(#{dest_table}.#{@internal_geocoder.country_column}::text) = orig.country
+            AND #{dest_table}.cartodb_georef_status IS NULL
+          #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
         }
       end
 

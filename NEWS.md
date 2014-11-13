@@ -4,12 +4,30 @@
   - Raster import: Drag & drop geotif files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS.
     This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
 
+3.2.12 (2014-11-13)
+------------------
+* New features
+  - Country guessing on import. Figure out if any column contains country information and automatically geocode the table. Depends on the geocoder. Take a look at the entry `content_guessing:` in `config/app_config.yml.sample`
+* Fixed bugs
+  - Remove cumulative option for torque cat. wizard #903
+
+3.2.11 (2014-11-11)
+------------------
+* New features
+  - Removal of 19 unused or no longer needed gems
+  - Allows to show an 'available for hire' banner in your public profile. 
+* Fixed bugs
+  - Fixed internal geocoder for org users
+
 
 3.2.10 (2014-11-07)
 ------------------
 * New features
   - Mapviews graph for everybody.
   - New rainbow basemaps.
+* Fixed bugs
+  - Made lib/sql git submodule point to 0.4.1 tag
+  - Batch internal geocoder update queries to avoid db timeouts
 
 3.2.9 (2014-11-03)
 ------------------

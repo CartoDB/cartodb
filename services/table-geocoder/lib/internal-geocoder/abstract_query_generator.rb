@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative 'input_type_resolver'
+require_relative '../../../importer/lib/importer/query_batcher'
 
 module CartoDB
   module InternalGeocoder
@@ -27,6 +28,10 @@ module CartoDB
       def country
         country = @internal_geocoder.countries
         country == %Q{'world'} ? 'null' : country
+      end
+
+      def dest_table
+        @internal_geocoder.qualified_table_name
       end
 
     end # AbstractQueryGenerator

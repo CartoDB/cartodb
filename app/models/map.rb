@@ -82,7 +82,7 @@ class Map < Sequel::Model
       view_bounds_sw: "[#{result[:miny]}, #{result[:minx]}]"
     )
   rescue Sequel::DatabaseError => exception
-    notify_airbrake(exception)
+    CartoDB::notify_exception(exception, { user: user } )
   end
 
   def viz_updated_at

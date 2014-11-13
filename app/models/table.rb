@@ -460,7 +460,7 @@ class Table < Sequel::Model(:user_tables)
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
           # only reset the sequence on real imports.
-          
+
           if max_cartodb_id
             user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
           end
@@ -489,7 +489,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import  = DataImport.find(:id=>self.data_import_id)
       end
 
-      importer_result_name = import_to_cartodb
+      importer_result_name = import_to_cartodb(name)
 
       @data_import.reload
       @data_import.table_name = importer_result_name
@@ -1199,8 +1199,7 @@ class Table < Sequel::Model(:user_tables)
             nil,  # QueryBatcher will use a simple internal to console logger
             'georeferencing table rows',
             false,
-            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round,
-            'cartodb_id'
+            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round
         )
       end
       schema(reload: true)
@@ -1506,6 +1505,7 @@ class Table < Sequel::Model(:user_tables)
     name_candidates = self.owner.tables.select_map(:name) if owner
 
     options.merge!(name_candidates: name_candidates)
+    options.merge!(connection: self.owner.connection) unless self.owner.nil?
     unless options[:database_schema].present? || self.owner.nil?
       options.merge!(database_schema: self.owner.database_schema)
     end
@@ -1534,8 +1534,9 @@ class Table < Sequel::Model(:user_tables)
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
-    existing_names = options[:name_candidates] || \
-      options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname)
+    # 
+    existing_names = []
+    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
@@ -1773,4 +1774,3 @@ class Table < Sequel::Model(:user_tables)
   end
 
 end
-

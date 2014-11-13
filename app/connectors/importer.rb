@@ -120,16 +120,22 @@ module CartoDB
         @rename_attempts = 0
         new_name
       rescue => exception
-        retry unless @rename_attempts > MAX_RENAME_RETRIES
-        @rename_attempts = 0
+        if @rename_attempts <= MAX_RENAME_RETRIES
+	  runner.log.append("Silently retrying renaming #{current_name} to #{new_name}. ")
+          retry
+        else
+          raise CartoDB::Importer2::InvalidNameError.new
+        end
+	@rename_attempts = 0
       end
 
       def rename_the_geom_index_if_exists(current_name)
         database.execute(%Q{
-          ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
+          ALTER INDEX IF EXISTS "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
-      rescue
+      rescue => exception
+        runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
       end
 
       def persist_metadata(result, name, data_import_id)

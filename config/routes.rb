@@ -313,6 +313,10 @@ CartoDB::Application.routes.draw do
 
   scope :module => 'superadmin', :format => :json do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
+    get '/superadmin/stats/total_users' => 'platform#total_users'
+    get '/superadmin/stats/total_datasets' => 'platform#total_datasets'
+    get '/superadmin/stats/total_seats_among_orgs' => 'platform#total_seats_among_orgs'
+    get '/superadmin/stats/total_shared_objects_among_orgs' => 'platform#total_shared_objects_among_orgs'
   end
 
 end

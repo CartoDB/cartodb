@@ -612,3 +612,4 @@ See TESTING.md
   - Diego Muñoz ([kartones](https://twitter.com/kartones))
   - Raul Ochoa ([rochoa](https://twitter.com/rochoa))
   - Nicolás M. Jaremek ([NickJaremek](https://twitter.com/NickJaremek))
+  - Jaime Chapinal ([Xatpy](https://twitter.com/chapi13))

@@ -38,13 +38,15 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    @tags             = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
-    @username         = viewed_user.username
-    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
-    @twitter_username = viewed_user.twitter_username 
-    @description      = viewed_user.description  
-    @website          = viewed_user.website 
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, '') : ''
+    @tags               = viewed_user.tags(true, Visualization::Member::CANONICAL_TYPE)
+    @username           = viewed_user.username
+    @name               = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @available_for_hire = viewed_user.available_for_hire
+    @email              = viewed_user.email
+    @twitter_username   = viewed_user.twitter_username 
+    @description        = viewed_user.description  
+    @website            = viewed_user.website 
+    @website_clean      = @website ? @website.gsub(/https?:\/\//, '') : ''
 
     @avatar_url = viewed_user.avatar
 
@@ -144,13 +146,15 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    @tags             = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
-    @username         = viewed_user.username
-    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
-    @twitter_username = viewed_user.twitter_username 
-    @description      = viewed_user.description
-    @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @tags               = viewed_user.tags(true, Visualization::Member::DERIVED_TYPE)
+    @username           = viewed_user.username
+    @name               = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @twitter_username   = viewed_user.twitter_username 
+    @available_for_hire = viewed_user.available_for_hire
+    @email              = viewed_user.email
+    @description        = viewed_user.description
+    @website            = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
+    @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
 
     @avatar_url = viewed_user.avatar
 

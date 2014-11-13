@@ -1,7 +1,8 @@
-3.2.11 (2014-11-XX)
+3.2.11 (2014-11-11)
 ------------------
 * New features
   - Removal of 19 unused or no longer needed gems
+  - Allows to show an 'available for hire' banner in your public profile. 
 * Fixed bugs
   - Fixed internal geocoder for org users
 

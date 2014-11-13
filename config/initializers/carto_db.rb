@@ -95,6 +95,12 @@ module CartoDB
     VERSION_1 = "v1"
   end
 
+  begin
+    CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
+  rescue
+    CARTODB_REV = nil
+  end
+
   PUBLIC_DB_USER  = 'publicuser'
   PUBLIC_DB_USER_PASSWORD  = 'publicuser'
   TILE_DB_USER    = 'tileuser'
@@ -196,6 +202,10 @@ module CartoDB
       title: 'Invalid ArcGIS version',
       what_about: "The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards."
     },
+    1014 => {
+      title: 'Invalid name',
+      what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -206,7 +216,7 @@ module CartoDB
     },
     2003 => {
       title: 'Malformed CSV',
-      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields."
+      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV."
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',

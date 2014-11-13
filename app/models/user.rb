@@ -131,7 +131,7 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
-    if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
+    if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
        changes.include?(:twitter_username) || changes.include?(:dynamic_cdn_enabled)
       invalidate_varnish_cache(regex: '.*:vizjson')
@@ -400,9 +400,7 @@ class User < Sequel::Model
     configuration = get_db_configuration_for(options[:as])
 
     connection = $pool.fetch(configuration) do
-      db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
-      end)))
+      db = get_database(options, configuration)
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
@@ -413,6 +411,20 @@ class User < Sequel::Model
     else
       connection
     end
+  end
+
+  def connection(options = {})
+    configuration = get_db_configuration_for(options[:as])
+
+    $pool.fetch(configuration) do
+      get_database(options, configuration)
+    end
+  end
+
+  def get_database(options, configuration)
+      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
+      end)))
   end
 
   def get_db_configuration_for(user = nil)

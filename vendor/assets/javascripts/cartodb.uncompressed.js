@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.24
 // uncompressed version: cartodb.uncompressed.js
-// sha: b8f6a07ae7ca84149686992274d9761580e825c9
+// sha: 0d71d79cf1ba86f4bf37036a0019068a0764ff8a
 (function() {
   var root = this;
 
@@ -28772,9 +28772,9 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   if(typeof(L) == "undefined")
     return;
 
-  var defaultSubstitute = function defaultSubstitute(lightOrDark) {
+  var stamenSubstitute = function stamenSubstitute(type) {
     return {
-      url: 'http://{s}.basemaps.cartocdn.com/'+ (lightOrDark || "light") +'_all/{z}/{x}/{y}.png',
+      url: 'http://{s}.basemaps.cartocdn.com/'+ type +'_all/{z}/{x}/{y}.png',
       subdomains: 'abcd',
       minZoom: 0,
       maxZoom: 18,
@@ -28793,9 +28793,9 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   };
 
   var substitutes = {
-    roadmap: defaultSubstitute(),
-    gray_roadmap: defaultSubstitute(),
-    dark_roadmap: defaultSubstitute('dark'),
+    roadmap: nokiaSubstitute('normal'),
+    gray_roadmap: stamenSubstitute('light'),
+    dark_roadmap: stamenSubstitute('dark'),
     hybrid: nokiaSubstitute('hybrid'),
     terrain: nokiaSubstitute('terrain'),
     satellite: nokiaSubstitute('satellite')
@@ -30014,7 +30014,6 @@ _.extend(
   google.maps.ImageMapType.prototype, {
 
     getTileUrl: function(tile, zoom) {
-      console.log("jamon");
       var y = tile.y;
       var tileRange = 1 << zoom;
       if (y < 0 || y  >= tileRange) {

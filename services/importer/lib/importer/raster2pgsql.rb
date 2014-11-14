@@ -42,7 +42,12 @@ module CartoDB
 
         run_raster2pgsql(overviews_list)
 
-        run_psql
+        run_psql psql_file_command(sql_filepath)
+
+        run_psql psql_inline_command(%Q{
+          create index on #{SCHEMA}.#{table_name} (min(st_summarystats(#{RASTER_COLUMN_NAME},1)));
+          create index on #{SCHEMA}.#{table_name} (max(st_summarystats(#{RASTER_COLUMN_NAME},1)));}
+        )
         self
       end
 
@@ -120,10 +125,10 @@ module CartoDB
         raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
       end
 
-      def run_psql
-        stdout, stderr, status  = Open3.capture3(psql_command)
+      def run_psql(command)
+        stdout, stderr, status  = Open3.capture3(command)
         output_message = stdout + stderr
-        output_message = "(#{status}) |#{output_message}| Command: #{psql_command}"
+        output_message = "(#{status}) |#{output_message}| Command: #{command}"
         self.command_output << "\n#{output_message}"
         self.exit_code = status.to_i
 
@@ -163,13 +168,21 @@ module CartoDB
         %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name} > #{sql_filepath})
       end
 
-      def psql_command
+      def psql_file_command(filename)
+        psql_base_command %Q(-f #{filename})
+      end
+
+      def psql_inline_command(query)
+        psql_base_command %Q(-c "#{query}")
+      end
+
+      def psql_base_command(extra_params)
         host      = pg_options.fetch(:host)
         port      = pg_options.fetch(:port)
         user      = pg_options.fetch(:user)
         database  = pg_options.fetch(:database)
 
-        %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} -f #{sql_filepath})
+        %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} #{extra_params})
       end
 
       def raster2pgsql_path

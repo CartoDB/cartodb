@@ -1,3 +1,8 @@
+3.2.13 (2014-11-14)
+-------------------
+ * Fixed bugs
+   - Timeouts in internal geocoder #1152
+
 3.2.12 (2014-11-13)
 ------------------
 * New features

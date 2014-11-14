@@ -4,9 +4,9 @@
   if(typeof(L) == "undefined")
     return;
 
-  var defaultSubstitute = function defaultSubstitute(lightOrDark) {
+  var stamenSubstitute = function stamenSubstitute(type) {
     return {
-      url: 'http://{s}.basemaps.cartocdn.com/'+ (lightOrDark || "light") +'_all/{z}/{x}/{y}.png',
+      url: 'http://{s}.basemaps.cartocdn.com/'+ type +'_all/{z}/{x}/{y}.png',
       subdomains: 'abcd',
       minZoom: 0,
       maxZoom: 18,
@@ -25,9 +25,9 @@
   };
 
   var substitutes = {
-    roadmap: defaultSubstitute(),
-    gray_roadmap: defaultSubstitute(),
-    dark_roadmap: defaultSubstitute('dark'),
+    roadmap: nokiaSubstitute('normal'),
+    gray_roadmap: stamenSubstitute('light'),
+    dark_roadmap: stamenSubstitute('dark'),
     hybrid: nokiaSubstitute('hybrid'),
     terrain: nokiaSubstitute('terrain'),
     satellite: nokiaSubstitute('satellite')

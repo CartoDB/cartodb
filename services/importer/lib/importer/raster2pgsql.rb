@@ -128,7 +128,6 @@ module CartoDB
         self.exit_code = status.to_i
 
         raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
-        raise TiffToSqlConversionError.new(output_message)  if output_message =~ /error/i || output_message =~ /aborted/i
       end
 
       def calculate_raster_scale(pixel_size)

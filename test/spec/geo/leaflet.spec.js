@@ -276,34 +276,63 @@ describe('LeafletMapView', function() {
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.
-  var expectedSubstituteDefault = { // New Stamen basemaps
-    tileUrlRegex: /.+[a-d]\.basemaps\.cartocdn\.com\/(light|dark)_all\/303\/101\/202.+/,
-    subdomains: ['a','b','c','d'],
-    minZoom: 0,
-    maxZoom: 18,
-    attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
-  };
   _({ // GMaps basemap base_type: expected substitute data
     //empty = defaults to gray_roadmap
-    "": expectedSubstituteDefault,
-    roadmap: expectedSubstituteDefault,
-    dark_roadmap: expectedSubstituteDefault,
-    hybrid: { // Nokia Hybrid Day
-      tileUrlRegex: /https:\/\/[1-4]\.maps\.nlp\.nokia\.com\/maptile\/\d+\.\d+\/maptile\/newest\/hybrid\.day\/303\/101\/202\/.+/,
+    "": {
+      tiles: {
+        providedBy: "cartocdn",
+        type: "light"
+      },
+      subdomains: ['a','b','c','d'],
+      minZoom: 0,
+      maxZoom: 18,
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+    },
+    dark_roadmap: {
+      tiles: {
+        providedBy: "cartocdn",
+        type: "dark"
+      },
+      subdomains: ['a','b','c','d'],
+      minZoom: 0,
+      maxZoom: 18,
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+    },
+    roadmap: {
+      tiles: {
+        providedBy: "nokia",
+        type: "normal.day"
+      },
       subdomains: ['1','2','3','4'],
       minZoom: 0,
       maxZoom: 21,
       attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
     },
-    terrain: { // Nokia Terrain Day
-      tileUrlRegex: /https:\/\/[1-4]\.maps\.nlp\.nokia\.com\/maptile\/\d+\.\d+\/maptile\/newest\/terrain\.day\/303\/101\/202\/.+/,
+    hybrid: {
+      tiles: {
+        providedBy: "nokia",
+        type: "hybrid.day"
+      },
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+    },
+    terrain: {
+      tiles: {
+        providedBy: "nokia",
+        type: "terrain.day"
+      },
       subdomains: ['1','2','3','4'],
       minZoom: 0,
       maxZoom: 21,
       attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
     },
     satellite: { // Nokia Satellite Day
-      tileUrlRegex: /https:\/\/[1-4]\.maps\.nlp\.nokia\.com\/maptile\/\d+\.\d+\/maptile\/newest\/satellite\.day\/303\/101\/202\/.+/,
+      tiles: {
+        providedBy: "nokia",
+        type: "satellite.day"
+      },
       subdomains: ['1','2','3','4'],
       minZoom: 0,
       maxZoom: 21,
@@ -329,7 +358,10 @@ describe('LeafletMapView', function() {
       });
 
       it("should have a tileUrl based on substitute's template URL", function() {
-        expect(view.getTileUrl({ x: 101, y: 202, z: 303 })).toMatch(substitute.tileUrlRegex);
+        var tileUrl = view.getTileUrl({ x: 101, y: 202, z: 303 });
+
+        expect(tileUrl).toContain(substitute.tiles.providedBy);
+        expect(tileUrl).toContain(substitute.tiles.type);
       });
 
       it("should have substitute's attribution", function() {

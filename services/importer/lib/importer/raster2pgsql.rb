@@ -12,6 +12,7 @@ module CartoDB
       ALIGNED_WEBMERCATOR_FILENAME  = '%s_aligned_webmercator.tif'
       SQL_FILENAME                  = '%s%s.sql'
       OVERLAY_TABLENAME             = 'o_%s_%s'
+      RASTER_COLUMN_NAME            = 'the_raster_webmercator'
 
       def initialize(table_name, filepath, pg_options)
         self.filepath             = filepath
@@ -159,8 +160,7 @@ module CartoDB
       end
 
       def raster2pgsql_command(overviews_list)
-        # We currently we don't apply any constraint
-        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -Y -I -f the_raster_webmercator ) +
+        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -Y -I -f #{RASTER_COLUMN_NAME} ) +
         %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name} > #{sql_filepath})
       end
 

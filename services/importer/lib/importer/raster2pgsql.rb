@@ -160,7 +160,7 @@ module CartoDB
 
       def raster2pgsql_command(overviews_list)
         # We currently we don't apply any constraint
-        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -Y -I -f the_raster_webmercator ) +
+        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -Y -I -f the_raster_webmercator ) +
         %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name} > #{sql_filepath})
       end
 

@@ -2,10 +2,18 @@
 
 module CartoDB
   module Importer2
+
+    # Take a sample from a database table.
+    # It uses an ids_column that must have an index created on it,
+    # in order to use just index scans instead of seq scans.
     class TableSampler
 
       attr_reader :db, :qualified_table_name, :ids_column, :sample_size
 
+      # @param db mixed
+      # @param qualified_table_name string
+      # @param ids_column string
+      # @param sample_size int
       def initialize db, qualified_table_name, ids_column, sample_size
         @db = db
         @qualified_table_name = qualified_table_name

@@ -1,3 +1,8 @@
+3.2.14 (2014-11-17)
+-------------------
+ * Fixed bugs
+   - Geocoding: change "Place" by "Country" in City name and Postal code options.
+
 3.2.13 (2014-11-14)
 -------------------
  * Fixed bugs

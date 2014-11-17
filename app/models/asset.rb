@@ -81,7 +81,8 @@ class Asset < Sequel::Model
     local_path = Rails.root.join 'public', 'uploads', target_asset_path
     FileUtils.mkdir_p local_path
     FileUtils.cp @file.path, local_path.join(filename)
-    File.join('/', 'uploads', target_asset_path, filename)
+    p = File.join('/', 'uploads', target_asset_path, filename)
+    "http://#{Cartodb.config[:account_host]}#{p}"
   end
 
   def use_s3?

@@ -6,6 +6,7 @@ module CartoDB
 
       COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
       MINIMUM_ENTROPY = 0.9
+      IDS_COLUMN = 'ogc_fid'
 
       def initialize(db, table_name, schema, options)
         @db         = db
@@ -89,18 +90,28 @@ module CartoDB
       end
 
       def sample_where_clause
-        @min_id, @max_id = index_limits[:min_id], index_limits[:max_id]
-        @ids_count = @max_id - @min_id + 1
-        if @ids_count <= sample_size
+        if ids_count <= sample_size
           ""
         else
-          "WHERE ogc_fid IN (#{sample_indices.to_a.join(',')})"
+          "WHERE #{IDS_COLUMN} IN (#{sample_indices.to_a.join(',')})"
         end
+      end
+
+      def ids_count
+        @ids_count ||= max_id - min_id + 1
+      end
+
+      def min_id
+        @min_id ||= index_limits[:min_id]
+      end
+
+      def max_id
+        @max_id ||= index_limits[:max_id]
       end
 
       #TODO move to a collaborator
       def sample_indices
-        if @ids_count / 2 > sample_size
+        if ids_count / 2 > sample_size
           sample_indices_add_method
         else
           sample_indices_delete_method
@@ -126,9 +137,8 @@ module CartoDB
       end
 
       def index_limits
-        #TODO extract ogc_fid somewhere
         @index_limits ||= @db[%Q(
-          SELECT min(ogc_fid) AS min_id, max(ogc_fid) AS max_id
+          SELECT min(#{IDS_COLUMN}) AS min_id, max(#{IDS_COLUMN}) AS max_id
           FROM #{qualified_table_name}
         )].first
       end

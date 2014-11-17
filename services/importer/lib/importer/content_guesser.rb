@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative 'table_sampler'
+
 module CartoDB
   module Importer2
     class ContentGuesser
@@ -74,73 +76,16 @@ module CartoDB
         matches.to_f / sample.count
       end
 
+      def sample
+        @sample ||= TableSampler.new(@db, qualified_table_name, IDS_COLUMN, sample_size).sample
+      end
+
       def threshold
         @options[:guessing][:threshold]
       end
 
       def is_country_column_type? column
         ['character varying', 'varchar', 'text'].include? column[:data_type]
-      end
-
-      def sample
-        @sample ||= @db[%Q(
-          SELECT * FROM #{qualified_table_name}
-          #{sample_where_clause}
-        )].all
-      end
-
-      def sample_where_clause
-        if ids_count <= sample_size
-          ""
-        else
-          "WHERE #{IDS_COLUMN} IN (#{sample_indices.to_a.join(',')})"
-        end
-      end
-
-      def ids_count
-        @ids_count ||= max_id - min_id + 1
-      end
-
-      def min_id
-        @min_id ||= index_limits[:min_id]
-      end
-
-      def max_id
-        @max_id ||= index_limits[:max_id]
-      end
-
-      #TODO move to a collaborator
-      def sample_indices
-        if ids_count / 2 > sample_size
-          sample_indices_add_method
-        else
-          sample_indices_delete_method
-        end
-      end
-
-      def sample_indices_add_method
-        sample_indices = Set.new
-        while sample_indices.size < sample_size
-          random_index = rand(@min_id..@max_id)
-          sample_indices.add(random_index)
-        end
-        sample_indices
-      end
-
-      def sample_indices_delete_method
-        sample_indices = Set.new(@min_id..@max_id)
-        while sample_indices.size > sample_size
-          random_index = rand(@min_id..@max_id)
-          sample_indices.delete random_index
-        end
-        sample_indices
-      end
-
-      def index_limits
-        @index_limits ||= @db[%Q(
-          SELECT min(#{IDS_COLUMN}) AS min_id, max(#{IDS_COLUMN}) AS max_id
-          FROM #{qualified_table_name}
-        )].first
       end
 
       def sample_size

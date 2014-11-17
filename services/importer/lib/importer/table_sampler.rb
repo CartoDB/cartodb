@@ -14,20 +14,21 @@ module CartoDB
       end
 
       def sample
-        db[%Q(
-          SELECT * FROM #{qualified_table_name}
-          #{sample_where_clause}
-        )].all
+        db[sample_query].all
       end
 
-      def sample_where_clause
+
+      private
+
+      def sample_query
         if ids_count <= sample_size
-          ""
+          %Q[SELECT * FROM #{qualified_table_name}]
         else
-          "WHERE #{ids_column} IN (#{sample_indices.to_a.join(',')})"
+          %Q[SELECT * FROM #{qualified_table_name} WHERE #{ids_column} IN (#{sample_indices.to_a.join(',')})]
         end
       end
 
+      # Gets sample_size random ids  of the rows to sample
       def sample_indices
         if ids_count / 2 > sample_size
           sample_indices_add_method
@@ -36,6 +37,7 @@ module CartoDB
         end
       end
 
+      # Add indices to the null set until we have sample_size indices
       def sample_indices_add_method
         sample_indices = Set.new
         while sample_indices.size < sample_size
@@ -45,6 +47,7 @@ module CartoDB
         sample_indices
       end
 
+      # Remove indices from the index space when sample_size is comparable to the index space
       def sample_indices_delete_method
         sample_indices = Set.new(min_id..max_id)
         while sample_indices.size > sample_size
@@ -59,18 +62,19 @@ module CartoDB
       end
 
       def min_id
-        @min_id ||= id_min_max[:min_id]
+        @min_id ||= min_max_ids[:min]
       end
 
       def max_id
-        @max_id ||= id_min_max[:max_id]
+        @max_id ||= min_max_ids[:max]
       end
 
-      def id_min_max
-        @id_min_max ||= db[%Q(
-          SELECT min(#{ids_column}) AS min_id, max(#{ids_column}) AS max_id
-          FROM #{qualified_table_name}
-        )].first
+      def min_max_ids
+        @min_max_ids ||= db[min_max_ids_query].first
+      end
+
+      def min_max_ids_query
+        %Q(SELECT min(#{ids_column}), max(#{ids_column}) FROM #{qualified_table_name})
       end
 
     end

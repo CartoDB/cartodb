@@ -30,7 +30,7 @@ module Cartodb
       )
     end
 
-    def send_request(path, body, method, expected_codes, timeout)
+    def send_request(path, body, method, expected_codes, timeout = nil)
       request = build_request(path, body, method, timeout)
       response = request.run
       if expected_codes.include?(response.code)

@@ -84,8 +84,53 @@ module CartoDB
       def sample
         @sample ||= @db[%Q(
           SELECT * FROM #{qualified_table_name}
-          ORDER BY random() LIMIT #{sample_size}
+          #{sample_where_clause}
         )].all
+      end
+
+      def sample_where_clause
+        @min_id, @max_id = index_limits[:min_id], index_limits[:max_id]
+        @ids_count = @max_id - @min_id + 1
+        if @ids_count <= sample_size
+          ""
+        else
+          "WHERE ogc_fid IN (#{sample_indices.to_a.join(',')})"
+        end
+      end
+
+      #TODO move to a collaborator
+      def sample_indices
+        if @ids_count / 2 > sample_size
+          sample_indices_add_method
+        else
+          sample_indices_delete_method
+        end
+      end
+
+      def sample_indices_add_method
+        sample_indices = Set.new
+        while sample_indices.size < sample_size
+          random_index = rand(@min_id..@max_id)
+          sample_indices.add(random_index)
+        end
+        sample_indices
+      end
+
+      def sample_indices_delete_method
+        sample_indices = Set.new(@min_id..@max_id)
+        while sample_indices.size > sample_size
+          random_index = rand(@min_id..@max_id)
+          sample_indices.delete random_index
+        end
+        sample_indices
+      end
+
+      def index_limits
+        #TODO extract ogc_fid somewhere
+        @index_limits ||= @db[%Q(
+          SELECT min(ogc_fid) AS min_id, max(ogc_fid) AS max_id
+          FROM #{qualified_table_name}
+        )].first
       end
 
       def sample_size

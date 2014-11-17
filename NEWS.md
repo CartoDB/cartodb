@@ -2,6 +2,7 @@
 -------------------
  * Fixed bugs
    - Geocoding: change "Place" by "Country" in City name and Postal code options.
+   - ContentGuesser: use index scan instead of seq scans in DB queries
 
 3.2.13 (2014-11-14)
 -------------------

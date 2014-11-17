@@ -18,8 +18,8 @@ gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 
-# It's used in the dataimport and arcgis. Just two calls. 
-# It's a replacement for the ruby uri that it's supposed to 
+# It's used in the dataimport and arcgis. Just two calls.
+# It's a replacement for the ruby uri that it's supposed to
 # perform better parsing of a URI
 gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
@@ -81,7 +81,7 @@ group :development, :test do
   gem 'mocha',                 '0.10.5'
   gem 'ci_reporter',           '1.8.4'
 
-  gem 'debugger',              '1.6.5'
+  gem 'debugger',              '1.6.8'
 
   gem 'rspec-rails',           '2.10.1'
   gem 'capybara',              '1.1.2'

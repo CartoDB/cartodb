@@ -1016,6 +1016,10 @@ class User < Sequel::Model
     renamed_tables.each do |t|
       table = ::Table.find(:table_id => t[:oid])
       begin
+        Rollbar.report_message('ghost tables', 'debug', {
+          :action => 'rename',
+          :new_table => t[:relname]
+        })
         vis = table.table_visualization
         vis.name = t[:relname]
         vis.store
@@ -1029,6 +1033,10 @@ class User < Sequel::Model
     created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
     created_tables.each do |t|
       begin
+        Rollbar.report_message('ghost tables', 'debug', {
+          :action => 'registering table',
+          :new_table => t[:relname]
+        })
         table = Table.new
         table.user_id  = self.id
         table.name     = t[:relname]
@@ -1048,6 +1056,10 @@ class User < Sequel::Model
 
     # Remove tables with oids that don't exist on the db
     self.tables.where(table_id: dropped_tables).all.each do |table|
+      Rollbar.report_message('ghost tables', 'debug', {
+        :action => 'dropping table',
+        :new_table => table.name
+      })
       table.keep_user_database_table = true
       table.destroy
     end if dropped_tables.present?

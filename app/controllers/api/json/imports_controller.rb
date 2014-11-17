@@ -239,12 +239,10 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def _upload_file
-    form_upload = false
     case
     when params[:filename].present? && request.body.present?
       filename = params[:filename].original_filename rescue params[:filename].to_s
-      filepath = params[:filename].path rescue params[:filename].to_s
-      form_upload = true
+      filepath = params[:filename].path rescue ''
     when params[:file].present?
       filename = params[:file].original_filename rescue params[:file].to_s
       filepath = params[:file].path rescue ''
@@ -256,7 +254,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     s3_config = Cartodb.config[:importer]['s3']
 
-    if !form_upload && s3_config && s3_config['access_key_id'] && s3_config['secret_access_key']
+    if s3_config && s3_config['access_key_id'] && s3_config['secret_access_key']
       AWS.config(
         access_key_id: Cartodb.config[:importer]['s3']['access_key_id'],
         secret_access_key: Cartodb.config[:importer]['s3']['secret_access_key']

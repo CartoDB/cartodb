@@ -15,7 +15,7 @@ module.exports = {
         dryRun: false
       },
 
-      'js-dist': {
+      'js-bugfixing': {
         options: {
           overwrite: true,
           cache: false,
@@ -35,7 +35,24 @@ module.exports = {
               '!_*.js'
             ],
             dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          },{
+          }
+        ]
+      },
+
+      'js-minor': {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: true,
+          // It will not upload minor vesion when it comes from a
+          // custom version, because it could overwrite production
+          // version
+          dryRun: <%= config.bump.increment === 'custom' %>,
+          headers: {
+            ContentType: 'application/x-javascript'
+          }
+        },
+        files: [{
             // Minor version
             action: 'upload',
             expand: true,
@@ -49,7 +66,7 @@ module.exports = {
         ]
       },
 
-      'css-dist': {
+      'css-bugfixing': {
         options: {
           overwrite: true,
           cache: false,
@@ -68,7 +85,21 @@ module.exports = {
               'themes/**/*.css'
             ],
             dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          },{
+          }
+        ]
+      },
+
+      'css-minor': {
+        options: {
+          overwrite: true,
+          cache: false,
+          dryRun: <%= config.bump.increment === 'custom' %>,
+          gzip: true,
+          headers: {
+            ContentType: 'text/css'
+          }
+        },
+        files: [{
             // Minor version
             action: 'upload',
             expand: true,

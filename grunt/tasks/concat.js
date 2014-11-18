@@ -37,7 +37,7 @@ module.exports = {
             // - Solution, replacing text, directly, rude.
 
             return src
-              .replace(/<%= version %>/g, config.pkg.version)
+              .replace(/<%= version %>/g, grunt.config.get('bump.version'))
               .replace(/<%= sha %>/g, grunt.config.get('gitinfo').local.branch.current.SHA)
               .replace(/<%= load_jquery %>/g, true)
           }
@@ -84,7 +84,7 @@ module.exports = {
             // - Solution, replacing text, directly, rude.
 
             return src
-              .replace(/<%= version %>/g, config.pkg.version)
+              .replace(/<%= version %>/g, grunt.config.get('bump.version'))
               .replace(/<%= sha %>/g, grunt.config.get('gitinfo').local.branch.current.SHA)
               .replace(/<%= load_jquery %>/g, true)
           }
@@ -112,7 +112,7 @@ module.exports = {
             // - Solution, replacing text, directly, rude.
 
             return src
-              .replace(/<%= version %>/g, config.pkg.version)
+              .replace(/<%= version %>/g, grunt.config.get('bump.version'))
               .replace(/<%= sha %>/g, grunt.config.get('gitinfo').local.branch.current.SHA)
               .replace(/<%= load_jquery %>/g, true)
           }

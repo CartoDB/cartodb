@@ -42,6 +42,7 @@ class DataImport < Sequel::Model
     service_item_id
     type_guessing
     quoted_fields_guessing
+    content_guessing
   }
 
   # Not all constants are used, but so that we keep track of available states
@@ -376,13 +377,10 @@ class DataImport < Sequel::Model
   def content_guessing_options
     guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
     geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
-    if not guessing_config[:enabled] or not geocoder_config
-      { guessing: { enabled: false } }
+    if guessing_config[:enabled] and self.content_guessing and geocoder_config
+      { guessing: guessing_config, geocoder: geocoder_config }
     else
-      {
-        guessing: guessing_config,
-        geocoder: geocoder_config
-      }
+      { guessing: { enabled: false } }
     end
   end
 

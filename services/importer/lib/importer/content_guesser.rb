@@ -7,7 +7,7 @@ module CartoDB
     class ContentGuesser
 
       COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
-      MINIMUM_ENTROPY = 0.9
+      DEFAULT_MINIMUM_ENTROPY = 0.9
       IDS_COLUMN = 'ogc_fid'
 
       def initialize(db, table_name, schema, options)
@@ -39,7 +39,7 @@ module CartoDB
 
       def is_country_column?(column)
         return false unless is_country_column_type? column
-        return false unless metric_entropy(column) > MINIMUM_ENTROPY
+        return false unless metric_entropy(column) > minimum_entropy
         return country_proportion(column) > threshold
       end
 
@@ -90,6 +90,10 @@ module CartoDB
 
       def sample_size
         @options[:guessing][:sample_size]
+      end
+
+      def minimum_entropy
+        @minimum_entropy ||= @options[:guessing].fetch(:minimum_entropy) rescue DEFAULT_MINIMUM_ENTROPY
       end
 
       def countries

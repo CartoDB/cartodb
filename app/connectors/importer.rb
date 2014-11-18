@@ -91,11 +91,12 @@ module CartoDB
         rename_the_geom_index_if_exists(current_name, new_name)
         new_name
       rescue => exception
-        runner.log.append("Silently retrying renaming #{current_name} to #{new_name}. ")
+        message = "Silently retrying renaming #{current_name} to #{new_name}. "
+        runner.log.append(message)
         if rename_attempts <= MAX_RENAME_RETRIES
           retry
         else
-          raise CartoDB::Importer2::InvalidNameError.new
+          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}")
         end
       end
 

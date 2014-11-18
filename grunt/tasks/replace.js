@@ -76,6 +76,22 @@ module.exports = {
         }]
       },
 
+      examples: {
+        options: {
+          patterns: [{
+            match: '/\/<%= config.version.minor %>\//gi',
+            replacement: "/<%= grunt.config('bump.minor') %>/",
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['examples/**/*.html'],
+          dest: 'examples/'
+        }]
+      },
+
       releasing: {
         options: {
           patterns: [{

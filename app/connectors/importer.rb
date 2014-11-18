@@ -75,14 +75,14 @@ module CartoDB
       end
 
       def rename(current_name, new_name, rename_attempts=0)
+        target_new_name = new_name
         new_name = table_registrar.get_valid_table_name(new_name)
 
         if (rename_attempts > 0)
           new_name = "#{new_name}_#{rename_attempts}"
         end
-
         rename_attempts = rename_attempts + 1
-
+        
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}"
           RENAME TO "#{new_name}"
@@ -91,10 +91,10 @@ module CartoDB
         rename_the_geom_index_if_exists(current_name, new_name)
         new_name
       rescue => exception
-        message = "Silently retrying renaming #{current_name} to #{new_name}. "
+        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). "
         runner.log.append(message)
         if rename_attempts <= MAX_RENAME_RETRIES
-          retry
+          rename(current_name, target_new_name, rename_attempts)
         else
           raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}")
         end

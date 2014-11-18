@@ -1401,14 +1401,16 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      begin
-        owner.in_database.rename_table(@name_changed_from, name) unless errored
-      rescue StandardError => exception
-        exception_to_raise = CartoDB::BaseCartoDBError.new(
-            "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
-        CartoDB::notify_exception(exception_to_raise, user: owner)
+      if register_table_only != false
+        begin
+          owner.in_database.rename_table(@name_changed_from, name) unless errored
+        rescue StandardError => exception
+          exception_to_raise = CartoDB::BaseCartoDBError.new(
+              "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
+          CartoDB::notify_exception(exception_to_raise, user: owner)
+        end
+        propagate_namechange_to_table_vis unless errored
       end
-      propagate_namechange_to_table_vis unless errored
 
       unless errored
         if layers.blank?

@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <title>Legends | CartoDB.js</title>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" /> 
-    <!--[if lte IE 8]>
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" /> 
-    <![endif]-->
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" /> 
 
-    <script src="../../dist/_cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
     <script>
 
       window.onload = function() {
-
-        cdb.load('../../src/', function() {
 
           var map_viz_url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
 
@@ -112,8 +107,6 @@
             zoom: 3,
             no_cdn: true
           }).done(onVisDone);
-
-        });
 
       }
 

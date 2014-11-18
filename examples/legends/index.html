@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <title>Legends | CartoDB.js</title>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" /> 
-    <!--[if lte IE 8]>
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" /> 
-    <![endif]-->
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" /> 
 
-    <script src="../../dist/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
     <script>
 
       currentLegend = null;
@@ -64,8 +61,6 @@
       }
 
       window.onload = function() {
-
-        cdb.load('../../src/', function() {
 
           var customLegend = new cdb.geo.ui.Legend.Custom({
             title: "Custom Legend",
@@ -145,8 +140,6 @@
           };
 
           cartodb.createVis('map', map_viz_url, { legends: false, no_cdn: true }).done(onVisDone);
-
-        });
 
       }
 

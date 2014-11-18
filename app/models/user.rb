@@ -1021,6 +1021,7 @@ class User < Sequel::Model
           :new_table => t[:relname]
         })
         vis = table.table_visualization
+        vis.register_table_only = true
         vis.name = t[:relname]
         vis.store
       rescue Sequel::DatabaseError => e

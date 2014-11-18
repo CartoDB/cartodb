@@ -6,7 +6,6 @@
 
 module.exports = {
   task: function(grunt, config) {
-    
     return {
       options: {
         accessKeyId: "<%= secrets.S3_KEY %>",
@@ -47,7 +46,7 @@ module.exports = {
           // It will not upload minor vesion when it comes from a
           // custom version, because it could overwrite production
           // version
-          dryRun: <%= config.bump.increment === 'custom' %>,
+          dryRun: isVersionPrerelease(config.version.bugfixing),
           headers: {
             ContentType: 'application/x-javascript'
           }
@@ -93,7 +92,7 @@ module.exports = {
         options: {
           overwrite: true,
           cache: false,
-          dryRun: <%= config.bump.increment === 'custom' %>,
+          dryRun: isVersionPrerelease(config.version.bugfixing),
           gzip: true,
           headers: {
             ContentType: 'text/css'
@@ -177,4 +176,12 @@ module.exports = {
       }
     }
   }
+}
+
+
+// How to know if the version is prerelease or
+// not :(
+function isVersionPrerelease(v) {
+  var v = v.split('.');
+  return !/^[0-9]+$/.test(v[v.length - 1]);
 }

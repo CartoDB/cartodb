@@ -243,7 +243,7 @@ class User < Sequel::Model
         end
 
         # Drop user quota function
-        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._cdb_userquotainbytes()})
+        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._CDB_UserQuotaInBytes()})
         # If user is in an organization should never have public schema, so to be safe check
         drop_all_functions_from_schema(self.database_schema)
         unless self.database_schema == 'public'
@@ -1183,7 +1183,7 @@ class User < Sequel::Model
     in_database(:as => :superuser) do |db|
 
       if !cartodb_extension_version_pre_mu? && has_organization?
-        db.run("DROP FUNCTION IF EXISTS public._cdb_userquotainbytes();")
+        db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
       end
 
       db.transaction do
@@ -1694,9 +1694,10 @@ TRIGGER
   end
 
   # Cartodb functions
-  def load_cartodb_functions(statement_timeout = nil)
-
-    cdb_extension_target_version = '0.4.1' # TODO: optionally take as parameter?
+  def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
+    if cdb_extension_target_version.nil?
+      cdb_extension_target_version = '0.5.0'
+    end
 
     add_python
 
@@ -1722,32 +1723,32 @@ TRIGGER
           }).first[:count] > 0
 
         db.run(%Q{
-    DO LANGUAGE 'plpgsql' $$
-    DECLARE
-      ver TEXT;
-    BEGIN
-      BEGIN
-        SELECT cartodb.cdb_version() INTO ver;
-      EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
-        RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-        BEGIN
-          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
-        EXCEPTION WHEN undefined_table THEN
-          RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
-          RETURN;
-        END;
-        RETURN;
-      END;
-      ver := '#{cdb_extension_target_version}';
-      IF position('dev' in ver) > 0 THEN
-        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-      ELSE
-        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-      END IF;
-    END;
-    $$;
+          DO LANGUAGE 'plpgsql' $$
+          DECLARE
+            ver TEXT;
+          BEGIN
+            BEGIN
+              SELECT cartodb.cdb_version() INTO ver;
+            EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
+              RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+              BEGIN
+                CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
+              EXCEPTION WHEN undefined_table THEN
+                RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+                CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
+                RETURN;
+              END;
+              RETURN;
+            END;
+            ver := '#{cdb_extension_target_version}';
+            IF position('dev' in ver) > 0 THEN
+              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+            ELSE
+              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+            END IF;
+          END;
+          $$;
         })
 
         unless statement_timeout.nil?
@@ -1755,7 +1756,6 @@ TRIGGER
         end
 
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
-
 
         unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
           raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
@@ -1765,11 +1765,10 @@ TRIGGER
       end
     end
 
-    # We reset the connections to this database to be sure
-    # the change in default search_path is effective
-    # TODO: only reset IFF migrating from pre-extension times
+    # We reset the connections to this database to be sure the change in default search_path is effective
     self.reset_pooled_connections
 
+    self.rebuild_quota_trigger
   end
 
   def set_statement_timeouts

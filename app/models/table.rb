@@ -1324,24 +1324,32 @@ class Table < Sequel::Model(:user_tables)
         SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
       })
 
-      exists_geom_cols = user_database[%Q{
-        SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
+      is_raster = user_database[%Q{
+        SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
       }].first
 
-      exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
+      if is_raster
+        user_database.run(%Q{
+          SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        })
+      else
+        exists_geom_cols = user_database[%Q{
+          SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
+        }].first
+        exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
 
-      # This are the two hot zones
-      user_database.run(%Q{
-        SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
-      })
-      user_database.run(%Q{
-        SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
-      })
+        # This are the two hot zones
+        user_database.run(%Q{
+          SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
+        })
+          user_database.run(%Q{
+          SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
+        })
 
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-      })
-
+        user_database.run(%Q{
+          SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        })
+      end
     end
 
     self.schema(reload:true)

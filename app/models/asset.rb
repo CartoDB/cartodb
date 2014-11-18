@@ -92,7 +92,8 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      FileUtils.rm("#{Rails.root}/public#{public_url}") rescue ''
+      local_url = public_url.gsub(/http:\/\/#{Cartodb.config[:account_host]}/,'')
+      FileUtils.rm("#{Rails.root}/public#{local_url}") rescue ''
       return
     end
     basename = File.basename(public_url)

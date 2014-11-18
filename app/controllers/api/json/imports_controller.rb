@@ -259,8 +259,14 @@ class Api::Json::ImportsController < Api::ApplicationController
     random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
 
     s3_config = Cartodb.config[:importer]['s3']
+    
+    file = nil
+    if ajax_upload
+      file = save_body_to_file(params, request, random_token, filename)
+      filepath = file.path
+    end
 
-    if !ajax_upload && s3_config && s3_config['access_key_id'] && s3_config['secret_access_key']
+    if s3_config && s3_config['access_key_id'] && s3_config['secret_access_key']
       AWS.config(
         access_key_id: Cartodb.config[:importer]['s3']['access_key_id'],
         secret_access_key: Cartodb.config[:importer]['s3']['secret_access_key']
@@ -273,25 +279,39 @@ class Api::Json::ImportsController < Api::ApplicationController
 
       o.write(Pathname.new(filepath), { acl: :authenticated_read })
 
-      o.url_for(:get, expires: s3_config['url_ttl']).to_s
-    else
-      case
-        when params[:filename].present? && request.body.present?
-          filedata = params[:filename].read.force_encoding('utf-8') rescue request.body.read.force_encoding('utf-8')
-        when params[:file].present?
-          filedata = params[:file].read.force_encoding('utf-8')
-        else
-          return
+      file_url = o.url_for(:get, expires: s3_config['url_ttl']).to_s
+
+      if ajax_upload
+        File.delete(file.path)
       end
 
-      FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
-
-      file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
-      file.write filedata
-      file.close
-      # Force GC pass to avoid stale memory
-      filedata = nil
+      file_url
+    else
+      if !ajax_upload
+        file = save_body_to_file(params, request, random_token, filename)
+      end
       file.path[/(\/uploads\/.*)/, 1]
     end
   end
+
+  def save_body_to_file(params, request, random_token, filename)
+    case
+      when params[:filename].present? && request.body.present?
+        filedata = params[:filename].read.force_encoding('utf-8') rescue request.body.read.force_encoding('utf-8')
+      when params[:file].present?
+        filedata = params[:file].read.force_encoding('utf-8')
+      else
+        return
+    end
+
+    FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
+
+    file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
+    file.write filedata
+    file.close
+    # Force GC pass to avoid stale memory
+    filedata = nil
+    file
+  end
+
 end

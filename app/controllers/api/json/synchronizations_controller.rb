@@ -28,7 +28,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         user_id:                current_user.id,
         state:                  Synchronization::Member::STATE_CREATED,
         type_guessing:          params.fetch(:type_guessing, default_type_guessing),
-        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing)
+        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing),
+        content_guessing:       ["true", true].include?(params[:content_guessing])
     )
 
     if from_sync_file_provider?

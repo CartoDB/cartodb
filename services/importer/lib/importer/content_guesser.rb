@@ -11,11 +11,12 @@ module CartoDB
       DEFAULT_MINIMUM_ENTROPY = 0.9
       IDS_COLUMN = 'ogc_fid'
 
-      def initialize(db, table_name, schema, options)
+      def initialize(db, table_name, schema, options, job=nil)
         @db         = db
         @table_name = table_name
         @schema     = schema
         @options    = options
+        @job        = job
       end
 
       def enabled?
@@ -74,7 +75,13 @@ module CartoDB
       def country_proportion(column)
         column_name_sym = column[:column_name].to_sym
         matches = sample.count { |row| countries.include? row[column_name_sym].gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
-        matches.to_f / sample.count
+        country_proportion = matches.to_f / sample.count
+        log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
+        return country_proportion
+      end
+
+      def log(msg)
+        @job.log msg if @job
       end
 
       def sample

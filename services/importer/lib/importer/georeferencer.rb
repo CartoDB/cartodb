@@ -25,7 +25,7 @@ module CartoDB
         @from_geojson_with_transform = false
         @options = options
         @tracker = @options[:tracker] || lambda { |state| state }
-        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options)
+        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options, @job)
       end
 
       def mark_as_from_geojson_with_transform

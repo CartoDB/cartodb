@@ -14,6 +14,10 @@ module CartoDB
           ['fake_table']
         end
 
+        def additional_support_tables
+          []
+        end
+
       end # Loader
     end # Doubles
   end # Importer2

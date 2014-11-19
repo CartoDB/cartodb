@@ -1,3 +1,6 @@
+3.11.25 (XX//XX/2014)
+- #211 - Viz made with Torque between 2 different dates shows date + time
+
 3.11.24 (11//11//2014)
 - don't render the fullscreen overlay for unsupported versions of IE
 - fixed using same callback name when there are more than one layer (#186)

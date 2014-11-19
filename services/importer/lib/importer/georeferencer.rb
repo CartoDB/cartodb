@@ -108,7 +108,10 @@ module CartoDB
         return false if not @content_guesser.enabled?
         job.log 'Trying country guessing...'
         @tracker.call('guessing')
+        time_start = Time.now
         country_column_name = @content_guesser.country_column
+        job.log "Guessing completed in #{((Time.now - time_start)*1000.0).to_i} ms"
+        @tracker.call('importing')
         if country_column_name
           create_the_geom_in table_name
           job.log "Found country column: #{country_column_name}"
@@ -134,6 +137,7 @@ module CartoDB
         )
         geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
         geocoder.run
+        @tracker.call('importing')
         job.log "Geocoding finished"
         geocoder.state == 'completed'
       end

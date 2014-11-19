@@ -1,8 +1,19 @@
-3.2.X (2014-XX-XX)
+3.2.15 (2014-11-20)
 ------------------
 * New features
   - Raster import: Drag & drop geotif files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS.
     This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
+3.2.14 (2014-11-17)
+-------------------
+ * Fixed bugs
+   - Geocoding: change "Place" by "Country" in City name and Postal code options.
+   - ContentGuesser: use index scan instead of seq scans in DB queries
+
+3.2.13 (2014-11-14)
+-------------------
+ * Fixed bugs
+   - Timeouts in internal geocoder #1152
 
 3.2.12 (2014-11-13)
 ------------------

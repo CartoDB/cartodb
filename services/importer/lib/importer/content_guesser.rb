@@ -1,11 +1,14 @@
 # encoding: utf-8
 
+require_relative 'table_sampler'
+
 module CartoDB
   module Importer2
     class ContentGuesser
 
       COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
       MINIMUM_ENTROPY = 0.9
+      IDS_COLUMN = 'ogc_fid'
 
       def initialize(db, table_name, schema, options)
         @db         = db
@@ -73,19 +76,16 @@ module CartoDB
         matches.to_f / sample.count
       end
 
+      def sample
+        @sample ||= TableSampler.new(@db, qualified_table_name, IDS_COLUMN, sample_size).sample
+      end
+
       def threshold
         @options[:guessing][:threshold]
       end
 
       def is_country_column_type? column
         ['character varying', 'varchar', 'text'].include? column[:data_type]
-      end
-
-      def sample
-        @sample ||= @db[%Q(
-          SELECT * FROM #{qualified_table_name}
-          ORDER BY random() LIMIT #{sample_size}
-        )].all
       end
 
       def sample_size

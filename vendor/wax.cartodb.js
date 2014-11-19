@@ -3082,13 +3082,6 @@ wax.interaction = function() {
           evt[key] = _e[key];
         }
 
-        // for (var key in e) {
-        //   evt[key] = e[key];
-        // }
-
-
-        evt.changedTouches = [];
-
         bean.remove(document.body, 'mouseup', onUp);
         bean.remove(parent(), touchEnds);
         bean.remove(parent(), pointerEnds);
@@ -3103,6 +3096,7 @@ wax.interaction = function() {
           // So next cases aren't possible.
 
           if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
+            evt.changedTouches = [];
             interaction.click(evt, pos);
           } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {

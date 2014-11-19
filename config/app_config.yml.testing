@@ -152,8 +152,8 @@ defaults: &defaults
   cartodb_com_hosted: true
   cartodb_central_domain_name: 'cartodb.com'
   cartodb_central_api:
-    host: 'fake.url'
-    port: 9999
+    host: 'admin.localhost.lan'
+    port: 4000
     username: 'api'
     password: 'test'
   aws:

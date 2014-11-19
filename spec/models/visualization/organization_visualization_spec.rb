@@ -83,7 +83,8 @@ describe Visualization::Member do
         :get_table_id => 1,
         :grant_select_to_tiler_user => nil,
         :cartodbfy => nil,
-        :set_the_geom_column! => nil
+        :set_the_geom_column! => nil,
+        :is_raster? => false
     )
   end
 

@@ -4,6 +4,7 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
+require_relative '../../doubles/support_tables.rb'
 
 include CartoDB
 
@@ -26,6 +27,9 @@ describe Visualization::Member do
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+
+    support_tables_mock = Doubles::Visualization::SupportTables.new
+    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
   end
 
   describe '#initialize' do
@@ -535,7 +539,7 @@ describe Visualization::Member do
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
       license:      attributes.fetch(:license, ''),
-      kind:         attrigbutes.fetch(:kind, Visualization::Member::KIND_GEOM)
+      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM)
     }
   end #random_attributes
 end # Visualization

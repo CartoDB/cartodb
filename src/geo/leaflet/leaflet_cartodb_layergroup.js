@@ -217,9 +217,10 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
   _manageOnEvents: function(map, o) {
     var layer_point = this._findPos(map,o);
 
-    if (!layer_point) {
+    if (!layer_point || layer_point.x === NaN || layer_point.y === NaN) {
       // If layer_point doesn't contain x and y,
       // we can't calculate event map position
+      console.log(o, layer_point);
       return;
     }
 

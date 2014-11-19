@@ -200,8 +200,9 @@ class DataImport < Sequel::Model
     ::Table.where(id: table_id, user_id: user_id).first
   end
 
+
   def is_raster?
-    !!(self.service_item_id =~ /.tif$/i)
+    ::JSON.parse(self.stats).select{ |item| item["type"] == ".tif" }.length > 0
   end
 
   private

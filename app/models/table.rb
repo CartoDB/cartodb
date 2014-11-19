@@ -99,6 +99,10 @@ class Table < Sequel::Model(:user_tables)
     }].all.map {|r| r[:st_geometrytype] }
   end
 
+  def is_raster?
+    schema.select { |key, value| value == "raster" }.length > 0
+  end
+
   def_dataset_method(:search) do |query|
     conditions = <<-EOS
       to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
@@ -619,12 +623,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
-
-    kind = CartoDB::Visualization::Member::KIND_GEOM
-    unless self.data_import_id.nil?
-      data_import = DataImport.where(id: data_import_id).first
-      kind = CartoDB::Visualization::Member::KIND_RASTER if data_import.is_raster?
-    end
+    kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
 
     member = CartoDB::Visualization::Member.new(
       name:         self.name,

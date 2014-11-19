@@ -55,7 +55,7 @@ module CartoDB
       def register(result)
         @support_tables_helper.reset
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
-        name = rename(result.table_name, result.name)
+        name = rename(result, result.table_name, result.name)
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
@@ -91,7 +91,7 @@ module CartoDB
         @support_tables_helper.change_schema(destination_schema, table_name)
       end
 
-      def rename(current_name, new_name, rename_attempts=0)
+      def rename(result, current_name, new_name, rename_attempts=0)
         target_new_name = new_name
         new_name = table_registrar.get_valid_table_name(new_name)
 
@@ -101,16 +101,16 @@ module CartoDB
         rename_attempts = rename_attempts + 1
         
         database.execute(%Q{
-          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{result.table_name}" RENAME TO "#{new_name}"
+          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
         })
 
-        rename_the_geom_index_if_exists(result.table_name)
+        rename_the_geom_index_if_exists(current_name, new_name)
 
         @support_tables_helper.tables = result.support_tables.map { |table|
           { schema: ORIGIN_SCHEMA, name: table }
         }
         # Delay recreation of constraints until schema change
-        results = @support_tables_helper.rename(result.table_name, new_name, recreate_constraints=false)
+        results = @support_tables_helper.rename(current_name, new_name, recreate_constraints=false)
 
         if results[:success]
           result.update_support_tables(results[:names])
@@ -123,13 +123,13 @@ module CartoDB
         message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). "
         runner.log.append(message)
         if rename_attempts <= MAX_RENAME_RETRIES
-          rename(current_name, target_new_name, rename_attempts)
+          rename(result, current_name, target_new_name, rename_attempts)
         else
-          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}")
+          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}. ERROR: #{exception}")
         end
       end
 
-      def rename_the_geom_index_if_exists(current_name)
+      def rename_the_geom_index_if_exists(current_name, new_name)
         database.execute(%Q{
           ALTER INDEX IF EXISTS "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"

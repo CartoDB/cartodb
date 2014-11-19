@@ -90,6 +90,13 @@ module Cartodb
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
 
+    ############################################################################
+    # Features
+
+    def get_features(username)
+      return send_request("api/users/#{username}/features", nil, :get, [200])
+    end
+
     private
 
   end # AppServer

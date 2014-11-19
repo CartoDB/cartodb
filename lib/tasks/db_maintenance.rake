@@ -775,13 +775,13 @@ namespace :cartodb do
         users.each_with_index do |user, i|
           begin
             user.set_raster_privileges
-            message = "OK %-#{20} (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
+            message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
             print message
-            log(message, :reload_users_avatars.to_s)
+            log(message, :grant_general_raster_permissions.to_s)
           rescue => e
             message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) MSG:#{e.message}\n" % [user.username, i, count]
             print message
-            log(message, :reload_users_avatars.to_s)
+            log(message, :grant_general_raster_permissions.to_s)
           end
       end
     end

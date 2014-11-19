@@ -1468,15 +1468,10 @@ class User < Sequel::Model
       "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
     ]
     unless self.organization.nil?
-      queries.merge! [
-        "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_overviews\" TO \"#{database_public_username}\"",
-        "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_columns\" TO \"#{database_public_username}\"",
-      ]
+      queries << "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_overviews\" TO \"#{database_public_username}\""
+      queries << "GRANT SELECT ON TABLE \"#{database_schema}\".\"raster_columns\" TO \"#{database_public_username}\""
     end
-    self.run_queries_in_transaction(
-      queries,
-      true
-    )
+    self.run_queries_in_transaction(queries,true)
   end
 
   def set_user_privileges # MU

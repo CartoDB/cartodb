@@ -1325,10 +1325,10 @@ class Table < Sequel::Model(:user_tables)
       })
 
       is_raster = user_database[%Q{
-        SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;
       }].first
 
-      if is_raster
+      if !is_raster.nil? && is_raster[:is_raster]
         user_database.run(%Q{
           SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
         })

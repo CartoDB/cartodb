@@ -112,7 +112,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     }
 
     if (range < ONE_DAY) {
-      if (start.getUTCDate() == end.getUTCDate()) {
+      if (start.getUTCDate() === end.getUTCDate()) {
         return toTimeStr;
       } else {
         // range is less than a day, but the range spans more than one day so render the date in addition to the time

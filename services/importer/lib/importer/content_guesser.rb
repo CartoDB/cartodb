@@ -6,7 +6,7 @@ module CartoDB
   module Importer2
     class ContentGuesser
 
-      COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
+      COUNTRIES_QUERY = 'SELECT name_ FROM admin0_synonyms'
       DEFAULT_MINIMUM_ENTROPY = 0.9
       IDS_COLUMN = 'ogc_fid'
 
@@ -72,7 +72,7 @@ module CartoDB
 
       def country_proportion(column)
         column_name_sym = column[:column_name].to_sym
-        matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
+        matches = sample.count { |row| countries.include? row[column_name_sym].gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
         matches.to_f / sample.count
       end
 
@@ -100,7 +100,7 @@ module CartoDB
         return @countries if @countries
         @countries = Set.new()
         geocoder_sql_api.fetch(COUNTRIES_QUERY).each do |country|
-          @countries.merge country['synonyms']
+          @countries.add country['name_']
         end
         @countries
       end

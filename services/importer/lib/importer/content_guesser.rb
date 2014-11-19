@@ -6,7 +6,8 @@ module CartoDB
   module Importer2
     class ContentGuesser
 
-      COUNTRIES_QUERY = 'SELECT name_ FROM admin0_synonyms'
+      COUNTRIES_COLUMN = 'name_'
+      COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
       DEFAULT_MINIMUM_ENTROPY = 0.9
       IDS_COLUMN = 'ogc_fid'
 
@@ -100,7 +101,7 @@ module CartoDB
         return @countries if @countries
         @countries = Set.new()
         geocoder_sql_api.fetch(COUNTRIES_QUERY).each do |country|
-          @countries.add country['name_']
+          @countries.add country[COUNTRIES_COLUMN]
         end
         @countries
       end

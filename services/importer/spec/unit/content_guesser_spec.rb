@@ -138,14 +138,18 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#countries' do
     it 'queries the sql api to get a Set of countries' do
+      countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
       api_mock = mock
       api_mock
         .expects(:fetch)
         .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
         .returns([
-          {'synonyms' => ['usa', 'united states']},
-          {'synonyms' => ['spain', 'es']},
-          {'synonyms' => ['france', 'fr']}
+          {countries_column => 'usa'},
+          {countries_column => 'united states'},
+          {countries_column => 'spain'},
+          {countries_column => 'es'},
+          {countries_column => 'france'},
+          {countries_column => 'fr'}
         ])
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       guesser.geocoder_sql_api = api_mock

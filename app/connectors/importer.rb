@@ -99,7 +99,7 @@ module CartoDB
           new_name = "#{new_name}_#{rename_attempts}"
         end
         rename_attempts = rename_attempts + 1
-        
+
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
         })

@@ -38,7 +38,12 @@
     "grunt-aws": "~0.3.0",
     "grunt-contrib-watch": "~0.6.0",
     "shelljs": "~0.2.6",
-    "grunt-cli": "~0.1.13"
+    "grunt-cli": "~0.1.13",
+    "remapify": "^1.3.0",
+    "browserify": "^6.3.2",
+    "browserify-shim": "^3.8.0",
+    "grunt-browserify": "^3.2.0",
+    "moment": "^2.8.4"
   },
   "files": [
     "dist"

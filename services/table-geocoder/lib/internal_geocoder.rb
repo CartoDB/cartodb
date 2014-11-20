@@ -95,9 +95,8 @@ module CartoDB
           qualified_table_name,
           nil, # use default logger
           'InternalGeocoder::copy_results_to_table',
-          true, # let the batcher take care of exceptions
-          CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE,
-          'cartodb_id'
+          false, # do not capture exceptions,
+          batch_size
         )
       end # copy_results_to_table
 

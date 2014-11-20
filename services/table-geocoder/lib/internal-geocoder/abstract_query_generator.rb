@@ -30,6 +30,10 @@ module CartoDB
         country == %Q{'world'} ? 'null' : country
       end
 
+      def dest_table
+        @internal_geocoder.qualified_table_name
+      end
+
     end # AbstractQueryGenerator
 
   end # InternalGeocoder

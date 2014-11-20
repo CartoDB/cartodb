@@ -182,7 +182,7 @@ module CartoDB
         # @throws ServiceDisabledError
         def get_resource_metadata(id)
           unless @user.nil?
-            raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless @user.arcgis_datasource_enabled?
+            raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.arcgis_datasource_enabled?
           end
 
           if is_multiresource?(id)

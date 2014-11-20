@@ -89,7 +89,7 @@ module CartoDB
       end
 
       def id_column
-        return @id_column if @id_colums
+        return @id_column if @id_column
         columns.each do |column|
           if ID_COLUMNS.include? column[:column_name]
             @id_column = column[:column_name]

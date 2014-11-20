@@ -201,6 +201,14 @@ module CartoDB
         job.success_status = true
         @results.push(result_for(job, source_file, loader.valid_table_names, loader.additional_support_tables))
       rescue => exception
+        if loader.nil?
+          valid_table_names = []
+          additional_support_tables = []
+        else
+          valid_table_names = loader.valid_table_names
+          additional_support_tables = loader.additional_support_tables
+        end
+
         job.log "Errored importing data from #{source_file.fullpath}:"
         job.log "#{exception.class.to_s}: #{exception.to_s}"
         job.log '----------------------------------------------------'
@@ -208,7 +216,7 @@ module CartoDB
         job.log '----------------------------------------------------'
         job.success_status = false
         @results.push(
-          result_for(job, source_file, loader.valid_table_names, loader.additional_support_tables, exception.class))
+          result_for(job, source_file, valid_table_names, additional_support_tables, exception.class))
       end
 
       def report
@@ -222,7 +230,11 @@ module CartoDB
       end
 
       def loader_for(source_file)
-        LOADERS.find(DEFAULT_LOADER) { |loader_klass|
+        loaders = LOADERS
+        if @loader_options[:raster_import_active].nil? || @loader_options[:raster_import_active] != true
+          loaders = loaders.select{ |loader_class| loader_class != TiffLoader }
+        end
+        loaders.find(DEFAULT_LOADER) { |loader_klass|
           loader_klass.supported?(source_file.extension)
         }
       end

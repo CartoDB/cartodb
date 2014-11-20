@@ -358,6 +358,7 @@ module CartoDB
           {}
         else
           {
+            raster_import_active:   Cartodb.config.fetch(:raster_import_active, nil),
             ogr2ogr_binary:         options['binary'],
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
             quoted_fields_guessing: @quoted_fields_guessing

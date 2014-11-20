@@ -123,7 +123,7 @@ module CartoDB
           unless has_enough_quota?(@user)
             raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
           end
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
+          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless is_service_enabled?(@user)
 
           fields_from(id)
 
@@ -141,7 +141,7 @@ module CartoDB
           unless has_enough_quota?(@user)
             raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
           end
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
+          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless is_service_enabled?(@user)
 
           fields_from(id)
 

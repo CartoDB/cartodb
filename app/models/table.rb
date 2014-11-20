@@ -29,6 +29,8 @@ class Table < Sequel::Model(:user_tables)
       PRIVACY_LINK => PRIVACY_LINK_TEXT
   }
 
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
+
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -1549,7 +1551,7 @@ class Table < Sequel::Model(:user_tables)
     # 
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
-    existing_names = existing_names + User::SYSTEM_TABLE_NAMES
+    existing_names = existing_names + SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)

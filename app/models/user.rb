@@ -50,7 +50,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
+
   GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
@@ -947,7 +947,7 @@ class User < Sequel::Model
     .from(:pg_class)
     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
     .where(:relkind => 'r', :nspname => self.database_schema)
-    .exclude(:relname => SYSTEM_TABLE_NAMES)
+    .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
     .all
   end
 

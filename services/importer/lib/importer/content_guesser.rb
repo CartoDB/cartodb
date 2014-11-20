@@ -96,7 +96,7 @@ module CartoDB
             return @id_column
           end
         end
-        raise ContentGuesserException.new "Couldn't find an id column for table #{qualified_table_name}"
+        raise ContentGuesserException, "Couldn't find an id column for table #{qualified_table_name}"
       end
 
       def threshold

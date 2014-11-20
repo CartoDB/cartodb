@@ -107,17 +107,21 @@ module CartoDB
       def create_the_geom_from_country_guessing
         return false if not @content_guesser.enabled?
         job.log 'Trying country guessing...'
-        @tracker.call('guessing')
-        time_start = Time.now
-        country_column_name = @content_guesser.country_column
-        job.log "Guessing completed in #{((Time.now - time_start)*1000.0).to_i} ms"
-        @tracker.call('importing')
-        if country_column_name
-          create_the_geom_in table_name
-          job.log "Found country column: #{country_column_name}"
-          return geocode_countries country_column_name
+        begin
+          #TODO add metrics
+          @tracker.call('guessing')
+          country_column_name = @content_guesser.country_column
+          @tracker.call('importing')
+          if country_column_name
+            create_the_geom_in table_name
+            job.log "Found country column: #{country_column_name}"
+            return geocode_countries country_column_name
+          end
+        rescue ContentGuesserException => e
+          Rollbar.report_exception(e)
+          job.log 'ERROR: #{e}'
+          return false
         end
-        return false
       end
 
       def geocode_countries country_column_name

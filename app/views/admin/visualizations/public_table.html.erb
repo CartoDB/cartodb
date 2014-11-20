@@ -40,9 +40,10 @@
     var api_key             = <%=raw @api_key.to_json %>;
 
     var debug = false;
-    <% if Rails.env.development? %>
+    <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
       debug = true;
     <% end %>
+
     cdb.config.set('debug', debug);
 
     $(function() {

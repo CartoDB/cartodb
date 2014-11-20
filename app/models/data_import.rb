@@ -45,6 +45,7 @@ class DataImport < Sequel::Model
   }
 
   # Not all constants are used, but so that we keep track of available states
+  STATE_PENDING   = 'pending'
   STATE_UNPACKING = 'unpacking'
   STATE_IMPORTING = 'importing'
   STATE_SUCCESS   = 'complete'
@@ -60,7 +61,7 @@ class DataImport < Sequel::Model
   def after_initialize
     instantiate_log
     self.results  = []
-    self.state    ||= STATE_UPLOADING
+    self.state    ||= STATE_PENDING
   end
 
   def before_save
@@ -203,6 +204,7 @@ class DataImport < Sequel::Model
   private
 
   def dispatch
+    self.state = STATE_UPLOADING
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
     new_importer
@@ -253,12 +255,12 @@ class DataImport < Sequel::Model
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
   end
 
-  # A stuck job shouldn't be finished, so it's state should not
+  # A stuck job should've started but not be finished, so it's state should not
   # be complete nor failed, it should have been in the queue
   # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
-    !%w(complete failure).include?(self.state) &&
+    ![STATE_PENDING, STATE_SUCCESS, STATE_FAILURE].include?(self.state) &&
     self.created_at < 5.minutes.ago            &&
     !running_import_ids.include?(self.id)
   end

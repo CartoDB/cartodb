@@ -1,3 +1,4 @@
+# Old makefile
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 

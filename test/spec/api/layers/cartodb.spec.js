@@ -30,7 +30,7 @@ describe('api.layers.cartodb', function() {
     beforeEach(function() {
         map = mapFn();
     });
-    it("has all the needed methods", function() {
+    it("has all the needed methods", function(done) {
       var methods = [
         'show',
         'hide',
@@ -43,17 +43,16 @@ describe('api.layers.cartodb', function() {
         'setOptions'
       ];
 
-      runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test'} }, function(l) {
-          layer = l;
-        });
+      cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test'} }, function(l) {
+        layer = l;
       });
-      waits(100);
-      runs(function() {
+
+      setTimeout(function() {
         _.each(methods, function(m) {
           expect(layer[m]).not.toEqual(undefined);
         })
-      });
+        done();
+      }, 100);
 
     });
 
@@ -68,112 +67,109 @@ describe('api.layers.cartodb', function() {
     }
 
 
-    it("should add a infowindow", function() {
+    it("should add a infowindow", function(done) {
       //cdb.templates.add(new cdb.core.Template({
         //name: 'test',
       //}));
-      runs(function() {
-        cartodb.createLayer(map, { 
-            kind: 'cartodb', 
-            options: { 
-              table_name: 'test',
-              user_name: 'test',
-              tile_style: 'tesst'
-            },
-            infowindow: { 
-              template: '<div></div>',
-              fields: [{name: 'test', title: true, order: 0}] 
-            }
-        }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
+
+      cartodb.createLayer(map, { 
+          kind: 'cartodb', 
+          options: { 
+            table_name: 'test',
+            user_name: 'test',
+            tile_style: 'tesst'
+          },
+          infowindow: { 
+            template: '<div></div>',
+            fields: [{name: 'test', title: true, order: 0}] 
+          }
+      }, function(l) {
+        addFn(map, l);
+        layer = l;
       });
-      waits(100);
-      runs(function() {
+
+      setTimeout(function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.infowindow.get('fields').length).toEqual(1);
         expect(layer.infowindow.get('fields')[0].name).toEqual('test');
         expect(layer.options.interactivity).toEqual('cartodb_id');
-      });
+        done();
+      }, 100);
     });
 
-    it("should add interactivity if there is infowindow", function() {
-      runs(function() {
-        cartodb.createLayer(map, { 
-            kind: 'cartodb', 
-            options: { 
-              table_name: 'test',
-              user_name: 'test',
-              tile_style: 'test'
-            },
-            infowindow: { 
-              template: '<div></div>',
-              fields: [{name: 'test', title: true, order: 0}] 
-            }
-        }, {
-          interactivity: 'myname,jaja'
-        }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
+    it("should add interactivity if there is infowindow", function(done) {
+      cartodb.createLayer(map, { 
+          kind: 'cartodb', 
+          options: { 
+            table_name: 'test',
+            user_name: 'test',
+            tile_style: 'test'
+          },
+          infowindow: { 
+            template: '<div></div>',
+            fields: [{name: 'test', title: true, order: 0}] 
+          }
+      }, {
+        interactivity: 'myname,jaja'
+      }, function(l) {
+        addFn(map, l);
+        layer = l;
       });
-      waits(100);
-      runs(function() {
+
+      setTimeout(function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
-      });
+        done();
+      }, 100);
     });
 
-    it("should not add interactivity when interaction is false", function() {
-      runs(function() {
-        cartodb.createLayer(map, { 
-            kind: 'cartodb', 
-            options: { 
-              table_name: 'test',
-              user_name: 'test',
-              tile_style: 'test'
-            },
-            infowindow: { 
-              template: '<div></div>',
-              fields: [{name: 'test', title: true, order: 0}] 
-            }
-        }, {
-          interactivity: 'myname,jaja',
-          interaction: false
-        }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
+    it("should not add interactivity when interaction is false", function(done) {
+
+      cartodb.createLayer(map, { 
+          kind: 'cartodb', 
+          options: { 
+            table_name: 'test',
+            user_name: 'test',
+            tile_style: 'test'
+          },
+          infowindow: { 
+            template: '<div></div>',
+            fields: [{name: 'test', title: true, order: 0}] 
+          }
+      }, {
+        interactivity: 'myname,jaja',
+        interaction: false
+      }, function(l) {
+        addFn(map, l);
+        layer = l;
       });
-      waits(100);
-      runs(function() {
+
+      setTimeout(function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
         expect(layer.options.interaction).toEqual(false);
-      });
+        done();
+      }, 100);
     });
 
     it("should add to the map when done", function() {
-      runs(function() {
-        cartodb.createLayer(map, { 
-            kind: 'cartodb', 
-            options: { 
-              table_name: 'test',
-              user_name: 'test',
-              tile_style: 'test'
-            },
-            infowindow: { 
-              template: '<div></div>',
-              fields: [{name: 'test', title: true, order: 0}] 
-            }
-        }, {
-          interactivity: 'myname,jaja',
-          interaction: false
-        }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
+      cartodb.createLayer(map, { 
+          kind: 'cartodb', 
+          options: { 
+            table_name: 'test',
+            user_name: 'test',
+            tile_style: 'test'
+          },
+          infowindow: { 
+            template: '<div></div>',
+            fields: [{name: 'test', title: true, order: 0}] 
+          }
+      }, {
+        interactivity: 'myname,jaja',
+        interaction: false
+      }, function(l) {
+        addFn(map, l);
+        layer = l;
       });
     });
 

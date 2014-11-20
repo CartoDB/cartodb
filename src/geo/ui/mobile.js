@@ -688,7 +688,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       }, this);
 
       this.$el.find(".torque").append(this.slider.render().$el);
-      this.$el.addClass("with-torque");
+
+      if (this.options.torqueLayer.hidden) this.slider.hide();
+      else this.$el.addClass("with-torque");
     }
 
   },

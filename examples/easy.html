@@ -13,13 +13,13 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 
     <script>
       function main() {
@@ -42,12 +42,11 @@
           });
 
           // you can get the native map to work with it
-          // depending if you use google maps or leaflet
-          map = vis.getNativeMap();
+          var map = vis.getNativeMap();
 
           // now, perform any operations you need
-          // map.setZoom(3)
-          // map.setCenter(new google.maps.Latlng(...))
+          // map.setZoom(3);
+          // map.panTo([50.5, 30.5]);
         })
         .error(function(err) {
           console.log(err);

@@ -12,13 +12,13 @@
         margin: 0;
       }
     </style>
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 
     <script>
       function main() {
@@ -45,9 +45,9 @@
           map.addLayer(layer);
 
           // create and add a new sublayer
-          layer.createSubLayer({
+          sublayer = layer.createSubLayer({
             sql: "select * from european_countries_e limit 200",
-            cartocss: '#european_countries_e {marker-fill: #F0F0F0;}'
+            cartocss: '#european_countries_e {marker-fill: red;}'
           });
 
           // change the query for the first layer

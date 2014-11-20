@@ -234,6 +234,11 @@
       return layer_view;
     },
 
+    pixelToLatLon: function(pos) {
+      var point = this.map_leaflet.containerPointToLatLng([pos[0], pos[1]]);
+      return point;
+    },
+
     latLonToPixel: function(latlon) {
       var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
       return this.map_leaflet.layerPointToContainerPoint(point);
@@ -289,8 +294,10 @@
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
-      // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView,
+
+      // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
+      "gmapsbase": cdb.geo.LeafLetGmapsTiledLayerView,
+
       "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
       "namedmap": cdb.geo.LeafLetCartoDBNamedMapView,
       "torque": function(layer, map) {

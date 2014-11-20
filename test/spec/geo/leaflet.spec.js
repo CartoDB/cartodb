@@ -41,23 +41,22 @@ describe('LeafletMapView', function() {
     expect(map.getViewBounds).not.toHaveBeenCalled();
   });
 
-  it("should change center and zoom when bounds are changed", function() {
+  it("should change center and zoom when bounds are changed", function(done) {
     var s = sinon.spy();
     mapView.getSize = function() { return {x: 200, y: 200}; }
     map.bind('change:center', s);
     spyOn(mapView, '_setCenter');
     mapView._bindModel();
-    runs(function() {
-      map.set({
-        'view_bounds_ne': [1, 1],
-        'view_bounds_sw': [-0.3, -1.2]
-      })
-    });
-    waits(1000);
-    runs(function() {
+
+    map.set({
+      'view_bounds_ne': [1, 1],
+      'view_bounds_sw': [-0.3, -1.2]
+    })
+
+    setTimeout(function() {
       expect(mapView._setCenter).toHaveBeenCalled();
-      //expect(s.called).toEqual(true);
-    });
+      done();
+    }, 1000);
   });
 
   it("should allow adding a layer", function() {
@@ -119,11 +118,11 @@ describe('LeafletMapView', function() {
   });
 
   it("should create a CartoDBLayerGroup when the layer is LayerGroup", function() {
-    layer = new cdb.geo.CartoDBGroupLayer({ 
+    layer = new cdb.geo.CartoDBGroupLayer({
       layer_definition: {
           version: '1.0.0',
           layers: [{
-             type: 'cartodb', 
+             type: 'cartodb',
              options: {
                sql: 'select * from ne_10m_populated_places_simple',
                cartocss: '#layer { marker-fill: red; }',
@@ -137,37 +136,35 @@ describe('LeafletMapView', function() {
     expect(layerView.getLayerCount()).toEqual(1);
   });
 
-  it("should create the cartodb logo", function() {
-    runs(function() {
-      layer = new cdb.geo.CartoDBLayer({ 
-        table_name: "INVENTADO",
-        user_name: 'test',
-        tile_style: 'test'
-      });
-      var lyr = map.addLayer(layer);
-      var layerView = mapView.getLayerByCid(lyr);
+  it("should create the cartodb logo", function(done) {
+    layer = new cdb.geo.CartoDBLayer({ 
+      table_name: "INVENTADO",
+      user_name: 'test',
+      tile_style: 'test'
     });
-    waits(1);
-    runs(function() {
+    var lyr = map.addLayer(layer);
+    var layerView = mapView.getLayerByCid(lyr);
+
+    setTimeout(function() {
       expect(container.find("div.cartodb-logo").length).toEqual(1);
-    });
+      done();
+    }, 1);
   });
 
-  it("should not add the cartodb logo when cartodb_logo = false", function() {
-    runs(function() {
-      layer = new cdb.geo.CartoDBLayer({ 
-        table_name: "INVENTADO",
-        user_name: 'test',
-        tile_style: 'test',
-        cartodb_logo: false
-      });
-      var lyr = map.addLayer(layer);
-      var layerView = mapView.getLayerByCid(lyr);
+  it("should not add the cartodb logo when cartodb_logo = false", function(done) {
+    layer = new cdb.geo.CartoDBLayer({ 
+      table_name: "INVENTADO",
+      user_name: 'test',
+      tile_style: 'test',
+      cartodb_logo: false
     });
-    waits(1);
-    runs(function() {
+    var lyr = map.addLayer(layer);
+    var layerView = mapView.getLayerByCid(lyr);
+
+    setTimeout(function() {
       expect(container.find("div.cartodb-logo").length).toEqual(0);
-    });
+      done();
+    }, 1);
   });
 
   it("should create a PlaiLayer when the layer is cartodb", function() {
@@ -178,7 +175,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should insert layers in specified order", function() {
-    var layer = new cdb.geo.CartoDBLayer({ 
+    var layer = new cdb.geo.CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test'
@@ -189,33 +186,9 @@ describe('LeafletMapView', function() {
     var b = new cdb.geo.TileLayer({urlTemplate: 'test'});
     map.addLayer(b, {at: 0});
 
-    expect(mapView.map_leaflet.addLayer.mostRecentCall.args[0].model).toEqual(layer);
+    expect(mapView.map_leaflet.addLayer.calls.mostRecent().args[0].model).toEqual(layer);
     //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
   });
-
-  // DEPRECATED (by now)
-  // it("should not insert map boundaries when not defined by the user", function() {
-  //   expect(mapView.map_leaflet.options.maxBounds).toBeFalsy();
-  // });
-
-  // it("should insert the boundaries when provided", function() {
-  //   var container = $('<div>').css('height', '200px');
-  //   var map = new cdb.geo.Map({bounding_box_sw: [1,2], bounding_box_ne: [3,5]});
-
-  //   var mapView = new cdb.geo.LeafletMapView({
-  //     el: this.container,
-  //     map: map
-  //   });
-  //   expect(map.get('bounding_box_sw')).toEqual([1,2]);
-  //   expect(map.get('bounding_box_ne')).toEqual([3,5]);
-  //   expect(mapView.map_leaflet.options.maxBounds).toBeTruthy();
-  //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lat).toEqual(3);
-  //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lng).toEqual(5);
-  //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lat).toEqual(1);
-  //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lng).toEqual(2);
-
-  // })
-
 
   it("shoule remove all layers when map view is cleaned", function() {
 
@@ -276,16 +249,15 @@ describe('LeafletMapView', function() {
 
   });
 
-  it("should save automatically when the zoom or center changes", function() {
+  it("should save automatically when the zoom or center changes", function(done) {
     spyOn(map, 'save');
-    runs(function() {
-      mapView.setAutoSaveBounds();
-      map.set('center', [1,2]);
-    });
-    waits(1500);
-    runs(function() {
+    mapView.setAutoSaveBounds();
+    map.set('center', [1,2]);
+
+    setTimeout(function() {
       expect(map.save).toHaveBeenCalled();
-    });
+      done();
+    }, 1500);
 
   });
 
@@ -294,15 +266,133 @@ describe('LeafletMapView', function() {
     var layer2 = new cdb.geo.TileLayer({ urlTemplate:'test2'});
     var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
     var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
-    console.log(layerView1.options.zIndex,layerView2.options.zIndex)
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });
 
-   it("should swicth layer", function() {
-      map.addLayer(layer);
-      layer.set('type', 'torque');
-      expect(mapView.layers[layer.cid] instanceof  L.TorqueLayer).toEqual(true);
-   });
+  it("should switch layer", function() {
+    map.addLayer(layer);
+    layer.set('type', 'torque');
+    expect(mapView.layers[layer.cid] instanceof L.TorqueLayer).toEqual(true);
+  });
+
+  // Test cases for gmaps substitutes since the support is deprecated.
+  _({ // GMaps basemap base_type: expected substitute data
+    //empty = defaults to gray_roadmap
+    "": {
+      tiles: {
+        providedBy: "cartocdn",
+        type: "light"
+      },
+      subdomains: ['a','b','c','d'],
+      minZoom: 0,
+      maxZoom: 18,
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+    },
+    dark_roadmap: {
+      tiles: {
+        providedBy: "cartocdn",
+        type: "dark"
+      },
+      subdomains: ['a','b','c','d'],
+      minZoom: 0,
+      maxZoom: 18,
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+    },
+    roadmap: {
+      tiles: {
+        providedBy: "nokia",
+        type: "normal.day"
+      },
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+    },
+    hybrid: {
+      tiles: {
+        providedBy: "nokia",
+        type: "hybrid.day"
+      },
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+    },
+    terrain: {
+      tiles: {
+        providedBy: "nokia",
+        type: "terrain.day"
+      },
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+    },
+    satellite: { // Nokia Satellite Day
+      tiles: {
+        providedBy: "nokia",
+        type: "satellite.day"
+      },
+      subdomains: ['1','2','3','4'],
+      minZoom: 0,
+      maxZoom: 21,
+      attribution: '©2012 Nokia <a href="http://here.net/services/terms" target="_blank">Terms of use</a>'
+    }
+  }).map(function(substitute, baseType) {
+    var layerOpts;
+    var testContext;
+
+    if (baseType) {
+      layerOpts = { base_type: baseType};
+      testContext = 'with basemap "'+ baseType +'"';
+    } else {
+      testContext = 'with default basemap "gray_roadmap"';
+    }
+
+    describe("given a GMaps layer model "+ testContext, function () {
+      var view;
+
+      beforeEach(function() {
+        var layer = new cdb.geo.GMapsBaseLayer(layerOpts);
+        view = mapView.createLayer(layer);
+      });
+
+      it("should have a tileUrl based on substitute's template URL", function() {
+        var tileUrl = view.getTileUrl({ x: 101, y: 202, z: 303 });
+
+        expect(tileUrl).toContain(substitute.tiles.providedBy);
+        expect(tileUrl).toContain(substitute.tiles.type);
+      });
+
+      it("should have substitute's attribution", function() {
+        expect(view.options.attribution).toEqual(substitute.attribution);
+      });
+
+      it("should have substitute's minZoom", function() {
+        expect(view.options.minZoom).toEqual(substitute.minZoom);
+      });
+
+      it("should have substitute's maxZoom", function() {
+        expect(view.options.maxZoom).toEqual(substitute.maxZoom);
+      });
+
+      it("shouldn't have any opacity since gmaps basemap didn't have any", function() {
+        expect(view.options.opacity).toEqual(1);
+      });
+
+      it("should match substitute's subdomains", function() {
+        expect(view.options.subdomains).toEqual(substitute.subdomains);
+      });
+
+      it("shouldn't have an errorTileUrl since gmaps didn't have any", function() {
+        expect(view.options.errorTileUrl).toEqual('');
+      });
+
+      it("shouldn't use osgeo's TMS setting", function() {
+        expect(view.options.tms).toEqual(false);
+      });
+    });
+  });
 
 });
 

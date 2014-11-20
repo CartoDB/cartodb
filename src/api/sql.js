@@ -50,6 +50,10 @@
    * })
    */
   SQL.prototype.execute = function(sql, vars, options, callback) {
+
+    //Variable that defines if a query should be using get method or post method
+    var MAX_LENGTH_GET_QUERY = 1024;
+
     var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
@@ -67,13 +71,16 @@
       crossDomain: true
     };
 
-    if(options.jsonp) {
-      delete params.crossDomain;
-      params.dataType = 'jsonp';
+    if(options.cache !== undefined) {
+      params.cache = options.cache; 
     }
 
-    if(options.cache) {
-      params.cache = options.cache; 
+    if(options.jsonp) {
+      delete params.crossDomain;
+      if (options.jsonpCallback) {
+        params.jsonpCallback = options.jsonpCallback;
+      }
+      params.dataType = 'jsonp';
     }
 
     // Substitute mapnik tokens
@@ -87,28 +94,46 @@
 
     // create query
     var query = Mustache.render(sql, vars);
-    var q = 'q=' + encodeURIComponent(query);
 
-    // request params
+    // check method: if we are going to send by get or by post
+    var isGetRequest = query.length < MAX_LENGTH_GET_QUERY;
+
+    // generate url depending on the http method
     var reqParams = ['format', 'dp', 'api_key'];
+    // request params
     if (options.extra_params) {
       reqParams = reqParams.concat(options.extra_params);
     }
-    for(var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
-      if(v) {
-        q += '&' + r + "=" + v;
-      }
-    }
 
-    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
-    // generate url depending on the http method
     params.url = this._host() ;
-    if(isGetRequest) {
-      params.url += '?' + q
+    if (isGetRequest) {
+      var q = 'q=' + encodeURIComponent(query);
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if(v) {
+          q += '&' + r + "=" + v;
+        }
+      }
+
+      params.url += '?' + q;
     } else {
-      params.data = q;
+      var objPost = {'q': query};
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if (v) {
+          objPost[r] = v;
+        }
+      }
+
+      params.data = objPost;
+      //Check if we are using jQuery(uncompressed) or reqwest (core)
+      if ((typeof(jQuery) !== 'undefined')) {
+        params.type = 'post';
+      } else {
+        params.method = 'post'; 
+      }
     }
 
     // wrap success and error functions

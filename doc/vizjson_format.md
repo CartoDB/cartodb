@@ -42,8 +42,7 @@ this is the spec for visjson:
     url: "http://javi.cartodb.com/tables/20343",
 
     // mandatory 
-    // map provider (gmaps or leaflet)
-    map_provider: "googlemaps",
+    map_provider: "leaflet",
 
      // optional
      // default: []

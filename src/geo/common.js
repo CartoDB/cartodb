@@ -1,9 +1,13 @@
 
+
 /*
  *  common functions for cartodb connector
  */
 
 function CartoDBLayerCommon() {
+
+  this.visible = true;
+
 }
 
 CartoDBLayerCommon.prototype = {
@@ -14,6 +18,7 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this._interactionDisabled = false;
+    this.visible = true;
   },
 
   hide: function() {
@@ -23,6 +28,14 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(0);
     // disable here interaction for all the layers
     this._interactionDisabled = true;
+    this.visible = false;
+  },
+
+  toggle: function() {
+
+    this.isVisible() ? this.hide() : this.show();
+
+    return this.isVisible();
   },
 
   /**
@@ -158,7 +171,8 @@ CartoDBLayerCommon.prototype = {
 
   _clearInteraction: function() {
     for(var i in this.interactionEnabled) {
-      if(this.interactionEnabled[i]) {
+      if (this.interactionEnabled.hasOwnProperty(i) &&
+        this.interactionEnabled[i]) {
         this.setInteraction(i, false);
       }
     }
@@ -166,9 +180,10 @@ CartoDBLayerCommon.prototype = {
 
   _reloadInteraction: function() {
     for(var i in this.interactionEnabled) {
-      if(this.interactionEnabled[i]) {
-        this.setInteraction(i, false);
-        this.setInteraction(i, true);
+      if (this.interactionEnabled.hasOwnProperty(i) &&
+        this.interactionEnabled[i]) {
+          this.setInteraction(i, false);
+          this.setInteraction(i, true);
       }
     }
   },
@@ -264,3 +279,4 @@ cdb.geo.common.CartoDBLogo = {
     },( timeout || 0 ));
   }
 };
+

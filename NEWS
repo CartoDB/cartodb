@@ -1,3 +1,35 @@
+3.11.24 (11//11//2014)
+- don't render the fullscreen overlay for unsupported versions of IE
+- fixed using same callback name when there are more than one layer (#186)
+- added new params options to cartodb.createVis(): gmaps_base_type and gmaps_style
+- deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#188)
+- fixes default height for itensity list elements in mobile
+
+3.11.23 (04//11//2014)
+- fixes rendering issue with category legends that contain long names
+- adds .toggle() method to layers and sublayers to change their visibility
+
+3.11.22 (03//11//2014)
+- fixes a bug that made the hidden Torque layers visible
+
+3.11.21 (24//10//2014)
+- enabled dynamic_cdn to route layergroup calls though the CDN
+
+3.11.20 (24//10//2014)
+- enabled fixed callback for layergroups and infowindows
+
+3.11.19 (23//10//2014)
+- fixes annotation specs
+- adds several methods to set the annotation properties.
+
+3.11.18 (22//10//2014)
+- adds annotation overlays
+
+3.11.17 (20//10//2014)
+- fixes positioning of the search and share overlays on the screen
+- fixed compatibility with mootools
+- fixes a problem with touch devices using two fingers for zooming.
+
 3.11.16 (10//10//2014)
 - applies the z-index to the text and image overlays
 

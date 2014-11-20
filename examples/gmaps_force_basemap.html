@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Force GMaps base type | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include google maps library -->
+    <script type="text/javascript" src="http://www.maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <script>
+      function main() {
+        var vizjson_url = "http://documentation.cartodb.com/api/v2/viz/9f130ef2-6371-11e4-a0fd-0e9d821ea90d/viz.json";
+        cartodb.createVis("map", vizjson_url, { share: true, title: true, description: true, search: true
+            , gmaps_base_type: 'roadmap'
+            , gmaps_style: '[{"featureType": "water","elementType": "geometry","stylers": [{ "color": "#80a580" }]}] '
+        })
+        .done(function(vis, layers) {
+        });
+      }
+      window.onload = main;
+    </script>
+  </body>
+</html>

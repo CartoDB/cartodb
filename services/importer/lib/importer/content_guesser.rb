@@ -9,7 +9,7 @@ module CartoDB
       COUNTRIES_COLUMN = 'name_'
       COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
       DEFAULT_MINIMUM_ENTROPY = 0.9
-      IDS_COLUMN = 'ogc_fid'
+      ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id']
 
       def initialize(db, table_name, schema, options, job=nil)
         @db         = db
@@ -85,7 +85,18 @@ module CartoDB
       end
 
       def sample
-        @sample ||= TableSampler.new(@db, qualified_table_name, IDS_COLUMN, sample_size).sample
+        @sample ||= TableSampler.new(@db, qualified_table_name, id_column, sample_size).sample
+      end
+
+      def id_column
+        return @id_column if @id_colums
+        columns.each do |column|
+          if ID_COLUMNS.include? column
+            @id_column = column
+            return @id_column
+          end
+        end
+        raise ContentGuesserException.new "Couldn't find an id column for table %{qualified_table_name}"
       end
 
       def threshold
@@ -124,5 +135,8 @@ module CartoDB
       end
 
     end
+
+    class ContentGuesserException < StandardError; end
+
   end
 end

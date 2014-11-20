@@ -77,7 +77,7 @@ module CartoDB
         matches = sample.count { |row| countries.include? row[column_name_sym].gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
         country_proportion = matches.to_f / sample.count
         log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
-        return country_proportion
+        country_proportion
       end
 
       def log(msg)

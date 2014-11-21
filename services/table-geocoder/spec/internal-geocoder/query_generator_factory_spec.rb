@@ -55,7 +55,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
       query = query_generator.search_terms_query(0)
 
-      query.squish.should == 'SELECT DISTINCT(quote_nullable(trim("city"))) AS city FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
+      query.squish.should == 'SELECT DISTINCT(trim(quote_nullable("city"))) AS city FROM "public"."untitled_table" WHERE cartodb_georef_status IS NULL LIMIT 5000 OFFSET 0'
     end
   end
 
@@ -91,8 +91,8 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
       query_generator.search_terms_query(0).squish.should == %Q{
         SELECT DISTINCT
-          quote_nullable(trim(region_column_name)) as region,
-          quote_nullable(trim(country_column_name)) as country
+          trim(quote_nullable(region_column_name)) as region,
+          trim(quote_nullable(country_column_name)) as country
         FROM any_table_name
         WHERE cartodb_georef_status IS NULL
         LIMIT 10 OFFSET 0

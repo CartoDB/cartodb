@@ -169,6 +169,25 @@ describe CartoDB::Importer2::ContentGuesser do
       guesser.countries.should eq Set.new []
       guesser.countries.should eq Set.new []
     end
+
+    it 'shall not add countries from DB if length < 2' do
+      countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
+      api_mock = mock
+      api_mock
+        .expects(:fetch)
+        .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
+        .returns([
+          {countries_column => 'usa'},
+          {countries_column => 'united states'},
+          {countries_column => 'fr'},
+          {countries_column => 's'},
+          {countries_column => ''},
+        ])
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser.geocoder_sql_api = api_mock
+      guesser.countries.should eq Set.new ['usa', 'united states', 'fr']
+    end
+
   end
 
   describe '#id_column' do

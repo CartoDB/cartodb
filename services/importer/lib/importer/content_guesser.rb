@@ -119,7 +119,8 @@ module CartoDB
         return @countries if @countries
         @countries = Set.new()
         geocoder_sql_api.fetch(COUNTRIES_QUERY).each do |country|
-          @countries.add country[COUNTRIES_COLUMN]
+          country_name = country[COUNTRIES_COLUMN]
+          @countries.add country_name if country_name.length >= 2
         end
         @countries
       end

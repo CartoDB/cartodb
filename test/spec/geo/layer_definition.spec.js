@@ -513,6 +513,47 @@ describe("LayerDefinition", function() {
 
     });
 
+
+    it("should set sql by GET", function(done) {
+      var q;
+      var layer = layerDefinition.getSubLayer(0);
+
+      spyOn(layerDefinition, '_requestGET').and.callThrough();
+      spyOn(layerDefinition, '_requestPOST').and.callThrough();;
+
+      var query = "SELECT * FROM RAMBO_CHARLIES where area < 1000";
+      layer.setSQL(q=query);
+      layerDefinition.getLayerToken();
+
+      setTimeout(function(){
+        expect(layerDefinition._requestGET).toHaveBeenCalled();
+        expect(layerDefinition._requestPOST).not.toHaveBeenCalled();
+        done();
+      }, 100);
+    });
+
+    it("should set sql by POST", function(done) {
+      var q;
+      var layer = layerDefinition.getSubLayer(0);
+
+      spyOn(layerDefinition, '_requestGET').and.callThrough();
+      spyOn(layerDefinition, '_requestPOST').and.callThrough();;
+
+      var query = "select 1 ";
+      for (var i = 0; i < 1600; i++){
+        query += ", " + Math.floor(Math.random() * 100) + 1;
+      }
+      query += ', * from rambo_charlies where area > 10';
+      layer.setSQL(q=query);
+      layerDefinition.getLayerToken();
+
+      setTimeout(function(){
+        expect(layerDefinition._requestGET).not.toHaveBeenCalled();
+        expect(layerDefinition._requestPOST).toHaveBeenCalled();
+        done();
+      }, 100);
+    });
+
   });
 
   describe('layerDefFromSubLayers', function() {

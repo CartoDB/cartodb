@@ -57,6 +57,7 @@ module CartoDB
         },
         notification: self.notification,
         avatar_url: self.avatar_url,
+        new_dashboard_enabled: self.new_dashboard_enabled,
         available_basemaps: {
           here: self.here_maps_enabled,
           stamen: self.stamen_maps_enabled,

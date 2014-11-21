@@ -105,6 +105,7 @@ class User < Sequel::Model
         self.here_maps_enabled          = self.organization.here_maps_enabled
         self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
         self.rainbow_maps_enabled       = self.organization.rainbow_maps_enabled
+        self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true

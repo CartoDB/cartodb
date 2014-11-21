@@ -2,6 +2,7 @@
 -------------------
  * Fixed bugs and improvements
    - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
+   - #1095 Add feature button in Torque maps
 
 3.2.14 (2014-11-17)
 -------------------

@@ -63,11 +63,11 @@ describe CartoDB::Importer2::ContentGuesser do
   describe '#columns' do
     it 'queries the db to get a list of columns with their corresponding data types' do
       db = mock
-      db.expects(:[]).returns(:any_iterable_list_of_columnts)
+      db.expects(:[]).returns(:any_iterable_list_of_columns)
       table_name = 'any_table_name'
       schema = 'any_schema'
       guesser = CartoDB::Importer2::ContentGuesser.new db, table_name, schema, nil
-      guesser.columns.should == :any_iterable_list_of_columnts
+      guesser.columns.should == :any_iterable_list_of_columns
     end
   end
 
@@ -138,14 +138,18 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#countries' do
     it 'queries the sql api to get a Set of countries' do
+      countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
       api_mock = mock
       api_mock
         .expects(:fetch)
         .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
         .returns([
-          {'synonyms' => ['usa', 'united states']},
-          {'synonyms' => ['spain', 'es']},
-          {'synonyms' => ['france', 'fr']}
+          {countries_column => 'usa'},
+          {countries_column => 'united states'},
+          {countries_column => 'spain'},
+          {countries_column => 'es'},
+          {countries_column => 'france'},
+          {countries_column => 'fr'}
         ])
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       guesser.geocoder_sql_api = api_mock
@@ -165,6 +169,32 @@ describe CartoDB::Importer2::ContentGuesser do
       guesser.countries.should eq Set.new []
       guesser.countries.should eq Set.new []
     end
+  end
+
+  describe '#id_column' do
+    it 'should return a column name known to be sequential and with index' do
+      db = mock
+      list_of_columns = [
+        {:column_name=>"data", :data_type=>"string"},
+        {:column_name=>"ogc_fid", :data_type=>"integer"},
+        {:column_name=>"more_data", :data_type=>"string"},
+      ]
+      db.expects(:[]).once.returns(list_of_columns)
+      guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil
+      guesser.id_column.should eq 'ogc_fid'
+    end
+
+    it "should raise an exception if there's no suitable id column" do
+      db = mock
+      list_of_columns = [
+        {:column_name=>"data", :data_type=>"string"},
+        {:column_name=>"more_data", :data_type=>"string"},
+      ]
+      db.expects(:[]).once.returns(list_of_columns)
+      guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil
+      expect {guesser.id_column}.to raise_error(CartoDB::Importer2::ContentGuesserException)
+    end
+
   end
 
 end

@@ -2,6 +2,7 @@
 -------------------
  * Fixed bugs and improvements
    - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
+   - Country guessing fix: must be done with at least 2 chars.
 
 3.2.14 (2014-11-17)
 -------------------

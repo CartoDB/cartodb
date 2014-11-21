@@ -6,15 +6,17 @@ module CartoDB
   module Importer2
     class ContentGuesser
 
-      COUNTRIES_QUERY = 'SELECT synonyms FROM country_decoder'
-      MINIMUM_ENTROPY = 0.9
-      IDS_COLUMN = 'ogc_fid'
+      COUNTRIES_COLUMN = 'name_'
+      COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
+      DEFAULT_MINIMUM_ENTROPY = 0.9
+      ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id']
 
-      def initialize(db, table_name, schema, options)
+      def initialize(db, table_name, schema, options, job=nil)
         @db         = db
         @table_name = table_name
         @schema     = schema
         @options    = options
+        @job        = job
       end
 
       def enabled?
@@ -39,7 +41,7 @@ module CartoDB
 
       def is_country_column?(column)
         return false unless is_country_column_type? column
-        return false unless metric_entropy(column) > MINIMUM_ENTROPY
+        return false unless metric_entropy(column) > minimum_entropy
         return country_proportion(column) > threshold
       end
 
@@ -72,12 +74,29 @@ module CartoDB
 
       def country_proportion(column)
         column_name_sym = column[:column_name].to_sym
-        matches = sample.count { |row| countries.include? row[column_name_sym].downcase }
-        matches.to_f / sample.count
+        matches = sample.count { |row| countries.include? row[column_name_sym].gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
+        country_proportion = matches.to_f / sample.count
+        log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
+        country_proportion
+      end
+
+      def log(msg)
+        @job.log msg if @job
       end
 
       def sample
-        @sample ||= TableSampler.new(@db, qualified_table_name, IDS_COLUMN, sample_size).sample
+        @sample ||= TableSampler.new(@db, qualified_table_name, id_column, sample_size).sample
+      end
+
+      def id_column
+        return @id_column if @id_column
+        columns.each do |column|
+          if ID_COLUMNS.include? column[:column_name]
+            @id_column = column[:column_name]
+            return @id_column
+          end
+        end
+        raise ContentGuesserException, "Couldn't find an id column for table #{qualified_table_name}"
       end
 
       def threshold
@@ -92,11 +111,15 @@ module CartoDB
         @options[:guessing][:sample_size]
       end
 
+      def minimum_entropy
+        @minimum_entropy ||= @options[:guessing].fetch(:minimum_entropy) rescue DEFAULT_MINIMUM_ENTROPY
+      end
+
       def countries
         return @countries if @countries
         @countries = Set.new()
         geocoder_sql_api.fetch(COUNTRIES_QUERY).each do |country|
-          @countries.merge country['synonyms']
+          @countries.add country[COUNTRIES_COLUMN]
         end
         @countries
       end
@@ -112,5 +135,8 @@ module CartoDB
       end
 
     end
+
+    class ContentGuesserException < StandardError; end
+
   end
 end

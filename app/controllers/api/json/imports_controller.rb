@@ -55,7 +55,8 @@ class Api::Json::ImportsController < Api::ApplicationController
         service_name:           service_name.presence,
         service_item_id:        service_item_id.presence,
         type_guessing:          params.fetch(:type_guessing, true),
-        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, true)
+        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, true),
+        content_guessing:       ["true", true].include?(params[:content_guessing])
     }
 
     data_import = DataImport.create(options)
@@ -244,7 +245,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     when params[:filename].present? && request.body.present?
       filename = params[:filename].original_filename rescue params[:filename].to_s
       begin
-        filepath = params[:filename].path 
+        filepath = params[:filename].path
       rescue
         filepath = params[:filename].to_s
         ajax_upload = true

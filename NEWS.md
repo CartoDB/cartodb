@@ -1,3 +1,8 @@
+3.2.15 (2014-11-21)
+-------------------
+ * Fixed bugs and improvements
+   - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
+
 3.2.14 (2014-11-17)
 -------------------
  * Fixed bugs

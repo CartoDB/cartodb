@@ -19,11 +19,10 @@ module Cartodb
 
     def build_request(path, body, method, timeout = 200)
       Typhoeus::Request.new(
-        "#{@host}/#{path}",
+        "#{ @host }/#{ path }",
         method: method,
         body: body.to_json,
-        username: @auth['username'],
-        password: @auth['password'],
+        userpwd: "#{ @auth[:username] }:#{ @auth[:password] }",
         headers: { "Content-Type" => "application/json" },
         ssl_verifypeer: Rails.env.production?,
         timeout: timeout

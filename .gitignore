@@ -25,6 +25,7 @@ config/app_config.yml
 config/redis.conf
 src/
 !lib/build/src/
+lib/build/test/test_bundle.*
 spec/support/data/failed_remote/*
 *.swp
 *.swo

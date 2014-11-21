@@ -101,9 +101,6 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       this.model.get('visible') ? this.show(): this.hide();
 
   }
-
-
-
 });
 
 _.extend(LeafLetTorqueLayer.prototype, cdb.geo.LeafLetLayerView.prototype);

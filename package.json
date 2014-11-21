@@ -36,7 +36,6 @@
     "grunt-contrib-sass": "~0.7.3",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-watch": "~0.6.0",
-    "grunt-exorcise": "^0.2.0",
     "grunt-mustache": "~0.1.6",
     "grunt-timer": "~0.3.3",
     "load-grunt-tasks": "~0.2.0",

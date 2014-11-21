@@ -95,7 +95,7 @@
       // Set assets url for static assets in our app
       var config = grunt.template.process("cdb.config.set('assets_url', '<%= env.http_path_prefix %>/assets/<%= pkg.version %>');");
       config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %> sha1: <%= gitrev %>');");
-      grunt.file.write("app_config.js", config);
+      grunt.file.write("lib/build/app_config.js", config);
     });
 
     grunt.registerTask('check_release', "checks release can be done", function() {

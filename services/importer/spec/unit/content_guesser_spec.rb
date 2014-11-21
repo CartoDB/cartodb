@@ -73,7 +73,7 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#is_country_column?' do
     it 'returns true if a sample proportion is above a given threshold' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns [
          {candidate_column_name: 'USA'},
@@ -87,7 +87,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it 'returns false if sample.count == 0' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns []
       guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
@@ -97,7 +97,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it 'returns false if countries.count == 0' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns [
          {candidate_column_name: 'USA'},
@@ -111,7 +111,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it 'returns false if sample.count == 0 and countries.count == 0' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns []
       guesser.stubs(:countries).returns Set.new []

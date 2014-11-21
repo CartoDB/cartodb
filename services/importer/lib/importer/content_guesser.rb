@@ -112,7 +112,7 @@ module CartoDB
       end
 
       def minimum_entropy
-        @minimum_entropy ||= @options[:guessing].fetch(:minimum_entropy) rescue DEFAULT_MINIMUM_ENTROPY
+        @minimum_entropy ||= @options[:guessing].fetch(:minimum_entropy, DEFAULT_MINIMUM_ENTROPY)
       end
 
       def countries

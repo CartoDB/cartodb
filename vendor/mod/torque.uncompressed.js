@@ -37,6 +37,7 @@
     start: function() {
       this.running = true;
       requestAnimationFrame(this._tick);
+      this.options.onStart && this.options.onStart();
     },
 
     isRunning: function() {
@@ -46,6 +47,7 @@
     stop: function() {
       this.pause();
       this.time(0);
+      this.options.onStop && this.options.onStop();
     },
 
     // real animation time
@@ -96,6 +98,7 @@
     pause: function() {
       this.running = false;
       cancelAnimationFrame(this._tick);
+      this.options.onPause && this.options.onPause();
     },
 
     _tick: function() {
@@ -4421,7 +4424,17 @@ L.TorqueLayer = L.CanvasLayer.extend({
       if(self.key !== k) {
         self.setKey(k, { direct: true });
       }
-    }, torque.clone(options));
+    }, torque.extend(torque.clone(options), {
+      onPause: function() {
+        self.fire('pause');
+      },
+      onStop: function() {
+        self.fire('stop');
+      },
+      onStart: function() {
+        self.fire('play');
+      }
+    }));
 
     this.play = this.animator.start.bind(this.animator);
     this.stop = this.animator.stop.bind(this.animator);
@@ -4735,8 +4748,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
       }
     }
     return null;
-  }
+  },
 
+  invalidate: function() {
+    this.provider.reload();
+  }
 });
 
 } //L defined

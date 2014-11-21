@@ -100,10 +100,6 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();
 
-  },
-
-  invalidate: function() {
-    this.provider.reload();
   }
 });
 

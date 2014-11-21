@@ -77,7 +77,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     if (!tb) return;
     if (tb.columnType === 'date' || this.options.force_format_date) {
       if (tb && tb.start !== undefined) {
-        var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
+        var f = self.options.formatter || this.formatterForRange(tb.start, tb.end);
         // avoid showing invalid dates
         if (!_.isNaN(changes.time.getYear())) {
           self.$('.value').text(f(changes.time));
@@ -92,17 +92,44 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.options.formatter = _;
   },
 
-  formaterForRange: function(start, end) {
-    start = start.getTime ? start.getTime(): start;
-    end = end.getTime ? end.getTime(): end;
-    var span = (end - start)/1000;
+  formatterForRange: function(start, end) {
+    start = start.getTime ? start : new Date(start);
+    end = end.getTime ? end : new Date(end);
+    var range = (end.getTime() - start.getTime()) / 1000;
     var ONE_DAY = 3600*24;
     var ONE_YEAR = ONE_DAY * 31 * 12;
-    function pad(n) { return n < 10 ? '0' + n : n; };
-    // lest than a day
-    if (span < ONE_DAY)   return function(t) { return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
-    if (span < ONE_YEAR) return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCDate()) + "/" + pad(t.getUTCFullYear()); };
-    return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCFullYear()); };
+
+    function pad(n) {
+      return n < 10 ? '0' + n : n;
+    }
+
+    function toUSDateStr(date) {
+      return pad(date.getUTCMonth() + 1) + "/" + pad(date.getUTCDate()) + "/" + pad(date.getUTCFullYear());
+    }
+
+    function toTimeStr(date) {
+      return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
+    }
+
+    if (range < ONE_DAY) {
+      if (start.getUTCDate() === end.getUTCDate()) {
+        return toTimeStr;
+      } else {
+        // range is less than a day, but the range spans more than one day so render the date in addition to the time
+        return function(date) {
+          return toUSDateStr(date) +' '+ toTimeStr(date);
+        };
+      }
+    }
+
+    if (range < ONE_YEAR) {
+      return toUSDateStr;
+    }
+
+    // >= ONE_YEAR
+    return function(date) {
+      return pad(date.getUTCMonth() + 1) + "/" + pad(date.getUTCFullYear());
+    };
   },
 
   _slide: function(e, ui) {

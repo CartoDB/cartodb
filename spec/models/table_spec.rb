@@ -75,6 +75,15 @@ describe Table do
       table.errors.fetch(:name).first.should =~ /reserved keyword/
     end
 
+    it 'is invalid with a "all" name' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'all'
+
+      table.valid?.should == false
+      table.errors.fetch(:name).first.should =~ /reserved keyword/
+    end
+
     it "should set a table_id value" do
       table = create_table(name: 'this_is_a_table', user_id: @user.id)
       table.table_id.should be_a(Integer)

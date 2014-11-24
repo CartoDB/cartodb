@@ -42,9 +42,11 @@ class DataImport < Sequel::Model
     service_item_id
     type_guessing
     quoted_fields_guessing
+    content_guessing
   }
 
   # Not all constants are used, but so that we keep track of available states
+  STATE_PENDING   = 'pending'
   STATE_UNPACKING = 'unpacking'
   STATE_IMPORTING = 'importing'
   STATE_SUCCESS   = 'complete'
@@ -60,7 +62,7 @@ class DataImport < Sequel::Model
   def after_initialize
     instantiate_log
     self.results  = []
-    self.state    ||= STATE_UPLOADING
+    self.state    ||= STATE_PENDING
   end
 
   def before_save
@@ -168,7 +170,7 @@ class DataImport < Sequel::Model
     #if log.entries =~ /Table (.*) registered/
       self.success  = true
       self.state    = STATE_SUCCESS
-      table_names = results.map { |result| result.name }.sort
+      table_names = results.map { |result| result.name }.select { |name| name != nil}.sort
       self.table_names = table_names.join(' ')
       self.tables_created_count = table_names.size
       log.append "Import finished\n"
@@ -203,6 +205,7 @@ class DataImport < Sequel::Model
   private
 
   def dispatch
+    self.state = STATE_UPLOADING
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
     new_importer
@@ -253,12 +256,12 @@ class DataImport < Sequel::Model
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
   end
 
-  # A stuck job shouldn't be finished, so it's state should not
+  # A stuck job should've started but not be finished, so it's state should not
   # be complete nor failed, it should have been in the queue
   # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
-    !%w(complete failure).include?(self.state) &&
+    ![STATE_PENDING, STATE_SUCCESS, STATE_FAILURE].include?(self.state) &&
     self.created_at < 5.minutes.ago            &&
     !running_import_ids.include?(self.id)
   end
@@ -373,6 +376,16 @@ class DataImport < Sequel::Model
     end
   end
 
+  def content_guessing_options
+    guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
+    geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
+    if guessing_config[:enabled] and self.content_guessing and geocoder_config
+      { guessing: guessing_config, geocoder: geocoder_config }
+    else
+      { guessing: { enabled: false } }
+    end
+  end
+
   def new_importer
     manual_fields = {}
     had_errors = false
@@ -428,7 +441,7 @@ class DataImport < Sequel::Model
       runner        = CartoDB::Importer2::Runner.new(
         pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
-      runner.loader_options = ogr2ogr_options
+      runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]
       if(!graphite_conf.nil?)
         runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
@@ -643,4 +656,3 @@ class DataImport < Sequel::Model
   end
 
 end
-

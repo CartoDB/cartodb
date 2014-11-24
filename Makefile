@@ -30,6 +30,7 @@ WORKING_SPECS_2 = \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
+  spec/lib/central_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \
@@ -64,6 +65,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/source_file_spec.rb \
+  services/importer/spec/unit/content_guesser_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \
@@ -126,7 +128,7 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
-  
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:

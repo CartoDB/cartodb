@@ -132,6 +132,8 @@ class Table < Sequel::Model(:user_tables)
                 :importing_encoding,
                 :temporal_the_geom_type,
                 :migrate_existing_table,
+                # this flag is used to register table changes only without doing operations on in the database
+                # for example when the table is renamed or created. For remove see keep_user_database_table
                 :register_table_only,
                 :new_table,
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
@@ -460,7 +462,7 @@ class Table < Sequel::Model(:user_tables)
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
           # only reset the sequence on real imports.
-          
+
           if max_cartodb_id
             user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
           end
@@ -1191,8 +1193,7 @@ class Table < Sequel::Model(:user_tables)
             nil,  # QueryBatcher will use a simple internal to console logger
             'georeferencing table rows',
             false,
-            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round,
-            'cartodb_id'
+            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round
         )
       end
       schema(reload: true)
@@ -1402,13 +1403,16 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      begin
-        owner.in_database.rename_table(@name_changed_from, name) unless errored
-      rescue StandardError => exception
-        exception_to_raise = CartoDB::BaseCartoDBError.new(
-            "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
-        CartoDB::notify_exception(exception_to_raise, user: owner)
+      if register_table_only != true
+        begin
+          owner.in_database.rename_table(@name_changed_from, name) unless errored
+        rescue StandardError => exception
+          exception_to_raise = CartoDB::BaseCartoDBError.new(
+              "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
+          CartoDB::notify_exception(exception_to_raise, user: owner)
+        end
       end
+
       propagate_namechange_to_table_vis unless errored
 
       unless errored
@@ -1767,4 +1771,3 @@ class Table < Sequel::Model(:user_tables)
   end
 
 end
-

@@ -2,6 +2,7 @@
 require_relative './column'
 require_relative './job'
 require_relative './query_batcher'
+require_relative './content_guesser'
 
 module CartoDB
   module Importer2
@@ -9,19 +10,27 @@ module CartoDB
       DEFAULT_BATCH_SIZE = 50000
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat }
-      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
+      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
-      THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
+      THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
+      def initialize(db, table_name, options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
         @job        = job || Job.new({  logger: logger } )
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
+        @options = options
+        @tracker = @options[:tracker] || lambda { |state| state }
+        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options, @job)
+        @importer_stats = ImporterStats.instance
+      end
+
+      def set_importer_stats(importer_stats)
+        @importer_stats = importer_stats
       end
 
       def mark_as_from_geojson_with_transform
@@ -33,8 +42,9 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        create_the_geom_from_geometry_column  || 
+        create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
+        create_the_geom_from_country_guessing ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -80,7 +90,7 @@ module CartoDB
         column.empty_lines_to_nulls
         column.geometrify
         unless column_exists_in?(table_name, :the_geom)
-          column.rename_to(:the_geom) 
+          column.rename_to(:the_geom)
         end
         handle_multipoint(qualified_table_name) if multipoint?
         self
@@ -97,6 +107,53 @@ module CartoDB
           end
         end
         false
+      end
+
+      def create_the_geom_from_country_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying country guessing...'
+        begin
+          country_column_name = nil
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            country_column_name = @content_guesser.country_column
+            @tracker.call('importing')
+          end
+          if country_column_name
+            job.log "Found country column: #{country_column_name}"
+            create_the_geom_in table_name
+            return geocode_countries country_column_name
+          end
+        rescue ContentGuesserException => e
+          Rollbar.report_exception(e)
+          job.log 'ERROR: #{e}'
+          return false
+        end
+      end
+
+      def geocode_countries country_column_name
+        geocoder = nil
+        @importer_stats.timing('geocoding') do
+          job.log "Geocoding countries..."
+          @tracker.call('geocoding')
+          create_the_geom_in(table_name)
+          config = @options[:geocoder].merge(
+            table_schema: schema,
+            table_name: table_name,
+            qualified_table_name: qualified_table_name,
+            connection: db,
+            formatter: country_column_name,
+            geometry_type: 'polygon',
+            kind: 'admin0',
+            max_rows: nil,
+            country_column: nil
+          )
+          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+          geocoder.run
+          @tracker.call('importing')
+          job.log "Geocoding finished"
+        end
+        geocoder.state == 'completed'
       end
 
       # Note: Performs a really simple ',' to '.' normalization.
@@ -178,7 +235,7 @@ module CartoDB
 
       def find_column_in(table_name, possible_names)
         sample = db[%Q{
-          SELECT  column_name 
+          SELECT  column_name
           FROM    information_schema.columns
           WHERE   table_name = '#{table_name}'
           AND     table_schema = '#{schema}'
@@ -227,4 +284,3 @@ module CartoDB
     end
   end
 end
-

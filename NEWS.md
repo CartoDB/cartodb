@@ -1,3 +1,29 @@
+3.2.15 (2014-11-21)
+-------------------
+ * Fixed bugs and improvements
+   - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
+   - Country guessing fix: must be done with at least 2 chars.
+   - Geocoding: fixed geocoder by postalcode when column type is numeric
+   - #1095 Add feature button in Torque maps
+
+3.2.14 (2014-11-17)
+-------------------
+ * Fixed bugs
+   - Geocoding: change "Place" by "Country" in City name and Postal code options.
+   - ContentGuesser: use index scan instead of seq scans in DB queries
+
+3.2.13 (2014-11-14)
+-------------------
+ * Fixed bugs
+   - Timeouts in internal geocoder #1152
+
+3.2.12 (2014-11-13)
+------------------
+* New features
+  - Country guessing on import. Figure out if any column contains country information and automatically geocode the table. Depends on the geocoder. Take a look at the entry `content_guessing:` in `config/app_config.yml.sample`
+* Fixed bugs
+  - Remove cumulative option for torque cat. wizard #903
+
 3.2.11 (2014-11-11)
 ------------------
 * New features

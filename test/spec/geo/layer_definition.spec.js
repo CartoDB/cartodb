@@ -519,7 +519,7 @@ describe("LayerDefinition", function() {
       var layer = layerDefinition.getSubLayer(0);
 
       spyOn(layerDefinition, '_requestGET').and.callThrough();
-      spyOn(layerDefinition, '_requestPOST').and.callThrough();;
+      spyOn(layerDefinition, '_requestPOST').and.callThrough();
 
       var query = "SELECT * FROM RAMBO_CHARLIES where area < 1000";
       layer.setSQL(q=query);
@@ -537,7 +537,7 @@ describe("LayerDefinition", function() {
       var layer = layerDefinition.getSubLayer(0);
 
       spyOn(layerDefinition, '_requestGET').and.callThrough();
-      spyOn(layerDefinition, '_requestPOST').and.callThrough();;
+      spyOn(layerDefinition, '_requestPOST').and.callThrough();
 
       var query = "select 1 ";
       for (var i = 0; i < 1600; i++){

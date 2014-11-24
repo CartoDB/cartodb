@@ -8,6 +8,6 @@ into account that several functions won't work as expected:
 | setMap        | [addTo](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#creating-visualizations-at-runtime)|
 | setQuery      | [setSQL](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sublayersetsqlsql) | 
 | setStyle      | [setCartoCSS](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sublayersetcartocsscss) |
-| setLayerOrder | no alternative, check proper map library methods [Leaflet](http://leafletjs.com/reference.html#tilelayer-bringtofront) or GMaps: ```map.overlayMapTypes.setAt(0, layer);```). |
+| setLayerOrder | no alternative, check proper map library methods [Leaflet](http://leafletjs.com/reference.html#tilelayer-bringtofront) or GMaps: ```map.overlayMapTypes.setAt(0, layer);``` |
 | isAdded       | check it with proper map library functions [Leaflet](http://leafletjs.com/reference.html#map-haslayer) or GMaps: looping through map.overlayMapTypes [MVCArray](https://developers.google.com/maps/documentation/javascript/reference#MVCArray) and comparing layers. | 
 | setBounds     | you can use this function within the proper map library [Leaflet](http://leafletjs.com/reference.html#map-fitbounds) or  [GMaps](https://developers.google.com/maps/documentation/javascript/reference#Map)) or get this info using CartoDB SQL ([example](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sqlgetboundssql-vars-options-callback)). | 

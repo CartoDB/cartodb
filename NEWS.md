@@ -1,6 +1,6 @@
 3.3.0 (2014-11-24)
-
- * Shows a warning message when editing a visualization that has a Google Maps basemap.
+ * New features
+  - Shows a warning message when editing a visualization that has a Google Maps basemap.
 
 3.2.15 (2014-11-21)
 -------------------

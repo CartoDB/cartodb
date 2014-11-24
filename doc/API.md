@@ -60,9 +60,9 @@ To start using CartoDB.js just paste this piece of code within the HEAD tags of 
 
 ### Create a visualization from scratch 
 
-The easiest way to quickly get a CartoDB map onto your webpage. Use this when there is no map in you applicacion and you want to add the visualization to hack over it. With this method, CartoDB.js handles all the details of loading a map interface, basemap, and your CartoDB visualization.
+The easiest way to quickly get a CartoDB map onto your webpage. Use this when there is no map in your application and you want to add the visualization to hack over it. With this method, CartoDB.js handles all the details of loading a map interface, basemap, and your CartoDB visualization.
 
-You can start by giving cartodb.js the DIV ID from your HTML where you want to place your map, and the viz.json URL of your visualization, which you can get from the publish window. 
+You can start by giving cartodb.js the DIV ID from your HTML where you want to place your map, and the viz.json URL of your visualization, which you can get from the share window. 
 
 <div class="code-title">Simplest way to add your map to a webpage ever!</div>
 ```javascript
@@ -95,7 +95,7 @@ cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
 
 In case you already have a map instantiated on your page, you can simply use the [createLayer](#cartodbcreatelayermap-layersource--options--callback) method to add new CartoDB layers to it. This is particullary useful when you have more things on your map apart from CartoDB layers or you have an application where you want to integrate CartoDB layers.
 
-Below, you have an example using a previously instatiated leaflet map.
+Below, you have an example using a previously instatiated Leaflet map.
 
 <div class="code-title">Adding cartodb layers to an existing map</div>
 ```html
@@ -122,9 +122,9 @@ Below, you have an example using a previously instatiated leaflet map.
 
 ### Creating visualizations at runtime 
 
-All CartoDB services are available through the API, which basically means that you can create a new visualization without doing it before through the CartoDB UI. This is particularly useful when you are modifying the visualization depending on user interactions that change the SQL to get the data or CartoCSS to style it. This method, although needs more programming skills, provides all the flexibility you might need to create more dynamic visualizations.
+All CartoDB services are available through the API, which basically means that you can create a new visualization without doing it before through the CartoDB UI. This is particularly useful when you are modifying the visualization depending on user interactions that change the SQL to get the data or CartoCSS to style it. Although this method requires more programming skills, it provides all the flexibility you might need to create more dynamic visualizations.
 
-When you create a visualization using the CartoDB website, you get automatically a viz.json URL defining it. When you want to create the visualization via JS, obviously you dont have it, so you will pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
+When you create a visualization using the CartoDB website, you get a viz.json URL defining it. When you want to create the visualization via JavaScript you don't always hava a viz.json, so you will need to pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
 
 <div class="code-title">Creating visualizations at runtime</div>
 ```javascript
@@ -211,6 +211,14 @@ cartodb.createVis('map', url)
   - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'. 
   - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
+
+##### Returns
+
+Promise object. You can listen for the following events:
+
+ **done**: triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
+ **error**: triggered when the layer couldn't be created. The error string is the first argument.
+
 
 ### cartodb.Vis
 

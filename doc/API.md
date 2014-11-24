@@ -326,7 +326,7 @@ Promise object. You can listen for the following events:
 + **done**: triggered when the layer is created, the layer is passed as first argument. Each layer type has different options, see layers section.
 + **error**: triggered when the layer couldn't be created. The error string is the first argument.
 
-You can call to `addTo(map[, position]) in the promise so when the layer is ready it will be added to the map. 
+You can call to `addTo(map[, position])` in the promise so when the layer is ready it will be added to the map. 
 
 ##### Example
 

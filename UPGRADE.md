@@ -22,124 +22,128 @@ Following methods are not supported or have changed:
 
 - **setMap**: use [addTo](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#creating-visualizations-at-runtime) instead.
 
-_v1:_
-```javascript
-var layer = new L.CartoDBLayer({
-  map: map,
-  user_name:'examples',
-  table_name: 'earthquakes',
-  query: "SELECT * FROM {{table_name}}",
-  tile_style: "#{{table_name}}{marker-fill:red}"
-})
-map.addLayer(layer);
-```
+  - _v1:_
+  ```javascript
+  var layer = new L.CartoDBLayer({
+    map: map,
+    user_name:'examples',
+    table_name: 'earthquakes',
+    query: "SELECT * FROM {{table_name}}",
+    tile_style: "#{{table_name}}{marker-fill:red}"
+  })
+  map.addLayer(layer);
+  ```
 
-_v2:_
-```javascript
-cartodb.createLayer(map, layerUrl, options, function(layer) {
-  map.addLayer(layer); // map.overlayMapTypes.setAt(0, layer); for gmaps
-});
-```
+  - _v2:_
+  ```javascript
+  cartodb.createLayer(map, layerUrl, options, function(layer) {
+    // For Leaflet
+    map.addLayer(layer);
 
-_v3:_
-```javascript
-cartodb.createLayer(map, layerUrl, options)
-  .addTo(map)
-  .on('done', function(layer) { ... });
-```
+    // For GMaps
+    map.overlayMapTypes.setAt(0, layer);
+  });
+  ```
+
+  - _v3:_
+  ```javascript
+  cartodb.createLayer(map, layerUrl, options)
+    .addTo(map)
+    .on('done', function(layer) { ... });
+  ```
 
 
 - **setQuery**: use [setSQL](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sublayersetsqlsql) instead.
 
-_v1:_
-```javascript
-layer.setQuery("SELECT * FROM {{table_name}} WHERE cartodb_id = 3");
-```
+  - _v1:_
+  ```javascript
+  layer.setQuery("SELECT * FROM {{table_name}} WHERE cartodb_id = 3");
+  ```
 
-_v2:_
-```javascript
-layer.setQuery("SELECT * FROM table_name WHERE cartodb_id = 10");
-```
+  - _v2:_
+  ```javascript
+  layer.setQuery("SELECT * FROM table_name WHERE cartodb_id = 10");
+  ```
 
-_v3:_
-```javascript
-layer.setSQL("SELECT * FROM table_name WHERE cartodb_id = 9");
-```
+  - _v3:_
+  ```javascript
+  layer.setSQL("SELECT * FROM table_name WHERE cartodb_id = 9");
+  ```
 
 
 - **setStyle**: use [setCartoCSS](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sublayersetcartocsscss) instead.
 
-_v1:_
-```javascript
-layer.setStyle("#{{table_name}} { marker-fill:purple }");
-```
+  - _v1:_
+  ```javascript
+  layer.setStyle("#{{table_name}} { marker-fill:purple }");
+  ```
 
-_v2:_
-```javascript
-layer.setCartoCSS("#layer { marker-fill:pink }");
-```
+  - _v2:_
+  ```javascript
+  layer.setCartoCSS("#layer { marker-fill:pink }");
+  ```
 
-_v3:_
-```javascript
-layer.setCartoCSS("#layer { marker-fill:yellow }");
-```
+  - _v3:_
+  ```javascript
+  layer.setCartoCSS("#layer { marker-fill:yellow }");
+  ```
 
 
 - **setLayerOrder**: no alternative, check proper map library methods.
 
-_v1:_
-```javascript
-layer.setLayerOrder(2); // Only available for GMaps
-```
+  - _v1:_
+  ```javascript
+  layer.setLayerOrder(2); // Only available for GMaps
+  ```
 
-_v2:_ check v3
+  - _v2:_ check v3
 
-_v3:_ [Leaflet](http://leafletjs.com/reference.html#tilelayer-bringtofront) or GMaps.
-```javascript
-// For Leaflet
-layer.bringToFront();
-layer.bringToBack();
+  - _v3:_ [Leaflet](http://leafletjs.com/reference.html#tilelayer-bringtofront) or GMaps.
+  ```javascript
+  // For Leaflet
+  layer.bringToFront();
+  layer.bringToBack();
 
-// For GMaps
-map.overlayMapTypes.setAt(0, layer);
-```
+  // For GMaps
+  map.overlayMapTypes.setAt(0, layer);
+  ```
 
 
 - **isAdded**: check it with proper map library functions ([Leaflet](http://leafletjs.com/reference.html#map-haslayer) or [GMaps](https://developers.google.com/maps/documentation/javascript/reference#MVCArray)).
 
-_v1:_
-```javascript
-layer.isAdded(); // Returned true or false
-```
+  - _v1:_
+  ```javascript
+  layer.isAdded(); // Returned true or false
+  ```
 
-_v2:_ check v3
+  - _v2:_ check v3
 
-_v3:_ [Leaflet](http://leafletjs.com/reference.html#map-haslayer) or GMaps.
-```javascript
-// For Leaflet
-map.haslayer(layer);
+  - _v3:_ [Leaflet](http://leafletjs.com/reference.html#map-haslayer) or GMaps.
+  ```javascript
+  // For Leaflet
+  map.haslayer(layer);
 
-// For GMaps
-var added = false;
-map.overlayMapTypes.forEach(function(lyr){
-  if (lyr === layer) added = true;
-});
-```
+  // For GMaps
+  var added = false;
+  map.overlayMapTypes.forEach(function(lyr){
+    if (lyr === layer) added = true;
+  });
+  ```
 
 
 - **setBounds**: you can get the needed info using CartoDB SQL ([example](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sqlgetboundssql-vars-options-callback)).
 
-_v1:_
-```javascript
-layer.setBounds("SELECT * FROM {{table_name}} WHERE cartodb_id < 100");
-```
+  - _v1:_
+  ```javascript
+  layer.setBounds("SELECT * FROM {{table_name}} WHERE cartodb_id < 100");
+  ```
 
-_v2:_ check v3
+  - _v2:_ check v3
 
-_v3:_
-```javascript
-var sql = new cartodb.SQL({ user: 'cartodb_user' });
-sql.getBounds('select * from table').done(function(bounds) {
-  console.log(bounds);
-});
-```
+  - _v3:_
+  ```javascript
+  var sql = new cartodb.SQL({ user: 'cartodb_user' });
+  sql.getBounds('select * from table').done(function(bounds) {
+    console.log(bounds);
+  });
+  ```

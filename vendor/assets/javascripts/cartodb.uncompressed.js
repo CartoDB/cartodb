@@ -1,6 +1,6 @@
 // cartodb.js version: 3.11.24
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0d71d79cf1ba86f4bf37036a0019068a0764ff8a
+// sha: bfc796011d0aaea1260f6fcb9cfbe7ae4d4e6ce1
 (function() {
   var root = this;
 
@@ -11122,7 +11122,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.0.1 - v6.0.4-157-gfdefcd0 */
+/* wax - 7.0.1 - v6.0.4-161-g64f2ce5 */
 
 
 !function (name, context, definition) {
@@ -14222,7 +14222,7 @@ wax.interaction = function() {
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
-        } else if (pos) {
+        } else if (pos && _d) {
           // If pos is not defined means wax can't calculate event position,
           // So next cases aren't possible.
 

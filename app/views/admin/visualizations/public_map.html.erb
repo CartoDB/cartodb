@@ -1,11 +1,5 @@
 <%= content_for(:css) do %>
-  <% if !Rails.env.production? %>
-    <%= stylesheet_link_tag 'cartodb.css', 'public_map.css' %>
-  <% else %>
-    <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-    <%= stylesheet_link_tag 'public_map.css' %>
-  <% end %>
-
+  <%= stylesheet_link_tag 'cartodb.css', 'public_map.css' %>
   <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 <% end %>
 
@@ -214,13 +208,8 @@
     map_options.mobile_layout = true;
 
   </script>
-  
-  <% if !Rails.env.production? %>
-    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map' %>
-  <% else %>
-    <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-    <%= javascript_include_tag 'app.js', 'templates.js', 'public_map' %>
-  <% end %>
+
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map' %>
 
   <script>
 

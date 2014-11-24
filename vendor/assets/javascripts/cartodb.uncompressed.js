@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.24-dev
+// cartodb.js version: 3.11.24
 // uncompressed version: cartodb.uncompressed.js
-// sha: 82a854637c4c8c671044109794c3ae400d1ae71b
+// sha: bfc796011d0aaea1260f6fcb9cfbe7ae4d4e6ce1
 (function() {
   var root = this;
 
@@ -11122,7 +11122,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.0.1 - v6.0.4-157-gfdefcd0 */
+/* wax - 7.0.1 - v6.0.4-161-g64f2ce5 */
 
 
 !function (name, context, definition) {
@@ -14222,7 +14222,7 @@ wax.interaction = function() {
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
-        } else if (pos) {
+        } else if (pos && _d) {
           // If pos is not defined means wax can't calculate event position,
           // So next cases aren't possible.
 
@@ -20705,7 +20705,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.24-dev';
+    cdb.VERSION = "3.11.24";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28772,9 +28772,9 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   if(typeof(L) == "undefined")
     return;
 
-  var defaultSubstitute = function defaultSubstitute(lightOrDark) {
+  var stamenSubstitute = function stamenSubstitute(type) {
     return {
-      url: 'http://{s}.basemaps.cartocdn.com/'+ (lightOrDark || "light") +'_all/{z}/{x}/{y}.png',
+      url: 'http://{s}.basemaps.cartocdn.com/'+ type +'_all/{z}/{x}/{y}.png',
       subdomains: 'abcd',
       minZoom: 0,
       maxZoom: 18,
@@ -28793,9 +28793,9 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   };
 
   var substitutes = {
-    roadmap: defaultSubstitute(),
-    gray_roadmap: defaultSubstitute(),
-    dark_roadmap: defaultSubstitute('dark'),
+    roadmap: nokiaSubstitute('normal'),
+    gray_roadmap: stamenSubstitute('light'),
+    dark_roadmap: stamenSubstitute('dark'),
     hybrid: nokiaSubstitute('hybrid'),
     terrain: nokiaSubstitute('terrain'),
     satellite: nokiaSubstitute('satellite')
@@ -33951,7 +33951,7 @@ Layers.register('torque', function(vis, data) {
   /**
    * create a layer for the specified map
    *
-   * @param map should be a L.Map or google.maps.Map object
+   * @param map should be a L.Map object, or equivalent depending on what provider you have.
    * @param layer should be an url or a javascript object with the data to create the layer
    * @param options layer options
    *

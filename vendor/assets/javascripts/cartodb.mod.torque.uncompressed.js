@@ -5289,6 +5289,7 @@ if(typeof(module) !== 'undefined') {
     start: function() {
       this.running = true;
       requestAnimationFrame(this._tick);
+      this.options.onStart && this.options.onStart();
     },
 
     isRunning: function() {
@@ -5298,6 +5299,7 @@ if(typeof(module) !== 'undefined') {
     stop: function() {
       this.pause();
       this.time(0);
+      this.options.onStop && this.options.onStop();
     },
 
     // real animation time
@@ -5348,6 +5350,7 @@ if(typeof(module) !== 'undefined') {
     pause: function() {
       this.running = false;
       cancelAnimationFrame(this._tick);
+      this.options.onPause && this.options.onPause();
     },
 
     _tick: function() {
@@ -9673,7 +9676,17 @@ L.TorqueLayer = L.CanvasLayer.extend({
       if(self.key !== k) {
         self.setKey(k, { direct: true });
       }
-    }, torque.clone(options));
+    }, torque.extend(torque.clone(options), {
+      onPause: function() {
+        self.fire('pause');
+      },
+      onStop: function() {
+        self.fire('stop');
+      },
+      onStart: function() {
+        self.fire('play');
+      }
+    }));
 
     this.play = this.animator.start.bind(this.animator);
     this.stop = this.animator.stop.bind(this.animator);
@@ -9987,8 +10000,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
       }
     }
     return null;
-  }
+  },
 
+  invalidate: function() {
+    this.provider.reload();
+  }
 });
 
 } //L defined
@@ -10200,9 +10216,6 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       this.model.get('visible') ? this.show(): this.hide();
 
   }
-
-
-
 });
 
 _.extend(LeafLetTorqueLayer.prototype, cdb.geo.LeafLetLayerView.prototype);
@@ -10289,7 +10302,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     if (!tb) return;
     if (tb.columnType === 'date' || this.options.force_format_date) {
       if (tb && tb.start !== undefined) {
-        var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
+        var f = self.options.formatter || this.formatterForRange(tb.start, tb.end);
         // avoid showing invalid dates
         if (!_.isNaN(changes.time.getYear())) {
           self.$('.value').text(f(changes.time));
@@ -10304,17 +10317,44 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.options.formatter = _;
   },
 
-  formaterForRange: function(start, end) {
-    start = start.getTime ? start.getTime(): start;
-    end = end.getTime ? end.getTime(): end;
-    var span = (end - start)/1000;
+  formatterForRange: function(start, end) {
+    start = start.getTime ? start : new Date(start);
+    end = end.getTime ? end : new Date(end);
+    var range = (end.getTime() - start.getTime()) / 1000;
     var ONE_DAY = 3600*24;
     var ONE_YEAR = ONE_DAY * 31 * 12;
-    function pad(n) { return n < 10 ? '0' + n : n; };
-    // lest than a day
-    if (span < ONE_DAY)   return function(t) { return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
-    if (span < ONE_YEAR) return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCDate()) + "/" + pad(t.getUTCFullYear()); };
-    return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCFullYear()); };
+
+    function pad(n) {
+      return n < 10 ? '0' + n : n;
+    }
+
+    function toUSDateStr(date) {
+      return pad(date.getUTCMonth() + 1) + "/" + pad(date.getUTCDate()) + "/" + pad(date.getUTCFullYear());
+    }
+
+    function toTimeStr(date) {
+      return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
+    }
+
+    if (range < ONE_DAY) {
+      if (start.getUTCDate() === end.getUTCDate()) {
+        return toTimeStr;
+      } else {
+        // range is less than a day, but the range spans more than one day so render the date in addition to the time
+        return function(date) {
+          return toUSDateStr(date) +' '+ toTimeStr(date);
+        };
+      }
+    }
+
+    if (range < ONE_YEAR) {
+      return toUSDateStr;
+    }
+
+    // >= ONE_YEAR
+    return function(date) {
+      return pad(date.getUTCMonth() + 1) + "/" + pad(date.getUTCFullYear());
+    };
   },
 
   _slide: function(e, ui) {

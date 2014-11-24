@@ -11,12 +11,7 @@
     var user_name = '<%= @username %>';
   </script>
 
-  <% if !Rails.env.production? %>
-    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
-  <% else %>
-    <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-    <%= javascript_include_tag 'app.js', 'templates.js', 'public_dashboard' %>
-  <% end %>
+  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
 <% end %>
 
 <div class="content<%= " empty" if @datasets.size == 0 %>">

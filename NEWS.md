@@ -1,3 +1,7 @@
+3.3.0 (2014-11-24)
+ * New features
+  - Shows a warning message when editing a visualization that has a Google Maps basemap.
+
 3.2.15 (2014-11-21)
 -------------------
  * Fixed bugs and improvements
@@ -47,6 +51,7 @@
 * New features
   * Enabled ghost tables. Tables created with SQL API are visible in the editor
   * Enables fullscreen for IE11.
+  * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 
 3.2.8 (2014-11-03)
 ------------------

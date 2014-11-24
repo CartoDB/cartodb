@@ -5,7 +5,12 @@ into account that the creation layer method and layer functions won't work as ex
 
 - [Creation](#creation)
 - [Methods](#methods)
-- [Comparison table](#comparison-table)
+  - setMap
+  - setQuery
+  - setStyle
+  - setLayerOrder
+  - isAdded
+  - setBounds
 
 ---
 
@@ -26,10 +31,10 @@ Following methods are not supported or have changed:
   ```javascript
   var layer = new L.CartoDBLayer({
     map: map,
-    user_name:'examples',
-    table_name: 'earthquakes',
+    user_name:'cartodb_user',
+    table_name: 'table_name',
     query: "SELECT * FROM {{table_name}}",
-    tile_style: "#{{table_name}}{marker-fill:red}"
+    tile_style: "#{{table_name}} {marker-fill:red}"
   })
   map.addLayer(layer);
   ```

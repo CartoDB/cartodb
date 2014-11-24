@@ -1,7 +1,23 @@
 # Upgrading from [cartodb-gmapsv3](https://github.com/vizzuality/cartodb-gmapsv3)/[leaflet](https://github.com/vizzuality/cartodb-leaflet) to CartoDB.js
 
 If your application is running an old CartoDB javascript library, you should take
-into account that several functions won't work as expected:
+into account that the creation layer method and layer functions won't work as expected.
+
+1.[Creation](#creation)
+2.[Methods](#methods)
+
+---
+
+## Creation
+
+You should follow the [instructions](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#adding-cartodb-layers-to-an-existing-map) we have in our [documentation](http://docs.cartodb.com/cartodb-platform/cartodb-js.html).
+You will find [layer available options](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#cartodbcreatelayermap-layersource--options--callback) and code examples there.
+
+---
+
+## Methods
+
+Following methods are not supported or have changed.
 
 - **setMap**: use ```addTo``` instead. Example in our [docs](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#creating-visualizations-at-runtime).
 - **setLayerOrder**: no alternative, check proper map library methods ([Leaflet](http://leafletjs.com/reference.html#tilelayer-bringtofront) | GMaps: ```map.overlayMapTypes.setAt(0, layer);```).

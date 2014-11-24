@@ -124,7 +124,7 @@ Below, you have an example using a previously instatiated Leaflet map.
 
 All CartoDB services are available through the API, which basically means that you can create a new visualization without doing it before through the CartoDB UI. This is particularly useful when you are modifying the visualization depending on user interactions that change the SQL to get the data or CartoCSS to style it. Although this method requires more programming skills, it provides all the flexibility you might need to create more dynamic visualizations.
 
-When you create a visualization using the CartoDB website, you get a viz.json URL defining it. When you want to create the visualization via JavaScript you don't always hava a viz.json, so you will need to pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
+When you create a visualization using the CartoDB website, you automatically get a viz.json URL defining it. When you want to create the visualization via JavaScript you don't always have a viz.json, so you will need to pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
 
 <div class="code-title">Creating visualizations at runtime</div>
 ```javascript
@@ -218,7 +218,6 @@ Promise object. You can listen for the following events:
 
  **done**: triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
  **error**: triggered when the layer couldn't be created. The error string is the first argument.
-
 
 ### cartodb.Vis
 

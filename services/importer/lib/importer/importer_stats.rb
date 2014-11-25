@@ -52,7 +52,6 @@ module CartoDB
       end
 
       def gauge(key, value)
-        nil
       end
 
     end

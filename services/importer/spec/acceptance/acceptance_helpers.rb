@@ -15,4 +15,8 @@ module AcceptanceHelpers
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end
 
+  def logger_double
+    CartoDB::Importer2::Doubles::Log.new
+  end
+
 end

@@ -104,6 +104,15 @@ describe 'csv regression tests' do
     }].first.fetch(:count).should eq 7
   end
 
+  it 'displays a specific error message for a file with too many columns' do
+    filepath = path_to('too_many_columns.csv')
+    downloader = Downloader.new(filepath)
+    runner = Runner.new(@pg_options, downloader, logger_double)
+    runner.run
+
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
+
   def sample_for(job)
     job.db[%Q{
       SELECT *

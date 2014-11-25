@@ -33,6 +33,7 @@ module CartoDB
     class EncodingDetectionError                < StandardError; end
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
+    class TooManyColumnsError < GenericImportError; end
 
     # @see also app/models/synchronization/member.rb => run() for more error codes
     # @see config/initializers/carto_db.rb For the texts
@@ -51,6 +52,7 @@ module CartoDB
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,
+      TooManyColumnsError                   => 2004,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

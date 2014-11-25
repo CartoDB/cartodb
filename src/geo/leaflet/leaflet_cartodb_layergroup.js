@@ -237,6 +237,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       case 'click':
       case 'touchend':
       case 'mspointerup':
+      case 'pointerup':
+      case 'pointermove':
         if (this.options.featureClick) {
           this.options.featureClick(o.e,latlng, screenPos, o.data, o.layer);
         }

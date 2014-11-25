@@ -220,7 +220,7 @@ module CartoDB
         end
 
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+        raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
 
         if ogr2ogr.exit_code != 0
           # OOM

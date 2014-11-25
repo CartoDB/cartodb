@@ -51,8 +51,7 @@ module CartoDB
         yield
       end
 
-      def gauge(key, value)
-      end
+      def gauge(key, value); end
 
     end
 

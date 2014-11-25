@@ -103,11 +103,12 @@ Following methods are not supported or have changed:
 
   - _v2:_ check v3
 
-  - _v3:_ [Leaflet](http://leafletjs.com/reference.html#tilelayer-bringtofront) or GMaps.
+  - _v3:_ [Leaflet(1)](http://leafletjs.com/reference.html#tilelayer-bringtofront), [Leaflet(2)](http://leafletjs.com/reference.html#tilelayer-setzindex) or GMaps.
   ```javascript
   // For Leaflet
   layer.bringToFront();
   layer.bringToBack();
+  layer.setZIndex();
 
   // For GMaps
   map.overlayMapTypes.setAt(0, layer);

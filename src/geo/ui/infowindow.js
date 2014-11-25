@@ -171,6 +171,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   updateContent: function(attributes) {
     var fields = this.get('fields');
     this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  },
+
+  closeInfowindow: function(){
+  if (this.get('visibility')) {
+      this.set("visibility", false);
+      this.trigger('close');
+    }
   }
 
 }, {

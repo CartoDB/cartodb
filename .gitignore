@@ -51,6 +51,5 @@ Vagrantfile
 node_modules
 .grunt/*
 _SpecRunner.html
-lib/assets/test/cartodb2_tests.js
 vendor/assets/javascripts/cartodb.*
 vendor/assets/stylesheets/cartodb.*

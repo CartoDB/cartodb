@@ -3,11 +3,7 @@
 <% end %>
 
 <%= content_for(:js) do %>
-  <% if current_user.new_dashboard_enabled %>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'new-dashboard.js' %>
-  <% else %>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' %>
-  <% end %>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
     , user_data = <%=raw current_user.data.to_json.html_safe %>

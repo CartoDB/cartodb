@@ -7,6 +7,7 @@ module CartoDB
       PREFIX = 'importer'
 
       private_class_method :new
+      attr_reader :fully_qualified_prefix
 
       def self.instance(host = nil, port = nil, host_info = nil)
         if host && port
@@ -20,7 +21,8 @@ module CartoDB
       end
 
       def initialize(host_info)
-        @timing_stack = ["#{PREFIX}.#{host_info}"]
+        @fully_qualified_prefix = "#{PREFIX}.#{host_info}"
+        @timing_stack = [fully_qualified_prefix]
       end
 
       def timing(key)
@@ -37,12 +39,20 @@ module CartoDB
         @timing_stack.join('.')
       end
 
+      def gauge(key, value)
+        Statsd.gauge("#{fully_qualified_prefix}.#{key}", value)
+      end
+
     end
 
     class NullImporterStats
 
       def timing(key)
         yield
+      end
+
+      def gauge(key, value)
+        nil
       end
 
     end

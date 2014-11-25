@@ -110,9 +110,14 @@ describe 'csv regression tests' do
   end
 
   it 'displays a specific error message for a file with too many columns' do
-    filepath = path_to('too_many_columns.csv')
-    downloader = Downloader.new(filepath)
-    runner = Runner.new(@pg_options, downloader, logger_double)
+    runner = runner_with_fixture('too_many_columns.csv')
+    runner.run
+
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
+
+  it 'displays a specific error message for a file with 10000 columns' do
+    runner = runner_with_fixture('10000_columns.csv')
     runner.run
 
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]

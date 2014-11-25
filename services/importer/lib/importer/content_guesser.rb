@@ -65,7 +65,7 @@ module CartoDB
         frequency_table = {}
         column_name_sym = column[:column_name].to_sym
         sample.each do |row|
-          elem = row[column_name_sym]
+          elem = normalize(row[column_name_sym])
           frequency_table[elem] += 1 rescue frequency_table[elem] = 1
         end
         length = sample.count.to_f
@@ -74,10 +74,14 @@ module CartoDB
 
       def country_proportion(column)
         column_name_sym = column[:column_name].to_sym
-        matches = sample.count { |row| countries.include? row[column_name_sym].gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
+        matches = sample.count { |row| countries.include? normalize(row[column_name_sym]) }
         country_proportion = matches.to_f / sample.count
         log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
         country_proportion
+      end
+
+      def normalize(str)
+        str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase
       end
 
       def log(msg)

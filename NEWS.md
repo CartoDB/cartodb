@@ -1,3 +1,8 @@
+3.3.1 (2014-11-25)
+------------------
+ * Fixed bugs
+   - Country guessing: normalize content before checking for duplicates.
+
 3.3.0 (2014-11-24)
 -------------------
  * New features

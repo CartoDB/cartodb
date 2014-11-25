@@ -81,11 +81,16 @@ describe 'csv regression tests' do
   end
 
   it 'import files named "all"' do
-    filepath = path_to('all.csv')
-    downloader = Downloader.new(filepath)
-    runner = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    runner = runner_with_fixture('all.csv')
     runner.run
 
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
+  it 'import big row files' do
+    runner = runner_with_fixture('big_row.csv')
+    runner.run
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
@@ -119,4 +124,11 @@ describe 'csv regression tests' do
       FROM #{job.qualified_table_name}
     }].first
   end #sample_for
+
+  def runner_with_fixture(file)
+    filepath = path_to(file)
+    downloader = Downloader.new(filepath)
+    Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+  end
+
 end # csv regression tests

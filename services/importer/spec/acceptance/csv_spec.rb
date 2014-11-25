@@ -80,6 +80,16 @@ describe 'csv regression tests' do
     geometry_type_for(runner).should eq 'POINT'
   end
 
+  it 'import files named "all"' do
+    filepath = path_to('all.csv')
+    downloader = Downloader.new(filepath)
+    runner = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
   it 'imports records with cell line breaks' do
     filepath    = path_to('in_cell_line_breaks.csv')
     downloader  = Downloader.new(filepath)

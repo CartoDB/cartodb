@@ -188,7 +188,7 @@ module CartoDB
     },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
     1011 => {
         title: 'Error retrieving data from datasource',

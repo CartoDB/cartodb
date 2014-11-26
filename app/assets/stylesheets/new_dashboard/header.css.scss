@@ -11,6 +11,10 @@
 
 /* Header */
 
+body {
+  font-family: "Lato", "san-serif";
+}
+
 .Header {
 }
 .Header-inner {
@@ -43,6 +47,7 @@
   @include inline-block();
   margin: 0 0 0 16px;
 
+  font-family: "Lato", "san-serif";
   text-decoration: none;
   font-size: 20px;
   color: $cGray2;

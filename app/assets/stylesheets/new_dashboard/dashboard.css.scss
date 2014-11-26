@@ -4,16 +4,17 @@
 @import "colors";
 
 body {
-  font-family: "Lato", "san-serif";
+  font-family: "Lato-Regular", "san-serif";
+  font-weight: 400;
 }
 
 a {
-  font-family: "Lato", "san-serif";
+  font-family: "Lato-Regular", "san-serif";
   font-weight: 400;
 }
 
 strong {
-  font-family: "Lato", "san-serif";
+  font-family: "Lato-Bold", "san-serif";
   font-weight: 700;
 }
 
@@ -41,4 +42,15 @@ strong {
 }
 .DashboardFilters .Button {
   float: right;
+}
+
+.VisList {
+
+}
+.VisList-Inner {
+  @include clearfix();
+  position:relative;
+  width: 940px;
+  margin: auto;
+  padding: 20px 0;
 }

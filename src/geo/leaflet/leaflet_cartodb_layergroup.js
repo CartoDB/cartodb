@@ -215,11 +215,16 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    * @param {Event} Wax event
    */
   _manageOnEvents: function(map, o) {
-    var layer_point = this._findPos(map,o),
-        latlng = map.layerPointToLatLng(layer_point);
+    var layer_point = this._findPos(map,o);
+
+    if (!layer_point || isNaN(layer_point.x) || isNaN(layer_point.y)) {
+      // If layer_point doesn't contain x and y,
+      // we can't calculate event map position
+      return false;
+    }
+
+    var latlng = map.layerPointToLatLng(layer_point);
     var event_type = o.e.type.toLowerCase();
-
-
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
     switch (event_type) {
@@ -232,6 +237,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       case 'click':
       case 'touchend':
       case 'mspointerup':
+      case 'pointerup':
+      case 'pointermove':
         if (this.options.featureClick) {
           this.options.featureClick(o.e,latlng, screenPos, o.data, o.layer);
         }

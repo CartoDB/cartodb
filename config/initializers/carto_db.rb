@@ -206,6 +206,10 @@ module CartoDB
       title: 'Invalid name',
       what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again."
     },
+    1015 => {
+      title: 'No results',
+      what_about: "Query was correct but returned no results, please change the parameters and run it again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."

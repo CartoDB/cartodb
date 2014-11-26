@@ -313,7 +313,7 @@ describe("LayerDefinition", function() {
     setTimeout(function() {
       expect(params.url).toEqual(layerDefinition._tilerHost() + '/api/v1/map?map_key=test&stat_tag=vis_id&lzma=' + encodeURIComponent(lzma));
       done();
-    }, 300);
+    }, 600);
   });
 
   it("should add api_key", function() {

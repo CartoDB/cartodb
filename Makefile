@@ -1,6 +1,6 @@
 # Old makefile
 
-UGLIFYJS = /Users/xavijam/.nvm/v0.8.11/lib/node_modules/uglify-js/bin/uglifyjs
+UGLIFYJS = ./node_modules/.bin/uglifyjs
 
 CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css themes/css/tooltip/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)

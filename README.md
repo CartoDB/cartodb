@@ -1,9 +1,10 @@
-CartoDB.js (v3.11) [![Build Status](https://travis-ci.org/CartoDB/cartodb.js.svg?branch=master)](https://travis-ci.org/CartoDB/cartodb.js)
+CartoDB.js (v3.11)
 ===========
 
-This library allows to embed you visualizations created with CartoDB in your map or website in a simple way.
+[![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-js-develop-testing)]
+(http://clinker.cartodb.net/jenkins/job/CartoDB-js-develop-testing)
 
-[![CartoDB.js landing](doc/thumbnail.png)](http://cartodb.github.io/cartodb.js/)
+This library allows to embed you visualizations created with CartoDB in your map or website in a simple way.
 
 
 ## Quick start
@@ -38,8 +39,17 @@ This library allows to embed you visualizations created with CartoDB in your map
       cartodb.createLayer(map, layerUrl).addTo(map);
     ```
 
-## Examples and documentation
-Examples and documentation are available in [CartoDB.js website](http://cartodb.github.io/cartodb.js/).
+## Documentation
+You can find the documentation online [here](http://docs.cartodb.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
+
+## Examples
+
+ - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
+ - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
+ - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
+ - [A visulization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
+ - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
+ - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
 
 
 ## How to build

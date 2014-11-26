@@ -832,11 +832,11 @@ only screen and (                min-resolution: 2dppx) {
   width: 50px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.time {
-  width: 80px;
+  width: 120px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.last {
   position:absolute;
-  left:145px;
+  left: 180px;
   right: 10px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.controls a.button {
@@ -1915,7 +1915,7 @@ div.cartodb-timeslider a.button.stop:hover {
 }
 
 div.cartodb-timeslider p {
-  width:75px;
+  width:120px;
   height:40px;
   margin:0;
   padding:0 5px 0 0;

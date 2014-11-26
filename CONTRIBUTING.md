@@ -66,12 +66,23 @@ If you want to open a new issue in our repository, please follow these instructi
 2. Write a good description, it always helps.
 3. Include your browser, OS and CartoDB.js version (it shows up in the browser console).
 4. Specify the steps to reproduce the problem.
-5. Try to add an example showing the problem (using JSFiddle, JSBin,...).
+5. Try to add an example showing the problem (using [JSFiddle](http://jsfiddle.net), [JSBin](http://jsbin.com),...).
 
 
 ## Contributing code
 Best part of open source, collaborate in CartoDB.js code!. We like hearing from you, so if you have any bug fixed, or a new feature ready to be merged, those are the steps you should follow:
 
+1. Fork the CartoDB.js repository.
+2. Create a new branch in your forked repository.
+3. Commit your changes. Add new tests if it is necessary (```grunt test```), remember to follow ["How to build"](https://github.com/CartoDB/cartodb.js/blob/master/README.md#how-to-build) steps.
+4. Open a pull request.
+5. Any of the CartoDB.js mantainers will take a look.
+6. If everything works, it will merged and released \o/.
+
+If you want more detailed information, this [GitHub guide](https://guides.github.com/activities/contributing-to-open-source/) is a must.
+
 
 ## Completing documentation
 
+CartoDB.js documentation is located in ```doc/API.md```. That file is the content that appears in [CartoDB platform documentation](http://docs.cartodb.com/cartodb-platform/cartodb-js.html). 
+Just follow the instructions described in [contributing code](#contributing-code) and after accepting your pull request, we will make it appear online :).

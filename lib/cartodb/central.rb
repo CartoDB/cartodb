@@ -11,6 +11,12 @@ module Cartodb
         username: Cartodb.config[:cartodb_central_api]['username'],
         password: Cartodb.config[:cartodb_central_api]['password']
       }
+
+      if Cartodb.config[:cartodb_central_api]['host']
+        @feature_flag_loader = CentralFeatureFlagLoader.new(self)
+      else
+        @feature_flag_loader = ConfigFeatureFlagLoader.new
+      end
     end
 
     def host
@@ -94,18 +100,49 @@ module Cartodb
     # Features
 
     def get_feature_flags(username)
-      send_request("api/users/#{username}/feature_flags", nil, :get, [200])
+      @feature_flag_loader.get_feature_flags(username)
+    end
+
+    def has_feature_flag(username, feature_flag_name)
+      @feature_flag_loader.has_feature_flag(username, feature_flag_name)
+    end
+
+    private
+
+  end
+
+  class CentralFeatureFlagLoader
+    
+    def initialize(central_client)
+      @central_client = central_client
+    end
+
+    def get_feature_flags(username)
+      @central_client.send_request("api/users/#{username}/feature_flags", nil, :get, [200])['feature_flags']
     rescue CartoDB::CentralCommunicationFailure => exception
       []
     end
 
     def has_feature_flag(username, feature_flag_name)
-      !send_request("api/users/#{username}/feature_flags/#{feature_flag_name}", nil, :get, [200])['feature_flag'].nil?
+      !@central_client.send_request("api/users/#{username}/feature_flags/#{feature_flag_name}", nil, :get, [200])['feature_flag'].nil?
     rescue CartoDB::CentralCommunicationFailure => exception
       false
     end
 
-    private
+  end
 
-  end # AppServer
+  class ConfigFeatureFlagLoader
+
+    def get_feature_flags(username)
+      Cartodb.config[:feature_flags][username]
+    rescue
+      []
+    end
+
+    def has_feature_flag(username, feature_flag_name)
+      get_feature_flags(username).include?(feature_flag_name)
+    end
+
+  end
+
 end # CartodbCentral

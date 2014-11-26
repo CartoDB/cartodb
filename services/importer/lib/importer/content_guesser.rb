@@ -101,7 +101,7 @@ module CartoDB
       end
 
       def normalize(str)
-        str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase
+        str.nil? ? '' : str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase
       end
 
       def log(msg)

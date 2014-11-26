@@ -257,6 +257,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       return
     end
 
+    filename = filename.gsub(/ /, '_')
+
     random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
 
     s3_config = Cartodb.config[:importer]['s3']

@@ -11,6 +11,7 @@
 
 /* Header */
 .Header {
+
 }
 .Header-inner {
   @include clearfix();
@@ -36,36 +37,9 @@
   margin: auto;
   padding: 20px 0;
 }
-
-/* Subheader-filter */
-
-.Subheader-filter {
+.Subheader .FilterList {
   position:absolute;
-  top: 50%;
   right: 0;
-  height: 20px;
-  margin-top: -10px;
-}
-.Subheader-filter li {
-  @include inline-block();
-  position:relative;
-  margin-right: 50px;
-}
-.Subheader-filter li:after {
-  content: '|';
-  color: $cGray9;
-  position: absolute;
-  top: 0;
-  right: -30px;
-}
-.Subheader-filter li:last-child {
-  margin-right: 0;
-}
-.Subheader-filter li:last-child:after {
-  display: none;
-}
-.Subheader-filter li.is-selected a {
-  color: $cGray2;
 }
 
 /* UserAvatar */

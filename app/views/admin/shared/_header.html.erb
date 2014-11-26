@@ -23,16 +23,18 @@
     <div class="Subheader-inner">
 
       <a href="#" class="UserAvatar UserAvatar--rounded">
-        <img src="//gravatar.com/avatar/853099e86161debceb724b345754f441?s=128" class="UserAvatar-avatar"/>
-        <span>Carlos Tallón</span>
+        <%= image_tag current_user.avatar_url, class: :"UserAvatar-avatar" %>
+        <span><%= current_user.username %></span>
       </a>
 
-      <ul class="Subheader-filter">
+      <ul class="FilterList FilterList--vertically-centered">
         <li class="is-selected">
           <a href="#"><strong>13</strong> Maps</a>
+          <div class="shadow"></div>
         </li>
         <li>
           <a href="#"><strong>89</strong> Datasets</a>
+          <div class="shadow"></div>
         </li>
       </ul>
 

@@ -82,6 +82,10 @@ describe CartoDB::Importer2::ContentGuesser do
       ]
       guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
       guesser.stubs(:threshold).returns 0.5
+      importer_stats_mock = mock
+      proportion = 2.0/3.0
+      importer_stats_mock.expects(:gauge).once().with('country_proportion', proportion)
+      guesser.set_importer_stats(importer_stats_mock)
 
       guesser.is_country_column?(column).should eq true
     end
@@ -214,6 +218,20 @@ describe CartoDB::Importer2::ContentGuesser do
       expect {guesser.id_column}.to raise_error(CartoDB::Importer2::ContentGuesserException)
     end
 
+  end
+
+  describe '#metric_entropy' do
+    it 'should be low for repeated elements after normalization' do
+      db = mock
+      column = { column_name: 'candidate_column_name' }
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: '1400US600'},
+         {candidate_column_name: '1400US601'},
+         {candidate_column_name: '1400US602'}
+      ]
+      guesser.metric_entropy(column).should < 0.5
+    end
   end
 
 end

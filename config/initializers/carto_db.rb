@@ -188,7 +188,7 @@ module CartoDB
     },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
     1011 => {
         title: 'Error retrieving data from datasource',
@@ -217,6 +217,10 @@ module CartoDB
     2003 => {
       title: 'Malformed CSV',
       what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV."
+    },
+    2004 => {
+      title: 'Too many columns',
+      what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones."
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',

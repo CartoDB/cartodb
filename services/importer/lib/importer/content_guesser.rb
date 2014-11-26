@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative 'table_sampler'
+require_relative 'importer_stats'
 
 module CartoDB
   module Importer2
@@ -17,6 +18,11 @@ module CartoDB
         @schema     = schema
         @options    = options
         @job        = job
+        @importer_stats = ImporterStats.instance
+      end
+
+      def set_importer_stats(importer_stats)
+        @importer_stats = importer_stats
       end
 
       def enabled?
@@ -41,8 +47,22 @@ module CartoDB
 
       def is_country_column?(column)
         return false unless is_country_column_type? column
-        return false unless metric_entropy(column) > minimum_entropy
-        return country_proportion(column) > threshold
+        entropy = metric_entropy(column)
+        if entropy < minimum_entropy
+          false
+        else
+          proportion = country_proportion(column)
+          if proportion < threshold
+            false
+          else
+            log_country_guessing_match_metrics(proportion)
+            true
+          end
+        end
+      end
+
+      def log_country_guessing_match_metrics(proportion)
+        @importer_stats.gauge('country_proportion', proportion)
       end
 
       # See http://en.wikipedia.org/wiki/Entropy_(information_theory)
@@ -65,7 +85,7 @@ module CartoDB
         frequency_table = {}
         column_name_sym = column[:column_name].to_sym
         sample.each do |row|
-          elem = row[column_name_sym]
+          elem = normalize(row[column_name_sym])
           frequency_table[elem] += 1 rescue frequency_table[elem] = 1
         end
         length = sample.count.to_f
@@ -74,10 +94,14 @@ module CartoDB
 
       def country_proportion(column)
         column_name_sym = column[:column_name].to_sym
-        matches = sample.count { |row| countries.include? row[column_name_sym].gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
+        matches = sample.count { |row| countries.include? normalize(row[column_name_sym]) }
         country_proportion = matches.to_f / sample.count
         log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
         country_proportion
+      end
+
+      def normalize(str)
+        str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase
       end
 
       def log(msg)

@@ -55,7 +55,7 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
-  * Enabled ghost tables. Tables created with SQL API are visible in the editor
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
   * Enables fullscreen for IE11.
   * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 

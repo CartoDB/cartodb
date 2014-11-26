@@ -220,7 +220,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     if (!layer_point || isNaN(layer_point.x) || isNaN(layer_point.y)) {
       // If layer_point doesn't contain x and y,
       // we can't calculate event map position
-      return;
+      return false;
     }
 
     var latlng = map.layerPointToLatLng(layer_point);

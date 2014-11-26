@@ -166,6 +166,7 @@
         var value = document.createElement("span");
         value.className = (typeof completions[i] == "string") ? "text" : "value";
         value.innerHTML = cur.displayText || cur;
+        value.title = cur.displayText || cur;
         value.hintId = i;
 
         if (getType(completions[i])) {

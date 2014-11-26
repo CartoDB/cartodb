@@ -1,0 +1,32 @@
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "common/mixins";
+@import "common/vars";
+@import "colors";
+
+/* VisCard */
+
+.VisCard {
+  width: 300px;
+  @include inline-block();
+  border: 1px solid $cGray7;
+  @include border-radius(4px);
+}
+.VisCard-Header {
+  width: 100%;
+  height: 170px;
+  background: $cLightGray;
+}
+.VisCard-Inner {
+  padding: 20px;
+}
+.VisCard-Title {
+  font-size: 16px;
+  color: #666666;
+  line-height: 19px;
+}
+.VisCard-Decription {
+  font-size: 13px;
+  color: #999999;
+  line-height: 16px;
+}

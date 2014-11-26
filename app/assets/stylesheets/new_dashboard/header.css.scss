@@ -10,14 +10,11 @@
 @import "colors";
 
 /* Header */
-
-body {
-  font-family: "Lato", "san-serif";
-}
-
 .Header {
 }
 .Header-inner {
+  @include clearfix();
+  position:relative;
   width: 940px;
   margin: auto;
 }
@@ -29,25 +26,57 @@ body {
 /* Subheader */
 
 .Subheader {
-  background: $cGray9;
+  background: $cGray11;
   border-bottom: 1px solid $cGray8;
 }
 .Subheader-inner {
+  @include clearfix();
+  position:relative;
   width: 940px;
   margin: auto;
   padding: 20px 0;
 }
 
-.UserAvatarInfo {
+/* Subheader-filter */
+
+.Subheader-filter {
+  position:absolute;
+  top: 50%;
+  right: 0;
+  height: 20px;
+  margin-top: -10px;
+}
+.Subheader-filter li {
+  @include inline-block();
+  position:relative;
+  margin-right: 50px;
+}
+.Subheader-filter li:after {
+  content: '|';
+  color: $cGray9;
+  position: absolute;
+  top: 0;
+  right: -30px;
+}
+.Subheader-filter li:last-child {
+  margin-right: 0;
+}
+.Subheader-filter li:last-child:after {
+  display: none;
+}
+.Subheader-filter li.is-selected a {
+  color: $cGray2;
 }
 
+/* UserAvatar */
+
 .UserAvatar {
+  float: left;
 }
 .UserAvatar span {
   @include inline-block();
-  margin: 0 0 0 16px;
+  margin: 0 0 0 15px;
 
-  font-family: "Lato", "san-serif";
   text-decoration: none;
   font-size: 20px;
   color: $cGray2;

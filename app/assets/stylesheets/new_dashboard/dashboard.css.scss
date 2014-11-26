@@ -1,0 +1,19 @@
+@import "common/mixins";
+@import "common/common-sprite";
+@import "common/vars";
+@import "colors";
+
+body {
+  font-family: "Lato", "san-serif";
+}
+
+a {
+  font-family: "Lato", "san-serif";
+  font-weight: 400;
+}
+
+strong {
+  font-family: "Lato", "san-serif";
+  font-weight: 700;
+}
+

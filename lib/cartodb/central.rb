@@ -93,8 +93,16 @@ module Cartodb
     ############################################################################
     # Features
 
-    def get_features(username)
-      return send_request("api/users/#{username}/features", nil, :get, [200])
+    def get_feature_flags(username)
+      send_request("api/users/#{username}/feature_flags", nil, :get, [200])
+    rescue CartoDB::CentralCommunicationFailure => exception
+      []
+    end
+
+    def has_feature_flag(username, feature_flag_name)
+      !send_request("api/users/#{username}/feature_flags/#{feature_flag_name}", nil, :get, [200])['feature_flag'].nil?
+    rescue CartoDB::CentralCommunicationFailure => exception
+      false
     end
 
     private

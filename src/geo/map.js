@@ -39,25 +39,16 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       if(myType === 'Tiled') {
         var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
           , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-
-        if(myTemplate === itsTemplate) {
-          return true; // tiled and same template
-        } else {
-          return false; // tiled and differente template
-        }
+        return myTemplate === itsTemplate;
       } else if(myType === 'WMS') {
-
         var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
           , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
-
         var myLayer  = me.layers? me.layers : me.options.layers
           , itsLayer = other.layers? other.layers : other.options.layers;
-
-        if(myTemplate === itsTemplate && myLayer === itsLayer) {
-          return true; // wms and same template
-        } else {
-          return false; // wms and differente template
-        }
+        return myTemplate === itsTemplate && myLayer === itsLayer;
+      }
+      else if (myType === 'torque') {
+        return cdb.geo.TorqueLayer.prototype.isEqual.call(this, layer);
       } else { // same type but not tiled
         var myBaseType = me.base_type? me.base_type : me.options.base_type;
         var itsBaseType = other.base_type? other.base_type : other.options.base_type;
@@ -127,7 +118,16 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
   defaults: {
     type: 'torque',
     visible: true
+  },
+
+  isEqual: function(other) {
+    var properties = ['query', 'query_wrapper', 'cartocss'];
+    var self = this;
+    return _.every(properties, function(p) {
+      return other.get(p) === self.get(p);
+    });
   }
+
 });
 
 // CartoDB layer
@@ -177,13 +177,30 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     } else {
       this.activate();
     }
-  }
+  },
+
+  /*isEqual: function() {
+    return false;
+  }*/
 });
 
 cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
+
   defaults: {
     visible: true,
     type: 'layergroup'
+  },
+
+  initialize: function() {
+    this.sublayers = new cdb.geo.Layers();
+  },
+
+  isEqual: function() {
+    return false;
+  },
+
+  contains: function(layer) {
+    return layer.get('type') === 'cartodb';
   }
 });
 

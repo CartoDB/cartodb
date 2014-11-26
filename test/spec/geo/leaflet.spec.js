@@ -183,10 +183,12 @@ describe('LeafletMapView', function() {
     map.addLayer(layer);
 
     spyOn(mapView.map_leaflet,'addLayer');
-    var b = new cdb.geo.TileLayer({urlTemplate: 'test'});
+    var b = new cdb.geo.TileLayer({urlTemplate: 'test' });
     map.addLayer(b, {at: 0});
+    
 
-    expect(mapView.map_leaflet.addLayer.calls.mostRecent().args[0].model).toEqual(layer);
+    expect(mapView.getLayerByCid(layer.cid).options.zIndex).toEqual(1);
+    expect(mapView.getLayerByCid(b.cid).options.zIndex).toEqual(0);
     //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
   });
 
@@ -273,6 +275,19 @@ describe('LeafletMapView', function() {
     map.addLayer(layer);
     layer.set('type', 'torque');
     expect(mapView.layers[layer.cid] instanceof L.TorqueLayer).toEqual(true);
+  });
+
+  it("should reuse layer view", function() {
+    var layer1 = new cdb.geo.TorqueLayer({ type: 'torque', sql: 'select * from table', cartocss: '#test {}' });
+    map.addLayer(layer1);
+    expect(mapView.layers[layer1.cid] instanceof L.TorqueLayer).toEqual(true);
+    mapView.layers[layer1.cid].check = 'testing';
+    var newLayer = layer1.clone();
+    newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
+    map.layers.reset([newLayer]);
+    expect(mapView.layers[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
+    expect(mapView.layers[newLayer.cid].model).toEqual(newLayer)
+    expect(mapView.layers[newLayer.cid].check).toEqual('testing');
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.

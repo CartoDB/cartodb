@@ -128,6 +128,43 @@
       }
     },
 
+    // this replaces the default functionality to search for
+    // already added views so they are not replaced
+    _addLayers: function() {
+      var self = this;
+
+      var oldLayers = this.layers;
+      this.layers = {};
+
+      function findLayerView(layer) {
+        var lv = _.find(oldLayers, function(layer_view) {
+          var m = layer_view.model;
+          return m.isEqual(layer);
+        });
+        return lv;
+      }
+
+      // remove all
+      for(var layer in oldLayers) {
+        var layer_view = oldLayers[layer];
+        if (!findLayerView(layer_view.model)) {
+          this.map_leaflet.removeLayer(layer_view);
+        }
+      }
+
+      this.map.layers.each(function(lyr) {
+        var lv = findLayerView(lyr);
+        if (!lv) {
+          self._addLayer(lyr);
+        } else {
+          lv.setModel(lyr);
+          self.layers[lyr.cid] = lv;
+          self.trigger('newLayerView', lv, lv.model, self);
+        }
+      });
+
+    },
+
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
       L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
@@ -136,6 +173,7 @@
       for(var layer in this.layers) {
         var layer_view = this.layers[layer];
         layer_view.remove();
+        console.log("delete ", layer);
         delete this.layers[layer];
       }
 
@@ -180,40 +218,23 @@
     _addLayer: function(layer, layers, opts) {
       var self = this;
       var lyr, layer_view;
-
       layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
-      if(!layer_view) {
+      if (!layer_view) {
         return;
       }
+      return this._addLayerToMap(layer_view, opts);
+    },
 
-      var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
-      // since leaflet does not support layer ordering
-      // add the layers should be removed and added again
-      // if the layer is being appended do not clear
-      if(!appending) {
-        for(var i in this.layers) {
-          this.map_leaflet.removeLayer(this.layers[i]);
-        }
-      }
+    _addLayerToMap: function(layer_view, opts) {
+      var layer = layer_view.model;
 
       this.layers[layer.cid] = layer_view;
+      cdb.geo.LeafletMapView.addLayerToMap(layer_view, this.map_leaflet);
 
-      // add them again, in correct order
-      if(appending) {
-        cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
-        if(layer_view.setZIndex) {
-          layer_view.setZIndex(layer.get('order'))
-        }
-      } else {
-        this.map.layers.each(function(layerModel) {
-          var v = self.layers[layerModel.cid];
-          if(v) {
-            cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
-            if(v.setZIndex) {
-              v.setZIndex(layerModel.get('order'))
-            }
-          }
-        });
+      // reorder layers
+      for(var i in this.layers) {
+        var lv = this.layers[i];
+        lv.setZIndex(lv.model.get('order'));
       }
 
       var attribution = layer.get('attribution');
@@ -228,8 +249,8 @@
         this.map.set({ attribution: attributions });
       }
 
-      if(opts == undefined || !opts.silent) {
-        this.trigger('newLayerView', layer_view, layer, this);
+      if(opts === undefined || !opts.silent) {
+        this.trigger('newLayerView', layer_view, layer_view.model, this);
       }
       return layer_view;
     },

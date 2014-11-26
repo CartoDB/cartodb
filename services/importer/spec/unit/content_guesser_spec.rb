@@ -222,7 +222,6 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#metric_entropy' do
     it 'should be low for repeated elements after normalization' do
-      db = mock
       column = { column_name: 'candidate_column_name' }
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       guesser.stubs(:sample).returns [
@@ -231,6 +230,13 @@ describe CartoDB::Importer2::ContentGuesser do
          {candidate_column_name: '1400US602'}
       ]
       guesser.metric_entropy(column).should < 0.5
+    end
+  end
+
+  describe '#normalize' do
+    it 'should handle gracefully nil values' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser.normalize(nil) == ''
     end
   end
 

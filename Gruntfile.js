@@ -69,9 +69,9 @@
     // builds cdb
     grunt.registerTask('cdb', "builds cartodb.js", function() {
       var done = this.async();
-      require("child_process").exec('cd && make update_cdb', function (error, stdout, stderr) {
+      require("child_process").exec('make update_cdb', function (error, stdout, stderr) {
         if (error) {
-          grunt.log.fail('cartodb.js not updated');
+          grunt.log.fail('cartodb.js not updated (due to '+ stdout +", "+ stderr +")");
         } else {
           grunt.log.ok('cartodb.js updated');
         }

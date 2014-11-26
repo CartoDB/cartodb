@@ -236,7 +236,7 @@ describe CartoDB::Importer2::ContentGuesser do
   describe '#normalize' do
     it 'should handle gracefully nil values' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
-      guesser.normalize(nil) == ''
+      guesser.normalize(nil).should == ''
     end
   end
 

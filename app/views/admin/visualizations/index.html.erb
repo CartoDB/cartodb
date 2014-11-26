@@ -1,9 +1,12 @@
-<% content_for(:page_title) do %>
-  <%= current_user.username %> |
-<% end %>
-
-<%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' %>
+<% content_for(:page_title) do -%>
+  <%= current_user.username -%> |
+<% end -%>
+<%= content_for(:js) do -%>
+  <% if current_user.new_dashboard_enabled %>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'new_dashboard.js' -%>
+  <% else %>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' -%>
+  <% end %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
     , user_data = <%=raw current_user.data.to_json.html_safe %>
@@ -14,25 +17,32 @@
     , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
+
+<%= content_for(:css) do -%>
+  <% if current_user.new_dashboard_enabled %>
+    <%= stylesheet_link_tag 'common.css', 'new_dashboard.css', :media => 'all' %>
+  <% else %>
+    <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
+  <% end %>
 <% end %>
 
-<%= render 'admin/shared/subheader' %>
+<% unless current_user.new_dashboard_enabled %>
+  <%= render 'admin/shared/subheader' %>
 
-<div class="bar_loader"></div>
+  <div class="bar_loader"></div>
 
-<div class="main_loader">
-  <i></i>
-</div>
+  <div class="main_loader">
+    <i></i>
+  </div>
 
-<%= render 'admin/visualizations/index/tables' %>
+  <%= render 'admin/visualizations/index/tables' %>
 
-<div class="drag_mamufas">
-  <span class="file"></span>
-  <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
-  <div class="mask"></div>
-</div>
+  <div class="drag_mamufas">
+    <span class="file"></span>
+    <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
+    <div class="mask"></div>
+  </div>
 
-<div class="bars"></div>
-<article class="support"></article>
+  <div class="bars"></div>
+  <article class="support"></article>
+<% end %>

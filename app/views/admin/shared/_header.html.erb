@@ -1,16 +1,36 @@
-<header>
-  <div class="inner">
-    <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>
-    <ul class="right">      
-      <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
+<% unless current_user.new_dashboard_enabled %>
+  <header>
+    <div class="inner">
+      <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>
+      <ul class="right">      
+        <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
       <li><%= link_to 'visualizations', visualizations_index_path(user_domain: params[:user_domain]), :class => :visualizations %></a></li>
-      <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path.include? 'common_data') %></a></li>
-      <li><%= link_to 'documentation', Cartodb.config[:developers_host] %></a></li>
-      <li>
-        <a class="dropdown account separator" href="<%= account_url %>"><%= current_user.username %><span>|</span></a>
-      </li>
+    <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path.include? 'common_data') %></a></li>
+  <li><%= link_to 'documentation', Cartodb.config[:developers_host] %></a></li>
+<li>
+  <a class="dropdown account separator" href="<%= account_url %>"><%= current_user.username %><span>|</span></a>
+</li>
     </ul>
   </div>
 </header>
-
 <%= yield :account_settings %>
+<% else %>
+  <div class="Header">
+    <div class="Header-inner"></div>
+    <div class="Header-map"></div>
+  </div>
+  <div class="Subheader">
+    <div class="Subheader-inner">
+
+      <div class="UserAvatarInfo">
+        <a href="#" class="UserAvatar UserAvatar--rounded">
+          <img src="//gravatar.com/avatar/853099e86161debceb724b345754f441?s=128" class="UserAvatar-avatar"/>
+          <span>
+            Carlos Tallón
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+<% end %>

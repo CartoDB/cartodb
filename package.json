@@ -50,5 +50,16 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "jquery": "global:$",
+    "underscore": "global:_",
+    "cartodbui": "global:cdb",
+    "cartodb.js": "global:cdb"
+  }
 }

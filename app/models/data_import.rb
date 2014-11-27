@@ -116,7 +116,11 @@ class DataImport < Sequel::Model
   end
 
   def get_error_text
-    self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    if self.error_code.nil?
+      nil
+    else
+      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    end
   end
 
   def raise_over_table_quota_error

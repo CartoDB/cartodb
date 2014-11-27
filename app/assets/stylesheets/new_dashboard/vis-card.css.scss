@@ -1,5 +1,7 @@
+@import "compass/css3";
 @import "compass/css3/inline-block";
 @import "compass/css3/border-radius";
+@import "compass/css3/opacity";
 @import "common/mixins";
 @import "common/vars";
 @import "colors";
@@ -7,26 +9,108 @@
 /* VisCard */
 
 .VisCard {
+  position:relative;
   width: 300px;
+  height: 352px;
+
   @include inline-block();
   border: 1px solid $cGray7;
   @include border-radius(4px);
+  overflow:hidden;
 }
 .VisCard-Header {
   width: 100%;
   height: 170px;
+  position: relative;
   background: $cLightGray;
 }
-.VisCard-Inner {
+.VisCard-Shadow {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 4px;
+  background: $cBlack;
+  @include opacity(.2);
+}
+.VisCard > .u-inner {
   padding: 20px;
 }
+.VisCard-Info {
+  width: 260px;
+}
 .VisCard-Title {
+  display: block;
+  margin: 0 0 10px 0;
   font-size: 16px;
   color: #666666;
   line-height: 19px;
 }
-.VisCard-Decription {
+.VisCard-Description {
+  margin: 0 0 5px 0;
+  font-family: "Lato-Light", "san-serif";
   font-size: 13px;
+  font-weight: 300;
   color: #999999;
   line-height: 16px;
+}
+.VisCard-Tags {
+  color: $cBlueLink;
+  font-weight: 300;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 16px;
+}
+.VisCard-Tags a {
+  color: $cBlueLink;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 16px;
+}
+.VisCard-Footer {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+}
+.VisCard-Footer > .u-inner {
+  @include box-sizing(border-box);
+  width: 260px;
+  margin: auto;
+  padding: 10px 0 15px 0;
+  border-top: 1px solid $cGray9;
+  color: $cGray6;
+  font-family: "Lato-Light", "san-serif";
+  font-size: 12.18px;
+  font-weight: 300;
+  line-height: 15px;
+}
+
+/* PrivacyIndicator */
+
+.PrivacyIndicator {
+  position: relative;
+  padding: 0 0 0 12px;
+
+  color: $cGray6;
+  font-family: "Lato-Light", "san-serif";
+  font-size: 12.18px;
+  font-weight: 300;
+  line-height: 15px;
+}
+.PrivacyIndicator:hover {
+  text-decoration: none;
+  color: $cGray6;
+}
+.PrivacyIndicator:before {
+  content: '';
+  position: absolute;
+  top: 5px; left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: $cLightGray;
+  @include border-radius(100%);
+}
+.PrivacyIndicator.is-public:before {
+  background-color: $cGreen;
 }

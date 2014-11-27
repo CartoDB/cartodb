@@ -26,10 +26,10 @@ strong {
   display: none;
   position:absolute;
   width: 100%;
-  bottom: -35px;
+  bottom: -34px;
   border-bottom: 1px solid $cGray4;
 }
-.DashboardFilters-inner {
+.DashboardFilters > .u-inner {
   @include clearfix();
   position:relative;
   width: 940px;
@@ -45,12 +45,24 @@ strong {
 }
 
 .VisList {
-
+  @include display-flex();
 }
-.VisList-Inner {
+.VisList > .u-inner {
   @include clearfix();
   position:relative;
   width: 940px;
   margin: auto;
   padding: 20px 0;
+
+}
+.VisList .VisList-Row {
+  margin: 0 0 20px 0;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+.VisList .VisList-Row .VisList-RowItem {
+  @include flex(1);
+  margin: auto;
 }

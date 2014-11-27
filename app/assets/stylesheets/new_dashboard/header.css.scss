@@ -8,7 +8,7 @@
 .Header {
 
 }
-.Header-inner {
+.Header > .u-inner {
   @include clearfix();
   position:relative;
   width: 940px;
@@ -25,7 +25,7 @@
   background: $cGray11;
   border-bottom: 1px solid $cGray8;
 }
-.Subheader-inner {
+.Subheader > .u-inner {
   @include clearfix();
   position:relative;
   width: 940px;

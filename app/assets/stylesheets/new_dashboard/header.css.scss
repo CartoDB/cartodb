@@ -6,7 +6,6 @@
 
 /* Header */
 .Header {
-
 }
 .Header > .u-inner {
   @include clearfix();
@@ -42,10 +41,10 @@
 .UserAvatar {
   float: left;
 }
-.UserAvatar span {
+.UserAvatar .UserAvatar-Name {
   @include inline-block();
+  clear: both;
   margin: 0 0 0 15px;
-
   text-decoration: none;
   font-size: 20px;
   color: $cGray2;
@@ -57,4 +56,9 @@
 }
 .UserAvatar--rounded .UserAvatar-avatar {
   @include border-radius(100px);
+}
+.UserAvatar .UserAvatar-Organization {
+}
+.UserAvatar .UserAvatar-Organization a {
+  @include inline-block();
 }

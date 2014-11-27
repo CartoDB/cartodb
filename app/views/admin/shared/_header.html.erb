@@ -15,16 +15,18 @@
 </header>
 <%= yield :account_settings %>
 <% else %>
+
   <div class="Header">
     <div class="u-inner"></div>
     <div class="Header-map"></div>
   </div>
+
   <div class="Subheader">
     <div class="u-inner">
 
       <a href="#" class="UserAvatar UserAvatar--rounded">
         <%= image_tag current_user.avatar_url, class: :"UserAvatar-avatar" %>
-        <span><%= current_user.username %></span>
+        <span class="UserAvatar-Name"><%= current_user.username %></span>
       </a>
 
       <ul class="FilterList FilterList--vertically-centered">

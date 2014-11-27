@@ -10,7 +10,7 @@ module Concerns
     end
 
     def feature_flags
-      @feature_flags ||= get_feature_flags
+      @feature_flags ||= get_feature_flags rescue []
     end
 
     def has_feature_flag?(feature_flag)
@@ -22,26 +22,10 @@ module Concerns
       if sync_data_with_cartodb_central?
         cartodb_central_client.get_feature_flags(self.username)
       else
-        ConfigFeatureFlagLoader.new.get_feature_flags(self.username)
+        Cartodb.config[:feature_flags][username]
       end
     end
 
   end
 
-  class ConfigFeatureFlagLoader
-
-    def get_feature_flags(username)
-      Cartodb.config[:feature_flags][username]
-    rescue
-      []
-    end
-
-    def has_feature_flag?(username, feature_flag_name)
-      get_feature_flags(username).include?(feature_flag_name)
-    end
-
-  end
-
 end
-    
-

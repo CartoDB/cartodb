@@ -95,14 +95,10 @@ module Cartodb
 
     def get_feature_flags(username)
       send_request("api/users/#{username}/feature_flags", nil, :get, [200])['feature_flags']
-    rescue CartoDB::CentralCommunicationFailure => exception
-      []
     end
 
     def has_feature_flag?(username, feature_flag_name)
       !send_request("api/users/#{username}/feature_flags/#{feature_flag_name}", nil, :get, [200])['feature_flag'].nil?
-    rescue CartoDB::CentralCommunicationFailure => exception
-      false
     end
 
   end

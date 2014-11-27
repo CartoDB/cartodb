@@ -105,8 +105,6 @@ module Cartodb
       false
     end
 
-    private
-
   end
 
 end # CartodbCentral

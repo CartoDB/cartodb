@@ -11,6 +11,7 @@ class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
+  include Concerns::FeatureFlaggable
 
   self.strict_param_setting = false
 

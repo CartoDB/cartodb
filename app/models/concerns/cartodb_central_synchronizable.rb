@@ -1,14 +1,6 @@
 module Concerns
   module CartodbCentralSynchronizable
 
-    def data(options = {})
-      return {} if !defined?(super)
-        
-      super_data = super(options)
-      super_data[:feature_flags] = cartodb_central_client.get_feature_flags(super_data[:username])
-      super_data
-    end
-
     def create_in_central
       return true unless sync_data_with_cartodb_central?
       if self.is_a?(User) && organization.present?

@@ -15,12 +15,19 @@ $cGray0:  rgba(0,    0,  0,1);
 
 /* Named colors */
 
-$cWhite:     rgba(255, 255, 255, 1);
-$cBlack:     $cGray0;
-$cGreen:     rgba(142,184,63,1);
+$cWhite:       rgba(255, 255, 255, 1);
+$cBlack:       $cGray0;
 
-$cLightGray: $cGray9;
-$cDarkGray:  $cGray1;
+$cRed:         rgba(250,180,180,1);
+$cGreen:       rgba(142,184,63,1);
 
-$cBlueLink:  rgba(0,143,213,1);
+$cLightGray:   $cGray9;
+$cDarkGray:    $cGray1;
+
+$cDefaultLink: rgba(0,143,213,1);
+
+
+/* Privacy colors */
+$cPrivate:     rgba(250,180,180,1);
+$cPublic:      rgba(142,184,63,1);
 

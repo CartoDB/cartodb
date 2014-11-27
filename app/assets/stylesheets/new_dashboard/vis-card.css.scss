@@ -55,14 +55,14 @@
   line-height: 16px;
 }
 .VisCard-Tags {
-  color: $cBlueLink;
+  color: $cDefaultLink;
   font-weight: 300;
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
 }
 .VisCard-Tags a {
-  color: $cBlueLink;
+  color: $cDefaultLink;
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
@@ -91,7 +91,6 @@
 .PrivacyIndicator {
   position: relative;
   padding: 0 0 0 12px;
-
   color: $cGray6;
   font-family: "Lato-Light", "san-serif";
   font-size: 12.18px;
@@ -112,5 +111,8 @@
   @include border-radius(100%);
 }
 .PrivacyIndicator.is-public:before {
-  background-color: $cGreen;
+  background-color: $cPublic;
+}
+.PrivacyIndicator.is-private:before {
+  background-color: $cPrivate;
 }

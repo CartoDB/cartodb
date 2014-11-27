@@ -1,0 +1,36 @@
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "compass/css3/opacity";
+@import "compass/css3/images";
+@import "compass/css3/transform";
+@import "compass/css3/text-shadow";
+@import "common/mixins";
+@import "common/common-sprite";
+@import "common/vars";
+@import "colors";
+
+.Button {
+  @include inline-block();
+  @include border-radius(28px);
+  background-color: $cLightGray;
+  padding: 13px 29px;
+}
+.Button:hover {
+  text-decoration:none;
+  background-color: darken($cLightGray, 5%);
+}
+.Button,
+.Button span {
+  font-family: "Lato-Bold", "san-serif";
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 700;
+  color: $cWhite;
+  text-transform: uppercase;
+}
+.Button--green {
+  background-color: $cGreen;
+}
+.Button--green:hover {
+  background-color: darken($cGreen, 5%);
+}

@@ -1,0 +1,64 @@
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "common/mixins";
+@import "common/vars";
+@import "colors";
+
+/* Header */
+.Header {
+}
+.Header > .u-inner {
+  @include clearfix();
+  position:relative;
+  width: 940px;
+  margin: auto;
+}
+.Header-map {
+  height: 300px;
+  background: $cWhite;
+}
+
+/* Subheader */
+
+.Subheader {
+  background: $cGray11;
+  border-bottom: 1px solid $cGray8;
+}
+.Subheader > .u-inner {
+  @include clearfix();
+  position:relative;
+  width: 940px;
+  margin: auto;
+  padding: 20px 0;
+}
+.Subheader .FilterList {
+  position:absolute;
+  right: 0;
+}
+
+/* UserAvatar */
+
+.UserAvatar {
+  float: left;
+}
+.UserAvatar .UserAvatar-Name {
+  @include inline-block();
+  clear: both;
+  margin: 0 0 0 15px;
+  text-decoration: none;
+  font-size: 20px;
+  color: $cGray2;
+}
+.UserAvatar-avatar {
+  @include inline-block();
+  width: 50px;
+  height: 50px;
+}
+.UserAvatar--rounded .UserAvatar-avatar {
+  @include border-radius(100px);
+}
+.UserAvatar .UserAvatar-Organization {
+}
+.UserAvatar .UserAvatar-Organization a {
+  @include inline-block();
+}

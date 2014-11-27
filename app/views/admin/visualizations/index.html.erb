@@ -1,38 +1,302 @@
-<% content_for(:page_title) do %>
-  <%= current_user.username %> |
-<% end %>
-
-<%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' %>
+<% content_for(:page_title) do -%>
+  <%= current_user.username -%> |
+<% end -%>
+<%= content_for(:js) do -%>
+  <% if current_user.new_dashboard_enabled %>
+    <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'new_dashboard.js' -%>
+  <% else %>
+    <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' -%>
+  <% end %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
-    , user_data = <%=raw current_user.data.to_json.html_safe %>
+      , user_data = <%=raw current_user.data.to_json.html_safe %>
     , config = <%=raw frontend_config.html_safe %>
-    , upgrade_url = "<%= upgrade_url %>"
-    , dashboard_first_time = <%= @first_time %>
-    , just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>
+  , upgrade_url = "<%= upgrade_url %>"
+  , dashboard_first_time = <%= @first_time %>
+, just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>
     , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
+
+<%= content_for(:css) do -%>
+  <% if current_user.new_dashboard_enabled %>
+    <%= stylesheet_link_tag 'common.css', 'new_dashboard.css', :media => 'all' %>
+  <% else %>
+    <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
+  <% end %>
 <% end %>
 
-<%= render 'admin/shared/subheader' %>
+<% unless current_user.new_dashboard_enabled %>
+  <%= render 'admin/shared/subheader' %>
 
-<div class="bar_loader"></div>
+  <div class="bar_loader"></div>
 
-<div class="main_loader">
-  <i></i>
-</div>
+  <div class="main_loader">
+    <i></i>
+  </div>
 
-<%= render 'admin/visualizations/index/tables' %>
+  <%= render 'admin/visualizations/index/tables' %>
 
-<div class="drag_mamufas">
-  <span class="file"></span>
-  <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
-  <div class="mask"></div>
-</div>
+  <div class="drag_mamufas">
+    <span class="file"></span>
+    <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
+    <div class="mask"></div>
+  </div>
 
-<div class="bars"></div>
-<article class="support"></article>
+  <div class="bars"></div>
+  <article class="support"></article>
+<% else %>
+  <div class="DashboardFilters">
+    <div class="u-inner">
+
+      <ul class="FilterList FilterList--vertically-centered">
+        <li class="is-selected">
+          <a href="#maps"><strong>13</strong> Maps</a>
+          <div class="shadow"></div>
+        </li>
+        <li>
+          <a href="#shared-with-you"><strong>7</strong> Shared with you</a>
+          <div class="shadow"></div>
+        </li>
+        <li>
+          <a href="#likes"><strong>7</strong> Liked Maps</a>
+          <div class="shadow"></div>
+        </li>
+      </ul>
+
+      <div class="DashboardFilters-order">
+        <span class="iconFont iconFont-check">
+        </span>
+        <ul>
+          <li class="is-selected">
+            <a href="#time" class=""></a>
+          </li>
+          <li>
+            <a href="#views"></a>
+          </li>
+          <li>
+            <a href="#likes"></a>
+          </li>
+        </ul>
+
+      </div>
+
+      <a href="#new-map" class="Button Button--green">
+        <span>New Map</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="VisList">
+    <div class="u-inner">
+
+      <div class="VisList-Row">
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header" >
+              <div class="VisCard-Shadow"></div>
+            </div>
+            <div class="u-inner">
+              <div class="VisCard-Info">
+                <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="VisCard-Tags">
+                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                </div>
+              </div>
+              <div class="VisCard-Footer">
+                <div class="u-inner">
+                  <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header"> 
+              <div class="VisCard-Shadow"></div>
+            </div>
+            <div class="u-inner">
+              <div class="VisCard-Info">
+                <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="VisCard-Tags">
+                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                </div>
+              </div>
+              <div class="VisCard-Footer">
+                <div class="u-inner">
+                  <a href="#change-privacy" class="PrivacyIndicator is-private">private</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header">
+                <div class="VisCard-Shadow"></div>
+              </div>
+              <div class="u-inner">
+                <div class="VisCard-Info">
+                  <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                  <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                  <div class="VisCard-Tags">
+                    <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                  </div>
+                </div>
+                <div class="VisCard-Footer">
+                  <div class="u-inner">
+                    <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="VisList-Row">
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header"> 
+              <div class="VisCard-Shadow"></div>
+            </div>
+            <div class="u-inner">
+              <div class="VisCard-Info">
+                <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="VisCard-Tags">
+                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                </div>
+              </div>
+              <div class="VisCard-Footer">
+                <div class="u-inner">
+                  <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header" >
+              <div class="VisCard-Shadow"></div>
+            </div>
+            <div class="u-inner">
+              <div class="VisCard-Info">
+                <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="VisCard-Tags">
+                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                </div>
+              </div>
+              <div class="VisCard-Footer">
+                <div class="u-inner">
+                  <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+              <div class="VisCard-Header">
+                <div class="VisCard-Shadow"></div>
+              </div>
+              <div class="u-inner">
+                <div class="VisCard-Info">
+                  <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                  <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                  <div class="VisCard-Tags">
+                    <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                  </div>
+                </div>
+                <div class="VisCard-Footer">
+                  <div class="u-inner">
+                    <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="VisList-Row">
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header" >
+              <div class="VisCard-Shadow"></div>
+            </div>
+            <div class="u-inner">
+              <div class="VisCard-Info">
+                <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="VisCard-Tags">
+                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                </div>
+              </div>
+              <div class="VisCard-Footer">
+                <div class="u-inner">
+                  <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+            <div class="VisCard-Header" >
+              <div class="VisCard-Shadow"></div>
+            </div>
+            <div class="u-inner">
+              <div class="VisCard-Info">
+                <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="VisCard-Tags">
+                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                </div>
+              </div>
+              <div class="VisCard-Footer">
+                <div class="u-inner">
+                  <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="VisList-RowItem">
+          <div class="VisCard">
+              <div class="VisCard-Header">
+                <div class="VisCard-Shadow"></div>
+              </div>
+              <div class="u-inner">
+                <div class="VisCard-Info">
+                  <a href="#" class="VisCard-Title">Budapest Marathon</a>
+                  <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                  <div class="VisCard-Tags">
+                    <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+                  </div>
+                </div>
+                <div class="VisCard-Footer">
+                  <div class="u-inner">
+                    <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  <% end %>

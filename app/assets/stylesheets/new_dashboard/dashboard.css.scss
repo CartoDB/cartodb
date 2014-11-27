@@ -1,0 +1,68 @@
+@import "common/mixins";
+@import "common/common-sprite";
+@import "common/vars";
+@import "colors";
+
+body {
+  font-family: "Lato-Regular", "san-serif";
+  font-weight: 400;
+}
+
+a {
+  font-family: "Lato-Regular", "san-serif";
+  font-weight: 400;
+}
+
+strong {
+  font-family: "Lato-Bold", "san-serif";
+  font-weight: 700;
+}
+
+/* DashboardFilters */
+
+.DashboardFilters {
+}
+.DashboardFilters .FilterList li .shadow {
+  display: none;
+  position:absolute;
+  width: 100%;
+  bottom: -34px;
+  border-bottom: 1px solid $cGray4;
+}
+.DashboardFilters > .u-inner {
+  @include clearfix();
+  position:relative;
+  width: 940px;
+  margin: auto;
+  padding: 20px 0;
+
+  border-bottom: 1px solid $cLightGray;
+}
+.DashboardFilters-order {
+}
+.DashboardFilters .Button {
+  float: right;
+}
+
+.VisList {
+  @include display-flex();
+}
+.VisList > .u-inner {
+  @include clearfix();
+  position:relative;
+  width: 940px;
+  margin: auto;
+  padding: 20px 0;
+
+}
+.VisList .VisList-Row {
+  margin: 0 0 20px 0;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+.VisList .VisList-Row .VisList-RowItem {
+  @include flex(1);
+  margin: auto;
+}

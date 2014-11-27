@@ -43,6 +43,8 @@ class DataImport < Sequel::Model
     type_guessing
     quoted_fields_guessing
     content_guessing
+    server
+    host
   }
 
   # Not all constants are used, but so that we keep track of available states
@@ -82,7 +84,8 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
-    log.append "Running on server #{Socket.gethostname} with PID: #{Process.pid}"
+    self.server = Socket.gethostname
+    log.append "Running on server #{self.server} with PID: #{Process.pid}"
     begin
       success = !!dispatch
     rescue TokenExpiredOrInvalidError => ex
@@ -441,9 +444,12 @@ class DataImport < Sequel::Model
         when Search::Twitter::DATASOURCE_NAME
           post_import_handler.add_transform_geojson_geom_column
       end
+      
+      database_options = pg_options
+      self.host = database_options[:host]
 
       runner        = CartoDB::Importer2::Runner.new(
-        pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
+        database_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]

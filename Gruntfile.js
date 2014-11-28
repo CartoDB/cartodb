@@ -12,7 +12,6 @@
 
     var ROOT_ASSETS_DIR = './public/assets/';
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
-    var BROWSERIFIED_MODULES_DIR = '.grunt/browserified_modules/';
 
     // use grunt --environment production
     var env = grunt.option('environment') || 'development';
@@ -31,7 +30,15 @@
 
       assets_dir: ASSETS_DIR,
       root_assets_dir: ROOT_ASSETS_DIR,
-      browserified_modules_dir: BROWSERIFIED_MODULES_DIR,
+
+      browserify_modules: {
+        src: 'lib/assets/javascripts/cartodb/browserify_modules',
+        dest: '.grunt/browserify_modules',
+        tests: {
+          src: 'lib/assets/test/spec/cartodb/browserify_modules/**/*.js',
+          dest: '.grunt/browserify_modules_tests.js'
+        }
+      },
 
       // Concat task
       concat:   require('./lib/build/tasks/concat').task(),

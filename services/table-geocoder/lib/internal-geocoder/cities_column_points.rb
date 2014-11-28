@@ -10,8 +10,8 @@ module CartoDB
       def search_terms_query(page)
         %Q{
           SELECT DISTINCT
-            quote_nullable(trim(#{@internal_geocoder.column_name})) as city,
-            quote_nullable(trim(#{@internal_geocoder.country_column})) as country
+            trim(quote_nullable(#{@internal_geocoder.column_name})) as city,
+            trim(quote_nullable(#{@internal_geocoder.country_column})) as country
           FROM #{@internal_geocoder.qualified_table_name}
           WHERE cartodb_georef_status IS NULL
           LIMIT #{@internal_geocoder.batch_size} OFFSET #{page * @internal_geocoder.batch_size}

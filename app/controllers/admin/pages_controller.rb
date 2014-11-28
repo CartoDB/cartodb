@@ -202,7 +202,7 @@ class Admin::PagesController < ApplicationController
   def public_organization(organization)
     @organization = organization
 
-    @name = ( !@organization.display_name.empty? ? @organization.display_name : @organization.name )
+    @name = ( !@organization.display_name.blank? ? @organization.display_name : @organization.name )
     @avatar_url = @organization.avatar_url
 
     @twitter_username = @organization.twitter_username 

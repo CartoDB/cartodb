@@ -32,6 +32,9 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
+
+  RESERVED_TABLE_NAMES = %W{ layergroup all }
+
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
@@ -247,7 +250,7 @@ class Table < Sequel::Model(:user_tables)
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if self.name == 'layergroup'
+    ) if RESERVED_TABLE_NAMES.include?(self.name) 
 
     # privacy setting must be a sane value
     if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
@@ -1527,6 +1530,8 @@ class Table < Sequel::Model(:user_tables)
     name = name[0..45]
 
     return name if name == options[:current_name]
+
+    name = "#{name}_t" if RESERVED_TABLE_NAMES.include?(name)
 
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 

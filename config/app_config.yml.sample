@@ -102,10 +102,11 @@ defaults: &defaults
       api_key: ''
       table_name: ''
   importer:
-    content_guessing:    # Depends on geocoding
-      enabled:     false # Disabled if false or not present
-      threshold:   0.8   # 80% or more matches
-      sample_size: 400   # +-5% error. See http://en.wikipedia.org/wiki/Sample_size_determination#Estimating_proportions_and_means
+    content_guessing:        # Depends on geocoding
+      enabled:         false # Disabled if false or not present
+      threshold:       0.9   # 90% or more matches
+      minimum_entropy: 0.9   # Normalized entropy, between 0.0 and 1.0. See http://en.wikipedia.org/wiki/Entropy_(information_theory)
+      sample_size:     400   # +-5% error. See http://en.wikipedia.org/wiki/Sample_size_determination#Estimating_proportions_and_means
     s3:
       access_key_id:
       secret_access_key:

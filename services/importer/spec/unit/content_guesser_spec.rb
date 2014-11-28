@@ -63,17 +63,17 @@ describe CartoDB::Importer2::ContentGuesser do
   describe '#columns' do
     it 'queries the db to get a list of columns with their corresponding data types' do
       db = mock
-      db.expects(:[]).returns(:any_iterable_list_of_columnts)
+      db.expects(:[]).returns(:any_iterable_list_of_columns)
       table_name = 'any_table_name'
       schema = 'any_schema'
       guesser = CartoDB::Importer2::ContentGuesser.new db, table_name, schema, nil
-      guesser.columns.should == :any_iterable_list_of_columnts
+      guesser.columns.should == :any_iterable_list_of_columns
     end
   end
 
   describe '#is_country_column?' do
     it 'returns true if a sample proportion is above a given threshold' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns [
          {candidate_column_name: 'USA'},
@@ -82,12 +82,16 @@ describe CartoDB::Importer2::ContentGuesser do
       ]
       guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
       guesser.stubs(:threshold).returns 0.5
+      importer_stats_mock = mock
+      proportion = 2.0/3.0
+      importer_stats_mock.expects(:gauge).once().with('country_proportion', proportion)
+      guesser.set_importer_stats(importer_stats_mock)
 
       guesser.is_country_column?(column).should eq true
     end
 
     it 'returns false if sample.count == 0' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns []
       guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
@@ -97,7 +101,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it 'returns false if countries.count == 0' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns [
          {candidate_column_name: 'USA'},
@@ -111,7 +115,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it 'returns false if sample.count == 0 and countries.count == 0' do
-      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
       guesser.stubs(:sample).returns []
       guesser.stubs(:countries).returns Set.new []
@@ -138,14 +142,18 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#countries' do
     it 'queries the sql api to get a Set of countries' do
+      countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
       api_mock = mock
       api_mock
         .expects(:fetch)
         .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
         .returns([
-          {'synonyms' => ['usa', 'united states']},
-          {'synonyms' => ['spain', 'es']},
-          {'synonyms' => ['france', 'fr']}
+          {countries_column => 'usa'},
+          {countries_column => 'united states'},
+          {countries_column => 'spain'},
+          {countries_column => 'es'},
+          {countries_column => 'france'},
+          {countries_column => 'fr'}
         ])
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       guesser.geocoder_sql_api = api_mock
@@ -164,6 +172,71 @@ describe CartoDB::Importer2::ContentGuesser do
 
       guesser.countries.should eq Set.new []
       guesser.countries.should eq Set.new []
+    end
+
+    it 'shall not add countries from DB if length < 2' do
+      countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
+      api_mock = mock
+      api_mock
+        .expects(:fetch)
+        .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
+        .returns([
+          {countries_column => 'usa'},
+          {countries_column => 'united states'},
+          {countries_column => 'fr'},
+          {countries_column => 's'},
+          {countries_column => ''},
+        ])
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser.geocoder_sql_api = api_mock
+      guesser.countries.should eq Set.new ['usa', 'united states', 'fr']
+    end
+
+  end
+
+  describe '#id_column' do
+    it 'should return a column name known to be sequential and with index' do
+      db = mock
+      list_of_columns = [
+        {:column_name=>"data", :data_type=>"string"},
+        {:column_name=>"ogc_fid", :data_type=>"integer"},
+        {:column_name=>"more_data", :data_type=>"string"},
+      ]
+      db.expects(:[]).once.returns(list_of_columns)
+      guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil
+      guesser.id_column.should eq 'ogc_fid'
+    end
+
+    it "should raise an exception if there's no suitable id column" do
+      db = mock
+      list_of_columns = [
+        {:column_name=>"data", :data_type=>"string"},
+        {:column_name=>"more_data", :data_type=>"string"},
+      ]
+      db.expects(:[]).once.returns(list_of_columns)
+      guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil
+      expect {guesser.id_column}.to raise_error(CartoDB::Importer2::ContentGuesserException)
+    end
+
+  end
+
+  describe '#metric_entropy' do
+    it 'should be low for repeated elements after normalization' do
+      column = { column_name: 'candidate_column_name' }
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: '1400US600'},
+         {candidate_column_name: '1400US601'},
+         {candidate_column_name: '1400US602'}
+      ]
+      guesser.metric_entropy(column).should < 0.5
+    end
+  end
+
+  describe '#normalize' do
+    it 'should handle gracefully nil values' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
+      guesser.normalize(nil).should == ''
     end
   end
 

@@ -1,4 +1,3 @@
-@import "compass/css3";
 @import "compass/css3/inline-block";
 @import "compass/css3/border-radius";
 @import "compass/css3/opacity";
@@ -84,35 +83,4 @@
   font-size: 12.18px;
   font-weight: 300;
   line-height: 15px;
-}
-
-/* PrivacyIndicator */
-
-.PrivacyIndicator {
-  position: relative;
-  padding: 0 0 0 12px;
-  color: $cGray6;
-  font-family: "Lato-Light", "san-serif";
-  font-size: 12.18px;
-  font-weight: 300;
-  line-height: 15px;
-}
-.PrivacyIndicator:hover {
-  text-decoration: none;
-  color: $cGray6;
-}
-.PrivacyIndicator:before {
-  content: '';
-  position: absolute;
-  top: 5px; left: 0;
-  width: 8px;
-  height: 8px;
-  background-color: $cLightGray;
-  @include border-radius(100%);
-}
-.PrivacyIndicator.is-public:before {
-  background-color: $cPublic;
-}
-.PrivacyIndicator.is-private:before {
-  background-color: $cPrivate;
 }

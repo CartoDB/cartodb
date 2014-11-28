@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'fileutils'
-require 'zip/zip'
 require_relative '../../lib/importer/unp'
 
 RSpec.configure do |config|
@@ -28,8 +27,7 @@ describe Unp do
       unp.source_files.should_not be_empty
     end
 
-    it 'populates a single source file for the passed path
-    if not compressed' do
+    it 'populates a single source file for the passed path if not compressed' do
       unp       = Unp.new
 
       unp.source_files.should be_empty
@@ -96,7 +94,6 @@ describe Unp do
       File.directory?(unp.temporary_directory).should eq true
 
       FileUtils.rm_r(dir)
-      FileUtils.rm_r(zipfile)
     end
 
     it 'extracts the contents of the file into the temporary directory' do
@@ -107,7 +104,6 @@ describe Unp do
       (Dir.entries(unp.temporary_directory).size > 2).should eq true
 
       FileUtils.rm_r(dir)
-      FileUtils.rm_r(zipfile)
     end
 
     it 'raises if unp could not extract the file' do
@@ -247,20 +243,15 @@ describe Unp do
   end #unp_failure?
 
   def zipfile_factory(dir='/var/tmp/bogus')
-    fixture1  = '/var/tmp/bogus/bogus1.csv'
-    fixture2  = '/var/tmp/bogus/bogus2.csv'
-    zipfile   = '/var/tmp/bogus.zip'
+    filename = 'bogus.zip'
+
+    zipfile = "#{dir}/#{filename}"
 
     FileUtils.rm(zipfile) if File.exists?(zipfile)
     FileUtils.rm_r(dir)   if File.exists?(dir)
     FileUtils.mkdir_p(dir)
-    FileUtils.touch(fixture1)
-    FileUtils.touch(fixture2)
 
-    Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-      zipfile.add(File.basename(fixture1), fixture1)
-      zipfile.add(File.basename(fixture2), fixture2)
-    end
+    FileUtils.cp(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"), zipfile)
 
     zipfile
   end

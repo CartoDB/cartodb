@@ -79,6 +79,8 @@ module CartoDB
         @named_maps     = nil
         @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
+        # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
+        self.register_table_only = false
       end
 
       def default_privacy(owner)
@@ -390,6 +392,8 @@ module CartoDB
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
       end
 
+      attr_accessor :register_table_only
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -507,6 +511,7 @@ module CartoDB
       # @param table Table
       def propagate_name_to(table)
         table.name = self.name
+        table.register_table_only = self.register_table_only
         table.update(name: self.name)
         self
       rescue => exception

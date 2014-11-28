@@ -18,10 +18,9 @@ describe Visualization::Locator do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-    @db = Sequel.sqlite
+    @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
-    Visualization::Migrator.new(@db).migrate
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @user_id = UUIDTools::UUID.timestamp_create.to_s

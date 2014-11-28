@@ -21,8 +21,15 @@
 
       <div class="website"><%= link_to @website_clean, @website %></div>
     <% end %>
+
   </div>
-  
+
+  <% if @available_for_hire %>
+    <div class="available-for-hire-banner">
+      <%= mail_to @email, "Available for hire" %>
+    </div>
+  <% end %>
+
   <ul>
     <% if action_name == 'datasets' %>
       <li><h2 class="count" title="<%= @name %> dataset<%= @tables_num == 1 ? '' : 's' %>"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></h2></li>

@@ -104,6 +104,7 @@ class User < Sequel::Model
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
         self.here_maps_enabled          = self.organization.here_maps_enabled
         self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
+        self.rainbow_maps_enabled       = self.organization.rainbow_maps_enabled
       end
       self.max_layers ||= 6
       self.private_tables_enabled ||= true
@@ -130,7 +131,7 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
-    if changes.include?(:account_type) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
+    if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
        changes.include?(:website) || changes.include?(:name) || changes.include?(:description) || \
        changes.include?(:twitter_username) || changes.include?(:dynamic_cdn_enabled)
       invalidate_varnish_cache(regex: '.*:vizjson')
@@ -399,9 +400,7 @@ class User < Sequel::Model
     configuration = get_db_configuration_for(options[:as])
 
     connection = $pool.fetch(configuration) do
-      db = ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
-        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
-      end)))
+      db = get_database(options, configuration)
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
@@ -412,6 +411,20 @@ class User < Sequel::Model
     else
       connection
     end
+  end
+
+  def connection(options = {})
+    configuration = get_db_configuration_for(options[:as])
+
+    $pool.fetch(configuration) do
+      get_database(options, configuration)
+    end
+  end
+
+  def get_database(options, configuration)
+      ::Sequel.connect(configuration.merge(:after_connect=>(proc do |conn|
+        conn.execute(%Q{ SET search_path TO "#{self.database_schema}", cartodb, public }) unless options[:as] == :cluster_admin
+      end)))
   end
 
   def get_db_configuration_for(user = nil)
@@ -1003,7 +1016,12 @@ class User < Sequel::Model
     renamed_tables.each do |t|
       table = ::Table.find(:table_id => t[:oid])
       begin
+        Rollbar.report_message('ghost tables', 'debug', {
+          :action => 'rename',
+          :new_table => t[:relname]
+        })
         vis = table.table_visualization
+        vis.register_table_only = true
         vis.name = t[:relname]
         vis.store
       rescue Sequel::DatabaseError => e
@@ -1016,6 +1034,10 @@ class User < Sequel::Model
     created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
     created_tables.each do |t|
       begin
+        Rollbar.report_message('ghost tables', 'debug', {
+          :action => 'registering table',
+          :new_table => t[:relname]
+        })
         table = Table.new
         table.user_id  = self.id
         table.name     = t[:relname]
@@ -1035,6 +1057,10 @@ class User < Sequel::Model
 
     # Remove tables with oids that don't exist on the db
     self.tables.where(table_id: dropped_tables).all.each do |table|
+      Rollbar.report_message('ghost tables', 'debug', {
+        :action => 'dropping table',
+        :new_table => table.name
+      })
       table.keep_user_database_table = true
       table.destroy
     end if dropped_tables.present?

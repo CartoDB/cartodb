@@ -8,6 +8,7 @@ require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
+require_relative '../../../lib/cartodb/errors'
 
 include CartoDB::Datasources
 
@@ -21,6 +22,7 @@ module CartoDB
       include Virtus.model
 
       MAX_RETRIES     = 10
+      MIN_INTERVAL_SECONDS = 15 * 60
 
       # Seconds required between manual sync now
       SYNC_NOW_TIMESPAN = 900
@@ -53,6 +55,7 @@ module CartoDB
       attribute :service_item_id,         String
       attribute :type_guessing,           Boolean, default: true
       attribute :quoted_fields_guessing,  Boolean, default: true
+      attribute :content_guessing,        Boolean, default: false
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -71,6 +74,9 @@ module CartoDB
         self.service_name     ||= nil
         self.service_item_id  ||= nil
         self.checksum         ||= ''
+
+        raise InvalidInterval.new unless self.interval >= MIN_INTERVAL_SECONDS
+
       end
 
       def to_s
@@ -151,7 +157,8 @@ module CartoDB
         runner        = CartoDB::Importer2::Runner.new(
           pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
         )
-        runner.loader_options = ogr2ogr_options
+        runner.loader_options = ogr2ogr_options.merge content_guessing_options
+
 
         runner.include_additional_errors_mapping(
           {
@@ -357,6 +364,17 @@ module CartoDB
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
             quoted_fields_guessing: @quoted_fields_guessing
           }
+        end
+      end
+
+      # TODO code duplicated from data_import.rb, refactor
+      def content_guessing_options
+        guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
+        geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
+        if guessing_config[:enabled] and self.content_guessing and geocoder_config
+          { guessing: guessing_config, geocoder: geocoder_config }
+        else
+          { guessing: { enabled: false } }
         end
       end
 

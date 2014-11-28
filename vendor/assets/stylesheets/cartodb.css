@@ -1924,6 +1924,7 @@ only screen and (                min-resolution: 2dppx) {
   border: 1px solid #1A1108;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend ul li {
+  height: auto;
   padding: 0;
   font-size: 12px;
   color: #fff;
@@ -1931,6 +1932,9 @@ only screen and (                min-resolution: 2dppx) {
   font-family: "Helvetica", Arial, sans-serif;
   text-transform: none;
   line-height: normal;
+}
+.cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend.intensity ul li.graph {
+  height: 22px;
 }
 .cartodb-mobile .aside .layer-container .layers > li div.cartodb-legend ul li .bullet {
   margin-top: 2px;
@@ -1991,11 +1995,11 @@ only screen and (                min-resolution: 2dppx) {
   width: 50px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.time {
-  width: 80px;
+  width: 120px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.last {
   position:absolute;
-  left:145px;
+  left: 180px;
   right: 10px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.controls a.button {
@@ -2224,7 +2228,6 @@ div.cartodb-legend.color ul li {
   font-family: "Helvetica", Arial;
   text-transform: uppercase;
   text-align: left;
-  line-height: normal;
   height: 10px;
   line-height: 10px;
   vertical-align:middle;
@@ -2504,7 +2507,6 @@ div.cartodb-zoom a {
   font: bold 20px "Arial";
   color: #999999;
   text-align: center;
-  line-height: normal;
   text-decoration: none;
   text-indent: -9999px;
   line-height: 0;
@@ -3076,7 +3078,7 @@ div.cartodb-timeslider a.button.stop:hover {
 }
 
 div.cartodb-timeslider p {
-  width:75px;
+  width:120px;
   height:40px;
   margin:0;
   padding:0 5px 0 0;
@@ -3490,14 +3492,14 @@ div.cartodb-timeslider .slider-wrapper {
   zoom: 1;
   *display: inline;
   vertical-align:top;
-  width:298px;
+  width:253px;
   height:4px;
   _height:4px;
   padding:18px 15px;
 }
 
 div.cartodb-timeslider .slider {
-  width:298px;
+  width:253px;
   height:4px;
 }
 

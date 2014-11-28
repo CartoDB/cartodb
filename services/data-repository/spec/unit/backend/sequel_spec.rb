@@ -7,7 +7,7 @@ include CartoDB
 
 describe DataRepository::Backend::Sequel do
   before do
-    db = Sequel.sqlite
+    db = Rails::Sequel.connection
     db.create_table :visualizations do
       String    :id, primary_key: true
       String    :name
@@ -36,10 +36,8 @@ describe DataRepository::Backend::Sequel do
       String    :visualization_id,  index: true
     end
 
-    Visualization.repository = 
-      DataRepository::Backend::Sequel.new(db, :visualizations)
-    Overlay.repository = 
-      DataRepository::Backend::Sequel.new(db, :overlays)
+    Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
+    Overlay.repository = DataRepository::Backend::Sequel.new(db, :overlays)
   end
 
   describe '#store' do

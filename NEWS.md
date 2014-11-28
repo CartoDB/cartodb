@@ -1,6 +1,63 @@
-3.2.X ()
+3.3.1 (2014-11-25)
+------------------
+ * Fixed bugs
+   - Country guessing: normalize content before checking for duplicates.
+
+3.3.0 (2014-11-24)
+-------------------
+ * New features
+  - Shows a warning message when editing a visualization that has a Google Maps basemap.
+
+3.2.15 (2014-11-21)
+-------------------
+ * Fixed bugs and improvements
+   - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
+   - Country guessing fix: must be done with at least 2 chars.
+   - Geocoding: fixed geocoder by postalcode when column type is numeric
+   - #1095 Add feature button in Torque maps
+
+3.2.14 (2014-11-17)
+-------------------
+ * Fixed bugs
+   - Geocoding: change "Place" by "Country" in City name and Postal code options.
+   - ContentGuesser: use index scan instead of seq scans in DB queries
+
+3.2.13 (2014-11-14)
+-------------------
+ * Fixed bugs
+   - Timeouts in internal geocoder #1152
+
+3.2.12 (2014-11-13)
+------------------
 * New features
-  * Enabled ghost tables. Tables created with SQL API are visible in the editor
+  - Country guessing on import. Figure out if any column contains country information and automatically geocode the table. Depends on the geocoder. Take a look at the entry `content_guessing:` in `config/app_config.yml.sample`
+* Fixed bugs
+  - Remove cumulative option for torque cat. wizard #903
+
+3.2.11 (2014-11-11)
+------------------
+* New features
+  - Removal of 19 unused or no longer needed gems
+  - Allows to show an 'available for hire' banner in your public profile. 
+* Fixed bugs
+  - Fixed internal geocoder for org users
+
+
+3.2.10 (2014-11-07)
+------------------
+* New features
+  - Mapviews graph for everybody.
+  - New rainbow basemaps.
+* Fixed bugs
+  - Made lib/sql git submodule point to 0.4.1 tag
+  - Batch internal geocoder update queries to avoid db timeouts
+
+3.2.9 (2014-11-03)
+------------------
+* New features
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
+  * Enables fullscreen for IE11.
+  * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 
 3.2.8 (2014-11-03)
 ------------------

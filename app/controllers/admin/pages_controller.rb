@@ -42,6 +42,8 @@ class Admin::PagesController < ApplicationController
     @tags             = viewed_user.tags(true, Visualization::Member::TYPE_CANONICAL)
     @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @available_for_hire = viewed_user.available_for_hire
+    @email              = viewed_user.email
     @twitter_username = viewed_user.twitter_username 
     @description      = viewed_user.description  
     @website          = viewed_user.website 
@@ -152,6 +154,8 @@ class Admin::PagesController < ApplicationController
     @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
     @twitter_username = viewed_user.twitter_username 
+    @available_for_hire = viewed_user.available_for_hire
+    @email              = viewed_user.email
     @description      = viewed_user.description
     @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
     @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
@@ -202,7 +206,7 @@ class Admin::PagesController < ApplicationController
   def public_organization(organization)
     @organization = organization
 
-    @name = ( !@organization.display_name.empty? ? @organization.display_name : @organization.name )
+    @name = ( !@organization.display_name.blank? ? @organization.display_name : @organization.name )
     @avatar_url = @organization.avatar_url
 
     @twitter_username = @organization.twitter_username 

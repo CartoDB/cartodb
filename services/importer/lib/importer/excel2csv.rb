@@ -66,8 +66,8 @@ module CartoDB
 
         job.log 'Newlines removed'
         spreadsheet
-      rescue NoMethodError
-        raise XLSXFormatError
+      rescue => exception
+        raise XLSXFormatError.new(exception.to_s)
       end #remove_newlines
 
       attr_reader :filepath, :job

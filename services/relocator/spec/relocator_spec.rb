@@ -2,6 +2,8 @@ require_relative '../../../spec/spec_helper.rb'
 require_relative '../worker'
 describe CartoDB::Relocator::Worker do
   it "should move an user" do
+    User.any_instance.stubs(:create_in_central).returns(true)
+    User.any_instance.stubs(:update_in_central).returns(true)
     (org, user_a, user_b, user_c) = prepare_organization
     CartoDB::Relocator::Worker.organize(user_c, org)
   end

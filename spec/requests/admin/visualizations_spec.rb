@@ -29,12 +29,10 @@ describe Admin::VisualizationsController do
   before(:each) do
     CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
     
-    @db = Sequel.sqlite
+    @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
-    CartoDB::Visualization::Migrator.new(@db).migrate
-    CartoDB::Visualization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     delete_user_data @user
     @headers = { 

@@ -32,6 +32,9 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
+
+  RESERVED_TABLE_NAMES = %W{ layergroup all }
+
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
@@ -132,6 +135,8 @@ class Table < Sequel::Model(:user_tables)
                 :importing_encoding,
                 :temporal_the_geom_type,
                 :migrate_existing_table,
+                # this flag is used to register table changes only without doing operations on in the database
+                # for example when the table is renamed or created. For remove see keep_user_database_table
                 :register_table_only,
                 :new_table,
                 # Handy for rakes and custom ghost table registers, won't delete user table in case of error
@@ -245,7 +250,7 @@ class Table < Sequel::Model(:user_tables)
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if self.name == 'layergroup'
+    ) if RESERVED_TABLE_NAMES.include?(self.name) 
 
     # privacy setting must be a sane value
     if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
@@ -460,7 +465,7 @@ class Table < Sequel::Model(:user_tables)
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
           # only reset the sequence on real imports.
-          
+
           if max_cartodb_id
             user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
           end
@@ -489,7 +494,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import  = DataImport.find(:id=>self.data_import_id)
       end
 
-      importer_result_name = import_to_cartodb
+      importer_result_name = import_to_cartodb(name)
 
       @data_import.reload
       @data_import.table_name = importer_result_name
@@ -1191,8 +1196,7 @@ class Table < Sequel::Model(:user_tables)
             nil,  # QueryBatcher will use a simple internal to console logger
             'georeferencing table rows',
             false,
-            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round,
-            'cartodb_id'
+            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round
         )
       end
       schema(reload: true)
@@ -1402,13 +1406,16 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      begin
-        owner.in_database.rename_table(@name_changed_from, name) unless errored
-      rescue StandardError => exception
-        exception_to_raise = CartoDB::BaseCartoDBError.new(
-            "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
-        CartoDB::notify_exception(exception_to_raise, user: owner)
+      if register_table_only != true
+        begin
+          owner.in_database.rename_table(@name_changed_from, name) unless errored
+        rescue StandardError => exception
+          exception_to_raise = CartoDB::BaseCartoDBError.new(
+              "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
+          CartoDB::notify_exception(exception_to_raise, user: owner)
+        end
       end
+
       propagate_namechange_to_table_vis unless errored
 
       unless errored
@@ -1498,6 +1505,7 @@ class Table < Sequel::Model(:user_tables)
     name_candidates = self.owner.tables.select_map(:name) if owner
 
     options.merge!(name_candidates: name_candidates)
+    options.merge!(connection: self.owner.connection) unless self.owner.nil?
     unless options[:database_schema].present? || self.owner.nil?
       options.merge!(database_schema: self.owner.database_schema)
     end
@@ -1523,11 +1531,14 @@ class Table < Sequel::Model(:user_tables)
 
     return name if name == options[:current_name]
 
+    name = "#{name}_t" if RESERVED_TABLE_NAMES.include?(name)
+
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
-    existing_names = options[:name_candidates] || \
-      options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname)
+    # 
+    existing_names = []
+    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
@@ -1765,4 +1776,3 @@ class Table < Sequel::Model(:user_tables)
   end
 
 end
-

@@ -95,6 +95,12 @@ module CartoDB
     VERSION_1 = "v1"
   end
 
+  begin
+    CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
+  rescue
+    CARTODB_REV = nil
+  end
+
   PUBLIC_DB_USER  = 'publicuser'
   PUBLIC_DB_USER_PASSWORD  = 'publicuser'
   TILE_DB_USER    = 'tileuser'
@@ -168,6 +174,10 @@ module CartoDB
       title: 'Invalid SHP file',
       what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, <a href='mailto:support@cartodb.com?subject=Invalid SHP file'>contact us</a>."
     },
+    1007 => {
+      title: 'Too many nodes',
+      what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.'
+    },
     1008 => {
       title: 'Unable to download file',
       what_about: "We couldn't download your file, check the URL and try again."
@@ -178,7 +188,7 @@ module CartoDB
     },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
     1011 => {
         title: 'Error retrieving data from datasource',
@@ -192,6 +202,14 @@ module CartoDB
       title: 'Invalid ArcGIS version',
       what_about: "The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards."
     },
+    1014 => {
+      title: 'Invalid name',
+      what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again."
+    },
+    1015 => {
+      title: 'No results',
+      what_about: "Query was correct but returned no results, please change the parameters and run it again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -202,7 +220,11 @@ module CartoDB
     },
     2003 => {
       title: 'Malformed CSV',
-      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields."
+      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV."
+    },
+    2004 => {
+      title: 'Too many columns',
+      what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones."
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',

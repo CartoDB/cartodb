@@ -64,7 +64,7 @@ describe Synchronization::Member do
     random = rand(999)
     {
       name:       attributes.fetch(:name, "name #{random}"),
-      interval:   attributes.fetch(:interval, random),
+      interval:   attributes.fetch(:interval, 15 * 60 + random),
       state:      attributes.fetch(:state, 'enabled'),
     }
   end

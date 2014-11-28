@@ -123,7 +123,7 @@ module CartoDB
           unless has_enough_quota?(@user)
             raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
           end
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
+          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless is_service_enabled?(@user)
 
           fields_from(id)
 
@@ -141,7 +141,7 @@ module CartoDB
           unless has_enough_quota?(@user)
             raise OutOfQuotaError.new("#{@user.username} out of quota for tweets", DATASOURCE_NAME)
           end
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless is_service_enabled?(@user)
+          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless is_service_enabled?(@user)
 
           fields_from(id)
 
@@ -374,6 +374,10 @@ module CartoDB
           end while (!next_results_cursor.nil? && !out_of_quota && !exception)
 
           log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
+
+          # ogr2org fails when there's no result. Since importing is done through a file
+          # that hides metadata we must raise an error to handle it gracefully
+          raise NoResultsError.new if exception.nil? && total_results == 0
 
           # If fails on the first request, do not fail silently
           if !exception.nil? && total_results == 0

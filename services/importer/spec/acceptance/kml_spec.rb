@@ -13,8 +13,8 @@ describe 'KML regression tests' do
 
   it 'imports KML files' do
     filepath    = path_to('counties_ny_export.kml')
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     geometry_type_for(runner).should be
@@ -22,10 +22,10 @@ describe 'KML regression tests' do
 
   it 'imports KML files from url' do
     filepath    = "https://maps.google.com/maps/ms?hl=en&ie=UTF8&t=m" +
-                  "&source=embed&authuser=0&msa=0&output=kml"         + 
+                  "&source=embed&authuser=0&msa=0&output=kml"         +
                   "&msid=214357343079009794152.0004d0322cc2768ca065e"
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     geometry_type_for(runner).should be
@@ -33,8 +33,8 @@ describe 'KML regression tests' do
 
   it 'imports KMZ in a 3D projection' do
     filepath    = path_to('usdm130806.kmz')
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     geometry_type_for(runner).should be
@@ -42,8 +42,8 @@ describe 'KML regression tests' do
 
   it 'imports multi-layer KMLs' do
     filepath    = path_to('multiple_layer.kml')
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     geometry_type_for(runner).should be
@@ -51,12 +51,11 @@ describe 'KML regression tests' do
 
   it 'raises if KML just contains a link to the actual KML url' do
     filepath    = path_to('abandoned.kml')
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     runner.results.first.error_code.should eq 3202
   end
 
 end # KML regression tests
- 

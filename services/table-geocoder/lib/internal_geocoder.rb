@@ -89,7 +89,15 @@ module CartoDB
       end # load_results_to_temp_table
 
       def copy_results_to_table
-        connection.run(@query_generator.copy_results_to_table_query)
+        CartoDB::Importer2::QueryBatcher::execute(
+          connection,
+          @query_generator.copy_results_to_table_query,
+          qualified_table_name,
+          nil, # use default logger
+          'InternalGeocoder::copy_results_to_table',
+          false, # do not capture exceptions,
+          batch_size
+        )
       end # copy_results_to_table
 
       def drop_temp_table

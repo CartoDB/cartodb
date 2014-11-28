@@ -14,13 +14,10 @@ include CartoDB
 describe Visualization::Overlays do
 
   before(:each) do
-    @db = Sequel.sqlite
-    Visualization.repository =
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    @db = Rails::Sequel.connection
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    CartoDB::Overlay::Migrator.new(@db).migrate
-    CartoDB::Overlay.repository        =
-      DataRepository::Backend::Sequel.new(@db, :overlays)
+    CartoDB::Overlay.repository = DataRepository::Backend::Sequel.new(@db, :overlays)
     member = Visualization::Member.new
     map_mock = mock
     map_mock.stubs(:scrollwheel=)
@@ -32,9 +29,7 @@ describe Visualization::Overlays do
     Visualization::Member.any_instance.stubs(:map).returns(map_mock)
     @visualization = member
 
-    Visualization::Migrator.new(@db).migrate
-    Visualization.repository = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
   end

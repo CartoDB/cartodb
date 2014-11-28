@@ -66,13 +66,19 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
-    it 'is invalid with a "layergroup" name' do
+    it 'is renames "layergroup" to "layergroup_t"' do
       table         = Table.new
       table.user_id = @user.id
       table.name    = 'layergroup'
+      table.valid?.should == true
+    end
 
-      table.valid?.should == false
-      table.errors.fetch(:name).first.should =~ /reserved keyword/
+    it 'renames "all" to "all_t"' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'all'
+      table.name.should eq 'all_t'
+      table.valid?.should == true
     end
 
     it "should set a table_id value" do

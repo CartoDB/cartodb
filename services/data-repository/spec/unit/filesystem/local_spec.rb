@@ -50,25 +50,5 @@ describe Local do
       stored_data.read.must_equal @data.read
     end
   end #fetch
-
-  describe '#zip' do
-    it 'zips a directory' do
-      filesystem    = Local.new(@prefix)
-      path          = filesystem.store("sample/#{@path}", @data)
-      zip_path      = filesystem.zip("sample")
-
-      zip_path.must_match /.zip/
-    end
-  end #zip
-
-  describe '#unzip' do
-    it 'unzips an existing zip file in the filesystem' do
-      filesystem    = Local.new(@prefix)
-      path          = filesystem.store("sample/#{@path}", @data)
-      zip_path      = filesystem.zip("sample")
-
-      filesystem.unzip(zip_path)
-    end
-  end #unzip
 end # Local
 

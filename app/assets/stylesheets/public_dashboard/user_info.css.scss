@@ -110,9 +110,16 @@
 
   } // ul
 
+  .available-for-hire-banner {
+    background: rgba(232, 250, 235, 1);
+    padding: 10px 0;
+    border: 1px solid #BBBBBB;
+    border-bottom: none;
+  }
+
   .details {
 
-    padding: 65px 0 37px 0;
+    padding: 65px 0 28px 0;
     background:#fff;
     border-left: 1px solid #BBBBBB;
     border-right: 1px solid #BBBBBB;
@@ -142,8 +149,8 @@
       text-align:center;
     }
 
-
   } // .details
+
 } // .user-info
 
 
@@ -152,6 +159,7 @@
 
 @media only screen and (max-width: 350px) {
 
+  .available-for-hire-banner,
   .user-info,
   .user-info .avatar,
   .user-info .details {
@@ -168,6 +176,7 @@
 
 @media only screen and (min-width: 351px) and (max-width: 710px) {
 
+  .available-for-hire-banner,
   .user-info,
   .user-info .avatar,
   .user-info .details {
@@ -184,6 +193,8 @@
 }
 
 @media only screen and (min-width: 711px) and (max-width: 980px) {
+
+  .available-for-hire-banner,
   .user-info,
   .user-info .avatar,
   .user-info .details {

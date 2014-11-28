@@ -21,7 +21,8 @@ $map-sprites: sprite-map("sprites/map/*.png",
   $map-plus-spacing:                 11px,
   $map-toggle-slides-spacing:        11px,
   $map-toggle-slides_active-spacing: 11px,
-  $map-slide_frame-spacing:          11px
+  $map-slide_frame-spacing:          11px,
+  $map-infowindow-edit-tools-spacing: 10px
 );
  
 // All sprites should extend this class

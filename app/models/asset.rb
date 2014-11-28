@@ -81,7 +81,8 @@ class Asset < Sequel::Model
     local_path = Rails.root.join 'public', 'uploads', target_asset_path
     FileUtils.mkdir_p local_path
     FileUtils.cp @file.path, local_path.join(filename)
-    File.join('/', 'uploads', target_asset_path, filename)
+    p = File.join('/', 'uploads', target_asset_path, filename)
+    "http://#{Cartodb.config[:account_host]}#{p}"
   end
 
   def use_s3?
@@ -91,7 +92,8 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      FileUtils.rm("#{Rails.root}/public#{public_url}") rescue ''
+      local_url = public_url.gsub(/http:\/\/#{Cartodb.config[:account_host]}/,'')
+      FileUtils.rm("#{Rails.root}/public#{local_url}") rescue ''
       return
     end
     basename = File.basename(public_url)

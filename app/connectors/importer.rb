@@ -50,7 +50,6 @@ module CartoDB
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(name, data_import_id)
         runner.log.append("Table '#{name}' registered")
-      rescue
       end
 
       def success?
@@ -76,14 +75,14 @@ module CartoDB
       end
 
       def rename(current_name, new_name, rename_attempts=0)
+        target_new_name = new_name
         new_name = table_registrar.get_valid_table_name(new_name)
 
         if (rename_attempts > 0)
           new_name = "#{new_name}_#{rename_attempts}"
         end
-
         rename_attempts = rename_attempts + 1
-
+        
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}"
           RENAME TO "#{new_name}"
@@ -91,16 +90,23 @@ module CartoDB
 
         rename_the_geom_index_if_exists(current_name, new_name)
         new_name
-      rescue
-        retry unless rename_attempts > MAX_RENAME_RETRIES
+      rescue => exception
+        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). "
+        runner.log.append(message)
+        if rename_attempts <= MAX_RENAME_RETRIES
+          rename(current_name, target_new_name, rename_attempts)
+        else
+          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}")
+        end
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)
         database.execute(%Q{
-          ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
+          ALTER INDEX IF EXISTS "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
-      rescue
+      rescue => exception
+        runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
       end
 
       def persist_metadata(name, data_import_id)

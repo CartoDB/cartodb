@@ -43,14 +43,4 @@ describe User do
 
   end
         
-
-  def create_org(org_name, org_quota, org_seats)
-    organization = Organization.new
-    organization.name = org_name
-    organization.quota_in_bytes = org_quota
-    organization.seats = org_seats
-    organization.save!
-    organization
-  end
-
 end

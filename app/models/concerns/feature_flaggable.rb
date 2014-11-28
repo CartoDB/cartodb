@@ -22,7 +22,7 @@ module Concerns
       if sync_data_with_cartodb_central?
         cartodb_central_client.get_feature_flags(self.username)
       else
-        Cartodb.config[:feature_flags][username]
+        (Cartodb.config[:user_feature_flags][username] + Cartodb.config[:feature_flags].select { |name, properties| !properties[:restricted] }.map { |k, v| k }).uniq.sort
       end
     end
 

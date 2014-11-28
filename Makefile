@@ -14,6 +14,7 @@ WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
   spec/models/user_spec.rb \
+  spec/user_unit_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
   spec/models/map_spec.rb \

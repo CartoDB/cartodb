@@ -7,3 +7,4 @@ Mime::Type.register "application/vnd.google-earth.kml+xml", :kml
 Mime::Type.register "application/vnd.google-earth.kml+xml", :kmz
 Mime::Type.register "application/octet-stream", :shp #sent as zip
 Mime::Type.register "application/octet-stream", :sql #sent as zip
+Mime::Type.register "image/svg+xml", :svg

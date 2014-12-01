@@ -397,6 +397,10 @@ class User < Sequel::Model
   end
 
   def in_database(options = {}, &block)
+    if options[:statement_timeout]
+      in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
+    end
+
     configuration = get_db_configuration_for(options[:as])
 
     connection = $pool.fetch(configuration) do
@@ -410,6 +414,11 @@ class User < Sequel::Model
       yield(connection)
     else
       connection
+    end
+
+  ensure
+    if options[:statement_timeout]
+      in_database.run('SET statement_timeout TO DEFAULT')
     end
   end
 

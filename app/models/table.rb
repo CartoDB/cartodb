@@ -1328,6 +1328,7 @@ class Table < Sequel::Model(:user_tables)
         SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
       })
 
+      # Avoid breaking on extension versions < 0.5.0
       begin
         is_raster = user_database[%Q{
           SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;

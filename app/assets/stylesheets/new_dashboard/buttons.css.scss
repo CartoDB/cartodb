@@ -23,9 +23,21 @@
   color: $cWhite;
   text-transform: uppercase;
 }
+.Button--border {
+  border-style: solid;
+  border-width: 2px;
+}
 .Button--green {
   background-color: $cGreen;
+  &:hover {
+    background-color: darken($cGreen, 5%);
+  }
 }
-.Button--green:hover {
-  background-color: darken($cGreen, 5%);
+.Button--white {
+  border-color: white;
+  background-color: transparent;
+  
+  &:hover {
+    background-color: transparent;
+  }
 }

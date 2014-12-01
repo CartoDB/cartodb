@@ -1,0 +1,36 @@
+// Dashboard banner styles
+// --------------------------------------------------
+
+@import "mixins";
+
+.SupportBanner {
+  display:block;
+  width:100%;
+  padding:40px 0;
+  background:#384047;
+}
+.SupportBanner .u-inner {
+  position:relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 940px;
+  margin: 0 auto;
+}
+.SupportBanner-infoTitle {
+  font-family: 'Lato', sans-serif;
+  font-size:20px;
+  font-weight:400;
+  color:white;
+}
+.SupportBanner-infoDescription {
+  margin-top:5px;
+  font-weight:300;
+  font-size:15px;
+  color:rgba(white, .5);
+}
+.SupportBanner-infoDescriptionLink {
+  text-decoration:underline;
+  color:rgba(white, .5);
+  &:hover { color:white }
+}

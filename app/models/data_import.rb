@@ -5,6 +5,7 @@ require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'
+require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
@@ -265,7 +266,7 @@ class DataImport < Sequel::Model
   # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
-    ![STATE_PENDING, STATE_SUCCESS, STATE_FAILURE].include?(self.state) &&
+    ![STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
     self.created_at < 5.minutes.ago            &&
     !running_import_ids.include?(self.id)
   end

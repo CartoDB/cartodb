@@ -1014,6 +1014,9 @@ var Vis = cdb.core.View.extend({
           });
           layerView.tooltip = tooltip;
           this.mapView.addOverlay(tooltip);
+          layerView.bind('remove', function() {
+            this.tooltip.clean();
+          });
         }
         layerView.setInteraction(i, true);
       }

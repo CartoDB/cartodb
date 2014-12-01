@@ -51,19 +51,25 @@
   <div class="Header">
     <div class="u-inner">
       <div class="Header-Navigation">
-        <ul>
+        <ul class="Header-NavigationList">
           <li>
             <a href="/dashboard/" class="Logo Logo--text">CartoDB</a>
           </li>
           <li>
-            <p>
-              
-            </p>
+            <ul class="Header-Navigation-Breadcrumb">
+              <li>
+                <% if current_user.has_organization? %>
+                  <%= current_user.organization.name %> /
+                <% end %>
+              </li>
+              <li><%= current_user.name || current_user.username %> /</li>
+              <li><a href="#/maps">Maps</a></li>
+            </ul>
           </li>
         </ul>
       </div>
       <div class="Header-Settings">
-        <ul>
+        <ul class="Header-SettingsList">
           <li>
             <a href="#">Explore</a>
           </li>
@@ -89,10 +95,7 @@
   <div class="Subheader">
     <div class="u-inner">
 
-      <a href="#" class="UserAvatar UserAvatar--rounded">
-        <%= image_tag current_user.avatar_url, class: :"UserAvatar-avatar" %>
-        <span class="UserAvatar-Name"><%= current_user.username %></span>
-      </a>
+      
 
       <ul class="FilterList FilterList--vertically-centered">
         <li class="is-selected">

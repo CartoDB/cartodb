@@ -1,3 +1,9 @@
+3.4.0 (2014-12-xx)
+------------------
+* New features
+  - Raster import: Drag & drop geotif files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS.
+    This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
 3.3.1 (2014-11-25)
 ------------------
  * Fixed bugs
@@ -55,7 +61,12 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
+<<<<<<< HEAD
+  * Implemented raster import into the editor. Only table import, yet no viewer/editor.
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor
+=======
   * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
+>>>>>>> master
   * Enables fullscreen for IE11.
   * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 

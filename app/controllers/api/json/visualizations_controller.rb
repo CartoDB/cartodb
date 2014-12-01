@@ -65,10 +65,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     payload.delete[:permission_id] if payload[:permission_id].present?
 
     if params[:source_visualization_id]
-      #TODO: check permissions to read
       source = Visualization::Collection.new.fetch(
         id: params.fetch(:source_visualization_id),
-        user_id: current_user.id
+        user_id: current_user.id,
+        exclude_raster: true
       ).first
       return(head 403) if source.nil?
 

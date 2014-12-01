@@ -13,7 +13,9 @@
 }
 .LikeButton:hover .LikeButton-icon {
   text-decoration: none;
-  @include dashboard-sprite(heart_highlighted);
+  background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
+  -webkit-transform: scale(.7);
+  background-size: 16px 14px;
 }
 .LikeButton-counter {
   font: 300 11px "Helvetica",Arial,sans-serif;
@@ -26,11 +28,70 @@
   @include inline-block();
   position:relative;
   top: -1px;
-  width: 11px;
-  height: 10px;
-  margin: 0 3px 0 0;
-  @include dashboard-sprite(heart);
+  width: 16px;
+  height: 14px;
+  margin: 0 2px 0 0;
+  background: image-url("sprites/dashboard/heart.png") no-repeat;
+  /*background-size: 11px 10px;*/
+  -webkit-transform: scale(.7);
+  background-size: 16px 14px;
 }
 .LikeButton--highlighted .LikeButton-icon {
-  @include dashboard-sprite(heart_highlighted);
+  background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
+  -webkit-transform: scale(.7);
+  background-size: 16px 14px;
 }
+
+.animated {
+  -webkit-animation-duration: 500ms;
+  animation-duration: 500ms;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(.7);
+    -ms-transform: scale(.7);
+    transform: scale(.7);
+  }
+
+  50% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+
+  100% {
+    -webkit-transform: scale(.7);
+    -ms-transform: scale(.7);
+    transform: scale(.7);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -webkit-transform: scale(.7);
+    -ms-transform: scale(.7);
+    transform: scale(.7);
+  }
+
+  50% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+
+  100% {
+    -webkit-transform: scale(.7);
+    -ms-transform: scale(.7);
+    transform: scale(.7);
+  }
+}
+
+.pulse {
+  -webkit-animation-name: pulse;
+  animation-name: pulse;
+}
+

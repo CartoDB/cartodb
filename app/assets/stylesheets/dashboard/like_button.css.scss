@@ -1,0 +1,36 @@
+@import "compass/css3/inline-block";
+@import "dashboard-sprite";
+
+.LikeButton {
+}
+.LikeButton:hover {
+  text-decoration: none;
+  color: #D62C6A;
+}
+.LikeButton:hover .LikeButton-counter {
+  text-decoration: none;
+  color: #D62C6A;
+}
+.LikeButton:hover .LikeButton-icon {
+  text-decoration: none;
+  @include dashboard-sprite(heart_highlighted);
+}
+.LikeButton-counter {
+  font: 300 11px "Helvetica",Arial,sans-serif;
+  color: #87878a;
+}
+.LikeButton--highlighted .LikeButton-counter {
+  color: #D62C6A;
+}
+.LikeButton .LikeButton-icon {
+  @include inline-block();
+  position:relative;
+  top: -1px;
+  width: 11px;
+  height: 10px;
+  margin: 0 3px 0 0;
+  @include dashboard-sprite(heart);
+}
+.LikeButton--highlighted .LikeButton-icon {
+  @include dashboard-sprite(heart_highlighted);
+}

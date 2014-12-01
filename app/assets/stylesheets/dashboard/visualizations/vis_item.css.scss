@@ -3,7 +3,6 @@
    *  Visualization item styles within visualizations list
    */
 
-  @import "../dashboard-sprite";
   @import "compass/css3/inline-block";
   @import "compass/css3/box-shadow";
   @import "compass/css3/transform";
@@ -94,39 +93,6 @@
     .LikeButton {
       float: right;
     }
-    .LikeButton:hover {
-      text-decoration: none;
-      color: #D62C6A;
-    }
-    .LikeButton:hover .LikeButton-counter {
-      text-decoration: none;
-      color: #D62C6A;
-    }
-    .LikeButton:hover .LikeButton-icon {
-      text-decoration: none;
-      @include dashboard-sprite(heart_highlighted);
-    }
-    .LikeButton-counter {
-      font-size: 12px;
-      color: #87878a;
-      line-height: 14px;
-    }
-    .LikeButton--highlighted .LikeButton-counter {
-      color: #D62C6A;
-    }
-    .LikeButton .LikeButton-icon {
-      position:relative;
-      top: -1px;
-      @include inline-block();
-      width: 11px;
-      height: 10px;
-      @include dashboard-sprite(heart);
-      margin: 0 3px 0 0;
-    }
-    .LikeButton--highlighted .LikeButton-icon {
-      @include dashboard-sprite(heart_highlighted);
-    }
-
 
     .vis-shared {
       @include display-flex();

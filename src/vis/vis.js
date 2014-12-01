@@ -284,10 +284,16 @@ var Vis = cdb.core.View.extend({
   },
 
   _addOverlays: function(overlays, options) {
+    overlays = overlays.toJSON();
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function(overlay) {
       return overlay.order === null ? Number.MAX_VALUE: overlay.order;
     });
+
+    // clean current overlays
+    while (this.overlays.length !== 0) {
+      this.overlays.pop().clean();
+    }
     this._createOverlays(overlays, options);
   },
 
@@ -454,7 +460,7 @@ var Vis = cdb.core.View.extend({
 
     var map = new cdb.geo.Map(mapConfig);
     this.map = map;
-    this.overlays = new Backbone.Collection();
+    this.overlayModels = new Backbone.Collection();
 
     this.updated_at = data.updated_at || new Date().getTime();
 
@@ -501,17 +507,28 @@ var Vis = cdb.core.View.extend({
     this.mapView = mapView;
 
     map.layers.bind('reset', this.addLegends, this);
-    this.overlays.bind('reset', this._addOverlays, this);
+    this.overlayModels.bind('reset', this._addOverlays, this);
+
+    // loader
+    this.mapView.bind('newLayerView', this._addLoading, this);
 
     if (options.time_slider) {
       this.mapView.bind('newLayerView', this._addTimeSlider, this);
+    }
+
+    if (this.infowindow) {
+      this.mapView.bind('newLayerView', this.addInfowindow, this);
+    }
+
+    if(this.tooltip) {
+      this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
       return Layers.create(layerData.type || layerData.kind, self, layerData);
     }));
 
-    this.overlays.reset(data.overlays);
+    this.overlayModels.reset(data.overlays);
 
 
     // if there are no sublayer_options fill it
@@ -610,6 +627,7 @@ var Vis = cdb.core.View.extend({
 
       this.map.actions = BackboneActions(this.map);
       this.map.layers.actions = BackboneActions(this.map.layers);
+      this.overlayModels.actions = BackboneActions(this.overlayModels)
 
       for (var i = 0; i < slides.length; ++i) {
         var slide = slides[i];
@@ -626,8 +644,8 @@ var Vis = cdb.core.View.extend({
           return Layers.create(layerData.type || layerData.kind, self, layerData);
         })));
 
-        // legends
-        //states.push(SwitchLegend(this, slide.layers));
+        // overlays
+        states.push(this.overlayModels.actions.reset(slide.overlays));
 
         this.slides.addState(
           seq.step(i),
@@ -639,8 +657,7 @@ var Vis = cdb.core.View.extend({
 
   _createOverlays: function(overlays, options) {
 
-    overlays.each(function(m) {
-      var data = m.attributes;
+    _(overlays).each(function(data) {
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
@@ -1122,7 +1139,7 @@ var Vis = cdb.core.View.extend({
     layerView.infowindow = infowindow.model;
   },
 
-  loadLayer: function(layerData, opts) {
+  /*loadLayer: function(layerData, opts) {
     var map = this.map;
     var mapView = this.mapView;
     //layerData.type = layerData.kind;
@@ -1161,7 +1178,25 @@ var Vis = cdb.core.View.extend({
 
     return layerView;
 
+  },*/
+
+  _addLoading: function (layerView) {
+    if (layerView) {
+      var self = this;
+
+      var loadingTiles = function() {
+        self.loadingTiles();
+      };
+
+      var loadTiles = function() {
+        self.loadTiles();
+      };
+
+      layerView.bind('loading', loadingTiles);
+      layerView.bind('load',    loadTiles);
+    }
   },
+
 
   loadingTiles: function() {
     if (this.loader) {

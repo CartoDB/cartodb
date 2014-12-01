@@ -17,31 +17,7 @@ strong {
   font-weight: 700;
 }
 
-/* DashboardFilters */
 
-.DashboardFilters {
-}
-.DashboardFilters .FilterList li .shadow {
-  display: none;
-  position:absolute;
-  width: 100%;
-  bottom: -34px;
-  border-bottom: 1px solid $cGray4;
-}
-.DashboardFilters > .u-inner {
-  position:relative;
-  @include inline-block();
-  width: 940px;
-  margin: auto;
-  padding: 20px 0;
-
-  border-bottom: 1px solid $cLightGray;
-}
-.DashboardFilters-order {
-}
-.DashboardFilters .Button {
-  float: right;
-}
 
 .VisList {
   @include display-flex();

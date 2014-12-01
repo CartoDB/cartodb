@@ -12,7 +12,7 @@
   @include inline-block();
   width:15px;
   height:15px;
-  @include background(sprite($new-dashboard-sprites, bell));
+  @include background(sprite($new-dashboard-sprites, bell-icon));
 }
 .UserNotifications-Count {
   position:absolute;
@@ -33,7 +33,7 @@
 }
 .UserNotifications:hover {
   .UserNotifications-Icon {
-    @include background(sprite($new-dashboard-sprites, bell, $offset-x:-15px));
+    @include background(sprite($new-dashboard-sprites, bell-icon, $offset-x:-15px));
   }
   .UserNotifications-Count {
     top:-10px;

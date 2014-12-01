@@ -588,7 +588,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database(as: :superuser).run("VACUUM FULL #{qualified_table_name}")
+    owner.in_database({as: :superuser, statement_timeout: 600000}).run("VACUUM FULL #{qualified_table_name}")
   end
 
   def handle_creation_error(e)
@@ -760,9 +760,7 @@ class Table < Sequel::Model(:user_tables)
 
   def make_geom_valid
     begin
-      # make timeout here long, but not infinite. 10mins = 600000 ms.
-      # TODO: extend .run to take a "long_running" indicator? See #730.
-      owner.in_database.run(%Q{SET statement_timeout TO 600000;UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT})
+      owner.in_database({statement_timeout: 600000}).run(%Q{UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);})
     rescue => e
       CartoDB::Logger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
     end

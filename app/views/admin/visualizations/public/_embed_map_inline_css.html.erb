@@ -41,8 +41,4 @@
 
 </style>
 
-<% if !Rails.env.production? %>
-  <%= stylesheet_link_tag 'cartodb.css' %>
-<% else %>
-  <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-<% end %>
+<%= stylesheet_link_tag 'cartodb.css' %>

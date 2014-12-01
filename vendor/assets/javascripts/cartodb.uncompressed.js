@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.24-dev
+// cartodb.js version: 3.11.25
 // uncompressed version: cartodb.uncompressed.js
-// sha: 82a854637c4c8c671044109794c3ae400d1ae71b
+// sha: 70b28430e0ae178d0b86b82dd93ab8d6685f81d5
 (function() {
   var root = this;
 
@@ -11122,7 +11122,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.0.1 - v6.0.4-157-gfdefcd0 */
+/* wax - 7.0.1 - v6.0.4-163-g2c1797b */
 
 
 !function (name, context, definition) {
@@ -11172,6 +11172,7 @@ L.Map.include({
             'gesturestart gesturechange gestureend ' +                         // gesture
             'MSPointerUp MSPointerDown MSPointerCancel MSPointerMove ' +       // MS Pointer events
             'MSPointerOver MSPointerOut ' +                                    // MS Pointer events
+            'pointerup pointerdown pointermove pointercancel' +                // MS Pointer events
             'message readystatechange pageshow pagehide popstate ' +           // window
             'hashchange offline online ' +                                     // window
             'afterprint beforeprint ' +                                        // printing
@@ -14095,10 +14096,16 @@ wax.interaction = function() {
         touchcancel: touchCancel
     };
 
-    var pointerEnds = {
+    var mspointerEnds = {
         MSPointerUp: onUp,
         MSPointerMove: onUp,
         MSPointerCancel: touchCancel
+    };
+
+    var pointerEnds = {
+        pointerup: onUp,
+        pointermove: onUp,
+        pointercancel: touchCancel
     };
 
     // Abstract getTile method. Depends on a tilegrid with
@@ -14137,7 +14144,7 @@ wax.interaction = function() {
         // to avoid performance hits.
         if (_downLock) return;
 
-        var _e = (e.type != "MSPointerMove" ? e : e.originalEvent);
+        var _e = (e.type !== "MSPointerMove" && e.type !== "pointermove" ? e : e.originalEvent);
         var pos = wax.u.eventoffset(_e);
 
         interaction.screen_feature(pos, function(feature) {
@@ -14163,7 +14170,7 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
+        var _e = (e.type !== "MSPointerDown" && e.type !== "pointerdown" ? e : e.originalEvent); 
         _d = wax.u.eventoffset(_e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
@@ -14181,6 +14188,11 @@ wax.interaction = function() {
           // Don't make the user click close if they hit another tooltip
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
+            bean.add(parent(), mspointerEnds);
+        } else if (e.type === "pointerdown" && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
+            // Don't make the user click close if they hit another tooltip
+            bean.fire(interaction, 'off');
+            // Touch moves invalidate touches
             bean.add(parent(), pointerEnds);
         }
 
@@ -14192,14 +14204,15 @@ wax.interaction = function() {
 
     function touchCancel() {
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), mspointerEnds);
         bean.remove(parent(), pointerEnds);
         _downLock = false;
     }
 
     function onUp(e) {
-        var evt = {},
-            _e = (e.type != "MSPointerMove" && e.type != "MSPointerUp" ? e : e.originalEvent),
-            pos = wax.u.eventoffset(_e);
+        var evt = {};
+        var _e = (e.type !== "MSPointerMove" && e.type !== "MSPointerUp" && e.type !== "pointerup" && e.type !== "pointermove" ? e : e.originalEvent);
+        var pos = wax.u.eventoffset(_e);
         _downLock = false;
 
         for (var key in _e) {
@@ -14210,11 +14223,9 @@ wax.interaction = function() {
         //   evt[key] = e[key];
         // }
 
-
-        evt.changedTouches = [];
-
         bean.remove(document.body, 'mouseup', onUp);
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), mspointerEnds);
         bean.remove(parent(), pointerEnds);
 
         if (e.type === 'touchend') {
@@ -14222,11 +14233,14 @@ wax.interaction = function() {
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
-        } else if (pos) {
+        } else if (pos && _d) {
           // If pos is not defined means wax can't calculate event position,
           // So next cases aren't possible.
 
           if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
+            evt.changedTouches = [];
+            interaction.click(evt, pos);
+          } else if (evt.type === "pointermove" || evt.type === "pointerup") {
             interaction.click(evt, pos);
           } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
@@ -14292,6 +14306,7 @@ wax.interaction = function() {
         bean.add(parent(), defaultEvents);
         bean.add(parent(), 'touchstart', onDown);
         bean.add(parent(), 'MSPointerDown', onDown);
+        bean.add(parent(), 'pointerdown', onDown);
         return interaction;
     };
 
@@ -20705,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.11.24-dev';
+    cdb.VERSION = "3.11.25";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28772,9 +28787,9 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   if(typeof(L) == "undefined")
     return;
 
-  var defaultSubstitute = function defaultSubstitute(lightOrDark) {
+  var stamenSubstitute = function stamenSubstitute(type) {
     return {
-      url: 'http://{s}.basemaps.cartocdn.com/'+ (lightOrDark || "light") +'_all/{z}/{x}/{y}.png',
+      url: 'http://{s}.basemaps.cartocdn.com/'+ type +'_all/{z}/{x}/{y}.png',
       subdomains: 'abcd',
       minZoom: 0,
       maxZoom: 18,
@@ -28793,9 +28808,9 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
   };
 
   var substitutes = {
-    roadmap: defaultSubstitute(),
-    gray_roadmap: defaultSubstitute(),
-    dark_roadmap: defaultSubstitute('dark'),
+    roadmap: nokiaSubstitute('normal'),
+    gray_roadmap: stamenSubstitute('light'),
+    dark_roadmap: stamenSubstitute('dark'),
     hybrid: nokiaSubstitute('hybrid'),
     terrain: nokiaSubstitute('terrain'),
     satellite: nokiaSubstitute('satellite')
@@ -29084,11 +29099,16 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    * @param {Event} Wax event
    */
   _manageOnEvents: function(map, o) {
-    var layer_point = this._findPos(map,o),
-        latlng = map.layerPointToLatLng(layer_point);
+    var layer_point = this._findPos(map,o);
+
+    if (!layer_point || isNaN(layer_point.x) || isNaN(layer_point.y)) {
+      // If layer_point doesn't contain x and y,
+      // we can't calculate event map position
+      return false;
+    }
+
+    var latlng = map.layerPointToLatLng(layer_point);
     var event_type = o.e.type.toLowerCase();
-
-
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
     switch (event_type) {
@@ -29101,6 +29121,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       case 'click':
       case 'touchend':
       case 'mspointerup':
+      case 'pointerup':
+      case 'pointermove':
         if (this.options.featureClick) {
           this.options.featureClick(o.e,latlng, screenPos, o.data, o.layer);
         }
@@ -33951,7 +33973,7 @@ Layers.register('torque', function(vis, data) {
   /**
    * create a layer for the specified map
    *
-   * @param map should be a L.Map or google.maps.Map object
+   * @param map should be a L.Map object, or equivalent depending on what provider you have.
    * @param layer should be an url or a javascript object with the data to create the layer
    * @param options layer options
    *

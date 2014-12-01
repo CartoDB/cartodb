@@ -165,7 +165,11 @@ module CartoDB
       end
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(job.db, job.table_name, georeferencer_options, SCHEMA, job, geometry_columns)
+        if @georeferencer.nil?
+          @georeferencer = Georeferencer.new(job.db, job.table_name, georeferencer_options, SCHEMA, job, geometry_columns)
+          @georeferencer.set_importer_stats(@importer_stats)
+        end
+        @georeferencer
       end
 
       def georeferencer_options
@@ -221,7 +225,7 @@ module CartoDB
         end
 
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+        raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
 
         if ogr2ogr.exit_code != 0
           # OOM

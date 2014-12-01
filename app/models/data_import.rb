@@ -43,6 +43,9 @@ class DataImport < Sequel::Model
     service_item_id
     type_guessing
     quoted_fields_guessing
+    content_guessing
+    server
+    host
   }
 
   # Not all constants are used, but so that we keep track of available states
@@ -82,7 +85,8 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
-    log.append "Running on server #{Socket.gethostname} with PID: #{Process.pid}"
+    self.server = Socket.gethostname
+    log.append "Running on server #{self.server} with PID: #{Process.pid}"
     begin
       success = !!dispatch
     rescue TokenExpiredOrInvalidError => ex
@@ -116,7 +120,11 @@ class DataImport < Sequel::Model
   end
 
   def get_error_text
-    self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    if self.error_code.nil?
+      nil
+    else
+      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    end
   end
 
   def raise_over_table_quota_error
@@ -385,13 +393,10 @@ class DataImport < Sequel::Model
   def content_guessing_options
     guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
     geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
-    if not guessing_config[:enabled] or not geocoder_config
-      { guessing: { enabled: false } }
+    if guessing_config[:enabled] and self.content_guessing and geocoder_config
+      { guessing: guessing_config, geocoder: geocoder_config }
     else
-      {
-        guessing: guessing_config,
-        geocoder: geocoder_config
-      }
+      { guessing: { enabled: false } }
     end
   end
 
@@ -446,9 +451,12 @@ class DataImport < Sequel::Model
         when Search::Twitter::DATASOURCE_NAME
           post_import_handler.add_transform_geojson_geom_column
       end
+      
+      database_options = pg_options
+      self.host = database_options[:host]
 
       runner        = CartoDB::Importer2::Runner.new(
-        pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
+        database_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]

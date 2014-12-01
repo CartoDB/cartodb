@@ -1,8 +1,26 @@
-3.2.15 (2014-11-20)
+3.4.0 (2014-12-xx)
 ------------------
 * New features
   - Raster import: Drag & drop geotif files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS.
     This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
+3.3.1 (2014-11-25)
+------------------
+ * Fixed bugs
+   - Country guessing: normalize content before checking for duplicates.
+
+3.3.0 (2014-11-24)
+-------------------
+ * New features
+  - Shows a warning message when editing a visualization that has a Google Maps basemap.
+
+3.2.15 (2014-11-21)
+-------------------
+ * Fixed bugs and improvements
+   - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
+   - Country guessing fix: must be done with at least 2 chars.
+   - Geocoding: fixed geocoder by postalcode when column type is numeric
+   - #1095 Add feature button in Torque maps
 
 3.2.14 (2014-11-17)
 -------------------
@@ -43,9 +61,14 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
+<<<<<<< HEAD
   * Implemented raster import into the editor. Only table import, yet no viewer/editor.
   * Enabled ghost tables. Tables created with SQL API are visible in the editor
+=======
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
+>>>>>>> master
   * Enables fullscreen for IE11.
+  * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 
 3.2.8 (2014-11-03)
 ------------------

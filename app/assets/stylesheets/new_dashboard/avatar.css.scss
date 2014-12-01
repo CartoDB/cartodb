@@ -1,0 +1,27 @@
+// Avatars
+// - Different types of user avatars
+// --------------------------------------------------
+
+@import "mixins";
+@import "colors";
+
+/* UserAvatar */
+
+.UserAvatar {
+  @include inline-block();
+}
+.UserAvatar--Large {
+  width:96px;
+  height:96px;
+  @include border-radius(2px);
+}
+.UserAvatar--Medium {
+  width:40px;
+  height:40px;
+  @include border-radius(2px);
+}
+.UserAvatar--Small {
+  width:16px;
+  height:16px;
+  @include border-radius(16px); 
+}

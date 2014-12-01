@@ -1,5 +1,4 @@
-@import "compass/css3/flexbox";
-@import "compass/utilities/general/clearfix";
+@import "mixins";
 @import "colors";
 
 
@@ -30,8 +29,8 @@ strong {
   border-bottom: 1px solid $cGray4;
 }
 .DashboardFilters > .u-inner {
-  @include clearfix();
   position:relative;
+  @include inline-block();
   width: 940px;
   margin: auto;
   padding: 20px 0;
@@ -45,19 +44,18 @@ strong {
 }
 
 .VisList {
-  @include display-flex;
+  @include display-flex();
 }
 .VisList > .u-inner {
-  @include clearfix();
   position:relative;
   width: 940px;
-  margin: auto;
+  margin: 0 auto;
   padding: 20px 0;
 
 }
 .VisList .VisList-Row {
   margin: 0 0 20px 0;
-  @include display-flex;
+  @include display-flex();
   @include flex-direction(row);
 }
 .VisList .VisList-Row .VisList-RowItem {

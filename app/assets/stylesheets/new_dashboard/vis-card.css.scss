@@ -1,8 +1,4 @@
-@import "compass/css3/inline-block";
-@import "compass/css3/border-radius";
-@import "compass/css3/opacity";
-@import "common/mixins";
-@import "common/vars";
+@import "mixins";
 @import "colors";
 
 /* VisCard */
@@ -11,7 +7,6 @@
   position:relative;
   width: 300px;
   height: 352px;
-
   @include inline-block();
   border: 1px solid $cGray7;
   @include border-radius(4px);
@@ -73,7 +68,6 @@
   bottom: 0;
 }
 .VisCard-Footer > .u-inner {
-  @include box-sizing(border-box);
   width: 260px;
   margin: auto;
   padding: 10px 0 15px 0;

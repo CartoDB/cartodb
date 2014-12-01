@@ -47,6 +47,68 @@
   <div class="bars"></div>
   <article class="support"></article>
 <% else %>
+
+  <div class="Header">
+    <div class="u-inner">
+      <div class="Header-Navigation">
+        <ul>
+          <li>
+            <a href="/dashboard/" class="Logo Logo--text">CartoDB</a>
+          </li>
+          <li>
+            <p>
+              
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="Header-Settings">
+        <ul>
+          <li>
+            <a href="#">Explore</a>
+          </li>
+          <li>
+            <a href="#">Learn</a>
+          </li>
+          <li>
+            <a href="#" class="UserNotifications">
+              <i class="UserNotifications-Icon"></i>
+              <span class="UserNotifications-Count">2</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="UserAvatar">
+              <%= image_tag current_user.avatar_url, class: "UserAvatar--Medium" %>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="Subheader">
+    <div class="u-inner">
+
+      <a href="#" class="UserAvatar UserAvatar--rounded">
+        <%= image_tag current_user.avatar_url, class: :"UserAvatar-avatar" %>
+        <span class="UserAvatar-Name"><%= current_user.username %></span>
+      </a>
+
+      <ul class="FilterList FilterList--vertically-centered">
+        <li class="is-selected">
+          <a href="#"><strong>13</strong> Maps</a>
+          <div class="shadow"></div>
+        </li>
+        <li>
+          <a href="#"><strong>89</strong> Datasets</a>
+          <div class="shadow"></div>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
+
   <div class="DashboardFilters">
     <div class="u-inner">
 
@@ -297,6 +359,41 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <div class="SupportBanner">
+      <div class="u-inner">
+        <div class="SupportBanner-Info">
+          <h4>As a paying customer you have access to our dedicated support.</h4>
+          <p>Remember that there is a lot of information in our community forums.</p>
+        </div>
+        <div class="SupportBanner-Button">
+          <a href="#support" class="Button Button--white Button--border">
+            <span>Contact support</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="Footer">
+      <div class="u-inner">
+        <div class="Footer-list">
+          <ul>
+            <li><a href="http://cartodb.com/tour/">Feature tour</a></li>
+            <li><a href="http://docs.cartodb.com/tutorials.html">Getting started</a></li>
+          </ul>
+        </div>
+        <div class="Footer-Logo">
+          <span class="Logo Logo--round">CartoDB</span>
+        </div>
+        <div class="Footer-list">
+          <ul>
+            <li><a href="http://docs.cartodb.com">Documentation</a></li>
+            <li><a href="mailto:support@cartodb.com">Support</a></li>
+            <li><a href="mailto:support@cartodb.com">Contact</a></li>
+          </ul>
+        </div>
       </div>
     </div>
 

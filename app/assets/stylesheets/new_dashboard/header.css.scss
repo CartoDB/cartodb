@@ -1,64 +1,46 @@
-@import "compass/css3/inline-block";
-@import "compass/css3/border-radius";
-@import "common/mixins";
-@import "common/vars";
+// Header
+// - Tipical Header view
+// --------------------------------------------------
+
+@import "mixins";
 @import "colors";
 
 /* Header */
 .Header {
+  display:block;
+  width:100%;
+  height:81px;
+  background:$cGray11;
+  border-bottom:1px solid $cGray8;
 }
 .Header > .u-inner {
-  @include clearfix();
   position:relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
   width: 940px;
-  margin: auto;
-}
-.Header-map {
-  height: 300px;
-  background: $cWhite;
+  margin: 0 auto;
 }
 
-/* Subheader */
-
-.Subheader {
-  background: $cGray11;
-  border-bottom: 1px solid $cGray8;
+.Header-Settings {
+  height:81px;
 }
-.Subheader > .u-inner {
-  @include clearfix();
+.Header-Settings ul {
+  height:100%;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.Header-Settings ul li {
   position:relative;
-  width: 940px;
-  margin: auto;
-  padding: 20px 0;
+  margin-left:30px;
 }
-.Subheader .FilterList {
-  position:absolute;
-  right: 0;
-}
-
-/* UserAvatar */
-
-.UserAvatar {
-  float: left;
-}
-.UserAvatar .UserAvatar-Name {
-  @include inline-block();
-  clear: both;
-  margin: 0 0 0 15px;
-  text-decoration: none;
-  font-size: 20px;
-  color: $cGray2;
-}
-.UserAvatar-avatar {
-  @include inline-block();
-  width: 50px;
-  height: 50px;
-}
-.UserAvatar--rounded .UserAvatar-avatar {
-  @include border-radius(100px);
-}
-.UserAvatar .UserAvatar-Organization {
-}
-.UserAvatar .UserAvatar-Organization a {
-  @include inline-block();
+.Header-Settings ul li a {
+  font-weight:300;
+  color:$cGray4;
+  
+  &:hover {
+    color:$cGray2;
+    text-decoration: underline;
+  }
 }

@@ -1,0 +1,46 @@
+// User notifications
+// --------------------------------------------------
+
+@import "compass/css3/images";
+@import "mixins";
+@import "new-dashboard-sprite";
+
+.UserNotifications {
+  position:relative;
+}
+.UserNotifications-Icon {
+  @include inline-block();
+  width:15px;
+  height:15px;
+  @include background(sprite($new-dashboard-sprites, bell));
+}
+.UserNotifications-Count {
+  position:absolute;
+  top:-9px;
+  right:-9px;
+  width:17px;
+  height:17px;
+  background:#C74B43;
+  @include border-radius(23px);
+  font-family:Arial;
+  font-size:10px;
+  font-weight:500;
+  text-align:center;
+  line-height:17px;
+  color:white;
+
+  &.is-empty { display:none }
+}
+.UserNotifications:hover {
+  .UserNotifications-Icon {
+    @include background(sprite($new-dashboard-sprites, bell, $offset-x:-15px));
+  }
+  .UserNotifications-Count {
+    top:-10px;
+    right:-10px;
+    width:19px;
+    height:19px;
+    font-size:11px;
+    line-height:19px;
+  }
+}

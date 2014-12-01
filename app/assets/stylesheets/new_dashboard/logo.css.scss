@@ -1,0 +1,25 @@
+// Logo
+// - Different ways to show CartoDB logo
+// --------------------------------------------------
+
+@import "compass/css3/images";
+@import "mixins";
+@import "new-dashboard-sprite";
+
+
+.Logo {
+  @include inline-block();
+  text-indent:-9999px;
+  font-size:0;
+}
+.Logo--text {
+  width:90px;
+  height:16px;
+  @include background(sprite($new-dashboard-sprites, logo-text));
+}
+.Logo--round {
+  width:40px;
+  height:40px;
+  @include background(sprite($new-dashboard-sprites, logo-round));
+}
+

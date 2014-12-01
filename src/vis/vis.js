@@ -40,6 +40,11 @@ var Overlay = {
 
 cdb.vis.Overlay = Overlay;
 
+cdb.vis.Overlays = Backbone.Collection.extend({
+  comparator: function() {
+  }
+});
+
 // layer factory
 var Layers = {
 
@@ -213,21 +218,27 @@ var Vis = cdb.core.View.extend({
     _.defer(loaded);
   },
 
-
+  /* remove
   _addLayers: function(layers, options) {
     for(var i = 0; i < layers.length; ++i) {
       var layerData = layers[i];
       this.loadLayer(layerData, options);
     }
   },
+  */
 
-  addLegends: function(layers, mobile_enabled) {
+  addLegends: function(layers) {
 
-    this.legends = new cdb.geo.ui.StackedLegend({
-      legends: this.createLegendView(layers)
-    });
-
-    if (!mobile_enabled) {
+    if (this.legends) {
+      this.legends.remove();
+    }
+    this.legends = null;
+    if (!this.mobile_enabled) {
+      this.legends = new cdb.geo.ui.StackedLegend({
+        legends: this.createLegendView(layers.map(function(lyr) {
+          return lyr.attributes;
+        }))
+      });
       this.mapView.addOverlay(this.legends);
     }
 
@@ -274,21 +285,24 @@ var Vis = cdb.core.View.extend({
 
   _addOverlays: function(overlays, options) {
     // Sort the overlays by its internal order
-    overlays = _.sortBy(overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
+    overlays = _.sortBy(overlays, function(overlay) {
+      return overlay.order === null ? Number.MAX_VALUE: overlay.order;
+    });
     this._createOverlays(overlays, options);
   },
 
   addTimeSlider: function(torqueLayer) {
-
     if (torqueLayer) {
-
-      this.addOverlay({
+      var timeSlider = this.addOverlay({
         type: 'time_slider',
         layer: torqueLayer
       });
-
+      // remove when layer is done
+      torqueLayer.bind('remove', function _remove() {
+        timeSlider.remove();
+        torqueLayer.unbind('remove', _remove);
+      });
     }
-
   },
 
   _setupSublayers: function(layers, options) {
@@ -435,11 +449,12 @@ var Vis = cdb.core.View.extend({
       }
 
       mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom == undefined ? 4: data.zoom;
+      mapConfig.zoom = data.zoom === undefined ? 4: data.zoom;
     }
 
-    var map         = new cdb.geo.Map(mapConfig);
-    this.map        = map;
+    var map = new cdb.geo.Map(mapConfig);
+    this.map = map;
+    this.overlays = new Backbone.Collection();
 
     this.updated_at = data.updated_at || new Date().getTime();
 
@@ -485,48 +500,36 @@ var Vis = cdb.core.View.extend({
 
     this.mapView = mapView;
 
-    this._addLayers(data.layers, options);
+    map.layers.bind('reset', this.addLegends, this);
+    this.overlays.bind('reset', this._addOverlays, this);
 
-    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) this.addLegends(data.layers, this.mobile_enabled);
-
-    if (options.time_slider)       {
-
-      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
-
-      if (torque && torque.length) {
-
-        this.torqueLayer = torque[0];
-
-        if (!this.mobile_enabled && this.torqueLayer) {
-
-          this.addTimeSlider(this.torqueLayer);
-
-        }
-      }
+    if (options.time_slider) {
+      this.mapView.bind('newLayerView', this._addTimeSlider, this);
     }
 
-    if (!options.sublayer_options) this._setupSublayers(data.layers, options);
-    if (options.sublayer_options)  this._setLayerOptions(options);
+    this.map.layers.reset(_.map(data.layers, function(layerData) {
+      return Layers.create(layerData.type || layerData.kind, self, layerData);
+    }));
 
-    if (this.mobile_enabled){
+    this.overlays.reset(data.overlays);
 
+
+    // if there are no sublayer_options fill it
+    if (!options.sublayer_options) {
+      this._setupSublayers(data.layers, options);
+    }
+    this._setLayerOptions(options);
+
+    if (this.mobile_enabled) {
       if (options.legends === undefined) {
         options.legends = this.legends ? true : false;
       }
       this.addMobile(data.overlays, data.layers, options);
     }
 
-    if (!data.slides) {
-      // Sort the overlays by its internal order
-      var overlays = _.sortBy(data.overlays, function(overlay){ return overlay.order == null ? 1000 : overlay.order; });
-      this._createOverlays(overlays, options);
-    } else {
-      //TODO: load odyssey and then slides
-      this._createSlides([data].concat(data.slides));
-
+    if (data.children) {
+      this._createSlides([data].concat(data.children));
     }
-
-    this._addOverlays(data.overlays, options);
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -534,6 +537,18 @@ var Vis = cdb.core.View.extend({
 
     return this;
 
+  },
+
+  _addTimeSlider: function() {
+    var torque = _(this.getLayers()).find(function(layer) {
+      return layer.model.get('type') === 'torque';
+    });
+    if (torque) {
+      this.torqueLayer = torque;
+      if (!this.mobile_enabled && this.torqueLayer) {
+        this.addTimeSlider(this.torqueLayer);
+      }
+    }
   },
 
   _addFullScreen: function() {
@@ -558,6 +573,15 @@ var Vis = cdb.core.View.extend({
                 model.set.apply(model, args);
               }
             });
+          },
+
+          reset: function() {
+            var args = arguments;
+            return O.Action({
+              enter: function() {
+                model.reset.apply(model, args);
+              }
+            });
           }
         };
         return actions;
@@ -574,18 +598,18 @@ var Vis = cdb.core.View.extend({
         });
       }
 
+
+      var self = this;
+
       var seq = this.sequence = O.Sequential();
       this.slides = O.Story();
-      
+
       // transition - debug, remove
       O.Keys().left().then(seq.prev, seq);
       O.Keys().right().then(seq.next, seq);
 
       this.map.actions = BackboneActions(this.map);
-
-      this.map.layers.each(function(layer) {
-        layer.actions = BackboneActions(layer);
-      });
+      this.map.layers.actions = BackboneActions(this.map.layers);
 
       for (var i = 0; i < slides.length; ++i) {
         var slide = slides[i];
@@ -598,18 +622,12 @@ var Vis = cdb.core.View.extend({
         }));
 
         // layers
-        this.map.layers.each(function(layer, i) {
-          var lyr = slide.layers[i];
-          _.extend(lyr, lyr.options);
-          if (lyr.options.named_map) {
-            states.push(layer.actions.set(lyr));
-          } else {
-            states.push(layer.actions.set(lyr));
-          }
-        });
+        states.push(this.map.layers.actions.reset(_.map(slide.layers, function(layerData) {
+          return Layers.create(layerData.type || layerData.kind, self, layerData);
+        })));
 
         // legends
-        states.push(SwitchLegend(this, slide.layers));
+        //states.push(SwitchLegend(this, slide.layers));
 
         this.slides.addState(
           seq.step(i),
@@ -621,8 +639,8 @@ var Vis = cdb.core.View.extend({
 
   _createOverlays: function(overlays, options) {
 
-    _.each(overlays, function(data) {
-
+    overlays.each(function(m) {
+      var data = m.attributes;
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
@@ -634,12 +652,11 @@ var Vis = cdb.core.View.extend({
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
-
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
-
-        if (!options[type] && options[type] !== undefined) return;
-
+        if (!options[type] && options[type] !== undefined) { 
+          return;
+        }
       }
 
       // We add the overlay
@@ -672,7 +689,7 @@ var Vis = cdb.core.View.extend({
           $(".cartodb-map-wrapper").addClass("with_header");
         }
 
-        overlay.render()
+        overlay.render();
       }
 
     }, this);
@@ -702,7 +719,7 @@ var Vis = cdb.core.View.extend({
 
   createLegendView: function(layers) {
     var legends = [];
-    for(var i = layers.length - 1; i>= 0; --i) {
+    for(var i = layers.length - 1; i >= 0; --i) {
       var layer = layers[i];
       if(layer.legend) {
         layer.legend.data = layer.legend.items;
@@ -747,12 +764,6 @@ var Vis = cdb.core.View.extend({
           }
         }
       }, this);
-
-      // Set map position correctly taking into account
-      // header height
-      if (overlay.type == "header") {
-        //this.setMapPosition();
-      }
     }
     return v;
   },
@@ -919,13 +930,19 @@ var Vis = cdb.core.View.extend({
 
     if (vizjson.layers.length > 1) {
       var token = opt.auth_token;
-      for(var i = 1; i < vizjson.layers.length; ++i) {
-        var o = vizjson.layers[i].options;
-        o.no_cdn = opt.no_cdn;
-        o.force_cors = opt.force_cors;
-        if(token) {
-          o.auth_token = token;
+      function _applyLayerOptions(layers) {
+        for(var i = 1; i < layers.length; ++i) {
+          var o = layers[i].options;
+          o.no_cdn = opt.no_cdn;
+          o.force_cors = opt.force_cors;
+          if(token) {
+            o.auth_token = token;
+          }
         }
+      }
+      _applyLayerOptions(vizjson.layers);
+      for(var i = 0; i < vizjson.children.length; ++i) {
+        _applyLayerOptions(vizjson.children[i].layers);
       }
     }
 

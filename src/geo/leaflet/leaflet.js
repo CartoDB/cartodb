@@ -144,11 +144,17 @@
         return lv;
       }
 
+      function canReused(layer) {
+        return self.map.layers.find(function(m) {
+          return m.isEqual(layer);
+        });
+      }
+
       // remove all
       for(var layer in oldLayers) {
         var layer_view = oldLayers[layer];
-        if (!findLayerView(layer_view.model)) {
-          this.map_leaflet.removeLayer(layer_view);
+        if (!canReused(layer_view.model)) {
+          layer_view.remove();
         }
       }
 
@@ -173,7 +179,6 @@
       for(var layer in this.layers) {
         var layer_view = this.layers[layer];
         layer_view.remove();
-        console.log("delete ", layer);
         delete this.layers[layer];
       }
 

@@ -49,6 +49,9 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       }
       else if (myType === 'torque') {
         return cdb.geo.TorqueLayer.prototype.isEqual.call(this, layer);
+      }
+      else if (myType === 'named_map') {
+        return cdb.geo.CartoDBNamedMapLayer.prototype.isEqual.call(this, layer);
       } else { // same type but not tiled
         var myBaseType = me.base_type? me.base_type : me.options.base_type;
         var itsBaseType = other.base_type? other.base_type : other.options.base_type;
@@ -123,7 +126,7 @@ cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
   isEqual: function(other) {
     var properties = ['query', 'query_wrapper', 'cartocss'];
     var self = this;
-    return _.every(properties, function(p) {
+    return this.get('type') === other.get('type') && _.every(properties, function(p) {
       return other.get(p) === self.get(p);
     });
   }
@@ -208,7 +211,12 @@ cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
   defaults: {
     visible: true,
     type: 'namedmap'
+  },
+
+  isEqual: function(other) {
+    return _.isEqual(this.get('options').named_map, other.get('options').named_map);
   }
+
 });
 
 cdb.geo.Layers = Backbone.Collection.extend({

@@ -30,6 +30,7 @@
     */
     remove: function() {
       this.leafletMap.removeLayer(this.leafletLayer);
+      this.trigger('remove', this);
       this.model.unbind(null, null, this);
       this.unbind();
     },

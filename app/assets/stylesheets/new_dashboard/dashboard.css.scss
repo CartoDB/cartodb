@@ -1,17 +1,20 @@
+@import "compass/css3/flexbox";
+@import "compass/utilities/general/clearfix";
 @import "colors";
 
+
 body {
-  font-family: "Lato-Regular", "san-serif";
+  font-family: "Lato", "san-serif";
   font-weight: 400;
 }
 
 a {
-  font-family: "Lato-Regular", "san-serif";
+  font-family: "Lato", "san-serif";
   font-weight: 400;
 }
 
 strong {
-  font-family: "Lato-Bold", "san-serif";
+  font-family: "Lato", "san-serif";
   font-weight: 700;
 }
 
@@ -42,7 +45,7 @@ strong {
 }
 
 .VisList {
-  @include display-flex();
+  @include display-flex;
 }
 .VisList > .u-inner {
   @include clearfix();
@@ -54,12 +57,10 @@ strong {
 }
 .VisList .VisList-Row {
   margin: 0 0 20px 0;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: row;
-  flex-direction: row;
+  @include display-flex;
+  @include flex-direction(row);
 }
 .VisList .VisList-Row .VisList-RowItem {
-  @include flex(1);
+  @include flex-grow(1);
   margin: auto;
 }

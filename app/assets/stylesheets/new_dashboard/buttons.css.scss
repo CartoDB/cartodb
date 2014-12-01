@@ -1,12 +1,5 @@
 @import "compass/css3/inline-block";
 @import "compass/css3/border-radius";
-@import "compass/css3/opacity";
-@import "compass/css3/images";
-@import "compass/css3/transform";
-@import "compass/css3/text-shadow";
-@import "common/mixins";
-@import "common/common-sprite";
-@import "common/vars";
 @import "colors";
 
 .Button {
@@ -21,7 +14,7 @@
 }
 .Button,
 .Button span {
-  font-family: "Lato-Bold", "san-serif";
+  font-family: "Lato", "san-serif";
   font-size: 12px;
   line-height: 15px;
   font-weight: 700;

@@ -20,6 +20,7 @@
 
 <%= content_for(:css) do -%>
   <% if current_user.new_dashboard_enabled %>
+    <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
     <%= stylesheet_link_tag 'common.css', 'new_dashboard.css', :media => 'all' %>
   <% else %>
     <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>

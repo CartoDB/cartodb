@@ -45,12 +45,14 @@
   background-size: 16px 14px;
 }
 .LikeButton-icon.is-animated {
-  -ms-animation-duration: 250ms;
-  -webkit-animation-duration: 250ms;
-  animation-duration: 250ms;
+  -ms-animation-duration: 400ms;
+  -webkit-animation-duration: 400ms;
+  animation-duration: 400ms;
   -webkit-animation-fill-mode: both;
   -ms-animation-fill-mode: both;
   animation-fill-mode: both;
+  animation-timing-function: ease-in;
+  -webkit-animation-timing-function: ease-in;
 }
 
 @-webkit-keyframes pulse {
@@ -60,12 +62,21 @@
     transform: scale(.7);
   }
 
-  50% {
+  25% {
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
   }
-
+  50% {
+    -webkit-transform: scale(.5);
+    -ms-transform: scale(.5);
+    transform: scale(.5);
+  }
+  75% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
   100% {
     -webkit-transform: scale(.7);
     -ms-transform: scale(.7);
@@ -80,12 +91,21 @@
     transform: scale(.7);
   }
 
-  50% {
+  25% {
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
   }
-
+  50% {
+    -webkit-transform: scale(.5);
+    -ms-transform: scale(.5);
+    transform: scale(.5);
+  }
+  75% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
   100% {
     -webkit-transform: scale(.7);
     -ms-transform: scale(.7);

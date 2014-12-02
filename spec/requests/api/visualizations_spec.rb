@@ -687,6 +687,60 @@ describe Api::Json::VisualizationsController do
     end
   end
 
+  describe 'tests visualization likes endpoints' do
+    it 'tests like endpoints' do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+      user_2 = create_user(
+        username: 'test2',
+        email:    'client2@example.com',
+        password: 'clientex'
+      )
+
+      user2_host = "http://#{user_2.username}.localhost.lan:53716"
+
+      post "#{CartoDB.hostname}/api/v1/viz?api_key=#{@api_key}", factory.to_json, @headers
+      vis_1_id = JSON.parse(last_response.body).fetch('id')
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 0
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes/detailed?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('likes').should eq []
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/like?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('is_liked').should eq false
+
+      post "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/like?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/like?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('is_liked').should eq true
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes/detailed?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user.id}]
+
+      post "#{user2_host}/api/v1/viz/#{vis_1_id}/like?api_key=#{user_2.api_key}"
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 2
+
+      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes/detailed?api_key=#{@api_key}"
+      JSON.parse(last_response.body).fetch('likes').should eq [
+                                                                {'actor_id' => @user.id},
+                                                                {'actor_id' => user_2.id}
+                                                              ]
+
+      delete "#{user2_host}/api/v1/viz/#{vis_1_id}/like?api_key=#{user_2.api_key}"
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
+
+      # TODO: Finish implementing specs
+
+      user_2.destroy
+    end
+  end
+
 
   def factory(attributes={})
     map   = ::Map.create(user_id: @user.id)

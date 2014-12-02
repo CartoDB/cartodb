@@ -165,10 +165,21 @@
     </div>
     <div class="DatasetsList-itemSecondaryInfo">
       <ul class="DatasetsList-itemMeta">
-        <a href="#change-privacy" class="PrivacyIndicator is-public DatasetsList-metaItem">public</a>
-        <a href="#like" class="LikeIndicator is-liked DatasetsList-metaItem">12</a>
-        <a href="#rows" class="RowsIndicator DatasetsList-metaItem">3.234 rows</a>
-        <span class="DatasetsList-metaItem">1 day ago by</span>
+        <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+        <a href="#likes" class="LikesIndicator">
+          <i class="LikesIndicator-icon iconFont-Heart--fill"></i>12
+        </a>
+        <label class="DefaultRows">
+          <i class="DefaultRows-icon iconFont-Rows"></i>
+          3.234 Rows
+        </label>
+        <label class="DefaultTimeDiff">
+          <i class="DefaultTimeDiff-icon iconFont-Clock"></i>
+          2 weeks ago by
+          <span class="UserAvatar">
+            <%= image_tag current_user.avatar_url, class: "UserAvatar--small" %>
+          </span>
+        </label>
       </ul>
       <div class="DatasetsList-itemTags">
         <div class="DefaultTags">

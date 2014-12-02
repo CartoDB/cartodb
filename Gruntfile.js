@@ -139,7 +139,7 @@
 
     grunt.registerTask('test',      ['config', 'concat:js', 'jst', 'jasmine']);
     grunt.registerTask('css',       ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
-    grunt.registerTask('js',        ['cdb', 'concat:js', 'jst']);
+    grunt.registerTask('js',        ['cdb', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('default',   ['clean', 'config', 'cdb', 'concat:js', 'css', 'jst', 'manifest']);
     grunt.registerTask('minimize',  ['default', 'copy:js', 'uglify']);
     grunt.registerTask('release',   ['check_release', 'default', 'copy:js', 'uglify', 's3', 'invalidate']);

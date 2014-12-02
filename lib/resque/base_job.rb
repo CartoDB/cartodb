@@ -4,6 +4,7 @@ require 'sequel'
 
 module Resque
   class BaseJob
+    extend ::Resque::Metrics
     MAX_RETRIES = 3
 
     @@queue = ''

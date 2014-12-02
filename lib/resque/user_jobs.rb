@@ -7,6 +7,7 @@ module Resque
     module SyncTables
 
       module LinkGhostTables 
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)
@@ -22,6 +23,7 @@ module Resque
     module Mail
 
       module NewOrganizationUser
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)
@@ -31,6 +33,7 @@ module Resque
       end
 
       module ShareVisualization
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_id, user_id)
@@ -41,6 +44,7 @@ module Resque
       end
       
       module ShareTable
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(table_id, user_id)
@@ -51,6 +55,7 @@ module Resque
       end
     
       module UnshareVisualization
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_name, visualization_owner_name, user_id)
@@ -61,6 +66,7 @@ module Resque
       end
       
       module UnshareTable
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(table_name, table_owner_name, user_id)
@@ -71,6 +77,7 @@ module Resque
       end
 
       module DataImportFinished
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors)

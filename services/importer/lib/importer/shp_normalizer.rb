@@ -25,6 +25,10 @@ module CartoDB
       end #encoding
 
       def shape_encoding
+        @shape_encoding ||= shape_encoding_guessing
+      end
+
+      def shape_encoding_guessing
         normalize
         dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
         encoding  = DBF::Table.new(dbf).encoding || 

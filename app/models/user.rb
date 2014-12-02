@@ -385,7 +385,7 @@ class User < Sequel::Model
   end
 
   def database_public_username
-    has_organization_enabled? ? "cartodb_publicuser_#{id}" : 'publicuser'
+    has_organization_enabled? ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
   end
 
   def database_password
@@ -1486,6 +1486,16 @@ class User < Sequel::Model
     self.run_queries_in_transaction(queries,true)
   end
 
+  def set_geo_columns_privileges
+    # Postgis lives at public schema, as do geometry_columns and geography_columns
+    catalogs_schema = 'public'
+    queries = [
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{database_public_username}" },
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{database_public_username}" },
+    ]
+    self.run_queries_in_transaction(queries, true)
+  end
+
   def set_user_privileges # MU
     self.set_user_privileges_in_cartodb_schema
     self.set_user_privileges_in_public_schema
@@ -1493,6 +1503,7 @@ class User < Sequel::Model
     self.set_user_privileges_in_importer_schema
     self.set_user_privileges_in_geocoding_schema
     self.set_privileges_to_publicuser_in_own_schema
+    self.set_geo_columns_privileges
     self.set_raster_privileges
   end
 

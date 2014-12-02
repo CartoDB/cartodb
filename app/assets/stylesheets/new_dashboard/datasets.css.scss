@@ -35,7 +35,6 @@
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(center, center);
-  margin-bottom: 7px;
   font-size: 16px;
   line-height: 19px;
 }
@@ -49,6 +48,7 @@
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(flex-end, flex-end);
+  margin-top: 5px;
 }
 .DatasetsList-itemTitle {
   @include display-flex();

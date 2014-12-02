@@ -35,7 +35,6 @@
         src: 'lib/assets/javascripts/cartodb/browserify_modules',
         dest: '.grunt/browserify_modules',
         tests: {
-          src: 'lib/assets/test/spec/cartodb/browserify_modules/**/*.js',
           dest: '.grunt/browserify_modules_tests.js'
         }
       },

@@ -31,7 +31,7 @@
     "grunt-contrib-compress": "~0.7.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-jasmine": "~0.6.3",
+    "grunt-contrib-jasmine": "~0.8.1",
     "grunt-contrib-jst": "git://github.com/javisantana/grunt-contrib-jst.git#master",
     "grunt-contrib-sass": "~0.7.3",
     "grunt-contrib-uglify": "~0.4.0",
@@ -57,7 +57,8 @@
   "browserify-shim": {
     "jquery": "global:$",
     "underscore": "global:_",
-    "cartodbui": "global:cdb",
-    "cartodb.js": "global:cdb"
+    "cartodb-editor": "global:cdb",
+    "cartodb.js": "global:cdb",
+    "backbone": "global:Backbone"
   }
 }

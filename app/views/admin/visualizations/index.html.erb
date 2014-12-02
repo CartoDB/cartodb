@@ -157,16 +157,19 @@
                 </div>
               </div>
               <div class="MapCard-contentFooter">
-                <div class="MapCard-contentFooterDetails">
+                <div class="MapCard-contentFooterDetails--left">
                   <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
-                  <label class="ModifiedLabel">
+                  <label class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <i class="DefaultTimeDiff-icon iconFont-Clock"></i>
                     2 weeks ago by
                     <span class="UserAvatar">
                       <%= image_tag current_user.avatar_url, class: "UserAvatar--small" %>
                     </span>
                   </label>
+                </div>
+                <div class="MapCard-contentFooterDetails--right">
                   <a href="#likes" class="LikesIndicator">
-                    <i class="LikesIndicator-icon"></i>
+                    <i class="LikesIndicator-icon iconFont-Heart--fill"></i>12
                   </a>
                 </div>
               </div>

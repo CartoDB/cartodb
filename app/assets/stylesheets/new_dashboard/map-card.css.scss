@@ -82,3 +82,19 @@
   display:block;
   margin-top:10px;
 }
+.MapCard-contentFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width:100%;
+  padding-top:15px;
+  border-top:1px solid $cGray9;
+}
+.MapCard-contentFooterDetails--left {
+  // @include display-flex();
+  // @include align-items(center, center);
+  // @include justify-content(space-between, justify);
+}
+.MapCard-contentFooterTimeDiff {
+  padding-left:14px;
+}

@@ -1,8 +1,6 @@
 @import "compass/css3/inline-block";
 @import "dashboard-sprite";
 
-.LikeButton {
-}
 .LikeButton:hover {
   text-decoration: none;
   color: #D62C6A;
@@ -15,6 +13,8 @@
   text-decoration: none;
   background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
   -webkit-transform: scale(.7);
+  -ms-transform: scale(.7);
+  transform: scale(.7);
   background-size: 16px 14px;
 }
 .LikeButton-counter {
@@ -32,23 +32,26 @@
   height: 14px;
   margin: 0 2px 0 0;
   background: image-url("sprites/dashboard/heart.png") no-repeat;
-  /*background-size: 11px 10px;*/
   -webkit-transform: scale(.7);
+  -ms-transform: scale(.7);
+  transform: scale(.7);
   background-size: 16px 14px;
 }
 .LikeButton--highlighted .LikeButton-icon {
   background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
   -webkit-transform: scale(.7);
+  -ms-transform: scale(.7);
+  transform: scale(.7);
   background-size: 16px 14px;
 }
-
-.animated {
-  -webkit-animation-duration: 350ms;
-  animation-duration: 350ms;
+.LikeButton-icon.is-animated {
+  -ms-animation-duration: 250ms;
+  -webkit-animation-duration: 250ms;
+  animation-duration: 250ms;
   -webkit-animation-fill-mode: both;
+  -ms-animation-fill-mode: both;
   animation-fill-mode: both;
 }
-
 
 @-webkit-keyframes pulse {
   0% {
@@ -89,9 +92,8 @@
     transform: scale(.7);
   }
 }
-
-.pulse {
+.LikeButton-icon.is-pulsating {
   -webkit-animation-name: pulse;
+  -ms-animation-name: pulse;
   animation-name: pulse;
 }
-

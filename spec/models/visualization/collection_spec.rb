@@ -231,7 +231,8 @@ describe Visualization::Collection do
       locked:       attributes.fetch(:locked, false),
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      kind:         attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM)
     }
   end #random_attributes
 end # Visualization::Collection

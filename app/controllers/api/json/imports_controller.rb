@@ -25,14 +25,17 @@ class Api::Json::ImportsController < Api::ApplicationController
     data_import.mark_as_failed_if_stuck!
 
     data = data_import.reload.public_values.except('service_item_id', 'service_name')
-    if data_import.state == DataImport::STATE_SUCCESS && \
-       data_import.service_name == CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
+    if data_import.state == DataImport::STATE_COMPLETE
+      data[:any_table_raster] = data_import.is_raster?
+
+      if data_import.service_name == CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
 
       audit_entry = ::SearchTweet.where(data_import_id: data_import.id).first
 
       data[:tweets_georeferenced] = audit_entry.retrieved_items
       data[:tweets_cost] = audit_entry.price
       data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0
+      end
     end
 
     render json: data

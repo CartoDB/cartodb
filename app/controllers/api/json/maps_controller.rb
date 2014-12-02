@@ -61,8 +61,9 @@ class Api::Json::MapsController < Api::ApplicationController
   def load_map
     # User must be owner or have permissions for the map's visualization
     vis = CartoDB::Visualization::Collection.new.fetch(
-        user_id: current_user.id,
-        map_id: params[:id]
+        user_id:        current_user.id,
+        map_id:         params[:id],
+        exclude_raster: true
     )
     raise RecordNotFound if vis.nil?
 

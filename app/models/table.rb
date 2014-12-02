@@ -29,6 +29,8 @@ class Table < Sequel::Model(:user_tables)
       PRIVACY_LINK => PRIVACY_LINK_TEXT
   }
 
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
+
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -100,6 +102,10 @@ class Table < Sequel::Model(:user_tables)
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
+  end
+
+  def is_raster?
+    schema.select { |key, value| value == "raster" }.length > 0
   end
 
   def_dataset_method(:search) do |query|
@@ -622,6 +628,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
+    kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
+
     member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
@@ -629,7 +637,8 @@ class Table < Sequel::Model(:user_tables)
       description:  self.description,
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
-      user_id:      self.owner.id
+      user_id:      self.owner.id,
+      kind:         kind
     )
 
     member.store
@@ -1319,24 +1328,36 @@ class Table < Sequel::Model(:user_tables)
         SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
       })
 
-      exists_geom_cols = user_database[%Q{
-        SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
-      }].first
+      begin
+        is_raster = user_database[%Q{
+          SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;
+        }].first
+      rescue
+        is_raster = nil
+      end
 
-      exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
+      if !is_raster.nil? && is_raster[:is_raster]
+        user_database.run(%Q{
+          SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        })
+      else
+        exists_geom_cols = user_database[%Q{
+          SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
+        }].first
+        exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
 
-      # This are the two hot zones
-      user_database.run(%Q{
-        SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
-      })
-      user_database.run(%Q{
-        SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
-      })
+        # This are the two hot zones
+        user_database.run(%Q{
+          SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
+        })
+          user_database.run(%Q{
+          SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
+        })
 
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-      })
-
+        user_database.run(%Q{
+          SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        })
+      end
     end
 
     self.schema(reload:true)
@@ -1537,7 +1558,7 @@ class Table < Sequel::Model(:user_tables)
     # 
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
-    existing_names = existing_names + User::SYSTEM_TABLE_NAMES
+    existing_names = existing_names + SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)

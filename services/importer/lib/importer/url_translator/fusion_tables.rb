@@ -16,7 +16,7 @@ module CartoDB
         def translate(url)
           return url if !supported?(url) || translated?(url) 
           return "#{URL_TEMPLATE}#{QUERY_FOR_DOC_ID}#{doc_id_from(url)}" if DOC_ID_REGEX === url
-          return "#{URL_TEMPLATE}#{query_from(url)}" if TABLE_QUERY_REGEX === url
+          #return "#{URL_TEMPLATE}#{query_from(url)}" if TABLE_QUERY_REGEX === url
           fail "Couldn't translate #{url}"
         end #translate
 

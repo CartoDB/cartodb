@@ -386,13 +386,25 @@ module CartoDB
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
       end
 
+      # @param user_id String UUID of the actor that likes the visualization
+      # @throws AlreadyLikedError
       def add_like_from(user_id)
         Like.create(actor: user_id, subject: id)
+      rescue Sequel::DatabaseError => exception
+        if exception.message =~ /duplicate key/i
+          raise AlreadyLikedError
+        else
+          raise exception
+        end
       end
 
       def remove_like_from(user_id)
         item = likes.select { |like| like.actor == user_id }
-        item.first.destroy unless item.nil?
+        item.first.destroy unless item.first.nil?
+      end
+
+      def liked_by?(user_id)
+        !(likes.select { |like| like.actor == user_id }.first.nil?)
       end
 
       attr_accessor :register_table_only

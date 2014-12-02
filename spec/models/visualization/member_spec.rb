@@ -543,23 +543,43 @@ describe Visualization::Member do
 
       member.likes.count.should eq 0
 
+      member.liked_by?(user_id_2).should eq false
+
       member.add_like_from(user_id_2)
       member.likes.count.should eq 1
       member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq true
+      member.liked_by?(user_id_3).should eq false
+
+      expect {
+        member.add_like_from(user_id_2)
+      }.to raise_error AlreadyLikedError
 
       member.add_like_from(user_id_3)
       member.likes.count.should eq 2
       member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
       member.likes.select.select { |like| like.actor == user_id_3 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq true
+      member.liked_by?(user_id_3).should eq true
 
       member.remove_like_from(user_id_3)
 
       member.likes.count.should eq 1
       member.likes.select.select { |like| like.actor == user_id_3 }.count.should eq 0
       member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq true
+      member.liked_by?(user_id_3).should eq false
 
       member.remove_like_from(user_id_2)
       member.likes.count.should eq 0
+
+      member.remove_like_from(user_id_2)
 
     end
   end

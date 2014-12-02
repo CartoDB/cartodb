@@ -11,4 +11,6 @@ module CartoDB
     # @param created_at DateTime
 
   end
+
+  class AlreadyLikedError < StandardError; end
 end

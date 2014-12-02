@@ -34,7 +34,8 @@ module CartoDB
           source:           visualization.source,
           title:            visualization.title,
           license:          visualization.license,
-          kind:             visualization.kind
+          kind:             visualization.kind,
+          likes:            visualization.likes.count
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)

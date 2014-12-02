@@ -91,7 +91,10 @@
     }
 
     .LikeButton {
-      float: right;
+      position:absolute;
+      padding: 10px;
+      top: 12px;
+      right: 12px;
     }
 
     .vis-shared {

@@ -1,8 +1,10 @@
 @import "mixins";
 @import "colors";
 
-// Row is distributed over the total size of 940px as:
-// Category(40px) + margin(20px) PrimaryInfo(480px) + margin(20px) + SecondaryInfo(380px)
+/**
+ * Row is distributed over the total size of 940px as:
+ * Category(40px) + margin(20px) PrimaryInfo(480px) + margin(20px) + SecondaryInfo(380px)
+ */
 .DatasetsList {
   position: relative;
   width: 940px;
@@ -11,8 +13,17 @@
 }
 .DatasetsList-item {
   @include display-flex();
+  @include justify-content(center, center);
   padding: 28px 0;
-  border-bottom: 1px solid $cGray8;
+  border-bottom: 1px $cGray8 solid;
+}
+.DatasetsList-item:hover,
+.DatasetsList-item.is-selected {
+  padding: 28px 19px; /* compensate for the negative margins and border */
+  margin: -1px -20px 0px -20px;
+  background-color: $cSelectBg;
+  border: 1px $cSelectBorder solid;
+  @include border-radius(5px);
 }
 .DatasetsList-itemCategory {
   width: 40px;
@@ -35,7 +46,6 @@
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(center, center);
-  margin-bottom: 7px;
   font-size: 16px;
   line-height: 19px;
 }
@@ -49,13 +59,12 @@
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(flex-end, flex-end);
+  margin-top: 5px;
 }
 .DatasetsList-itemTitle {
   @include display-flex();
-  @include align-items(baseline, baseline);
   @include align-items(baseline, baseline);
 }
 .DatasetsList-itemDescription {
   margin-top: 4px;
 }
-

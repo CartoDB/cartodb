@@ -153,30 +153,17 @@
   </div>
 </div>
 
+<% template = "admin/visualizations/new_dashboard_examples/datasetslist_item" %>
 <ul class="DatasetsList">
-  <li class="DatasetsList-item">
-    <div class="DatasetsList-itemCategory"></div>
-    <div class="DatasetsList-itemPrimaryInfo">
-      <h3 class="DefaultTitle DatasetsList-itemTitle">
-        <a href="#">Bike_route_from_Aspe title</a>
-        <span class="PermissionIndicator">READ ONLY</span>
-      </h3>
-      <p class="DatasetsList-itemDescription DefaultDescription">Data extracted from Garmin 611 Foreunner</p>
-    </div>
-    <div class="DatasetsList-itemSecondaryInfo">
-      <ul class="DatasetsList-itemMeta">
-        <a href="#change-privacy" class="PrivacyIndicator is-public DatasetsList-metaItem">public</a>
-        <a href="#like" class="LikeIndicator is-liked DatasetsList-metaItem">12</a>
-        <a href="#rows" class="RowsIndicator DatasetsList-metaItem">3.234 rows</a>
-        <span class="DatasetsList-metaItem">1 day ago by</span>
-      </ul>
-      <div class="DatasetsList-itemTags">
-        <div class="VisCard-Tags">
-          <a href="#">Bike</a>, <a href="#">Personal</a>, <a href="#">Rides</a>
-        </div>
-      </div>
-    </div>
-  </li>
+  <%= render template %>
+  <%= render template %>
+  <%= render template %>
+  <%= render template, selected: true %>
+  <%= render template, selected: true %>
+  <%= render template, selected: true %>
+  <%= render template %>
+  <%= render template, selected: true %>
+  <%= render template %>
 </ul>
 
 <div class="SupportBanner">

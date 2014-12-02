@@ -17,6 +17,20 @@ describe UrlTranslator::FusionTables do
   url2_without_docid  = "https://www.google.com/fusiontables/data?" +
           "nodocid=1G0S0PVX2lD39uY6VC4VwYy2dbGGh8uHNG9bPxng"
 
+  url_with_content = 'https://fusiontables.googleusercontent.com/fusiontables/embedviz?' +
+      'viz=GVIZ&t=TABLE&q=select+col1,+col2,+col3+from+' +
+      '17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+in+' +
+      '(%27Minnesota%27,+%27Mississippi%27)&containerId=googft-gviz-canvas'
+
+  url_with_query = 'https://www.google.com/fusiontables/embedviz?' +
+      'viz=GVIZ&t=TABLE&q=select+col1%2C+col2%2C+col3+' +
+      'from+17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+' +
+      "in+('Minnesota'%2C+'Mississippi')&containerId=googft-gviz-canvas"
+  url_with_query_translation = 'https://www.google.com/fusiontables/' +
+      'exporttable?query=select+col1%2C+col2%2C+col3+' +
+      'from+17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+' +
+      "in+('Minnesota'%2C+'Mississippi')&containerId=googft-gviz-canvas"
+
   describe '#translate' do
     it 'returns a translated Fusion Tables url' do
       translated = UrlTranslator::FusionTables.new.translate(url1)
@@ -42,6 +56,19 @@ describe UrlTranslator::FusionTables do
       UrlTranslator::FusionTables.new.translate(not_supported)
         .should eq not_supported
     end
+
+    it 'does not supports user content' do
+      UrlTranslator::FusionTables.new.supported?(url_with_content).should eq false
+    end
+
+    it 'supports url with table query' do
+      UrlTranslator::FusionTables.new.supported?(url_with_query).should eq true
+    end
+
+    # TODO: can we translate somehow this kind of urls to meaningful data?
+    #it 'translates url table query' do
+    #  UrlTranslator::FusionTables.new.translate(url_with_query).should eq url_with_query_translation
+    #end
 
     it 'fails if url does not contain docid' do
       expect { UrlTranslator::FusionTables.new.translate(url2_without_docid) }.to raise_error

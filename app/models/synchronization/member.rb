@@ -229,7 +229,7 @@ module CartoDB
           raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
         end
 
-        log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+        log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
         if datasource_provider.providers_download_url?

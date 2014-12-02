@@ -8,6 +8,7 @@ require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
 require_relative './relator'
+require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
@@ -383,6 +384,15 @@ module CartoDB
         end
 
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+      end
+
+      def add_like_from(user_id)
+        Like.create(actor: user_id, subject: id)
+      end
+
+      def remove_like_from(user_id)
+        item = likes.select { |like| like.actor == user_id }
+        item.first.destroy unless item.nil?
       end
 
       attr_accessor :register_table_only

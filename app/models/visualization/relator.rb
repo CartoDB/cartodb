@@ -13,7 +13,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
-                          permission support_tables }
+                          permission support_tables likes }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -22,6 +22,7 @@ module CartoDB
         @permission_id  = attributes.fetch(:permission_id)
         @kind           = attributes.fetch(:kind)
         @support_tables = nil
+        @likes          = nil
       end
 
       def support_tables
@@ -71,6 +72,10 @@ module CartoDB
 
       def permission
         @permission ||= CartoDB::Permission.where(id: @permission_id).first unless @permission_id.nil?
+      end
+
+      def likes
+        @likes ||= Like.where(subject: @id).all.to_a
       end
 
       attr_reader :id, :map_id

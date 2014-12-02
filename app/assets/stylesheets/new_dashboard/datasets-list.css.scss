@@ -63,8 +63,11 @@
 }
 .DatasetsList-itemTitle {
   @include display-flex();
-  @include align-items(baseline, baseline);
+  @include align-items(center, center);
+}
+.DatasetsList-itemTitlePermission {
+  margin-left: 10px;
 }
 .DatasetsList-itemDescription {
-  margin-top: 4px;
+  margin-top: 7px;
 }

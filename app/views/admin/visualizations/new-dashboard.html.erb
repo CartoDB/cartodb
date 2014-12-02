@@ -1,0 +1,209 @@
+<% content_for(:page_title) do -%>
+  <%= current_user.username -%> |
+<% end -%>
+<%= content_for(:js) do -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'new_dashboard.js' -%>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var user_data = <%=raw current_user.data.to_json.html_safe %>;
+    var config = <%=raw frontend_config.html_safe %>;
+    var upgrade_url = "<%= upgrade_url %>";
+    var dashboard_first_time = <%= @first_time %>;
+    var just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>;
+    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
+  </script>
+<% end %>
+
+<%= content_for(:css) do -%>
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+  <%= stylesheet_link_tag 'common.css', 'new_dashboard.css', :media => 'all' %>
+<% end %>
+
+
+<div class="Header">
+  <div class="u-inner">
+    <div class="Header-navigation">
+      <ul class="Header-navigationList">
+        <li>
+          <a href="/dashboard/" class="Logo Logo--text">CartoDB</a>
+        </li>
+        <li>
+          <ul class="Header-navigationBreadcrumb">
+            <li class="Header-navigationBreadcrumbItem">
+              <% if current_user.has_organization? %>
+                <%= current_user.organization.name %> /
+              <% end %>
+            </li>
+            <li class="Header-navigationBreadcrumbItem"><%= current_user.name || current_user.username %> /</li>
+            <li class="Header-navigationBreadcrumbItem"><a class="Header-navigationBreadcrumbLink" href="#/maps">Maps</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="Header-settings">
+      <ul class="Header-settingsList">
+        <li class="Header-settingsItem">
+          <a href="#" class="Header-settingsLink">Explore</a>
+        </li>
+        <li class="Header-settingsItem">
+          <a href="#" class="Header-settingsLink">Learn</a>
+        </li>
+        <li class="Header-settingsItem">
+          <a href="#" class="UserNotifications">
+            <i class="UserNotifications-Icon"></i>
+            <span class="UserNotifications-Count">2</span>
+          </a>
+        </li>
+        <li class="Header-settingsItem">
+          <a href="#" class="UserAvatar">
+            <%= image_tag current_user.avatar_url, class: "UserAvatar--medium" %>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="DashboardFilters">
+  <div class="u-inner">
+
+    <div class="DashboardFilters-type">
+      <ul class="DashboardFilters-list">
+        <li class="DashboardFilters-typeItem">
+          <a href="#maps" class="DashboardFilters-typeLink is-selected"><strong>13</strong> Maps</a>
+        </li>
+        <li class="DashboardFilters-typeItem">
+          <a class="DashboardFilters-typeLink" href="#shared-with-you"><strong>7</strong> Shared with you</a>
+        </li>
+        <li class="DashboardFilters-typeItem">
+          <a class="DashboardFilters-typeLink" href="#likes"><strong>7</strong> Liked Maps</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="DashboardFilters-order">
+      <ul class="DashboardFilters-list">
+        <li class="DashboardFilters-orderItem">
+          Order by
+        </li>
+        <li class="DashboardFilters-orderItem">
+          <a class="DashboardFilters-orderLink DashboardFilters-orderLink--clock is-selected" href="#time"></a>
+        </li>
+        <li class="DashboardFilters-orderItem">
+          <a class="DashboardFilters-orderLink DashboardFilters-orderLink--graph" href="#views"></a>
+        </li>
+        <li class="DashboardFilters-orderItem">
+          <a class="DashboardFilters-orderLink DashboardFilters-orderLink--heart" href="#likes"></a>
+        </li>
+      </ul>
+
+      <a href="#new-map" class="Button Button--green">
+        <span>New Map</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="Maps">
+  <div class="u-inner">
+
+    <ul class="Maps-list">
+
+      <li class="Maps-listItem">
+        <div class="MapCard">
+          <div class="MapCard-header">
+            <img src="" alt="" title="" />
+            <div class="MapCard-headerShadow"></div>
+            <a href="#layers" class="MapCard-headerLayers"></a>
+            <div class="MapCard-headerGraph"></div>
+          </div>
+          <div class="MapCard-content">
+            <div class="MapCard-contentDetail">
+              <div class="MapCard-contentInfo">
+                <h3 class="DefaultTitle"><a class="DefaultTitle-link" title="Budapest Marathon" href="#">Budapest Marathon</a></h3>
+                <span class="PermissionIndicator">READ</span>
+              </div>
+              <p class="MapCard-contentDescription DefaultDescription">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+              <div class="DefaultTags MapCard-contentTags">
+                <a class="DefaultTags-item" href="#tag">Bike</a>, <a class="MapsCard-contentTag" href="#tag">Personal</a>, <a class="MapsCard-contentTag" href="#tag">Rides</a>
+              </div>
+            </div>
+            <div class="MapCard-contentFooter">
+              <div class="MapCard-contentFooterDetails--left">
+                <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                <label class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                  <i class="DefaultTimeDiff-icon iconFont-Clock"></i>
+                  2 weeks ago by
+                  <span class="UserAvatar">
+                    <%= image_tag current_user.avatar_url, class: "UserAvatar--small" %>
+                  </span>
+                </label>
+              </div>
+              <div class="MapCard-contentFooterDetails--right">
+                <a href="#likes" class="LikesIndicator">
+                  <i class="LikesIndicator-icon iconFont-Heart--fill"></i>12
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</div>
+
+<ul class="DatasetsList">
+  <li class="DatasetsList-item">
+    <div class="DatasetsList-itemCategory"></div>
+    <div class="DatasetsList-itemPrimaryInfo">
+      <h3 class="DefaultTitle DatasetsList-itemTitle">
+        <a href="#">Bike_route_from_Aspe title</a>
+        <span class="PermissionIndicator">READ ONLY</span>
+      </h3>
+      <p class="DatasetsList-itemDescription DefaultDescription">Data extracted from Garmin 611 Foreunner</p>
+    </div>
+    <div class="DatasetsList-itemSecondaryInfo">
+      <ul class="DatasetsList-itemMeta">
+        <a href="#change-privacy" class="PrivacyIndicator is-public DatasetsList-metaItem">public</a>
+        <a href="#like" class="LikeIndicator is-liked DatasetsList-metaItem">12</a>
+        <a href="#rows" class="RowsIndicator DatasetsList-metaItem">3.234 rows</a>
+        <span class="DatasetsList-metaItem">1 day ago by</span>
+      </ul>
+      <div class="DatasetsList-itemTags">
+        <div class="VisCard-Tags">
+          <a href="#">Bike</a>, <a href="#">Personal</a>, <a href="#">Rides</a>
+        </div>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<div class="SupportBanner">
+  <div class="u-inner">
+    <div class="SupportBanner-info">
+      <h4 class="SupportBanner-infoTitle">As a paying customer you have access to our dedicated support.</h4>
+      <p class="SupportBanner-infoDescription">Remember that there is a lot of information in our <a href="#" class="SupportBanner-infoDescriptionLink">community forums</a>.</p>
+    </div>
+    <div class="SupportBanner-link">
+      <a href="#support" class="Button Button--white Button--border">
+        <span>Contact support</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="Footer">
+  <div class="u-inner">
+    <ul class="Footer-list Footer-list--left">
+      <li class="Footer-listItem"><a class="Footer-listLink" href="http://cartodb.com/tour/">Feature tour</a></li>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="http://docs.cartodb.com/tutorials.html">Getting started</a></li>
+    </ul>
+    <span class="Logo Logo--round">CartoDB</span>
+    <ul class="Footer-list Footer-list--right">
+      <li class="Footer-listItem"><a class="Footer-listLink" href="http://docs.cartodb.com">Documentation</a></li>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="mailto:support@cartodb.com">Support</a></li>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="mailto:support@cartodb.com">Contact</a></li>
+    </ul>
+  </div>
+</div>

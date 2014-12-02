@@ -1,0 +1,27 @@
+// Maps list
+// --------------------------------------------------
+
+@import "mixins";
+
+
+.Maps {
+  display:block;
+  width:100%;
+  margin:20px 0 30px;
+  background:white;
+}
+.Maps > .u-inner {
+  position:relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 940px;
+  margin: 0 auto;
+}
+
+.Maps-list {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  @include flex-wrap(wrap);
+}

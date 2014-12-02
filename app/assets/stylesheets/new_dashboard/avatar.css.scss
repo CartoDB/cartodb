@@ -10,17 +10,17 @@
 .UserAvatar {
   @include inline-block();
 }
-.UserAvatar--Large {
+.UserAvatar--large {
   width:96px;
   height:96px;
   @include border-radius(2px);
 }
-.UserAvatar--Medium {
+.UserAvatar--medium {
   width:40px;
   height:40px;
   @include border-radius(2px);
 }
-.UserAvatar--Small {
+.UserAvatar--small {
   width:16px;
   height:16px;
   @include border-radius(16px); 

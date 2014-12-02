@@ -1,0 +1,84 @@
+// Map card item
+// --------------------------------------------------
+
+@import "compass/css3/images";
+@import "new-dashboard-sprite";
+@import "colors";
+@import "mixins";
+
+.MapCard {
+  position:relative;
+  @include inline-block();
+  width: 300px;
+  height: 352px;
+  margin-top:18px;
+  border: 1px solid $cGray7;
+  @include border-radius(4px);
+}
+.MapCard-header {
+  width: 100%;
+  height: 170px;
+  position: relative;
+  background: $cLightGray;
+}
+.MapCard-headerShadow {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 4px;
+  background: $cBlack;
+  @include opacity(.2);
+  z-index:2;
+}
+.MapCard-headerGraph {
+  position:absolute;
+  width:80px;
+  height:28px;
+  bottom:10px;
+  right:12px;
+  @include border-radius(2px);
+  background:rgba(black,.4);
+  z-index:2;
+}
+.MapCard-headerLayers {
+  position:absolute;
+  top:10px;
+  left:12px;
+  width:29px;
+  height:29px;
+  @include border-radius(2px);
+  @include background(sprite($new-dashboard-sprites, layers-icon) center center rgba(black,.4));
+  z-index:2;
+}
+.MapCard-headerLayers {
+  position:absolute;
+  top:10px;
+  left:12px;
+  width:29px;
+  height:29px;
+  @include border-radius(2px);
+  @include background(sprite($new-dashboard-sprites, layers-icon) center center rgba(black,.4));
+  z-index:2;
+}
+.MapCard-content {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  @include flex-direction(column);
+  height:142px;
+  padding:20px;
+}
+.MapCard-contentInfo {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.MapCard-contentDescription {
+  display:block;
+  margin-top:10px;
+}
+.MapCard-contentTags {
+  display:block;
+  margin-top:10px;
+}

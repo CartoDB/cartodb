@@ -1,0 +1,17 @@
+// Default title for datasets and maps
+// --------------------------------------------------
+
+@import "colors";
+
+
+.DefaultTitle {
+  font-weight:400;
+  font-size:16px;
+}
+.DefaultTitle-link {
+  color:$cGray4;
+  &:hover {
+    color:$cGray2;
+    text-decoration:underline;
+  }
+}

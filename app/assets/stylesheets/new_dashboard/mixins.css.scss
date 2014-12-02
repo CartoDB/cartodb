@@ -43,6 +43,13 @@
   flex-grow: $v;
   // IE10 doesn't support this property
 }
+@mixin flex-wrap($v) {
+  -webkit-flex-wrap: $v;
+  -moz-flex-wrap: $v;
+  -ms-flex-wrap: $v;
+  flex-wrap: $v;
+  // IE10 doesn't support this property  
+}
 @mixin justify-content($v, $ie-v) {
   -webkit-justify-content: $v;
   -moz-justify-content: $v;

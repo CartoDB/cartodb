@@ -84,7 +84,7 @@
           </li>
           <li class="Header-settingsItem">
             <a href="#" class="UserAvatar">
-              <%= image_tag current_user.avatar_url, class: "UserAvatar--Medium" %>
+              <%= image_tag current_user.avatar_url, class: "UserAvatar--medium" %>
             </a>
           </li>
         </ul>
@@ -129,9 +129,6 @@
           <span>New Map</span>
         </a>
       </div>
-
-      
-
     </div>
   </div>
 
@@ -140,28 +137,42 @@
 
       <ul class="Maps-list">
 
-        <div class="Maps-listItem">
-          <div class="MapsCard">
-            <div class="MapsCard-header">
+        <li class="Maps-listItem">
+          <div class="MapCard">
+            <div class="MapCard-header">
               <img src="" alt="" title="" />
-              <div class="MapsCard-headerShadow"></div>
+              <div class="MapCard-headerShadow"></div>
+              <a href="#layers" class="MapCard-headerLayers"></a>
+              <div class="MapCard-headerGraph"></div>
             </div>
-            <div class="MapsCard-content">
-              <div class="MapsCard-contentInfo">
-                <a href="#" class="VisCard-Title">Budapest Marathon</a>
-                <p class="VisCard-Description">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
-                <div class="VisCard-Tags">
-                  <a href="#tag">Bike</a>, <a href="#tag">Personal</a>, <a href="#tag">Rides</a>
+            <div class="MapCard-content">
+              <div class="MapCard-contentDetail">
+                <div class="MapCard-contentInfo">
+                  <h3 class="DefaultTitle"><a class="DefaultTitle-link" title="Budapest Marathon" href="#">Budapest Marathon</a></h3>
+                  <span class="PermissionIndicator">READ</span>
+                </div>
+                <p class="MapCard-contentDescription DefaultDescription">Data extracted from GARMIN 611 Forerunner during the NYC Marathon…</p>
+                <div class="DefaultTags MapCard-contentTags">
+                  <a class="DefaultTags-item" href="#tag">Bike</a>, <a class="MapsCard-contentTag" href="#tag">Personal</a>, <a class="MapsCard-contentTag" href="#tag">Rides</a>
                 </div>
               </div>
-              <div class="MapsCard-contentFooter">
-                <div class="u-inner">
+              <div class="MapCard-contentFooter">
+                <div class="MapCard-contentFooterDetails">
                   <a href="#change-privacy" class="PrivacyIndicator is-public">public</a>
+                  <label class="ModifiedLabel">
+                    2 weeks ago by
+                    <span class="UserAvatar">
+                      <%= image_tag current_user.avatar_url, class: "UserAvatar--small" %>
+                    </span>
+                  </label>
+                  <a href="#likes" class="LikesIndicator">
+                    <i class="LikesIndicator-icon"></i>
+                  </a>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </li>
 
       </ul>
     </div>

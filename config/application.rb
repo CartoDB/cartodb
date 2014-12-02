@@ -59,7 +59,7 @@ module CartoDB
     config.assets.paths << Rails.root.join('bower_components')
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
-    config.assets.precompile = %w( app.js application.js cdb.js common_data.js new_dashboard.js dashboard.js keys.js login.js models.js organization.js modernizr.js statsc.js table.js public_dashboard.js public_table.js map_public.js templates.js templates_mustache.js tipsy.js common.js jquery.tipsy.js specs.js )
+    config.assets.precompile = %w( app.js application.js cdb.js common_data.js new_dashboard.js new_dashboard_templates.js dashboard.js keys.js login.js models.js organization.js modernizr.js statsc.js table.js public_dashboard.js public_table.js map_public.js templates.js templates_mustache.js tipsy.js common.js jquery.tipsy.js specs.js )
     config.assets.precompile += %w( cdb.css cdb/themes/css/cartodb.css cdb/themes/css/cartodb.ie.css common.css new_dashboard.css dashboard.css db.css cartodb.css fonts_ie.css front.css keys.css leaflet.css map.css map/leaflet.ie.css organization.css pages.css plugins/tipsy.css public.css password_protected.css public_dashboard.css public_table.css public_map.css public_ie.css specs.css table.css tables.css)
     config.assets.precompile += %w( *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf *.swf )
 

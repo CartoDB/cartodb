@@ -51,7 +51,7 @@ install:
   # Needs fixing first some tests:
   #- cp services/importer/spec/factories/database.json.sample services/importer/spec/factories/database.json
   - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
-  - cd lib/build && npm install && cd ../..
+  - npm install
 
 script:
   - make travis

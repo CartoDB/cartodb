@@ -16,7 +16,7 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
-    view = current_user.new_dashboard_enabled ? 'new-dashboard' : 'index'
+    view = current_user.present? && current_user.new_dashboard_enabled.present? && current_user.new_dashboard_enabled ? 'new-dashboard' : 'index'
 
     respond_to do |format|
       format.html { render view, layout: 'application' }

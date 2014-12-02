@@ -2,7 +2,7 @@
   <%= current_user.username -%> |
 <% end -%>
 <%= content_for(:js) do -%>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' -%>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
     var user_data = <%=raw current_user.data.to_json.html_safe %>;
@@ -15,25 +15,25 @@
 <% end %>
 
 <%= content_for(:css) do -%>
-    <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
 <% end %>
 
 
-  <%= render 'admin/shared/subheader' %>
+<%= render 'admin/shared/subheader' %>
 
-  <div class="bar_loader"></div>
+<div class="bar_loader"></div>
 
-  <div class="main_loader">
-    <i></i>
-  </div>
+<div class="main_loader">
+  <i></i>
+</div>
 
-  <%= render 'admin/visualizations/index/tables' %>
+<%= render 'admin/visualizations/index/tables' %>
 
-  <div class="drag_mamufas">
-    <span class="file"></span>
-    <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
-    <div class="mask"></div>
-  </div>
+<div class="drag_mamufas">
+  <span class="file"></span>
+  <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
+  <div class="mask"></div>
+</div>
 
-  <div class="bars"></div>
-  <article class="support"></article>
+<div class="bars"></div>
+<article class="support"></article>

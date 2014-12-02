@@ -21,7 +21,7 @@
   font: 300 11px "Helvetica",Arial,sans-serif;
   color: #87878a;
 }
-.LikeButton--highlighted .LikeButton-counter {
+.LikeButton.is-highlighted .LikeButton-counter {
   color: #D62C6A;
 }
 .LikeButton .LikeButton-icon {
@@ -37,7 +37,7 @@
   transform: scale(.7);
   background-size: 16px 14px;
 }
-.LikeButton--highlighted .LikeButton-icon {
+.LikeButton.is-highlighted .LikeButton-icon {
   background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);

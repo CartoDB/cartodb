@@ -18,7 +18,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
   before_filter :link_ghost_tables, only: [:index, :show]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2, :notify_watching, :list_watching]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
+                  :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked, :remove_like]
 
   def index
     collection = Visualization::Collection.new.fetch(
@@ -36,7 +37,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     }.compact
     synchronizations = synchronizations_by_table_name(table_data)
     rows_and_sizes   = rows_and_sizes_for(table_data)
-
     representation  = collection.map { |vis|
       begin
         vis.to_hash(
@@ -63,6 +63,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def create
     payload.delete(:permission) if payload[:permission].present?
     payload.delete[:permission_id] if payload[:permission_id].present?
+    vis = nil
 
     if params[:source_visualization_id]
       source = Visualization::Collection.new.fetch(
@@ -244,6 +245,41 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     watcher = CartoDB::Visualization::Watcher.new(current_user, vis)
     render_jsonp(watcher.list)
+  end
+
+  def likes_count
+    vis = Visualization::Member.new(id: @table_id).fetch
+    render_jsonp({id: vis.id, likes_count: vis.likes.count})
+  end
+
+  def likes_list
+    vis = Visualization::Member.new(id: @table_id).fetch
+    render_jsonp({id: vis.id, likes: vis.likes.map { |like| {actor_id: like.actor } }})
+  end
+
+  def add_like
+    vis = Visualization::Member.new(id: @table_id).fetch
+    vis.add_like_from(current_user.id)
+    render_jsonp({id: vis.id, likes_count: vis.likes.count})
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  rescue AlreadyLikedError
+    render(text: "You've already liked this visualization", status: 400)
+  end
+
+  def is_liked
+    vis = Visualization::Member.new(id: @table_id).fetch
+    render_jsonp({id: vis.id, is_liked: vis.liked_by?(current_user.id)})
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  def remove_like
+    vis = Visualization::Member.new(id: @table_id).fetch
+    vis.remove_like_from(current_user.id)
+    render_jsonp({id: vis.id, likes_count: vis.likes.count})
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
   end
 
   private

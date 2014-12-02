@@ -12,7 +12,7 @@ require_relative '../../../app/models/overlay/migrator'
 
 def app
   CartoDB::Application.new
-end #app
+end
 
 describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
@@ -33,10 +33,8 @@ describe Api::Json::VisualizationsController do
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
-    CartoDB::Visualization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
-    CartoDB::Overlay.repository        =
-      DataRepository::Backend::Sequel.new(@db, :overlays)
+    CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
 
     delete_user_data @user
     @headers = { 

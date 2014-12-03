@@ -17,6 +17,26 @@ describe UrlTranslator::FusionTables do
   url2_without_docid  = "https://www.google.com/fusiontables/data?" +
           "nodocid=1G0S0PVX2lD39uY6VC4VwYy2dbGGh8uHNG9bPxng"
 
+  # INFO: this is the URL where url_with_query kind of URLs are redirected to
+  url_with_content = 'https://fusiontables.googleusercontent.com/fusiontables/embedviz?' +
+      'viz=GVIZ&t=TABLE&q=select+col1,+col2,+col3+from+' +
+      '17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+in+' +
+      '(%27Minnesota%27,+%27Mississippi%27)&containerId=googft-gviz-canvas'
+
+  url_with_query = 'https://www.google.com/fusiontables/embedviz?' +
+      'viz=GVIZ&t=TABLE&q=select+col1%2C+col2%2C+col3+' +
+      'from+17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+' +
+      "in+('Minnesota'%2C+'Mississippi')&containerId=googft-gviz-canvas"
+  url_with_query_translation = 'https://www.google.com/fusiontables/' +
+      'exporttable?query=select+col1%2C+col2%2C+col3+' +
+      'from+17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+' +
+      "in+('Minnesota'%2C+'Mississippi')"
+
+  url_with_query_without_container_id = 'https://www.google.com/fusiontables/embedviz?' +
+      'viz=GVIZ&t=TABLE&q=select+col1%2C+col2%2C+col3+' +
+      'from+17aT9Ud-YnGiXdXEJUyycH2ocUqreOeKGbzCkUw+where+col1+' +
+      "in+('Minnesota'%2C+'Mississippi')"
+
   describe '#translate' do
     it 'returns a translated Fusion Tables url' do
       translated = UrlTranslator::FusionTables.new.translate(url1)
@@ -43,18 +63,32 @@ describe UrlTranslator::FusionTables do
         .should eq not_supported
     end
 
-    it 'fails if url does not contain docid' do
-      expect { UrlTranslator::FusionTables.new.translate(url2_without_docid) }.to raise_error
+    it 'translates url table query' do
+      UrlTranslator::FusionTables.new.translate(url_with_query).should eq url_with_query_translation
+      UrlTranslator::FusionTables.new.translate(url_with_query_without_container_id).should eq url_with_query_translation
     end
   end #translate
 
   describe '#supported?' do
-    it 'returns true if URL is from Fusion Tables' do
-      UrlTranslator::FusionTables.new.supported?('http://google.com/fusiontables')
+    it 'returns true if URL is from Fusion Tables and has docid' do
+      UrlTranslator::FusionTables.new.supported?(url1)
         .should eq true
       UrlTranslator::FusionTables.new.supported?('http://bogus.com')
         .should eq false
     end
+
+    it 'returns false if url does not contain docid' do
+      UrlTranslator::FusionTables.new.supported?(url2_without_docid).should eq false
+    end
+
+    it 'returns false for user content' do
+      UrlTranslator::FusionTables.new.supported?(url_with_content).should eq false
+    end
+
+    it 'returns true with table query' do
+      UrlTranslator::FusionTables.new.supported?(url_with_query).should eq true
+    end
+
   end #supported?
 
   describe '#translated?' do

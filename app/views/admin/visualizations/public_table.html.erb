@@ -105,6 +105,11 @@
           </div>
           <div class="user-options">
 
+            <a href="#like" data-liked="<%= @is_liked ? 1 : 0 %>" data-id="<%= @visualization_id %>" class="like button grey js-like <%= @is_liked ? "is-highlighted" : "" %>">
+              <span class="icon"></span>
+              <span class="counter"><%= @likes_count %></span>
+            </a>
+
             <% domain = @table.owner.organization ? @table.owner.username : nil %>
 
             <!--a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a-->

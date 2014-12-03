@@ -106,6 +106,10 @@ class Admin::VisualizationsController < ApplicationController
 
     @user_domain = user_domain_variable(request)
 
+    @visualization_id = @visualization.id
+    @is_liked         = is_liked(@visualization)
+    @likes_count      = @visualization.likes.count
+
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.public_table_count
 
@@ -185,6 +189,9 @@ class Admin::VisualizationsController < ApplicationController
 
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    @is_liked    = is_liked(@visualization)
+    @likes_count = @visualization.likes.count
 
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
@@ -441,6 +448,11 @@ class Admin::VisualizationsController < ApplicationController
       type:         "application/#{type}; charset=binary; header=present",
       disposition:  "attachment; filename=#{table.name}.#{extension}"
     }
+  end
+
+  def is_liked(vis)
+    return false unless current_user.present?
+    vis.liked_by?(current_user.id) 
   end
 
   def update_user_last_activity

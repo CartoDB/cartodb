@@ -11,7 +11,6 @@ class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
-  include Concerns::FeatureFlaggable
 
   self.strict_param_setting = false
 
@@ -32,6 +31,8 @@ class User < Sequel::Model
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
+
+  one_to_many :feature_flags_user
 
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
@@ -1277,6 +1278,10 @@ class User < Sequel::Model
 
   def belongs_to_organization?(organization)
     organization_user? and self.organization.eql? organization
+  end
+
+  def feature_flags
+    self.feature_flags_user.map { |ff| ff.feature_flag.name }
   end
 
   def create_client_application

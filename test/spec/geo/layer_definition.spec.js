@@ -513,6 +513,18 @@ describe("LayerDefinition", function() {
 
     });
 
+    it("should trigger change:visible when show/hide", function() {
+      var sub = layerDefinition.getSubLayer(0);
+      var s = sinon.spy();
+      sub.bind('change:visibility', s);
+      sub.hide();
+      expect(s.called).toEqual(true);
+      sub.hide();
+      expect(s.callCount).toEqual(1);
+      sub.show();
+      expect(s.callCount).toEqual(2);
+    });
+
   });
 
   describe('layerDefFromSubLayers', function() {

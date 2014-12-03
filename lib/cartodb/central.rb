@@ -90,7 +90,17 @@ module Cartodb
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
 
-    private
+    ############################################################################
+    # Features
 
-  end # AppServer
+    def get_feature_flags(username)
+      send_request("api/users/#{username}/feature_flags", nil, :get, [200])['feature_flags']
+    end
+
+    def has_feature_flag?(username, feature_flag_name)
+      !send_request("api/users/#{username}/feature_flags/#{feature_flag_name}", nil, :get, [200])['feature_flag'].nil?
+    end
+
+  end
+
 end # CartodbCentral

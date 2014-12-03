@@ -1,3 +1,15 @@
+3.5.0 (2014-xx-xx)
+------------------
+* New features
+  - Likes on Visualizations & Datasets lists. Also prepared backend code for inminent like button on public map pages.
+
+3.4.1 (2014-12-01)
+------------------
+ * Fixed bugs and improvements
+   - Modified signature of cartodb:db:load_functions rake task, to both reduce required params (added default values) and
+     allowing to specify a cartodb-postgresql extension version, so existing users can keep with their versions while
+     load_functions loads (optionally) a different one.
+
 3.4.0 (2014-12-01)
 ------------------
 * New features

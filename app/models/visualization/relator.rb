@@ -1,11 +1,8 @@
 # encoding: utf-8
 require_relative './stats'
-<<<<<<< HEAD
 require_relative '../visualization/collection'
 require_relative '../overlay/collection'
-=======
 require_relative './support_tables'
->>>>>>> master
 
 module CartoDB
   module Visualization

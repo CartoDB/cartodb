@@ -68,12 +68,7 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
-<<<<<<< HEAD
-  * Implemented raster import into the editor. Only table import, yet no viewer/editor.
-  * Enabled ghost tables. Tables created with SQL API are visible in the editor
-=======
   * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
->>>>>>> master
   * Enables fullscreen for IE11.
   * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 

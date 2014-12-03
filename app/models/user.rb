@@ -1130,7 +1130,7 @@ class User < Sequel::Model
   # Only returns owned tables (not shared ones)
   def table_count(filters={})
     filters.merge!(
-      type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
       exclude_shared: true
     )
 

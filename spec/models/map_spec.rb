@@ -70,7 +70,7 @@ describe Map do
       CartoDB::Visualization::Member.new(
         privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         name:     'wadus',
-        type:     CartoDB::Visualization::Member::CANONICAL_TYPE,
+        type:     CartoDB::Visualization::Member::TYPE_CANONICAL,
         user_id:  @user.id,
         map_id:   map.id
       ).store

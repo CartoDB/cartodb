@@ -1,3 +1,6 @@
+3.11.26 ()
+- #235 - Allows to use the input fields in fullscreen on Chrome
+
 3.11.25 (26//11//2014)
 - #211 - Viz made with Torque between 2 different dates shows date + time
 - #223 - fixed problem with IE11 touch devices.

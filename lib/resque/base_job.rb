@@ -5,7 +5,6 @@ require 'resque-metrics'
 
 module Resque
   class BaseJob
-    debugger
     extend ::Resque::Metrics
     MAX_RETRIES = 3
 

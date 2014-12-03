@@ -76,3 +76,10 @@
   opacity:$v;
   filter:alpha(opacity=($v*100)); // IE10
 }
+@mixin transition($prop: all, $time: 1s, $ease: linear) {
+  -webkit-transition: $prop $time $ease;
+  -moz-transition: $prop $time $ease;
+  -o-transition: $prop $time $ease;
+  -ms-transition: $prop $time $ease;
+  transition: $prop $time $ease;
+}

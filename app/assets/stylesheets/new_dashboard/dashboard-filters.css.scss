@@ -10,21 +10,31 @@
 .DashboardFilters {
   display:block;
   width:100%;
-  height:80px;
 }
 .DashboardFilters > .u-inner {
   position:relative;
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display:block;
   width: 940px;
+  height:80px;
   margin: 0 auto;
   padding: 0;
   border-bottom: 1px solid $cLightGray;
+  overflow:hidden;
 }
-
-
-
+.DashboardFilters-inner {
+  display:block;
+  padding: 0;
+  @include transition(margin,250ms);
+}
+.DashboardFilters-inner.items--selected {
+  margin-top:-80px;
+}
+.DashboardFilters-row {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  height:80px;
+}
 .DashboardFilters-list {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -47,6 +57,27 @@
 
   &:first-child { margin-left:0 }
   &:last-child:after { display:none }
+}
+.DashboardFilters-search {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  height:80px;
+}
+.DashboardFilters-searchButton {
+  width:14px;
+  height:16px;
+  border:none;
+  @include background(sprite($new-dashboard-sprites, lens-icon));
+  &:hover { @include background(sprite($new-dashboard-sprites, lens-icon, $offset-x:-14px)); }
+}
+.DashboardFilters-searchValue {
+  width:58px;
+  padding-left:5px;
+  outline:none;
+  border:none;
+  background:none;
+  font-size:14px;
 }
 .DashboardFilters-typeLink {
   line-height:80px;
@@ -74,8 +105,6 @@
     text-decoration: none;
   }
 }
-
-
 .DashboardFilters-order {
   @include display-flex();
   @include justify-content(space-between, justify);

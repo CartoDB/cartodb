@@ -1,3 +1,6 @@
+ * Fixed bugs and improvements
+   - fixed metadata tables being dropped if they were in more than one account #1349
+
 3.4.1 (2014-12-01)
 ------------------
  * Fixed bugs and improvements

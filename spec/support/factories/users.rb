@@ -80,7 +80,7 @@ module CartoDB
 
     def reload_user_data(user)
       delete_user_data user
-      reate_import(@user, "#{Rails.root}/db/fake_data/import_csv_1.csv")
+      create_import(@user, "#{Rails.root}/db/fake_data/import_csv_1.csv")
       create_import(@user, "#{Rails.root}/db/fake_data/twitters.csv")
     end
 

@@ -36,7 +36,13 @@ describe Api::Json::VisualizationsController do
     CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
     CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
 
-    delete_user_data @user
+    begin
+      delete_user_data @user
+    rescue => exception
+      # Silence named maps problems only here upon data cleaning, not in specs
+      raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
+    end
+
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'
@@ -689,6 +695,7 @@ describe Api::Json::VisualizationsController do
 
   describe 'tests visualization likes endpoints' do
     it 'tests like endpoints' do
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
       user_2 = create_user(
@@ -699,43 +706,60 @@ describe Api::Json::VisualizationsController do
 
       user2_host = "http://#{user_2.username}.localhost.lan:53716"
 
-      post "#{CartoDB.hostname}/api/v1/viz?api_key=#{@api_key}", factory.to_json, @headers
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+        factory.to_json, @headers
       vis_1_id = JSON.parse(last_response.body).fetch('id')
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes?api_key=#{@api_key}"
+      get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 0
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes/detailed?api_key=#{@api_key}"
+      get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes').should eq []
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/like?api_key=#{@api_key}"
+      get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('is_liked').should eq false
 
-      post "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/like?api_key=#{@api_key}"
+      post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/like?api_key=#{@api_key}"
+      get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('is_liked').should eq true
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes?api_key=#{@api_key}"
+      get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes/detailed?api_key=#{@api_key}"
+      get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user.id}]
 
-      post "#{user2_host}/api/v1/viz/#{vis_1_id}/like?api_key=#{user_2.api_key}"
+      post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
       JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 2
 
-      get "#{CartoDB.hostname}/api/v1/viz/#{vis_1_id}/likes/detailed?api_key=#{@api_key}"
-      JSON.parse(last_response.body).fetch('likes').should eq [
-                                                                {'actor_id' => @user.id},
-                                                                {'actor_id' => user_2.id}
-                                                              ]
+      get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      # Careful with order of array items
+      (JSON.parse(last_response.body).fetch('likes') - [
+                                                         {'actor_id' => @user.id},
+                                                         {'actor_id' => user_2.id}
+                                                       ]).should eq []
 
-      delete "#{user2_host}/api/v1/viz/#{vis_1_id}/like?api_key=#{user_2.api_key}"
+      delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
       JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
 
-      # TODO: Finish implementing specs
+      # No effect expected
+      delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
+
+      post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      last_response.status.should == 400
+      last_response.body.should eq "You've already liked this visualization"
+
+      delete api_v1_visualizations_remove_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 0
+
+      post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      JSON.parse(last_response.body).fetch('likes_count').to_i.should eq 1
+
+      get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user.id}]
 
       user_2.destroy
     end

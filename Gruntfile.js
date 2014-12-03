@@ -32,8 +32,7 @@
       root_assets_dir: ROOT_ASSETS_DIR,
 
       browserify_modules: {
-        src: 'lib/assets/javascripts/cartodb/browserify_modules',
-        dest: '.grunt/browserify_modules',
+        src: 'lib/assets/javascripts/cartodb',
         tests: {
           dest: '.grunt/browserify_modules_tests.js'
         }

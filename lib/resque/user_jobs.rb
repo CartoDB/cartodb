@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './base_job'
+require 'resque-metrics'
 
 module Resque
   module UserJobs

@@ -30,6 +30,10 @@ module CartoDB
       TYPE_CANONICAL  = 'table'
       TYPE_DERIVED    = 'derived'
       TYPE_SLIDE      = 'slide'
+
+      KIND_GEOM   = 'geom'
+      KIND_RASTER = 'raster'
+
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -46,6 +50,7 @@ module CartoDB
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/models/visualization/collection_spec.rb -> random_attributes
       # spec/models/visualization/member_spec.rb -> random_attributes
+      # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -66,6 +71,7 @@ module CartoDB
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
       attribute :parent_id,           String, default: nil
+      attribute :kind,                String, default: KIND_GEOM
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -157,6 +163,8 @@ module CartoDB
             CartoDB.notify_exception(exception, { user: user })
           end
         end
+
+        support_tables.delete_all
 
         invalidate_varnish_cache
         overlays.destroy
@@ -513,6 +521,9 @@ module CartoDB
         table.name = self.name
         table.register_table_only = self.register_table_only
         table.update(name: self.name)
+        if name_changed
+          support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
+        end
         self
       rescue => exception
         revert_name_change(old_name) if name_changed

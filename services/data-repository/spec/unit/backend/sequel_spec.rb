@@ -26,6 +26,7 @@ describe DataRepository::Backend::Sequel do
       String    :permission_id
       Boolean   :locked
       String    :parent_id
+      String    :kind
     end
 
     db.create_table :overlays do

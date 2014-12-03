@@ -11,10 +11,10 @@ module CartoDB
         @user_model   = user_model  || ::User
       end
 
-      def get(id_or_name, subdomain)
+      def get(id_or_name, subdomain, filters={})
         user = user_from(subdomain)
 
-        visualization_from(id_or_name, user) || 
+        visualization_from(id_or_name, user, filters) ||
         table_from(id_or_name, user)         ||
         [nil, nil]
       end
@@ -27,22 +27,18 @@ module CartoDB
         @user ||= user_model.where(username: subdomain).first
       end
 
-      def visualization_from(id_or_name, user)
-        if user
-          visualization = get_by_name(id_or_name, user)
-        else
-          visualization = nil
-        end
+      def visualization_from(id_or_name, user, filters)
+        visualization = nil
 
-        unless visualization
-          visualization = get_by_id(id_or_name)
-        end
+        visualization = get_by_name(id_or_name, user, filters) if user
+        visualization = get_by_id(id_or_name, filters) if visualization.nil?
 
         return false if visualization.nil?
 
         [visualization, visualization.table]
       end
 
+      # TODO: Check if we still need this, as everything comes loaded from Vis collections now
       def table_from(id_or_name, user)
         table = ::Table.get_by_id(id_or_name, user)
         return false unless table && table.table_visualization
@@ -51,23 +47,26 @@ module CartoDB
         false
       end
         
-      def get_by_id(uuid)
-        Visualization::Collection.new.fetch(
-            id: uuid
-        ).first
+      def get_by_id(uuid, filters)
+        params = {
+          id: uuid
+        }
+        Visualization::Collection.new.fetch(params.merge(filters)).first
       rescue KeyError
         nil
       end
 
-      def get_by_name(name, user)
-        # when looking for a visualization using name return
-        # the ones that user owns. Collection returns
-        Visualization::Collection.new.fetch({
+      def get_by_name(name, user, filters)
+        params = {
           name:   name,
           user_id: user.id
-        }).select { |u|
-          u.user_id == user.id
-        }.first
+        }
+        # when looking for a visualization using name return the ones that user owns
+        Visualization::Collection.new.fetch(params.merge(filters))
+          .select { |u|
+            u.user_id == user.id
+          }
+          .first
       rescue KeyError
         nil
       end

@@ -67,7 +67,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     if params[:source_visualization_id]
       source = Visualization::Collection.new.fetch(
         id: params.fetch(:source_visualization_id),
-        user_id: current_user.id
+        user_id: current_user.id,
+        exclude_raster: true
       ).first
       return(head 403) if source.nil?
 
@@ -339,11 +340,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       table[:name]
       ).first
       if row.nil?
-        CartoDB.notify_error(
-          "Table #{table[:schema]}.#{table[:name]} not found at pg_class for username #{current_user.username}", {
-          user: current_user.username,
-          action: 'Api::Json::VisualizationsController.rows_and_sizes_for()'
-        })
         # don't break whole dashboard
         data[table[:name]] = {
           size: nil,

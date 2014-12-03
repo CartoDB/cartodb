@@ -72,6 +72,8 @@ module CartoDB
       attribute :locked,              Boolean, default: false
       attribute :parent_id,           String, default: nil
       attribute :kind,                String, default: KIND_GEOM
+      attribute :prev_id,             String, default: nil
+      attribute :next_id,             String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE

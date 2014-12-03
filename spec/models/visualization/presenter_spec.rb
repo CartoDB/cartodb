@@ -69,9 +69,10 @@ describe Visualization::Member do
       vis_mock.stubs(:parent_id).returns(nil)
       vis_mock.stubs(:children).returns([])
       vis_mock.stubs(:kind).returns(Visualization::Member::KIND_GEOM)
-
       vis_mock.stubs(:table).returns(nil)
       vis_mock.stubs(:related_tables).returns([])
+      vis_mock.stubs(:prev_id).returns(nil)
+      vis_mock.stubs(:next_id).returns(nil)
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro
@@ -94,6 +95,8 @@ describe Visualization::Member do
       data[:parent_id].should eq nil
       data[:children].should eq Array.new
       data[:kind].should eq Visualization::Member::KIND_GEOM
+      data[:prev_id].should eq nil
+      data[:next_id].should eq nil
     end
   end
 

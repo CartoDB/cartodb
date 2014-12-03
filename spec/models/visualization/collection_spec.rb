@@ -322,8 +322,10 @@ describe Visualization::Collection do
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
       license:      attributes.fetch(:license, ''),
-      parent_id:    attributes.fetch(:parent_id, nil)
-      kind:         attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM)
+      parent_id:    attributes.fetch(:parent_id, nil),
+      kind:         attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
+      prev_id:    attributes.fetch(:prev_id, nil),
+      next_id:    attributes.fetch(:next_id, nil)
     }
   end #random_attributes
 end # Visualization::Collection

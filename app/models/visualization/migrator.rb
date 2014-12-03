@@ -32,6 +32,8 @@ module CartoDB
           String    :title
           String    :parent_id
           String    :kind
+          String    :prev_id
+          String    :next_id
         end
 
         @db.run(%Q{

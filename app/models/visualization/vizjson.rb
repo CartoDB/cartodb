@@ -40,7 +40,9 @@ module CartoDB
           updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
           overlays:       overlays_for(visualization),
-          children:       children_for(visualization)
+          children:       children_for(visualization),
+          prev:           visualization.prev_id,
+          next:           visualization.next_id
         }
       end
 

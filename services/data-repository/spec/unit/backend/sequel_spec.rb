@@ -27,6 +27,8 @@ describe DataRepository::Backend::Sequel do
       Boolean   :locked
       String    :parent_id
       String    :kind
+      String    :prev_id
+      String    :next_id
     end
 
     db.create_table :overlays do

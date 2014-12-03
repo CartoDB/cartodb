@@ -57,7 +57,7 @@
   "browserify-shim": {
     "jquery": "global:$",
     "underscore": "global:_",
-    "cartodb-editor": "global:cdb",
+    "cdb.admin": "global:cdb.admin",
     "cartodb.js": "global:cdb",
     "backbone": "global:Backbone"
   }

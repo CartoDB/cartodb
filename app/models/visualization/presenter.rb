@@ -33,7 +33,9 @@ module CartoDB
           locked:           visualization.locked,
           source:           visualization.source,
           title:            visualization.title,
-          parent_id:        visualization.parent_id
+          parent_id:        visualization.parent_id,
+          license:          visualization.license,
+          kind:             visualization.kind
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)

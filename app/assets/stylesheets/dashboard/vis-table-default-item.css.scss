@@ -18,9 +18,10 @@
     h3 {
       font-size:17px;
       @include text-overflow();
-      color:#2483B4;
+      color:#AAA;
 
       a {
+        color:#2483B4;
         font:bold 17px $title-fonts;
         @include transform-style("linear");
         @include transition-property("color");
@@ -192,7 +193,6 @@
   .vis-item:hover,
   .table-item:hover {
     h3 {
-      color:black;
       a {
         color:black;
         text-decoration:none;

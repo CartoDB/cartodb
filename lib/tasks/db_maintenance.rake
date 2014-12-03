@@ -205,13 +205,25 @@ namespace :cartodb do
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
+    # e.g. bundle exec rake cartodb:db:load_functions['127.0.0.1','0.5.0']
+    #      bundle exec rake cartodb:db:load_functions[,'0.5.0']
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:num_threads, :thread_sleep, :database_host, :sleep, :statement_timeout] => :environment do |t, args|
-      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
-      thread_sleep = args[:thread_sleep].blank? ? 0.1 : args[:thread_sleep].to_f
+    task :load_functions, [:database_host, :version, :num_threads, :thread_sleep, :sleep, :statement_timeout] => :environment do |t, args|
+      # Send this as string, not as number
+      extension_version = args[:version].blank? ? nil : args[:version]
       database_host = args[:database_host].blank? ? nil : args[:database_host]
-      sleep = args[:sleep].blank? ? 5 : args[:sleep].to_i
-      statement_timeout = args[:statement_timeout].blank? ? nil : args[:statement_timeout]
+      threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
+      thread_sleep = args[:thread_sleep].blank? ? 0.25 : args[:thread_sleep].to_f
+      sleep = args[:sleep].blank? ? 1 : args[:sleep].to_i
+      statement_timeout = args[:statement_timeout].blank? ? 180000 : args[:statement_timeout]
+
+      puts "Running extension update with following config:"
+      puts "extension_version: #{extension_version.nil? ? 'UNSPECIFIED/LATEST' : extension_version}"
+      puts "database_host: #{database_host.nil? ? 'ALL' : database_host}"
+      puts "threads: #{threads}"
+      puts "thread_sleep: #{thread_sleep}"
+      puts "sleep: #{sleep}"
+      puts "statement_timeout: #{statement_timeout}"
 
       if database_host.nil?
         count = User.count
@@ -219,14 +231,14 @@ namespace :cartodb do
         count = User.where(database_host: database_host).count
       end
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
-          begin
-            user.load_cartodb_functions(statement_timeout)
-            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
-            sleep(sleep)
-          rescue => e
-            log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
-            puts "FAIL:#{i} #{e.message}"
-          end
+        begin
+          user.load_cartodb_functions(statement_timeout, extension_version)
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
+          sleep(sleep)
+        rescue => e
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
+          puts "FAIL:#{i} #{e.message}"
+        end
       }, threads, thread_sleep, database_host)
     end
 
@@ -757,14 +769,32 @@ namespace :cartodb do
       users.each_with_index do |user, i|
         begin
           user.reload_avatar
-          message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+          message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
           print message
           log(message, :reload_users_avatars.to_s)
         rescue => e
-          message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+          message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n" % [user.username, i, count]
           print message
           log(message, :reload_users_avatars.to_s)
         end
+      end
+    end
+
+    desc "Grant general raster permissions"
+      task :grant_general_raster_permissions => :environment do
+        users = User.all
+        count = users.count
+        users.each_with_index do |user, i|
+          begin
+            user.set_raster_privileges
+            message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
+            print message
+            log(message, :grant_general_raster_permissions.to_s)
+          rescue => e
+            message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) MSG:#{e.message}\n" % [user.username, i, count]
+            print message
+            log(message, :grant_general_raster_permissions.to_s)
+          end
       end
     end
 

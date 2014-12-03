@@ -3,10 +3,12 @@
 module CartoDB
   module Importer2
     class Result
-      ATTRIBUTES = %w{ name schema extension tables success error_code log_trace }
+      ATTRIBUTES = %w{ name schema extension tables success error_code log_trace support_tables }
       attr_reader *ATTRIBUTES.map(&:to_sym)
 
       def initialize(attributes)
+        @support_tables = []
+
         ATTRIBUTES.each do |attribute|
           instance_variable_set :"@#{attribute}",
             attributes.fetch(attribute.to_sym, nil)
@@ -24,7 +26,11 @@ module CartoDB
       def table_name
         tables.first
       end
-    end # Result
-  end # Importer2
-end # CartoDB
+
+      def update_support_tables(new_list)
+        @support_tables = new_list
+      end
+    end
+  end
+end
 

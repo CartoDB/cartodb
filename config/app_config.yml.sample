@@ -1,4 +1,5 @@
 defaults: &defaults
+  raster_import_active: false
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false
@@ -233,6 +234,13 @@ defaults: &defaults
             ratelimit_concurrency:  3
             ratelimit_ttl:          4
             ratelimit_wait_secs:    0.1
+  feature_flags:
+    ghost_tables:
+      restricted: true 
+    rainbow_maps:
+      restricted: false
+  user_feature_flags:
+    rambo:    ['ghost_tables']
 
 development:
   <<: *defaults

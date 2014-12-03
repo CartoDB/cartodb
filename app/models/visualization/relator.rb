@@ -2,6 +2,7 @@
 require_relative './stats'
 require_relative '../visualization/collection'
 require_relative '../overlay/collection'
+require_relative './support_tables'
 
 module CartoDB
   module Visualization
@@ -13,8 +14,8 @@ module CartoDB
                         others:           :other_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats
-                      single_data_layer? synchronization permission parent children }
+      INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
+                          permission parent children support_tables }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -22,6 +23,8 @@ module CartoDB
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
         @parent_id      = attributes.fetch(:parent_id)
+        @kind           = attributes.fetch(:kind)
+        @support_tables = nil
       end
 
       # @return CartoDB::Visualization::Collection Use .count for number of children or .each to cycle through them
@@ -31,6 +34,11 @@ module CartoDB
 
       def parent
         @parent ||= Visualization::Member.new(id: @parent_id).fetch unless @parent_id.nil?
+      end
+
+      def support_tables
+        @support_tables ||= Visualization::SupportTables.new(user.in_database,
+                                     { parent_id: @id, parent_kind: @kind, public_user_roles: user.public_user_roles})
       end
 
       def overlays

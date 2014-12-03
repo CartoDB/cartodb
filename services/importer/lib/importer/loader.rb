@@ -149,6 +149,10 @@ module CartoDB
       end
 
       def encoding
+        @encoding ||= encoding_guess
+      end
+
+      def encoding_guess
         normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
           normalizer.supported?(source_file.extension)
         }
@@ -200,6 +204,11 @@ module CartoDB
 
       def osm?(source_file)
         source_file.extension =~ /\.osm/
+      end
+
+      # Not used for now, but for compatibility with tiff_loader
+      def additional_support_tables
+        []
       end
 
       attr_accessor   :source_file, :options

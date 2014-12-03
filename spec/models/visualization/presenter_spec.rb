@@ -68,6 +68,7 @@ describe Visualization::Member do
       vis_mock.stubs(:title).returns('')
       vis_mock.stubs(:parent_id).returns(nil)
       vis_mock.stubs(:children).returns([])
+      vis_mock.stubs(:kind).returns(Visualization::Member::KIND_GEOM)
 
       vis_mock.stubs(:table).returns(nil)
       vis_mock.stubs(:related_tables).returns([])
@@ -92,6 +93,7 @@ describe Visualization::Member do
       data[:table].should eq Hash.new
       data[:parent_id].should eq nil
       data[:children].should eq Array.new
+      data[:kind].should eq Visualization::Member::KIND_GEOM
     end
   end
 

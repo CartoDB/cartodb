@@ -1,3 +1,16 @@
+3.4.1 (2014-12-01)
+------------------
+ * Fixed bugs and improvements
+   - Modified signature of cartodb:db:load_functions rake task, to both reduce required params (added default values) and
+     allowing to specify a cartodb-postgresql extension version, so existing users can keep with their versions while
+     load_functions loads (optionally) a different one.
+
+3.4.0 (2014-12-01)
+------------------
+* New features
+  - Raster import: Drag & drop geotiff files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS. NOTE: Raster overviews import is not yet fully working, this release handles streamlined import itself.
+    This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
 3.3.1 (2014-11-25)
 ------------------
  * Fixed bugs

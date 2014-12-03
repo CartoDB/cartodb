@@ -229,7 +229,7 @@ module CartoDB
           raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
         end
 
-        log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+        log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
         if datasource_provider.providers_download_url?
@@ -360,6 +360,7 @@ module CartoDB
           {}
         else
           {
+            raster_import_active:   Cartodb.config.fetch(:raster_import_active, nil),
             ogr2ogr_binary:         options['binary'],
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
             quoted_fields_guessing: @quoted_fields_guessing

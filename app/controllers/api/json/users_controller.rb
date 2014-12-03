@@ -117,8 +117,9 @@ class Api::Json::UsersController < Api::ApplicationController
         end
 
         vis = CartoDB::Visualization::Collection.new.fetch(
-          id: res,
-          user_id: current_user.id
+          id:             res,
+          user_id:        current_user.id,
+          exclude_raster: true
         ).first
         if vis.nil?
           false

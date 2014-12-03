@@ -998,6 +998,7 @@ class User < Sequel::Model
         FROM information_schema.columns c, pg_tables t
         WHERE
         t.tablename = c.table_name AND
+        t.schemaname = c.table_schema AND
         t.tableowner = '#{database_username}' AND
     }
 

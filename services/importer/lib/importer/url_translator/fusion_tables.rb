@@ -11,17 +11,17 @@ module CartoDB
                                   "/exporttable?query="
         QUERY_FOR_DOC_ID        = "select+*+from+"
         DOC_ID_REGEX            = %r{\?docid=([\w-]+)#?.*}
-        TABLE_QUERY_REGEX       = /&q=(.*)&?.*/
+        TABLE_QUERY_REGEX       = /&q=([^&]*)&?.*/
 
         def translate(url)
           return url if !supported?(url) || translated?(url) 
           return "#{URL_TEMPLATE}#{QUERY_FOR_DOC_ID}#{doc_id_from(url)}" if DOC_ID_REGEX === url
-          #return "#{URL_TEMPLATE}#{query_from(url)}" if TABLE_QUERY_REGEX === url
+          return "#{URL_TEMPLATE}#{query_from(url)}" if TABLE_QUERY_REGEX === url
           fail "Couldn't translate #{url}"
         end #translate
 
         def supported?(url)
-          !!(url =~ URL_REGEX)
+          !!(url =~ URL_REGEX && (DOC_ID_REGEX === url || TABLE_QUERY_REGEX === url))
         end #supported?
 
         def translated?(url)

@@ -1078,6 +1078,7 @@ SubLayer.prototype = {
     this._parent.removeLayer(this._position);
     this._unbindInteraction();
     this._added = false;
+    this.trigger('remove', this);
   },
 
   toggle: function() {
@@ -1145,6 +1146,9 @@ SubLayer.prototype = {
       attrs[i] = new_attrs[i];
     }
     this._parent.setLayer(this._position, def);
+    if (new_attrs.hidden !== undefined) {
+      this.trigger('change:visibility', this, new_attrs.hidden);
+    }
     return this;
   },
 

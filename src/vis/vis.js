@@ -234,10 +234,9 @@ var Vis = cdb.core.View.extend({
     }
     this.legends = null;
     if (!this.mobile_enabled) {
+      var legends = this.createLegendView(layers);//layers.map(function(lyr) { return lyr.attributes; }))
       this.legends = new cdb.geo.ui.StackedLegend({
-        legends: this.createLegendView(layers.map(function(lyr) {
-          return lyr.attributes;
-        }))
+        legends: legends
       });
       this.mapView.addOverlay(this.legends);
     }
@@ -604,18 +603,6 @@ var Vis = cdb.core.View.extend({
         return actions;
       }
 
-      function SwitchLegend(vis, layers) {
-        return O.Action({
-          enter: function() {
-            if (vis.legends) {
-              vis.legends.remove();
-            }
-            vis.addLegends(layers, vis.mobile_enabled);
-          }
-        });
-      }
-
-
       var self = this;
 
       var seq = this.sequence = O.Sequential();
@@ -734,26 +721,45 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  createLegendView: function(layers) {
-    var legends = [];
-    for(var i = layers.length - 1; i >= 0; --i) {
-      var layer = layers[i];
-      if(layer.legend) {
-        layer.legend.data = layer.legend.items;
-        var legend = layer.legend;
+  _createLegendView: function(layer, layerView) {
+    if (layer.legend) {
+      layer.legend.data = layer.legend.items;
+      var legend = layer.legend;
 
-        if((legend.items && legend.items.length) || legend.template) {
-          layer.legend.index = i;
-          legends.push(new cdb.geo.ui.Legend(layer.legend));
-        }
-      }
-      if(layer.options && layer.options.layer_definition) {
-        legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
-      } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
-        legends = legends.concat(this.createLegendView(layer.options.named_map.layers));
+      if ((legend.items && legend.items.length) || legend.template) {
+        layer.legend.index = i;
+        var view = new cdb.geo.ui.Legend(layer.legend);
+        layerView.bind('change:visibility', function(layer, hidden) {
+          view[hidden? 'hide': 'show']();
+        });
+        return view;
       }
     }
-    return legends;
+    return null;
+  },
+
+  createLegendView: function(layers) {
+    var legends = [];
+    var self = this;
+    for (var i = layers.length - 1; i >= 0; --i) {
+      var cid = layers.at(i).cid;
+      var layer = layers.at(i).attributes
+      var layerView = this.mapView.getLayerByCid(cid);
+      if (layer.options && layer.options.layer_definition) {
+        var sublayers = layer.options.layer_definition.layers;
+        _(sublayers).each(function(sub, i) {
+          legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+        });
+      } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+        var sublayers = layer.options.named_map.layers;
+        _(sublayers).each(function(sub, i) {
+          legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+        });
+      } else {
+        legends.push(this._createLegendView(layer, layerView))
+      }
+    }
+    return _.compact(legends);
   },
 
   addOverlay: function(overlay) {

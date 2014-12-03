@@ -336,9 +336,9 @@ gem install bundler
 The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 
 ```bash
-sudo apt-get install nodejs npm
 sudo add-apt-repository ppa:cartodb/nodejs-010
 sudo apt-get update
+sudo apt-get install nodejs npm
 ```
 
 We currently run our node apps against version 0.10. You can install [NVM](https://github.com/creationix/nvm) 

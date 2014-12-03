@@ -18,7 +18,6 @@ Resque::Metrics.on_job_complete do |job_class, queue, time|
 end
 
 Resque::Metrics.on_job_enqueue do |job_class, queue, time|
-  debugger
   CartoDB::Resque::Metrics.logger.info(
     {:event => :job_enqueue,
      :job_class => job_class.to_s,

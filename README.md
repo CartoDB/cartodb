@@ -338,7 +338,7 @@ The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 ```bash
 sudo add-apt-repository ppa:cartodb/nodejs-010
 sudo apt-get update
-sudo apt-get install nodejs npm
+sudo apt-get install nodejs
 ```
 
 We currently run our node apps against version 0.10. You can install [NVM](https://github.com/creationix/nvm) 

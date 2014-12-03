@@ -30,12 +30,11 @@ Resque::Metrics.on_job_fork do |job_class, queue|
   CartoDB::Resque::Metrics.logger.info(
     {:event => :job_fork,
      :job_class => job_class, 
-     :queue => queue, 
-     :time => time}.to_json
+     :queue => queue}.to_json
   )
 end
 
-Resque::Metrics.on_job_failure do |job_class, queue|
+Resque::Metrics.on_job_failure do |job_class, queue, time|
   CartoDB::Resque::Metrics.logger.info(
     {:event => :job_failure,
      :job_class => job_class, 

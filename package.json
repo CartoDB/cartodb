@@ -41,6 +41,7 @@
     "load-grunt-tasks": "~0.2.0",
     "moment": "^2.8.4",
     "remapify": "^1.3.0",
+    "rewireify": "0.0.13",
     "shelljs": "~0.2.6",
     "uglify-js": "1.3.3",
     "underscore": "~1.6.0",

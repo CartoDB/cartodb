@@ -22,11 +22,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.enabled = true
 
     @user.save
+    @user.set_relationships_from_central(params[:user])
     respond_with(:superadmin, @user)
   end
 
   def update
     @user.set_fields_from_central(params[:user], :update)
+    @user.set_relationships_from_central(params[:user])
 
     @user.save
     respond_with(:superadmin, @user)

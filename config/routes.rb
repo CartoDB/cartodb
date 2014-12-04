@@ -89,6 +89,10 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/datasets/locked/:page'                 => 'visualizations#index', as: :datasets_locked_page
     get '(/u/:user_domain)/dashboard/datasets/locked/tag/:tag'              => 'visualizations#index', as: :datasets_locked_tag
     get '(/u/:user_domain)/dashboard/datasets/locked/tag/:tag/:page'        => 'visualizations#index', as: :datasets_locked_tag_page
+    get '(/u/:user_domain)/dashboard/datasets/library'                      => 'visualizations#index', as: :datasets_library
+    get '(/u/:user_domain)/dashboard/datasets/library/:page'                => 'visualizations#index', as: :datasets_library_page
+    get '(/u/:user_domain)/dashboard/datasets/library/tag/:tag'             => 'visualizations#index', as: :datasets_library_tag
+    get '(/u/:user_domain)/dashboard/datasets/library/tag/:tag/:page'       => 'visualizations#index', as: :datasets_library_tag_page
 
     # Tables search
     get '(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
@@ -115,6 +119,8 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/datasets/liked/search/:q/:page'          => 'visualizations#index', as: :datasets_liked_search_page
     get '(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q'         => 'visualizations#index', as: :datasets_liked_locked_search
     get '(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q/:page'   => 'visualizations#index', as: :datasets_liked_locked_search_page
+    get '(/u/:user_domain)/dashboard/datasets/library/search/:q'              => 'visualizations#index', as: :datasets_library_search
+    get '(/u/:user_domain)/dashboard/datasets/library/search/:q/:page'        => 'visualizations#index', as: :datasets_library_search_page
 
     # Visualizations
     get '(/u/:user_domain)/dashboard/visualizations'                            => 'visualizations#index', as: :visualizations_index

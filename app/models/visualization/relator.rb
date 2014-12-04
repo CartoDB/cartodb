@@ -15,7 +15,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
-                          permission parent children support_tables }
+                          permission parent children support_tables prev_vis next_vis }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -25,15 +25,29 @@ module CartoDB
         @parent_id      = attributes.fetch(:parent_id)
         @kind           = attributes.fetch(:kind)
         @support_tables = nil
+        @prev_id        = attributes.fetch(:prev_id)
+        @next_id        = attributes.fetch(:next_id)
       end
 
       # @return CartoDB::Visualization::Collection Use .count for number of children or .each to cycle through them
       def children
+        #TODO: Order them using prev-next
         Visualization::Collection.new.fetch(parent_id: @id)
       end
 
+      # @return CartoDB::Visualization::Member
       def parent
         @parent ||= Visualization::Member.new(id: @parent_id).fetch unless @parent_id.nil?
+      end
+
+      # @return CartoDB::Visualization::Member
+      def prev_vis
+        @prev_vis ||= Visualization::Member.new(id: @prev_id).fetch unless @prev_id.nil?
+      end
+
+      # @return CartoDB::Visualization::Member
+      def next_vis
+         @next_vis ||= Visualization::Member.new(id: @next_id).fetch unless @next_id.nil?
       end
 
       def support_tables

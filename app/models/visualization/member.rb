@@ -91,6 +91,10 @@ module CartoDB
         self.register_table_only = false
       end
 
+      def ==(other_vis)
+        self.id == other_vis.id
+      end
+
       def default_privacy(owner)
         owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
@@ -165,6 +169,8 @@ module CartoDB
             CartoDB.notify_exception(exception, { user: user })
           end
         end
+
+        unlink_self_from_list!
 
         support_tables.delete_all
 
@@ -400,6 +406,44 @@ module CartoDB
         end
 
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+      end
+
+      # TODO: Need to run as transaction
+      def set_next_list_item!(other_vis)
+        if other_vis.nil?
+          self.next_id = nil
+        else
+          if self.next_id.nil?
+            other_vis.next_id = nil
+          else
+            other_vis.next_id = self.next_id
+            next_item = next_vis
+            next_item.prev_id = other_vis.id
+            next_item.store
+          end
+          self.next_id = other_vis.id
+          other_vis.prev_id = self.id
+          other_vis.store
+        end
+        store
+        fetch
+      end
+
+      # To be used when deleting the visualization
+      # TODO: Need to run as transaction
+      def unlink_self_from_list!
+        unless self.prev_id.nil?
+          prev_item = prev_vis
+          prev_item.next_id = self.next_id
+          prev_item.store
+        end
+        unless self.next_id.nil?
+          next_item = next_vis
+          next_item.prev_id = self.prev_id
+          next_item.store
+        end
+        self.prev_id = nil
+        self.next_id = nil
       end
 
       attr_accessor :register_table_only

@@ -2,6 +2,7 @@
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
+require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../doubles/support_tables.rb'
@@ -10,9 +11,11 @@ include CartoDB
 
 describe Visualization::Member do
   before do
-    memory = DataRepository.new
-    Visualization.repository  = memory
-    Overlay.repository        = memory
+    @db = Rails::Sequel.connection
+    Sequel.extension(:pagination)
+
+    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Overlay.repository        = DataRepository.new # In-memory storage
   end
 
   before(:each) do
@@ -591,6 +594,171 @@ describe Visualization::Member do
     table_member.store
   end
 
+  describe '#linked_list_tests' do
+    it 'checks set_next! and unlink_self_from_list! on visualizations when set' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      member_a = Visualization::Member.new(random_attributes({ name:'A', type: Visualization::Member::TYPE_DERIVED }))
+      member_a = member_a.store.fetch
+      member_b = Visualization::Member.new(random_attributes({ name:'B', type: Visualization::Member::TYPE_DERIVED }))
+      member_b = member_b.store.fetch
+      member_c = Visualization::Member.new(random_attributes({ name:'C', type: Visualization::Member::TYPE_DERIVED }))
+      member_c = member_c.store.fetch
+      member_d = Visualization::Member.new(random_attributes({ name:'D', type: Visualization::Member::TYPE_DERIVED }))
+      member_d = member_d.store.fetch
+
+      # A
+      member_a.prev_id.should eq nil
+      member_a.prev_vis.should eq nil
+      member_a.next_id.should eq nil
+      member_a.next_vis.should eq nil
+
+      # A -> B
+      member_a.set_next_list_item! member_b
+      # set_next! & set_prev! modify state of next/prev sibiling but only are able to reload themselves
+      # so we need to reload them
+      member_b = member_b.fetch
+
+      member_a.next_vis.should eq member_b
+      member_a.prev_vis.should eq nil
+      member_b.prev_vis.should eq member_a
+      member_b.next_vis.should eq nil
+
+      # A -> B -> C
+      member_b.set_next_list_item! member_c
+
+      member_a = member_a.fetch
+      member_c = member_c.fetch
+
+      member_a.prev_vis.should eq nil
+      member_a.next_vis.should eq member_b
+      member_b.prev_vis.should eq member_a
+      member_b.next_vis.should eq member_c
+      member_c.prev_vis.should eq member_b
+      member_c.next_vis.should eq nil
+
+      # A -> D -> B -> C
+      member_a.set_next_list_item! member_d
+
+      member_b = member_b.fetch
+      member_c = member_c.fetch
+      member_d = member_d.fetch
+
+      member_a.prev_vis.should eq nil
+      member_a.next_vis.should eq member_d
+      member_d.prev_vis.should eq member_a
+      member_d.next_vis.should eq member_b
+      member_b.prev_vis.should eq member_d
+      member_b.next_vis.should eq member_c
+      member_c.prev_vis.should eq member_b
+      member_c.next_vis.should eq nil
+
+      member_a.next_vis.next_vis.should eq member_b
+      member_a.next_vis.next_vis.next_vis.should eq member_c
+      member_a.next_vis.next_vis.next_vis.next_vis.should eq nil
+
+      # A -> D -> C
+      member_b.delete
+      # triggers unlink_self_from_list! inside, should reorder remaining items
+
+      member_c = member_c.fetch
+      member_d = member_d.fetch
+
+      member_a.prev_vis.should eq nil
+      member_a.next_vis.should eq member_d
+      member_d.prev_vis.should eq member_a
+      member_d.next_vis.should eq member_c
+      member_c.prev_vis.should eq member_d
+      member_c.next_vis.should eq nil
+
+      # D -> C
+      member_a.delete
+
+      member_d = member_d.fetch
+
+      member_d.prev_vis.should eq nil
+      member_d.next_vis.should eq member_c
+      member_c.prev_vis.should eq member_d
+      member_c.next_vis.should eq nil
+
+      # D
+      member_c.delete
+
+      member_d = member_d.fetch
+
+      member_d.prev_vis.should eq nil
+      member_d.next_vis.should eq nil
+
+      member_d.delete
+    end
+
+    it 'checks reordering visualizations items' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      member_a = Visualization::Member.new(random_attributes({ name:'A', type: Visualization::Member::TYPE_DERIVED }))
+      member_a = member_a.store.fetch
+      member_b = Visualization::Member.new(random_attributes({ name:'B', type: Visualization::Member::TYPE_DERIVED }))
+      member_b = member_b.store.fetch
+      member_c = Visualization::Member.new(random_attributes({ name:'C', type: Visualization::Member::TYPE_DERIVED }))
+      member_c = member_c.store.fetch
+      member_d = Visualization::Member.new(random_attributes({ name:'D', type: Visualization::Member::TYPE_DERIVED }))
+      member_d = member_d.store.fetch
+      member_e = Visualization::Member.new(random_attributes({ name:'E', type: Visualization::Member::TYPE_DERIVED }))
+      member_e = member_e.store.fetch
+
+      # A -> B
+      member_a.set_next_list_item! member_b
+      member_b = member_b.fetch
+
+      # A -> B -> C
+      member_b.set_next_list_item! member_c
+      member_a.fetch
+      member_c.fetch
+
+      # A -> B -> C -> D
+      member_c.set_next_list_item! member_d
+      member_a.fetch
+      member_b.fetch
+      member_d.fetch
+
+      # A -> B -> C -> D -> E
+      member_d.set_next_list_item! member_e
+      member_a.fetch
+      member_b.fetch
+      member_c.fetch
+      member_e.fetch
+
+      member_a.prev_vis.should eq nil
+      member_a.next_vis.should eq member_b
+      member_b.prev_vis.should eq member_a
+      member_b.next_vis.should eq member_c
+      member_c.prev_vis.should eq member_b
+      member_c.next_vis.should eq member_d
+      member_d.prev_vis.should eq member_c
+      member_d.next_vis.should eq member_e
+      member_e.prev_vis.should eq member_d
+      member_e.next_vis.should eq nil
+
+      # TODO: Test reordering, probably need to also relink previous last-next from origin
+
+
+
+      member_a.delete
+
+      member_b.fetch
+      member_b.delete
+
+      member_c.fetch
+      member_c.delete
+
+      member_d.fetch
+      member_d.delete
+
+      member_e.fetch
+      member_e.delete
+    end
+  end
+
   protected
 
   def random_attributes(attributes={})
@@ -606,8 +774,10 @@ describe Visualization::Member do
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
       license:      attributes.fetch(:license, ''),
-      parent_id:    attributes.fetch(:parent_id, nil)
-      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM)
+      parent_id:    attributes.fetch(:parent_id, nil),
+      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
+      prev_id:      attributes.fetch(:prev_id, nil),
+      next_id:      attributes.fetch(:next_id, nil)
     }
   end
 end

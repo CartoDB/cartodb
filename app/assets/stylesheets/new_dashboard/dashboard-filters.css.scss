@@ -153,3 +153,20 @@
 .DashboardFilters-orderLink--clock.is-selected {
   @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px));
 }
+.DashboardFilters-selectedItems {
+  font-size:15px;
+  font-weight:300;
+  color:$cGray6;
+}
+.DashboardFilters-actionsList {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.DashboardFilters-actionsLink {
+  font-size:13px;
+  padding-left:25px;
+}
+.DashboardFilters-actionsLink.is--critical {
+  color:#FF6C6C;
+}

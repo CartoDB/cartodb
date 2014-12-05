@@ -70,7 +70,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
 
-      requestFullScreen.call(docEl);
+      if (docEl.webkitRequestFullScreen) {
+        requestFullScreen.call(docEl, Element.ALLOW_KEYBOARD_INPUT);
+      } else {
+        requestFullScreen.call(docEl);
+      }
 
       if (mapView) {
 

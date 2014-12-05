@@ -412,30 +412,7 @@ module CartoDB
       # @param other_vis CartoDB::Visualization::Member|nil
       # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
       def set_next_list_item!(other_vis)
-        reload_self = false
-
-        if other_vis.nil?
-          self.next_id = nil
-          old_prev = nil
-          old_next = nil
-        else
-          old_prev = other_vis.prev_list_item
-          old_next = other_vis.next_list_item
-        end
-
-        # First close gap left by other_vis
-        unless old_prev.nil?
-          old_prev.next_id = old_next.nil? ? nil : old_next.id
-          old_prev.store
-          reload_self = old_prev.id == self.id
-        end
-        unless old_next.nil?
-          old_next.prev_id = old_prev.nil? ? nil : old_prev.id
-          old_next.store
-          reload_self = old_next.id == self.id
-        end
-
-        fetch if reload_self
+        close_list_gap(other_vis)
 
         # Now insert other_vis after self
         unless other_vis.nil?
@@ -451,6 +428,32 @@ module CartoDB
           other_vis.prev_id = self.id
           other_vis.store
                    .fetch
+        end
+
+        store
+        fetch
+      end
+
+      # TODO: Need to run as transaction
+      # @param other_vis CartoDB::Visualization::Member|nil
+      # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
+      def set_prev_list_item!(other_vis)
+        close_list_gap(other_vis)
+
+        # Now insert other_vis after self
+        unless other_vis.nil?
+          if self.prev_id.nil?
+            other_vis.prev_id = nil
+          else
+            other_vis.prev_id = self.prev_id
+            next_item = prev_list_item
+            next_item.next_id = other_vis.id
+            next_item.store
+          end
+          self.prev_id = other_vis.id
+          other_vis.next_id = self.id
+          other_vis.store
+          .fetch
         end
 
         store
@@ -479,6 +482,33 @@ module CartoDB
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
+
+      def close_list_gap(other_vis)
+        reload_self = false
+
+        if other_vis.nil?
+          self.next_id = nil
+          old_prev = nil
+          old_next = nil
+        else
+          old_prev = other_vis.prev_list_item
+          old_next = other_vis.next_list_item
+        end
+
+        # First close gap left by other_vis
+        unless old_prev.nil?
+          old_prev.next_id = old_next.nil? ? nil : old_next.id
+          old_prev.store
+          reload_self |= old_prev.id == self.id
+        end
+        unless old_next.nil?
+          old_next.prev_id = old_prev.nil? ? nil : old_prev.id
+          old_next.store
+          reload_self |= old_next.id == self.id
+        end
+
+        fetch if reload_self
+      end
 
       def do_store(propagate_changes=true)
         if password_protected?

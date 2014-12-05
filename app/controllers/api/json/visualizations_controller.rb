@@ -61,8 +61,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def create
-    payload.delete(:permission) if payload[:permission].present?
-    payload.delete[:permission_id] if payload[:permission_id].present?
+    vis_data = payload
+
+    vis_data.delete(:permission) if vis_data[:permission].present?
+    vis_data.delete[:permission_id] if vis_data[:permission_id].present?
+
+    # Don't allow to modify next_id/prev_id, force to use set_next_id()
+    prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+    next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
 
     if params[:source_visualization_id]
       source = Visualization::Collection.new.fetch(
@@ -94,7 +100,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       blender = Visualization::TableBlender.new(current_user, tables)
       map = blender.blend
       vis = Visualization::Member.new(
-        payload.merge(
+        vis_data.merge(
           name:     name_candidate,
           map_id:   map.id,
           type:     'derived',
@@ -107,7 +113,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       Visualization::Overlays.new(vis).create_default_overlays
     else
       vis = Visualization::Member.new(
-        payload_with_default_privacy.merge(
+        add_default_privacy(vis_data).merge(
           name: name_candidate,
           user_id:  current_user.id
         )
@@ -117,6 +123,18 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis.privacy = vis.default_privacy(current_user)
 
     vis.store
+    if !prev_id.nil?
+      prev_vis = Visualization::Member.new(id: prev_id).fetch
+      return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      prev_vis.set_next_list_item!(vis)
+    elsif !next_id.nil?
+      next_vis = Visualization::Member.new(id: next_id).fetch
+      return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      next_vis.set_prev_list_item!(vis)
+    end
+
     current_user.update_visualization_metrics
     render_jsonp(vis)
   rescue CartoDB::InvalidMember
@@ -141,20 +159,22 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis = Visualization::Member.new(id: @table_id).fetch
     return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
-    payload.delete(:permission) if payload[:permission].present?
-    payload.delete[:permission_id] if payload[:permission_id].present?
+    vis_data = payload
 
-    # Don't allow to modify next_id/prev_id from PUT operations, force to use set_next_id()
-    payload.delete(:next_id) if payload[:next_id].present?
-    payload.delete(:prev_id) if payload[:prev_id].present?
+    vis_data.delete(:permission) if vis_data[:permission].present?
+    vis_data.delete[:permission_id] if vis_data[:permission_id].present?
+
+    # Don't allow to modify next_id/prev_id, force to use set_next_id()
+    prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+    next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
 
     # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
     # This is far from perfect, but works without messing with table-vis sync and their two backends
     if vis.table?
       old_vis_name = vis.name
 
-      payload.delete(:url_options) if payload[:url_options].present?
-      vis.attributes = payload
+      vis_data.delete(:url_options) if vis_data[:url_options].present?
+      vis.attributes = vis_data
       new_vis_name = vis.name
       old_table_name = vis.table.name
       vis.store.fetch
@@ -163,7 +183,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         vis.store.fetch
       end
     else
-      vis.attributes = payload  
+      vis.attributes = vis_data
       vis.store.fetch
     end
 
@@ -264,7 +284,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     next_vis = Visualization::Member.new(id: payload[:next_id]).fetch
-    return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     prev_vis.set_next_list_item!(next_vis)
 
@@ -324,8 +344,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ::JSON.parse(request.body.read.to_s || String.new)
   end
 
-  def payload_with_default_privacy
-    { privacy: default_privacy }.merge(payload)
+  def add_default_privacy(data)
+    { privacy: default_privacy }.merge(data)
   end
 
   def default_privacy

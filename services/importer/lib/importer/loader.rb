@@ -149,6 +149,10 @@ module CartoDB
       end
 
       def encoding
+        @encoding ||= encoding_guess
+      end
+
+      def encoding_guess
         normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
           normalizer.supported?(source_file.extension)
         }

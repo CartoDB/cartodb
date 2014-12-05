@@ -2,7 +2,7 @@ Sequel.migration do
 
   up do
     create_table :feature_flags do
-      primary_key :id
+      Integer     :id,                  primary_key: true
       Text        :name,                null: false, unique: true
       TrueClass   :restricted,          default: true, null: false
       DateTime    :created_at,          default: Sequel::CURRENT_TIMESTAMP

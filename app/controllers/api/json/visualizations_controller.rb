@@ -144,6 +144,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     payload.delete(:permission) if payload[:permission].present?
     payload.delete[:permission_id] if payload[:permission_id].present?
 
+    # Don't allow to modify next_id/prev_id from PUT operations, force to use set_next_id()
+    payload.delete(:next_id) if payload[:next_id].present?
+    payload.delete(:prev_id) if payload[:prev_id].present?
+
     # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
     # This is far from perfect, but works without messing with table-vis sync and their two backends
     if vis.table?
@@ -253,6 +257,31 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     watcher = CartoDB::Visualization::Watcher.new(current_user, vis)
     render_jsonp(watcher.list)
+  end
+
+  def set_next_id
+    prev_vis = Visualization::Member.new(id: @table_id).fetch
+    return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+    next_vis = Visualization::Member.new(id: payload[:next_id]).fetch
+    return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+
+    prev_vis.set_next_list_item!(next_vis)
+
+    # TODO: return full list
+    render_jsonp([])
+  rescue KeyError
+    head(404)
+  rescue CartoDB::InvalidMember
+    render_jsonp({ errors: ['Error saving next slide position'] }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
+  rescue
+    render_jsonp({ errors: ['Unknown error'] }, 400)
   end
 
   private

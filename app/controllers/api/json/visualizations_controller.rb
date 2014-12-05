@@ -253,7 +253,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       raise KeyError if current_user.nil? || !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     end
 
-    render_jsonp({id: vis.id, likes_count: vis.likes.count})
+    render_jsonp({
+                   id: vis.id,
+                   likes: vis.likes.count
+                 })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   end
@@ -264,7 +267,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       raise KeyError if current_user.nil? || !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     end
 
-    render_jsonp({id: vis.id, likes: vis.likes.map { |like| {actor_id: like.actor } }})
+    render_jsonp({
+                   id: vis.id,
+                   likes: vis.likes.map { |like| {actor_id: like.actor } }
+                 })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   end
@@ -275,7 +281,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
     vis.add_like_from(current_user.id)
-    render_jsonp({id: vis.id, likes: vis.likes.count, liked: vis.liked_by?(current_user.id) }) # TODO: talk to Kartones
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: vis.liked_by?(current_user.id)
+                 })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue AlreadyLikedError
@@ -287,7 +297,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     raise KeyError if !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
-    render_jsonp({id: vis.id, likes: vis.likes.count, liked: true }) # TODO: talk to Kartones
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: true
+                 })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   end
@@ -298,7 +312,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
     vis.remove_like_from(current_user.id)
-    render_jsonp({id: vis.id, likes: vis.likes.count, liked: false }) # TODO: talk to Kartones
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: false
+                 })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   end

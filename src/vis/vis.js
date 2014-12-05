@@ -297,13 +297,16 @@ var Vis = cdb.core.View.extend({
   },
 
   addTimeSlider: function(torqueLayer) {
-    if (torqueLayer) {
-      var timeSlider = this.addOverlay({
-        type: 'time_slider',
-        layer: torqueLayer
-      });
+    // if a timeslides already exists don't create it again
+    if (torqueLayer && !this.timeSlider) {
+      var self = this;
+      // dont use add overlay since this overlay is managed by torque layer
+      var timeSlider = Overlay.create('time_slider', this, { layer: torqueLayer });
+      this.mapView.addOverlay(timeSlider);
+      this.timeSlider = timeSlider;
       // remove when layer is done
       torqueLayer.bind('remove', function _remove() {
+        self.timeSlider = null;
         timeSlider.remove();
         torqueLayer.unbind('remove', _remove);
       });

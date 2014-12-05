@@ -15,7 +15,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
-                          permission parent children support_tables prev_vis next_vis }
+                          permission parent children support_tables prev_list_item next_list_item }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -41,12 +41,12 @@ module CartoDB
       end
 
       # @return CartoDB::Visualization::Member
-      def prev_vis
+      def prev_list_item
         @prev_vis ||= Visualization::Member.new(id: @prev_id).fetch unless @prev_id.nil?
       end
 
       # @return CartoDB::Visualization::Member
-      def next_vis
+      def next_list_item
          @next_vis ||= Visualization::Member.new(id: @next_id).fetch unless @next_id.nil?
       end
 

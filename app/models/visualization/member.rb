@@ -409,36 +409,63 @@ module CartoDB
       end
 
       # TODO: Need to run as transaction
+      # @param other_vis CartoDB::Visualization::Member|nil
+      # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
       def set_next_list_item!(other_vis)
+        reload_self = false
+
         if other_vis.nil?
           self.next_id = nil
+          old_prev = nil
+          old_next = nil
         else
+          old_prev = other_vis.prev_list_item
+          old_next = other_vis.next_list_item
+        end
+
+        # First close gap left by other_vis
+        unless old_prev.nil?
+          old_prev.next_id = old_next.nil? ? nil : old_next.id
+          old_prev.store
+          reload_self = old_prev.id == self.id
+        end
+        unless old_next.nil?
+          old_next.prev_id = old_prev.nil? ? nil : old_prev.id
+          old_next.store
+          reload_self = old_next.id == self.id
+        end
+
+        fetch if reload_self
+
+        # Now insert other_vis after self
+        unless other_vis.nil?
           if self.next_id.nil?
             other_vis.next_id = nil
           else
             other_vis.next_id = self.next_id
-            next_item = next_vis
+            next_item = next_list_item
             next_item.prev_id = other_vis.id
             next_item.store
           end
           self.next_id = other_vis.id
           other_vis.prev_id = self.id
           other_vis.store
+                   .fetch
         end
+
         store
         fetch
       end
 
-      # To be used when deleting the visualization
       # TODO: Need to run as transaction
       def unlink_self_from_list!
         unless self.prev_id.nil?
-          prev_item = prev_vis
+          prev_item = prev_list_item
           prev_item.next_id = self.next_id
           prev_item.store
         end
         unless self.next_id.nil?
-          next_item = next_vis
+          next_item = next_list_item
           next_item.prev_id = self.prev_id
           next_item.store
         end

@@ -236,29 +236,8 @@ sudo make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
-`template_postgis`. In the example script below (can be saved for examples as `template_postgis.sh`), make sure that the
-path to each SQL file is correct:
+`template_postgis`. 
 
-```bash
-#!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
-createdb -E UTF8 template_postgis
-createlang -d template_postgis plpgsql
-psql -d postgres -c \
- "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
-psql -d template_postgis -c "CREATE EXTENSION postgis"
-psql -d template_postgis -c "CREATE EXTENSION postgis_topology"
-psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
-psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
-```
-
-Before executing the script, change to the postgres user:
-```bash
-sudo su - postgres
-./template_postgis.sh
-```
-
-Alternatively, you may run the lines of the `template_postgis.sh` script one by one by entering Postgres as follows:
 ```bash
 sudo su - postgres
 POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
@@ -275,6 +254,7 @@ exit
 ## Install cartodb-postgresql ##
 
 ```bash
+cd /tmp
 git clone https://github.com/CartoDB/pg_schema_triggers.git
 cd pg_schema_triggers
 sudo make all install PGUSER=postgres
@@ -342,7 +322,11 @@ sudo apt-get install nodejs
 ```
 
 We currently run our node apps against version 0.10. You can install [NVM](https://github.com/creationix/nvm) 
-to handle multiple versions in the same system.
+to handle multiple versions in the same system:
+```bash
+curl https://raw.githubusercontent.com/creationix/nvm/v0.20.0/install.sh | bash
+source ~/.bashrc
+```
 
 Then you can install and use any version, for example:
 ```bash
@@ -460,7 +444,7 @@ Have their own README and tools since they don't run on the Rails, see [lib/buil
 ### Raster import support
 Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.
 
-Access to temporary dir is also needed. Depending on your installation you might also need to run `chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
+Access to temporary dir is also needed. Depending on your installation you might also need to run `sudo chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
 
 ## Install local instance of cold beer ##
 

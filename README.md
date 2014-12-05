@@ -322,11 +322,7 @@ sudo apt-get install nodejs
 ```
 
 We currently run our node apps against version 0.10. You can install [NVM](https://github.com/creationix/nvm) 
-to handle multiple versions in the same system:
-```bash
-curl https://raw.githubusercontent.com/creationix/nvm/v0.20.0/install.sh | bash
-source ~/.bashrc
-```
+to handle multiple versions in the same system.
 
 Then you can install and use any version, for example:
 ```bash

@@ -44,8 +44,12 @@ describe("decorators", function() {
         getMocks.apply(this);
       });
 
-      it("Should be able to add elder method ", function() {
+      it("Should be able to add elder method ", function(done) {
+        // If not, it fails running this test with PhantomJS :S
+        setTimeout(function(){
           expect(Backbone.Model.prototype.elder).toBeTruthy();
+          done();
+        }, 500);
       });
 
       it("Should be able to call a method from a parent class", function() {

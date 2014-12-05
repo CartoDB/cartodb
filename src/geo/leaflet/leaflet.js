@@ -29,11 +29,14 @@
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom')
       };
+
+
       if (this.map.get('bounding_box_ne')) {
         //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
-      if(!this.options.map_object) {
+      if (!this.options.map_object) {
+
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
         // remove the "powered by leaflet"
@@ -43,21 +46,26 @@
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
       } else {
+
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
+
         var c = self.map_leaflet.getCenter();
+
         self._setModelProperty({ center: [c.lat, c.lng] });
         self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-      }
 
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
+      this.map.layers.bind('change:type', this._swicthLayerView, this);
 
       this.map.geometries.bind('add', this._addGeometry, this);
       this.map.geometries.bind('remove', this._removeGeometry, this);
@@ -114,11 +122,11 @@
 
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
-      if(bounds) {
+
+      if (bounds) {
         this.showBounds(bounds);
       }
     },
-
 
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
@@ -193,11 +201,17 @@
       // add them again, in correct order
       if(appending) {
         cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
+        if(layer_view.setZIndex) {
+          layer_view.setZIndex(layer.get('order'))
+        }
       } else {
         this.map.layers.each(function(layerModel) {
           var v = self.layers[layerModel.cid];
           if(v) {
             cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
+            if(v.setZIndex) {
+              v.setZIndex(layerModel.get('order'))
+            }
           }
         });
       }
@@ -214,7 +228,15 @@
         this.map.set({ attribution: attributions });
       }
 
-      this.trigger('newLayerView', layer_view, this);
+      if(opts == undefined || !opts.silent) {
+        this.trigger('newLayerView', layer_view, layer, this);
+      }
+      return layer_view;
+    },
+
+    pixelToLatLon: function(pos) {
+      var point = this.map_leaflet.containerPointToLatLng([pos[0], pos[1]]);
+      return point;
     },
 
     latLonToPixel: function(latlon) {
@@ -254,18 +276,33 @@
     },
 
     invalidateSize: function() {
-      this.map_leaflet.invalidateSize();
+      // there is a race condition in leaflet. If size is invalidated
+      // and at the same time the center is set the final center is displaced
+      // so set pan to false so the map is not moved and then force the map
+      // to be at the place it should be
+      this.map_leaflet.invalidateSize({ pan: false })//, animate: false });
+      this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0, {
+        animate: false
+      });
     }
 
   }, {
 
     layerTypeMap: {
       "tiled": cdb.geo.LeafLetTiledLayerView,
+      "wms": cdb.geo.LeafLetWMSLayerView,
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
-      // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+
+      // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
+      "gmapsbase": cdb.geo.LeafLetGmapsTiledLayerView,
+
+      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
+      "namedmap": cdb.geo.LeafLetCartoDBNamedMapView,
+      "torque": function(layer, map) {
+        return new cdb.geo.LeafLetTorqueLayer(layer, map);
+      }
     },
 
     createLayer: function(layer, map) {
@@ -273,15 +310,24 @@
       var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
       if (layerClass) {
-        layer_view = new layerClass(layer, map);
+        try {
+          layer_view = new layerClass(layer, map);
+        } catch(e) {
+          cdb.log.error("MAP: error creating layer" + layer.get('type') + " " + e);
+        }
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");
       }
       return layer_view;
     },
 
-    addLayerToMap: function(layer_view, map) {
+    addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
+      if(pos !== undefined) {
+        if(v.setZIndex) {
+          v.setZIndex(pos);
+        }
+      }
     },
 
     /**

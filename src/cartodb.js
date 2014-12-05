@@ -1,22 +1,23 @@
 // entry point
-(function() {
+;(function() {
 
     var root = this;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.26-dev';
+    cdb.VERSION = "3.11.25";
+    cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
       '2.1.0': ''
     };
 
-    cdb.CARTOCSS_DEFAULT_VERSION = '2.0.0';
+    cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
     cdb.CDB_HOST = {
-      'http': 'tiles.cartocdn.com',
-      'https': 'd3pu9mtm6f0hk5.cloudfront.net'
+      'http': 'api.cartocdn.com',
+      'https': 'cartocdn.global.ssl.fastly.net'
     };
 
     root.cdb.config = {};
@@ -37,6 +38,7 @@
     cdb.files = [
         "../vendor/jquery.min.js",
         "../vendor/underscore-min.js",
+        "../vendor/json2.js",
         "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
@@ -47,6 +49,7 @@
         "../vendor/mousewheel.js",
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
+        "../vendor/lzma.js",
 
         'core/decorator.js',
         'core/config.js',
@@ -59,6 +62,10 @@
         'geo/geocoder.js',
         'geo/geometry.js',
         'geo/map.js',
+        'geo/ui/text.js',
+        'geo/ui/annotation.js',
+        'geo/ui/image.js',
+        'geo/ui/share.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
         'geo/ui/legend.js',
@@ -66,30 +73,38 @@
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
+        'geo/ui/layer_selector.js',
+        'geo/ui/mobile.js',
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
+        'geo/ui/fullscreen.js',
 
+        'geo/layer_definition.js',
         'geo/common.js',
 
-        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_gmaps_tiledlayer.js',
+        'geo/leaflet/leaflet_wmslayer.js',
+        'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
-
 
         'geo/gmaps/gmaps_base.js',
         'geo/gmaps/gmaps_baselayer.js',
         'geo/gmaps/gmaps_plainlayer.js',
         'geo/gmaps/gmaps_tiledlayer.js',
+        'geo/gmaps/gmaps_cartodb_layergroup.js',
         'geo/gmaps/gmaps_cartodb_layer.js',
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
+        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
+        'ui/common/dropdown.js',
 
         'vis/vis.js',
         'vis/overlays.js',

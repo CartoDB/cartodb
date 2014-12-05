@@ -47,6 +47,26 @@ describe("core.view", function() {
       expect(view._callbacks).toEqual(undefined);
   });
 
+  it("should unlink the view model", function() {
+      var called = false;
+      var new_view = new TestView({ el: $('<div>'), model: new Backbone.Model() });
+      
+      spyOn(new_view, 'test_method');
+      new_view.model.bind('change', new_view.test_method, new_view);
+      new_view.model.bind('change', function() { called= true;});
+
+      new_view.model.trigger('change');
+      expect(called).toEqual(true);
+      expect(new_view.test_method).toHaveBeenCalled();
+      expect(new_view.test_method.calls.count()).toEqual(1);
+      called = false;
+      new_view.clean();
+      //trigger again
+      new_view.model.trigger('change');
+      expect(called).toEqual(true);
+      expect(new_view.test_method.calls.count()).toEqual(1);
+  });
+
   it("should unlink linked models", function() {
       var called = false;
       var model = new Backbone.Model();
@@ -58,14 +78,14 @@ describe("core.view", function() {
       model.trigger('change');
       expect(called).toEqual(true);
       expect(view.test_method).toHaveBeenCalled();
-      expect(view.test_method.callCount).toEqual(1);
+      expect(view.test_method.calls.count()).toEqual(1);
       called = false;
       view.clean();
       expect(_.size(view._models)).toEqual(0);
       //trigger again
       model.trigger('change');
       expect(called).toEqual(true);
-      expect(view.test_method.callCount).toEqual(1);
+      expect(view.test_method.calls.count()).toEqual(1);
   });
 
   it("should add and remove subview", function() {
@@ -107,7 +127,7 @@ describe("core.view", function() {
       expect(v1.el.style.display).toEqual('none');
   });
 
-  it("should retrigger an event when launched on a descendant object", function() {
+  it("should retrigger an event when launched on a descendant object", function(done) {
     var launched = false;
     view.child = new TestView({});
     view.retrigger('cachopo', view.child);
@@ -115,9 +135,10 @@ describe("core.view", function() {
       launched = true;
     }),
     view.child.trigger('cachopo');
-    waits(25);
-
-    expect(launched).toBeTruthy();
+    setTimeout(function(){
+      expect(launched).toBeTruthy();
+      done();  
+    }, 25);
   });
 
   it("should kill an event", function() {

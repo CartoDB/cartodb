@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <script>
+      function main() {
+        cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
+            shareable: true,
+            title: false,
+            description: true,
+            search: true,
+            tiles_loader: true,
+            center_lat: 0,
+            center_lon: 0,
+            zoom: 2
+        })
+        .done(function(vis, layers) {
+          // layer 0 is the base layer, layer 1 is cartodb layer
+          // setInteraction is disabled by default
+          layers[1].setInteraction(true);
+          layers[1].on('featureOver', function(e, pos, latlng, data) {
+            cartodb.log.log(e, pos, latlng, data);
+          });
+
+          // you can get the native map to work with it
+          var map = vis.getNativeMap();
+
+          var annotation = new cdb.geo.ui.Annotation({
+            latlng:[-20, -54],
+            text: "Hi, I'm <strong>here</strong>",
+            mapView: vis.mapView,
+            style: {
+              "z-index": 1000,
+              "color": "#FFF",
+              "text-align": "right",
+              "font-size": "13",
+              "font-family-name": "Helvetica",
+              "box-color": "#F84F40",
+              "box-opacity": 0.7,
+              "box-padding": 10,
+              "line-color": "#F84F40",
+              "line-width": 50
+            }
+          });
+
+          this.mapView.$el.append(annotation.render().$el);
+
+          window.annotation = annotation = new cdb.geo.ui.Annotation({
+            latlng:[14, 34],
+            text: "… and I'm here :)",
+            style: {
+              boxColor: "#FEB24C",
+              lineColor: "#FEB24C"
+            },
+            mapView: vis.mapView
+          });
+
+          this.mapView.$el.append(annotation.render().$el);
+
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

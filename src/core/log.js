@@ -13,21 +13,28 @@
     });
 
     cdb.core.ErrorList = Backbone.Collection.extend({
-        model: cdb.core.Error
+        model: cdb.core.Error,
+        enableTrack: function() {
+          var old_onerror = window.onerror;
+          window.onerror = function(msg, url, line) {
+              cdb.errors.create({
+                  msg: msg,
+                  url: url,
+                  line: line
+              });
+              if (old_onerror)
+                old_onerror.apply(window, arguments);
+          };
+        }
     });
 
     /** contains all error for the application */
     cdb.errors = new cdb.core.ErrorList();
 
+
     // error tracking!
     if(cdb.config.ERROR_TRACK_ENABLED) {
-        window.onerror = function(msg, url, line) {
-            cdb.errors.create({
-                msg: msg,
-                url: url,
-                line: line
-            });
-        };
+      cdb.errors.enableTrack();
     }
 
 
@@ -39,6 +46,11 @@
     //IE7 love
     if(typeof console !== "undefined") {
         _console = console;
+        try {
+          _console.log.apply(_console, ['cartodb.js ' + cartodb.VERSION])
+        } catch(e) {
+          _console = new _fake_console();
+        }
     } else {
         _console = new _fake_console();
     }
@@ -47,9 +59,11 @@
 
         error: function() {
             _console.error.apply(_console, arguments);
-            cdb.errors.create({
-                msg: Array.prototype.slice.call(arguments).join('')
-            });
+            if(cdb.config.ERROR_TRACK_ENABLED) {
+              cdb.errors.create({
+                  msg: Array.prototype.slice.call(arguments).join('')
+              });
+            }
         },
 
         log: function() {

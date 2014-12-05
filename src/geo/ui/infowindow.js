@@ -1,33 +1,37 @@
 /** Usage:
-*
-* Add Infowindow model:
-*
-* var infowindowModel = new cdb.geo.ui.InfowindowModel({
-*   template_name: 'templates/map/infowindow',
-*   latlng: [72, -45],
-*   offset: [100, 10]
-* });
-*
-* var infowindow = new cdb.geo.ui.Infowindow({
-*   model: infowindowModel,
-*   mapView: mapView
-* });
-*
-* Show the infowindow:
-* infowindow.showInfowindow();
-*
-*/
+ *
+ * Add Infowindow model:
+ *
+ * var infowindowModel = new cdb.geo.ui.InfowindowModel({
+ *   template_name: 'infowindow_light',
+ *   latlng: [72, -45],
+ *   offset: [100, 10]
+ * });
+ *
+ * var infowindow = new cdb.geo.ui.Infowindow({
+ *   model: infowindowModel,
+ *   mapView: mapView
+ * });
+ *
+ * Show the infowindow:
+ * infowindow.showInfowindow();
+ *
+ */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
+
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
-    template_name: 'geo/infowindow',
+    template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
+    maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
+    template: "",
     content: "",
     visibility: false,
+    alternative_names: { },
     fields: null // contains the fields displayed in the infowindow
   },
 
@@ -35,25 +39,29 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     this.set({fields: []});
   },
 
-  saveFields: function() {
-    this.set('old_fields', _.clone(this.get('fields')));
+  saveFields: function(where) {
+    where = where || 'old_fields';
+    this.set(where, _.clone(this.get('fields')));
   },
 
   fieldCount: function() {
-    return this.get('fields').length
+    var fields = this.get('fields')
+    if (!fields) return 0;
+    return fields.length
   },
 
-  restoreFields: function(whiteList) {
-     var fields = this.get('old_fields')
-     if(whiteList) {
-       fields = fields.filter(function(f) {
-          return _.contains(whiteList, f.name);
-       });
-     }
-     if(fields && fields.length) {
-       this._setFields(fields);
-     }
-     this.unset('old_fields');
+  restoreFields: function(whiteList, from) {
+    from = from || 'old_fields';
+    var fields = this.get(from);
+    if(whiteList) {
+      fields = fields.filter(function(f) {
+        return _.contains(whiteList, f.name);
+      });
+    }
+    if(fields && fields.length) {
+      this._setFields(fields);
+    }
+    this.unset(from);
   },
 
   _cloneFields: function() {
@@ -77,10 +85,10 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       var fields = this.get('fields');
       if(fields) {
         at = at === undefined ? fields.length: at;
-        fields.push({name: fieldName, title: true, position: at});
+        fields.push({ name: fieldName, title: true, position: at });
       } else {
         at = at === undefined ? 0 : at;
-        this.set('fields', [{name: fieldName, title: true, position: at}])
+        this.set('fields', [{ name: fieldName, title: true, position: at }], { silent: true});
       }
     }
     dfd.resolve();
@@ -116,12 +124,29 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
+  getAlternativeName: function(fieldName) {
+    return this.get("alternative_names") && this.get("alternative_names")[fieldName];
+  },
+
+  setAlternativeName: function(fieldName, alternativeName) {
+    var alternativeNames = this.get("alternative_names") || [];
+
+    alternativeNames[fieldName] = alternativeName;
+    this.set({ 'alternative_names': alternativeNames });
+    this.trigger('change:alternative_names');
+  },
+
   getFieldPos: function(fieldName) {
     var p = this.getFieldProperty(fieldName, 'position');
     if(p == undefined) {
       return Number.MAX_VALUE;
     }
     return p;
+  },
+
+  containsAlternativeName: function(fieldName) {
+    var names = this.get('alternative_names') || [];
+    return names[fieldName];
   },
 
   containsField: function(fieldName) {
@@ -140,8 +165,45 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       this.trigger('remove:fields')
     }
     return this;
+  },
+
+  // updates content with attributes
+  updateContent: function(attributes) {
+    var fields = this.get('fields');
+    this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
   }
 
+}, {
+  contentForFields: function(attributes, fields, options) {
+    options = options || {};
+    var render_fields = [];
+    for(var j = 0; j < fields.length; ++j) {
+      var f = fields[j];
+      var value = String(attributes[f.name]);
+      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
+        render_fields.push({
+          title: f.title ? f.name : null,
+          value: attributes[f.name],
+          index: j ? j : null
+        });
+      }
+    }
+
+    // manage when there is no data to render
+    if (render_fields.length === 0) {
+      render_fields.push({
+        title: null,
+        value: 'No data available',
+        index: j ? j : null,
+        type: 'empty'
+      });
+    }
+
+    return {
+      fields: render_fields,
+      data: attributes
+    };
+  }
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
@@ -155,37 +217,51 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     // Close bindings
-    "click .close":       "_closeInfowindow",
-    "touchstart .close":  "_closeInfowindow",
+    "click .close":         "_closeInfowindow",
+    "touchstart .close":    "_closeInfowindow",
+    "MSPointerDown .close": "_closeInfowindow",
     // Rest infowindow bindings
-    "dragstart":          "_checkOrigin",
-    "mousedown":          "_checkOrigin",
-    "touchstart":         "_checkOrigin",
-    "dblclick":           "_stopPropagation",
-    "mousewheel":         "_stopPropagation",
-    "DOMMouseScroll":     "_stopPropagation",
-    "dbclick":            "_stopPropagation",
-    "click":              "_stopPropagation"
+    "dragstart":            "_checkOrigin",
+    "mousedown":            "_checkOrigin",
+    "touchstart":           "_checkOrigin",
+    "MSPointerDown":        "_checkOrigin",
+    "dblclick":             "_stopPropagation",
+    "DOMMouseScroll":       "_stopBubbling",
+    'MozMousePixelScroll':  "_stopBubbling",
+    "mousewheel":           "_stopBubbling",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
   },
 
   initialize: function(){
     var self = this;
 
-    _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
+    _.bindAll(this, "render", "setLatLng", "_setTemplate", "_updatePosition",
+      "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this.model.get("template_name"));
+    // Set template if it is defined in options
+    if (this.options.template) this.model.set('template', this.options.template);
 
-    this.add_related_model(this.model);
+    // Set template view variable and
+    // compile it if it is necessary
+    if (this.model.get('template')) {
+      this._compileTemplate();
+    } else {
+      this._setTemplate();
+    }
 
-    this.model.bind('change:content',       this.render, this);
-    this.model.bind('change:template_name', this.changeTemplate, this);
-    this.model.bind('change:latlng',        this._update, this);
-    this.model.bind('change:visibility',    this.toggle, this);
-    this.model.bind('change:template',      this._compileTemplate, this);
+    this.model.bind('change:content',             this.render, this);
+    this.model.bind('change:template_name',       this._setTemplate, this);
+    this.model.bind('change:latlng',              this._update, this);
+    this.model.bind('change:visibility',          this.toggle, this);
+    this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:alternative_names',   this.render, this);
+    this.model.bind('change:width',               this.render, this);
+    this.model.bind('change:maxHeight',           this.render, this);
 
-    this.mapView.map.bind('change',         this._updatePosition, this);
+    this.mapView.map.bind('change',             this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
       self.hide(true);
@@ -195,43 +271,72 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       self.show(true);
     });
 
-    // Set min height to show the scroll
-    this.minHeightToScroll = 180;
+    this.add_related_model(this.mapView.map);
 
-    this.render();
+    // Hide the element
     this.$el.hide();
   },
+
 
   /**
    *  Render infowindow content
    */
   render: function() {
+
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      var $jscrollpane = this.$(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-
+      
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
       });
-      var template_name = _.clone(this.model.attributes.template_name);
-      // Sanitized them
-      var sanitized_fields = this._fieldsToString(fields, template_name);
+      var data = this.model.get('content') ? this.model.get('content').data : {};
 
-      this.$el.html($(this.template({ content: { fields: sanitized_fields }})));
+      // If a custom template is not applied, let's sanitized
+      // fields for the template rendering
+      if (this.model.get('template_name')) {
+        var template_name = _.clone(this.model.attributes.template_name);
+
+        // Sanitized them
+        fields = this._fieldsToString(fields, template_name);
+      }
+
+      // Join plan fields values with content to work with
+      // custom infowindows and CartoDB infowindows.
+      var values = {};
+      _.each(this.model.get('content').fields, function(pair) {
+        values[pair.title] = pair.value;
+      })
+
+      var obj = _.extend({
+          content: {
+            fields: fields,
+            data: data
+          }
+        },values);
+
+      this.$el.html(this.template(obj));
+
+      // Set width and max-height from the model only
+      // If there is no width set, we don't force our infowindow
+      if (this.model.get('width')) {
+        this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+      }
+      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
       var self = this;
       setTimeout(function() {
-        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
-        if (self.minHeightToScroll <= actual_height)
-          self.$el.find(".cartodb-popup-content").jScrollPane({
+        var actual_height = self.$(".cartodb-popup-content").outerHeight();
+        if (self.model.get('maxHeight') <= actual_height)
+          self.$(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
@@ -242,27 +347,46 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
+
+      if(!this.isLoadingData()) {
+        this.model.trigger('domready', this, this.$el);
+        this.trigger('domready', this, this.$el);
+      }
     }
 
     return this;
   },
 
+  _getModelTemplate: function() {
+    return this.model.get("template_name")
+  },
+
   /**
    *  Change template of the infowindow
    */
-  changeTemplate: function(template_name) {
-    this.template = cdb.templates.getTemplate(this.model.get("template_name"));
-    this.render();
+  _setTemplate: function() {
+    if (this.model.get('template_name')) {
+      this.template = cdb.templates.getTemplate(this._getModelTemplate());
+      this.render();
+    }
   },
 
   /**
    *  Compile template of the infowindow
    */
   _compileTemplate: function() {
-    this.template = new cdb.core.Template({
-       template: this.model.get('template'),
-       type: this.model.get('template_type') || 'mustache'
-    }).asFunction()
+    var template = this.model.get('template') ?
+      this.model.get('template') :
+      cdb.templates.getTemplate(this._getModelTemplate());
+
+    if(typeof(template) !== 'function') {
+      this.template = new cdb.core.Template({
+        template: template,
+        type: this.model.get('template_type') || 'mustache'
+      }).asFunction()
+    } else {
+      this.template = template
+    }
 
     this.render();
   },
@@ -303,19 +427,26 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  - Cut off title if it is very long (in header or image templates).
    *  - If the value is a valid url, let's make it a link.
    *  - More to come...
-   */                                                                                                                
+   */
   _sanitizeField: function(attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value == null || attr.value == undefined) {
       attr.value = '';
     }
 
+    //Get the alternative title
+    var alternative_name = this.model.getAlternativeName(attr.title);
+
+    if (attr.title && alternative_name) {
+      // Alternative title
+      attr.title = alternative_name;
+    } else if (attr.title) {
+      // Remove '_' character from titles
+      attr.title = attr.title.replace(/_/g,' ');
+    }
+
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
-
-    // Remove '_' character from titles
-    if (attr.title)
-      attr.title = attr.title.replace(/_/g,' ');
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
@@ -343,16 +474,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return attr;
   },
 
+  isLoadingData: function() {
+    var content = this.model.get("content");
+    return content.fields && content.fields.length == 1 && content.fields[0].type === "loading";
+  },
+
   /**
    *  Check if infowindow is loading the row content
    */
   _checkLoading: function() {
-    var content = this.model.get("content");
-
-    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
-      this._startSpinner()
+    if (this.isLoadingData()) {
+      this._startSpinner();
     } else {
-      this._stopSpinner()
+      this._stopSpinner();
     }
   },
 
@@ -402,7 +536,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var content = this.model.get("content");
 
     if (content && content.fields && content.fields.length > 0) {
-      return (content.fields[0].value).toString();
+      return (content.fields[0].value || '').toString();
     }
 
     return false;
@@ -478,7 +612,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/
       return String(url).match(urlPattern) != null ? true : false;
     }
 
@@ -490,6 +624,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
+  },
+
+  /**
+   *  Stop event bubbling
+   */
+  _stopBubbling: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
   },
 
   /**
@@ -507,6 +649,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       content:  {
         fields: [{
           title: null,
+          alternative_name: null,
           value: 'Loading content...',
           index: null,
           type: "loading"
@@ -525,6 +668,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       content:  {
         fields: [{
           title: null,
+          alternative_name: null,
           value: 'There has been an error...',
           index: null,
           type: 'error'
@@ -548,11 +692,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _closeInfowindow: function(ev) {
     if (ev) {
-      ev.preventDefault()
+      ev.preventDefault();
       ev.stopPropagation();
     }
-
-    this.model.set("visibility",false);
+    if (this.model.get("visibility")) {
+       this.model.set("visibility", false);
+       this.trigger('close');
+    }
   },
 
   /**
@@ -609,7 +755,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to show up
    */
   _animateIn: function(delay) {
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
       this.$el.css({
         'marginBottom':'-10px',
         'display':'block',
@@ -631,7 +777,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to disappear
    */
   _animateOut: function() {
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
       var self = this;
       this.$el.animate({
         marginBottom: "-10px",

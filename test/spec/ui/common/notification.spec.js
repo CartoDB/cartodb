@@ -10,30 +10,27 @@ describe("common.ui.Notification", function() {
     //spyOn(dialog, 'cancel');
   });
 
-  it("open should show the element", function() {
-    runs(function () {
-      expect(notification.$el.css('display')).toEqual('none');
-      notification.open();
-    });
-    waits(500);
-    runs(function () {
+  it("open should show the element", function(done) {
+    expect(notification.$el.css('display')).toEqual('none');
+    notification.open();
+    setTimeout(function () {
       expect(notification.$el.css('display')).toEqual('block');
-    });
+      done();
+    }, 500);
   });
 
-  it("should be closed on timeout", function() {
-    runs(function () {
-      notification = new cdb.ui.common.Notification({
-        el: $('<div>'),
-        timeout: 250,
-        template: 'template'
-      });
-      notification.open();
+  it("should be closed on timeout", function(done) {
+    notification = new cdb.ui.common.Notification({
+      el: $('<div>'),
+      timeout: 250,
+      template: 'template'
     });
-    waits(500);
-    runs(function () {
+    notification.open();
+    
+    setTimeout(function () {
       expect(notification.$el.css('display')).toEqual('none');
-    });
+      done();
+    }, 500);
   });
 
 

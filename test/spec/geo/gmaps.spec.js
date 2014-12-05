@@ -17,14 +17,18 @@
       layer    = new cdb.geo.TileLayer({ urlTemplate: layerURL });
 
       spy = {
-        zoomChanged: function(){},
-        centerChanged: function(){}
+        zoomChanged:        function(){},
+        centerChanged:      function(){},
+        scrollWheelChanged: function(){}
       };
 
       spyOn(spy, 'zoomChanged');
       spyOn(spy, 'centerChanged');
+      spyOn(spy, 'scrollWheelChanged');
+
       map.bind('change:zoom', spy.zoomChanged);
       map.bind('change:center', spy.centerChanged);
+      map.bind('change:scrollwheel', spy.scrollWheelChanged);
     });
 
     it("should change bounds when center is set", function() {
@@ -36,23 +40,28 @@
       expect(map.getViewBounds).not.toHaveBeenCalled();
     });
 
-    it("should change center and zoom when bounds are changed", function() {
+    it("should change center and zoom when bounds are changed", function(done) {
       var s = sinon.spy();
       mapView.getSize = function() { return {x: 200, y: 200}; }
       map.bind('change:center', s);
       spyOn(mapView, '_setCenter');
       mapView._bindModel();
-      runs(function() {
-        map.set({
-          'view_bounds_ne': [1, 1],
-          'view_bounds_sw': [-0.3, -1.2]
-        })
+
+      map.set({
+        'view_bounds_ne': [1, 1],
+        'view_bounds_sw': [-0.3, -1.2]
       });
-      waits(1000);
-      runs(function() {
+
+      setTimeout(function() {
         expect(mapView._setCenter).toHaveBeenCalled();
-        //expect(s.called).toEqual(true);
-      });
+        done();
+      }, 1000);
+    });
+
+    it("should allow to disable the scroll wheel", function() {
+      map.disableScrollWheel();
+      expect(spy.scrollWheelChanged).toHaveBeenCalled();
+      expect(map.get("scrollwheel")).toEqual(false);
     });
 
     it("should change zoom", function() {
@@ -108,23 +117,47 @@
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
-      layer = new cdb.geo.CartoDBLayer({});
+      layer = new cdb.geo.CartoDBLayer({
+        table_name: 'test',
+        user_name: 'testuser',
+        tile_style: 'teststyle'
+      });
       map.addLayer(new cdb.geo.PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(cdb.geo.GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
-    it("should create a cartodb logo when layer is cartodb", function() {
-      runs(function() {
-        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO"});
-        var lyr = map.addLayer(layer);
-        var layerView = mapView.getLayerByCid(lyr);
+    it("should create a CartoDBGroupLayer when the layer is layergroup", function() {
+      layer = new cdb.geo.CartoDBGroupLayer({
+        layer_definition: {
+          version: '1.0.0',
+          layers: [{
+             type: 'cartodb', 
+             options: {
+               sql: "select * from european_countries_export",
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+               cartocss_version : '2.0.0',
+               interactivity: ['test2', 'cartodb_id2']
+             }
+           }]
+        }
       });
-      waits(2000);
-      runs(function() {
+      map.addLayer(new cdb.geo.PlainLayer({}));
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(cdb.geo.GMapsCartoDBLayerGroupView.prototype.isPrototypeOf(layerView)).toBeTruthy();
+    });
+
+    it("should create a cartodb logo when layer is cartodb", function(done) {
+      layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+
+      setTimeout(function() {
         expect(container.find("div.cartodb-logo").length).toEqual(1);
-      });
+        done();
+      }, 3000);
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {
@@ -191,6 +224,12 @@
       var v = mapView.geometries[geo.cid];
       var geojson = cdb.geo.gmaps.PathView.getGeoJSON(v.geom, 'MultiPolygon');
       expect(geojson).toEqual(multipoly);
+    });
+
+    it("should swicth layer", function() {
+      map.addLayer(layer);
+      layer.set('type', 'torque');
+      expect(mapView.layers[layer.cid] instanceof cdb.geo.GMapsTorqueLayerView).toEqual(true);
     });
 
 /*

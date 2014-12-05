@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Slider | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+
+    <!-- CartoDB library -->
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <script type="text/javascript" src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <!-- JQuery library -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+    <!-- Before/after-map -->
+    <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="js/jquery.beforeafter-map-0.11-CDB.js"></script>
+
+  </head>
+
+  <body onload="main();">
+
+    <div id="map-container">
+      <div id="before" style="height:600px;width:100%;"></div>
+      <div id="after" style="height:600px;width:100%;"></div>
+    </div>
+
+    <script>
+      function _generate_map(container){
+
+        var mapa = L.map(container, {
+            center: [43,-90],
+            zoom: 4,
+            scrollWheelZoom: false,
+            attributionControl: false,
+            inertia: true
+        });
+
+        L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png', {
+              attribution: 'Stamen'
+            }).addTo(mapa);
+
+        if (container === "before") {
+            cartodb.createLayer(mapa, 'http://documentation.cartodb.com/api/v2/viz/0b6b2f94-6a52-11e4-8910-0e853d047bba/viz.json')
+            .addTo(mapa)
+            .done(function(layer) {
+            })
+            .error(function(err) {
+                console.log("error layer before : " + err);
+            });
+
+        } else {
+            cartodb.createLayer(mapa, 'http://documentation.cartodb.com/api/v2/viz/bdeb4618-6a52-11e4-8522-0e9d821ea90d/viz.json')
+            .addTo(mapa)
+            .done(function(layer) {
+
+            })
+            .error(function(err) {
+                console.log("error layer after: " + err);
+            });
+        }
+
+        return mapa;
+      }
+      
+
+      function main() {
+        var before = _generate_map("before"),
+            after = _generate_map("after");
+
+        $('#map-container').beforeAfter(before, after,{
+          arrowTop: 0.95,
+          animateIntro: true,
+          introDelay: 1500,
+          introDuration: 2000,
+          introPosition: .30,
+          imagePath: './imgs/',
+          showFullLinks: true,
+          permArrows: true,
+          arrowLeftOffset: -115,
+          arrowRightOffset: -5
+        });
+      }
+    </script>
+  </body>
+</html>

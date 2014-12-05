@@ -1,0 +1,23 @@
+
+  /**
+   *  CartoDB tooltip dark styles
+   */
+
+  div.cartodb-tooltip-content-wrapper.dark {
+    background: rgb(0,0,0);
+    background:rgba(0,0,0,0.75);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#bf000000, endColorstr=#bf000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bf000000, endColorstr=#bf000000)";
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark h4 {
+    color:#999;
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark p {
+    color:#FFFFFF;
+  }
+
+  div.cartodb-tooltip-content-wrapper.dark a {
+    color:#397DB9;
+  }

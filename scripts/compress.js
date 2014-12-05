@@ -56,39 +56,37 @@ for(var i = 0; i < files.length; ++i) {
   }
 }
 
-require('git-rev').long(function (sha) {
-  concat_files(vendor_files, [], function(vendor_js) {
-    concat_files(cdb_files, [], function(cdb_js) {
-      fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
-        fs.writeFile("dist/_cartodb.js", _.template(final_js)({
-          CDB_DEPS: vendor_js,
-          CDB_LIB: cdb_js,
-          version: package_.version,
-          sha: sha,
-          load_jquery: true
-        }));
+function create_dist_file(vendor_files, cdb_files, ignore, name) {
+  require('git-rev').long(function (sha) {
+    concat_files(vendor_files, ignore, function(vendor_js) {
+      concat_files(cdb_files, ignore, function(cdb_js) {
+        fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
+          fs.writeFile(name, _.template(final_js)({
+            CDB_DEPS: vendor_js,
+            CDB_LIB: cdb_js,
+            version: package_.version,
+            sha: sha,
+            load_jquery: true
+          }));
+        });
       });
     });
   });
-});
+}
 
-//no jquery
-require('git-rev').long(function (sha) {
-  concat_files(vendor_files, ['./vendor/jquery.min.js'], function(vendor_js) {
-    concat_files(cdb_files, [], function(cdb_js) {
-      fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
-        fs.writeFile("dist/_cartodb_nojquery.js", _.template(final_js)({
-          CDB_DEPS: vendor_js,
-          CDB_LIB: cdb_js,
-          version: package_.version,
-          sha: sha,
-          load_jquery: false
-        }));
-      });
-    });
-  });
-});
+cdb_ui_files = [
+  './src/ui/common/tabpane.js',
+  './src/ui/common/dialog.js',
+  './src/ui/common/notification.js',
+  './src/ui/common/table.js',
+  './src/geo/leaflet/leaflet.geometry.js',
+  './src/geo/gmaps/gmaps.geometry.js',
+];
 
+create_dist_file(vendor_files, cdb_files, [], "dist/_cartodb.js");
+create_dist_file(vendor_files, cdb_files, ['./vendor/jquery.min.js'], "dist/_cartodb_nojquery.js");
+create_dist_file(vendor_files, cdb_files, ['./vendor/leaflet.js'], "dist/_cartodb_noleaflet.js");
+create_dist_file(vendor_files, cdb_files.concat(cdb_ui_files), [], "dist/cartodb.full.uncompressed.js");
 
 
 //exec batch commands

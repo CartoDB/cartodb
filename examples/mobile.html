@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mobile | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <script>
+      function main() {
+        var map = new L.Map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        });
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/3fbabeb2-47b2-11e4-b614-0e9d821ea90d/viz.json', {
+          searchControl: true,
+          mobile_layout: true,
+          force_mobile: $(window).width() < 620
+        })
+        .addTo(map)
+        .on('done', function(layer) {
+
+        })
+        .on('error', function(err) {
+          alert("some error occurred: " + err);
+        });
+      }
+
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

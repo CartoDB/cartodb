@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scroll map example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+
+      div.example {
+        display:block;
+        padding:0 20px;
+      }
+
+      div.example p {
+        font:normal 0.9em "Helvetica", Arial;
+        color:#666;
+      }
+
+      div.example h2 {
+        font:bold 1.3em "Helvetica", Arial;
+        color:#000;
+      }
+
+      #map {
+        width:100%;
+        height:400px;
+        margin:50px 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+
+  </head>
+    
+  <body>
+    <div class="example">
+      <h2>TRYING A CARTODB MAP IN A PAGE WITH SCROLL</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas elementum sem id arcu posuere semper. Fusce consectetur ipsum et augue laoreet aliquet. Donec imperdiet nisi vel tellus accumsan quis dapibus sem consectetur. Fusce ultrices tellus ut lacus molestie ultricies. Proin lacus metus, venenatis vitae sodales gravida, bibendum non magna. Morbi vitae euismod sem. Suspendisse sit amet sem in arcu vehicula ultrices ut ac arcu.</p>
+
+      <p>Sed vehicula, urna ut tempus bibendum, tellus nisl luctus dolor, et convallis nisi nisl a tellus. Fusce ante metus, elementum in consectetur vitae, ultricies et arcu. Fusce nec metus a nunc pharetra rhoncus. Curabitur et enim sit amet dolor iaculis pulvinar ac et lacus. Vivamus ullamcorper est ut tellus sagittis adipiscing. Nam eget nunc vel turpis consectetur gravida. Morbi varius felis ut mauris aliquam vel sollicitudin metus pulvinar.</p>
+
+      <p>Aenean lobortis lorem ac mauris condimentum tempor. Nam aliquet fringilla augue in ullamcorper. Maecenas auctor hendrerit nulla, ut laoreet purus pharetra sit amet. In auctor fermentum mi, et egestas ipsum varius a. Morbi commodo, eros eu mollis convallis, mauris lacus interdum tellus, non vehicula lectus eros eu quam. Duis hendrerit elementum ipsum, in consectetur augue mollis sed. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus commodo, nisl eget luctus convallis, dui tellus scelerisque quam, at hendrerit mauris felis id magna. Ut vel lacus nisl. Aenean lacinia laoreet posuere. Duis ultrices bibendum mi, tincidunt scelerisque eros pretium in. Nunc ornare porttitor porta. Duis luctus tristique diam id aliquam.</p>
+
+      <p>Sed nec lorem diam, eget tempus lorem. Praesent sit amet urna purus, non tincidunt urna. Duis accumsan, enim sit amet facilisis interdum, massa sem pretium nisi, a aliquam lectus massa ut orci. Vivamus vestibulum bibendum augue ut pretium. Nulla rhoncus fringilla neque id euismod. In hac habitasse platea dictumst. Morbi blandit luctus iaculis.</p>
+
+      <p>Vivamus ut magna dui, feugiat iaculis lorem. In nunc augue, aliquam tristique blandit non, tempus ac neque. In commodo sagittis ante, vel ullamcorper lorem ultrices ut. In nec sem nec nunc tempus fringilla nec pellentesque nibh. Mauris varius pulvinar nibh, quis placerat eros consectetur eget. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In condimentum nisl id elit sollicitudin imperdiet. Nulla eget est leo. Aenean at velit vel quam imperdiet molestie quis sit amet turpis. In hac habitasse platea dictumst.</p>
+
+      <div id="map"></div>
+    </div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script>
+
+      function main() {
+
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        })
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+        cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
+          query: 'select * from {{table_name}} where area::float > 10000'
+        })
+         .on('done', function(layer) {
+          map.addLayer(layer);
+
+          layer.on('featureOver', function(e, pos, latlng, data) {
+            cartodb.log.log(e, pos, latlng, data);
+          });
+
+          layer.on('error', function(err) {
+            cartodb.log.log('error: ' + err);
+          });
+
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
+        });
+
+      }
+
+      // you could use $(window).load(main);
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

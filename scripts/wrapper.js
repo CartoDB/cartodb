@@ -31,6 +31,7 @@
   root.Mustache = Mustache;
   (function() {
     var $ = root.$;
+    var jQuery = root.jQuery;
     var L = root.L;
     var Mustache = root.Mustache;
     var Backbone = root.Backbone;

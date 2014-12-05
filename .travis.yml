@@ -1,0 +1,16 @@
+language: node_js
+rvm:
+- 2.1.2
+node_js:
+  - 0.10
+before_install:
+  - npm install -g grunt-cli
+install:
+  - ruby --version
+  - gem --version
+  - bundle install
+  - npm install
+before_script:
+  - cp secrets.example.json secrets.json
+script:
+  - grunt test

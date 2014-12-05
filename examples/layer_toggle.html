@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      .layer-control {
+        position: absolute;
+        padding: 10px;
+        top: 10px;
+        left: 10px;
+        background: #fff;
+        border: 4px solid #000;
+        z-index: 1000;
+      }
+      .layer-control a {
+        color: #333;
+      }
+    </style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+  </head>
+  <body>
+
+    <div class="layer-control">
+      <a href="#" class="layer-toggle">Hide layer</a>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <script>
+
+      function main() {
+        var map = new L.Map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        });
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+        // create a layer with 1 sublayer
+        cartodb.createLayer(map, {
+          user_name: 'documentation',
+          type: 'cartodb',
+          sublayers: [{
+            sql: "select * from european_countries_e",
+            cartocss: '#european_countries_e {marker-fill: #F0F0F0;}'
+          }]
+        }).done(function(layer) {
+
+          // add the layer to our map which already contains 1 sublayer
+          map.addLayer(layer);
+
+          // create and add a new sublayer
+          var sublayer = layer.createSubLayer({
+            sql: "select * from european_countries_e limit 200",
+            cartocss: '#european_countries_e {marker-fill: red;}'
+          });
+
+          // change the query for the first layer
+          layer.getSubLayer(0).setSQL('select * from european_countries_e where area > 10');
+
+          $(".layer-toggle").on("click", function() {
+            if (layer.toggle()) {
+              $(this).text("Hide layer");
+            } else {
+              $(this).text("Show layer");
+            }
+          });
+
+        });
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

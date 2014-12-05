@@ -109,7 +109,7 @@ describe("core.Model", function() {
     expect(triggered).toBeTruthy();
   });
 
-  it("should retrigger an event when launched on a descendant object", function() {
+  it("should retrigger an event when launched on a descendant object", function(done) {
     var launched = false;
     model.child = new TestModel({});
     model.retrigger('cachopo', model.child);
@@ -117,9 +117,10 @@ describe("core.Model", function() {
       launched = true;
     }),
     model.child.trigger('cachopo');
-    waits(25);
-
-    expect(launched).toBeTruthy();
+    setTimeout(function(){
+      expect(launched).toBeTruthy();
+      done();
+    }, 25);
   });
 
   it("should trigger 'saving' event when save", function() {

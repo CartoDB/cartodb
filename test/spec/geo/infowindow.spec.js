@@ -7,6 +7,22 @@ describe("cdb.geo.ui.infowindow", function() {
       model = new cdb.geo.ui.InfowindowModel();
     });
 
+    it("should allow adding an alternative name", function() {
+
+      model.addField('the_name');
+      model.addField('the_description');
+
+      model.setAlternativeName('the_name', 'nombre');
+      model.setAlternativeName('the_description', 'descripción');
+
+      n = model.getAlternativeName('the_name');
+      d = model.getAlternativeName('the_description');
+
+      expect(n).toEqual("nombre");
+      expect(d).toEqual("descripción");
+
+    });
+
     it("should add a field", function() {
       expect(model.containsField('test')).toEqual(false);
       model.addField('test');
@@ -86,6 +102,56 @@ describe("cdb.geo.ui.infowindow", function() {
       spyOn(view, 'render');
       model.set('template', 'jaja');
       expect(view.render).toHaveBeenCalled()
+    });
+
+    it("should change width of the popup when width attribute changes", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup"></div>',
+        'width': 100
+      });
+      expect(view.$('.cartodb-popup').css('width')).toBe('100px');
+    });
+
+    it("shouldn't change width of the popup when width attribute is undefined", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup v2"></div>'
+      })
+      view.model.unset('width');
+      expect(view.$('.cartodb-popup').css('width')).toBe(undefined);
+    });
+
+    it("should change maxHeight of the popup when maxHeight attribute changes", function() {
+      spyOn(view, 'render');
+      view.model.set({
+        'template': '<div class="cartodb-popup"><div class="cartodb-popup-content"></div></div>',
+        'maxHeight': 100
+      });
+      expect(view.$('.cartodb-popup-content').css('max-height')).toBe('100px');
+    });
+
+    it("should render without alternative_name set", function() {
+      var template = '<div class="cartodb-popup">\
+        <a href="#close" class="cartodb-popup-close-button close">x</a>\
+         <div class="cartodb-popup-content-wrapper">\
+           <div class="cartodb-popup-content">\
+             <ul id="mylist"></ul>\
+           </div>\
+         </div>\
+         <div class="cartodb-popup-tip-container"></div>\
+      </div>';
+
+      model.unset('alternative_names');
+      model.set({
+        content: {
+          fields: [ { title:'test', value:true, position:0, index:0 } ]
+        },
+        template_name:'infowindow_light',
+        template: template
+      });
+
+      expect(view.render().$el.html().length).not.toBe(0);
     });
 
     it("should convert value to string when it is a number", function() {
@@ -236,6 +302,70 @@ describe("cdb.geo.ui.infowindow", function() {
   });
 
 
+  describe("custom template", function() {
+    var model, view;
+
+    beforeEach(function() {
+
+      var container = $('<div>').css('height', '200px');
+
+      map = new cdb.geo.Map();
+
+      mapView = new cdb.geo.MapView({
+        el: container,
+        map: map
+      });
+
+      model = new cdb.geo.ui.InfowindowModel({
+        template: '<div>{{ test1 }}</div>',
+        fields: [
+          { title: 'test1', position: 1, value: "x" },
+          { title: 'test2', position: 2, value: "b" }
+        ]
+      });
+
+      view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+    });
+
+    it("should compile the template when changes", function() {
+      view.compile = function() {};
+      spyOn(view, 'compile');
+      view.model.bind('change:template', view.compile);
+      view.model.set('template', '<div>{{test1}}</div>');
+      expect(view.compile).toHaveBeenCalled();
+    });
+
+    it("should render properly when there is only a field without title", function() {
+      model.set({
+        fields: [
+          { name: 'test1', position: 0, title: false },
+        ],
+        content: {
+          fields: [
+            { title: 'test1', position: 0, value: 'jamon' },
+          ]
+        }
+      });
+
+      var new_view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+      expect(new_view.render().$el.html()).toBe('<div>jamon</div>');
+    });
+
+    it("shouldn't sanitize the fields", function() {
+      spyOn(view, '_sanitizeField');
+      view.render();
+      expect(view._sanitizeField).not.toHaveBeenCalled();
+    });
+  });
+
 
   describe("image template", function() {
     var model, view, container, fields, fieldsWithoutURL, url;
@@ -282,6 +412,11 @@ describe("cdb.geo.ui.infowindow", function() {
 
     it("should validate the cover url", function() {
       var url = view._getCoverURL();
+      expect(view._isValidURL(url)).toEqual(true);
+    });
+
+    it("should accept google chart URLS in the cover", function() {
+      var url = "http://chart.googleapis.com/chart?chxl=0:|1990%2F92|2001%2F03|2011%2F13&chxr=1,0,75&chxs=0,676767,11.5,0.5,lt,676767&chxt=x,y&chs=279x210&cht=lc&chco=FF0000&chds=0,69&chd=t:9.5,12.8,15.1,14.6,12.9,10.2,9.5,8.2,7.4,6.2,6,6.5,7.1,7.5,7.9,8,8.2,7.9,7.5,6.9,6.3,5.6&chg=-1,0,0,4&chls=1&chma=0,0,0,25&chm=B,EFEFEF,0,0,0&chtt=Malnourishment+in+&chts=676767,14";
       expect(view._isValidURL(url)).toEqual(true);
     });
 

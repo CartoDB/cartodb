@@ -56,10 +56,7 @@ cdb.core.Template = Backbone.Model.extend({
    */
   render: function(vars) {
     var c = this.compiled = this.compiled || this.get('compiled') || this.compile();
-    var r = cdb.core.Profiler.get('template_render');
-    r.start();
     var rendered = c(vars);
-    r.end();
     return rendered;
   },
 

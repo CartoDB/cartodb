@@ -33,9 +33,11 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/icons/default_marker.png',
+          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           anchor: {x: 10, y: 10}
-      }
+      },
+      raiseOnDrag: false,
+      crossOnDrag: false
     }
   );
 
@@ -124,15 +126,32 @@ function PathView(geometryModel) {
     */
   }
 
+  // TODO: check this conditions
+
   if(this.geom.getPaths) {
     var paths = this.geom.getPaths();
-    for(var i = 0; i < paths.length; ++i) {
-      bindPath(paths[i]);
+
+    if (paths && paths[0]) {
+      // More than one path
+      for(var i = 0; i < paths.length; ++i) {
+        bindPath(paths[i]);
+      }
+    } else {
+      // One path
+      bindPath(paths);
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
     }
   } else {
-    for(var i = 0; i < this.geom.length; ++i) {
-      bindPath(this.geom[i].getPath());
-      google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+    // More than one path
+    if (this.geom.length) {
+      for(var i = 0; i < this.geom.length; ++i) {
+        bindPath(this.geom[i].getPath());
+        google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+      }
+    } else {
+      // One path
+      bindPath(this.geom.getPath());
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
     }
   }
 

@@ -29,12 +29,19 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-    //TODO: bind zoom change to disable zoom+/zoom-
+    this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 
   render: function() {
     this.$el.html(this.template(this.options));
+    this._checkZoom();
     return this;
+  },
+
+  _checkZoom: function() {
+    var zoom = this.map.get('zoom');
+    this.$('.zoom_in')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('disabled')
+    this.$('.zoom_out')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('disabled')
   },
 
   zoom_in: function(ev) {

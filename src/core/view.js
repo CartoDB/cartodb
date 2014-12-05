@@ -17,6 +17,7 @@
     },
 
     add_related_model: function(m) {
+      if(!m) throw "added non valid model"
       this._models.push(m);
     },
 
@@ -52,6 +53,8 @@
       }
       this.remove();
       this.unbind();
+      // remove this model binding
+      if (this.model && this.model.unbind) this.model.unbind(null, null, this); 
       // remove model binding
       _(this._models).each(function(m) {
         m.unbind(null, null, self);
@@ -118,7 +121,7 @@
     * @method cleanTooltips
     */
     cleanTooltips: function() {
-      $('.tipsy').remove();
+      this.$('.tipsy').remove();
     }
 
 

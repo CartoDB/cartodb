@@ -1,9 +1,12 @@
-(function() {
+
+;(function() {
 
   var root = this;
 
+  root.cartodb = root.cartodb || {};
+
   function SQL(options) {
-    if(cdb === this || window === this) {
+    if(cartodb === this || window === this) {
       return new SQL(options);
     }
     if(!options.user) {
@@ -15,10 +18,15 @@
       loc = 'https';
     }
 
+    this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest);
+    if(!this.ajax) {
+      throw new Error("jQuery or reqwest should be loaded");
+    }
+
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
-      jsonp: !$.support.cors
+      jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
     })
   }
 
@@ -41,8 +49,12 @@
    *    id: '1'
    * })
    */
-  SQL.prototype.execute= function(sql, vars, options, callback) {
-    var promise = new cdb._Promise();
+  SQL.prototype.execute = function(sql, vars, options, callback) {
+
+    //Variable that defines if a query should be using get method or post method
+    var MAX_LENGTH_GET_QUERY = 1024;
+
+    var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
     }
@@ -59,32 +71,69 @@
       crossDomain: true
     };
 
+    if(options.cache !== undefined) {
+      params.cache = options.cache; 
+    }
+
     if(options.jsonp) {
       delete params.crossDomain;
+      if (options.jsonpCallback) {
+        params.jsonpCallback = options.jsonpCallback;
+      }
       params.dataType = 'jsonp';
     }
 
+    // Substitute mapnik tokens
+    // resolution at zoom level 0
+    var res = '156543.03515625';
+    // full webmercator extent
+    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    sql = sql.replace('!bbox!', ext)
+             .replace('!pixel_width!', res)
+             .replace('!pixel_height!', res);
+
     // create query
     var query = Mustache.render(sql, vars);
-    var q = 'q=' + encodeURIComponent(query);
 
-    // request params
+    // check method: if we are going to send by get or by post
+    var isGetRequest = query.length < MAX_LENGTH_GET_QUERY;
+
+    // generate url depending on the http method
     var reqParams = ['format', 'dp', 'api_key'];
-    for(var i in reqParams) {
-      var r = reqParams[i];
-      var v = options[r];
-      if(v) {
-        q += '&' + r + "=" + v;
-      }
+    // request params
+    if (options.extra_params) {
+      reqParams = reqParams.concat(options.extra_params);
     }
 
-    var isGetRequest = options.type == 'get' || params.type == 'get';
-    // generate url depending on the http method
     params.url = this._host() ;
-    if(isGetRequest) {
-      params.url += '?' + q
+    if (isGetRequest) {
+      var q = 'q=' + encodeURIComponent(query);
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if(v) {
+          q += '&' + r + "=" + v;
+        }
+      }
+
+      params.url += '?' + q;
     } else {
-      params.data = q;
+      var objPost = {'q': query};
+      for(var i in reqParams) {
+        var r = reqParams[i];
+        var v = options[r];
+        if (v) {
+          objPost[r] = v;
+        }
+      }
+
+      params.data = objPost;
+      //Check if we are using jQuery(uncompressed) or reqwest (core)
+      if ((typeof(jQuery) !== 'undefined')) {
+        params.type = 'post';
+      } else {
+        params.method = 'post'; 
+      }
     }
 
     // wrap success and error functions
@@ -94,11 +143,18 @@
     if(error) delete error.success;
 
     params.error = function(resp) {
-      var errors = resp.responseText && JSON.parse(resp.responseText);
+      var res = resp.responseText || resp.response;
+      var errors = res && JSON.parse(res);
       promise.trigger('error', errors && errors.error, resp)
       if(error) error(resp);
     }
     params.success = function(resp, status, xhr) {
+      // manage rewest
+      if(status == undefined) {
+        status = resp.status;
+        xhr = resp;
+        resp = JSON.parse(resp.response);
+      }
       promise.trigger('done', resp, status, xhr);
       if(success) success(resp, status, xhr);
       if(callback) callback(resp);
@@ -106,12 +162,12 @@
 
     // call ajax
     delete options.jsonp;
-    $.ajax(_.extend(params, options));
+    this.ajax(_.extend(params, options));
     return promise;
   }
 
   SQL.prototype.getBounds = function(sql, vars, options, callback) {
-      var promise = new cdb._Promise();
+      var promise = new cartodb._Promise();
       var args = arguments,
       fn = args[args.length -1];
       if(_.isFunction(fn)) {
@@ -176,12 +232,19 @@
     var _orderDir;
     var _sql = this;
 
-    function _table(callback) {
-      _table.fetch(callback);
+    function _table() {
+      _table.fetch.apply(_table, arguments);
     }
 
-    _table.fetch = function(callback) {
-      _sql.execute(_table.sql(), {}, callback);
+    _table.fetch = function(vars) {
+      vars = vars || {}
+      var args = arguments,
+      fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        callback = fn;
+        if(args.length === 1) vars = {};
+      }
+      _sql.execute(_table.sql(), vars, callback);
     }
 
     _table.sql = function() {
@@ -191,7 +254,7 @@
       } else {
         s += ' * '
       }
-      
+
       s += "from " + _name;
 
       if(_filters) {
@@ -243,6 +306,26 @@
 
   }
 
-  cartodb.SQL = SQL;
+  /*
+   * sql.filter(sql.f().distance('< 10km')
+   */
+  /*cartodb.SQL.geoFilter = function() {
+    var _sql;
+    function f() {}
+
+    f.distance = function(qty) {
+      qty.replace('km', '*1000')
+      _sql += 'st_distance(the_geom) ' + qty
+    }
+    f.or = function() {
+    }
+
+    f.and = function() {
+    }
+    return f;
+  }
+  */
+
+  root.cartodb.SQL = SQL;
 
 })();

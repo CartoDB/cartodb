@@ -7,6 +7,9 @@ require 'rspec/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].each {|f| require f}
 
+# Inline Resque for queue handling
+Resque.inline = true
+
 RSpec.configure do |config|
   config.mock_with :mocha
 

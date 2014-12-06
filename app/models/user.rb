@@ -11,6 +11,7 @@ class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
+  include Concerns::FeatureFlaggable
 
   self.strict_param_setting = false
 
@@ -50,7 +51,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
+
   GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
@@ -84,6 +85,10 @@ class User < Sequel::Model
         errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
       end
     end
+  end
+
+  def public_user_roles
+    self.organization_user? ? [CartoDB::PUBLIC_DB_USER, database_public_username] : [CartoDB::PUBLIC_DB_USER]
   end
 
   ## Callbacks
@@ -240,7 +245,7 @@ class User < Sequel::Model
         end
 
         # Drop user quota function
-        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._cdb_userquotainbytes()})
+        database.run(%Q{ DROP FUNCTION IF EXISTS "#{self.database_schema}"._CDB_UserQuotaInBytes()})
         # If user is in an organization should never have public schema, so to be safe check
         drop_all_functions_from_schema(self.database_schema)
         unless self.database_schema == 'public'
@@ -381,7 +386,7 @@ class User < Sequel::Model
   end
 
   def database_public_username
-    has_organization_enabled? ? "cartodb_publicuser_#{id}" : 'publicuser'
+    has_organization_enabled? ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
   end
 
   def database_password
@@ -398,6 +403,10 @@ class User < Sequel::Model
   end
 
   def in_database(options = {}, &block)
+    if options[:statement_timeout]
+      in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
+    end
+
     configuration = get_db_configuration_for(options[:as])
 
     connection = $pool.fetch(configuration) do
@@ -411,6 +420,11 @@ class User < Sequel::Model
       yield(connection)
     else
       connection
+    end
+
+  ensure
+    if options[:statement_timeout]
+      in_database.run('SET statement_timeout TO DEFAULT')
     end
   end
 
@@ -944,7 +958,7 @@ class User < Sequel::Model
     .from(:pg_class)
     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
     .where(:relkind => 'r', :nspname => self.database_schema)
-    .exclude(:relname => SYSTEM_TABLE_NAMES)
+    .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
     .all
   end
 
@@ -985,6 +999,7 @@ class User < Sequel::Model
         FROM information_schema.columns c, pg_tables t
         WHERE
         t.tablename = c.table_name AND
+        t.schemaname = c.table_schema AND
         t.tableowner = '#{database_username}' AND
     }
 
@@ -1107,14 +1122,22 @@ class User < Sequel::Model
     end
   end
 
+  def public_table_count
+    table_count({
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      exclude_raster: true
+    })
+  end
+
   # Only returns owned tables (not shared ones)
-  def table_count(privacy_filter=nil)
-    filter = {
-        user_id: self.id
-    }
-    filter[:privacy] = privacy_filter unless privacy_filter.nil?
-    ::Table.filter(filter).count
-  end #table_count
+  def table_count(filters={})
+    filters.merge!(
+      type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+      exclude_shared: true
+    )
+
+    visualization_count(filters)
+  end
 
   def failed_import_count
     DataImport.where(user_id: self.id, state: 'failure').count
@@ -1130,25 +1153,32 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count(
-      CartoDB::Visualization::Member::DERIVED_TYPE,
-      CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-      true
-    )
-  end #public_visualization_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    })
+  end
 
-  # Get a count of visualizations with optional type and privacy filters
-  def visualization_count(type_filter=nil, privacy_filter=nil, exclude_shared=false)
+  # Get a count of visualizations with some optional filters
+  def visualization_count(filters = {})
+    type_filter           = filters.fetch(:type, nil)
+    privacy_filter        = filters.fetch(:privacy, nil)
+    exclude_shared_filter = filters.fetch(:exclude_shared, false)
+    exclude_raster_filter = filters.fetch(:exclude_raster, false)
+
     parameters = {
-      user_id: self.id
+      user_id:        self.id,
+      per_page:       CartoDB::Visualization::Collection::ALL_RECORDS,
+      exclude_shared: exclude_shared_filter
     }
-    parameters[:type] = type_filter unless type_filter.nil?
-    parameters[:privacy] = privacy_filter unless privacy_filter.nil?
-    parameters[:exclude_shared] = true if exclude_shared
-    parameters[:per_page] = CartoDB::Visualization::Collection::ALL_RECORDS
 
+    parameters.merge!(type: type_filter)      unless type_filter.nil?
+    parameters.merge!(privacy: privacy_filter)   unless privacy_filter.nil?
+    parameters.merge!(exclude_raster: exclude_raster_filter) if exclude_raster_filter
     CartoDB::Visualization::Collection.new.fetch(parameters).count
-  end #visualization_count
+  end
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
@@ -1169,7 +1199,8 @@ class User < Sequel::Model
   def update_visualization_metrics
     update_gauge("visualizations.total", maps.count)
     update_gauge("visualizations.table", table_count)
-    update_gauge("visualizations.derived", visualization_count(nil,nil,true))
+
+    update_gauge("visualizations.derived", visualization_count({ exclude_shared: true, exclude_raster: true }))
   end
 
   def rebuild_quota_trigger
@@ -1177,7 +1208,7 @@ class User < Sequel::Model
     in_database(:as => :superuser) do |db|
 
       if !cartodb_extension_version_pre_mu? && has_organization?
-        db.run("DROP FUNCTION IF EXISTS public._cdb_userquotainbytes();")
+        db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
       end
 
       db.transaction do
@@ -1443,6 +1474,30 @@ class User < Sequel::Model
     )
   end
 
+  def set_raster_privileges
+    # Postgis lives at public schema, so raster catalogs too
+    catalogs_schema = "public"
+    queries = [
+      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+    ]
+    unless self.organization.nil?
+      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{database_public_username}\""
+      queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{database_public_username}\""
+    end
+    self.run_queries_in_transaction(queries,true)
+  end
+
+  def set_geo_columns_privileges
+    # Postgis lives at public schema, as do geometry_columns and geography_columns
+    catalogs_schema = 'public'
+    queries = [
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{database_public_username}" },
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{database_public_username}" },
+    ]
+    self.run_queries_in_transaction(queries, true)
+  end
+
   def set_user_privileges # MU
     self.set_user_privileges_in_cartodb_schema
     self.set_user_privileges_in_public_schema
@@ -1450,6 +1505,8 @@ class User < Sequel::Model
     self.set_user_privileges_in_importer_schema
     self.set_user_privileges_in_geocoding_schema
     self.set_privileges_to_publicuser_in_own_schema
+    self.set_geo_columns_privileges
+    self.set_raster_privileges
   end
 
 
@@ -1670,9 +1727,10 @@ TRIGGER
   end
 
   # Cartodb functions
-  def load_cartodb_functions(statement_timeout = nil)
-
-    cdb_extension_target_version = '0.4.1' # TODO: optionally take as parameter?
+  def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
+    if cdb_extension_target_version.nil?
+      cdb_extension_target_version = '0.5.0'
+    end
 
     add_python
 
@@ -1698,32 +1756,32 @@ TRIGGER
           }).first[:count] > 0
 
         db.run(%Q{
-    DO LANGUAGE 'plpgsql' $$
-    DECLARE
-      ver TEXT;
-    BEGIN
-      BEGIN
-        SELECT cartodb.cdb_version() INTO ver;
-      EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
-        RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-        BEGIN
-          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
-        EXCEPTION WHEN undefined_table THEN
-          RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-          CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
-          RETURN;
-        END;
-        RETURN;
-      END;
-      ver := '#{cdb_extension_target_version}';
-      IF position('dev' in ver) > 0 THEN
-        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-      ELSE
-        EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-      END IF;
-    END;
-    $$;
+          DO LANGUAGE 'plpgsql' $$
+          DECLARE
+            ver TEXT;
+          BEGIN
+            BEGIN
+              SELECT cartodb.cdb_version() INTO ver;
+            EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
+              RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+              BEGIN
+                CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
+              EXCEPTION WHEN undefined_table THEN
+                RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
+                CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
+                RETURN;
+              END;
+              RETURN;
+            END;
+            ver := '#{cdb_extension_target_version}';
+            IF position('dev' in ver) > 0 THEN
+              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+            ELSE
+              EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+            END IF;
+          END;
+          $$;
         })
 
         unless statement_timeout.nil?
@@ -1731,7 +1789,6 @@ TRIGGER
         end
 
         obtained = db.fetch('SELECT cartodb.cdb_version() as v').first[:v]
-
 
         unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
           raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
@@ -1741,11 +1798,10 @@ TRIGGER
       end
     end
 
-    # We reset the connections to this database to be sure
-    # the change in default search_path is effective
-    # TODO: only reset IFF migrating from pre-extension times
+    # We reset the connections to this database to be sure the change in default search_path is effective
     self.reset_pooled_connections
 
+    self.rebuild_quota_trigger
   end
 
   def set_statement_timeouts

@@ -71,6 +71,7 @@ gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 gem 'mixpanel',              '4.0.2'
 gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.23.0'
+gem 'resque-metrics',        '0.1.1'
 
 group :development, :test do
   gem 'rb-readline'

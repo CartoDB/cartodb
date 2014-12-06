@@ -1,3 +1,19 @@
+ * Fixed bugs and improvements
+   - fixed metadata tables being dropped if they were in more than one account #1349
+
+3.4.1 (2014-12-01)
+------------------
+ * Fixed bugs and improvements
+   - Modified signature of cartodb:db:load_functions rake task, to both reduce required params (added default values) and
+     allowing to specify a cartodb-postgresql extension version, so existing users can keep with their versions while
+     load_functions loads (optionally) a different one.
+
+3.4.0 (2014-12-01)
+------------------
+* New features
+  - Raster import: Drag & drop geotiff files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS. NOTE: Raster overviews import is not yet fully working, this release handles streamlined import itself.
+    This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
 3.3.1 (2014-11-25)
 ------------------
  * Fixed bugs
@@ -55,7 +71,12 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
+<<<<<<< HEAD
+  * Implemented raster import into the editor. Only table import, yet no viewer/editor.
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor
+=======
   * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
+>>>>>>> master
   * Enables fullscreen for IE11.
   * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 

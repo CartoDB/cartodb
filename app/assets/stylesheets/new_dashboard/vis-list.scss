@@ -1,24 +1,6 @@
 @import "mixins";
 @import "colors";
 
-
-body {
-  font-family: "Lato", "san-serif";
-  font-weight: 400;
-}
-
-a {
-  font-family: "Lato", "san-serif";
-  font-weight: 400;
-}
-
-strong {
-  font-family: "Lato", "san-serif";
-  font-weight: 700;
-}
-
-
-
 .VisList {
   @include display-flex();
 }

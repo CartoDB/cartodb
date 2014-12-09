@@ -584,7 +584,7 @@ module CartoDB
         yield
       rescue Sequel::NoExistingObject => exception
         # INFO: don't fail on nonexistant object delete
-        CartoDB.notify_warning_exception(exception)
+        CartoDB.notify_exception(exception)
       end
 
     end

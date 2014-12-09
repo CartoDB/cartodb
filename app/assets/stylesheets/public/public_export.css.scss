@@ -106,7 +106,7 @@
 }
 
 .export_options .button.grey.like {
-  @include inline-block();
+  display: none;
 }
 .export_options .button.grey.like .icon {
   @include inline-block();

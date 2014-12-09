@@ -391,6 +391,7 @@ module CartoDB
       def add_like_from(user_id)
         Like.create(actor: user_id, subject: id)
         reload_likes
+        self
       rescue Sequel::DatabaseError => exception
         if exception.message =~ /duplicate key/i
           raise AlreadyLikedError
@@ -403,6 +404,7 @@ module CartoDB
         item = likes.select { |like| like.actor == user_id }
         item.first.destroy unless item.first.nil?
         reload_likes
+        self
       end
 
       def liked_by?(user_id)

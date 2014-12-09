@@ -13,13 +13,16 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
-  
-  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :add_like, :is_liked, :remove_like
+
+  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
+               :remove_like
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list]
+  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
+                                                         :is_liked, :remove_like]
   before_filter :link_ghost_tables, only: [:index, :show]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
-                  :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked, :remove_like]
+                                                      :notify_watching, :list_watching, :likes_count, :likes_list,
+                                                      :add_like, :is_liked, :remove_like]
 
   def index
     collection = Visualization::Collection.new.fetch(
@@ -247,10 +250,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(watcher.list)
   end
 
+  # Does not mandate a current_viewer except if vis is not public
   def likes_count
     vis = Visualization::Member.new(id: @table_id).fetch
     if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
-      raise KeyError if current_user.nil? || !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
     end
 
     render_jsonp({
@@ -261,10 +265,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render(text: exception.message, status: 403)
   end
 
+  # Does not mandate a current_viewer except if vis is not public
   def likes_list
     vis = Visualization::Member.new(id: @table_id).fetch
     if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
-      raise KeyError if current_user.nil? || !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
     end
 
     render_jsonp({
@@ -276,15 +281,18 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def add_like
+    return(head 403) unless current_viewer
+
     vis = Visualization::Member.new(id: @table_id).fetch
-    raise KeyError if !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY) &&
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
-    vis.add_like_from(current_user.id)
+    vis.add_like_from(current_viewer.id)
+       .fetch
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
-                   liked: vis.liked_by?(current_user.id)
+                   liked: vis.liked_by?(current_viewer.id)
                  })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
@@ -293,25 +301,30 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def is_liked
+    return(head 403) unless current_viewer
+
     vis = Visualization::Member.new(id: @table_id).fetch
-    raise KeyError if !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY) &&
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
-                   liked: vis.liked_by?(current_user.id)
+                   liked: vis.liked_by?(current_viewer.id)
                  })
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   end
 
   def remove_like
+    return(head 403) unless current_viewer
+
     vis = Visualization::Member.new(id: @table_id).fetch
-    raise KeyError if !vis.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY) &&
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
       vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
 
-    vis.remove_like_from(current_user.id)
+    vis.remove_like_from(current_viewer.id)
+       .fetch
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,

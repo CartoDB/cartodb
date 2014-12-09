@@ -177,6 +177,15 @@ class ApplicationController < ActionController::Base
     super(CartoDB.extract_subdomain(request))
   end
 
+  def current_viewer
+    if @current_viewer.nil?
+      authenticated_sessions = request.session.select {|k,v| k.start_with?("warden.user")}.values
+      authenticated_usernames = authenticated_sessions.select { |username| authenticated?(:scope => username) }
+      @current_viewer = authenticated_usernames.nil? ? nil : User.where(username: authenticated_usernames.first).first
+    end
+    @current_viewer
+  end
+
   protected :current_user
 
 end

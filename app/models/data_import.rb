@@ -110,6 +110,10 @@ class DataImport < Sequel::Model
     success ? handle_success : handle_failure
     Rails.logger.debug log.to_s
     self
+  rescue CartoDB::QuotaExceeded => quota_exception
+    CartoDB::notify_warning_exception(quota_exception)
+    handle_failure
+    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace

@@ -11,7 +11,6 @@ class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
-  include Concerns::FeatureFlaggable
 
   self.strict_param_setting = false
 
@@ -32,6 +31,8 @@ class User < Sequel::Model
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
+
+  one_to_many :feature_flags_user
 
   # Sequel setup & plugins
   plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
@@ -937,7 +938,7 @@ class User < Sequel::Model
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def db_size_in_bytes(use_total = false)
+  def db_size_in_bytes
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded
@@ -1093,7 +1094,7 @@ class User < Sequel::Model
   end
 
   def remaining_quota(use_total = false)
-    self.quota_in_bytes - self.db_size_in_bytes(use_total)
+    self.quota_in_bytes - self.db_size_in_bytes
   end
 
   def disk_quota_overspend
@@ -1281,6 +1282,10 @@ class User < Sequel::Model
     organization_user? and self.organization.eql? organization
   end
 
+  def feature_flags
+    self.feature_flags_user.map { |ff| ff.feature_flag.name }
+  end
+
   def create_client_application
     ClientApplication.create(:user_id => self.id)
   end
@@ -1387,7 +1392,7 @@ class User < Sequel::Model
 
   def reset_schema_owner
     in_database(as: :superuser) do |database|
-      database.run(%Q{ALTER SCHEMA \"#{self.database_schema}\" OWNER TO "#{self.database_username}"})
+      database.run(%Q{ALTER SCHEMA "#{self.database_schema}" OWNER TO "#{self.database_username}"})
     end
   end
 
@@ -1479,7 +1484,7 @@ class User < Sequel::Model
     catalogs_schema = "public"
     queries = [
       "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
-      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+      "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
     ]
     unless self.organization.nil?
       queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{database_public_username}\""
@@ -1493,7 +1498,7 @@ class User < Sequel::Model
     catalogs_schema = 'public'
     queries = [
         %Q{ GRANT SELECT ON "#{catalogs_schema}"."geometry_columns" TO "#{database_public_username}" },
-        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{database_public_username}" },
+        %Q{ GRANT SELECT ON "#{catalogs_schema}"."geography_columns" TO "#{database_public_username}" }
     ]
     self.run_queries_in_transaction(queries, true)
   end
@@ -1729,7 +1734,7 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.0'
+      cdb_extension_target_version = '0.5.1'
     end
 
     add_python
@@ -2025,9 +2030,9 @@ TRIGGER
     tables_queries = []
     tables.each do |table|
       if table.public? || table.public_with_link_only?
-        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".#{table.name} TO #{CartoDB::PUBLIC_DB_USER}"
+        tables_queries << "GRANT SELECT ON \"#{self.database_schema}\".\"#{table.name}\" TO #{CartoDB::PUBLIC_DB_USER}"
       end
-      tables_queries << "ALTER TABLE \"#{self.database_schema}\".#{table.name} OWNER TO \"#{database_username}\""
+      tables_queries << "ALTER TABLE \"#{self.database_schema}\".\"#{table.name}\" OWNER TO \"#{database_username}\""
     end
     self.run_queries_in_transaction(
       tables_queries,

@@ -1,0 +1,50 @@
+/*
+ * Image sprite for dashboard page
+ */
+
+@import "compass/utilities/sprites/base";
+ 
+// General Sprite Defaults
+// You can override them before you import this file.
+$new-elements-sprite-base-class: ".new-elements-sprite" !default;
+$new-elements-sprite-dimensions: false !default;
+ 
+$new-elements-sprites: sprite-map("sprites/new-elements/*.png",
+  $position:                                  0%,
+  $spacing:                                   0,
+  $repeat:                                    no-repeat,
+  $readonly-spacing:                          0
+);
+ 
+// All sprites should extend this class
+// The elements-sprite mixin will do so for you.
+#{$new-elements-sprite-base-class} {
+  background: $new-elements-sprites no-repeat;
+}
+ 
+// Use this to set the dimensions of an element
+// based on the size of the original image.
+@mixin new-elements-sprite-dimensions($name) {
+  @include sprite-dimensions($new-elements-sprites, $name)
+}
+ 
+// Move the background position to display the sprite.
+@mixin new-elements-sprite-position($name, $offset-x: 0, $offset-y: 0) {
+  @include sprite-position($new-elements-sprites, $name, $offset-x, $offset-y)
+}
+ 
+// Extends the sprite base class and set the background position for the desired sprite.
+// It will also apply the image dimensions if $dimensions is true.
+@mixin new-elements-sprite($name, $dimensions: $new-elements-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
+  @extend #{$new-elements-sprite-base-class};
+  @include sprite($new-elements-sprites, $name, $dimensions, $offset-x, $offset-y)
+}
+ 
+@mixin new-elements-sprites($sprite-names, $dimensions: $new-elements-sprite-dimensions, $prefix: sprite-map-name($new-dashboard-sprites)) {
+  @include sprites($new-elements-sprites, $sprite-names, $new-elements-sprite-base-class, $dimensions, $prefix)
+}
+ 
+// Generates a class for each sprited image.
+@mixin all-new-elements-sprites($dimensions: $new-elements-sprite-dimensions, $prefix: sprite-map-name($new-dashboard-sprites)) {
+  @include new-elements-sprites(favorite important photos readonly symbolic-link system unreadable, $dimensions, $prefix);
+}

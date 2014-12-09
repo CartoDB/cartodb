@@ -8,9 +8,8 @@
  *  - If bars needs a min width.
  *
  */
-@import "compass/css3/border-radius";
+@import "../new_common/mixins";
 @import "compass/css3/images";
-@import "../common/mixins";
 
 @mixin progress-bar($h, $r, $grad, $min) {
   .ProgressBar {
@@ -38,7 +37,10 @@
         &:after {
           position:absolute;
           content: '';
-          @include position(0,0,0,0);
+          top:0;
+          right:0;
+          bottom:0;
+          left:0;
           width:100%;
           @include background(linear-gradient(left,rgba(#FFF,0.30),rgba(#FFF,0)))
         }
@@ -65,7 +67,10 @@
       &:before {
         position:absolute;
         content: '';
-        @include position(0,0,0,auto);
+        top:0;
+        right:0;
+        bottom:0;
+        left:auto;
         border-right:1px solid white;
       }
     }

@@ -54,6 +54,13 @@
 
   .slide_view {
 
+    &.ui-sortable-helper {
+      width: 104px!Important;
+      height: 63px!Important;
+      margin-left: 20px;
+      cursor: move;
+    }
+
     &.active:hover .count { background: #AAC6DF; }
 
     &:hover .count { background: #bbb; }
@@ -142,6 +149,9 @@
         color: #9CA0A3;
         text-decoration: none;
       }
+      a:hover {
+        color:#666;
+      }
 
     }
 
@@ -185,12 +195,15 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
   }
 
-  .slide_transition_dropdown {
+  .dropdown.slide_transition_dropdown {
+
     width: 109px;
 
     li { 
       padding: 10px;
       a { padding: 0; }
+      a .radiobutton ul li span.radio { margin: 1px 7px 0 0!Important; }
+
     }
     li.seconds { text-align: center; }
   }

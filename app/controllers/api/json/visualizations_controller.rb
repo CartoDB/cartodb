@@ -19,6 +19,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like]
+  before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like]
   before_filter :link_ghost_tables, only: [:index, :show]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
@@ -433,5 +434,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     }
     data
   end
+
+  # This only allows to authenticate if sending an API request to username.api_key subdomain,
+  # but doesn't breaks the request if can't authenticate
+  def optional_api_authorization
+    authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+  end
+
 end
 

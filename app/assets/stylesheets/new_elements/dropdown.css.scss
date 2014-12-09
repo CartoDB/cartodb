@@ -1,11 +1,9 @@
 /*
  * Adapted from elements/dropdown to fit new design
  */
-@import "compass/css3/inline-block";
-@import "compass/css3/box-shadow";
-@import "compass/css3/border-radius";
-@import "compass/css3/opacity";
-@import "../common/vars";
+
+
+@import "../new_common/mixins";
 
 .dropdown {
   position: absolute;
@@ -13,7 +11,7 @@
   background: white;
   @include border-radius(3px);
   border: none;
-  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
+  // @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
   z-index: 50;
 
   &:before {
@@ -187,14 +185,13 @@
   padding-top: 10px;
 
   &:first-child {
-    @include border-top-radius(3px);
+    // @include border-top-radius(3px);
     border-top: 0;
     margin-top: 0;
     padding-top: 0;
   }
   &:last-child {
-    @include border-bottom-radius(3px);
+    // @include border-bottom-radius(3px);
     margin-bottom: 0;
   }
 }
-

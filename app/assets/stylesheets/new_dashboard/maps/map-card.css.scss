@@ -2,9 +2,9 @@
 // --------------------------------------------------
 
 @import "compass/css3/images";
-@import "new-dashboard-sprite";
-@import "colors";
-@import "mixins";
+@import "../new-dashboard-sprite";
+@import "../../new_common/colors";
+@import "../../new_common/mixins";
 
 .MapCard {
   position:relative;

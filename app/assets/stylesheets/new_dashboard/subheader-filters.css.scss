@@ -3,8 +3,8 @@
 
 @import "compass/css3/images";
 @import "new-dashboard-sprite";
-@import "mixins";
-@import "colors";
+@import "../new_common/mixins";
+@import "../new_common/colors";
 
 
 .DashboardFilters {

@@ -13,12 +13,7 @@ $new-dashboard-sprites: sprite-map("sprites/new-dashboard/*.png",
   $position:                                  0%,
   $spacing:                                   0,
   $repeat:                                    no-repeat,
-  $readonly-spacing:                          0//,
-  // $dashboard-paginator_arrows-spacing:        10px,
-  // $dashboard-square-spacing:                  35px,
-  // $dashboard-prohibited-spacing:              5px,
-  // $dashboard-download_dataset-spacing:        40px,
-  // $dashboard-download_dataset_people-spacing: 40px
+  $readonly-spacing:                          0
 );
  
 // All sprites should extend this class

@@ -715,14 +715,12 @@ describe Api::Json::VisualizationsController do
       JSON.parse(last_response.body).fetch('likes').should eq []
 
       get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
-      JSON.parse(last_response.body).fetch('is_liked').should eq false
 
       post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-      JSON.parse(last_response.body).fetch('liked').should eq true
 
       get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
-      JSON.parse(last_response.body).fetch('is_liked').should eq true
+      JSON.parse(last_response.body).fetch('liked').should eq true
 
       get api_v1_visualizations_likes_count_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
@@ -732,7 +730,6 @@ describe Api::Json::VisualizationsController do
 
       post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 2
-      JSON.parse(last_response.body).fetch('liked').should eq true
 
       get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       # Careful with order of array items
@@ -743,8 +740,6 @@ describe Api::Json::VisualizationsController do
 
       delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
-      JSON.parse(last_response.body).fetch('liked').should eq false
-
 
       # No effect expected
       delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
@@ -756,7 +751,6 @@ describe Api::Json::VisualizationsController do
 
       delete api_v1_visualizations_remove_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
-      JSON.parse(last_response.body).fetch('liked').should eq false
 
       post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1

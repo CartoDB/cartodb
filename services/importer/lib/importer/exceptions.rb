@@ -76,7 +76,8 @@ module CartoDB
       CartoDB::Datasources::OutOfQuotaError                       => 8001,
       CartoDB::Datasources::InvalidInputDataError                 => 1012,
       CartoDB::Datasources::ResponseError                         => 1011,
-      CartoDB::Datasources::ExternalServiceError                  => 1012
+      CartoDB::Datasources::ExternalServiceError                  => 1012,
+      CartoDB::Datasources::DropboxPermissionError                => 1016
     }
   end # Importer2
 end # CartoDB

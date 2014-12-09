@@ -300,7 +300,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
-                   liked: true
+                   liked: vis.liked_by?(current_user.id)
                  })
   rescue KeyError => exception
     render(text: exception.message, status: 403)

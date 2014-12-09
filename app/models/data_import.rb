@@ -109,8 +109,15 @@ class DataImport < Sequel::Model
 
     success ? handle_success : handle_failure
     Rails.logger.debug log.to_s
+    raise CartoDB::QuotaExceeded, 'TODO: simulation'
+    self
+  rescue CartoDB::QuotaExceeded => quota_exception
+    debugger
+    CartoDB.notify_warning_exception(quota_exception)
+    handle_failure
     self
   rescue => exception
+    debugger
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
@@ -317,6 +324,7 @@ class DataImport < Sequel::Model
         database_schema: current_user.database_schema
     })
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    debugger
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
       current_user.in_database.run(%Q{DROP TABLE #{table_name}})

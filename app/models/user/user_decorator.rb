@@ -6,6 +6,7 @@ module CartoDB
       data = {
         id: self.id,
         email: self.email,
+        name: self.name,
         username: self.username,
         account_type: self.account_type,
         table_quota: self.table_quota,

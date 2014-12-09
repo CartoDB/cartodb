@@ -609,85 +609,81 @@ describe Visualization::Member do
 
       # A
       member_a.prev_id.should eq nil
-      member_a.prev_vis.should eq nil
+      member_a.prev_list_item.should eq nil
       member_a.next_id.should eq nil
-      member_a.next_vis.should eq nil
+      member_a.next_list_item.should eq nil
 
       # A -> B
       member_a.set_next_list_item! member_b
-      # set_next! & set_prev! modify state of next/prev sibiling but only are able to reload themselves
-      # so we need to reload them
-      member_b = member_b.fetch
 
-      member_a.next_vis.should eq member_b
-      member_a.prev_vis.should eq nil
-      member_b.prev_vis.should eq member_a
-      member_b.next_vis.should eq nil
+      member_a.next_list_item.should eq member_b
+      member_a.prev_list_item.should eq nil
+      member_b.prev_list_item.should eq member_a
+      member_b.next_list_item.should eq nil
 
       # A -> B -> C
       member_b.set_next_list_item! member_c
 
-      member_a = member_a.fetch
-      member_c = member_c.fetch
+      # set_next reloads "actor and subject", but other affected items need to be reloaded
+      member_a.fetch
 
-      member_a.prev_vis.should eq nil
-      member_a.next_vis.should eq member_b
-      member_b.prev_vis.should eq member_a
-      member_b.next_vis.should eq member_c
-      member_c.prev_vis.should eq member_b
-      member_c.next_vis.should eq nil
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_b
+      member_b.prev_list_item.should eq member_a
+      member_b.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_b
+      member_c.next_list_item.should eq nil
 
       # A -> D -> B -> C
       member_a.set_next_list_item! member_d
 
-      member_b = member_b.fetch
-      member_c = member_c.fetch
-      member_d = member_d.fetch
+      member_b.fetch
+      member_c.fetch
 
-      member_a.prev_vis.should eq nil
-      member_a.next_vis.should eq member_d
-      member_d.prev_vis.should eq member_a
-      member_d.next_vis.should eq member_b
-      member_b.prev_vis.should eq member_d
-      member_b.next_vis.should eq member_c
-      member_c.prev_vis.should eq member_b
-      member_c.next_vis.should eq nil
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_b
+      member_b.prev_list_item.should eq member_d
+      member_b.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_b
+      member_c.next_list_item.should eq nil
 
-      member_a.next_vis.next_vis.should eq member_b
-      member_a.next_vis.next_vis.next_vis.should eq member_c
-      member_a.next_vis.next_vis.next_vis.next_vis.should eq nil
+      member_a.next_list_item.next_list_item.should eq member_b
+      member_a.next_list_item.next_list_item.next_list_item.should eq member_c
+      member_a.next_list_item.next_list_item.next_list_item.next_list_item.should eq nil
 
       # A -> D -> C
       member_b.delete
       # triggers unlink_self_from_list! inside, should reorder remaining items
 
-      member_c = member_c.fetch
-      member_d = member_d.fetch
+      member_c.fetch
+      member_d.fetch
 
-      member_a.prev_vis.should eq nil
-      member_a.next_vis.should eq member_d
-      member_d.prev_vis.should eq member_a
-      member_d.next_vis.should eq member_c
-      member_c.prev_vis.should eq member_d
-      member_c.next_vis.should eq nil
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_d
+      member_c.next_list_item.should eq nil
 
       # D -> C
       member_a.delete
 
-      member_d = member_d.fetch
+      member_d.fetch
 
-      member_d.prev_vis.should eq nil
-      member_d.next_vis.should eq member_c
-      member_c.prev_vis.should eq member_d
-      member_c.next_vis.should eq nil
+      member_d.prev_list_item.should eq nil
+      member_d.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_d
+      member_c.next_list_item.should eq nil
 
       # D
       member_c.delete
 
-      member_d = member_d.fetch
+      member_d.fetch
 
-      member_d.prev_vis.should eq nil
-      member_d.next_vis.should eq nil
+      member_d.prev_list_item.should eq nil
+      member_d.next_list_item.should eq nil
 
       member_d.delete
     end
@@ -708,52 +704,93 @@ describe Visualization::Member do
 
       # A -> B
       member_a.set_next_list_item! member_b
-      member_b = member_b.fetch
-
       # A -> B -> C
       member_b.set_next_list_item! member_c
       member_a.fetch
-      member_c.fetch
-
       # A -> B -> C -> D
       member_c.set_next_list_item! member_d
       member_a.fetch
       member_b.fetch
-      member_d.fetch
-
       # A -> B -> C -> D -> E
       member_d.set_next_list_item! member_e
       member_a.fetch
       member_b.fetch
       member_c.fetch
-      member_e.fetch
 
-      member_a.prev_vis.should eq nil
-      member_a.next_vis.should eq member_b
-      member_b.prev_vis.should eq member_a
-      member_b.next_vis.should eq member_c
-      member_c.prev_vis.should eq member_b
-      member_c.next_vis.should eq member_d
-      member_d.prev_vis.should eq member_c
-      member_d.next_vis.should eq member_e
-      member_e.prev_vis.should eq member_d
-      member_e.next_vis.should eq nil
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_b
+      member_b.prev_list_item.should eq member_a
+      member_b.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_b
+      member_c.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_c
+      member_d.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_d
+      member_e.next_list_item.should eq nil
 
-      # TODO: Test reordering, probably need to also relink previous last-next from origin
+      # Actual reordering starts here
+      # -----------------------------
 
-
-
-      member_a.delete
-
-      member_b.fetch
-      member_b.delete
+      # B -> A -> C -> D -> E
+      member_b.set_next_list_item! member_a
 
       member_c.fetch
-      member_c.delete
 
+      member_b.prev_list_item.should eq nil
+      member_b.next_list_item.should eq member_a
+      member_a.prev_list_item.should eq member_b
+      member_a.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_a
+      member_c.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_c
+      member_d.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_d
+      member_e.next_list_item.should eq nil
+
+      # B -> A -> D -> E -> C
+      member_e.set_next_list_item! member_c
+
+      member_a.fetch
+      member_d.fetch
+
+      member_b.prev_list_item.should eq nil
+      member_b.next_list_item.should eq member_a
+      member_a.prev_list_item.should eq member_b
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_d
+      member_e.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_e
+      member_c.next_list_item.should eq nil
+
+      # B -> E -> A -> D -> C
+
+      member_b.set_next_list_item! member_e
+
+      member_a.fetch
+      member_c.fetch
+      member_d.fetch
+
+      member_b.prev_list_item.should eq nil
+      member_b.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_b
+      member_e.next_list_item.should eq member_a
+      member_a.prev_list_item.should eq member_e
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_d
+      member_c.next_list_item.should eq nil
+
+      # Cleanup
+      member_a.delete
+      member_b.fetch
+      member_b.delete
+      member_c.fetch
+      member_c.delete
       member_d.fetch
       member_d.delete
-
       member_e.fetch
       member_e.delete
     end

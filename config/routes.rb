@@ -263,7 +263,8 @@ CartoDB::Application.routes.draw do
     put     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',                as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
     delete  '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',               as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
     get     '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
-    put    '(/u/:user_domain)/api/v1/viz/:id/watching'                    => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
+    put     '(/u/:user_domain)/api/v1/viz/:id/next_id'                    => 'visualizations#set_next_id',     as: :api_v1_visualizations_set_next_id,     constraints: { id: /[^\/]+/ }
 
     # Tags
     get '(/u/:user_domain)/api/v1/tags' => 'tags#index', as: :api_v1_tags_index

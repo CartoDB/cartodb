@@ -12,7 +12,7 @@ require_relative '../../../app/models/overlay/migrator'
 
 def app
   CartoDB::Application.new
-end #app
+end
 
 describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
@@ -33,12 +33,16 @@ describe Api::Json::VisualizationsController do
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
-    CartoDB::Visualization.repository  = 
-      DataRepository::Backend::Sequel.new(@db, :visualizations)
-    CartoDB::Overlay.repository        =
-      DataRepository::Backend::Sequel.new(@db, :overlays)
+    CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
+    begin
+      delete_user_data @user
+    rescue => exception
+      # Silence named maps problems only here upon data cleaning, not in specs
+      raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
+    end
 
-    delete_user_data @user
+
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'
@@ -689,20 +693,121 @@ describe Api::Json::VisualizationsController do
     end
   end
 
+  describe '#slides_sorting' do
+    it 'checks proper working of prev/next' do
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+         factory(name: 'A').to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_a_id = body.fetch('id')
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq nil
+
+      # standalone
+      # A
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory(name: 'standalone').to_json, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq nil
+
+      # A -> B
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory(name: 'B', prev_id: vis_a_id).to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_b_id = body.fetch('id')
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_b_id
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      puts "A: #{vis_a_id}\nB: #{vis_b_id}\n"
+      # C -> A -> B
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory(name: 'C', next_id: vis_a_id).to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_c_id = body.fetch('id')
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_a_id
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_b_id
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      # C -> D -> A -> B
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory(name: 'D', prev_id: vis_c_id, next_id: vis_a_id).to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_d_id = body.fetch('id')
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_a_id
+
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_d_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_d_id
+      body.fetch('next_id').should eq vis_b_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+
+    end
+  end
 
   def factory(attributes={})
     map   = ::Map.create(user_id: @user.id)
-    name  = "visualization #{rand(9999)}"
     {
-      name:         name,
+      name:         attributes.fetch(:name, "visualization #{rand(9999)}"),
       tags:         attributes.fetch(:tags, ['foo', 'bar']),
       map_id:       map.id,
       description:  'bogus',
       type:         'derived',
       privacy:      'public',
-      locked:       attributes.fetch(:locked, false)
+      locked:       attributes.fetch(:locked, false),
+      prev_id:      attributes.fetch(:prev_id, nil),
+      next_id:      attributes.fetch(:next_id, nil)
     }
-  end #factory
+  end
 
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)

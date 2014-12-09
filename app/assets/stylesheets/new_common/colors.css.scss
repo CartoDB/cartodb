@@ -2,41 +2,63 @@
 // --------------------------------------------------
 
 
+// Paragraphs
+$cTypography-headers:           rgba(#333, 1);
+$cTypography-paragraphs:        rgba(#666, 1);
+$cTypography-secondary:         rgba(#999, 1);
+$cTypography-help:              rgba(#CCC, 1);
+$cTypography-headersOverBlack:  rgba(#FFF, 1);
+$cTypography-link:              rgba(#0090D7, 1);
+$cTypography-linkHover:         rgba(#62B4E3, 1);
 
-/* Grays */
+// Structure
+$cStructure-mainBkg:  rgba(#FFF, 1);
+$cStructure-mainLine: rgba(#DDD, 1);
+$cStructure-grayBkg:  rgba(#F9F9F9, 1);
+$cStructure-softLine: rgba(#EEE, 1);
 
-$cGray11: rgba(249,249,249,1); /* #F9F9F9 */
-$cGray10: rgba(241,241,241,1); /* #F1F1F1 */
-$cGray9:  rgba(238,238,238,1); /* #EEEEEE */
-$cGray8:  rgba(221,221,221,1); /* #DDDDDD */
-$cGray7:  rgba(219,219,219,1); /* #DBDBDB */
-$cGray6:  rgba(153,153,153,1); /* #999999 */
-$cGray5:  rgba(121,121,121,1);
-$cGray4:  rgba(102,102,102,1); /* #666666 */
-$cGray3:  rgba(68,  68, 68,1);
-$cGray2:  rgba(51,  51, 51,1); /* #333333 */
-$cGray1:  rgba(34,  34, 34,1);
-$cGray0:  rgba(0,    0,  0,1);
+// Highlight
+$cHighlight-main:     rgba(#0090D7, 1);
+$cHighlight-positive: rgba(#8FB83F, 1);
+$cHighlight-negative: rgba(#C74B43, 1);
+$cHighlight-alert:    rgba(#C67B44, 1);
 
-$cGrayUndefined: rgba(204, 204, 204, 1); /* #CCCCCCC */
 
-/* Named colors */
 
-$cWhite:       rgba(255, 255, 255, 1);
-$cBlack:       $cGray0;
+// /* Grays */
 
-$cRed:         rgba(250,180,180,1);
-$cGreen:       rgba(142,184,63,1);
+// $cGray11: rgba(249,249,249,1); /* #F9F9F9 */
+// $cGray10: rgba(241,241,241,1); /* #F1F1F1 */
+// $cGray9:  rgba(238,238,238,1); /* #EEEEEE */
+// $cGray8:  rgba(221,221,221,1); /* #DDDDDD */
+// $cGray7:  rgba(219,219,219,1); /* #DBDBDB */
+// $cGray6:  rgba(153,153,153,1); /* #999999 */
+// $cGray5:  rgba(121,121,121,1);
+// $cGray4:  rgba(102,102,102,1); /* #666666 */
+// $cGray3:  rgba(68,  68, 68,1);
+// $cGray2:  rgba(51,  51, 51,1); /* #333333 */
+// $cGray1:  rgba(34,  34, 34,1);
+// $cGray0:  rgba(0,    0,  0,1);
 
-$cLightGray:   $cGray9;
-$cDarkGray:    $cGray1;
+// $cGrayUndefined: rgba(204, 204, 204, 1); /* #CCCCCCC */
 
-$cDefaultLink: rgba(0,143,213,1);
+// /* Named colors */
 
-$cSelectBg: rgba(245, 250, 254, 1); /* #F5FAFE */
-$cSelectBorder: rgba(188, 216, 241, 1); /* #BCD8F1 */
+// $cWhite:       rgba(255, 255, 255, 1);
+// $cBlack:       $cGray0;
 
-/* Privacy colors */
-$cPrivate:     rgba(250,180,180,1);
-$cPublic:      rgba(142,184,63,1);
+// $cRed:         rgba(250,180,180,1);
+// $cGreen:       rgba(142,184,63,1);
+
+// $cLightGray:   $cGray9;
+// $cDarkGray:    $cGray1;
+
+// $cDefaultLink: rgba(0,143,213,1);
+
+// $cSelectBg: rgba(245, 250, 254, 1); /* #F5FAFE */
+// $cSelectBorder: rgba(188, 216, 241, 1); /* #BCD8F1 */
+
+// /* Privacy colors */
+// $cPrivate:     rgba(250,180,180,1);
+// $cPublic:      rgba(142,184,63,1);
 

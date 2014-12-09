@@ -7,37 +7,35 @@
 .Button {
   @include inline-block();
   @include border-radius(28px);
-  background-color: $cLightGray;
   padding: 13px 29px;
-}
-.Button:hover {
   text-decoration:none;
-  background-color: darken($cLightGray, 5%);
 }
 .Button,
 .Button span {
-  font-family: "Lato", "san-serif";
   font-size: 12px;
   line-height: 15px;
   font-weight: 700;
-  color: $cWhite;
+  color: white;
   text-transform: uppercase;
 }
-.Button--border {
-  border-style: solid;
-  border-width: 2px;
+.Button--main {
+  background-color: $cHighlight-main;
+  &:hover { background-color: rgba(#007FBD, 1) }
 }
-.Button--green {
-  background-color: $cGreen;
-  &:hover {
-    background-color: darken($cGreen, 5%);
-  }
+.Button--positive {
+  background-color: $cHighlight-positive;
+  &:hover { background-color: rgba(#7FA538, 1) }
 }
-.Button--white {
-  border-color: white;
-  background-color: transparent;
-  
+.Button--negative {
+  background-color: $cHighlight-negative;
+  &:hover { background-color: rgba(#B93F37, 1) }
+}
+.Button--secondary {
+  border:2px solid #CCCCCC;
+  color: #666666;
+  background-color: rgba(white, 1);
   &:hover {
-    background-color: transparent;
+    background-color: rgba(#CCCCCC, 1);
+    color:white;
   }
 }

@@ -90,7 +90,6 @@ module Cartodb
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
 
-    private
+  end
 
-  end # AppServer
 end # CartodbCentral

@@ -25,6 +25,7 @@ describe DataRepository::Backend::Sequel do
       String    :url_options
       String    :permission_id
       Boolean   :locked
+      String    :kind
     end
 
     db.create_table :overlays do

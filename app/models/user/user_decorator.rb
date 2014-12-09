@@ -62,7 +62,8 @@ module CartoDB
           here: self.here_maps_enabled,
           stamen: self.stamen_maps_enabled,
           rainbow: self.rainbow_maps_enabled
-        }
+        },
+        feature_flags: self.feature_flags
       }
 
       data[:organization] = self.organization.to_poro(self) if self.organization.present?

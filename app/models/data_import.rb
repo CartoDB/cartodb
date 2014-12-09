@@ -5,6 +5,7 @@ require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'
+require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
@@ -51,7 +52,7 @@ class DataImport < Sequel::Model
   STATE_PENDING   = 'pending'
   STATE_UNPACKING = 'unpacking'
   STATE_IMPORTING = 'importing'
-  STATE_SUCCESS   = 'complete'
+  STATE_COMPLETE   = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
 
@@ -79,7 +80,7 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_SUCCESS || state == STATE_FAILURE)
+    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE)
     values
   end
 
@@ -108,6 +109,10 @@ class DataImport < Sequel::Model
 
     success ? handle_success : handle_failure
     Rails.logger.debug log.to_s
+    self
+  rescue CartoDB::QuotaExceeded => quota_exception
+    CartoDB::notify_warning_exception(quota_exception)
+    handle_failure
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
@@ -176,7 +181,7 @@ class DataImport < Sequel::Model
     # TODO: This doesn't works properly, until researched do not report false negatives
     #if log.entries =~ /Table (.*) registered/
       self.success  = true
-      self.state    = STATE_SUCCESS
+      self.state    = STATE_COMPLETE
       table_names = results.map { |result| result.name }.select { |name| name != nil}.sort
       self.table_names = table_names.join(' ')
       self.tables_created_count = table_names.size
@@ -207,6 +212,11 @@ class DataImport < Sequel::Model
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
     ::Table.where(id: table_id, user_id: user_id).first
+  end
+
+
+  def is_raster?
+    ::JSON.parse(self.stats).select{ |item| item["type"] == ".tif" }.length > 0
   end
 
   private
@@ -268,7 +278,7 @@ class DataImport < Sequel::Model
   # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
-    ![STATE_PENDING, STATE_SUCCESS, STATE_FAILURE].include?(self.state) &&
+    ![STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
     self.created_at < 5.minutes.ago            &&
     !running_import_ids.include?(self.id)
   end
@@ -376,8 +386,9 @@ class DataImport < Sequel::Model
       {}
     else
       {
-        ogr2ogr_binary:       options['binary'],
-        ogr2ogr_csv_guessing: options['csv_guessing'] && self.type_guessing,
+        raster_import_active:   Cartodb.config.fetch(:raster_import_active, nil),
+        ogr2ogr_binary:         options['binary'],
+        ogr2ogr_csv_guessing:   options['csv_guessing'] && self.type_guessing,
         quoted_fields_guessing: self.quoted_fields_guessing
       }
     end
@@ -453,14 +464,15 @@ class DataImport < Sequel::Model
       )
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]
-      if(!graphite_conf.nil?)
+      unless graphite_conf.nil?
         runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
       end
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database
       destination_schema = current_user.database_schema
-      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
+      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
+                                                       destination_schema, current_user.public_user_roles)
       log.append 'Before importer run'
       importer.run(tracker)
       log.append 'After importer run'

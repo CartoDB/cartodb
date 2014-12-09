@@ -29,6 +29,10 @@ module CartoDB
 
       CANONICAL_TYPE  = 'table'
       DERIVED_TYPE    =  'derived'
+
+      KIND_GEOM   = 'geom'
+      KIND_RASTER = 'raster'
+
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -45,6 +49,7 @@ module CartoDB
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/models/visualization/collection_spec.rb -> random_attributes
       # spec/models/visualization/member_spec.rb -> random_attributes
+      # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -64,6 +69,7 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :kind,                String, default: KIND_GEOM
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -152,14 +158,16 @@ module CartoDB
           end
         end
 
+        support_tables.delete_all
+
         invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
-        map.destroy if map
-        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
-        permission.destroy if permission
-        repository.delete(id)
+        safe_sequel_delete { map.destroy } if map
+        safe_sequel_delete { table.destroy } if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        safe_sequel_delete { permission.destroy } if permission
+        safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
         self
@@ -498,6 +506,9 @@ module CartoDB
         table.name = self.name
         table.register_table_only = self.register_table_only
         table.update(name: self.name)
+        if name_changed
+          support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
+        end
         self
       rescue => exception
         revert_name_change(old_name) if name_changed
@@ -567,6 +578,13 @@ module CartoDB
       def secure_digest(*args)
         #noinspection RubyArgCount
         Digest::SHA256.hexdigest(args.flatten.join)
+      end
+
+      def safe_sequel_delete
+        yield
+      rescue Sequel::NoExistingObject => exception
+        # INFO: don't fail on nonexistant object delete
+        CartoDB.notify_exception(exception)
       end
 
     end

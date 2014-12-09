@@ -110,6 +110,11 @@
       }
     }
 
+    // Table kind
+    .table-kind {
+      text-transform: capitalize;
+    }
+
     // Table sharing
     .table-shared {
       @include display-flex();
@@ -167,10 +172,14 @@
         .table-info { width:50% }
         .table-desc { width:50% }
 
+        // Shared type
         &.shared {
           .table-info { width:55% }
           .table-desc { width:45% }
         }
+
+        // Raster type
+        &.raster { cursor:default }
       }
 
       & + .table-item {

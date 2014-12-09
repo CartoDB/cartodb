@@ -104,10 +104,17 @@ module Concerns
     def set_fields_from_central(params, action)
       return self unless params.present? && action.present?
       self.set(params.slice(*allowed_attributes_from_central(action)))
+
       if self.is_a?(User) && params.has_key?(:password)
         self.password = self.password_confirmation = params[:password]
       end
       self
+    end
+
+    def set_relationships_from_central(params)
+      if params.has_key?(:feature_flags)
+        update_feature_flags(params[:feature_flags])
+      end
     end
 
     def sync_data_with_cartodb_central?
@@ -116,6 +123,26 @@ module Concerns
 
     def cartodb_central_client
       @cartodb_central_client ||= Cartodb::Central.new
+    end
+
+    def update_feature_flags(feature_flag_ids)
+      feature_flag_ids = feature_flag_ids.compact.reject(&:empty?)
+      current_feature_flag_ids = self.feature_flags_user.map { | ffu | ffu.feature_flag_id }
+      to_add = feature_flag_ids - current_feature_flag_ids
+      to_remove = current_feature_flag_ids - feature_flag_ids
+
+      removed_feature_flags_user = self.feature_flags_user.select { | ffu | to_remove.include?(ffu.feature_flag_id) }
+      removed_feature_flags_user.map do | rffu | 
+        rffu.destroy
+      end
+
+      self.feature_flags_user << to_add.map do | ff_id | 
+        ffu = FeatureFlagsUser.new
+        ffu.user_id = self.id
+        ffu.feature_flag_id = ff_id
+        ffu.save
+      end
+
     end
 
   end

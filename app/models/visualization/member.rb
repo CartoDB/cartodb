@@ -165,10 +165,10 @@ module CartoDB
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
-        map.destroy if map
-        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
-        permission.destroy if permission
-        repository.delete(id)
+        safe_sequel_delete { map.destroy } if map
+        safe_sequel_delete { table.destroy } if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        safe_sequel_delete { permission.destroy } if permission
+        safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
         self
@@ -604,6 +604,13 @@ module CartoDB
       def secure_digest(*args)
         #noinspection RubyArgCount
         Digest::SHA256.hexdigest(args.flatten.join)
+      end
+
+      def safe_sequel_delete
+        yield
+      rescue Sequel::NoExistingObject => exception
+        # INFO: don't fail on nonexistant object delete
+        CartoDB.notify_exception(exception)
       end
 
     end

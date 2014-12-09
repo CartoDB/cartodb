@@ -42,5 +42,8 @@ module CartoDB
           super("Service disabled", service, username)
         end
       end
+
+      class DropboxPermissionError      < DatasourceBaseError; end
+
   end
 end

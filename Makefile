@@ -129,9 +129,6 @@ WORKING_SPECS_9 = \
   services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
 
-UNIT_SPECS = \
-  spec/user_unit_spec.rb
-
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
@@ -141,8 +138,6 @@ endif
 	# TODO skip this if db already exists ?
 	bundle exec rake cartodb:test:prepare
 
-check-unit:
-	bundle exec rspec $(UNIT_SPECS)
 check-1:
 	bundle exec rspec $(WORKING_SPECS_1)
 check-2:
@@ -162,7 +157,7 @@ check-8:
 check-9:
 	bundle exec rspec $(WORKING_SPECS_9)
 
-check-prepared: check-unit check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9
+check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 check-9
 
 check: prepare-test-db check-prepared
 check-frontend:

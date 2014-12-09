@@ -315,6 +315,7 @@ CartoDB::Application.routes.draw do
     end
     resources :organizations
     resources :synchronizations
+    resources :feature_flags
   end
 
   scope :module => 'superadmin', :format => :json do

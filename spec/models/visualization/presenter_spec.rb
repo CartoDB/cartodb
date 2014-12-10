@@ -1,23 +1,37 @@
 # encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/presenter'
+require_relative '../../doubles/support_tables.rb'
 
 include CartoDB
 
 describe Visualization::Member do
   before do
-    memory = DataRepository.new
-    Visualization.repository  = memory
-    Overlay.repository        = memory
+    @db = Rails::Sequel.connection
+    Sequel.extension(:pagination)
+
+    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Overlay.repository        = DataRepository.new # In-memory storage
   end
 
   before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_name = 'whatever'
+    user_apikey = '123'
+    @user_mock = mock
+    @user_mock.stubs(:id).returns(user_id)
+    @user_mock.stubs(:username).returns(user_name)
+    @user_mock.stubs(:api_key).returns(user_apikey)
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+
+    support_tables_mock = Doubles::Visualization::SupportTables.new
+    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
   end
 
   describe '#privacy_for_vizjson' do
     it 'checks expected privacy values for the vizjson' do
-      user_id = UUIDTools::UUID.timestamp_create.to_s
-
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
@@ -27,7 +41,7 @@ describe Visualization::Member do
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)
-      user_mock.stubs(:id).returns(user_id)
+      user_mock.stubs(:id).returns(@user_mock.id)
       Visualization::Member.any_instance.stubs(:user).returns(user_mock)
 
       presenter = Visualization::Presenter.new(visualization)
@@ -99,6 +113,81 @@ describe Visualization::Member do
       data[:prev_id].should eq nil
       data[:next_id].should eq nil
       data[:transition_options].should eq Hash.new
+    end
+  end
+
+  describe '#children' do
+    it 'tests .children and its sorting' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      ::Permission.any_instance.stubs(:owner).returns(@user_mock)
+
+      parent = Visualization::Member.new(random_attributes_for_vis_member({
+                                                                            name:'PARENT',
+                                                                            user_id: @user_mock.id,
+                                                                            type: Visualization::Member::TYPE_CANONICAL
+                                                                          }))
+      parent = parent.store.fetch
+
+      # Create unsorted on purpose
+      member_d = Visualization::Member.new(random_attributes_for_vis_member({
+                                                                              name:'D',
+                                                                              user_id: @user_mock.id,
+                                                                              type: Visualization::Member::TYPE_SLIDE,
+                                                                              parent_id: parent.id
+                                                                            }))
+      member_d = member_d.store.fetch
+      member_c = Visualization::Member.new(random_attributes_for_vis_member({
+                                                                              name:'C',
+                                                                              user_id: @user_mock.id,
+                                                                              type: Visualization::Member::TYPE_SLIDE,
+                                                                              parent_id: parent.id
+                                                                            }))
+      member_c = member_c.store.fetch
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({
+                                                                              name:'B',
+                                                                              user_id: @user_mock.id,
+                                                                              type: Visualization::Member::TYPE_SLIDE,
+                                                                              parent_id: parent.id
+                                                                            }))
+      member_b = member_b.store.fetch
+      member_e = Visualization::Member.new(random_attributes_for_vis_member({
+                                                                              name:'E',
+                                                                              user_id: @user_mock.id,
+                                                                              type: Visualization::Member::TYPE_SLIDE,
+                                                                              parent_id: parent.id
+                                                                            }))
+      member_e = member_e.store.fetch
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({
+                                                                              name:'A',
+                                                                              user_id: @user_mock.id,
+                                                                              type: Visualization::Member::TYPE_SLIDE,
+                                                                              parent_id: parent.id
+                                                                            }))
+      member_a = member_a.store.fetch
+
+      # A -> B -> C -> D -> E
+      member_a.set_next_list_item! member_b
+      member_b.set_next_list_item! member_c
+      member_c.set_next_list_item! member_d
+      member_d.set_next_list_item! member_e
+      member_a.fetch
+      member_b.fetch
+      member_c.fetch
+      member_d.fetch
+      member_e.fetch
+
+      parent.fetch
+
+      data = Visualization::Presenter.new(parent).to_poro
+
+      data[:children].length.should eq 5
+
+      data[:children][0][:id].should eq member_a.id
+      data[:children][1][:id].should eq member_b.id
+      data[:children][2][:id].should eq member_c.id
+      data[:children][3][:id].should eq member_d.id
+      data[:children][4][:id].should eq member_e.id
     end
   end
 

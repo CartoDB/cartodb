@@ -37,25 +37,37 @@ describe Visualization::Relator do
     it 'tests .children and its sorting' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-      parent = Visualization::Member.new(random_attributes({ name:'PARENT',
-                                                             type: Visualization::Member::TYPE_CANONICAL }))
+      parent = Visualization::Member.new(random_attributes_for_vis_member({
+                                                            name:'PARENT',
+                                                            user_id: @user_mock.id,
+                                                            type: Visualization::Member::TYPE_CANONICAL }))
       parent = parent.store.fetch
 
       # Create unsorted on purpose
-      member_d = Visualization::Member.new(random_attributes({ name:'D', type: Visualization::Member::TYPE_SLIDE,
-                                                               parent_id: parent.id }))
+      member_d = Visualization::Member.new(random_attributes_for_vis_member({
+                                                              name:'D', type: Visualization::Member::TYPE_SLIDE,
+                                                              user_id: @user_mock.id,
+                                                              parent_id: parent.id }))
       member_d = member_d.store.fetch
-      member_c = Visualization::Member.new(random_attributes({ name:'C', type: Visualization::Member::TYPE_SLIDE,
-                                                               parent_id: parent.id }))
+      member_c = Visualization::Member.new(random_attributes_for_vis_member({
+                                                              name:'C', type: Visualization::Member::TYPE_SLIDE,
+                                                              user_id: @user_mock.id,
+                                                              parent_id: parent.id }))
       member_c = member_c.store.fetch
-      member_b = Visualization::Member.new(random_attributes({ name:'B', type: Visualization::Member::TYPE_SLIDE,
-                                                               parent_id: parent.id }))
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({
+                                                              name:'B', type: Visualization::Member::TYPE_SLIDE,
+                                                              user_id: @user_mock.id,
+                                                              parent_id: parent.id }))
       member_b = member_b.store.fetch
-      member_e = Visualization::Member.new(random_attributes({ name:'E', type: Visualization::Member::TYPE_SLIDE,
-                                                               parent_id: parent.id }))
+      member_e = Visualization::Member.new(random_attributes_for_vis_member({
+                                                              name:'E', type: Visualization::Member::TYPE_SLIDE,
+                                                              user_id: @user_mock.id,
+                                                              parent_id: parent.id }))
       member_e = member_e.store.fetch
-      member_a = Visualization::Member.new(random_attributes({ name:'A', type: Visualization::Member::TYPE_SLIDE,
-                                                               parent_id: parent.id }))
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({
+                                                              name:'A', type: Visualization::Member::TYPE_SLIDE,
+                                                              user_id: @user_mock.id,
+                                                              parent_id: parent.id }))
       member_a = member_a.store.fetch
 
       # A -> B -> C -> D -> E
@@ -75,36 +87,12 @@ describe Visualization::Relator do
 
       children.length.should eq 5
 
-      children[0][:id].should eq member_a.id
-      children[1][:id].should eq member_b.id
-      children[2][:id].should eq member_c.id
-      children[3][:id].should eq member_d.id
-      children[4][:id].should eq member_e.id
+      children[0].id.should eq member_a.id
+      children[1].id.should eq member_b.id
+      children[2].id.should eq member_c.id
+      children[3].id.should eq member_d.id
+      children[4].id.should eq member_e.id
     end
-  end
-
-  # TODO: Move this to a factory
-  protected
-
-  def random_attributes(attributes={})
-    random = UUIDTools::UUID.timestamp_create.to_s
-    {
-      name:         attributes.fetch(:name, "name #{random}"),
-      description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
-      tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, Visualization::Member::TYPE_CANONICAL),
-      user_id:      attributes.fetch(:user_id, @user_mock.id),
-      active_layer_id: random,
-      title:        attributes.fetch(:title, ''),
-      source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, ''),
-      parent_id:    attributes.fetch(:parent_id, nil),
-      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
-      prev_id:            attributes.fetch(:prev_id, nil),
-      next_id:            attributes.fetch(:next_id, nil),
-      transition_options: attributes.fetch(:transition_options, {})
-    }
   end
 
 end

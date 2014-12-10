@@ -90,6 +90,11 @@ module CartoDB
         self
       end
 
+      def delete_if(&block)
+        collection.delete_if(&block)
+        self
+      end
+
       def store
         self
       end

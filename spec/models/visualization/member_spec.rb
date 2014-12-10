@@ -46,7 +46,7 @@ describe Visualization::Member do
   describe '#store' do
 
     it 'should fail if no user_id attribute present' do
-      attributes  = random_attributes
+      attributes  = random_attributes_for_vis_member
       attributes.delete(:user_id)
       member      = Visualization::Member.new(attributes)
       expect {
@@ -55,7 +55,7 @@ describe Visualization::Member do
     end
 
     it 'persists attributes to the data repository' do
-      attributes  = random_attributes
+      attributes  = random_attributes_for_vis_member
       member      = Visualization::Member.new(attributes)
       member.store
 
@@ -89,7 +89,7 @@ describe Visualization::Member do
       relation    = "visualizations_#{relation_id}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
       Visualization::Migrator.new(db).migrate(relation)
-      attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
+      attributes  = random_attributes_for_vis_member(tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes, repository)
       member.store
       
@@ -102,7 +102,7 @@ describe Visualization::Member do
     end
 
     it 'persists tags as JSON if the backend does not support arrays' do
-      attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
+      attributes  = random_attributes_for_vis_member(tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes)
       member.store
 
@@ -113,7 +113,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache in varnish if name changed' do
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member)
       member.store
 
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
@@ -128,7 +128,7 @@ describe Visualization::Member do
       # Need to at least have this decorated in the user data or checks before becoming private will raise an error
       CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
       
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member)
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
@@ -138,7 +138,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache in varnish if description changed' do
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member)
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
@@ -150,7 +150,7 @@ describe Visualization::Member do
 
   describe '#fetch' do
     it 'fetches attributes from the data repository' do
-      attributes  = random_attributes
+      attributes  = random_attributes_for_vis_member
       member      = Visualization::Member.new(attributes).store
       member      = Visualization::Member.new(id: member.id)
       member.name = 'changed'
@@ -163,7 +163,7 @@ describe Visualization::Member do
     it 'deletes this member data from the data repository' do
       CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
 
-      member = Visualization::Member.new(random_attributes).store
+      member = Visualization::Member.new(random_attributes_for_vis_member).store
       member.fetch
       member.name.should_not be_nil
 
@@ -175,7 +175,7 @@ describe Visualization::Member do
 
     it 'invalidates vizjson cache' do
       CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member)
       member.store
 
       member.expects(:invalidate_varnish_cache)
@@ -185,7 +185,7 @@ describe Visualization::Member do
 
   describe '#unlink_from' do
     it 'invalidates varnish cache' do
-      member = Visualization::Member.new(random_attributes).store
+      member = Visualization::Member.new(random_attributes_for_vis_member).store
       member.expects(:invalidate_varnish_cache)
       member.expects(:remove_layers_from)
       member.unlink_from(Object.new)
@@ -541,7 +541,7 @@ describe Visualization::Member do
 
   it 'should not allow to change permission from the outside' do
     @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
-    member = Visualization::Member.new(random_attributes({user_id: @user.id}))
+    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: @user.id}))
     member.store
     member = Visualization::Member.new(id: member.id).fetch
     member.permission.should_not be nil
@@ -555,14 +555,14 @@ describe Visualization::Member do
 
     expected_errors = { parent_id: 'Slides must have a parent' }
 
-    member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_DERIVED }))
+    member = Visualization::Member.new(random_attributes_for_vis_member({ type: Visualization::Member::TYPE_DERIVED }))
     member.store
 
     member = Visualization::Member.new(id: member.id).fetch
     member.parent_id.should be nil
     member.parent.should be nil
 
-    child_member = Visualization::Member.new(random_attributes({ type: Visualization::Member::TYPE_SLIDE }))
+    child_member = Visualization::Member.new(random_attributes_for_vis_member({ type: Visualization::Member::TYPE_SLIDE }))
     # Can't save a children of type slide without parent_id
     expect {
       child_member.store
@@ -570,7 +570,7 @@ describe Visualization::Member do
     child_member.valid?.should eq false
     child_member.errors.should eq expected_errors
 
-    child_member = Visualization::Member.new(random_attributes({
+    child_member = Visualization::Member.new(random_attributes_for_vis_member({
       type:       Visualization::Member::TYPE_SLIDE,
       parent_id:  member.id
     }))
@@ -582,12 +582,12 @@ describe Visualization::Member do
     child_member.parent.id.should eq member.id
 
     # Allowed but unused
-    table_member = Visualization::Member.new(random_attributes({
+    table_member = Visualization::Member.new(random_attributes_for_vis_member({
       type:       Visualization::Member::TYPE_CANONICAL,
       parent_id:  member.id
     }))
     table_member.store
-    table_member = Visualization::Member.new(random_attributes({
+    table_member = Visualization::Member.new(random_attributes_for_vis_member({
       type:       Visualization::Member::TYPE_CANONICAL,
       parent_id:  member.id
     }))
@@ -599,7 +599,7 @@ describe Visualization::Member do
 
     transition_options = { first: true, second: 6 }
 
-    member = Visualization::Member.new(random_attributes({ transition_options: transition_options }))
+    member = Visualization::Member.new(random_attributes_for_vis_member({ transition_options: transition_options }))
 
     member.transition_options.should eq transition_options
     member.slide_transition_options.should eq ::JSON.dump(transition_options)
@@ -620,13 +620,13 @@ describe Visualization::Member do
     it 'checks set_next! and unlink_self_from_list! on visualizations when set' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-      member_a = Visualization::Member.new(random_attributes({ name:'A', type: Visualization::Member::TYPE_DERIVED }))
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({ name:'A', type: Visualization::Member::TYPE_DERIVED }))
       member_a = member_a.store.fetch
-      member_b = Visualization::Member.new(random_attributes({ name:'B', type: Visualization::Member::TYPE_DERIVED }))
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({ name:'B', type: Visualization::Member::TYPE_DERIVED }))
       member_b = member_b.store.fetch
-      member_c = Visualization::Member.new(random_attributes({ name:'C', type: Visualization::Member::TYPE_DERIVED }))
+      member_c = Visualization::Member.new(random_attributes_for_vis_member({ name:'C', type: Visualization::Member::TYPE_DERIVED }))
       member_c = member_c.store.fetch
-      member_d = Visualization::Member.new(random_attributes({ name:'D', type: Visualization::Member::TYPE_DERIVED }))
+      member_d = Visualization::Member.new(random_attributes_for_vis_member({ name:'D', type: Visualization::Member::TYPE_DERIVED }))
       member_d = member_d.store.fetch
 
       # A
@@ -713,15 +713,15 @@ describe Visualization::Member do
     it 'checks reordering visualizations items' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-      member_a = Visualization::Member.new(random_attributes({ name:'A', type: Visualization::Member::TYPE_DERIVED }))
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({ name:'A', type: Visualization::Member::TYPE_DERIVED }))
       member_a = member_a.store.fetch
-      member_b = Visualization::Member.new(random_attributes({ name:'B', type: Visualization::Member::TYPE_DERIVED }))
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({ name:'B', type: Visualization::Member::TYPE_DERIVED }))
       member_b = member_b.store.fetch
-      member_c = Visualization::Member.new(random_attributes({ name:'C', type: Visualization::Member::TYPE_DERIVED }))
+      member_c = Visualization::Member.new(random_attributes_for_vis_member({ name:'C', type: Visualization::Member::TYPE_DERIVED }))
       member_c = member_c.store.fetch
-      member_d = Visualization::Member.new(random_attributes({ name:'D', type: Visualization::Member::TYPE_DERIVED }))
+      member_d = Visualization::Member.new(random_attributes_for_vis_member({ name:'D', type: Visualization::Member::TYPE_DERIVED }))
       member_d = member_d.store.fetch
-      member_e = Visualization::Member.new(random_attributes({ name:'E', type: Visualization::Member::TYPE_DERIVED }))
+      member_e = Visualization::Member.new(random_attributes_for_vis_member({ name:'E', type: Visualization::Member::TYPE_DERIVED }))
       member_e = member_e.store.fetch
 
       # A -> B
@@ -818,27 +818,5 @@ describe Visualization::Member do
     end
   end
 
-  protected
-
-  def random_attributes(attributes={})
-    random = UUIDTools::UUID.timestamp_create.to_s
-    {
-      name:         attributes.fetch(:name, "name #{random}"),
-      description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
-      tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, Visualization::Member::TYPE_CANONICAL),
-      user_id:      attributes.fetch(:user_id, @user_mock.id),
-      active_layer_id: random,
-      title:        attributes.fetch(:title, ''),
-      source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, ''),
-      parent_id:    attributes.fetch(:parent_id, nil),
-      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
-      prev_id:            attributes.fetch(:prev_id, nil),
-      next_id:            attributes.fetch(:next_id, nil),
-      transition_options: attributes.fetch(:transition_options, {})
-    }
-  end
 end
 

@@ -81,18 +81,18 @@
   width: 14px;
   height: 14px;
   background: image-url("layout/heart.png") no-repeat;
+  background-size: 14px 14px;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);
-  background-size: 14px 14px;
 }
 
 .user-options .button.grey.like.is-highlighted .icon {
   background: image-url("layout/heart_highlighted.png") no-repeat;
+  background-size: 14px 14px;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);
-  background-size: 14px 14px;
 }
 
 .user-options .button.grey.like .icon.is-animated {

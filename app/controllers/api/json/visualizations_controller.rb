@@ -18,8 +18,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy, :set_next_id
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
   before_filter :link_ghost_tables, only: [:index, :show]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
-                                                      :notify_watching, :list_watching, :set_next_id]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2, :notify_watching, :list_watching, :set_next_id]
 
   def index
     collection = Visualization::Collection.new.fetch(
@@ -286,7 +285,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     prev_vis = Visualization::Member.new(id: @table_id).fetch
     return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
-    next_vis = Visualization::Member.new(id: payload[:next_id]).fetch
+    next_vis = Visualization::Member.new(id: payload['next_id']).fetch
     return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     prev_vis.set_next_list_item!(next_vis)

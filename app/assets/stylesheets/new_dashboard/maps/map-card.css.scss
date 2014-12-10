@@ -15,10 +15,20 @@
   border: 1px solid rgba(#DBDBDB, 1);
   @include border-radius(4px);
 }
+.MapCard:hover {
+  background-color: #F5FAFE;
+  border-color: #BCD8F1;
+  cursor: pointer;
+}
+.MapCard.is--selected {
+  background-color: #EFF8FF;
+  border-color: #BCD8F1;
+  &:hover { cursor: default }
+}
 .MapCard-header {
+  position: relative;
   width: 100%;
   height: 170px;
-  position: relative;
   background: $cStructure-softLine;
 }
 .MapCard-headerShadow {
@@ -68,6 +78,10 @@
   @include flex-direction(column);
   height:142px;
   padding:20px;
+}
+.MapCard-contentDetail {
+  display:block;
+  width:100%;
 }
 .MapCard-contentInfo {
   @include display-flex();

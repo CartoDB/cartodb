@@ -1,59 +1,15 @@
-<% if current_user.new_dashboard_enabled %>
-<div class="Header">
-  <div class="u-inner">
-    <div class="Header-navigation">
-      <ul class="Header-navigationList">
-        <li>
-          <a href="/dashboard/" class="Logo Logo--text">CartoDB</a>
-        </li>
-        <li>
-          <ul class="Header-navigationBreadcrumb">
-            <li class="Header-navigationBreadcrumbItem">
-              <% if current_user.has_organization? %>
-                <%= current_user.organization.name %> /
-              <% end %>
-            </li>
-            <li class="Header-navigationBreadcrumbItem"><%= current_user.name || current_user.username %> /</li>
-            <li class="Header-navigationBreadcrumbItem"><a class="Header-navigationBreadcrumbLink" href="#/maps">Maps</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <div class="Header-settings">
-      <ul class="Header-settingsList">
-        <li class="Header-settingsItem">
-          <a href="#" class="Header-settingsLink">Explore</a>
-        </li>
-        <li class="Header-settingsItem">
-          <a href="#" class="Header-settingsLink">Learn</a>
-        </li>
-        <li class="Header-settingsItem">
-          <a href="#" class="UserNotifications">
-            <i class="UserNotifications-Icon"></i>
-            <span class="UserNotifications-Count">2</span>
-          </a>
-        </li>
-        <li class="Header-settingsItem">
-          <a href="#" class="UserAvatar" id="settings">
-            <%= image_tag current_user.avatar_url, class: "UserAvatar--medium" %>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
-<% else %>
-  <header>
-    <div class="inner">
-      <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>
-      <ul class="right">
-        <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
+<% unless current_user.new_dashboard_enabled %>
+<header>
+  <div class="inner">
+    <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>
+    <ul class="right">
+      <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
       <li><%= link_to 'visualizations', visualizations_index_path(user_domain: params[:user_domain]), :class => :visualizations %></a></li>
-    <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path.include? 'common_data') %></a></li>
-  <li><%= link_to 'documentation', Cartodb.config[:developers_host] %></a></li>
-<li>
-  <a class="dropdown account separator" href="<%= account_url %>"><%= current_user.username %><span>|</span></a>
-</li>
+      <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path.include? 'common_data') %></a></li>
+      <li><%= link_to 'documentation', Cartodb.config[:developers_host] %></a></li>
+      <li>
+        <a class="dropdown account separator" href="<%= account_url %>"><%= current_user.username %><span>|</span></a>
+      </li>
     </ul>
   </div>
 </header>

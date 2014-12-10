@@ -195,3 +195,11 @@
     margin-bottom: 0;
   }
 }
+
+.dropdown > ul > li > p {
+  margin-top: 10px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}

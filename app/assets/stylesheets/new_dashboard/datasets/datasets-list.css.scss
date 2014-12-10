@@ -15,21 +15,21 @@
   @include display-flex();
   @include justify-content(center, center);
   padding: 28px 0;
-  border-bottom: 1px $cGray8 solid;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
 .DatasetsList-item:hover,
 .DatasetsList-item.is-selected {
   padding: 28px 19px; /* compensate for the negative margins and border */
   margin: -1px -20px 0px -20px;
-  background-color: $cSelectBg;
-  border: 1px $cSelectBorder solid;
+  background-color: rgba(#F5FAFE, 1);
+  border: 1px rgba(#BCD8F1, 1) solid;
   @include border-radius(5px);
 }
 .DatasetsList-itemCategory {
   width: 40px;
   height: 40px;
   margin-right: 20px;
-  border: 1px $cGray8 solid
+  border: 1px $cStructure-mainLine solid
 }
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();

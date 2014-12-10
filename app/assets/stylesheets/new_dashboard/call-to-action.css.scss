@@ -1,9 +1,11 @@
 @import "../new_common/colors";
 
+// TODO: check this component, probably not necessary
+
 .CallToAction {
   font-weight: 300;
   font-size: 13px;
   font-style: italic;
   line-height: 16px;
-  color: $cDefaultLink;
+  color: $cTypography-link;
 }

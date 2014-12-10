@@ -8,16 +8,16 @@
 .LikesIndicator {
   font-size:13px;
   font-weight:300;
-  color:$cGray6;
+  color:$cTypography-secondary;
 }
 .LikesIndicator-icon {
   margin-right:6px;
   font-family: 'CartoIcon';
   font-size:11px;
-  color: $cGrayUndefined;
+  color: $cTypography-help;
 }
 .LikesIndicator:hover {
-  color:$cGray4;
+  color:$cTypography-paragraphs;
   text-decoration:none;
   .LikesIndicator-icon { color:#D93F56 }
 }

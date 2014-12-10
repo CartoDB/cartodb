@@ -12,14 +12,14 @@
   width: 300px;
   height: 352px;
   margin-top:18px;
-  border: 1px solid $cGray7;
+  border: 1px solid rgba(#DBDBDB, 1);
   @include border-radius(4px);
 }
 .MapCard-header {
   width: 100%;
   height: 170px;
   position: relative;
-  background: $cLightGray;
+  background: $cStructure-softLine;
 }
 .MapCard-headerShadow {
   position: absolute;
@@ -27,7 +27,7 @@
   bottom: 0;
   width: 100%;
   height: 4px;
-  background: $cBlack;
+  background: black;
   @include opacity(.2);
   z-index:2;
 }
@@ -88,7 +88,7 @@
   @include align-items(center, center);
   width:100%;
   padding-top:15px;
-  border-top:1px solid $cGray9;
+  border-top:1px solid $cStructure-softLine;
 }
 .MapCard-contentFooterDetails--left {
   // @include display-flex();

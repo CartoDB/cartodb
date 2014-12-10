@@ -4,10 +4,14 @@
 
 /* PrivacyIndicator */
 
+$cPrivacy-private:  rgba(#FF6C6C, 1);
+$cPrivacy-public:   rgba(#8EB83F, 1);
+$cPrivacy-other:    rgba(#F5A623, 1);
+
 .PrivacyIndicator {
   position: relative;
   padding: 0 0 0 12px;
-  color: $cGray6;
+  color: $cTypography-secondary;
   font-family: "Lato", "san-serif";
   font-size: 12.18px;
   font-weight: 300;
@@ -15,7 +19,7 @@
 }
 .PrivacyIndicator:hover {
   text-decoration: none;
-  color: $cGray6;
+  color: $cTypography-secondary;
 }
 .PrivacyIndicator:before {
   content: '';
@@ -23,12 +27,12 @@
   top: 5px; left: 0;
   width: 8px;
   height: 8px;
-  background-color: $cLightGray;
+  background-color: $cTypography-help;
   @include border-radius(100%);
 }
 .PrivacyIndicator.is-public:before {
-  background-color: $cPublic;
+  background-color: $cPrivacy-public;
 }
 .PrivacyIndicator.is-private:before {
-  background-color: $cPrivate;
+  background-color: $cPrivacy-private;
 }

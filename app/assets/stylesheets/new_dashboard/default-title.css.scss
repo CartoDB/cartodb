@@ -9,9 +9,9 @@
   font-size:16px;
 }
 .DefaultTitle-link {
-  color:$cGray4;
+  color: $cTypography-paragraphs;
   &:hover {
-    color:$cGray2;
+    color: $cTypography-headers;
     text-decoration:underline;
   }
 }

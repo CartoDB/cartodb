@@ -789,23 +789,63 @@ describe Api::Json::VisualizationsController do
       body = JSON.parse(last_response.body)
       body.fetch('prev_id').should eq vis_a_id
       body.fetch('next_id').should eq nil
+    end
+  end
 
+  describe '#source_visualization_id_and_hierarchy' do
+    it 'checks proper working of prev/next' do
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+      map_id = ::Map.create(user_id: @user.id).id
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+       factory({
+                 name: 'PARENT',
+                 type: CartoDB::Visualization::Member::TYPE_CANONICAL
+               }).to_json, @headers
+      body = JSON.parse(last_response.body)
+      parent_vis_id = body.fetch('id')
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'CHILD 1',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id
+           }.to_json, @headers
+      vis_1_body = JSON.parse(last_response.body)
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'CHILD 1',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             source_visualization_id: vis_1_body.fetch('id'),
+             parent_id: parent_vis_id
+           }.to_json, @headers
+      vis_2_body = JSON.parse(last_response.body)
+
+      vis_2_body.fetch('parent_id').should eq vis_1_body.fetch('parent_id')
+      vis_2_body.fetch('id').should_not eq vis_1_body.fetch('id')
 
     end
   end
 
+
+
   def factory(attributes={})
-    map   = ::Map.create(user_id: @user.id)
     {
-      name:         attributes.fetch(:name, "visualization #{rand(9999)}"),
-      tags:         attributes.fetch(:tags, ['foo', 'bar']),
-      map_id:       map.id,
-      description:  'bogus',
-      type:         'derived',
-      privacy:      'public',
-      locked:       attributes.fetch(:locked, false),
-      prev_id:      attributes.fetch(:prev_id, nil),
-      next_id:      attributes.fetch(:next_id, nil)
+      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
+      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: @user.id).id),
+      description:              attributes.fetch(:description, 'bogus'),
+      type:                     attributes.fetch(:type, 'derived'),
+      privacy:                  attributes.fetch(:privacy, 'public'),
+      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
+      parent_id:                attributes.fetch(:parent_id, nil),
+      locked:                   attributes.fetch(:locked, false),
+      prev_id:                  attributes.fetch(:prev_id, nil),
+      next_id:                  attributes.fetch(:next_id, nil)
     }
   end
 

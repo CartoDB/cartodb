@@ -19,9 +19,13 @@
   margin: 0 auto;
 }
 .Maps-list {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
-  @include flex-wrap(wrap);
+  display:block;
   width:100%;
+}
+.Maps-listItem {
+  display:inline;
+}
+
+.Maps-listItem:nth-child(3n) .MapCard {
+  margin-right:0
 }

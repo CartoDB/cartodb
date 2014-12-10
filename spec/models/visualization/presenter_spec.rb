@@ -88,6 +88,7 @@ describe Visualization::Member do
       vis_mock.stubs(:prev_id).returns(nil)
       vis_mock.stubs(:next_id).returns(nil)
       vis_mock.stubs(:transition_options).returns({})
+      vis_mock.stubs(:active_child).returns(nil)
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro
@@ -113,6 +114,7 @@ describe Visualization::Member do
       data[:prev_id].should eq nil
       data[:next_id].should eq nil
       data[:transition_options].should eq Hash.new
+      data[:active_child].should eq nil
     end
   end
 

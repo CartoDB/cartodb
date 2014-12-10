@@ -38,7 +38,8 @@ module CartoDB
           kind:               visualization.kind,
           prev_id:            visualization.prev_id,
           next_id:            visualization.next_id,
-          transition_options: visualization.transition_options
+          transition_options: visualization.transition_options,
+          active_child:       visualization.active_child
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)

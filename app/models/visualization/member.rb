@@ -50,7 +50,7 @@ module CartoDB
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
-      # spec/models/visualization/collection_spec.rb -> random_attributes
+      # spec/support/helpers.rb -> random_attributes_for_vis_member
       # spec/models/visualization/member_spec.rb -> random_attributes
       # app/models/visualization/presenter.rb
       # spec/models/visualization/presenter_spec.rb
@@ -79,6 +79,7 @@ module CartoDB
       attribute :next_id,             String, default: nil
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
+      attribute :active_child,        String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE

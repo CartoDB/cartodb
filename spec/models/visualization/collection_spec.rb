@@ -327,7 +327,8 @@ describe Visualization::Collection do
       prev_id:            attributes.fetch(:prev_id, nil),
       next_id:            attributes.fetch(:next_id, nil),
       slide_transition_options: attributes.fetch(:slide_transition_options,
-                                                 CartoDB::Visualization::Member::DEFAULT_OPTIONS_VALUE)
+                                                 CartoDB::Visualization::Member::DEFAULT_OPTIONS_VALUE),
+      active_child: attributes.fetch(:active_child, nil)
     }
   end #random_attributes
 end # Visualization::Collection

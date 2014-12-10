@@ -30,6 +30,7 @@ describe DataRepository::Backend::Sequel do
       String    :prev_id
       String    :next_id
       String    :slide_transition_options
+      String    :active_child
     end
 
     db.create_table :overlays do

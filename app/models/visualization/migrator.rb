@@ -35,6 +35,7 @@ module CartoDB
           String    :prev_id
           String    :next_id
           String    :slide_transition_options
+          String    :active_child
         end
 
         @db.run(%Q{

@@ -1,5 +1,4 @@
 @import "compass/css3/inline-block";
-@import "dashboard-sprite";
 
 .LikeButton:hover {
   text-decoration: none;
@@ -11,7 +10,7 @@
 }
 .LikeButton:hover .LikeButton-icon {
   text-decoration: none;
-  background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
+  background: image-url("layout/heart_highlighted.png") no-repeat;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);
@@ -30,14 +29,14 @@
   top: -1px;
   width: 14px;
   height: 14px;
-  background: image-url("sprites/dashboard/heart.png") no-repeat;
+  background: image-url("layout/heart.png") no-repeat;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);
   background-size: 14px 14px;
 }
 .LikeButton.is-highlighted .LikeButton-icon {
-  background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
+  background: image-url("layout/heart_highlighted.png") no-repeat;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);

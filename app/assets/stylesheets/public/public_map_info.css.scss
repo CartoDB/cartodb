@@ -80,7 +80,7 @@
   top: -1px;
   width: 14px;
   height: 14px;
-  background: image-url("sprites/dashboard/heart.png") no-repeat;
+  background: image-url("layout/heart.png") no-repeat;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);
@@ -88,7 +88,7 @@
 }
 
 .user-options .button.grey.like.is-highlighted .icon {
-  background: image-url("sprites/dashboard/heart_highlighted.png") no-repeat;
+  background: image-url("layout/heart_highlighted.png") no-repeat;
   -webkit-transform: scale(.7);
   -ms-transform: scale(.7);
   transform: scale(.7);

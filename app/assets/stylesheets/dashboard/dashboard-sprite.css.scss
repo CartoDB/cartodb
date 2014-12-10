@@ -18,11 +18,9 @@ $dashboard-sprites: sprite-map("sprites/dashboard/*.png",
   $dashboard-square-spacing:                  35px,
   $dashboard-prohibited-spacing:              5px,
   $dashboard-download_dataset-spacing:        40px,
-  $dashboard-download_dataset_people-spacing: 40px,
-  $dashboard-heart-spacing:                   10px,
-  $dashboard-heart_highlighted-spacing:       10px
+  $dashboard-download_dataset_people-spacing: 40px
 );
- 
+
 // All sprites should extend this class
 // The dashboard-sprite mixin will do so for you.
 #{$dashboard-sprite-base-class} {

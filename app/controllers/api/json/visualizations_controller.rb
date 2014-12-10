@@ -302,17 +302,26 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def is_liked
-    return(head 403) unless current_viewer
-
-    vis = Visualization::Member.new(id: @table_id).fetch
-    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
-      vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
-
-    render_jsonp({
-                   id:    vis.id,
-                   likes: vis.likes.count,
-                   liked: vis.liked_by?(current_viewer.id)
-                 })
+    if current_viewer
+      vis = Visualization::Member.new(id: @table_id).fetch
+      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
+                        vis.privacy != Visualization::Member::PRIVACY_LINK &&
+                        !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+      render_jsonp({
+                     id:    vis.id,
+                     likes: vis.likes.count,
+                     liked: vis.liked_by?(current_viewer.id)
+                   })
+    else
+      vis = Visualization::Member.new(id: @table_id).fetch
+      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
+                        vis.privacy != Visualization::Member::PRIVACY_LINK
+      render_jsonp({
+                     id:    vis.id,
+                     likes: vis.likes.count,
+                     liked: false
+                   })
+    end
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   end
@@ -438,7 +447,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   # This only allows to authenticate if sending an API request to username.api_key subdomain,
   # but doesn't breaks the request if can't authenticate
   def optional_api_authorization
-    authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    if params[:api_key].present?
+      authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    end
   end
 
 end

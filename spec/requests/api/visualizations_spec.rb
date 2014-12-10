@@ -717,6 +717,7 @@ describe Api::Json::VisualizationsController do
       get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
 
       post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      last_response.status.should == 200
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
       get api_v1_visualizations_is_liked_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
@@ -729,6 +730,7 @@ describe Api::Json::VisualizationsController do
       JSON.parse(last_response.body).fetch('likes').should eq [{'actor_id' => @user.id}]
 
       post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+      last_response.status.should == 200
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 2
 
       get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
@@ -739,10 +741,12 @@ describe Api::Json::VisualizationsController do
                                                        ]).should eq []
 
       delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+      last_response.status.should == 200
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
       # No effect expected
       delete api_v1_visualizations_remove_like_url(user_domain: user_2.username, id: vis_1_id, api_key: user_2.api_key)
+      last_response.status.should == 200
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
       post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
@@ -750,9 +754,11 @@ describe Api::Json::VisualizationsController do
       last_response.body.should eq "You've already liked this visualization"
 
       delete api_v1_visualizations_remove_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      last_response.status.should == 200
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 0
 
       post api_v1_visualizations_add_like_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)
+      last_response.status.should == 200
       JSON.parse(last_response.body).fetch('likes').to_i.should eq 1
 
       get api_v1_visualizations_likes_list_url(user_domain: @user.username, id: vis_1_id, api_key: @api_key)

@@ -31,8 +31,23 @@ module CartoDB
 
       # @return CartoDB::Visualization::Collection Use .count for number of children or .each to cycle through them
       def children
-        #TODO: Order them using prev-next
-        Visualization::Collection.new.fetch(parent_id: @id)
+        ordered = []
+        children = Visualization::Collection.new.fetch(parent_id: @id).map { |vis| {
+            id:       vis.id,
+            prev_id:  vis.prev_id,
+            next_id:  vis.next_id
+          }
+        }
+        if children.length > 0
+          ordered << children.select { |vis| vis[:prev_id].nil? }.first
+          children.delete_if { |vis| vis[:prev_id].nil? }
+          begin
+            target = ordered.last[:next_id]
+            ordered << children.select { |vis| vis[:id] == target }.first
+            children.delete_if { |vis| vis[:id] == target }
+          end while children.length > 0 && ordered.last[:next_id] != nil
+        end
+        ordered
       end
 
       # @return CartoDB::Visualization::Member

@@ -15,7 +15,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
   
   ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching
-  ssl_required :index, :show, :create, :update, :destroy
+  ssl_required :index, :show, :create, :update, :destroy, :set_next_id
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
   before_filter :link_ghost_tables, only: [:index, :show]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2, :notify_watching, :list_watching, :set_next_id]
@@ -161,12 +161,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis_data = payload
 
-    vis_data.delete(:permission) if vis_data[:permission].present?
-    vis_data.delete[:permission_id] if vis_data[:permission_id].present?
+    vis_data.delete(:permission) || vis_data.delete('permission')
+    vis_data.delete(:permission_id)  || vis_data.delete('permission_id')
 
     # Don't allow to modify next_id/prev_id, force to use set_next_id()
-    prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
-    next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
+    vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+    vis_data.delete(:next_id) || vis_data.delete('next_id')
 
     # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
     # This is far from perfect, but works without messing with table-vis sync and their two backends
@@ -280,6 +280,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def set_next_id
+    head(404) if payload[:next_id].nil?
+
     prev_vis = Visualization::Member.new(id: @table_id).fetch
     return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 

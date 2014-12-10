@@ -18,26 +18,27 @@ module CartoDB
 
       def to_poro
         poro = {
-          id:               visualization.id,
-          name:             visualization.name,
-          map_id:           visualization.map_id,
-          active_layer_id:  visualization.active_layer_id,
-          type:             visualization.type,
-          tags:             visualization.tags,
-          description:      visualization.description,
-          privacy:          privacy_for_vizjson.upcase,
-          stats:            visualization.stats(user),
-          created_at:       visualization.created_at,
-          updated_at:       visualization.updated_at,
-          permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
-          locked:           visualization.locked,
-          source:           visualization.source,
-          title:            visualization.title,
-          parent_id:        visualization.parent_id,
-          license:          visualization.license,
-          kind:             visualization.kind,
-          prev_id:          visualization.prev_id,
-          next_id:          visualization.next_id
+          id:                 visualization.id,
+          name:               visualization.name,
+          map_id:             visualization.map_id,
+          active_layer_id:    visualization.active_layer_id,
+          type:               visualization.type,
+          tags:               visualization.tags,
+          description:        visualization.description,
+          privacy:            privacy_for_vizjson.upcase,
+          stats:              visualization.stats(user),
+          created_at:         visualization.created_at,
+          updated_at:         visualization.updated_at,
+          permission:         visualization.permission.nil? ? nil : visualization.permission.to_poro,
+          locked:             visualization.locked,
+          source:             visualization.source,
+          title:              visualization.title,
+          parent_id:          visualization.parent_id,
+          license:            visualization.license,
+          kind:               visualization.kind,
+          prev_id:            visualization.prev_id,
+          next_id:            visualization.next_id,
+          transition_options: visualization.transition_options
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)
@@ -106,7 +107,12 @@ module CartoDB
       end
 
       def children
-        @visualization.children.map { |vis| { id: vis.id } }
+        @visualization.children.map { |vis| {
+                                              id:       vis.id,
+                                              prev_id:  vis.prev_id,
+                                              next_id:  vis.next_id
+                                            }
+        }
       end
 
       def synchronization_data_for(table=nil)

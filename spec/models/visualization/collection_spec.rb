@@ -324,8 +324,10 @@ describe Visualization::Collection do
       license:      attributes.fetch(:license, ''),
       parent_id:    attributes.fetch(:parent_id, nil),
       kind:         attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
-      prev_id:    attributes.fetch(:prev_id, nil),
-      next_id:    attributes.fetch(:next_id, nil)
+      prev_id:            attributes.fetch(:prev_id, nil),
+      next_id:            attributes.fetch(:next_id, nil),
+      slide_transition_options: attributes.fetch(:slide_transition_options,
+                                                 CartoDB::Visualization::Member::DEFAULT_OPTIONS_VALUE)
     }
   end #random_attributes
 end # Visualization::Collection

@@ -837,7 +837,7 @@ describe Visualization::Member do
       kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
       prev_id:            attributes.fetch(:prev_id, nil),
       next_id:            attributes.fetch(:next_id, nil),
-      transition_options: attributes.fetch(:transition_options, [])
+      transition_options: attributes.fetch(:transition_options, {})
     }
   end
 end

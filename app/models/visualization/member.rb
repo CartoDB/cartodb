@@ -45,7 +45,7 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
-      DEFAULT_OPTIONS_VALUE = '[]'
+      DEFAULT_OPTIONS_VALUE = '{}'
 
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb

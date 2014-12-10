@@ -107,7 +107,12 @@ module CartoDB
       end
 
       def children
-        @visualization.children.map { |vis| { id: vis.id } }
+        @visualization.children.map { |vis| {
+                                              id:       vis.id,
+                                              prev_id:  vis.prev_id,
+                                              next_id:  vis.next_id
+                                            }
+        }
       end
 
       def synchronization_data_for(table=nil)

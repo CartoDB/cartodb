@@ -594,6 +594,28 @@ describe Visualization::Member do
     table_member.store
   end
 
+  it 'tests transition_options field jsonification' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    transition_options = { first: true, second: 6 }
+
+    member = Visualization::Member.new(random_attributes({ transition_options: transition_options }))
+
+    member.transition_options.should eq transition_options
+    member.slide_transition_options.should eq ::JSON.dump(transition_options)
+
+    transition_options[:third] = 'testing'
+
+    member.transition_options = transition_options
+
+    member.transition_options.should eq transition_options
+    member.slide_transition_options.should eq ::JSON.dump(transition_options)
+
+    member = member.store.fetch
+    member.transition_options.should eq transition_options
+    member.slide_transition_options.should eq ::JSON.dump(transition_options)
+  end
+
   describe '#linked_list_tests' do
     it 'checks set_next! and unlink_self_from_list! on visualizations when set' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
@@ -813,8 +835,9 @@ describe Visualization::Member do
       license:      attributes.fetch(:license, ''),
       parent_id:    attributes.fetch(:parent_id, nil),
       kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
-      prev_id:      attributes.fetch(:prev_id, nil),
-      next_id:      attributes.fetch(:next_id, nil)
+      prev_id:            attributes.fetch(:prev_id, nil),
+      next_id:            attributes.fetch(:next_id, nil),
+      transition_options: attributes.fetch(:transition_options, [])
     }
   end
 end

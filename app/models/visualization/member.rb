@@ -45,12 +45,15 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
+      DEFAULT_OPTIONS_VALUE = '[]'
+
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/models/visualization/collection_spec.rb -> random_attributes
       # spec/models/visualization/member_spec.rb -> random_attributes
       # app/models/visualization/presenter.rb
+      # spec/models/visualization/presenter_spec.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -74,6 +77,8 @@ module CartoDB
       attribute :kind,                String, default: KIND_GEOM
       attribute :prev_id,             String, default: nil
       attribute :next_id,             String, default: nil
+      # Don't use directly, use instead getter/setter "transition_options"
+      attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -89,6 +94,14 @@ module CartoDB
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
+      end
+
+      def transition_options
+        ::JSON.parse(self.slide_transition_options).symbolize_keys
+      end
+
+      def transition_options=(value)
+        self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
       end
 
       def ==(other_vis)

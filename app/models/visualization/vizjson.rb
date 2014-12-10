@@ -42,7 +42,8 @@ module CartoDB
           overlays:       overlays_for(visualization),
           children:       children_for(visualization),
           prev:           visualization.prev_id,
-          next:           visualization.next_id
+          next:           visualization.next_id,
+          transition_options: visualization.transition_options
         }
       end
 

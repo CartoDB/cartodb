@@ -18,6 +18,9 @@
   color: white;
   text-transform: uppercase;
 }
+.Button:hover,
+.Button span:hover { text-decoration:none }
+
 .Button--main {
   background-color: $cHighlight-main;
   &:hover { background-color: rgba(#007FBD, 1) }
@@ -38,4 +41,8 @@
     background-color: rgba(#CCCCCC, 1);
     color:white;
   }
+}
+.Button--overBlack {
+  border:2px solid white;
+  &:hover {}
 }

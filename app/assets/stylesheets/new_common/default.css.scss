@@ -3,6 +3,10 @@
 
 @import "colors";
 
+* {
+  margin: 0;
+  padding: 0;
+}
 
 body {
   background: white;
@@ -14,5 +18,8 @@ ul { list-style: none }
 a {
   text-decoration: none;
   color: $cTypography-link;
-  &:hover { color: $cTypography-linkHover }
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: underline;
+  }
 }

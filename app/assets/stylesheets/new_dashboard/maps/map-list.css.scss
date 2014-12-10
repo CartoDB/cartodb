@@ -23,4 +23,5 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   @include flex-wrap(wrap);
+  width:100%;
 }

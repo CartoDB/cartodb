@@ -8,8 +8,8 @@
     var user_data = <%=raw current_user.data.to_json.html_safe %>;
     var config = <%=raw frontend_config.html_safe %>;
     var upgrade_url = "<%= upgrade_url %>";
-    var dashboard_first_time = <%= @first_time %>;
-    var just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>;
+    var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
+    var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>

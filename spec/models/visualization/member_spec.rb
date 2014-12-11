@@ -896,6 +896,62 @@ describe Visualization::Member do
       member_e.fetch
       member_e.delete
     end
+
+    it 'checks transactional wrappings for prev-next' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'A',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_a = member_a.store.fetch
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'B',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_b = member_b.store.fetch
+
+      # trick to not stub but also check that validator and other internal fields are reset upon fetch, etc.
+      member_b.privacy = 'invalid value'
+
+      expect {
+        member_a.set_next_list_item! member_b
+      }.to raise_error
+
+      member_a.fetch
+      member_b.fetch
+      member_a.next_id.should eq nil
+      member_b.prev_id.should eq nil
+      member_b.privacy.should eq Visualization::Member::PRIVACY_PUBLIC
+
+
+      member_b.privacy = 'invalid value'
+
+      expect {
+        member_b.set_prev_list_item! member_a
+      }.to raise_error
+
+      member_a.fetch
+      member_b.fetch
+      member_a.next_id.should eq nil
+      member_b.prev_id.should eq nil
+      member_b.privacy.should eq Visualization::Member::PRIVACY_PUBLIC
+
+
+      member_a.set_next_list_item! member_b
+      member_a.privacy = 'invalid value'
+
+      CartoDB::Visualization::Relator.any_instance.stubs(:next_list_item) do
+        raise "Forced error"
+      end
+
+      expect {
+        member_a.unlink_self_from_list!
+      }.to raise_error
+
+      member_a = member_a.fetch
+      member_b = member_b.fetch
+      member_a.next_id.should eq member_b.id
+      member_b.prev_id.should eq member_a.id
+    end
   end
 
 end

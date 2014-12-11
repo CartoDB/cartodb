@@ -73,6 +73,14 @@
 
 .user-options .button.grey.like {
   @include inline-block();
+  position:relative;
+  padding:0 9px;
+  text-transform: uppercase;
+  text-shadow: none;
+  font-size:11px;
+  line-height:27px;
+  font-family:'Arial';
+  letter-spacing:0;
 }
 .user-options .button.grey.like .icon {
   @include inline-block();

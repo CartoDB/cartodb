@@ -367,7 +367,14 @@ var Vis = cdb.core.View.extend({
       this.moduleChecked = true;
 
       // load modules needed for layers
-      this.loadModules(data.layers, function() {
+      var layers = data.layers;
+
+      // check if there are slides and check all the layers
+      if (data.children && data.children.length > 0) {
+        layers = layers.concat(data.children.map(function(s) { return s.layers }));
+      }
+
+      this.loadModules(layers, function() {
         self.load(data, options);
       });
 

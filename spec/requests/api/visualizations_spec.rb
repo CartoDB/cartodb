@@ -698,15 +698,30 @@ describe Api::Json::VisualizationsController do
       CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
+      map_id = ::Map.create(user_id: @user.id).id
+
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-         factory(name: 'A').to_json, @headers
+           factory({
+                     name: 'PARENT',
+                     type: CartoDB::Visualization::Member::TYPE_CANONICAL
+                   }).to_json, @headers
+      body = JSON.parse(last_response.body)
+      parent_vis_id = body.fetch('id')
+
+      # A
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'A',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id
+           }.to_json, @headers
       body = JSON.parse(last_response.body)
       vis_a_id = body.fetch('id')
       body.fetch('prev_id').should eq nil
       body.fetch('next_id').should eq nil
 
       # standalone
-      # A
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
            factory(name: 'standalone').to_json, @headers
       body = JSON.parse(last_response.body)
@@ -715,7 +730,13 @@ describe Api::Json::VisualizationsController do
 
       # A -> B
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           factory(name: 'B', prev_id: vis_a_id).to_json, @headers
+           {
+             name: 'B',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id,
+             prev_id: vis_a_id
+           }.to_json, @headers
       body = JSON.parse(last_response.body)
       vis_b_id = body.fetch('id')
       body.fetch('prev_id').should eq vis_a_id
@@ -732,10 +753,15 @@ describe Api::Json::VisualizationsController do
       body.fetch('prev_id').should eq vis_a_id
       body.fetch('next_id').should eq nil
 
-      puts "A: #{vis_a_id}\nB: #{vis_b_id}\n"
       # C -> A -> B
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           factory(name: 'C', next_id: vis_a_id).to_json, @headers
+           {
+             name: 'C',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id,
+             next_id: vis_a_id
+           }.to_json, @headers
       body = JSON.parse(last_response.body)
       vis_c_id = body.fetch('id')
       body.fetch('prev_id').should eq nil
@@ -759,7 +785,14 @@ describe Api::Json::VisualizationsController do
 
       # C -> D -> A -> B
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           factory(name: 'D', prev_id: vis_c_id, next_id: vis_a_id).to_json, @headers
+           {
+             name: 'D',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id,
+             prev_id: vis_c_id,
+             next_id: vis_a_id
+           }.to_json, @headers
       body = JSON.parse(last_response.body)
       vis_d_id = body.fetch('id')
       body.fetch('prev_id').should eq vis_c_id
@@ -788,6 +821,35 @@ describe Api::Json::VisualizationsController do
           {}, @headers
       body = JSON.parse(last_response.body)
       body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      # C -> A -> B -> D
+      put api_v1_visualizations_set_next_id_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
+           { next_id: nil }.to_json, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_b_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq vis_d_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_b_id
       body.fetch('next_id').should eq nil
     end
   end

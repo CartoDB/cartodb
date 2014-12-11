@@ -78,17 +78,13 @@ module CartoDB
       user.save
     end
 
-    def reload_user_data user
-
+    def reload_user_data(user)
       delete_user_data user
-
-      fixture     = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-      data_import = create_import(@user, fixture)
-      fixture     = "#{Rails.root}/db/fake_data/twitters.csv"
-      data_import = create_import(@user, fixture)
+      create_import(@user, "#{Rails.root}/db/fake_data/import_csv_1.csv")
+      create_import(@user, "#{Rails.root}/db/fake_data/twitters.csv")
     end
 
-    def create_import user, file_name, name=nil
+    def create_import(user, file_name, name=nil)
       data_import  = DataImport.create(
         user_id:      user.id,
         data_source:  file_name,

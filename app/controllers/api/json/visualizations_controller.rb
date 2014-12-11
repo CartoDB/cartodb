@@ -13,12 +13,17 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
-  
-  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching
+
+  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
+               :remove_like
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
+  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
+                                                         :is_liked, :remove_like]
+  before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like]
   before_filter :link_ghost_tables, only: [:index, :show]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2, :notify_watching, :list_watching]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
+                                                      :notify_watching, :list_watching, :likes_count, :likes_list,
+                                                      :add_like, :is_liked, :remove_like]
 
   def index
     collection = Visualization::Collection.new.fetch(
@@ -36,7 +41,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     }.compact
     synchronizations = synchronizations_by_table_name(table_data)
     rows_and_sizes   = rows_and_sizes_for(table_data)
-
     representation  = collection.map { |vis|
       begin
         vis.to_hash(
@@ -63,6 +67,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def create
     payload.delete(:permission) if payload[:permission].present?
     payload.delete[:permission_id] if payload[:permission_id].present?
+    vis = nil
 
     if params[:source_visualization_id]
       source = Visualization::Collection.new.fetch(
@@ -246,6 +251,99 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(watcher.list)
   end
 
+  # Does not mandate a current_viewer except if vis is not public
+  def likes_count
+    vis = Visualization::Member.new(id: @table_id).fetch
+    if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+    end
+
+    render_jsonp({
+                   id: vis.id,
+                   likes: vis.likes.count
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  # Does not mandate a current_viewer except if vis is not public
+  def likes_list
+    vis = Visualization::Member.new(id: @table_id).fetch
+    if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+    end
+
+    render_jsonp({
+                   id: vis.id,
+                   likes: vis.likes.map { |like| {actor_id: like.actor } }
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  def add_like
+    return(head 403) unless current_viewer
+
+    vis = Visualization::Member.new(id: @table_id).fetch
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
+      vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+
+    vis.add_like_from(current_viewer.id)
+       .fetch
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: vis.liked_by?(current_viewer.id)
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  rescue AlreadyLikedError
+    render(text: "You've already liked this visualization", status: 400)
+  end
+
+  def is_liked
+    if current_viewer
+      vis = Visualization::Member.new(id: @table_id).fetch
+      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
+                        vis.privacy != Visualization::Member::PRIVACY_LINK &&
+                        !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+      render_jsonp({
+                     id:    vis.id,
+                     likes: vis.likes.count,
+                     liked: vis.liked_by?(current_viewer.id)
+                   })
+    else
+      vis = Visualization::Member.new(id: @table_id).fetch
+      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
+                        vis.privacy != Visualization::Member::PRIVACY_LINK
+      render_jsonp({
+                     id:    vis.id,
+                     likes: vis.likes.count,
+                     liked: false
+                   })
+    end
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  def remove_like
+    return(head 403) unless current_viewer
+
+    vis = Visualization::Member.new(id: @table_id).fetch
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
+      vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+
+    vis.remove_like_from(current_viewer.id)
+       .fetch
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: false
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
   private
 
   def table_and_schema_from_params
@@ -345,5 +443,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     }
     data
   end
+
+  # This only allows to authenticate if sending an API request to username.api_key subdomain,
+  # but doesn't breaks the request if can't authenticate
+  def optional_api_authorization
+    if params[:api_key].present?
+      authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    end
+  end
+
 end
 

@@ -14,7 +14,7 @@
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
     // use grunt --environment production
-    var runenv = grunt.option('environment') || 'development';
+    var env = grunt.option('environment') || 'development';
 
     var aws = {};
     if (grunt.file.exists('./lib/build/grunt-aws.json')) {
@@ -25,7 +25,7 @@
     grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
       aws: aws,
-      runenv: grunt.file.readJSON("./lib/build/config/" + runenv + ".json"),
+      env: grunt.file.readJSON("./lib/build/config/" + env + ".json"),
       gitrev: exec('git rev-parse HEAD', { silent:true }).output.replace('\n', ''),
 
       assets_dir: ASSETS_DIR,
@@ -100,7 +100,7 @@
 
     grunt.registerTask('config', "generates assets config for current configuration", function() {
       // Set assets url for static assets in our app
-      var config = grunt.template.process("cdb.config.set('assets_url', '<%= runenv.http_path_prefix %>/assets/<%= pkg.version %>');");
+      var config = grunt.template.process("cdb.config.set('assets_url', '<%= env.http_path_prefix %>/assets/<%= pkg.version %>');");
       config += grunt.template.process("\nconsole.log('cartodbui v<%= pkg.version %> sha1: <%= gitrev %>');");
       grunt.file.write("lib/build/app_config.js", config);
     });

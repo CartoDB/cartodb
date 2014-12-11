@@ -34,11 +34,13 @@ module CartoDB
           source:           visualization.source,
           title:            visualization.title,
           license:          visualization.license,
-          kind:             visualization.kind
+          kind:             visualization.kind,
+          likes:            visualization.likes.count
         }
         poro.merge!(table: table_data_for(table))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
+        poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
         poro
       end
 

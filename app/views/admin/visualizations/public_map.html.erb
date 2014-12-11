@@ -7,7 +7,6 @@
   public-map
 <% end %>
 
-
 <%= content_for(:content) do %>
   <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? || @visualization.organization? %>
 
@@ -60,14 +59,18 @@
             </a>
           </div>
 
-          <div class="export_options">
+          <div class="extra_options">
             <div class="left"></div>
             <div class="user-options">
 
-              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
+              <a href="#like" class="like button grey js-like">
+                <span class="icon"></span>
+                <span class="counter"><%= @likes_count %></span>
+              </a>
 
-              <!--a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a-->
+              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
               <a href="<%= public_visualizations_show_url(user_domain: domain, id: @visualization.id) %>" class="edit button grey">Edit in CartoDB</a>
+              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
             </div>
           </div>
 

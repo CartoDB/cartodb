@@ -8,15 +8,14 @@
 @import "compass/css3/inline-block";
 @import "../common/mixins";
 
-
-.export_options {
+.extra_options {
   float:left;
   clear:both;
   width:100%;
   padding: 13px 0 0 0;
   margin: 30px 0 0 0;
   @include clearfix();
-  
+
   &.disabled { display:none }
 
   border-top: 1px solid #E5E5E5;
@@ -80,12 +79,11 @@
 
 }
 
-.export_options .user-options {
+.extra_options .user-options {
   float:right;
 }
 
-
-.export_options .button.green.clone {
+.extra_options .button.green.clone {
   position:relative;
   display:none;
   padding:0 9px 0 28px;
@@ -105,8 +103,7 @@
     @include background(image-url('layout/clone-icon.png') no-repeat 0 0);
   }
 }
-
-.export_options .button.grey.edit {
+.extra_options .button.grey.edit {
   position:relative;
   display:none;
   padding:0 9px;
@@ -118,10 +115,9 @@
   letter-spacing:0;
 }
 
-
 @media only screen and (max-width: 710px) {
-  body.public-map .export_options,
-  body.public .export_options {
+  body.public-map .extra_options,
+  body.public .extra_options {
     
     .download_options {
       display:block!important;
@@ -139,8 +135,8 @@
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
-  body.public-map .export_options,
-  body.public .export_options {
+  body.public-map .extra_options,
+  body.public .extra_options {
     
     .download_options {
       display:block!important;

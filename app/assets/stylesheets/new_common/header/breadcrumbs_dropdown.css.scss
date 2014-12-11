@@ -1,0 +1,17 @@
+@import "../new_common/mixins";
+@import "../new_common/colors";
+
+.BreadcrumbsDropdown {
+  min-width: 200px;
+}
+.BreadcrumbsDropdown-sameline {
+  @include display-flex();
+  @include flex-wrap(nowrap);
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.BreadcrumbsDropdown-lockIcon {
+  font-size: 13px;
+  font-weight:300;
+  color: $cTypography-help;
+}

@@ -14,7 +14,7 @@
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
     // use grunt --environment production
-    var env = grunt.option('environment') || 'development';
+    var runenv = grunt.option('environment') || 'development';
 
     var aws = {};
     if (grunt.file.exists('./lib/build/grunt-aws.json')) {
@@ -25,7 +25,7 @@
     grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
       aws: aws,
-      env: grunt.file.readJSON("./lib/build/config/" + env + ".json"),
+      runenv: grunt.file.readJSON("./lib/build/config/" + runenv + ".json"),
       gitrev: exec('git rev-parse HEAD', { silent:true }).output.replace('\n', ''),
 
       assets_dir: ASSETS_DIR,

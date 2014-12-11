@@ -1,4 +1,4 @@
-3.5.0 (2014-xx-xx)
+3.5.0 (2014-12-11)
 ------------------
 * New features
   - Likes on Visualizations & Datasets lists. Also prepared backend code for inminent like button on public map pages.

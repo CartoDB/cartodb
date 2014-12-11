@@ -80,7 +80,7 @@ class Layer < Sequel::Model
 
   def before_destroy
     maps.each(&:invalidate_vizjson_varnish_cache)
-    children.each(&:destroy)
+    children.each(&:destroy) unless children.nil?
     super
   end
 

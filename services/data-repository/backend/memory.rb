@@ -8,16 +8,21 @@ module DataRepository
       def store(key, data, options={})
         data = data.to_a if data.is_a?(Set) # OMG FIXME
         super(key, JSON.parse(data.to_json))
-      end #store
+      end
 
       def fetch(key, options={})
         super key
-      end #fetch
+      end
 
       def exists?(key)
         self.has_key?(key)
-      end #exists?
-    end # Memory
-  end # Backend
-end # DataRepository
+      end
+
+      # Not supported, so just call data
+      def transaction(&block)
+        block.call
+      end
+    end
+  end
+end
 

@@ -23,7 +23,7 @@
   width:100%;
 }
 .Maps-listItem {
-  display:inline;
+  @include inline-block();
 }
 
 .Maps-listItem:nth-child(3n) .MapCard {

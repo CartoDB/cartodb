@@ -1,8 +1,6 @@
 // Map card item
 // --------------------------------------------------
 
-@import "compass/css3/images";
-@import "../new-dashboard-sprite";
 @import "../../new_common/colors";
 @import "../../new_common/mixins";
 
@@ -61,7 +59,6 @@
   width:29px;
   height:29px;
   @include border-radius(2px);
-  @include background(sprite($new-dashboard-sprites, layers-icon) center center rgba(black,.4));
   z-index:2;
 }
 .MapCard-headerLayers {
@@ -71,7 +68,6 @@
   width:29px;
   height:29px;
   @include border-radius(2px);
-  @include background(sprite($new-dashboard-sprites, layers-icon) center center rgba(black,.4));
   z-index:2;
 }
 .MapCard-content {

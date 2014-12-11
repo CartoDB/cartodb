@@ -1,8 +1,6 @@
 // Dashboard filters
 // --------------------------------------------------
 
-@import "compass/css3/images";
-@import "new-dashboard-sprite";
 @import "../new_common/mixins";
 @import "../new_common/colors";
 
@@ -77,11 +75,11 @@
   margin-right:5px;
   border:none;
   line-height:80px;
-  @include background(sprite($new-dashboard-sprites, lens-icon));
+  
 }
 .DashboardFilters-searchLink:hover {
   .DashboardFilters-searchLinkIcon {
-    @include background(sprite($new-dashboard-sprites, lens-icon, $offset-x:-14px));
+    
   }  
 }
 .DashboardFilters-searchItem {
@@ -184,29 +182,29 @@
 .DashboardFilters-orderLink--heart {
   width:18px;
   height:16px;
-  @include background(sprite($new-dashboard-sprites, heart-icon));
-  &:hover { @include background(sprite($new-dashboard-sprites, heart-icon, $offset-x:-18px)); }
+  // @include background(sprite($new-dashboard-sprites, heart-icon));
+  // &:hover { @include background(sprite($new-dashboard-sprites, heart-icon, $offset-x:-18px)); }
 }
 .DashboardFilters-orderLink--heart.is-selected {
-  @include background(sprite($new-dashboard-sprites, heart-icon, $offset-x:-18px));
+  // @include background(sprite($new-dashboard-sprites, heart-icon, $offset-x:-18px));
 }
 .DashboardFilters-orderLink--graph {
   width:20px;
   height:12px;
-  @include background(sprite($new-dashboard-sprites, graph-icon));
-  &:hover { @include background(sprite($new-dashboard-sprites, graph-icon, $offset-x:-20px)); }
+  // @include background(sprite($new-dashboard-sprites, graph-icon));
+  // &:hover { @include background(sprite($new-dashboard-sprites, graph-icon, $offset-x:-20px)); }
 }
 .DashboardFilters-orderLink--graph.is-selected {
-  @include background(sprite($new-dashboard-sprites, graph-icon, $offset-x:-20px));
+  // @include background(sprite($new-dashboard-sprites, graph-icon, $offset-x:-20px));
 }
 .DashboardFilters-orderLink--clock {
   width:18px;
   height:19px;
-  @include background(sprite($new-dashboard-sprites, clock-icon));
-  &:hover { @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px)); }
+  // @include background(sprite($new-dashboard-sprites, clock-icon));
+  // &:hover { @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px)); }
 }
 .DashboardFilters-orderLink--clock.is-selected {
-  @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px));
+  // @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px));
 }
 .DashboardFilters-selectedItems {
   font-size:15px;

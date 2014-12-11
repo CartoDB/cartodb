@@ -1,8 +1,6 @@
 {
-  "browserify": {
-    "debug": false,
-    "watch": false
-  },
+  "browserify_debug": false,
+  "browserify_watch": false,
   "use_minify": true,
   "http_path_prefix": "//cartodb-libs.global.ssl.fastly.net/cartodbui"
 }

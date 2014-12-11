@@ -63,7 +63,7 @@
 
       uglify: require('./lib/build/tasks/uglify.js').task(),
 
-      browserify: require('./lib/build/tasks/browserify.js').task()
+      browserify: require('./lib/build/tasks/browserify.js').task(grunt)
     });
 
     // Load Grunt tasks

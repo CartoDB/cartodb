@@ -1,8 +1,6 @@
 {
-  "browserify": {
-    "debug": true,
-    "watch": true
-  },
+  "browserify_debug": true,
+  "browserify_watch": true,
   "use_minify": false,
   "http_path_prefix": ""
 }

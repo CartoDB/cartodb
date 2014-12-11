@@ -108,6 +108,7 @@ module CartoDB
         map { |member| member.to_hash(related: false, table_data: true) }
       end
 
+      # Warning, this is a cached count, do not use if adding/removing collection items
       attr_reader :total_entries
 
       private

@@ -515,6 +515,15 @@ module CartoDB
         !(likes.select { |like| like.actor == user_id }.first.nil?)
       end
 
+      # @param viewer_user User
+      def qualified_name(viewer_user=nil)
+        if viewer_user.nil? || is_owner?(viewer_user)
+          name
+        else
+          "#{user.sql_safe_database_schema}.#{name}"
+        end
+      end
+
       attr_accessor :register_table_only
 
       private

@@ -25,7 +25,7 @@ module CartoDB
         @parent_id      = attributes.fetch(:parent_id)
         @kind           = attributes.fetch(:kind)
         @support_tables = nil
-	@likes          = nil
+	      @likes          = nil
         @prev_id        = attributes.fetch(:prev_id)
         @next_id        = attributes.fetch(:next_id)
       end
@@ -34,14 +34,16 @@ module CartoDB
       def children
         ordered = []
         children = Visualization::Collection.new.fetch(parent_id: @id)
-        if children.total_entries > 0
+        if children.count > 0
           ordered << children.select { |vis| vis[:prev_id].nil? }.first
           children.delete_if { |vis| vis[:prev_id].nil? }
-          begin
-            target = ordered.last[:next_id]
-            ordered << children.select { |vis| vis[:id] == target }.first
-            children.delete_if { |vis| vis[:id] == target }
-          end while children.total_entries > 0 && ordered.last[:next_id] != nil
+          if children.count > 0
+            begin
+              target = ordered.last[:next_id]
+              ordered << children.select { |vis| vis[:id] == target }.first
+              children.delete_if { |vis| vis[:id] == target }
+            end while (children.count > 0 && !ordered.last[:next_id].nil?)
+          end
         end
         ordered
       end

@@ -28,7 +28,7 @@ module CartoDB
         poro_data = {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
-          title:          qualify_vis_name,
+          title:          visualization.qualified_name(@user),
           likes:          visualization.likes.count,
           description:    visualization.description_md,
           scrollwheel:    map.scrollwheel,
@@ -48,6 +48,10 @@ module CartoDB
 
         children = children_for(visualization)
         poro_data.merge!({slides: children}) if children.length > 0
+        unless visualization.parent_id.nil?
+          poro_data[:title] = visualization.parent.qualified_name(@user)
+          poro_data[:description] = visualization.parent.description_md
+        end
 
         poro_data
       end
@@ -146,14 +150,6 @@ module CartoDB
 
       def default_options
         { full: true, visualization_id: visualization.id }
-      end
-
-      def qualify_vis_name
-        if @user.nil? || @visualization.is_owner?(@user)
-          visualization.name
-        else
-          "#{@visualization.user.sql_safe_database_schema}.#{visualization.name}"
-        end
       end
 
     end

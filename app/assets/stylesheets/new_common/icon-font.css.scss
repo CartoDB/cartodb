@@ -7,6 +7,16 @@
 @include font-face("CartoIcon", font-files("cartoIcon.woff", "cartoIcon.ttf", "cartoIcon.svg"), "cartoIcon.eot", normal, normal);
 
 
+.iconFont {
+  font-family:'CartoIcon';
+  display: inline-block;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 
 .iconFont-Clock:before {
   content: "\E001";
@@ -80,14 +90,46 @@
   content: "\E012";
 }
 
-.iconFont-Close:before {
+.iconFont-ArrowNext:before {
   content: "\E013";
 }
 
-.iconFont-ArrowBack:before {
+.iconFont-ArrowPrev:before {
   content: "\E014";
 }
 
-.iconFont-ArrowNext:before {
+.iconFont-Close:before {
   content: "\E015";
+}
+
+.iconFont-CartoFante:before {
+  content: "\E016";
+}
+
+.iconFont-Lock:before {
+  content: "\E017";
+}
+
+.iconFont-CartoDB:before {
+  content: "\E018";
+}
+
+.iconFont-Lens:before {
+  content: "\E019";
+}
+
+.iconFont-PolygonDataset:before {
+  content: "\E01A";
+}
+
+.iconFont-LinesDataset:before {
+  content: "\E01B";
+}
+
+.iconFont-RasterDataset:before {
+  content: "\E01C";
+}
+
+.iconFont-PointsDataset:before {
+  content: "\E01D";
 }

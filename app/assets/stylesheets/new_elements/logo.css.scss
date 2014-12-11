@@ -4,22 +4,29 @@
 
 @import "compass/css3/images";
 @import "../new_common/mixins";
-@import "new-elements-sprite";
 
 
 .Logo {
   @include inline-block();
-  text-indent:-9999px;
-  font-size:0;
 }
 .Logo--text {
   width:90px;
   height:16px;
-  @include background(sprite($new-elements-sprites, logo-text));
+  i {
+    font-size:17px;
+    color: #333333;
+  }
 }
 .Logo--round {
   width:40px;
   height:40px;
-  @include background(sprite($new-elements-sprites, logo-round));
+  background-color:#CCCCCC;
+  @include border-radius(40px);
+  line-height:50px;
+  text-align:center;
+  i {
+    font-size:24px;
+    color: white;
+  }
 }
 

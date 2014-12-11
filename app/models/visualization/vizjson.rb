@@ -25,7 +25,7 @@ module CartoDB
       # Return a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
-        {
+        poro_data = {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          qualify_vis_name,
@@ -40,11 +40,15 @@ module CartoDB
           updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
           overlays:       overlays_for(visualization),
-          children:       children_for(visualization),
           prev:           visualization.prev_id,
           next:           visualization.next_id,
           transition_options: visualization.transition_options
         }
+
+        children = children_for(visualization)
+        poro_data.merge!({slides: children}) if children.length > 0
+
+        poro_data
       end
 
       def layer_group_for(visualization)

@@ -488,7 +488,7 @@ module CartoDB
         end
         self.prev_id = nil
         self.next_id = nil
-      def
+      end
 
       # @param user_id String UUID of the actor that likes the visualization
       # @throws AlreadyLikedError

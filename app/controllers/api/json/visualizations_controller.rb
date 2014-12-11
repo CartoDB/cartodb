@@ -280,18 +280,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def set_next_id
-    head(404) if payload[:next_id].nil?
+    next_id = payload[:next_id] || payload['next_id']
+
+    return(head 404) if next_id.nil?
 
     prev_vis = Visualization::Member.new(id: @table_id).fetch
-    return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+    return(head 403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
-    next_vis = Visualization::Member.new(id: payload['next_id']).fetch
-    return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+    next_vis = Visualization::Member.new(id: next_id).fetch
+    return(head 403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
     prev_vis.set_next_list_item!(next_vis)
 
-    # TODO: return full list
-    render_jsonp([])
+    render_jsonp(prev_vis.to_vizjson)
   rescue KeyError
     head(404)
   rescue CartoDB::InvalidMember

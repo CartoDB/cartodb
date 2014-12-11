@@ -14,7 +14,12 @@
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
     // use grunt --environment production
-    var env = grunt.option('environment') || 'development';
+    var env = './config/grunt_' + (grunt.option('environment') || 'development') + '.json';
+    if (grunt.file.exists(env)) {
+      env = grunt.file.readJSON(env)
+    } else {
+      throw grunt.util.error(env +' file is missing! See '+ env +'.sample for how it should look like');
+    }
 
     var aws = {};
     if (grunt.file.exists('./lib/build/grunt-aws.json')) {
@@ -25,7 +30,7 @@
     grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
       aws: aws,
-      env: grunt.file.readJSON("./lib/build/config/" + env + ".json"),
+      env: env,
       gitrev: exec('git rev-parse HEAD', { silent:true }).output.replace('\n', ''),
 
       assets_dir: ASSETS_DIR,
@@ -63,7 +68,7 @@
 
       uglify: require('./lib/build/tasks/uglify.js').task(),
 
-      browserify: require('./lib/build/tasks/browserify.js').task(grunt)
+      browserify: require('./lib/build/tasks/browserify.js').task(env.browserify_watch, env.browserify_debug, ASSETS_DIR)
     });
 
     // Load Grunt tasks

@@ -141,6 +141,6 @@
     grunt.registerTask('js',        ['cdb', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('default',   ['clean', 'config', 'js', 'css', 'manifest']);
     grunt.registerTask('minimize',  ['default', 'copy:js', 'uglify']);
-    grunt.registerTask('release',   ['check_release', 'default', 'copy:js', 'uglify', 's3', 'invalidate']);
+    grunt.registerTask('release',   ['check_release', 'minimize', 's3', 'invalidate']);
 
   };

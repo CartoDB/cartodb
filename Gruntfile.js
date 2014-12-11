@@ -17,8 +17,8 @@
     var env = grunt.option('environment') || 'development';
 
     var aws = {};
-    if (grunt.file.exists('grunt-aws.json')) {
-      aws = grunt.file.readJSON('grunt-aws.json');
+    if (grunt.file.exists('./lib/build/grunt-aws.json')) {
+      aws = grunt.file.readJSON('./lib/build/grunt-aws.json');
     }
 
     // Project configuration.

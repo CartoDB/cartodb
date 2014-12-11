@@ -548,6 +548,7 @@ describe Visualization::Member do
     member.permission_id = UUIDTools::UUID.timestamp_create.to_s
     member.valid?.should eq false
     @user.destroy
+  end
 
   describe '#likes' do
     it 'should properly relate likes to a visualization' do

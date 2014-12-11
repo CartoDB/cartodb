@@ -158,7 +158,8 @@ window.vizjson = function(data) {
 cartodb.moduleLoad = function(name, mod) {
   cartodb[name] = mod;
   cartodb.config.modules.add({
-    name: mod
+    name: name,
+    mod: mod
   });
 };
 
@@ -547,7 +548,10 @@ var Vis = cdb.core.View.extend({
     }
 
     if (data.children) {
-      this._createSlides([data].concat(data.children));
+      cdb.config.bind('moduleLoaded:odyssey', function() {
+        self._createSlides([data].concat(data.children));
+      });
+      Loader.loadModule('odyssey');
     }
 
     _.defer(function() {

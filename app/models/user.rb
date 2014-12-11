@@ -1283,6 +1283,7 @@ class User < Sequel::Model
   end
 
   def feature_flags
+    puts "hell?"
     self.feature_flags_user.map { |ff| ff.feature_flag.name }
   end
 

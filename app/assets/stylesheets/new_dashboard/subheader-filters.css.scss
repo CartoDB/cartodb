@@ -15,19 +15,24 @@
   position:relative;
   display:block;
   width: 940px;
-  height:80px;
+  height:81px;
   margin: 0 auto;
   padding: 0;
-  border-bottom: 1px solid $cStructure-softLine;
   overflow:hidden;
 }
 .DashboardFilters-inner {
   display:block;
   padding: 0;
-  @include transition(margin,250ms);
+  @include transition(margin,150ms);
 }
-.DashboardFilters-inner.items--selected {
-  margin-top:-80px;
+.DashboardFilters-separator {
+  position:absolute;
+  left:0;
+  top:80px;
+  width:100%;
+  height:1px;
+  background-color:$cStructure-softLine;
+  z-index:0;
 }
 .DashboardFilters-row {
   @include display-flex();
@@ -50,7 +55,7 @@
     position:absolute;
     top:50%;
     right:-25px;
-    margin-top:-8px;
+    margin-top:-10px;
     font-weight:300;
     color:$cStructure-softLine;
   }
@@ -58,26 +63,76 @@
   &:first-child { margin-left:0 }
   &:last-child:after { display:none }
 }
-.DashboardFilters-search {
+
+.DashboardFilters-searchLink {
+  line-height:80px;
+  font-size:14px;
+  color:$cTypography-help;
+}
+.DashboardFilters-searchLinkIcon {
+  @include inline-block();
+  vertical-align: middle;
+  width:14px;
+  height:15px;
+  margin-right:5px;
+  border:none;
+  line-height:80px;
+  @include background(sprite($new-dashboard-sprites, lens-icon));
+}
+.DashboardFilters-searchLink:hover {
+  .DashboardFilters-searchLinkIcon {
+    @include background(sprite($new-dashboard-sprites, lens-icon, $offset-x:-14px));
+  }  
+}
+.DashboardFilters-searchItem {
+  display:none;
+  margin-right:0;
+  &:after { content:'' }
+}
+.DashboardFilters-searchForm {
+  position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
+  width:827px;
 }
-.DashboardFilters-searchButton {
-  width:14px;
-  height:16px;
-  border:none;
-  @include background(sprite($new-dashboard-sprites, lens-icon));
-  &:hover { @include background(sprite($new-dashboard-sprites, lens-icon, $offset-x:-14px)); }
-}
-.DashboardFilters-searchValue {
-  width:58px;
+.DashboardFilters-searchInput {
+  width:790px;
   padding-left:5px;
   outline:none;
   border:none;
   background:none;
-  font-size:14px;
+  font-size:15px;
+}
+.DashboardFilters-cleanSearch {
+  position:absolute;
+  top:23px;
+  right:0;
+  width:30px;
+  height:30px;
+  @include border-radius(30px);
+  border:1px solid #CCC;
+  color:#CCC;
+  text-indent:-9999px;
+  font-size:0;
+  &:hover {
+    border:1px solid #999;
+    color:#999;
+  }
+}
+// We can't group this style :(
+.DashboardFilters-searchInput::-webkit-input-placeholder {
+  font-style:italic;
+  color:#DDD;
+}
+.DashboardFilters-searchInput::-moz-placeholder {
+  font-style:italic;
+  color:#DDD;
+}
+.DashboardFilters-searchInput:-ms-placeholder {
+  font-style:italic;
+  color:#DDD;
 }
 .DashboardFilters-typeLink {
   line-height:80px;
@@ -169,4 +224,18 @@
 }
 .DashboardFilters-actionsLink.is--critical {
   color:#FF6C6C;
+}
+
+// Filters states
+.DashboardFilters-inner.items--selected {
+  margin-top:-81px;
+}
+.DashboardFilters-inner.search--enabled {
+
+  .DashboardFilters-typeItem,
+  .DashboardFilters-orderItem,
+  .Button--positive { display:none }
+
+  .DashboardFilters-searchEnabler { display:inline }
+  .DashboardFilters-searchItem { display:inherit }
 }

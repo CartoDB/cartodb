@@ -15,7 +15,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
-                          permission parent children support_tables prev_list_item next_list_item }
+                          permission parent children support_tables prev_list_item next_list_item likes reload_likes }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -25,6 +25,7 @@ module CartoDB
         @parent_id      = attributes.fetch(:parent_id)
         @kind           = attributes.fetch(:kind)
         @support_tables = nil
+	@likes          = nil
         @prev_id        = attributes.fetch(:prev_id)
         @next_id        = attributes.fetch(:next_id)
       end
@@ -107,6 +108,15 @@ module CartoDB
 
       def permission
         @permission ||= CartoDB::Permission.where(id: @permission_id).first unless @permission_id.nil?
+      end
+
+      def likes
+        @likes ||= Like.where(subject: @id).all.to_a
+      end
+
+      def reload_likes
+        @likes = nil
+        likes
       end
 
       attr_reader :id, :map_id

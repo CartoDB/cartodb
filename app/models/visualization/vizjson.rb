@@ -29,6 +29,7 @@ module CartoDB
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          qualify_vis_name,
+          likes:          visualization.likes.count,
           description:    visualization.description_md,
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,

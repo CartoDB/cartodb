@@ -74,6 +74,13 @@
           span.dot-separator { display:none }
         }
       }
+
+      .LikeButton {
+        line-height:.0;
+      }
+      .LikeButton .LikeButton-icon {
+        margin: 0 0 0 0;
+      }
     }
 
     // Synchronization

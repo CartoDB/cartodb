@@ -59,7 +59,7 @@ describe Visualization::Member do
   end
 
   describe 'to_poro fields' do
-    it 'basic fields as of jul-2014' do
+    it 'basic fields expected at the to_poro method' do
       perm_mock = mock
       perm_mock.stubs(:to_poro).returns({ wadus: 'wadus'})
 
@@ -89,6 +89,7 @@ describe Visualization::Member do
       vis_mock.stubs(:next_id).returns(nil)
       vis_mock.stubs(:transition_options).returns({})
       vis_mock.stubs(:active_child).returns(nil)
+      vis_mock.stubs(:likes).returns([])
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro
@@ -111,6 +112,7 @@ describe Visualization::Member do
       data[:parent_id].should eq nil
       data[:children].should eq Array.new
       data[:kind].should eq Visualization::Member::KIND_GEOM
+      data[:likes].should eq Array.new
       data[:prev_id].should eq nil
       data[:next_id].should eq nil
       data[:transition_options].should eq Hash.new
@@ -190,6 +192,7 @@ describe Visualization::Member do
       data[:children][2][:id].should eq member_c.id
       data[:children][3][:id].should eq member_d.id
       data[:children][4][:id].should eq member_e.id
+      data[:likes].should eq 0
     end
   end
 

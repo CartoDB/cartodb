@@ -1,3 +1,10 @@
+3.5.0 (2014-12-11)
+------------------
+* New features
+  - Likes on Visualizations & Datasets lists. Also prepared backend code for inminent like button on public map pages.
+ * Fixed bugs and improvements
+   - fixed metadata tables being dropped if they were in more than one account #1349
+
 3.4.1 (2014-12-01)
 ------------------
  * Fixed bugs and improvements
@@ -68,6 +75,7 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
+  * Implemented raster import into the editor. Only table import, yet no viewer/editor.
   * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
   * Enables fullscreen for IE11.
   * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)

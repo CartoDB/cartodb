@@ -4,7 +4,9 @@ namespace :resque do
     Resque.before_fork do |job|
       #we disconnect the worker so it reconnects on each job
       Rails::Sequel.connection.disconnect 
+      Resque::Metrics.before_fork.call(job)
     end
+    Resque.after_fork = Resque::Metrics.after_fork
   end
 
   desc "Quit running workers"

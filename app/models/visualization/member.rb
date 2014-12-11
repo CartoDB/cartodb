@@ -8,6 +8,7 @@ require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
 require_relative './relator'
+require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
@@ -192,12 +193,11 @@ module CartoDB
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
-        map.destroy if map
-        table.destroy if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        children.map(&:delete)
-
-        permission.destroy if permission
-        repository.delete(id)
+        safe_sequel_delete { map.destroy } if map
+        safe_sequel_delete { table.destroy } if (type == CANONICAL_TYPE && table && !from_table_deletion)
+	safe_sequel_delete { children.map(&:delete) }
+        safe_sequel_delete { permission.destroy } if permission
+        safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
         self
@@ -488,6 +488,31 @@ module CartoDB
         end
         self.prev_id = nil
         self.next_id = nil
+      def
+
+      # @param user_id String UUID of the actor that likes the visualization
+      # @throws AlreadyLikedError
+      def add_like_from(user_id)
+        Like.create(actor: user_id, subject: id)
+        reload_likes
+        self
+      rescue Sequel::DatabaseError => exception
+        if exception.message =~ /duplicate key/i
+          raise AlreadyLikedError
+        else
+          raise exception
+        end
+      end
+
+      def remove_like_from(user_id)
+        item = likes.select { |like| like.actor == user_id }
+        item.first.destroy unless item.first.nil?
+        reload_likes
+        self
+      end
+
+      def liked_by?(user_id)
+        !(likes.select { |like| like.actor == user_id }.first.nil?)
       end
 
       attr_accessor :register_table_only
@@ -710,6 +735,13 @@ module CartoDB
       def secure_digest(*args)
         #noinspection RubyArgCount
         Digest::SHA256.hexdigest(args.flatten.join)
+      end
+
+      def safe_sequel_delete
+        yield
+      rescue Sequel::NoExistingObject => exception
+        # INFO: don't fail on nonexistant object delete
+        CartoDB.notify_exception(exception)
       end
 
     end

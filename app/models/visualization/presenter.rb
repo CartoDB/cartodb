@@ -36,6 +36,7 @@ module CartoDB
           parent_id:          visualization.parent_id,
           license:            visualization.license,
           kind:               visualization.kind,
+          likes:              visualization.likes.count,
           prev_id:            visualization.prev_id,
           next_id:            visualization.next_id,
           transition_options: visualization.transition_options,
@@ -45,6 +46,7 @@ module CartoDB
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro.merge!(children: children)
+        poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
         poro
       end
 

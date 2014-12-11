@@ -38,6 +38,11 @@ module DataRepository
         redis.del(key)
       end #delete
 
+      # Not supported, so just call data
+      def transaction(&block)
+        block.call
+      end
+
       private
 
       attr_reader :redis

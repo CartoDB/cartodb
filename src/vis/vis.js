@@ -559,15 +559,30 @@ var Vis = cdb.core.View.extend({
   },
 
   _addTimeSlider: function() {
+    var self = this;
     var torque = _(this.getLayers()).find(function(layer) {
       return layer.model.get('type') === 'torque';
     });
     if (torque) {
       this.torqueLayer = torque;
+      // send step events from torque layer 
+      this.torqueLayer.bind('change:time', function(s) {
+        this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
+      }, this);
       if (!this.mobile_enabled && this.torqueLayer) {
         this.addTimeSlider(this.torqueLayer);
       }
     }
+  },
+
+  // sets the animation step if there is an animation
+  // returns true if succed
+  setAnimationStep: function(s, opt) {
+    if (this.torqueLayer) {
+      this.torqueLayer.setStep(s, opt);
+      return true;
+    }
+    return false;
   },
 
   _addFullScreen: function() {
@@ -606,6 +621,21 @@ var Vis = cdb.core.View.extend({
         return actions;
       }
 
+      function SetStepAction(vis, step) {
+        return O.Action(function() {
+          vis.setAnimationStep(step);
+        });
+      }
+      function AnimationTrigger(vis, step) {
+        var t = O.Trigger();
+        vis.on('change:step', function (layer, currentStep) {
+          if (currentStep === step) {
+            t.trigger();
+          }
+        });
+        return t;
+      }
+
       var self = this;
 
       var seq = this.sequence = O.Sequential();
@@ -618,6 +648,12 @@ var Vis = cdb.core.View.extend({
       this.map.actions = BackboneActions(this.map);
       this.map.layers.actions = BackboneActions(this.map.layers);
       this.overlayModels.actions = BackboneActions(this.overlayModels)
+
+      function goTo(seq, i) {
+        return function() {
+          seq.current(i);
+        }
+      }
 
       for (var i = 0; i < slides.length; ++i) {
         var slide = slides[i];
@@ -636,6 +672,15 @@ var Vis = cdb.core.View.extend({
 
         // overlays
         states.push(this.overlayModels.actions.reset(slide.overlays));
+
+        slide.transition_options = {
+          step: i*200
+        };
+        if (slide.transition_options && slide.transition_options.step !== undefined) {
+          var step = slide.transition_options.step;
+          AnimationTrigger(this, step).then(goTo(seq, i));
+          //states.push(SetStepAction(this, step));
+        }
 
         this.slides.addState(
           seq.step(i),
@@ -1150,47 +1195,6 @@ var Vis = cdb.core.View.extend({
 
     layerView.infowindow = infowindow.model;
   },
-
-  /*loadLayer: function(layerData, opts) {
-    var map = this.map;
-    var mapView = this.mapView;
-    //layerData.type = layerData.kind;
-    var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
-
-    var layerView = mapView.getLayerByCid(layer_cid);
-
-    if (!layerView) {
-      this.throwError("layer can't be created", map.layers.getByCid(layer_cid));
-      return;
-    }
-
-    // add the associated overlays
-    if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
-      this.addInfowindow(layerView);
-    }
-
-    if(layerView && this.tooltip && layerView.containTooltip && layerView.containTooltip()) {
-      this.addTooltip(layerView);
-    }
-
-    if (layerView) {
-      var self = this;
-
-      var loadingTiles = function() {
-        self.loadingTiles(opts);
-      };
-
-      var loadTiles = function() {
-        self.loadTiles(opts);
-      };
-
-      layerView.bind('loading', loadingTiles);
-      layerView.bind('load',    loadTiles);
-    }
-
-    return layerView;
-
-  },*/
 
   _addLoading: function (layerView) {
     if (layerView) {

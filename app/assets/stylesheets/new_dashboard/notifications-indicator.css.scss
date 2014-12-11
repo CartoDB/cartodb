@@ -5,14 +5,14 @@
 
 .UserNotifications {
   position:relative;
+  @include display-flex();
 }
 .UserNotifications-Icon {
-  @include inline-block();
-  width:15px;
-  height:15px;
+  color: #999;
 }
 .UserNotifications-Count {
   position:absolute;
+  display:none;
   top:-9px;
   right:-9px;
   width:17px;
@@ -25,13 +25,11 @@
   text-align:center;
   line-height:17px;
   color:white;
-
-  &.is-empty { display:none }
 }
+// States
 .UserNotifications:hover {
-  .UserNotifications-Icon {
-    
-  }
+  text-decoration:none;
+  
   .UserNotifications-Count {
     top:-10px;
     right:-10px;
@@ -41,3 +39,8 @@
     line-height:19px;
   }
 }
+.UserNotifications.has--alerts {
+  .UserNotifications-Icon { color: #666 }
+  .UserNotifications-Count { display: block }
+}
+

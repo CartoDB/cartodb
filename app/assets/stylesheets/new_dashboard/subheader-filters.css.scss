@@ -70,18 +70,10 @@
 .DashboardFilters-searchLinkIcon {
   @include inline-block();
   vertical-align: middle;
-  width:14px;
-  height:15px;
   margin-right:5px;
-  border:none;
-  line-height:80px;
   
 }
-.DashboardFilters-searchLink:hover {
-  .DashboardFilters-searchLinkIcon {
-    
-  }  
-}
+.DashboardFilters-searchLink:hover { color: #333 }
 .DashboardFilters-searchItem {
   display:none;
   margin-right:0;
@@ -107,13 +99,14 @@
   position:absolute;
   top:23px;
   right:0;
-  width:30px;
-  height:30px;
+  width:28px;
+  height:28px;
   @include border-radius(30px);
   border:1px solid #CCC;
   color:#CCC;
-  text-indent:-9999px;
-  font-size:0;
+  text-align: center;
+  line-height:32px;
+  
   &:hover {
     border:1px solid #999;
     color:#999;
@@ -170,42 +163,27 @@
 }
 .DashboardFilters-orderItem {
   @include inline-block();
-  padding-right:24px;
-  font-size:13px;
+  margin-right:24px;
+  // font-size:13px;
+  // font-weight:300;
   color:$cTypography-secondary;
-  font-weight:300;
+  line-height:19px;
 }
-.DashboardFilters-orderLink { @include inline-block() }
+.DashboardFilters-orderLink {
+  @include inline-block();
+  font-size: 19px;
+  color: #CCCCCC;
+  line-height:19px;
+  &:hover { color: #666 }
+}
 .DashboardFilters-orderLink.is-selected {
-  &:hover { cursor:default }
-}
-.DashboardFilters-orderLink--heart {
-  width:18px;
-  height:16px;
-  // @include background(sprite($new-dashboard-sprites, heart-icon));
-  // &:hover { @include background(sprite($new-dashboard-sprites, heart-icon, $offset-x:-18px)); }
-}
-.DashboardFilters-orderLink--heart.is-selected {
-  // @include background(sprite($new-dashboard-sprites, heart-icon, $offset-x:-18px));
+  color:#666666;
+  &:hover { cursor: default }
 }
 .DashboardFilters-orderLink--graph {
-  width:20px;
-  height:12px;
-  // @include background(sprite($new-dashboard-sprites, graph-icon));
-  // &:hover { @include background(sprite($new-dashboard-sprites, graph-icon, $offset-x:-20px)); }
+  line-height:26px;
 }
-.DashboardFilters-orderLink--graph.is-selected {
-  // @include background(sprite($new-dashboard-sprites, graph-icon, $offset-x:-20px));
-}
-.DashboardFilters-orderLink--clock {
-  width:18px;
-  height:19px;
-  // @include background(sprite($new-dashboard-sprites, clock-icon));
-  // &:hover { @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px)); }
-}
-.DashboardFilters-orderLink--clock.is-selected {
-  // @include background(sprite($new-dashboard-sprites, clock-icon, $offset-x:-18px));
-}
+
 .DashboardFilters-selectedItems {
   font-size:15px;
   font-weight:300;

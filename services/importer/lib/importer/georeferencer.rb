@@ -124,7 +124,7 @@ module CartoDB
             create_the_geom_in table_name
             return geocode_countries country_column_name
           end
-        rescue ContentGuesserException => e
+        rescue Exception => e
           Rollbar.report_exception(e)
           job.log 'ERROR: #{e}'
           return false

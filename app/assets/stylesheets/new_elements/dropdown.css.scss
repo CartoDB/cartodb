@@ -1,5 +1,17 @@
 /*
- * Adapted from elements/dropdown to fit new design
+ * Dropdown styles, with a subtle blurry border, and a triangle "tick" popping out of the dropdown box to indicate where it is anchored.
+ *
+ * The tick is composed by two injected elements by :before and :after the .dropdown's content.
+ * :before injects a square box, rotated 45 degrees, which has a box-shadow attached to it.
+ * :after injects a rectangle with same background as the dropdown content, which overlaps :before's content to.
+ *
+ *            /\         <-- tick_x:before, the visible half of the rotated square
+ *   ________/..\_____
+ *  |      :      :   |  <-- tick_x:after, the rectangle covering the other half of :before
+ *  |      :......:   |
+ *
+ * The tick can be placed horizontally by .tick_left/center/right, or vertically by .tick_top/middle/bottom, in
+ * combination with horizontal_left/right and vertical_top/bottom.
  */
 @import "../new_common/mixins";
 @import "../new_common/colors";
@@ -20,9 +32,17 @@
     content: ' ';
     position: absolute;
     display: block !important;
-    width: 0;
-    height: 0;
-    z-index: 10;
+    width: 10px;
+    height: 10px;
+    background-color: $cStructure-mainBkg;
+    box-shadow: 0 0 5px 1px $cStructure-mainLine;
+    transform: rotate(45deg);
+  }
+  &:after {
+    content: ' ';
+    position: absolute;
+    display: block !important;
+    background-color: $cStructure-mainBkg;
   }
 
   // Tick for 12 possibilities
@@ -30,60 +50,88 @@
     &.horizontal_left {
       &:before {
         left: -5px;
-        border-right: 6px solid $cStructure-mainBkg;
-        border-top: 6px solid transparent;
-        border-bottom: 6px solid transparent;
+      }
+      &:after {
+        left: 0;
       }
     }
     &.horizontal_right {
       &:before {
         right: -5px;
-        border-left: 6px solid $cStructure-mainBkg;
-        border-top: 6px solid transparent;
-        border-bottom: 6px solid transparent;
       }
+      &:after {
+        right: 0;
+      }
+    }
+    &:after {
+      width: 10px;
+      height: 22px;
     }
   }
 
   &.tick_top:before {
     top: 12px;
   }
+  &.tick_top:after {
+    top: 6px;
+  }
   &.tick_middle:before {
-    left: 50%;
-    margin-left: -3px;
+    top: 50%;
+    margin-top: -3px;
+  }
+  &.tick_middle:after {
+    top: 50%;
+    margin-top: -9px;
   }
   &.tick_bottom:before {
     bottom: 12px;
+  }
+  &.tick_bottom:after {
+    bottom: 6px;
   }
 
   &.tick_left, &.tick_center, &.tick_right {
     &.vertical_top {
       &:before {
         bottom: -5px;
-        border-top: 6px solid $cStructure-mainBkg;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
+      }
+      &:after {
+        bottom: 0;
       }
     }
     &.vertical_bottom {
       &:before {
         top: -5px;
-        border-bottom: 6px solid $cStructure-mainBkg;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
       }
+      &:after {
+        top: 0;
+      }
+    }
+    &:after {
+      width: 22px;
+      height: 10px;
     }
   }
 
   &.tick_left:before {
     left: 12px;
   }
+  &.tick_left:after {
+    left: 6px;
+  }
   &.tick_center:before {
     left: 50%;
     margin-left: -3px;
   }
+  &.tick_center:after {
+    left: 50%;
+    margin-left: -9px;
+  }
   &.tick_right:before {
     right: 12px;
+  }
+  &.tick_right:after {
+    right: 6px;
   }
 
   &.short {

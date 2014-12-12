@@ -10,7 +10,6 @@ https://groups.google.com/d/forum/cartodb
 Every new feature (as well as bugfixes) should come with a test case. Depending on context different guidelines might
 apply, see following sections.
 
-If you
 Unless you plan to develop frontend code you can serve assets from our CDN instead, make sure the following is set in
 the `config/app_config.yml`:
 
@@ -33,7 +32,7 @@ since the UI is built on top of [CartoDB.js](https://github.com/CartoDB/cartodb.
 
 Source code is located at `lib/assets/javascripts`.
 
-See [doc/frontend.md] for further details.
+See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
@@ -57,7 +56,7 @@ We use [SASS](http://sass-lang.com/),
 Source files are located at `app/assets/stylesheets`. We used to use Rails sprockets pipeline,
  but nowadays migrated to [Grunt](#grunt) (see that section for details).
 
-See [doc/frontend.md] for further details.
+See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 

@@ -31,9 +31,7 @@ We hope you like it!
   - [Note on tiling SQL API and Redis](#note-on-tiling-sql-api-and-redis)
   - [Handy tasks](#handy-tasks)
   - [Using foreman](#using-foreman)
-- [Developing CartoDB](#developing-cartodb)
-  - [Frontend (JS/CSS)](#frontend-js-css)
-  - [Contributing]
+- [Developing & Contributing to CartoDB](#developing--contributing-to-cartodb)
 - [How do I Upgrade CartodB?](#how-do-i-upgrade-cartodb)
 - [Testing](#testing)
 - [Contributors](#contributors)
@@ -582,13 +580,7 @@ See [UPGRADE](UPGRADE) for instructions about upgrading CartoDB.
 For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
 documentation.
 
-# Developing CartoDB
-
-## Frontend (JS/CSS)
-
-See [doc/frontend.md](doc/frontend.md)
-
-## Contributing
+# Developing & Contributing to CartoDB
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how you can improve CartoDB. :)
 

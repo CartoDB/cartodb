@@ -200,7 +200,11 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         safe_sequel_delete { map.destroy } if map
         safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        safe_sequel_delete { children.map(&:delete) }
+        safe_sequel_delete { children.map { |child|
+                                            # Refetch each item before removal so Relator reloads prev/next cursors
+                                            child.fetch.delete
+                                          }
+        }
         safe_sequel_delete { permission.destroy } if permission
         safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }

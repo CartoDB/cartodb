@@ -1,17 +1,19 @@
 /*
  * Adapted from elements/dropdown to fit new design
  */
-
-
 @import "../new_common/mixins";
+@import "../new_common/colors";
 
 .dropdown {
   position: absolute;
   display: none;
-  background: white;
-  @include border-radius(3px);
-  border: none;
-  // @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
+  background: $cStructure-mainBkg;
+  @include border-radius(4px);
+
+  /* x-offset, y-offset, blur, size, color */
+  box-shadow: 0 0 5px 1px $cStructure-mainLine;
+
+  border: 1px $cStructure-mainLine solid;
   z-index: 50;
 
   &:before {
@@ -28,7 +30,7 @@
     &.horizontal_left {
       &:before {
         left: -5px;
-        border-right: 6px solid white;
+        border-right: 6px solid $cStructure-mainBkg;
         border-top: 6px solid transparent;
         border-bottom: 6px solid transparent;
       }
@@ -36,7 +38,7 @@
     &.horizontal_right {
       &:before {
         right: -5px;
-        border-left: 6px solid white;
+        border-left: 6px solid $cStructure-mainBkg;
         border-top: 6px solid transparent;
         border-bottom: 6px solid transparent;
       }
@@ -58,7 +60,7 @@
     &.vertical_top {
       &:before {
         bottom: -5px;
-        border-top: 6px solid white;
+        border-top: 6px solid $cStructure-mainBkg;
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
       }
@@ -66,7 +68,7 @@
     &.vertical_bottom {
       &:before {
         top: -5px;
-        border-bottom: 6px solid white;
+        border-bottom: 6px solid $cStructure-mainBkg;
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
       }
@@ -82,82 +84,6 @@
   }
   &.tick_right:before {
     right: 12px;
-  }
-
-  // With border
-  &.border {
-    $after_color: rgba(0, 0, 0, 0.35);
-    border: 1px solid $after_color;
-
-    &:after {
-      content: ' ';
-      position: absolute;
-      display: block !important;
-      width: 0;
-      height: 0;
-      z-index: 1;
-    }
-
-    // Tick for 12 possibilities
-    &.tick_top, &.tick_middle, &.tick_bottom {
-      &.horizontal_left {
-        &:after {
-          left: -6px;
-          border-right: 6px solid $after_color;
-          border-top: 6px solid transparent;
-          border-bottom: 6px solid transparent;
-        }
-      }
-      &.horizontal_right {
-        &:after {
-          right: -6px;
-          border-left: 6px solid $after_color;
-          border-top: 6px solid transparent;
-          border-bottom: 6px solid transparent;
-        }
-      }
-    }
-
-    &.tick_top:after {
-      top: 12px;
-    }
-    &.tick_middle:after {
-      left: 50%;
-      margin-top: -3px;
-    }
-    &.tick_bottom:after {
-      bottom: 12px;
-    }
-
-    &.tick_left, &.tick_center, &.tick_right {
-      &.vertical_top {
-        &:after {
-          bottom: -6px;
-          border-top: 6px solid $after_color;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-        }
-      }
-      &.vertical_bottom {
-        &:after {
-          top: -6px;
-          border-bottom: 6px solid $after_color;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-        }
-      }
-    }
-
-    &.tick_left:after {
-      left: 12px;
-    }
-    &.tick_center:after {
-      left: 50%;
-      margin-left: -3px;
-    }
-    &.tick_right:after {
-      right: 12px;
-    }
   }
 
   &.short {
@@ -180,18 +106,16 @@
 
 .dropdown > ul > li {
   display:block;
-  border-top:1px solid rgba(#CCCCCC,0.35);
+  border-top:1px solid $cStructure-mainLine;
   margin-top: 10px;
   padding-top: 10px;
 
   &:first-child {
-    // @include border-top-radius(3px);
     border-top: 0;
     margin-top: 0;
     padding-top: 0;
   }
   &:last-child {
-    // @include border-bottom-radius(3px);
     margin-bottom: 0;
   }
 }

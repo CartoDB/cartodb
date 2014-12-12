@@ -1,18 +1,17 @@
+# Frontend documentation
 
-# organizations
+## Organizations
 
-this document contains some notes on how to work with backbone models related to organization
+This document contains some notes on how to work with backbone models related to organization
 
-## models related to organization
+## Models related to organization
 
 - [cdb.admin.User](https://github.com/CartoDB/cartodb/blob/CDB-2891/lib/assets/javascripts/cartodb/models/user.js): it already existed, but it takes more importance
 - [cdb.admin.Organization](https://github.com/CartoDB/cartodb/blob/CDB-2891/lib/assets/javascripts/cartodb/models/organization.js): this represents an organization
 - [cdb.admin.Permission](https://github.com/CartoDB/cartodb/blob/CDB-2891/lib/assets/javascripts/cartodb/models/permissions.js): permission object, contains the information to know about the ownership and
   permission list (called ``acl``) of an object. See https://github.com/Vizzuality/cartodb-management/wiki/multiuser-REST-API#permissions-object
 
-
-
-## changes 
+### Changes
 
 - ``User`` model has an organization attribute. Each user is **always** inside an organization, so
   this will be always filled. When the organization contains only a user, the application behavior is the
@@ -21,7 +20,7 @@ this document contains some notes on how to work with backbone models related to
 - ``Visualization`` object contains a ``permission`` attribute (instance of ``cdb.admin.Permission``)
 
 
-## how to use them
+### How to use them
 
 - add read permissions to a table
 

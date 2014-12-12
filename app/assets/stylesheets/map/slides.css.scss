@@ -85,6 +85,9 @@
       background: rgba(#E8E8E8, .1);
       @include simple-transition(background, 150ms);
 
+      &.loading .count .spinner { display: block; }
+      &.loading .count .icon { display: none; }
+
       &:hover {
         background: rgba(#E8E8E8, .08);
       }
@@ -93,6 +96,20 @@
         padding: 0;
         background: rgba(#000, .1);
       }
+
+      .count .spinner {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -15px;
+        margin-top: -15px;
+        width: 30px;
+        height: 30px;
+        background: transparent image-url('layout/tail-spin.svg') no-repeat 50% 50%;
+        background-size: 30px;
+      }
+
 
     }
 

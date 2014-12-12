@@ -68,8 +68,13 @@
 
       uglify: require('./lib/build/tasks/uglify.js').task(),
 
-      browserify: require('./lib/build/tasks/browserify.js').task(env.browserify_watch, env.browserify_debug, ASSETS_DIR)
+      browserify: require('./lib/build/tasks/browserify.js').task(env.browserify_watch, env.browserify_debug, ASSETS_DIR),
+
+      availabletasks: require('./lib/build/tasks/availabletasks.js').task()
     });
+
+    // $ grunt availabletasks
+    grunt.loadNpmTasks('grunt-available-tasks');
 
     // Load Grunt tasks
     require('load-grunt-tasks')(grunt);
@@ -147,5 +152,5 @@
     grunt.registerTask('default',   ['clean', 'config', 'js', 'css', 'manifest']);
     grunt.registerTask('minimize',  ['default', 'copy:js', 'uglify']);
     grunt.registerTask('release',   ['check_release', 'minimize', 's3', 'invalidate']);
-
+    grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes). Make sure to have run default task at least once to have files setup', ['browserify', 'watch']);
   };

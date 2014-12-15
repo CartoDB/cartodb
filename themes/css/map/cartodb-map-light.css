@@ -1425,19 +1425,15 @@ div.cartodb-zoom-info {
 /* Tiles loader control */
 
 div.cartodb-tiles-loader {
-  position:relative;
   float:left;
   display:block;
-  left:0;
-  top:0;
+  clear: both;
 }
 
 div.cartodb-tiles-loader div.loader {
-  position:absolute;
+  position:relative;
   display:block;
-  top:70px;
-  left:-30px;
-  margin:20px 0 0 0;
+  margin: 15px 0 0 20px;
   width: 28px;
   height:28px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;

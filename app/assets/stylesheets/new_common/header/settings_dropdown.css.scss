@@ -1,0 +1,18 @@
+@import "../new_common/mixins";
+
+.SettingsDropdown {
+  min-width: 200px;
+}
+.SettingsDropdown-sameline {
+  @include display-flex();
+  @include flex-wrap(nowrap);
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.SettingsDropdown-email {
+  margin-top: 0 !important;
+}
+.SettingsDropdown-progressBar {
+  @include progress-bar(6px, 9px, true, false);
+  margin: 5px 0 15px 0;
+}

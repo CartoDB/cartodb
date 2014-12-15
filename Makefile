@@ -4,7 +4,7 @@ all:
 	bundle install
 	# I cannot remmeber why gdal is being skipped from this list...
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
-	cd lib/build && npm install && cd ../..
+	npm install
 
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
@@ -161,7 +161,7 @@ check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 
 
 check: prepare-test-db check-prepared
 check-frontend:
-	cd lib/build && grunt test
+	grunt test
 
 travis: check-frontend check
 

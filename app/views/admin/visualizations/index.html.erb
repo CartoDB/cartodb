@@ -1,22 +1,23 @@
-<% content_for(:page_title) do %>
-  <%= current_user.username %> |
-<% end %>
-
-<%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' %>
+<% content_for(:page_title) do -%>
+  <%= current_user.username -%> |
+<% end -%>
+<%= content_for(:js) do -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' -%>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-    , user_data = <%=raw current_user.data.to_json.html_safe %>
-    , config = <%=raw frontend_config.html_safe %>
-    , upgrade_url = "<%= upgrade_url %>"
-    , dashboard_first_time = <%= @first_time %>
-    , just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>
-    , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
+    var username = "<%= current_user.username %>";
+    var user_data = <%=raw current_user.data.to_json.html_safe %>;
+    var config = <%=raw frontend_config.html_safe %>;
+    var upgrade_url = "<%= upgrade_url %>";
+    var dashboard_first_time = <%= @first_time %>;
+    var just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>;
+    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>
-<%= content_for(:css) do %>
+
+<%= content_for(:css) do -%>
   <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
 <% end %>
+
 
 <%= render 'admin/shared/subheader' %>
 

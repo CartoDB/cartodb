@@ -1,0 +1,176 @@
+@import "compass/css3/images";
+
+// Mixins
+// - Necessary SCSS functions
+// - Browser support:
+//  · IE => 10
+//  · Chrome => 21
+//  · Sarafi => 6
+//  · Firefox => 24
+//  · Opera => 12
+// --------------------------------------------------
+
+// Display inline 
+@mixin inline-block() {
+  display:inline-block;
+  vertical-align: top;
+}
+
+// Display flex functions
+@mixin display-flex() {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+@mixin flex($v) {
+  -webkit-box-flex: $v;
+  -moz-box-flex:  $v;
+  -webkit-flex:  $v;
+  -ms-flex:  $v;
+  flex:  $v;
+}
+@mixin flex-direction($v) {
+  -webkit-flex-direction: $v;
+  -moz-flex-direction: $v;
+  -ms-flex-direction: $v;
+  flex-direction: $v;
+  // IE10 doesn't support this property
+}
+@mixin flex-grow($v) {
+  -webkit-flex-grow: $v;
+  -moz-flex-grow: $v;
+  -ms-flex-grow: $v;
+  flex-grow: $v;
+  // IE10 doesn't support this property
+}
+@mixin flex-wrap($v) {
+  -webkit-flex-wrap: $v;
+  -moz-flex-wrap: $v;
+  -ms-flex-wrap: $v;
+  flex-wrap: $v;
+  // IE10 doesn't support this property  
+}
+@mixin justify-content($v, $ie-v) {
+  -webkit-justify-content: $v;
+  -moz-justify-content: $v;
+  -ms-justify-content: $v;
+  justify-content: $v;
+  // Hello IE10
+  -ms-flex-pack: $ie-v;
+}
+@mixin align-items($v, $ie-v) {
+  -webkit-align-items: $v;
+  -moz-align-items: $v;
+  -ms-align-items: $v;
+  align-items: $v;
+  // Hello IE10
+  -ms-flex-align: $ie-v;
+}
+
+// CSS3 typical functions
+@mixin border-radius($r) {
+  // No more -webkit, -moz, etc.
+  border-radius: $r;
+}
+@mixin opacity($v) {
+  opacity:$v;
+  filter:alpha(opacity=($v*100)); // IE10
+}
+@mixin transition($prop: all, $time: 1s, $ease: linear) {
+  -webkit-transition: $prop $time $ease;
+  -moz-transition: $prop $time $ease;
+  -o-transition: $prop $time $ease;
+  -ms-transition: $prop $time $ease;
+  transition: $prop $time $ease;
+}
+
+/**
+ *  Progress element styles
+ *
+ *  It needs:
+ *  - Height of the progress "bar".
+ *  - Border radius of the element.
+ *  - If it needs a white gradient over it.
+ *  - If bars needs a min width.
+ *
+ */
+@mixin progress-bar($h, $r, $grad, $min) {
+  position:relative;
+  display:block;
+  width:100%;
+  height: $h;
+  @include border-radius($r);
+  background:#E5E5E5;
+  overflow:hidden;
+
+  .bar-3,
+  .bar-2,
+  .bar-1,
+  .bar-0 {
+    position:absolute;
+    top:0;
+    bottom:0;
+    @if $min {
+      min-width:$min;
+    }
+    @include border-radius($r);
+
+    @if $grad {
+      &:after {
+        position:absolute;
+        content: '';
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+        width:100%;
+        @include background(linear-gradient(left,rgba(#FFF,0.30),rgba(#FFF,0)))
+      }
+    }
+  }
+
+  // Blue dark
+  .bar-3 {
+    @include background(linear-gradient(#2C6E9C,#245D8C));
+    z-index:3;
+  }
+
+  // Blue light
+  .bar-2 {
+    @include background(linear-gradient(#419EDE,#3486C9));
+    z-index:2;
+  }
+
+  // Grey light
+  .bar-1 {
+    background:#E5E5E5;
+    z-index:1;
+    &:after { display:none }
+    &:before {
+      position:absolute;
+      content: '';
+      top:0;
+      right:0;
+      bottom:0;
+      left:auto;
+      border-right:1px solid white;
+    }
+  }
+
+  // image pattern
+  .bar-0 {
+    @include background(image-url("layout/unassigned_bkg.png") repeat-x left 0);
+    z-index:0;
+    &:after { display:none }
+  }
+
+  // Danger and caution background
+  .danger {
+    @include background(linear-gradient(#FF5255,#CB2828))
+  }
+  .caution {
+    @include background(linear-gradient(#F8B85C,#F49000))
+  }
+}

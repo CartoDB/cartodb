@@ -1,0 +1,27 @@
+// Default styles
+// --------------------------------------------------
+
+@import "colors";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: white;
+  font-family: 'Lato', sans-serif;
+}
+
+ul { list-style: none }
+
+a {
+  text-decoration: none;
+  color: $cTypography-link;
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: underline;
+  }
+}
+
+i { font-style: normal }

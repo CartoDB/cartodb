@@ -1,0 +1,23 @@
+// Likes indicator (12♥)
+// --------------------------------------------------
+
+@import "../new_common/colors";
+@import "../new_common/mixins";
+
+
+.LikesIndicator {
+  font-size:13px;
+  font-weight:300;
+  color:$cTypography-secondary;
+}
+.LikesIndicator-icon {
+  margin-right:6px;
+  font-family: 'CartoIcon';
+  font-size:11px;
+  color: $cTypography-help;
+}
+.LikesIndicator:hover {
+  color:$cTypography-paragraphs;
+  text-decoration:none;
+  .LikesIndicator-icon { color:#D93F56 }
+}

@@ -26,11 +26,14 @@ The frontend is really standalone code, but is integrated with/served by the Rai
 
 ## JS
 
-We use plain old JS and an older version of
-[BackboneJS](http://htmlpreview.github.io/?https://raw.github.com/jashkenas/backbone/0.9.2/index.html),
-since the UI is built on top of [CartoDB.js](https://github.com/CartoDB/cartodb.js).
+CartoDB is built on top of [CartoDB.js](https://github.com/CartoDB/cartodb.js),
+which in turns depends on some common libraries, in particular worth mentioning:
 
-Source code is located at `lib/assets/javascripts`.
+ - [BackboneJS 0.9.2](http://htmlpreview.github.io/?https://raw.github.com/jashkenas/backbone/0.9.2/index.html).
+ - [jQuery 1.7.2](http://api.jquery.com/category/version/1.7/)
+ - [underscore.js 1.4.4](http://htmlpreview.github.io/?https://raw.github.com/jashkenas/underscore/1.4.4/index.html)
+
+Source code is located at `lib/assets/javascripts`, dependencies at `vendor/assets/javascripts`.
 
 See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
@@ -40,8 +43,8 @@ Until our guidelines are publically available follow the existing file/directory
 
 Tests reside in the `lib/assets/test` directory. We use
  - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
- - [SinonJS](sinonjs.org) for test spies/stubs/mocks when Jasmine spies isn't good enough
- - [Rewirefy](https://github.com/i-like-robots/rewireify) to mock CommonJS `require` calls
+ - [SinonJS 1.3.4](sinonjs.org) for test spies/stubs/mocks when Jasmine spies isn't good enough
+ - [Rewirefy](https://github.com/i-like-robots/rewireify) to mock CommonJS (browserify) `require` calls
 
 When adding new files make sure they exist in an appropriate file located in `lib/build/js_files` (will depends
 if you're writing tests for current code or the newer browserify modules).

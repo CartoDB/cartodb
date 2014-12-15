@@ -855,7 +855,7 @@ describe Api::Json::VisualizationsController do
   end
 
   describe '#source_visualization_id_and_hierarchy' do
-    it 'checks proper working of prev/next' do
+    it 'checks proper working of parent_id' do
       CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
@@ -863,7 +863,7 @@ describe Api::Json::VisualizationsController do
 
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
        factory({
-                 name: 'PARENT',
+                 name: "PARENT #{UUIDTools::UUID.timestamp_create.to_s}",
                  type: CartoDB::Visualization::Member::TYPE_CANONICAL
                }).to_json, @headers
       body = JSON.parse(last_response.body)
@@ -871,7 +871,7 @@ describe Api::Json::VisualizationsController do
 
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
            {
-             name: 'CHILD 1',
+             name: "CHILD 1 #{UUIDTools::UUID.timestamp_create.to_s}",
              type: CartoDB::Visualization::Member::TYPE_SLIDE,
              parent_id: parent_vis_id,
              map_id: map_id
@@ -880,7 +880,7 @@ describe Api::Json::VisualizationsController do
 
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
            {
-             name: 'CHILD 1',
+             name: "CHILD 1 #{UUIDTools::UUID.timestamp_create.to_s}",
              type: CartoDB::Visualization::Member::TYPE_SLIDE,
              source_visualization_id: vis_1_body.fetch('id'),
              parent_id: parent_vis_id

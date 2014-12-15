@@ -52,9 +52,7 @@ module CartoDB
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/support/helpers.rb -> random_attributes_for_vis_member
-      # spec/models/visualization/member_spec.rb -> random_attributes
       # app/models/visualization/presenter.rb
-      # spec/models/visualization/presenter_spec.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -169,6 +167,11 @@ module CartoDB
         data = repository.fetch(id)
         raise KeyError if data.nil?
         self.attributes = data
+        self.name_changed = false
+        self.privacy_changed = false
+        self.description_changed = false
+        self.permission_change_valid = true
+        validator.reset
         self
       end
 
@@ -194,8 +197,12 @@ module CartoDB
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         safe_sequel_delete { map.destroy } if map
-        safe_sequel_delete { table.destroy } if (type == CANONICAL_TYPE && table && !from_table_deletion)
-	safe_sequel_delete { children.map(&:delete) }
+        safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
+        safe_sequel_delete { children.map { |child|
+                                            # Refetch each item before removal so Relator reloads prev/next cursors
+                                            child.fetch.delete
+                                          }
+        }
         safe_sequel_delete { permission.destroy } if permission
         safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
@@ -422,72 +429,76 @@ module CartoDB
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
       end
 
-      # TODO: Need to run as transaction
       # @param other_vis CartoDB::Visualization::Member|nil
       # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
       def set_next_list_item!(other_vis)
-        close_list_gap(other_vis)
+        repository.transaction do
+          close_list_gap(other_vis)
 
-        # Now insert other_vis after self
-        unless other_vis.nil?
-          if self.next_id.nil?
-            other_vis.next_id = nil
-          else
-            other_vis.next_id = self.next_id
-            next_item = next_list_item
-            next_item.prev_id = other_vis.id
-            next_item.store
+          # Now insert other_vis after self
+          unless other_vis.nil?
+            if self.next_id.nil?
+              other_vis.next_id = nil
+            else
+              other_vis.next_id = self.next_id
+              next_item = next_list_item
+              next_item.prev_id = other_vis.id
+              next_item.store
+            end
+            self.next_id = other_vis.id
+            other_vis.prev_id = self.id
+            other_vis.store
+            other_vis.fetch
           end
-          self.next_id = other_vis.id
-          other_vis.prev_id = self.id
-          other_vis.store
-                   .fetch
+
+          store
         end
 
-        store
         fetch
       end
 
-      # TODO: Need to run as transaction
       # @param other_vis CartoDB::Visualization::Member|nil
       # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
       def set_prev_list_item!(other_vis)
-        close_list_gap(other_vis)
+        repository.transaction do
+          close_list_gap(other_vis)
 
-        # Now insert other_vis after self
-        unless other_vis.nil?
-          if self.prev_id.nil?
-            other_vis.prev_id = nil
-          else
-            other_vis.prev_id = self.prev_id
-            next_item = prev_list_item
-            next_item.next_id = other_vis.id
-            next_item.store
+          # Now insert other_vis after self
+          unless other_vis.nil?
+            if self.prev_id.nil?
+              other_vis.prev_id = nil
+            else
+              other_vis.prev_id = self.prev_id
+              next_item = prev_list_item
+              next_item.next_id = other_vis.id
+              next_item.store
+            end
+            self.prev_id = other_vis.id
+            other_vis.next_id = self.id
+            other_vis.store
+            .fetch
           end
-          self.prev_id = other_vis.id
-          other_vis.next_id = self.id
-          other_vis.store
-          .fetch
-        end
 
-        store
+          store
+        end
         fetch
       end
 
-      # TODO: Need to run as transaction
       def unlink_self_from_list!
-        unless self.prev_id.nil?
-          prev_item = prev_list_item
-          prev_item.next_id = self.next_id
-          prev_item.store
+        repository.transaction do
+          unless self.prev_id.nil?
+            prev_item = prev_list_item
+            prev_item.next_id = self.next_id
+            prev_item.store
+          end
+          unless self.next_id.nil?
+            next_item = next_list_item
+            next_item.prev_id = self.prev_id
+            next_item.store
+          end
+          self.prev_id = nil
+          self.next_id = nil
         end
-        unless self.next_id.nil?
-          next_item = next_list_item
-          next_item.prev_id = self.prev_id
-          next_item.store
-        end
-        self.prev_id = nil
-        self.next_id = nil
       end
 
       # @param user_id String UUID of the actor that likes the visualization

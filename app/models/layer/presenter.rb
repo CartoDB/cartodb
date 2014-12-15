@@ -91,7 +91,7 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       def children_for(layer, as_hash=true)
-        items = layer.children.map { |child_layer| { id: child_layer.id } }
+        items = layer.children.nil? ? [] : layer.children.map { |child_layer| { id: child_layer.id } }
         as_hash ? { children: items } : items
       end
 

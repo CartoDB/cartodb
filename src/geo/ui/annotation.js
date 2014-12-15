@@ -306,11 +306,21 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     cdb.core.View.prototype.clean.call(this);
   },
 
+  _fixLinks: function() {
+
+    this.$el.find("a").each(function(i, link) {
+      $(this).attr("target", "_top");
+    });
+
+  },
+
   render: function() {
+
+    var self = this;
 
     this.$el.html(this.template(this.model.attributes));
 
-    var self = this;
+    this._fixLinks();
 
     setTimeout(function() {
       self._applyStyle();

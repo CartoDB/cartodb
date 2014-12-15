@@ -147,13 +147,22 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     });
   },
 
+  _fixLinks: function() {
+
+    this.$el.find("a").each(function(i, link) {
+      $(this).attr("target", "_top");
+    });
+
+  },
+
   render: function() {
 
+    var self = this;
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
-    var self = this;
-    
+    this._fixLinks();
+
     setTimeout(function() {
       self._applyStyle();
       self._place();

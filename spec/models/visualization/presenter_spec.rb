@@ -112,7 +112,7 @@ describe Visualization::Member do
       data[:parent_id].should eq nil
       data[:children].should eq Array.new
       data[:kind].should eq Visualization::Member::KIND_GEOM
-      data[:likes].should eq Array.new
+      data[:likes].should eq 0
       data[:prev_id].should eq nil
       data[:next_id].should eq nil
       data[:transition_options].should eq Hash.new

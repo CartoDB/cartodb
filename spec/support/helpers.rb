@@ -112,7 +112,8 @@ module HelperMethods
       prev_id:            attributes.fetch(:prev_id, nil),
       next_id:            attributes.fetch(:next_id, nil),
       transition_options: attributes.fetch(:transition_options, {}),
-      active_child:       attributes.fetch(:active_child, nil)
+      active_child:       attributes.fetch(:active_child, nil),
+      locked:             attributes.fetch(:locked, false)
     }
   end
 end

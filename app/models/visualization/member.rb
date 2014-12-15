@@ -52,9 +52,7 @@ module CartoDB
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/support/helpers.rb -> random_attributes_for_vis_member
-      # spec/models/visualization/member_spec.rb -> random_attributes
       # app/models/visualization/presenter.rb
-      # spec/models/visualization/presenter_spec.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -200,7 +198,11 @@ module CartoDB
         layers(:cartodb).map(&:destroy)
         safe_sequel_delete { map.destroy } if map
         safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        safe_sequel_delete { children.map(&:delete) }
+        safe_sequel_delete { children.map { |child|
+                                            # Refetch each item before removal so Relator reloads prev/next cursors
+                                            child.fetch.delete
+                                          }
+        }
         safe_sequel_delete { permission.destroy } if permission
         safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }

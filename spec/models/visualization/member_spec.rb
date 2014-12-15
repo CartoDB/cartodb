@@ -897,6 +897,40 @@ describe Visualization::Member do
       member_e.delete
     end
 
+    it 'checks that upon destruction children are destroyed too' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      support_tables_mock = Doubles::Visualization::SupportTables.new
+      Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+
+      starting_collection_count = Visualization::Collection.new.fetch.count
+
+      parent = Visualization::Member.new(random_attributes_for_vis_member({
+                                                             user_id: @user_mock.id,
+                                                             name: 'PARENT',
+                                                             type: Visualization::Member::TYPE_DERIVED
+                                                           })).store
+
+      child1 = Visualization::Member.new(random_attributes_for_vis_member({
+                                                             user_id: @user_mock.id,
+                                                             name: 'CHILD 1',
+                                                             type: Visualization::Member::TYPE_SLIDE,
+                                                             parent_id:  parent.id
+                                                           })).store.fetch
+      child2 = Visualization::Member.new(random_attributes_for_vis_member({
+                                                             user_id: @user_mock.id,
+                                                             name: 'CHILD 2',
+                                                             type: Visualization::Member::TYPE_SLIDE,
+                                                             parent_id:  parent.id
+                                                           })).store.fetch
+
+      child2.set_prev_list_item!(child1)
+      parent.fetch
+
+      parent.delete
+
+      Visualization::Collection.new.fetch.count.should eq starting_collection_count
+    end
+
     it 'checks transactional wrappings for prev-next' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 

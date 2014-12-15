@@ -2,7 +2,6 @@
   <%= current_user.username -%> |
 <% end -%>
 <%= content_for(:js) do -%>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'new_dashboard_templates.js', 'new_dashboard_deps.js', 'new_dashboard.js' -%>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
     var user_data = <%=raw current_user.data.to_json.html_safe %>;
@@ -12,6 +11,7 @@
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'new_dashboard_templates.js', 'new_dashboard_deps.js', 'new_dashboard.js' -%>
 <% end %>
 
 <%= content_for(:css) do -%>

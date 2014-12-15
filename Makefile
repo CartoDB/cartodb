@@ -118,8 +118,7 @@ WORKING_SPECS_8 = \
   spec/models/shared_entity_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
-  # Warning, run only 'uses locked filter' as the others fail
-  spec/requests/api/visualizations_spec.rb:630 \
+  spec/requests/api/visualizations_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \

@@ -112,7 +112,7 @@ module Concerns
     end
 
     def set_relationships_from_central(params)
-      if params.has_key?(:feature_flags)
+      if params.present? && params.has_key?(:feature_flags)
         update_feature_flags(params[:feature_flags])
       end
     end

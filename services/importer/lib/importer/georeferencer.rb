@@ -124,9 +124,12 @@ module CartoDB
             create_the_geom_in table_name
             return geocode_countries country_column_name
           end
-        rescue ContentGuesserException => e
-          Rollbar.report_exception(e)
-          job.log 'ERROR: #{e}'
+        rescue Exception => ex
+          message = "create_the_geom_from_country_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
           return false
         end
       end

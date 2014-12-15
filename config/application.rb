@@ -74,6 +74,7 @@ module CartoDB
       table.js public_dashboard.js
       public_table.js
       map_public.js
+      public_like.js
       templates.js
       templates_mustache.js
       tipsy.js

@@ -61,6 +61,7 @@
     "underscore": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cartodb.js": "global:cdb",
-    "backbone": "global:Backbone"
+    "backbone": "global:Backbone",
+    "moment": "global:moment"
   }
 }

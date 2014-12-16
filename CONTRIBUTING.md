@@ -75,9 +75,9 @@ npm install
 npm install -g grunt-cli
 ```
 
-Run `npm grunt availabletasks` to see available tasks.
+Run `grunt availabletasks` to see available tasks.
 
-For a standard developer we recommend `npm grunt dev`, which watches CSS/JS files and rebuild bundles automatically on
+For a standard developer we recommend `grunt dev`, which watches CSS/JS files and rebuild bundles automatically on
 file changes. The compiled code can be seen under `public/assets/:version`
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:

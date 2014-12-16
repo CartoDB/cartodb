@@ -354,8 +354,8 @@ module CartoDB
     end
 
     def clear
+      self.acl = []
       revoke_previous_permissions(entity)
-      self.access_control_list = DEFAULT_ACL_VALUE
       save
     end
 

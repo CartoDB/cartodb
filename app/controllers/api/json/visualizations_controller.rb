@@ -290,6 +290,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.add_like_from(current_viewer.id)
        .fetch
+       .invalidate_varnish_cache
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -335,6 +336,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.remove_like_from(current_viewer.id)
        .fetch
+       .invalidate_varnish_cache
+
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,

@@ -81,7 +81,7 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE)
+    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
     values
   end
 

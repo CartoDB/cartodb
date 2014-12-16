@@ -76,7 +76,6 @@
       });
 
     };
-    var is_liked = <%= @vis_liked %>;
 
     var opt = get_url_params({
       'force_mobile': bool_fn,
@@ -124,10 +123,13 @@
         loadingTime.end();
       });
 
+      var is_liked = <%= @vis_liked %>;
+      var likes    = <%= @visualization.to_vizjson[:likes] %>;
+
       var like = new cdb.open.LikeView({ 
         el: $(".js-like"),
         auto_fetch: false,
-        model: new cdb.open.Like({ vis_id: "<%= @visualization.id %>" })
+        model: new cdb.open.Like({ id: "<%= @visualization.id %>", vis_id: "<%= @visualization.id %>", likes: likes, liked: is_liked })
       });
 
       window.vis = vis;

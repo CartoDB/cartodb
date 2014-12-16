@@ -127,7 +127,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.privacy = vis.default_privacy(current_user)
 
+    # both null, make sure is the first children or automatically link to the tail of the list
+    if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
+      parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
+      return head(403) unless parent_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      if parent_vis.children.length > 0
+        prev_id = parent_vis.children.last.id
+      end
+    end
+
     vis.store
+
+    # Setup prev/next
     if !prev_id.nil?
       prev_vis = Visualization::Member.new(id: prev_id).fetch
       return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)

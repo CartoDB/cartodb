@@ -24,6 +24,13 @@ module CartoDB
         job.log "raster2pgsql output:    #{raster2pgsql.command_output}"
         job.log "raster2pgsql exit code: #{raster2pgsql.exit_code}"
 
+        if raster2pgsql.exit_code != 0
+          if raster2pgsql.command_output =~ /no space left on device/i
+            raise FileTooBigError.new(job.logger)
+          end
+          raise LoadError.new(job.logger)
+        end
+
         job.db.run(%Q{
           ALTER TABLE #{job.qualified_table_name}
           RENAME COLUMN rid TO cartodb_id

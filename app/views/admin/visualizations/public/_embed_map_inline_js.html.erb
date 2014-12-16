@@ -125,7 +125,8 @@
 
       var like = new cdb.open.LikeView({ 
         el: $(".js-like"),
-        model: new cdb.open.Like({ vis_id: "<%= @visualization.id %>" })
+        auto_fetch: false,
+        model: new cdb.open.Like({ vis_id: "<%= @visualization.id %>", likes: <%= @visualization.to_vizjson[:likes] %> })
       });
 
       window.vis = vis;

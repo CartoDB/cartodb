@@ -1,4 +1,5 @@
 @import "../new_common/mixins";
+@import "../new_common/colors";
 
 .SettingsDropdown {
   min-width: 220px;
@@ -32,6 +33,8 @@
   margin: 5px 0 15px 0;
   background: #F5F5F5;
 }
+.SettingsDropdown-progressBar.is--inAlert span { background: $cHighlight-alert }
+.SettingsDropdown-progressBar.is--inDanger span { background: $cHighlight-negative }
 .SettingsDropdown-progressBar:before {
   content: '';
   position: absolute;

@@ -447,7 +447,7 @@ module CartoDB
         end
 
         # when visualization turns private remove the acl
-        if not organization? and privacy_changed
+        if privacy == PRIVACY_PRIVATE && permission.acl.size > 0 && privacy_changed
           permission.clear
         end
 

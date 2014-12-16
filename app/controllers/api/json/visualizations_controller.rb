@@ -29,13 +29,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection = Visualization::Collection.new.fetch(
                    params.dup.merge(scope_for(current_user))
                  )
+
+    users_cache = {}
+
     table_data = collection.map { |vis|
       if vis.table.nil?
         nil
       else
+        users_cache[vis.user_id] ||= vis.user
         {
           name:   vis.table.name,
-          schema: vis.user.database_schema
+          schema: users_cache[vis.user_id].database_schema
         }
       end
     }.compact

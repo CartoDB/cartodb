@@ -123,15 +123,6 @@
         loadingTime.end();
       });
 
-      var is_liked = <%= @vis_liked %>;
-      var likes    = <%= @visualization.to_vizjson[:likes] %>;
-
-      var like = new cdb.open.LikeView({ 
-        el: $(".js-like"),
-        auto_fetch: false,
-        model: new cdb.open.Like({ id: "<%= @visualization.id %>", vis_id: "<%= @visualization.id %>", likes: likes, liked: is_liked })
-      });
-
       window.vis = vis;
 
       // fixes default position of the overlays

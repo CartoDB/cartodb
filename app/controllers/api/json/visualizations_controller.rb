@@ -425,7 +425,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rows = current_user.in_database.fetch(%Q{
         SELECT
           relname AS table_name,
-          pg_total_relation_size(? || '.' || relname) AS total_relation_size,
+          pg_total_relation_size('"' || ? || '"."' || relname || '"') AS total_relation_size,
           reltuples::integer AS reltuples
         FROM pg_class
         WHERE relname in ?

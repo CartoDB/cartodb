@@ -232,11 +232,12 @@ module CartoDB
 
     # @return User|nil
     def owner
-      User.where(id:self.owner_id).first
+      @owner ||= User.where(id:self.owner_id).first
     end
 
     # @param value User
     def owner=(value)
+      @owner = value
       self.owner_id = value.id
       self.owner_username = value.username
     end

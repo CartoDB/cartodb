@@ -123,7 +123,6 @@
         loadingTime.end();
       });
 
-      var is_liked = <%= @vis_liked %>;
       var likes    = <%= @visualization.to_vizjson[:likes] %>;
 
       var like = new cdb.open.LikeView({ 

@@ -252,7 +252,6 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @vis_liked = current_viewer.nil? ? false : @visualization.liked_by?(current_viewer.id)
     @protected_map_tokens = current_user.get_auth_tokens
 
     respond_to do |format|
@@ -312,7 +311,6 @@ class Admin::VisualizationsController < ApplicationController
 
     response.headers['Cache-Control']   = "no-cache, private"
 
-    @vis_liked = current_viewer.nil? ? false : @visualization.liked_by?(current_viewer.id)
     @protected_map_tokens = @visualization.get_auth_tokens
 
     respond_to do |format|
@@ -335,7 +333,6 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @vis_liked = current_viewer.nil? ? false : @visualization.liked_by?(current_viewer.id)
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
 

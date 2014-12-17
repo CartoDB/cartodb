@@ -14,7 +14,7 @@ module CartoDB
     def to_poro
       {
         id:         @permission.id,
-        owner:      @user_presenter.decorate(@permission.owner.id),
+        owner:      @user_presenter.decorate_user(@permission.owner),
         entity: {
           id:       @permission.entity_id,
           type:     @permission.entity_type

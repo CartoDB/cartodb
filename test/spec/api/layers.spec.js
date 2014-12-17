@@ -230,7 +230,7 @@ describe('api.layers', function() {
           layers: [
             null,
             {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: '#test { marker-width: 10; }'}, infowindow: null }
+            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map{ -torque-frame-count: 10; }#test { marker-width: 10; }'}, infowindow: null }
           ]
         }, { layerIndex: 2 }, s).done(function(lyr) {
           layer = lyr;
@@ -254,7 +254,7 @@ describe('api.layers', function() {
           layers: [
             null,
             {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: '#test { marker-width: 10; }'}, infowindow: null }
+            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}, infowindow: null }
           ]
         }, { layerIndex: 2 }, s).done(function(lyr) {
           layer = lyr;
@@ -279,7 +279,7 @@ describe('api.layers', function() {
           layers: [
             null,
             {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: '#test { marker-width: 10; }'}, infowindow: null }
+            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map{ -torque-frame-count: 10;}#test { marker-width: 10; }'}, infowindow: null }
           ]
         }, { layerIndex: 2 }, s).done(function(lyr) {
           layer = lyr;

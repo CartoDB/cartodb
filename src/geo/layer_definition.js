@@ -403,8 +403,8 @@ Map.prototype = {
       }
       // check payload size
       var payload = JSON.stringify(this.toJSON());
-      if (payload.length < this.options.MAX_GET_SIZE) {
-        return false;
+      if (payload.length > this.options.MAX_GET_SIZE) {
+        return true;
       }
     }
     return false;

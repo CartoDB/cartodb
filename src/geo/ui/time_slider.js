@@ -67,7 +67,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   updateSliderRange: function(changes) {
-    this.$(".slider" ).slider({ max: changes.steps });
+    this.$(".slider" ).slider({ max: changes.steps - 1 });
   },
 
   // each time time changes, move the slider

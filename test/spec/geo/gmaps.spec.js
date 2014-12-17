@@ -226,10 +226,13 @@
       expect(geojson).toEqual(multipoly);
     });
 
-    it("should swicth layer", function() {
+    it("should swicth layer", function(done) {
       map.addLayer(layer);
-      layer.set('type', 'torque');
-      expect(mapView.layers[layer.cid] instanceof cdb.geo.GMapsTorqueLayerView).toEqual(true);
+      layer.set({'type': 'torque', 'cartocss': 'Map{ -torque-frame-count: 10; }'});
+      setTimeout(function() {
+        expect(mapView.layers[layer.cid] instanceof cdb.geo.GMapsTorqueLayerView).toEqual(true);
+        done();
+      }, 2000);
     });
 
 /*

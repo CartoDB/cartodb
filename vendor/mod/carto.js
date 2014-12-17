@@ -1,22 +1,1809 @@
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.carto=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (tree) {
 
-var assert = {
-  ok: function(value, message) {
-    message = message || '';
-    if(!value) throw new Error("assertion failed", message);
+tree.functions = {
+    rgb: function (r, g, b) {
+        return this.rgba(r, g, b, 1.0);
+    },
+    rgba: function (r, g, b, a) {
+        var rgb = [r, g, b].map(function (c) { return number(c); });
+        a = number(a);
+        if (rgb.some(isNaN) || isNaN(a)) return null;
+        return new tree.Color(rgb, a);
+    },
+    // Only require val
+    stop: function (val) {
+        var color, mode;
+        if (arguments.length > 1) color = arguments[1];
+        if (arguments.length > 2) mode = arguments[2];
+
+        return {
+            is: 'tag',
+            val: val,
+            color: color,
+            mode: mode,
+            toString: function(env) {
+                return '\n\t<stop value="' + val.ev(env) + '"' +
+                    (color ? ' color="' + color.ev(env) + '" ' : '') +
+                    (mode ? ' mode="' + mode.ev(env) + '" ' : '') +
+                    '/>';
+            }
+        };
+    },
+    hsl: function (h, s, l) {
+        return this.hsla(h, s, l, 1.0);
+    },
+    hsla: function (h, s, l, a) {
+        h = (number(h) % 360) / 360;
+        s = number(s); l = number(l); a = number(a);
+        if ([h, s, l, a].some(isNaN)) return null;
+
+        var m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s,
+            m1 = l * 2 - m2;
+
+        return this.rgba(hue(h + 1/3) * 255,
+                         hue(h)       * 255,
+                         hue(h - 1/3) * 255,
+                         a);
+
+        function hue(h) {
+            h = h < 0 ? h + 1 : (h > 1 ? h - 1 : h);
+            if      (h * 6 < 1) return m1 + (m2 - m1) * h * 6;
+            else if (h * 2 < 1) return m2;
+            else if (h * 3 < 2) return m1 + (m2 - m1) * (2/3 - h) * 6;
+            else                return m1;
+        }
+    },
+    hue: function (color) {
+        if (!('toHSL' in color)) return null;
+        return new tree.Dimension(Math.round(color.toHSL().h));
+    },
+    saturation: function (color) {
+        if (!('toHSL' in color)) return null;
+        return new tree.Dimension(Math.round(color.toHSL().s * 100), '%');
+    },
+    lightness: function (color) {
+        if (!('toHSL' in color)) return null;
+        return new tree.Dimension(Math.round(color.toHSL().l * 100), '%');
+    },
+    alpha: function (color) {
+        if (!('toHSL' in color)) return null;
+        return new tree.Dimension(color.toHSL().a);
+    },
+    saturate: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+
+        hsl.s += amount.value / 100;
+        hsl.s = clamp(hsl.s);
+        return hsla(hsl);
+    },
+    desaturate: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+
+        hsl.s -= amount.value / 100;
+        hsl.s = clamp(hsl.s);
+        return hsla(hsl);
+    },
+    lighten: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+
+        hsl.l += amount.value / 100;
+        hsl.l = clamp(hsl.l);
+        return hsla(hsl);
+    },
+    darken: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+
+        hsl.l -= amount.value / 100;
+        hsl.l = clamp(hsl.l);
+        return hsla(hsl);
+    },
+    fadein: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+
+        hsl.a += amount.value / 100;
+        hsl.a = clamp(hsl.a);
+        return hsla(hsl);
+    },
+    fadeout: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+
+        hsl.a -= amount.value / 100;
+        hsl.a = clamp(hsl.a);
+        return hsla(hsl);
+    },
+    spin: function (color, amount) {
+        if (!('toHSL' in color)) return null;
+        var hsl = color.toHSL();
+        var hue = (hsl.h + amount.value) % 360;
+
+        hsl.h = hue < 0 ? 360 + hue : hue;
+
+        return hsla(hsl);
+    },
+    replace: function (entity, a, b) {
+        if (entity.is === 'field') {
+            return entity.toString + '.replace(' + a.toString() + ', ' + b.toString() + ')';
+        } else {
+            return entity.replace(a, b);
+        }
+    },
+    //
+    // Copyright (c) 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
+    // http://sass-lang.com
+    //
+    mix: function (color1, color2, weight) {
+        var p = weight.value / 100.0;
+        var w = p * 2 - 1;
+        var a = color1.toHSL().a - color2.toHSL().a;
+
+        var w1 = (((w * a == -1) ? w : (w + a) / (1 + w * a)) + 1) / 2.0;
+        var w2 = 1 - w1;
+
+        var rgb = [color1.rgb[0] * w1 + color2.rgb[0] * w2,
+                   color1.rgb[1] * w1 + color2.rgb[1] * w2,
+                   color1.rgb[2] * w1 + color2.rgb[2] * w2];
+
+        var alpha = color1.alpha * p + color2.alpha * (1 - p);
+
+        return new tree.Color(rgb, alpha);
+    },
+    greyscale: function (color) {
+        return this.desaturate(color, new tree.Dimension(100));
+    },
+    '%': function (quoted /* arg, arg, ...*/) {
+        var args = Array.prototype.slice.call(arguments, 1),
+            str = quoted.value;
+
+        for (var i = 0; i < args.length; i++) {
+            str = str.replace(/%s/,    args[i].value)
+                     .replace(/%[da]/, args[i].toString());
+        }
+        str = str.replace(/%%/g, '%');
+        return new tree.Quoted(str);
+    }
+};
+
+var image_filter_functors = [
+    'emboss', 'blur', 'gray', 'sobel', 'edge-detect',
+    'x-gradient', 'y-gradient', 'sharpen'];
+
+for (var i = 0; i < image_filter_functors.length; i++) {
+    var f = image_filter_functors[i];
+    tree.functions[f] = (function(f) {
+        return function() {
+            return new tree.ImageFilter(f);
+        };
+    })(f);
+}
+
+tree.functions['agg-stack-blur'] = function(x, y) {
+    return new tree.ImageFilter('agg-stack-blur', [x, y]);
+};
+
+tree.functions['scale-hsla'] = function(h0,h1,s0,s1,l0,l1,a0,a1) {
+    return new tree.ImageFilter('scale-hsla', [h0,h1,s0,s1,l0,l1,a0,a1]);
+};
+
+function hsla(h) {
+    return tree.functions.hsla(h.h, h.s, h.l, h.a);
+}
+
+function number(n) {
+    if (n instanceof tree.Dimension) {
+        return parseFloat(n.unit == '%' ? n.value / 100 : n.value);
+    } else if (typeof(n) === 'number') {
+        return n;
+    } else {
+        return NaN;
+    }
+}
+
+function clamp(val) {
+    return Math.min(1, Math.max(0, val));
+}
+
+})(require('./tree'));
+
+},{"./tree":7}],2:[function(require,module,exports){
+(function (process,__dirname){
+var util = require('util'),
+    fs = require('fs'),
+    path = require('path');
+
+
+function getVersion() {
+    if (process.browser) {
+        return require('../../package.json').version.split('.');
+    } else if (parseInt(process.version.split('.')[1], 10) > 4) {
+        return require('../../package.json').version.split('.');
+    } else {
+        // older node
+        var package_json = JSON.parse(fs.readFileSync(path.join(__dirname,'../../package.json')));
+        return package_json.version.split('.');
+    }
+}
+
+var carto = {
+    version: getVersion(),
+    Parser: require('./parser').Parser,
+    Renderer: require('./renderer').Renderer,
+    tree: require('./tree'),
+    RendererJS: require('./renderer_js'),
+
+    // @TODO
+    writeError: function(ctx, options) {
+        var message = '';
+        var extract = ctx.extract;
+        var error = [];
+
+        options = options || {};
+
+        if (options.silent) { return; }
+
+        options.indent = options.indent || '';
+
+        if (!('index' in ctx) || !extract) {
+            return util.error(options.indent + (ctx.stack || ctx.message));
+        }
+
+        if (typeof(extract[0]) === 'string') {
+            error.push(stylize((ctx.line - 1) + ' ' + extract[0], 'grey'));
+        }
+
+        if (extract[1] === '' && typeof extract[2] === 'undefined') {
+            extract[1] = '¶';
+        }
+        error.push(ctx.line + ' ' + extract[1].slice(0, ctx.column) +
+            stylize(stylize(extract[1][ctx.column], 'bold') +
+            extract[1].slice(ctx.column + 1), 'yellow'));
+
+        if (typeof(extract[2]) === 'string') {
+            error.push(stylize((ctx.line + 1) + ' ' + extract[2], 'grey'));
+        }
+        error = options.indent + error.join('\n' + options.indent) + '\033[0m\n';
+
+        message = options.indent + message + stylize(ctx.message, 'red');
+        if (ctx.filename) (message += stylize(' in ', 'red') + ctx.filename);
+
+        util.error(message, error);
+
+        if (ctx.callLine) {
+            util.error(stylize('from ', 'red') + (ctx.filename || ''));
+            util.error(stylize(ctx.callLine, 'grey') + ' ' + ctx.callExtract);
+        }
+        if (ctx.stack) { util.error(stylize(ctx.stack, 'red')); }
+    }
+};
+
+require('./tree/call');
+require('./tree/color');
+require('./tree/comment');
+require('./tree/definition');
+require('./tree/dimension');
+require('./tree/element');
+require('./tree/expression');
+require('./tree/filterset');
+require('./tree/filter');
+require('./tree/field');
+require('./tree/keyword');
+require('./tree/layer');
+require('./tree/literal');
+require('./tree/operation');
+require('./tree/quoted');
+require('./tree/imagefilter');
+require('./tree/reference');
+require('./tree/rule');
+require('./tree/ruleset');
+require('./tree/selector');
+require('./tree/style');
+require('./tree/url');
+require('./tree/value');
+require('./tree/variable');
+require('./tree/zoom');
+require('./tree/invalid');
+require('./tree/fontset');
+require('./tree/frame_offset');
+require('./functions');
+
+for (var k in carto) { exports[k] = carto[k]; }
+
+// Stylize a string
+function stylize(str, style) {
+    var styles = {
+        'bold' : [1, 22],
+        'inverse' : [7, 27],
+        'underline' : [4, 24],
+        'yellow' : [33, 39],
+        'green' : [32, 39],
+        'red' : [31, 39],
+        'grey' : [90, 39]
+    };
+    return '\033[' + styles[style][0] + 'm' + str +
+           '\033[' + styles[style][1] + 'm';
+}
+
+}).call(this,require('_process'),"/lib/carto")
+},{"../../package.json":44,"./functions":1,"./parser":3,"./renderer":4,"./renderer_js":5,"./tree":7,"./tree/call":8,"./tree/color":9,"./tree/comment":10,"./tree/definition":11,"./tree/dimension":12,"./tree/element":13,"./tree/expression":14,"./tree/field":15,"./tree/filter":16,"./tree/filterset":17,"./tree/fontset":18,"./tree/frame_offset":19,"./tree/imagefilter":20,"./tree/invalid":21,"./tree/keyword":22,"./tree/layer":23,"./tree/literal":24,"./tree/operation":25,"./tree/quoted":26,"./tree/reference":27,"./tree/rule":28,"./tree/ruleset":29,"./tree/selector":30,"./tree/style":31,"./tree/url":32,"./tree/value":33,"./tree/variable":34,"./tree/zoom":35,"_process":40,"fs":36,"path":39,"util":42}],3:[function(require,module,exports){
+(function (global){
+var carto = exports,
+    tree = require('./tree'),
+    _ = global._ || require('underscore');
+
+//    Token matching is done with the `$` function, which either takes
+//    a terminal string or regexp, or a non-terminal function to call.
+//    It also takes care of moving all the indices forwards.
+carto.Parser = function Parser(env) {
+    var input,       // LeSS input string
+        i,           // current index in `input`
+        j,           // current chunk
+        temp,        // temporarily holds a chunk's state, for backtracking
+        memo,        // temporarily holds `i`, when backtracking
+        furthest,    // furthest index the parser has gone to
+        chunks,      // chunkified input
+        current,     // index of current chunk, in `input`
+        parser;
+
+    var that = this;
+
+    // This function is called after all files
+    // have been imported through `@import`.
+    var finish = function() {};
+
+    function save()    {
+        temp = chunks[j];
+        memo = i;
+        current = i;
+    }
+    function restore() {
+        chunks[j] = temp;
+        i = memo;
+        current = i;
+    }
+
+    function sync() {
+        if (i > current) {
+            chunks[j] = chunks[j].slice(i - current);
+            current = i;
+        }
+    }
+    //
+    // Parse from a token, regexp or string, and move forward if match
+    //
+    function $(tok) {
+        var match, args, length, c, index, endIndex, k;
+
+        // Non-terminal
+        if (tok instanceof Function) {
+            return tok.call(parser.parsers);
+        // Terminal
+        // Either match a single character in the input,
+        // or match a regexp in the current chunk (chunk[j]).
+        } else if (typeof(tok) === 'string') {
+            match = input.charAt(i) === tok ? tok : null;
+            length = 1;
+            sync();
+        } else {
+            sync();
+
+            match = tok.exec(chunks[j]);
+            if (match) {
+                length = match[0].length;
+            } else {
+                return null;
+            }
+        }
+
+        // The match is confirmed, add the match length to `i`,
+        // and consume any extra white-space characters (' ' || '\n')
+        // which come after that. The reason for this is that LeSS's
+        // grammar is mostly white-space insensitive.
+        if (match) {
+            var mem = i += length;
+            endIndex = i + chunks[j].length - length;
+
+            while (i < endIndex) {
+                c = input.charCodeAt(i);
+                if (! (c === 32 || c === 10 || c === 9)) { break; }
+                i++;
+            }
+            chunks[j] = chunks[j].slice(length + (i - mem));
+            current = i;
+
+            if (chunks[j].length === 0 && j < chunks.length - 1) { j++; }
+
+            if (typeof(match) === 'string') {
+                return match;
+            } else {
+                return match.length === 1 ? match[0] : match;
+            }
+        }
+    }
+
+    // Same as $(), but don't change the state of the parser,
+    // just return the match.
+    function peek(tok) {
+        if (typeof(tok) === 'string') {
+            return input.charAt(i) === tok;
+        } else {
+            return !!tok.test(chunks[j]);
+        }
+    }
+
+    function extractErrorLine(style, errorIndex) {
+        return (style.slice(0, errorIndex).match(/\n/g) || '').length + 1;
+    }
+
+
+    // Make an error object from a passed set of properties.
+    // Accepted properties:
+    // - `message`: Text of the error message.
+    // - `filename`: Filename where the error occurred.
+    // - `index`: Char. index where the error occurred.
+    function makeError(err) {
+        var einput;
+
+        _(err).defaults({
+            index: furthest,
+            filename: env.filename,
+            message: 'Parse error.',
+            line: 0,
+            column: -1
+        });
+
+        if (err.filename && that.env.inputs && that.env.inputs[err.filename]) {
+            einput = that.env.inputs[err.filename];
+        } else {
+            einput = input;
+        }
+
+        err.line = extractErrorLine(einput, err.index);
+        for (var n = err.index; n >= 0 && einput.charAt(n) !== '\n'; n--) {
+            err.column++;
+        }
+
+        return new Error(_('<%=filename%>:<%=line%>:<%=column%> <%=message%>').template(err));
+    }
+
+    this.env = env = env || {};
+    this.env.filename = this.env.filename || null;
+    this.env.inputs = this.env.inputs || {};
+
+    // The Parser
+    parser = {
+
+        extractErrorLine: extractErrorLine,
+        //
+        // Parse an input string into an abstract syntax tree.
+        // Throws an error on parse errors.
+        parse: function(str) {
+            var root, start, end, zone, line, lines, buff = [], c, error = null;
+
+            i = j = current = furthest = 0;
+            chunks = [];
+            input = str.replace(/\r\n/g, '\n');
+            if (env.filename) {
+                that.env.inputs[env.filename] = input;
+            }
+
+            var early_exit = false;
+
+            // Split the input into chunks.
+            chunks = (function (chunks) {
+                var j = 0,
+                    skip = /(?:@\{[\w-]+\}|[^"'`\{\}\/\(\)\\])+/g,
+                    comment = /\/\*(?:[^*]|\*+[^\/*])*\*+\/|\/\/.*/g,
+                    string = /"((?:[^"\\\r\n]|\\.)*)"|'((?:[^'\\\r\n]|\\.)*)'|`((?:[^`]|\\.)*)`/g,
+                    level = 0,
+                    match,
+                    chunk = chunks[0],
+                    inParam;
+
+                for (var i = 0, c, cc; i < input.length;) {
+                    skip.lastIndex = i;
+                    if (match = skip.exec(input)) {
+                        if (match.index === i) {
+                            i += match[0].length;
+                            chunk.push(match[0]);
+                        }
+                    }
+                    c = input.charAt(i);
+                    comment.lastIndex = string.lastIndex = i;
+
+                    if (match = string.exec(input)) {
+                        if (match.index === i) {
+                            i += match[0].length;
+                            chunk.push(match[0]);
+                            continue;
+                        }
+                    }
+
+                    if (!inParam && c === '/') {
+                        cc = input.charAt(i + 1);
+                        if (cc === '/' || cc === '*') {
+                            if (match = comment.exec(input)) {
+                                if (match.index === i) {
+                                    i += match[0].length;
+                                    chunk.push(match[0]);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+
+                    switch (c) {
+                        case '{': if (! inParam) { level ++;        chunk.push(c);                           break; }
+                        case '}': if (! inParam) { level --;        chunk.push(c); chunks[++j] = chunk = []; break; }
+                        case '(': if (! inParam) { inParam = true;  chunk.push(c);                           break; }
+                        case ')': if (  inParam) { inParam = false; chunk.push(c);                           break; }
+                        default:                                    chunk.push(c);
+                    }
+
+                    i++;
+                }
+                if (level !== 0) {
+                    error = {
+                        index: i - 1,
+                        type: 'Parse',
+                        message: (level > 0) ? "missing closing `}`" : "missing opening `{`"
+                    };
+                }
+
+                return chunks.map(function (c) { return c.join(''); });
+            })([[]]);
+
+            if (error) {
+                throw makeError(error);
+            }
+
+            // Start with the primary rule.
+            // The whole syntax tree is held under a Ruleset node,
+            // with the `root` property set to true, so no `{}` are
+            // output.
+            root = new tree.Ruleset([], $(this.parsers.primary));
+            root.root = true;
+
+            // Get an array of Ruleset objects, flattened
+            // and sorted according to specificitySort
+            root.toList = (function() {
+                var line, lines, column;
+                return function(env) {
+                    env.error = function(e) {
+                        if (!env.errors) env.errors = new Error('');
+                        if (env.errors.message) {
+                            env.errors.message += '\n' + makeError(e).message;
+                        } else {
+                            env.errors.message = makeError(e).message;
+                        }
+                    };
+                    env.frames = env.frames || [];
+
+
+                    // call populates Invalid-caused errors
+                    var definitions = this.flatten([], [], env);
+                    definitions.sort(specificitySort);
+                    return definitions;
+                };
+            })();
+
+            // Sort rules by specificity: this function expects selectors to be
+            // split already.
+            //
+            // Written to be used as a .sort(Function);
+            // argument.
+            //
+            // [1, 0, 0, 467] > [0, 0, 1, 520]
+            var specificitySort = function(a, b) {
+                var as = a.specificity;
+                var bs = b.specificity;
+
+                if (as[0] != bs[0]) return bs[0] - as[0];
+                if (as[1] != bs[1]) return bs[1] - as[1];
+                if (as[2] != bs[2]) return bs[2] - as[2];
+                return bs[3] - as[3];
+            };
+
+            return root;
+        },
+
+        // Here in, the parsing rules/functions
+        //
+        // The basic structure of the syntax tree generated is as follows:
+        //
+        //   Ruleset ->  Rule -> Value -> Expression -> Entity
+        //
+        //  In general, most rules will try to parse a token with the `$()` function, and if the return
+        //  value is truly, will return a new node, of the relevant type. Sometimes, we need to check
+        //  first, before parsing, that's when we use `peek()`.
+        parsers: {
+            // The `primary` rule is the *entry* and *exit* point of the parser.
+            // The rules here can appear at any level of the parse tree.
+            //
+            // The recursive nature of the grammar is an interplay between the `block`
+            // rule, which represents `{ ... }`, the `ruleset` rule, and this `primary` rule,
+            // as represented by this simplified grammar:
+            //
+            //     primary  →  (ruleset | rule)+
+            //     ruleset  →  selector+ block
+            //     block    →  '{' primary '}'
+            //
+            // Only at one point is the primary rule not called from the
+            // block rule: at the root level.
+            primary: function() {
+                var node, root = [];
+
+                while ((node = $(this.rule) || $(this.ruleset) ||
+                               $(this.comment)) ||
+                               $(/^[\s\n]+/) || (node = $(this.invalid))) {
+                    if (node) root.push(node);
+                }
+                return root;
+            },
+
+            invalid: function () {
+                var chunk = $(/^[^;\n]*[;\n]/);
+
+                // To fail gracefully, match everything until a semicolon or linebreak.
+                if (chunk) {
+                    return new tree.Invalid(chunk, memo);
+                }
+            },
+
+            // We create a Comment node for CSS comments `/* */`,
+            // but keep the LeSS comments `//` silent, by just skipping
+            // over them.
+            comment: function() {
+                var comment;
+
+                if (input.charAt(i) !== '/') return;
+
+                if (input.charAt(i + 1) === '/') {
+                    return new tree.Comment($(/^\/\/.*/), true);
+                } else if (comment = $(/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/)) {
+                    return new tree.Comment(comment);
+                }
+            },
+
+            // Entities are tokens which can be found inside an Expression
+            entities: {
+
+                // A string, which supports escaping " and ' "milky way" 'he\'s the one!'
+                quoted: function() {
+                    if (input.charAt(i) !== '"' && input.charAt(i) !== "'") return;
+                    var str = $(/^"((?:[^"\\\r\n]|\\.)*)"|'((?:[^'\\\r\n]|\\.)*)'/);
+                    if (str) {
+                        return new tree.Quoted(str[1] || str[2]);
+                    }
+                },
+
+                // A reference to a Mapnik field, like [NAME]
+                // Behind the scenes, this has the same representation, but Carto
+                // needs to be careful to warn when unsupported operations are used.
+                field: function() {
+                    if (! $('[')) return;
+                    var field_name = $(/(^[^\]]+)/);
+                    if (! $(']')) return;
+                    if (field_name) return new tree.Field(field_name[1]);
+                },
+
+                // This is a comparison operator
+                comparison: function() {
+                    var str = $(/^=~|=|!=|<=|>=|<|>/);
+                    if (str) {
+                        return str;
+                    }
+                },
+
+                // A catch-all word, such as: hard-light
+                // These can start with either a letter or a dash (-),
+                // and then contain numbers, underscores, and letters.
+                keyword: function() {
+                    var k = $(/^[A-Za-z-]+[A-Za-z-0-9_]*/);
+                    if (k) { return new tree.Keyword(k); }
+                },
+
+                // A function call like rgb(255, 0, 255)
+                // The arguments are parsed with the `entities.arguments` parser.
+                call: function() {
+                    var name, args;
+
+                    if (!(name = /^([\w\-]+|%)\(/.exec(chunks[j]))) return;
+
+                    name = name[1];
+
+                    if (name === 'url') {
+                        // url() is handled by the url parser instead
+                        return null;
+                    } else {
+                        i += name.length;
+                    }
+
+                    $('('); // Parse the '(' and consume whitespace.
+
+                    args = $(this.entities['arguments']);
+
+                    if (!$(')')) return;
+
+                    if (name) {
+                        return new tree.Call(name, args, i);
+                    }
+                },
+                // Arguments are comma-separated expressions
+                'arguments': function() {
+                    var args = [], arg;
+
+                    while (arg = $(this.expression)) {
+                        args.push(arg);
+                        if (! $(',')) { break; }
+                    }
+
+                    return args;
+                },
+                literal: function() {
+                    return $(this.entities.dimension) ||
+                        $(this.entities.keywordcolor) ||
+                        $(this.entities.hexcolor) ||
+                        $(this.entities.quoted);
+                },
+
+                // Parse url() tokens
+                //
+                // We use a specific rule for urls, because they don't really behave like
+                // standard function calls. The difference is that the argument doesn't have
+                // to be enclosed within a string, so it can't be parsed as an Expression.
+                url: function() {
+                    var value;
+
+                    if (input.charAt(i) !== 'u' || !$(/^url\(/)) return;
+                    value = $(this.entities.quoted) || $(this.entities.variable) ||
+                            $(/^[\-\w%@$\/.&=:;#+?~]+/) || '';
+                    if (! $(')')) {
+                        return new tree.Invalid(value, memo, 'Missing closing ) in URL.');
+                    } else {
+                        return new tree.URL((typeof value.value !== 'undefined' ||
+                            value instanceof tree.Variable) ?
+                            value : new tree.Quoted(value));
+                    }
+                },
+
+                // A Variable entity, such as `@fink`, in
+                //
+                //     width: @fink + 2px
+                //
+                // We use a different parser for variable definitions,
+                // see `parsers.variable`.
+                variable: function() {
+                    var name, index = i;
+
+                    if (input.charAt(i) === '@' && (name = $(/^@[\w-]+/))) {
+                        return new tree.Variable(name, index, env.filename);
+                    }
+                },
+
+                hexcolor: function() {
+                    var rgb;
+                    if (input.charAt(i) === '#' && (rgb = $(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})/))) {
+                        return new tree.Color(rgb[1]);
+                    }
+                },
+
+                keywordcolor: function() {
+                    var rgb = chunks[j].match(/^[a-z]+/);
+                    if (rgb && rgb[0] in tree.Reference.data.colors) {
+                        return new tree.Color(tree.Reference.data.colors[$(/^[a-z]+/)]);
+                    }
+                },
+
+                // A Dimension, that is, a number and a unit. The only
+                // unit that has an effect is %
+                dimension: function() {
+                    var c = input.charCodeAt(i);
+                    if ((c > 57 || c < 45) || c === 47) return;
+                    var value = $(/^(-?\d*\.?\d+(?:[eE][-+]?\d+)?)(\%|\w+)?/);
+                    if (value) {
+                        return new tree.Dimension(value[1], value[2], memo);
+                    }
+                }
+            },
+
+            // The variable part of a variable definition.
+            // Used in the `rule` parser. Like @fink:
+            variable: function() {
+                var name;
+
+                if (input.charAt(i) === '@' && (name = $(/^(@[\w-]+)\s*:/))) {
+                    return name[1];
+                }
+            },
+
+            // Entities are the smallest recognized token,
+            // and can be found inside a rule's value.
+            entity: function() {
+                return $(this.entities.call) ||
+                    $(this.entities.literal) ||
+                    $(this.entities.field) ||
+                    $(this.entities.variable) ||
+                    $(this.entities.url) ||
+                    $(this.entities.keyword);
+            },
+
+            // A Rule terminator. Note that we use `peek()` to check for '}',
+            // because the `block` rule will be expecting it, but we still need to make sure
+            // it's there, if ';' was ommitted.
+            end: function() {
+                return $(';') || peek('}');
+            },
+
+            // Elements are the building blocks for Selectors. They consist of
+            // an element name, such as a tag a class, or `*`.
+            element: function() {
+                var e = $(/^(?:[.#][\w\-]+|\*|Map)/);
+                if (e) return new tree.Element(e);
+            },
+
+            // Attachments allow adding multiple lines, polygons etc. to an
+            // object. There can only be one attachment per selector.
+            attachment: function() {
+                var s = $(/^::([\w\-]+(?:\/[\w\-]+)*)/);
+                if (s) return s[1];
+            },
+
+            // Selectors are made out of one or more Elements, see above.
+            selector: function() {
+                var a, attachment,
+                    e, elements = [],
+                    f, filters = new tree.Filterset(),
+                    z, zooms = [],
+                    frame_offset = tree.FrameOffset.none;
+                    segments = 0, conditions = 0;
+
+                while (
+                        (e = $(this.element)) ||
+                        (z = $(this.zoom)) ||
+                        (fo = $(this.frame_offset)) ||
+                        (f = $(this.filter)) ||
+                        (a = $(this.attachment))
+                    ) {
+                    segments++;
+                    if (e) {
+                        elements.push(e);
+                    } else if (z) {
+                        zooms.push(z);
+                        conditions++;
+                    } else if (fo) {
+                        frame_offset = fo;
+                        conditions++;
+                    } else if (f) {
+                        var err = filters.add(f);
+                        if (err) {
+                            throw makeError({
+                                message: err,
+                                index: i - 1
+                            });
+                        }
+                        conditions++;
+                    } else if (attachment) {
+                        throw makeError({
+                            message: 'Encountered second attachment name.',
+                            index: i - 1
+                        });
+                    } else {
+                        attachment = a;
+                    }
+
+                    var c = input.charAt(i);
+                    if (c === '{' || c === '}' || c === ';' || c === ',') { break; }
+                }
+
+                if (segments) {
+                    return new tree.Selector(filters, zooms, frame_offset, elements, attachment, conditions, memo);
+                }
+            },
+
+            filter: function() {
+                save();
+                var key, op, val;
+                if (! $('[')) return;
+                if (key = $(/^[a-zA-Z0-9\-_]+/) ||
+                    $(this.entities.quoted) ||
+                    $(this.entities.variable) ||
+                    $(this.entities.keyword) ||
+                    $(this.entities.field)) {
+                    // TODO: remove at 1.0.0
+                    if (key instanceof tree.Quoted) {
+                        key = new tree.Field(key.toString());
+                    }
+                    if ((op = $(this.entities.comparison)) &&
+                        (val = $(this.entities.quoted) ||
+                             $(this.entities.variable) ||
+                             $(this.entities.dimension) ||
+                             $(this.entities.keyword) ||
+                             $(this.entities.field))) {
+                        if (! $(']')) {
+                            throw makeError({
+                                message: 'Missing closing ] of filter.',
+                                index: memo - 1
+                            });
+                        }
+                        if (!key.is) key = new tree.Field(key);
+                        return new tree.Filter(key, op, val, memo, env.filename);
+                    }
+                }
+            },
+
+            frame_offset: function() {
+                save();
+                var op, val;
+                if ($(/^\[\s*frame-offset/g) &&
+                    (op = $(this.entities.comparison)) &&
+                    (val = $(/^\d+/)) &&
+                    $(']'))  {
+                        return tree.FrameOffset(op, val, memo);
+                }
+            },
+
+            zoom: function() {
+                save();
+                var op, val;
+                if ($(/^\[\s*zoom/g) &&
+                    (op = $(this.entities.comparison)) &&
+                    (val = $(this.entities.variable) || $(this.entities.dimension)) && $(']')) {
+                        return new tree.Zoom(op, val, memo);
+                } else {
+                    // backtrack
+                    restore();
+                }
+            },
+
+            // The `block` rule is used by `ruleset`
+            // It's a wrapper around the `primary` rule, with added `{}`.
+            block: function() {
+                var content;
+
+                if ($('{') && (content = $(this.primary)) && $('}')) {
+                    return content;
+                }
+            },
+
+            // div, .class, body > p {...}
+            ruleset: function() {
+                var selectors = [], s, f, l, rules, filters = [];
+                save();
+
+                while (s = $(this.selector)) {
+                    selectors.push(s);
+                    while ($(this.comment)) {}
+                    if (! $(',')) { break; }
+                    while ($(this.comment)) {}
+                }
+                if (s) {
+                    while ($(this.comment)) {}
+                }
+
+                if (selectors.length > 0 && (rules = $(this.block))) {
+                    if (selectors.length === 1 &&
+                        selectors[0].elements.length &&
+                        selectors[0].elements[0].value === 'Map') {
+                        var rs = new tree.Ruleset(selectors, rules);
+                        rs.isMap = true;
+                        return rs;
+                    }
+                    return new tree.Ruleset(selectors, rules);
+                } else {
+                    // Backtrack
+                    restore();
+                }
+            },
+
+            rule: function() {
+                var name, value, c = input.charAt(i);
+                save();
+
+                if (c === '.' || c === '#') { return; }
+
+                if (name = $(this.variable) || $(this.property)) {
+                    value = $(this.value);
+
+                    if (value && $(this.end)) {
+                        return new tree.Rule(name, value, memo, env.filename);
+                    } else {
+                        furthest = i;
+                        restore();
+                    }
+                }
+            },
+
+            font: function() {
+                var value = [], expression = [], weight, font, e;
+
+                while (e = $(this.entity)) {
+                    expression.push(e);
+                }
+
+                value.push(new tree.Expression(expression));
+
+                if ($(',')) {
+                    while (e = $(this.expression)) {
+                        value.push(e);
+                        if (! $(',')) { break; }
+                    }
+                }
+                return new tree.Value(value);
+            },
+
+            // A Value is a comma-delimited list of Expressions
+            // In a Rule, a Value represents everything after the `:`,
+            // and before the `;`.
+            value: function() {
+                var e, expressions = [];
+
+                while (e = $(this.expression)) {
+                    expressions.push(e);
+                    if (! $(',')) { break; }
+                }
+
+                if (expressions.length > 1) {
+                    return new tree.Value(expressions.map(function(e) {
+                        return e.value[0];
+                    }));
+                } else if (expressions.length === 1) {
+                    return new tree.Value(expressions);
+                }
+            },
+            // A sub-expression, contained by parenthensis
+            sub: function() {
+                var e;
+
+                if ($('(') && (e = $(this.expression)) && $(')')) {
+                    return e;
+                }
+            },
+            // This is a misnomer because it actually handles multiplication
+            // and division.
+            multiplication: function() {
+                var m, a, op, operation;
+                if (m = $(this.operand)) {
+                    while ((op = ($('/') || $('*') || $('%'))) && (a = $(this.operand))) {
+                        operation = new tree.Operation(op, [operation || m, a], memo);
+                    }
+                    return operation || m;
+                }
+            },
+            addition: function() {
+                var m, a, op, operation;
+                if (m = $(this.multiplication)) {
+                    while ((op = $(/^[-+]\s+/) || (input.charAt(i - 1) != ' ' && ($('+') || $('-')))) &&
+                           (a = $(this.multiplication))) {
+                        operation = new tree.Operation(op, [operation || m, a], memo);
+                    }
+                    return operation || m;
+                }
+            },
+
+            // An operand is anything that can be part of an operation,
+            // such as a Color, or a Variable
+            operand: function() {
+                return $(this.sub) || $(this.entity);
+            },
+
+            // Expressions either represent mathematical operations,
+            // or white-space delimited Entities.  @var * 2
+            expression: function() {
+                var e, delim, entities = [], d;
+
+                while (e = $(this.addition) || $(this.entity)) {
+                    entities.push(e);
+                }
+
+                if (entities.length > 0) {
+                    return new tree.Expression(entities);
+                }
+            },
+            property: function() {
+                var name = $(/^(([a-z][-a-z_0-9]*\/)?\*?-?[-a-z_0-9]+)\s*:/);
+                if (name) return name[1];
+            }
+        }
+    };
+    return parser;
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./tree":7,"underscore":undefined}],4:[function(require,module,exports){
+(function (global){
+var _ = global._ || require('underscore');
+var carto = require('./index');
+
+carto.Renderer = function Renderer(env, options) {
+    this.env = env || {};
+    this.options = options || {};
+    this.options.mapnik_version = this.options.mapnik_version || '3.0.0';
+};
+
+/**
+ * Prepare a MSS document (given as an string) into a
+ * XML Style fragment (mostly useful for debugging)
+ *
+ * @param {String} data the mss contents as a string.
+ */
+carto.Renderer.prototype.renderMSS = function render(data) {
+    // effects is a container for side-effects, which currently
+    // are limited to FontSets.
+    var env = _(this.env).defaults({
+        benchmark: false,
+        validation_data: false,
+        effects: []
+    });
+
+    if (!carto.tree.Reference.setVersion(this.options.mapnik_version)) {
+        throw new Error("Could not set mapnik version to " + this.options.mapnik_version);
+    }
+
+    var output = [];
+    var styles = [];
+
+    if (env.benchmark) console.time('Parsing MSS');
+    var parser = (carto.Parser(env)).parse(data);
+    if (env.benchmark) console.timeEnd('Parsing MSS');
+
+    if (env.benchmark) console.time('Rule generation');
+    var rule_list = parser.toList(env);
+    if (env.benchmark) console.timeEnd('Rule generation');
+
+    if (env.benchmark) console.time('Rule inheritance');
+    var rules = inheritDefinitions(rule_list, env);
+    if (env.benchmark) console.timeEnd('Rule inheritance');
+
+    if (env.benchmark) console.time('Style sort');
+    var sorted = sortStyles(rules,env);
+    if (env.benchmark) console.timeEnd('Style sort');
+
+    if (env.benchmark) console.time('Total Style generation');
+    for (var k = 0, rule, style_name; k < sorted.length; k++) {
+        rule = sorted[k];
+        style_name = 'style' + (rule.attachment !== '__default__' ? '-' + rule.attachment : '');
+        styles.push(style_name);
+        var bench_name = '\tStyle "'+style_name+'" (#'+k+') toXML';
+        if (env.benchmark) console.time(bench_name);
+        // env.effects can be modified by this call
+        output.push(carto.tree.StyleXML(style_name, rule.attachment, rule, env));
+        if (env.benchmark) console.timeEnd(bench_name);
+    }
+    if (env.benchmark) console.timeEnd('Total Style generation');
+    if (env.errors) throw env.errors;
+    return output.join('\n');
+};
+
+/**
+ * Prepare a MML document (given as an object) into a
+ * fully-localized XML file ready for Mapnik2 consumption
+ *
+ * @param {String} m - the JSON file as a string.
+ */
+carto.Renderer.prototype.render = function render(m) {
+    // effects is a container for side-effects, which currently
+    // are limited to FontSets.
+    var env = _(this.env).defaults({
+        benchmark: false,
+        validation_data: false,
+        effects: [],
+        ppi: 90.714
+    });
+
+    if (!carto.tree.Reference.setVersion(this.options.mapnik_version)) {
+        throw new Error("Could not set mapnik version to " + this.options.mapnik_version);
+    }
+
+    var output = [];
+
+    // Transform stylesheets into definitions.
+    var definitions = _(m.Stylesheet).chain()
+        .map(function(s) {
+            if (typeof s == 'string') {
+                throw new Error("Stylesheet object is expected not a string: '" + s + "'");
+            }
+            // Passing the environment from stylesheet to stylesheet,
+            // allows frames and effects to be maintained.
+            env = _(env).extend({filename:s.id});
+
+            var time = +new Date(),
+                root = (carto.Parser(env)).parse(s.data);
+            if (env.benchmark)
+                console.warn('Parsing time: ' + (new Date() - time) + 'ms');
+            return root.toList(env);
+        })
+        .flatten()
+        .value();
+
+    function appliesTo(name, classIndex) {
+        return function(definition) {
+            return definition.appliesTo(l.name, classIndex);
+        };
+    }
+
+    // Iterate through layers and create styles custom-built
+    // for each of them, and apply those styles to the layers.
+    var styles, l, classIndex, rules, sorted, matching;
+    for (var i = 0; i < m.Layer.length; i++) {
+        l = m.Layer[i];
+        styles = [];
+        classIndex = {};
+
+        if (env.benchmark) console.warn('processing layer: ' + l.id);
+        // Classes are given as space-separated alphanumeric strings.
+        var classes = (l['class'] || '').split(/\s+/g);
+        for (var j = 0; j < classes.length; j++) {
+            classIndex[classes[j]] = true;
+        }
+        matching = definitions.filter(appliesTo(l.name, classIndex));
+        rules = inheritDefinitions(matching, env);
+        sorted = sortStyles(rules, env);
+
+        for (var k = 0, rule, style_name; k < sorted.length; k++) {
+            rule = sorted[k];
+            style_name = l.name + (rule.attachment !== '__default__' ? '-' + rule.attachment : '');
+
+            // env.effects can be modified by this call
+            var styleXML = carto.tree.StyleXML(style_name, rule.attachment, rule, env);
+
+            if (styleXML) {
+                output.push(styleXML);
+                styles.push(style_name);
+            }
+        }
+
+        output.push(carto.tree.LayerXML(l, styles));
+    }
+
+    output.unshift(env.effects.map(function(e) {
+        return e.toXML(env);
+    }).join('\n'));
+
+    var map_properties = getMapProperties(m, definitions, env);
+
+    // Exit on errors.
+    if (env.errors) throw env.errors;
+
+    // Pass TileJSON and other custom parameters through to Mapnik XML.
+    var parameters = _(m).reduce(function(memo, v, k) {
+        if (!v && v !== 0) return memo;
+
+        switch (k) {
+        // Known skippable properties.
+        case 'srs':
+        case 'Layer':
+        case 'Stylesheet':
+            break;
+        // Non URL-bound TileJSON properties.
+        case 'bounds':
+        case 'center':
+        case 'minzoom':
+        case 'maxzoom':
+        case 'version':
+            memo.push('  <Parameter name="' + k + '">' + v + '</Parameter>');
+            break;
+        // Properties that require CDATA.
+        case 'name':
+        case 'description':
+        case 'legend':
+        case 'attribution':
+        case 'template':
+            memo.push('  <Parameter name="' + k + '"><![CDATA[' + v + ']]></Parameter>');
+            break;
+        // Mapnik image format.
+        case 'format':
+            memo.push('  <Parameter name="' + k + '">' + v + '</Parameter>');
+            break;
+        // Mapnik interactivity settings.
+        case 'interactivity':
+            memo.push('  <Parameter name="interactivity_layer">' + v.layer + '</Parameter>');
+            memo.push('  <Parameter name="interactivity_fields">' + v.fields + '</Parameter>');
+            break;
+        // Support any additional scalar properties.
+        default:
+            if ('string' === typeof v) {
+                memo.push('  <Parameter name="' + k + '"><![CDATA[' + v + ']]></Parameter>');
+            } else if ('number' === typeof v) {
+                memo.push('  <Parameter name="' + k + '">' + v + '</Parameter>');
+            } else if ('boolean' === typeof v) {
+                memo.push('  <Parameter name="' + k + '">' + v + '</Parameter>');
+            }
+            break;
+        }
+        return memo;
+    }, []);
+    if (parameters.length) output.unshift(
+        '<Parameters>\n' +
+        parameters.join('\n') +
+        '\n</Parameters>\n'
+    );
+
+    var properties = _(map_properties).map(function(v) { return ' ' + v; }).join('');
+
+    output.unshift(
+        '<?xml version="1.0" ' +
+        'encoding="utf-8"?>\n' +
+        '<!DOCTYPE Map[]>\n' +
+        '<Map' + properties +'>\n');
+    output.push('</Map>');
+    return output.join('\n');
+};
+
+/**
+ * This function currently modifies 'current'
+ * @param {Array}  current  current list of rules
+ * @param {Object} definition a Definition object to add to the rules
+ * @param {Object} byFilter an object/dictionary of existing filters. This is
+ * actually keyed `attachment->filter`
+ * @param {Object} env the current environment
+*/
+function addRules(current, definition, byFilter, env) {
+    var newFilters = definition.filters,
+        newRules = definition.rules,
+        updatedFilters, clone, previous;
+
+    // The current definition might have been split up into
+    // multiple definitions already.
+    for (var k = 0; k < current.length; k++) {
+        updatedFilters = current[k].filters.cloneWith(newFilters);
+        if (updatedFilters) {
+            previous = byFilter[updatedFilters];
+            if (previous) {
+                // There's already a definition with those exact
+                // filters. Add the current definitions' rules
+                // and stop processing it as the existing rule
+                // has already gone down the inheritance chain.
+                previous.addRules(newRules);
+            } else {
+                clone = current[k].clone(updatedFilters);
+                // Make sure that we're only maintaining the clone
+                // when we did actually add rules. If not, there's
+                // no need to keep the clone around.
+                if (clone.addRules(newRules)) {
+                    // We inserted an element before this one, so we need
+                    // to make sure that in the next loop iteration, we're
+                    // not performing the same task for this element again,
+                    // hence the k++.
+                    byFilter[updatedFilters] = clone;
+                    current.splice(k, 0, clone);
+                    k++;
+                }
+            }
+        } else if (updatedFilters === null) {
+            // if updatedFilters is null, then adding the filters doesn't
+            // invalidate or split the selector, so we addRules to the
+            // combined selector
+
+            // Filters can be added, but they don't change the
+            // filters. This means we don't have to split the
+            // definition.
+            //
+            // this is cloned here because of shared classes, see
+            // sharedclass.mss
+            current[k] = current[k].clone();
+            current[k].addRules(newRules);
+        }
+        // if updatedFeatures is false, then the filters split the rule,
+        // so they aren't the same inheritance chain
+    }
+    return current;
+}
+
+/**
+ * Apply inherited styles from their ancestors to them.
+ *
+ * called either once per render (in the case of mss) or per layer
+ * (for mml)
+ *
+ * @param {Object} definitions - a list of definitions objects
+ *   that contain .rules
+ * @param {Object} env - the environment
+ * @return {Array<Array>} an array of arrays is returned,
+ *   in which each array refers to a specific attachment
+ */
+function inheritDefinitions(definitions, env) {
+    var inheritTime = +new Date();
+    // definitions are ordered by specificity,
+    // high (index 0) to low
+    var byAttachment = {},
+        byFilter = {};
+    var result = [];
+    var current, previous, attachment;
+
+    // Evaluate the filters specified by each definition with the given
+    // environment to correctly resolve variable references
+    definitions.forEach(function(d) {
+        d.filters.ev(env);
+    });
+
+    for (var i = 0; i < definitions.length; i++) {
+
+        attachment = definitions[i].attachment;
+        current = [definitions[i]];
+
+        if (!byAttachment[attachment]) {
+            byAttachment[attachment] = [];
+            byAttachment[attachment].attachment = attachment;
+            byFilter[attachment] = {};
+            result.push(byAttachment[attachment]);
+        }
+
+        // Iterate over all subsequent rules.
+        for (var j = i + 1; j < definitions.length; j++) {
+            if (definitions[j].attachment === attachment) {
+                // Only inherit rules from the same attachment.
+                current = addRules(current, definitions[j], byFilter[attachment], env);
+            }
+        }
+
+        for (var k = 0; k < current.length; k++) {
+            byFilter[attachment][current[k].filters] = current[k];
+            byAttachment[attachment].push(current[k]);
+        }
+    }
+
+    if (env.benchmark) console.warn('Inheritance time: ' + ((new Date() - inheritTime)) + 'ms');
+
+    return result;
+
+}
+
+// Sort styles by the minimum index of their rules.
+// This sorts a slice of the styles, so it returns a sorted
+// array but does not change the input.
+function sortStylesIndex(a, b) { return b.index - a.index; }
+function sortStyles(styles, env) {
+    for (var i = 0; i < styles.length; i++) {
+        var style = styles[i];
+        style.index = Infinity;
+        for (var b = 0; b < style.length; b++) {
+            var rules = style[b].rules;
+            for (var r = 0; r < rules.length; r++) {
+                var rule = rules[r];
+                if (rule.index < style.index) {
+                    style.index = rule.index;
+                }
+            }
+        }
+    }
+
+    var result = styles.slice();
+    result.sort(sortStylesIndex);
+    return result;
+}
+
+/**
+ * Find a rule like Map { background-color: #fff; },
+ * if any, and return a list of properties to be inserted
+ * into the <Map element of the resulting XML. Translates
+ * properties of the mml object at `m` directly into XML
+ * properties.
+ *
+ * @param {Object} m the mml object.
+ * @param {Array} definitions the output of toList.
+ * @param {Object} env
+ * @return {String} rendered properties.
+ */
+function getMapProperties(m, definitions, env) {
+    var rules = {};
+    var symbolizers = carto.tree.Reference.data.symbolizers.map;
+
+    _(m).each(function(value, key) {
+        if (key in symbolizers) rules[key] = key + '="' + value + '"';
+    });
+
+    definitions.filter(function(r) {
+        return r.elements.join('') === 'Map';
+    }).forEach(function(r) {
+        for (var i = 0; i < r.rules.length; i++) {
+            var key = r.rules[i].name;
+            if (!(key in symbolizers)) {
+                env.error({
+                    message: 'Rule ' + key + ' not allowed for Map.',
+                    index: r.rules[i].index
+                });
+            }
+            rules[key] = r.rules[i].ev(env).toXML(env);
+        }
+    });
+    return rules;
+}
+
+module.exports = carto;
+module.exports.addRules = addRules;
+module.exports.inheritDefinitions = inheritDefinitions;
+module.exports.sortStyles = sortStyles;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./index":2,"underscore":undefined}],5:[function(require,module,exports){
+(function (global){
+(function(carto) {
+var tree = require('./tree');
+var _ = global._ || require('underscore');
+
+
+function CartoCSS(style, options) {
+  this.options = options || {};
+  if(style) {
+    this.setStyle(style);
+  }
+}
+
+CartoCSS.Layer = function(shader, options) {
+  this.options = options;
+  this.shader = shader;
+};
+
+
+CartoCSS.Layer.prototype = {
+
+  fullName: function() {
+    return this.shader.attachment;
+  },
+
+  name: function() {
+    return this.fullName().split('::')[0];
+  },
+
+  // frames this layer need to be rendered
+  frames: function() {
+    return this.shader.frames;
+  },
+
+  attachment: function() {
+    return this.fullName().split('::')[1];
+  },
+
+  eval: function(prop) {
+    var p = this.shader[prop];
+    if (!p || !p.style) return;
+    return p.style({}, { zoom: 0, 'frame-offset': 0 });
+  },
+
+  /*
+   * `props`: feature properties
+   * `context`: rendering properties, i.e zoom
+   */
+  getStyle: function(props, context) {
+    var style = {};
+    for(var i in this.shader) {
+      if(i !== 'attachment' && i !== 'zoom' && i !== 'frames' && i !== 'symbolizers') {
+        style[i] = this.shader[i].style(props, context);
+      }
+    }
+    return style;
+  },
+
+  /**
+   * return the symbolizers that need to be rendered with 
+   * this style. The order is the rendering order.
+   * @returns a list with 3 possible values 'line', 'marker', 'polygon'
+   */
+  getSymbolizers: function() {
+    return this.shader.symbolizers;
+  },
+
+  /**
+   * returns if the style varies with some feature property.
+   * Useful to optimize rendering
+   */
+  isVariable: function() {
+    for(var i in this.shader) {
+      if(i !== 'attachment' && i !== 'zoom' && i !== 'frames' && i !== 'symbolizers') {
+        if (!this.shader[i].constant) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
+
+  getShader: function() {
+    return this.shader;
+  },
+
+  /**
+   * returns true if a feature needs to be rendered
+   */
+  filter: function(featureType, props, context) {
+    for(var i in this.shader) {
+     var s = this.shader[i](props, context);
+     if(s) {
+       return true;
+     }
+    }
+    return false;
+  },
+
+  //
+  // given a geoemtry type returns the transformed one acording the CartoCSS
+  // For points there are two kind of types: point and sprite, the first one 
+  // is a circle, second one is an image sprite
+  //
+  // the other geometry types are the same than geojson (polygon, linestring...)
+  //
+  transformGeometry: function(type) {
+    return type;
+  },
+
+  transformGeometries: function(geojson) {
+    return geojson;
+  }
+
+};
+
+CartoCSS.prototype = {
+
+  setStyle: function(style) {
+    var layers = this.parse(style);
+    if(!layers) {
+      throw new Error(this.parse_env.errors);
+    }
+    this.layers = layers.map(function(shader) {
+        return new CartoCSS.Layer(shader);
+    });
+  },
+
+  getLayers: function() {
+    return this.layers;
+  },
+
+  getDefault: function() {
+    return this.findLayer({ attachment: '__default__' });
+  },
+
+  findLayer: function(where) {
+    return _.find(this.layers, function(value) {
+      for (var key in where) {
+        var v = value[key];
+        if (typeof(v) === 'function') {
+          v = v.call(value);
+        }
+        if (where[key] !== v) return false;
+      }
+      return true;
+    });
+  },
+
+  _createFn: function(ops) {
+    var body = ops.join('\n');
+    if(this.options.debug) console.log(body);
+    return Function("data","ctx", "var _value = null; " +  body + "; return _value; ");
+  },
+
+  _compile: function(shader) {
+    if(typeof shader === 'string') {
+        shader = eval("(function() { return " + shader +"; })()");
+    }
+    this.shader_src = shader;
+    for(var attr in shader) {
+        var c = mapper[attr];
+        if(c) {
+            this.compiled[c] = eval("(function() { return shader[attr]; })();");
+        }
+    }
+  },
+
+  parse: function(cartocss) {
+    var parse_env = {
+      frames: [],
+      errors: [],
+      error: function(obj) {
+        this.errors.push(obj);
+      }
+    };
+    this.parse_env = parse_env;
+
+    var ruleset = null;
+    try {
+      ruleset = (new carto.Parser(parse_env)).parse(cartocss);
+    } catch(e) {
+      // add the style.mss string to match the response from the server
+      parse_env.errors.push(e.message);
+      return;
+    }
+    if(ruleset) {
+
+      function defKey(def) {
+        return def.elements[0] + "::" + def.attachment;
+      }
+      var defs = ruleset.toList(parse_env);
+      defs.reverse();
+      // group by elements[0].value::attachment
+      var layers = {};
+      for(var i = 0; i < defs.length; ++i) {
+        var def = defs[i];
+        var key = defKey(def);
+        var layer = layers[key] = (layers[key] || {
+          symbolizers: []
+        });
+        layer.frames = [];
+        layer.zoom = tree.Zoom.all;
+        var props = def.toJS(parse_env);
+        if (this.options.debug) console.log("props", props);
+        for(var v in props) {
+          var lyr = layer[v] = layer[v] || {
+            constant: false,
+            symbolizer: null,
+            js: [],
+            index: 0
+          };
+          // build javascript statements
+          lyr.js.push(props[v].map(function(a) { return a.js; }).join('\n'));
+          // get symbolizer for prop
+          lyr.symbolizer = _.first(props[v].map(function(a) { return a.symbolizer; }));
+          // serach the max index to know rendering order
+          lyr.index = _.max(props[v].map(function(a) { return a.index; }).concat(lyr.index));
+          lyr.constant = !_.any(props[v].map(function(a) { return !a.constant; }));
+        }
+      }
+
+      var ordered_layers = [];
+      if (this.options.debug) console.log(layers);
+
+      var done = {};
+      for(var i = 0; i < defs.length; ++i) {
+        var def = defs[i];
+        var k = defKey(def);
+        var layer = layers[k];
+        if(!done[k]) {
+          if(this.options.debug) console.log("**", k);
+          for(var prop in layer) {
+            if (prop !== 'zoom' && prop !== 'frames' && prop !== 'symbolizers') {
+              if(this.options.debug) console.log("*", prop);
+              layer[prop].style = this._createFn(layer[prop].js);
+              layer.symbolizers.push(layer[prop].symbolizer);
+              layer.symbolizers = _.uniq(layer.symbolizers);
+            }
+          }
+          layer.attachment = k;
+          ordered_layers.push(layer);
+          done[k] = true;
+        }
+        layer.zoom |= def.zoom;
+        layer.frames.push(def.frame_offset);
+      }
+
+      // uniq the frames
+      for(i = 0; i < ordered_layers.length; ++i) {
+        ordered_layers[i].frames = _.uniq(ordered_layers[i].frames);
+      }
+
+      return ordered_layers;
+
+    }
+    return null;
   }
 };
 
-if (navigator.userAgent.indexOf('MSIE 8.0') !== -1 || navigator.userAgent.indexOf('MSIE 7.0') !== -1) {
-  Object.defineProperty = function(o, p, fn) { o[p] = fn.value; };
+
+carto.RendererJS = function (options) {
+    this.options = options || {};
+    this.options.mapnik_version = this.options.mapnik_version || 'latest';
+};
+
+// Prepare a javascript object which contains the layers
+carto.RendererJS.prototype.render = function render(cartocss, callback) {
+    var reference = require('./torque-reference');
+    tree.Reference.setData(reference.version.latest);
+    return new CartoCSS(cartocss, this.options);
+}
+
+if(typeof(module) !== 'undefined') {
+  module.exports = carto.RendererJS;
 }
 
 
+})(require('../carto'));
 
-var carto_initialize = function(carto, uri, callback) {
-  callback();
-};
-window.carto = window.carto || {};
-
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../carto":2,"./torque-reference":6,"./tree":7,"underscore":undefined}],6:[function(require,module,exports){
 var _mapnik_reference_latest = {
     "version": "2.1.1",
     "style": {
@@ -1904,885 +3691,14 @@ var _mapnik_reference_latest = {
     }
 }
 
-window.carto['mapnik-reference'] =  {
+module.exports = {
   version: {
     latest: _mapnik_reference_latest,
     '2.1.1': _mapnik_reference_latest
   }
-}
-//
-// Stub out `require` in the browser
-//
-window.carto = window.carto || {};
-window.carto.underscore = window._;
-
-function require(arg) {
-    var mod = window.carto[arg];
-    if(!mod) {
-      mod = window.carto[arg.split('/')[1]];
-    }
-    if(!mod) {
-      mod = window.carto[arg]
-    }
-    if(!mod) {
-      mod = window[arg.split('/')[1]];
-    }
-    // try global scope
-    if(!mod) {
-      mod = window[arg]
-    }
-    return mod;
-}
-
-if (typeof(exports) !== 'undefined') {
-    carto = exports;
-    tree = require('./tree');
-    _ = require('underscore');
-} else {
-    if (typeof(window.carto) === 'undefined') { window.carto = {}; }
-    carto = window.carto;
-    tree = window.carto.tree = {};
-    _ = window._;
-}
-
-// carto.js - parser
-//
-//    A relatively straight-forward predictive parser.
-//    There is no tokenization/lexing stage, the input is parsed
-//    in one sweep.
-//
-//    To make the parser fast enough to run in the browser, several
-//    optimization had to be made:
-//
-//    - Matching and slicing on a huge input is often cause of slowdowns.
-//      The solution is to chunkify the input into smaller strings.
-//      The chunks are stored in the `chunks` var,
-//      `j` holds the current chunk index, and `current` holds
-//      the index of the current chunk in relation to `input`.
-//      This gives us an almost 4x speed-up.
-//
-//    - In many cases, we don't need to match individual tokens;
-//      for example, if a value doesn't hold any variables, operations
-//      or dynamic references, the parser can effectively 'skip' it,
-//      treating it as a literal.
-//      An example would be '1px solid #000' - which evaluates to itself,
-//      we don't need to know what the individual components are.
-//      The drawback, of course is that you don't get the benefits of
-//      syntax-checking on the CSS. This gives us a 50% speed-up in the parser,
-//      and a smaller speed-up in the code-gen.
-//
-//
-//    Token matching is done with the `$` function, which either takes
-//    a terminal string or regexp, or a non-terminal function to call.
-//    It also takes care of moving all the indices forwards.
-
-carto.Parser = function Parser(env) {
-    var input,       // LeSS input string
-        i,           // current index in `input`
-        j,           // current chunk
-        temp,        // temporarily holds a chunk's state, for backtracking
-        memo,        // temporarily holds `i`, when backtracking
-        furthest,    // furthest index the parser has gone to
-        chunks,      // chunkified input
-        current,     // index of current chunk, in `input`
-        parser;
-
-    var that = this;
-
-    // This function is called after all files
-    // have been imported through `@import`.
-    var finish = function() {};
-
-    var imports = this.imports = {
-        paths: env && env.paths || [],  // Search paths, when importing
-        queue: [],                      // Files which haven't been imported yet
-        files: {},                      // Holds the imported parse trees
-        mime: env && env.mime,         // MIME type of .carto files
-        push: function(path, callback) {
-            var that = this;
-            this.queue.push(path);
-
-            //
-            // Import a file asynchronously
-            //
-            carto.Parser.importer(path, this.paths, function(root) {
-                that.queue.splice(that.queue.indexOf(path), 1); // Remove the path from the queue
-                that.files[path] = root;                        // Store the root
-
-                callback(root);
-
-                if (that.queue.length === 0) { finish(); }       // Call `finish` if we're done importing
-            }, env);
-        }
-    };
-
-    function save()    {
-        temp = chunks[j];
-        memo = i;
-        current = i;
-    }
-    function restore() {
-        chunks[j] = temp;
-        i = memo;
-        current = i;
-    }
-
-    function sync() {
-        if (i > current) {
-            chunks[j] = chunks[j].slice(i - current);
-            current = i;
-        }
-    }
-    //
-    // Parse from a token, regexp or string, and move forward if match
-    //
-    function $(tok) {
-        var match, args, length, c, index, endIndex, k;
-
-        //
-        // Non-terminal
-        //
-        if (tok instanceof Function) {
-            return tok.call(parser.parsers);
-        //
-        // Terminal
-        //
-        //     Either match a single character in the input,
-        //     or match a regexp in the current chunk (chunk[j]).
-        //
-        } else if (typeof(tok) === 'string') {
-            match = input.charAt(i) === tok ? tok : null;
-            length = 1;
-            sync();
-        } else {
-            sync();
-
-            match = tok.exec(chunks[j]);
-            if (match) {
-                length = match[0].length;
-            } else {
-                return null;
-            }
-        }
-
-        // The match is confirmed, add the match length to `i`,
-        // and consume any extra white-space characters (' ' || '\n')
-        // which come after that. The reason for this is that LeSS's
-        // grammar is mostly white-space insensitive.
-        if (match) {
-            var mem = i += length;
-            endIndex = i + chunks[j].length - length;
-
-            while (i < endIndex) {
-                c = input.charCodeAt(i);
-                if (! (c === 32 || c === 10 || c === 9)) { break; }
-                i++;
-            }
-            chunks[j] = chunks[j].slice(length + (i - mem));
-            current = i;
-
-            if (chunks[j].length === 0 && j < chunks.length - 1) { j++; }
-
-            if (typeof(match) === 'string') {
-                return match;
-            } else {
-                return match.length === 1 ? match[0] : match;
-            }
-        }
-    }
-
-    // Same as $(), but don't change the state of the parser,
-    // just return the match.
-    function peek(tok) {
-        if (typeof(tok) === 'string') {
-            return input.charAt(i) === tok;
-        } else {
-            if (tok.test(chunks[j])) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    function extractErrorLine(style, errorIndex) {
-        return (style.slice(0, errorIndex).match(/\n/g) || '').length + 1;
-    }
-
-
-    // Make an error object from a passed set of properties.
-    // Accepted properties:
-    // - `message`: Text of the error message.
-    // - `filename`: Filename where the error occurred.
-    // - `index`: Char. index where the error occurred.
-    function makeError(err) {
-        var einput;
-
-        _(err).defaults({
-            index: furthest,
-            filename: env.filename,
-            message: 'Parse error.',
-            line: 0,
-            column: -1
-        });
-
-        if (err.filename && that.env.inputs && that.env.inputs[err.filename]) {
-            einput = that.env.inputs[err.filename];
-        } else {
-            einput = input;
-        }
-
-        err.line = extractErrorLine(einput, err.index);
-        for (var n = err.index; n >= 0 && einput.charAt(n) !== '\n'; n--) {
-            err.column++;
-        }
-
-        return new Error(_('<%=filename%>:<%=line%>:<%=column%> <%=message%>').template(err));
-    }
-
-    this.env = env = env || {};
-    this.env.filename = this.env.filename || null;
-    this.env.inputs = this.env.inputs || {};
-
-    // The Parser
-    return parser = {
-
-        imports: imports,
-        extractErrorLine: extractErrorLine,
-        //
-        // Parse an input string into an abstract syntax tree.
-        // Throws an error on parse errors.
-        parse: function(str) {
-            var root, start, end, zone, line, lines, buff = [], c, error = null;
-
-            i = j = current = furthest = 0;
-            chunks = [];
-            input = str.replace(/\r\n/g, '\n');
-            if (env.filename) {
-                that.env.inputs[env.filename] = input;
-            }
-
-            var early_exit = false;
-            // Split the input into chunks.
-            chunks = (function(chunks) {
-                var j = 0,
-                    skip = /[^"'`\{\}\/]+/g,
-                    comment = /\/\*(?:[^*]|\*+[^\/*])*\*+\/|\/\/.*/g,
-                    level = 0,
-                    match,
-                    chunk = chunks[0],
-                    inString;
-
-                chunker: for (var i = 0, c, cc; i < input.length; i++) {
-                    skip.lastIndex = i;
-                    if (match = skip.exec(input)) {
-                        if (match.index === i) {
-                            i += match[0].length;
-                            chunk.push(match[0]);
-                        }
-                    }
-                    c = input.charAt(i);
-                    comment.lastIndex = i;
-
-                    if (!inString && c === '/') {
-                        cc = input.charAt(i + 1);
-                        if (cc === '/' || cc === '*') {
-                            if (match = comment.exec(input)) {
-                                if (match.index === i) {
-                                    i += match[0].length - 1;
-                                    chunk.push(match[0]);
-                                    c = input.charAt(i);
-                                    continue chunker;
-                                }
-                            }
-                        }
-                    }
-
-                    if (c === '{' && !inString) { level++;
-                        chunk.push(c);
-                    } else if (c === '}' && !inString) { level--;
-                        chunk.push(c);
-                        chunks[++j] = chunk = [];
-                    } else {
-                        if (c === '"' || c === "'" || c === '`') {
-                            if (! inString) {
-                                inString = c;
-                            } else {
-                                inString = inString === c ? false : inString;
-                            }
-                        }
-                        chunk.push(c);
-                    }
-                }
-                if (level > 0) {
-                    // TODO: make invalid instead
-                    throw makeError({
-                        message: 'Missing closing `}`',
-                        index: i
-                    });
-                }
-
-                return chunks.map(function(c) { return c.join(''); });
-            })([[]]);
-
-            // Start with the primary rule.
-            // The whole syntax tree is held under a Ruleset node,
-            // with the `root` property set to true, so no `{}` are
-            // output. The callback is called when the input is parsed.
-            root = new tree.Ruleset([], $(this.parsers.primary));
-            root.root = true;
-
-            // Get an array of Ruleset objects, flattened
-            // and sorted according to specificitySort
-            root.toList = (function() {
-                var line, lines, column;
-                return function(env) {
-                    env.error = function(e) {
-                        if (!env.errors) env.errors = new Error('');
-                        if (env.errors.message) {
-                            env.errors.message += '\n' + makeError(e).message;
-                        } else {
-                            env.errors.message = makeError(e).message;
-                        }
-                    };
-                    env.frames = env.frames || [];
-
-                    // call populates Invalid-caused errors
-                    var definitions = this.flatten([], [], env);
-                    definitions.sort(specificitySort);
-                    return definitions;
-                };
-            })();
-
-            // Sort rules by specificity: this function expects selectors to be
-            // split already.
-            //
-            // Written to be used as a .sort(Function);
-            // argument.
-            //
-            // [1, 0, 0, 467] > [0, 0, 1, 520]
-            var specificitySort = function(a, b) {
-                var as = a.specificity;
-                var bs = b.specificity;
-
-                if (as[0] != bs[0]) return bs[0] - as[0];
-                if (as[1] != bs[1]) return bs[1] - as[1];
-                if (as[2] != bs[2]) return bs[2] - as[2];
-                return bs[3] - as[3];
-            };
-
-            // If `i` is smaller than the `input.length - 1`,
-            // it means the parser wasn't able to parse the whole
-            // string, so we've got a parsing error.
-            //
-            // We try to extract a \n delimited string,
-            // showing the line where the parse error occured.
-            // We split it up into two parts (the part which parsed,
-            // and the part which didn't), so we can color them differently.
-            if (i < input.length - 1) throw makeError({
-                message:'Parse error.',
-                index:i
-            });
-
-            return root;
-        },
-
-        //
-        // Here in, the parsing rules/functions
-        //
-        // The basic structure of the syntax tree generated is as follows:
-        //
-        //   Ruleset ->  Rule -> Value -> Expression -> Entity
-        //
-        //  In general, most rules will try to parse a token with the `$()` function, and if the return
-        //  value is truly, will return a new node, of the relevant type. Sometimes, we need to check
-        //  first, before parsing, that's when we use `peek()`.
-        //
-        parsers: {
-            //
-            // The `primary` rule is the *entry* and *exit* point of the parser.
-            // The rules here can appear at any level of the parse tree.
-            //
-            // The recursive nature of the grammar is an interplay between the `block`
-            // rule, which represents `{ ... }`, the `ruleset` rule, and this `primary` rule,
-            // as represented by this simplified grammar:
-            //
-            //     primary  →  (ruleset | rule)+
-            //     ruleset  →  selector+ block
-            //     block    →  '{' primary '}'
-            //
-            // Only at one point is the primary rule not called from the
-            // block rule: at the root level.
-            //
-            primary: function() {
-                var node, root = [];
-
-                while ((node = $(this.rule) || $(this.ruleset) ||
-                               $(this.comment)) ||
-                               $(/^[\s\n]+/) || (node = $(this.invalid))) {
-                    node && root.push(node);
-                }
-                return root;
-            },
-
-            invalid: function () {
-                var chunk = $(/^[^;\n]*[;\n]/);
-
-                // To fail gracefully, match everything until a semicolon or linebreak.
-                if (chunk) {
-                    return new(tree.Invalid)(chunk, memo);
-                }
-            },
-
-            // We create a Comment node for CSS comments `/* */`,
-            // but keep the LeSS comments `//` silent, by just skipping
-            // over them.
-            comment: function() {
-                var comment;
-
-                if (input.charAt(i) !== '/') return;
-
-                if (input.charAt(i + 1) === '/') {
-                    return new tree.Comment($(/^\/\/.*/), true);
-                } else if (comment = $(/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/)) {
-                    return new tree.Comment(comment);
-                }
-            },
-
-            //
-            // Entities are tokens which can be found inside an Expression
-            //
-            entities: {
-                //
-                // A string, which supports escaping " and '
-                //
-                //     "milky way" 'he\'s the one!'
-                //
-                quoted: function() {
-                    if (input.charAt(i) !== '"' && input.charAt(i) !== "'") return;
-                    var str = $(/^"((?:[^"\\\r\n]|\\.)*)"|'((?:[^'\\\r\n]|\\.)*)'/);
-                    if (str) {
-                        return new tree.Quoted(str[1] || str[2]);
-                    }
-                },
-
-                // A reference to a Mapnik field, like
-                //
-                //     [NAME]
-                //
-                // Behind the scenes, this has the same representation, but Carto
-                // needs to be careful to warn when unsupported operations are used.
-                field: function() {
-                    if (! $('[')) return;
-                    var field_name = $(/(^[a-zA-Z0-9\-_]+)/);
-                    if (! $(']')) return;
-                    if (field_name) return new tree.Field(field_name[1]);
-                },
-
-                // This is a comparison operator
-                comparison: function() {
-                    var str = $(/^=~|=|!=|<=|>=|<|>/);
-                    if (str) {
-                        return str;
-                    }
-                },
-
-                // A catch-all word, such as:
-                //
-                //     hard-light
-                //
-                //  These can start with either a letter or a dash (-),
-                //  and then contain numbers, underscores, and letters.
-                keyword: function() {
-                    var k = $(/^[A-Za-z-]+[A-Za-z-0-9_]*/);
-                    if (k) { return new tree.Keyword(k); }
-                },
-
-                // A function call
-                //
-                //     rgb(255, 0, 255)
-                //
-                // The arguments are parsed with the `entities.arguments` parser.
-                call: function() {
-                    var name, args;
-
-                    if (! (name = /^([\w\-]+|%)\(/.exec(chunks[j]))) return;
-
-                    name = name[1].toLowerCase();
-
-                    if (name === 'url') {
-                        return null;
-                    } else {
-                        i += name.length + 1;
-                    }
-
-                    args = $(this.entities.arguments);
-
-                    if (!$(')')) return;
-
-                    if (name) {
-                        return new tree.Call(name, args, i); 
-                    }
-                },
-                // Arguments are comma-separated expressions
-                'arguments': function() {
-                    var args = [], arg;
-
-                    while (arg = $(this.expression)) {
-                        args.push(arg);
-                        if (! $(',')) { break; }
-                    }
-
-                    return args;
-                },
-                literal: function() {
-                    return $(this.entities.dimension) ||
-                           $(this.entities.color) ||
-                           $(this.entities.quoted);
-                },
-
-                // Parse url() tokens
-                //
-                // We use a specific rule for urls, because they don't really behave like
-                // standard function calls. The difference is that the argument doesn't have
-                // to be enclosed within a string, so it can't be parsed as an Expression.
-                url: function() {
-                    var value;
-
-                    if (input.charAt(i) !== 'u' || !$(/^url\(/)) return;
-                    value = $(this.entities.quoted) || $(this.entities.variable) ||
-                            $(/^[\-\w%@$\/.&=:;#+?~]+/) || '';
-                    if (! $(')')) {
-                        return new tree.Invalid(value, memo, 'Missing closing ) in URL.');
-                    } else {
-                        return new tree.URL((value.value || value instanceof tree.Variable) ?
-                            value : new tree.Quoted(value), imports.paths);
-                    }
-                },
-
-                // A Variable entity, such as `@fink`, in
-                //
-                //     width: @fink + 2px
-                //
-                // We use a different parser for variable definitions,
-                // see `parsers.variable`.
-                variable: function() {
-                    var name, index = i;
-
-                    if (input.charAt(i) === '@' && (name = $(/^@[\w-]+/))) {
-                        return new tree.Variable(name, index, env.filename);
-                    }
-                },
-
-                // A Hexadecimal color
-                //
-                //     #4F3C2F
-                //
-                // `rgb` and `hsl` colors are parsed through the `entities.call` parser.
-                color: function() {
-                    var rgb;
-
-                    if (input.charAt(i) === '#' && (rgb = $(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})/))) {
-                        return new tree.Color(rgb[1]);
-                    } else {
-                        rgb = chunks[j].match(/^[a-z]+/);
-                        if (rgb && rgb[0] in tree.Reference.data.colors) {
-                            return new tree.Color(tree.Reference.data.colors[$(/^[a-z]+/)]);
-                        }
-                    }
-                },
-
-                // A Dimension, that is, a number and a unit. The only
-                // unit that has an effect is %
-                //
-                //     0.5em 95%
-                dimension: function() {
-                    var c = input.charCodeAt(i);
-                    if ((c > 57 || c < 45) || c === 47) return;
-                    var value = $(/^(-?\d*\.?\d+)(\%|\w+)?/);
-                    if (value) {
-                        return new tree.Dimension(value[1], value[2], memo);
-                    }
-                }
-            },
-
-            // The variable part of a variable definition. Used in the `rule` parser
-            //
-            //     @fink:
-            variable: function() {
-                var name;
-
-                if (input.charAt(i) === '@' && (name = $(/^(@[\w-]+)\s*:/))) {
-                    return name[1];
-                }
-            },
-
-            //
-            // Entities are the smallest recognized token,
-            // and can be found inside a rule's value.
-            //
-            entity: function() {
-                return $(this.entities.literal) ||
-                    $(this.entities.field) ||
-                    $(this.entities.variable) ||
-                    $(this.entities.url) ||
-                    $(this.entities.call) ||
-                    $(this.entities.keyword);
-            },
-
-            //
-            // A Rule terminator. Note that we use `peek()` to check for '}',
-            // because the `block` rule will be expecting it, but we still need to make sure
-            // it's there, if ';' was ommitted.
-            //
-            end: function() {
-                return $(';') || peek('}');
-            },
-
-            // Elements are the building blocks for Selectors. They consist of
-            // an element name, such as a tag a class, or `*`.
-            element: function() {
-                var e = $(/^(?:[.#][\w\-]+|\*|Map)/);
-                if (e) return new tree.Element(e);
-            },
-
-            // Attachments allow adding multiple lines, polygons etc. to an
-            // object. There can only be one attachment per selector.
-            attachment: function() {
-                var s = $(/^::([\w\-]+(?:\/[\w\-]+)*)/);
-                if (s) return s[1];
-            },
-
-            // Selectors are made out of one or more Elements, see above.
-            selector: function() {
-                var a, attachment;
-                var e, elements = [];
-                var f, filters = new tree.Filterset();
-                var z, zoom = tree.Zoom.all;
-                var fo, frame_offset = tree.FrameOffset.none;
-                var segments = 0, conditions = 0;
-
-                while (
-                        (e = $(this.element)) ||
-                        (z = $(this.zoom)) ||
-                        (fo = $(this.frame_offset)) ||
-                        (f = $(this.filter)) ||
-                        (a = $(this.attachment))
-                    ) {
-                    segments++;
-                    if (e) {
-                        elements.push(e);
-                    } else if (z) {
-                        zoom &= z;
-                        conditions++;
-                    } else if (fo) {
-                        frame_offset = fo;
-                        conditions++;
-                    } else if (f) {
-                        filters.add(f);
-                        conditions++;
-                    } else if (attachment) {
-                        throw makeError({
-                            message:'Encountered second attachment name.',
-                            index:i - 1
-                        });
-                    } else {
-                        attachment = a;
-                    }
-
-                    var c = input.charAt(i);
-                    if (c === '{' || c === '}' || c === ';' || c === ',') { break; }
-                }
-
-                if (segments) {
-                    return new tree.Selector(filters, zoom, frame_offset, elements, attachment, conditions, memo);
-                }
-            },
-
-            filter: function() {
-                save();
-                var key, op, val;
-                if (! $('[')) return;
-                if (key = $(/^[a-zA-Z0-9\-_]+/) || $(this.entities.quoted) || $(this.entities.variable)) {
-                    if ((op = $(this.entities.comparison)) &&
-                        (val = $(this.entities.quoted) || $(this.entities.variable) || $(/^[\w\-\.]+/))) {
-                        if (! $(']')) return;
-                        return new tree.Filter(key, op, val, memo, env.filename);
-                    }
-                }
-            },
-
-            frame_offset: function() {
-                save();
-                var op, val;
-                if ($(/^\[\s*frame-offset/g) &&
-                    (op = $(this.entities.comparison)) &&
-                    (val = $(/^\d+/)) &&
-                    $(']'))  {
-                        return tree.FrameOffset(op, val, memo);
-                }
-            },
-
-            zoom: function() {
-                save();
-                var op, val;
-                if ($(/^\[\s*zoom/g) &&
-                    (op = $(this.entities.comparison)) &&
-                    (val = $(/^\d+/)) &&
-                    $(']')) {
-                        return tree.Zoom(op, val, memo);
-                }
-            },
-
-            //
-            // The `block` rule is used by `ruleset`
-            // It's a wrapper around the `primary` rule, with added `{}`.
-            //
-            block: function() {
-                var content;
-
-                if ($('{') && (content = $(this.primary)) && $('}')) {
-                    return content;
-                }
-            },
-
-            //
-            // div, .class, body > p {...}
-            //
-            ruleset: function() {
-                var selectors = [], s, f, l, rules, filters = [];
-                save();
-
-                while (s = $(this.selector)) {
-                    selectors.push(s);
-                    if (! $(',')) { break }
-                }
-                if (s) $(this.comment);
-
-                if (selectors.length > 0 && (rules = $(this.block))) {
-                    if (selectors.length === 1 &&
-                        selectors[0].elements.length &&
-                        selectors[0].elements[0].value === 'Map') {
-                        var rs = new tree.Ruleset(selectors, rules);
-                        rs.isMap = true;
-                        return rs;
-                    }
-                    return new tree.Ruleset(selectors, rules);
-                } else {
-                    // Backtrack
-                    restore();
-                }
-            },
-            rule: function() {
-                var name, value, c = input.charAt(i);
-                save();
-
-                if (c === '.' || c === '#' || c === '&') { return }
-
-                if (name = $(this.variable) || $(this.property)) {
-                    value = $(this.value);
-
-                    if (value && $(this.end)) {
-                        return new tree.Rule(name, value, memo, env.filename);
-                    } else {
-                        furthest = i;
-                        restore();
-                    }
-                }
-            },
-
-            font: function() {
-                var value = [], expression = [], weight, font, e;
-
-                while (e = $(this.entity)) {
-                    expression.push(e);
-                }
-
-                value.push(new tree.Expression(expression));
-
-                if ($(',')) {
-                    while (e = $(this.expression)) {
-                        value.push(e);
-                        if (! $(',')) { break; }
-                    }
-                }
-                return new tree.Value(value);
-            },
-
-            // A Value is a comma-delimited list of Expressions
-            // In a Rule, a Value represents everything after the `:`,
-            // and before the `;`.
-            value: function() {
-                var e, expressions = [];
-
-                while (e = $(this.expression)) {
-                    expressions.push(e);
-                    if (! $(',')) { break; }
-                }
-
-                if (expressions.length > 0) {
-                    return new tree.Value(expressions);
-                }
-            },
-            // A sub-expression, contained by parenthensis
-            sub: function() {
-                var e;
-
-                if ($('(') && (e = $(this.expression)) && $(')')) {
-                    return e;
-                }
-            },
-            // This is a misnomer because it actually handles multiplication
-            // and division.
-            multiplication: function() {
-                var m, a, op, operation;
-                if (m = $(this.operand)) {
-                    while ((op = ($('/') || $('*') || $('%'))) && (a = $(this.operand))) {
-                        operation = new tree.Operation(op, [operation || m, a], memo);
-                    }
-                    return operation || m;
-                }
-            },
-            addition: function() {
-                var m, a, op, operation;
-                if (m = $(this.multiplication)) {
-                    while ((op = $(/^[-+]\s+/) || (input.charAt(i - 1) != ' ' && ($('+') || $('-')))) &&
-                           (a = $(this.multiplication))) {
-                        operation = new tree.Operation(op, [operation || m, a], memo);
-                    }
-                    return operation || m;
-                }
-            },
-
-            // An operand is anything that can be part of an operation,
-            // such as a Color, or a Variable
-            operand: function() {
-                return $(this.sub) || $(this.entity);
-            },
-
-            // Expressions either represent mathematical operations,
-            // or white-space delimited Entities.
-            //
-            //     1px solid black
-            //     @var * 2
-            expression: function() {
-                var e, delim, entities = [], d;
-
-                while (e = $(this.addition) || $(this.entity)) {
-                    entities.push(e);
-                }
-                if (entities.length > 0) {
-                    return new tree.Expression(entities);
-                }
-            },
-            property: function() {
-                var name = $(/^(([a-z][-a-z_0-9]*\/)?\*?-?[-a-z_0-9]+)\s*:/);
-                if (name) return name[1];
-            }
-        }
-    };
 };
 
+},{}],7:[function(require,module,exports){
 /**
  * TODO: document this. What does this do?
  */
@@ -2794,44 +3710,29 @@ if(typeof(module) !== "undefined") {
       return null;
   };
 }
+
+},{}],8:[function(require,module,exports){
+(function (global){
 (function(tree) {
-
-tree.Anonymous = function Anonymous(string) {
-    this.value = string.value || string;
-};
-tree.Anonymous.prototype = {
-    toString: function() {
-        return this.value;
-    },
-    eval: function() { return this; }
-};
-
-})(require('../tree'));
-(function(tree) {
-
+var _ = global._ || require('underscore');
 tree.Call = function Call(name, args, index) {
-    this.is = 'call';
-
     this.name = name;
     this.args = args;
     this.index = index;
 };
 
 tree.Call.prototype = {
-    //
-    // When evaluating a function call,
+    is: 'call',
+    // When evuating a function call,
     // we either find the function in `tree.functions` [1],
     // in which case we call it, passing the  evaluated arguments,
     // or we simply print it out as it appeared originally [2].
-    //
     // The *functions.js* file contains the built-in functions.
-    //
     // The reason why we evaluate the arguments, is in the case where
     // we try to pass a variable to a function, like: `saturate(@color)`.
     // The function should receive the value, not the variable.
-    //
-    eval: function(env) {
-        var args = this.args.map(function(a) { return a.eval(env); });
+    'ev': function(env) {
+        var args = this.args.map(function(a) { return a.ev(env); });
 
         for (var i = 0; i < args.length; i++) {
             if (args[i].is === 'undefined') {
@@ -2843,8 +3744,18 @@ tree.Call.prototype = {
         }
 
         if (this.name in tree.functions) {
-            if (tree.functions[this.name].length === args.length) {
-                return tree.functions[this.name].apply(tree.functions, args);
+            if (tree.functions[this.name].length <= args.length) {
+                var val = tree.functions[this.name].apply(tree.functions, args);
+                if (val === null) {
+                    env.error({
+                        message: 'incorrect arguments given to ' + this.name + '()',
+                        index: this.index,
+                        type: 'runtime',
+                        filename: this.filename
+                    });
+                    return { is: 'undefined', value: 'undefined' };
+                }
+                return val;
             } else {
                 env.error({
                     message: 'incorrect number of arguments for ' + this.name +
@@ -2859,10 +3770,19 @@ tree.Call.prototype = {
                 };
             }
         } else {
-            var fn = tree.Reference.mapnikFunction(this.name);
-            if (!fn) {
+            var fn = tree.Reference.mapnikFunctions[this.name];
+            if (fn === undefined) {
+                var functions = _.pairs(tree.Reference.mapnikFunctions);
+                // cheap closest, needs improvement.
+                var name = this.name;
+                var mean = functions.map(function(f) {
+                    return [f[0], tree.Reference.editDistance(name, f[0]), f[1]];
+                }).sort(function(a, b) {
+                    return a[1] - b[1];
+                });
                 env.error({
-                    message: 'unknown function ' + this.name,
+                    message: 'unknown function ' + this.name + '(), did you mean ' +
+                        mean[0][0] + '(' + mean[0][2] + ')',
                     index: this.index,
                     type: 'runtime',
                     filename: this.filename
@@ -2872,10 +3792,13 @@ tree.Call.prototype = {
                     value: 'undefined'
                 };
             }
-            if (fn[1] !== args.length) {
+            if (fn !== args.length &&
+                !(Array.isArray(fn) && _.include(fn, args.length)) &&
+                // support variable-arg functions like `colorize-alpha`
+                fn !== -1) {
                 env.error({
-                    message: 'function ' + this.name + ' takes ' +
-                        fn[1] + ' arguments and was given ' + args.length,
+                    message: 'function ' + this.name + '() takes ' +
+                        fn + ' arguments and was given ' + args.length,
                     index: this.index,
                     type: 'runtime',
                     filename: this.filename
@@ -2893,36 +3816,29 @@ tree.Call.prototype = {
     },
 
     toString: function(env, format) {
-        if (format === 'image-filter') {
-            if (this.args.length) {
-                return this.name + ':' + this.args.join(',');
-            } else {
-                return this.name;
-            }
+        if (this.args.length) {
+            return this.name + '(' + this.args.join(',') + ')';
         } else {
-            if (this.args.length) {
-                return this.name + '(' + this.args.join(',') + ')';
-            } else {
-                return this.name;
-            }
+            return this.name;
         }
     }
 };
 
 })(require('../tree'));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../tree":7,"underscore":undefined}],9:[function(require,module,exports){
 (function(tree) {
-//
 // RGB Colors - #ff0014, #eee
-//
+// can be initialized with a 3 or 6 char string or a 3 or 4 element
+// numerical array
 tree.Color = function Color(rgb, a) {
-    //
     // The end goal here, is to parse the arguments
     // into an integer triplet, such as `128, 255, 0`
     //
     // This facilitates operations and conversions.
-    //
     if (Array.isArray(rgb)) {
-        this.rgb = rgb;
+        this.rgb = rgb.slice(0, 3);
     } else if (rgb.length == 6) {
         this.rgb = rgb.match(/.{2}/g).map(function(c) {
             return parseInt(c, 16);
@@ -2932,12 +3848,19 @@ tree.Color = function Color(rgb, a) {
             return parseInt(c + c, 16);
         });
     }
-    this.is = 'color';
-    this.alpha = typeof(a) === 'number' ? a : 1;
+
+    if (typeof(a) === 'number') {
+        this.alpha = a;
+    } else if (rgb.length === 4) {
+        this.alpha = rgb[3];
+    } else {
+        this.alpha = 1;
+    }
 };
 
 tree.Color.prototype = {
-    eval: function() { return this; },
+    is: 'color',
+    'ev': function() { return this; },
 
     // If we have some transparency, the only way to represent it
     // is via `rgba`. Otherwise, we use the hex representation,
@@ -2961,7 +3884,7 @@ tree.Color.prototype = {
     // channels will spill onto each other. Once we have
     // our result, in the form of an integer triplet,
     // we create a new Color node to hold the result.
-    operate: function(op, other) {
+    operate: function(env, op, other) {
         var result = [];
 
         if (! (other instanceof tree.Color)) {
@@ -2999,8 +3922,9 @@ tree.Color.prototype = {
     }
 };
 
-
 })(require('../tree'));
+
+},{"../tree":7}],10:[function(require,module,exports){
 (function(tree) {
 
 tree.Comment = function Comment(value, silent) {
@@ -3012,22 +3936,32 @@ tree.Comment.prototype = {
     toString: function(env) {
         return '<!--' + this.value + '-->';
     },
-    eval: function() { return this; }
+    'ev': function() { return this; }
 };
 
 })(require('../tree'));
-(function(tree) {
-var assert = require('assert');
 
+},{"../tree":7}],11:[function(require,module,exports){
+(function (global){
+(function(tree) {
+var assert = require('assert'),
+    _ = global._ || require('underscore');
+
+// A definition is the combination of a selector and rules, like
+// #foo {
+//     polygon-opacity:1.0;
+// }
+//
+// The selector can have filters
 tree.Definition = function Definition(selector, rules) {
     this.elements = selector.elements;
     assert.ok(selector.filters instanceof tree.Filterset);
     this.rules = rules;
-    this.ruleIndex = [];
+    this.ruleIndex = {};
     for (var i = 0; i < this.rules.length; i++) {
         if ('zoom' in this.rules[i]) this.rules[i] = this.rules[i].clone();
         this.rules[i].zoom = selector.zoom;
-        this.ruleIndex.push(this.rules[i].updateID());
+        this.ruleIndex[this.rules[i].updateID()] = true;
     }
     this.filters = selector.filters;
     this.zoom = selector.zoom;
@@ -3048,7 +3982,7 @@ tree.Definition.prototype.clone = function(filters) {
     if (filters) assert.ok(filters instanceof tree.Filterset);
     var clone = Object.create(tree.Definition.prototype);
     clone.rules = this.rules.slice();
-    clone.ruleIndex = this.ruleIndex.slice();
+    clone.ruleIndex = _.clone(this.ruleIndex);
     clone.filters = filters ? filters : this.filters.clone();
     clone.attachment = this.attachment;
     return clone;
@@ -3059,9 +3993,9 @@ tree.Definition.prototype.addRules = function(rules) {
 
     // Add only unique rules.
     for (var i = 0; i < rules.length; i++) {
-        if (this.ruleIndex.indexOf(rules[i].id) < 0) {
+        if (!this.ruleIndex[rules[i].id]) {
             this.rules.push(rules[i]);
-            this.ruleIndex.push(rules[i].id);
+            this.ruleIndex[rules[i].id] = true;
             added++;
         }
     }
@@ -3069,24 +4003,33 @@ tree.Definition.prototype.addRules = function(rules) {
     return added;
 };
 
-/**
- * Determine whether this selector matches a given id
- * and array of classes, by determining whether
- * all elements it contains match.
- */
+// Determine whether this selector matches a given id
+// and array of classes, by determining whether
+// all elements it contains match.
 tree.Definition.prototype.appliesTo = function(id, classes) {
-    for (var i = 0; i < this.elements.length; i++) {
-        if (!this.elements[i].matches(id, classes)) {
-            return false;
-        }
+    for (var i = 0, l = this.elements.length; i < l; i++) {
+        var elem = this.elements[i];
+        if (!(elem.wildcard ||
+            (elem.type === 'class' && classes[elem.clean]) ||
+            (elem.type === 'id' && id === elem.clean))) return false;
     }
     return true;
 };
 
+function symbolizerName(symbolizer) {
+    function capitalize(str) { return str[1].toUpperCase(); }
+    return symbolizer.charAt(0).toUpperCase() +
+           symbolizer.slice(1).replace(/\-./, capitalize) + 'Symbolizer';
+}
+
+// Get a simple list of the symbolizers, in order
+function symbolizerList(sym_order) {
+    return sym_order.sort(function(a, b) { return a[1] - b[1]; })
+        .map(function(v) { return v[0]; });
+}
+
 tree.Definition.prototype.symbolizersToXML = function(env, symbolizers, zoom) {
-    var xml = '  <Rule>\n';
-    xml += tree.Zoom.toXML(zoom).join('');
-    xml += this.filters.toXML(env);
+    var xml = zoom.toXML(env).join('') + this.filters.toXML(env);
 
     // Sort symbolizers by the index of their first property definition
     var sym_order = [], indexes = [];
@@ -3099,20 +4042,17 @@ tree.Definition.prototype.symbolizersToXML = function(env, symbolizers, zoom) {
         sym_order.push([key, min_idx]);
     }
 
-    // Get a simple list of the symbolizers, in order
-    sym_order = sym_order.sort(function(a, b) {
-        return a[1] - b[1];
-    }).map(function(v) {
-        return v[0];
-    });
+    sym_order = symbolizerList(sym_order);
+    var sym_count = 0;
 
     for (var i = 0; i < sym_order.length; i++) {
         var attributes = symbolizers[sym_order[i]];
         var symbolizer = sym_order[i].split('/').pop();
-        
+
         // Skip the magical * symbolizer which is used for universal properties
         // which are bubbled up to Style elements intead of Symbolizer elements.
         if (symbolizer === '*') continue;
+        sym_count++;
 
         var fail = tree.Reference.requiredProperties(symbolizer, attributes);
         if (fail) {
@@ -3124,37 +4064,43 @@ tree.Definition.prototype.symbolizersToXML = function(env, symbolizers, zoom) {
             });
         }
 
-        var name = symbolizer.charAt(0).toUpperCase() +
-               symbolizer.slice(1).replace(/\-./, function(str) {
-                   return str[1].toUpperCase();
-               }) + 'Symbolizer';
+        var name = symbolizerName(symbolizer);
 
         var selfclosing = true, tagcontent;
         xml += '    <' + name + ' ';
-        for (var key in attributes) {
+        for (var j in attributes) {
             if (symbolizer === 'map') env.error({
                 message: 'Map properties are not permitted in other rules',
-                index: attributes[key].index,
-                filename: attributes[key].filename
+                index: attributes[j].index,
+                filename: attributes[j].filename
             });
-            var x = tree.Reference.selector(attributes[key].name);
+            var x = tree.Reference.selector(attributes[j].name);
             if (x && x.serialization && x.serialization === 'content') {
                 selfclosing = false;
-                tagcontent = attributes[key].eval(env).toXML(env, true);
+                tagcontent = attributes[j].ev(env).toXML(env, true);
+            } else if (x && x.serialization && x.serialization === 'tag') {
+                selfclosing = false;
+                tagcontent = attributes[j].ev(env).toXML(env, true);
             } else {
-                xml += attributes[key].eval(env).toXML(env) + ' ';
+                xml += attributes[j].ev(env).toXML(env) + ' ';
             }
         }
         if (selfclosing) {
             xml += '/>\n';
-        } else {
-            xml += '><![CDATA[' + tagcontent + ']]></' + name + '>\n';
+        } else if (typeof tagcontent !== "undefined") {
+            if (tagcontent.indexOf('<') != -1) {
+                xml += '>' + tagcontent + '</' + name + '>\n';
+            } else {
+                xml += '><![CDATA[' + tagcontent + ']]></' + name + '>\n';
+            }
         }
     }
-    xml += '  </Rule>\n';
-    return xml;
+    if (!sym_count || !xml) return '';
+    return '  <Rule>\n' + xml + '  </Rule>\n';
 };
 
+// Take a zoom range of zooms and 'i', the index of a rule in this.rules,
+// and finds all applicable symbolizers
 tree.Definition.prototype.collectSymbolizers = function(zooms, i) {
     var symbolizers = {}, child;
 
@@ -3178,18 +4124,18 @@ tree.Definition.prototype.collectSymbolizers = function(zooms, i) {
     }
 };
 
+// The tree.Zoom.toString function ignores the holes in zoom ranges and outputs
+// scaledenominators that cover the whole range from the first to last bit set.
+// This algorithm can produces zoom ranges that may have holes. However,
+// when using the filter-mode="first", more specific zoom filters will always
+// end up before broader ranges. The filter-mode will pick those first before
+// resorting to the zoom range with the hole and stop processing further rules.
 tree.Definition.prototype.toXML = function(env, existing) {
-    // The tree.Zoom.toString function ignores the holes in zoom ranges and outputs
-    // scaledenominators that cover the whole range from the first to last bit set.
-    // This algorithm can produces zoom ranges that may have holes. However,
-    // when using the filter-mode="first", more specific zoom filters will always
-    // end up before broader ranges. The filter-mode will pick those first before
-    // resorting to the zoom range with the hole and stop processing further rules.
     var filter = this.filters.toString();
     if (!(filter in existing)) existing[filter] = tree.Zoom.all;
 
-    var available = tree.Zoom.all, xml = '', zoom, symbolizers;
-    var zooms = { available: tree.Zoom.all };
+    var available = tree.Zoom.all, xml = '', zoom, symbolizers,
+        zooms = { available: tree.Zoom.all };
     for (var i = 0; i < this.rules.length && available; i++) {
         zooms.rule = this.rules[i].zoom;
         if (!(existing[filter] & zooms.rule)) continue;
@@ -3197,7 +4143,8 @@ tree.Definition.prototype.toXML = function(env, existing) {
         while (zooms.current = zooms.rule & available) {
             if (symbolizers = this.collectSymbolizers(zooms, i)) {
                 if (!(existing[filter] & zooms.current)) continue;
-                xml += this.symbolizersToXML(env, symbolizers, existing[filter] & zooms.current);
+                xml += this.symbolizersToXML(env, symbolizers,
+                    (new tree.Zoom()).setZoom(existing[filter] & zooms.current));
                 existing[filter] &= ~zooms.current;
             }
         }
@@ -3206,26 +4153,104 @@ tree.Definition.prototype.toXML = function(env, existing) {
     return xml;
 };
 
-})(require('../tree'));
-(function(tree) {
+tree.Definition.prototype.toJS = function(env) {
+  var shaderAttrs = {};
 
+  // merge conditions from filters with zoom condition of the
+  // definition
+  var zoom = "(" + this.zoom + " & (1 << ctx.zoom))";
+  var frame_offset = this.frame_offset;
+  var _if = this.filters.toJS(env);
+  var filters = [zoom];
+  if(_if) filters.push(_if);
+  if(frame_offset) filters.push('ctx["frame-offset"] === ' + frame_offset);
+  _if = filters.join(" && ");
+  _.each(this.rules, function(rule) {
+      if(rule instanceof tree.Rule) {
+        shaderAttrs[rule.name] = shaderAttrs[rule.name] || [];
+
+        var r = {
+          index: rule.index,
+          symbolizer: rule.symbolizer
+        };
+
+        if (_if) {
+          r.js = "if(" + _if + "){" + rule.value.toJS(env) + "}"
+        } else {
+          r.js = rule.value.toJS(env);
+        }
+
+        r.constant = rule.value.ev(env).is !== 'field';
+        r.filtered = !!_if;
+
+        shaderAttrs[rule.name].push(r);
+      } else {
+        throw new Error("Ruleset not supported");
+        //if (rule instanceof tree.Ruleset) {
+          //var sh = rule.toJS(env);
+          //for(var v in sh) {
+            //shaderAttrs[v] = shaderAttrs[v] || [];
+            //for(var attr in sh[v]) {
+              //shaderAttrs[v].push(sh[v][attr]);
+            //}
+          //}
+        //}
+      }
+  });
+  return shaderAttrs;
+};
+
+
+})(require('../tree'));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../tree":7,"assert":37,"underscore":undefined}],12:[function(require,module,exports){
+(function (global){
+(function(tree) {
+var _ = global._ || require('underscore');
 //
 // A number with a unit
 //
 tree.Dimension = function Dimension(value, unit, index) {
     this.value = parseFloat(value);
     this.unit = unit || null;
-    this.is = 'float';
     this.index = index;
 };
 
 tree.Dimension.prototype = {
-    eval: function (env) {
-        if (this.unit && ['px', '%'].indexOf(this.unit) === -1) {
-             env.error({
+    is: 'float',
+    physical_units: ['m', 'cm', 'in', 'mm', 'pt', 'pc'],
+    screen_units: ['px', '%'],
+    all_units: ['m', 'cm', 'in', 'mm', 'pt', 'pc', 'px', '%'],
+    densities: {
+        m: 0.0254,
+        mm: 25.4,
+        cm: 2.54,
+        pt: 72,
+        pc: 6
+    },
+    ev: function (env) {
+        if (this.unit && !_.contains(this.all_units, this.unit)) {
+            env.error({
                 message: "Invalid unit: '" + this.unit + "'",
                 index: this.index
             });
+            return { is: 'undefined', value: 'undefined' };
+        }
+
+        // normalize units which are not px or %
+        if (this.unit && _.contains(this.physical_units, this.unit)) {
+            if (!env.ppi) {
+                env.error({
+                    message: "ppi is not set, so metric units can't be used",
+                    index: this.index
+                });
+                return { is: 'undefined', value: 'undefined' };
+            }
+            // convert all units to inch
+            // convert inch to px using ppi
+            this.value = (this.value / this.densities[this.unit]) * env.ppi;
+            this.unit = 'px';
         }
 
         return this;
@@ -3237,110 +4262,102 @@ tree.Dimension.prototype = {
     toColor: function() {
         return new tree.Color([this.value, this.value, this.value]);
     },
+    round: function() {
+        this.value = Math.round(this.value);
+        return this;
+    },
     toString: function() {
         return this.value.toString();
     },
-
-    // In an operation between two Dimensions,
-    // we default to the first Dimension's unit,
-    // so `1px + 2em` will yield `3px`.
-    // In the future, we could implement some unit
-    // conversions such that `100cm + 10mm` would yield
-    // `101cm`.
-    operate: function(op, other) {
-        return new tree.Dimension(tree.operate(op, this.value, other.value),
-                  this.unit || other.unit);
-    }
-};
-
-})(require('../tree'));
-(function(tree) {
-
-tree.Directive = function Directive(name, value) {
-    this.name = name;
-    if (Array.isArray(value)) {
-        this.ruleset = new tree.Ruleset([], value);
-    } else {
-        this.value = value;
-    }
-};
-tree.Directive.prototype = {
-    toString: function(ctx, env) {
-        if (this.ruleset) {
-            this.ruleset.root = true;
-            return this.name + ' {\n  ' +
-                   this.ruleset.toString(ctx, env).trim().replace(/\n/g, '\n  ') +
-                               '\n}\n';
-        } else {
-            return this.name + ' ' + this.value.toString() + ';\n';
+    operate: function(env, op, other) {
+        if (this.unit === '%' && other.unit !== '%') {
+            env.error({
+                message: 'If two operands differ, the first must not be %',
+                index: this.index
+            });
+            return {
+                is: 'undefined',
+                value: 'undefined'
+            };
         }
-    },
-    eval: function(env) {
-        env.frames.unshift(this);
-        this.ruleset = this.ruleset && this.ruleset.eval(env);
-        env.frames.shift();
-        return this;
-    },
-    variable: function(name) {
-        return tree.Ruleset.prototype.variable.call(this.ruleset, name);
-    },
-    find: function() {
-        return tree.Ruleset.prototype.find.apply(this.ruleset, arguments);
-    },
-    rulesets: function() {
-        return tree.Ruleset.prototype.rulesets.apply(this.ruleset);
+
+        if (this.unit !== '%' && other.unit === '%') {
+            if (op === '*' || op === '/' || op === '%') {
+                env.error({
+                    message: 'Percent values can only be added or subtracted from other values',
+                    index: this.index
+                });
+                return {
+                    is: 'undefined',
+                    value: 'undefined'
+                };
+            }
+
+            return new tree.Dimension(tree.operate(op,
+                    this.value, this.value * other.value * 0.01),
+                this.unit);
+        }
+
+        //here the operands are either the same (% or undefined or px), or one is undefined and the other is px
+        return new tree.Dimension(tree.operate(op, this.value, other.value),
+            this.unit || other.unit);
     }
 };
 
 })(require('../tree'));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../tree":7,"underscore":undefined}],13:[function(require,module,exports){
 (function(tree) {
 
 // An element is an id or class selector
 tree.Element = function Element(value) {
     this.value = value.trim();
+    if (this.value[0] === '#') {
+        this.type = 'id';
+        this.clean = this.value.replace(/^#/, '');
+    }
+    if (this.value[0] === '.') {
+        this.type = 'class';
+        this.clean = this.value.replace(/^\./, '');
+    }
+    if (this.value.indexOf('*') !== -1) {
+        this.type = 'wildcard';
+    }
 };
 
 // Determine the 'specificity matrix' of this
 // specific selector
 tree.Element.prototype.specificity = function() {
     return [
-        (this.value[0] == '#') ? 1 : 0, // a
-        (this.value[0] == '.') ? 1 : 0  // b
+        (this.type === 'id') ? 1 : 0, // a
+        (this.type === 'class') ? 1 : 0  // b
     ];
 };
 
-tree.Element.prototype.toString = function() {
-    return this.value;
-};
-
-// Determine whether this element matches an id or classes.
-// An element is a single id or class, or check whether the given
-// array of classes contains this, or the id is equal to this.
-//
-// Takes a plain string for id and plain strings in the array of
-// classes.
-tree.Element.prototype.matches = function(id, classes) {
-    return (classes.indexOf(this.value.replace(/^\./, '')) !== -1) ||
-        (this.value.replace(/^#/, '') === id) ||
-        (this.value === '*');
-};
+tree.Element.prototype.toString = function() { return this.value; };
 
 })(require('../tree'));
+
+},{"../tree":7}],14:[function(require,module,exports){
 (function(tree) {
 
 tree.Expression = function Expression(value) {
     this.value = value;
 };
+
 tree.Expression.prototype = {
-    eval: function(env) {
+    is: 'expression',
+    ev: function(env) {
         if (this.value.length > 1) {
             return new tree.Expression(this.value.map(function(e) {
-                return e.eval(env);
+                return e.ev(env);
             }));
         } else {
-            return this.value[0].eval(env);
+            return this.value[0].ev(env);
         }
     },
+
     toString: function(env) {
         return this.value.map(function(e) {
             return e.toString(env);
@@ -3349,51 +4366,38 @@ tree.Expression.prototype = {
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],15:[function(require,module,exports){
 (function(tree) {
 
 tree.Field = function Field(content) {
     this.value = content || '';
-    this.is = 'field';
 };
 
 tree.Field.prototype = {
+    is: 'field',
     toString: function() {
         return '[' + this.value + ']';
     },
-    'eval': function() {
+    'ev': function() {
         return this;
     }
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],16:[function(require,module,exports){
 (function(tree) {
 
 tree.Filter = function Filter(key, op, val, index, filename) {
-    if (key.is) {
-        this.key = key.value;
-        this._key = key;
-    } else {
-        this.key = key;
-    }
-
+    this.key = key;
     this.op = op;
+    this.val = val;
     this.index = index;
     this.filename = filename;
 
-    if (val.is) {
-        this.val = val.value;
-        this._val = val;
-    } else {
-        this.val = val;
-    }
-
-    if (ops[this.op][1] == 'numeric') {
-        this.val = 1 * this.val;
-    }
-
     this.id = this.key + this.op + this.val;
 };
-
 
 // xmlsafe, numeric, suffix
 var ops = {
@@ -3406,15 +4410,35 @@ var ops = {
     '=~': ['.match(', 'string', ')']
 };
 
+tree.Filter.prototype.ev = function(env) {
+    this.key = this.key.ev(env);
+    this.val = this.val.ev(env);
+    return this;
+};
+
 tree.Filter.prototype.toXML = function(env) {
-    if (this.val.eval) this._val = this.val.eval(env);
-    if (this.key.eval) this._key = this.key.eval(env);
-    if (this._key) var key = this._key.toString(false);
-    if (this._val) var val = this._val.toString(this._val.is == 'string');
+    if (tree.Reference.data.filter) {
+        if (this.key.is === 'keyword' && -1 === tree.Reference.data.filter.value.indexOf(this.key.toString())) {
+            env.error({
+                message: this.key.toString() + ' is not a valid keyword in a filter expression',
+                index: this.index,
+                filename: this.filename
+            });
+        }
+        if (this.val.is === 'keyword' && -1 === tree.Reference.data.filter.value.indexOf(this.val.toString())) {
+            env.error({
+                message: this.val.toString() + ' is not a valid keyword in a filter expression',
+                index: this.index,
+                filename: this.filename
+            });
+        }
+    }
+    var key = this.key.toString(false);
+    var val = this.val.toString(this.val.is == 'string');
 
     if (
-        (ops[this.op][1] == 'numeric' && isNaN(this.val)) ||
-        (ops[this.op][1] == 'string' && (val || this.val)[0] != "'")
+        (ops[this.op][1] == 'numeric' && isNaN(val) && this.val.is !== 'field') ||
+        (ops[this.op][1] == 'string' && (val)[0] != "'")
     ) {
         env.error({
             message: 'Cannot use operator "' + this.op + '" with value ' + this.val,
@@ -3423,7 +4447,7 @@ tree.Filter.prototype.toXML = function(env) {
         });
     }
 
-    return '[' + (key || this.key) + ']' + ops[this.op][0] + '' + (val || this.val) + (ops[this.op][2] || '');
+    return key + ops[this.op][0] + val + (ops[this.op][2] || '');
 };
 
 tree.Filter.prototype.toString = function() {
@@ -3431,250 +4455,292 @@ tree.Filter.prototype.toString = function() {
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],17:[function(require,module,exports){
+(function (global){
 var tree = require('../tree');
+var _ = global._ || require('underscore');
 
-tree.Filterset = function Filterset() {};
+tree.Filterset = function Filterset() {
+    this.filters = {};
+};
 
-Object.defineProperty(tree.Filterset.prototype, 'toXML', {
-    enumerable: false,
-    value: function(env) {
-        var filters = [];
-        for (var id in this) {
-            filters.push('(' + this[id].toXML(env).trim() + ')');
-        }
-
-        if (filters.length) {
-            return '    <Filter>' + filters.join(' and ') + '</Filter>\n';
-        } else {
-            return '';
-        }
+tree.Filterset.prototype.toXML = function(env) {
+    var filters = [];
+    for (var id in this.filters) {
+        filters.push('(' + this.filters[id].toXML(env).trim() + ')');
     }
-});
-
-Object.defineProperty(tree.Filterset.prototype, 'toString', {
-    enumerable: false,
-    value: function() {
-        var arr = [];
-        for (var id in this) arr.push(this[id].id);
-        arr.sort();
-        return arr.join('\t');
+    if (filters.length) {
+        return '    <Filter>' + filters.join(' and ') + '</Filter>\n';
+    } else {
+        return '';
     }
-});
+};
 
-Object.defineProperty(tree.Filterset.prototype, 'clone', {
-    enumerable: false,
-    value: function() {
-        var clone = new tree.Filterset();
-        for (var id in this) {
-            clone[id] = this[id];
-        }
-        return clone;
+tree.Filterset.prototype.toString = function() {
+    var arr = [];
+    for (var id in this.filters) arr.push(this.filters[id].id);
+    return arr.sort().join('\t');
+};
+
+tree.Filterset.prototype.ev = function(env) {
+    for (var i in this.filters) {
+        this.filters[i].ev(env);
     }
-});
+    return this;
+};
+
+tree.Filterset.prototype.clone = function() {
+    var clone = new tree.Filterset();
+    for (var id in this.filters) {
+        clone.filters[id] = this.filters[id];
+    }
+    return clone;
+};
 
 // Note: other has to be a tree.Filterset.
-Object.defineProperty(tree.Filterset.prototype, 'cloneWith', {
-    enumerable: false,
-    value: function(other) {
-        var additions;
-        for (var id in other) {
-            var status = this.addable(other[id]);
-            if (status === false) {
-                return false;
+tree.Filterset.prototype.cloneWith = function(other) {
+    var additions = [];
+    for (var id in other.filters) {
+        var status = this.addable(other.filters[id]);
+        // status is true, false or null. if it's null we don't fail this
+        // clone nor do we add the filter.
+        if (status === false) {
+            return false;
+        }
+        if (status === true) {
+            // Adding the filter will override another value.
+            additions.push(other.filters[id]);
+        }
+    }
+
+    // Adding the other filters doesn't make this filterset invalid, but it
+    // doesn't add anything to it either.
+    if (!additions.length) {
+        return null;
+    }
+
+    // We can successfully add all filters. Now clone the filterset and add the
+    // new rules.
+    var clone = new tree.Filterset();
+
+    // We can add the rules that are already present without going through the
+    // add function as a Filterset is always in it's simplest canonical form.
+    for (id in this.filters) {
+        clone.filters[id] = this.filters[id];
+    }
+
+    // Only add new filters that actually change the filter.
+    while (id = additions.shift()) {
+        clone.add(id);
+    }
+
+    return clone;
+};
+
+tree.Filterset.prototype.toJS = function(env) {
+  var opMap = {
+    '=': '==='
+  };
+  return _.map(this.filters, function(filter) {
+    var op = filter.op;
+    if(op in opMap) {
+      op = opMap[op];
+    }
+    var val = filter.val;
+    if(filter._val !== undefined) {
+      val = filter._val.toString(true);
+    }
+    var attrs = "data";
+    return attrs + "." + filter.key.value  + " " + op + " " + (val.is === 'string' ? "'"+ val +"'" : val);
+  }).join(' && ');
+};
+
+// Returns true when the new filter can be added, false otherwise.
+// It can also return null, and on the other side we test for === true or
+// false
+tree.Filterset.prototype.addable = function(filter) {
+    var key = filter.key.toString(),
+        value = filter.val.toString();
+
+    if (value.match(/^[0-9]+(\.[0-9]*)?$/)) value = parseFloat(value);
+
+    switch (filter.op) {
+        case '=':
+            // if there is already foo= and we're adding foo=
+            if (this.filters[key + '='] !== undefined) {
+                if (this.filters[key + '='].val.toString() != value) {
+                    return false;
+                } else {
+                    return null;
+                }
             }
-            if (status === true) {
-                // Adding the filter will override another value.
-                if (!additions) additions = [];
-                additions.push(other[id]);
+            if (this.filters[key + '!=' + value] !== undefined) return false;
+            if (this.filters[key + '>'] !== undefined && this.filters[key + '>'].val >= value) return false;
+            if (this.filters[key + '<'] !== undefined && this.filters[key + '<'].val <= value) return false;
+            if (this.filters[key + '>='] !== undefined  && this.filters[key + '>='].val > value) return false;
+            if (this.filters[key + '<='] !== undefined  && this.filters[key + '<='].val < value) return false;
+            return true;
+
+        case '=~':
+            return true;
+
+        case '!=':
+            if (this.filters[key + '='] !== undefined) return (this.filters[key + '='].val == value) ? false : null;
+            if (this.filters[key + '!=' + value] !== undefined) return null;
+            if (this.filters[key + '>'] !== undefined && this.filters[key + '>'].val >= value) return null;
+            if (this.filters[key + '<'] !== undefined && this.filters[key + '<'].val <= value) return null;
+            if (this.filters[key + '>='] !== undefined && this.filters[key + '>='].val > value) return null;
+            if (this.filters[key + '<='] !== undefined && this.filters[key + '<='].val < value) return null;
+            return true;
+
+        case '>':
+            if (key + '=' in this.filters) {
+                if (this.filters[key + '='].val <= value) {
+                    return false;
+                } else {
+                    return null;
+                }
+            }
+            if (this.filters[key + '<'] !== undefined && this.filters[key + '<'].val <= value) return false;
+            if (this.filters[key + '<='] !== undefined  && this.filters[key + '<='].val <= value) return false;
+            if (this.filters[key + '>'] !== undefined && this.filters[key + '>'].val >= value) return null;
+            if (this.filters[key + '>='] !== undefined  && this.filters[key + '>='].val > value) return null;
+            return true;
+
+        case '>=':
+            if (this.filters[key + '=' ] !== undefined) return (this.filters[key + '='].val < value) ? false : null;
+            if (this.filters[key + '<' ] !== undefined && this.filters[key + '<'].val <= value) return false;
+            if (this.filters[key + '<='] !== undefined && this.filters[key + '<='].val < value) return false;
+            if (this.filters[key + '>' ] !== undefined && this.filters[key + '>'].val >= value) return null;
+            if (this.filters[key + '>='] !== undefined && this.filters[key + '>='].val >= value) return null;
+            return true;
+
+        case '<':
+            if (this.filters[key + '=' ] !== undefined) return (this.filters[key + '='].val >= value) ? false : null;
+            if (this.filters[key + '>' ] !== undefined && this.filters[key + '>'].val >= value) return false;
+            if (this.filters[key + '>='] !== undefined && this.filters[key + '>='].val >= value) return false;
+            if (this.filters[key + '<' ] !== undefined && this.filters[key + '<'].val <= value) return null;
+            if (this.filters[key + '<='] !== undefined && this.filters[key + '<='].val < value) return null;
+            return true;
+
+        case '<=':
+            if (this.filters[key + '=' ] !== undefined) return (this.filters[key + '='].val > value) ? false : null;
+            if (this.filters[key + '>' ] !== undefined && this.filters[key + '>'].val >= value) return false;
+            if (this.filters[key + '>='] !== undefined && this.filters[key + '>='].val > value) return false;
+            if (this.filters[key + '<' ] !== undefined && this.filters[key + '<'].val <= value) return null;
+            if (this.filters[key + '<='] !== undefined && this.filters[key + '<='].val <= value) return null;
+            return true;
+    }
+};
+
+// Does the new filter constitute a conflict?
+tree.Filterset.prototype.conflict = function(filter) {
+    var key = filter.key.toString(),
+        value = filter.val.toString();
+
+    if (!isNaN(parseFloat(value))) value = parseFloat(value);
+
+    // if (a=b) && (a=c)
+    // if (a=b) && (a!=b)
+    // or (a!=b) && (a=b)
+    if ((filter.op === '=' && this.filters[key + '='] !== undefined &&
+        value != this.filters[key + '='].val.toString()) ||
+        (filter.op === '!=' && this.filters[key + '='] !== undefined &&
+        value == this.filters[key + '='].val.toString()) ||
+        (filter.op === '=' && this.filters[key + '!='] !== undefined &&
+        value == this.filters[key + '!='].val.toString())) {
+        return filter.toString() + ' added to ' + this.toString() + ' produces an invalid filter';
+    }
+
+    return false;
+};
+
+// Only call this function for filters that have been cleared by .addable().
+tree.Filterset.prototype.add = function(filter, env) {
+    var key = filter.key.toString(),
+        id,
+        op = filter.op,
+        conflict = this.conflict(filter),
+        numval;
+
+    if (conflict) return conflict;
+
+    if (op === '=') {
+        for (var i in this.filters) {
+            if (this.filters[i].key == key) delete this.filters[i];
+        }
+        this.filters[key + '='] = filter;
+    } else if (op === '!=') {
+        this.filters[key + '!=' + filter.val] = filter;
+    } else if (op === '=~') {
+        this.filters[key + '=~' + filter.val] = filter;
+    } else if (op === '>') {
+        // If there are other filters that are also >
+        // but are less than this one, they don't matter, so
+        // remove them.
+        for (var j in this.filters) {
+            if (this.filters[j].key == key && this.filters[j].val <= filter.val) {
+                delete this.filters[j];
             }
         }
-
-        // Adding the other filters doesn't make this filterset invalid, but it
-        // doesn't add anything to it either.
-        if (!additions) return null;
-
-        // We can successfully add all filters. Now clone the filterset and add the
-        // new rules.
-        var clone = new tree.Filterset();
-
-        // We can add the rules that are already present without going through the
-        // add function as a Filterset is always in it's simplest canonical form.
-        for (var id in this) {
-            clone[id] = this[id];
+        this.filters[key + '>'] = filter;
+    } else if (op === '>=') {
+        for (var k in this.filters) {
+            numval = (+this.filters[k].val.toString());
+            if (this.filters[k].key == key && numval < filter.val) {
+                delete this.filters[k];
+            }
         }
-
-        // Only add new filters that actually change the filter.
-        while (id = additions.shift()) {
-            clone.add(id);
+        if (this.filters[key + '!=' + filter.val] !== undefined) {
+            delete this.filters[key + '!=' + filter.val];
+            filter.op = '>';
+            this.filters[key + '>'] = filter;
         }
-
-        return clone;
-    }
-});
-
-/**
- * Returns true when the new filter can be added, false otherwise.
- */
-Object.defineProperty(tree.Filterset.prototype, 'addable', {
-    enumerable: false,
-    value: function(filter) {
-        var key = filter.key, value = filter.val;
-
-        switch (filter.op) {
-            case '=':
-                if (key + '=' in this) return (this[key + '='].val != value) ? false : null;
-                if (key + '!=' + value in this) return false;
-                if (key + '>' in this  && this[key + '>'].val >= value) return false;
-                if (key + '<' in this  && this[key + '<'].val <= value) return false;
-                if (key + '>=' in this && this[key + '>='].val > value) return false;
-                if (key + '<=' in this && this[key + '<='].val < value) return false;
-                return true;
-
-            case '!=':
-                if (key + '=' in this) return (this[key + '='].val == value) ? false : null;
-                if (key + '!=' + value in this) return null;
-                if (key + '>' in this  && this[key + '>'].val >= value) return null;
-                if (key + '<' in this  && this[key + '<'].val <= value) return null;
-                if (key + '>=' in this && this[key + '>='].val > value) return null;
-                if (key + '<=' in this && this[key + '<='].val < value) return null;
-                return true;
-
-            case '>':
-                if (key + '=' in this) return (this[key + '='].val <= value) ? false : null;
-                if (key + '<' in this && this[key + '<'].val <= value) return false;
-                if (key + '<=' in this && this[key + '<='].val <= value) return false;
-                if (key + '>' in this && this[key + '>'].val >= value) return null;
-                if (key + '>=' in this && this[key + '>='].val > value) return null;
-                return true;
-
-            case '>=':
-                if (key + '=' in this) return (this[key + '='].val < value) ? false : null;
-                if (key + '<' in this && this[key + '<'].val <= value) return false;
-                if (key + '<=' in this && this[key + '<='].val < value) return false;
-                if (key + '>' in this && this[key + '>'].val >= value) return null;
-                if (key + '>=' in this && this[key + '>='].val >= value) return null;
-                return true;
-
-            case '<':
-                if (key + '=' in this) return (this[key + '='].val >= value) ? false : null;
-                if (key + '>' in this && this[key + '>'].val >= value) return false;
-                if (key + '>=' in this && this[key + '>='].val >= value) return false;
-                if (key + '<' in this && this[key + '<'].val <= value) return null;
-                if (key + '<=' in this && this[key + '<='].val < value) return null;
-                return true;
-
-            case '<=':
-                if (key + '=' in this) return (this[key + '='].val > value) ? false : null;
-                if (key + '>' in this && this[key + '>'].val >= value) return false;
-                if (key + '>=' in this && this[key + '>='].val > value) return false;
-                if (key + '<' in this && this[key + '<'].val <= value) return null;
-                if (key + '<=' in this && this[key + '<='].val <= value) return null;
-                return true;
+        else {
+            this.filters[key + '>='] = filter;
+        }
+    } else if (op === '<') {
+        for (var l in this.filters) {
+            numval = (+this.filters[l].val.toString());
+            if (this.filters[l].key == key && numval >= filter.val) {
+                delete this.filters[l];
+            }
+        }
+        this.filters[key + '<'] = filter;
+    } else if (op === '<=') {
+        for (var m in this.filters) {
+            numval = (+this.filters[m].val.toString());
+            if (this.filters[m].key == key && numval > filter.val) {
+                delete this.filters[m];
+            }
+        }
+        if (this.filters[key + '!=' + filter.val] !== undefined) {
+            delete this.filters[key + '!=' + filter.val];
+            filter.op = '<';
+            this.filters[key + '<'] = filter;
+        }
+        else {
+            this.filters[key + '<='] = filter;
         }
     }
-});
+};
 
-/**
- * Only call this function for filters that have been cleared by .addable().
- */
-Object.defineProperty(tree.Filterset.prototype, 'add', {
-    enumerable: false,
-    value: function(filter) {
-        var key = filter.key;
-
-        switch (filter.op) {
-            case '=':
-                for (var id in this) {
-                    if (this[id].key == key) {
-                        delete this[id];
-                    }
-                }
-                this[key + '='] = filter;
-                break;
-
-            case '!=':
-                this[key + '!=' + filter.val] = filter;
-                break;
-
-            case '=~':
-                this[key + '=~' + filter.val] = filter;
-                break;
-
-            case '>':
-                // If there are other filters that are also >
-                // but are less than this one, they don't matter, so
-                // remove them.
-                for (var id in this) {
-                    if (this[id].key == key && this[id].val <= filter.val) {
-                        delete this[id];
-                    }
-                }
-                this[key + '>'] = filter;
-                break;
-
-            case '>=':
-                for (var id in this) {
-                    if (this[id].key == key && this[id].val < filter.val) {
-                        delete this[id];
-                    }
-                }
-                if (key + '!=' + filter.val in this) {
-                    delete this[key + '!=' + filter.val];
-                    filter.op = '>';
-                    this[key + '>'] = filter;
-                }
-                else {
-                    this[key + '>='] = filter;
-                }
-                break;
-
-            case '<':
-                for (var id in this) {
-                    if (this[id].key == key && this[id].val >= filter.val) {
-                        delete this[id];
-                    }
-                }
-                this[key + '<'] = filter;
-                break;
-
-            case '<=':
-                for (var id in this) {
-                    if (this[id].key == key && this[id].val > filter.val) {
-                        delete this[id];
-                    }
-                }
-                if (key + '!=' + filter.val in this) {
-                    delete this[key + '!=' + filter.val];
-                    filter.op = '<';
-                    this[key + '<'] = filter;
-                }
-                else {
-                    this[key + '<='] = filter;
-                }
-                break;
-        }
-    }
-});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../tree":7,"underscore":undefined}],18:[function(require,module,exports){
 (function(tree) {
 
 tree._getFontSet = function(env, fonts) {
-    var find_existing = function(fonts) {
-        var findFonts = fonts.join('');
-        for (var i = 0; i < env.effects.length; i++) {
-            if (findFonts == env.effects[i].fonts.join('')) {
-                return env.effects[i];
-            }
-        }
-    };
-
-    var existing = false;
-    if (existing = find_existing(fonts)) {
-        return existing;
-    } else {
-        var new_fontset = new tree.FontSet(env, fonts);
-        env.effects.push(new_fontset);
-        return new_fontset;
+    var fontKey = fonts.join('');
+    if (env._fontMap && env._fontMap[fontKey]) {
+        return env._fontMap[fontKey];
     }
+
+    var new_fontset = new tree.FontSet(env, fonts);
+    env.effects.push(new_fontset);
+    if (!env._fontMap) env._fontMap = {};
+    env._fontMap[fontKey] = new_fontset;
+    return new_fontset;
 };
 
 tree.FontSet = function FontSet(env, fonts) {
@@ -3693,6 +4759,8 @@ tree.FontSet.prototype.toXML = function(env) {
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],19:[function(require,module,exports){
 var tree = require('../tree');
 
 // Storage for Frame offset value
@@ -3720,21 +4788,22 @@ tree.FrameOffset = function(op, value, index) {
 tree.FrameOffset.max = 32;
 tree.FrameOffset.none = 0;
 
+
+},{"../tree":7}],20:[function(require,module,exports){
 (function(tree) {
-//
-// RGB Colors - #ff0014, #eee
-//
+
 tree.ImageFilter = function ImageFilter(filter, args) {
-    this.is = 'imagefilter';
     this.filter = filter;
     this.args = args || null;
 };
+
 tree.ImageFilter.prototype = {
-    eval: function() { return this; },
+    is: 'imagefilter',
+    ev: function() { return this; },
 
     toString: function() {
         if (this.args) {
-            return this.filter + ':' + this.args.join(',');
+            return this.filter + '(' + this.args.join(',') + ')';
         } else {
             return this.filter;
         }
@@ -3743,6 +4812,8 @@ tree.ImageFilter.prototype = {
 
 
 })(require('../tree'));
+
+},{"../tree":7}],21:[function(require,module,exports){
 (function (tree) {
 tree.Invalid = function Invalid(chunk, index, message) {
     this.chunk = chunk;
@@ -3751,7 +4822,9 @@ tree.Invalid = function Invalid(chunk, index, message) {
     this.message = message || "Invalid code: " + this.chunk;
 };
 
-tree.Invalid.prototype.eval = function(env) {
+tree.Invalid.prototype.is = 'invalid';
+
+tree.Invalid.prototype.ev = function(env) {
     env.error({
         chunk: this.chunk,
         index: this.index,
@@ -3763,6 +4836,8 @@ tree.Invalid.prototype.eval = function(env) {
     };
 };
 })(require('../tree'));
+
+},{"../tree":7}],22:[function(require,module,exports){
 (function(tree) {
 
 tree.Keyword = function Keyword(value) {
@@ -3775,49 +4850,52 @@ tree.Keyword = function Keyword(value) {
     this.is = special[value] ? special[value] : 'keyword';
 };
 tree.Keyword.prototype = {
-    eval: function() { return this; },
+    ev: function() { return this; },
     toString: function() { return this.value; }
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],23:[function(require,module,exports){
 (function(tree) {
 
-tree.Layer = function Layer(obj) {
-    this.name = obj.name;
-    this.status = obj.status;
-    this.styles = obj.styles;
-    this.properties = obj.properties  || {};
-    this.srs = obj.srs;
-    this.datasource = obj.Datasource;
-};
-
-tree.Layer.prototype.toXML = function() {
+tree.LayerXML = function(obj, styles) {
     var dsoptions = [];
-    for (var i in this.datasource) {
+    for (var i in obj.Datasource) {
         dsoptions.push('<Parameter name="' + i + '"><![CDATA[' +
-            this.datasource[i] + ']]></Parameter>');
+            obj.Datasource[i] + ']]></Parameter>');
     }
 
     var prop_string = '';
-    for (var i in this.properties) {
-        prop_string += '  ' + i + '="' + this.properties[i] + '"\n';
+    for (var prop in obj.properties) {
+        if (prop === 'minzoom') {
+            prop_string += '  maxzoom="' + tree.Zoom.ranges[obj.properties[prop]] + '"\n';
+        } else if (prop === 'maxzoom') {
+            prop_string += '  minzoom="' + tree.Zoom.ranges[obj.properties[prop]+1] + '"\n';
+        } else {
+            prop_string += '  ' + prop + '="' + obj.properties[prop] + '"\n';
+        }
     }
 
     return '<Layer' +
-        ' name="' + this.name + '"\n' +
+        ' name="' + obj.name + '"\n' +
         prop_string +
-        ((typeof this.status === 'undefined') ? '' : '  status="' + this.status + '"\n') +
-        '  srs="' + this.srs + '">\n    ' +
-        this.styles.reverse().map(function(s) {
+        ((typeof obj.status === 'undefined') ? '' : '  status="' + obj.status + '"\n') +
+        ((typeof obj.srs === 'undefined') ? '' : '  srs="' + obj.srs + '"') + '>\n    ' +
+        styles.reverse().map(function(s) {
             return '<StyleName>' + s + '</StyleName>';
         }).join('\n    ') +
+        (dsoptions.length ?
         '\n    <Datasource>\n       ' +
         dsoptions.join('\n       ') +
-        '\n    </Datasource>\n' +
+        '\n    </Datasource>\n'
+        : '') +
         '  </Layer>\n';
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],24:[function(require,module,exports){
 // A literal is a literal string for Mapnik - the
 // result of the combination of a `tree.Field` with any
 // other type.
@@ -3832,24 +4910,29 @@ tree.Literal.prototype = {
     toString: function() {
         return this.value;
     },
-    'eval': function() {
+    'ev': function() {
         return this;
     }
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],25:[function(require,module,exports){
+// An operation is an expression with an op in between two operands,
+// like 2 + 1.
 (function(tree) {
 
 tree.Operation = function Operation(op, operands, index) {
     this.op = op.trim();
     this.operands = operands;
     this.index = index;
-    this.is = 'operation';
 };
 
-tree.Operation.prototype.eval = function(env) {
-    var a = this.operands[0].eval(env),
-        b = this.operands[1].eval(env),
+tree.Operation.prototype.is = 'operation';
+
+tree.Operation.prototype.ev = function(env) {
+    var a = this.operands[0].ev(env),
+        b = this.operands[1].ev(env),
         temp;
 
     if (a.is === 'undefined' || b.is === 'undefined') {
@@ -3901,11 +4984,24 @@ tree.Operation.prototype.eval = function(env) {
                 value: 'undefined'
             };
         } else {
-            return new tree.Literal(a.eval(env).toString(true) + this.op + b.eval(env).toString(true));
+            return new tree.Literal(a.ev(env).toString(true) + this.op + b.ev(env).toString(true));
         }
     }
 
-    return a.operate(this.op, b);
+    if (a.operate === undefined) {
+        env.error({
+           message: 'Cannot do math with type ' + a.is + '.',
+           index: this.index,
+           type: 'runtime',
+           filename: this.filename
+        });
+        return {
+            is: 'undefined',
+            value: 'undefined'
+        };
+    }
+
+    return a.operate(env, this.op, b);
 };
 
 tree.operate = function(op, a, b) {
@@ -3919,136 +5015,126 @@ tree.operate = function(op, a, b) {
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],26:[function(require,module,exports){
 (function(tree) {
 
 tree.Quoted = function Quoted(content) {
     this.value = content || '';
-    this.is = 'string';
 };
 
 tree.Quoted.prototype = {
+    is: 'string',
+
     toString: function(quotes) {
-        var xmlvalue = this.value.replace(/\'/g, '&apos;');
-        return (quotes === true) ? "'" + xmlvalue + "'" : this.value;
+        var escapedValue = this.value
+            .replace(/&/g, '&amp;')
+        var xmlvalue = escapedValue
+            .replace(/\'/g, '\\\'')
+            .replace(/\"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/\>/g, '&gt;');
+        return (quotes === true) ? "'" + xmlvalue + "'" : escapedValue;
     },
 
-    'eval': function() {
+    'ev': function() {
         return this;
     },
 
-    operate: function(op, other) {
-        return new tree.Quoted(true,
-            tree.operate(op, this.toString(), other.toString(this.contains_field)));
+    operate: function(env, op, other) {
+        return new tree.Quoted(tree.operate(op, this.toString(), other.toString(this.contains_field)));
     }
 };
 
 })(require('../tree'));
-/*
- * Carto pulls in a reference from the `mapnik-reference`
- * module. This file builds indexes from that file for its various
- * options, and provides validation methods for property: value
- * combinations.
- */
+
+},{"../tree":7}],27:[function(require,module,exports){
+(function (global){
+// Carto pulls in a reference from the `mapnik-reference`
+// module. This file builds indexes from that file for its various
+// options, and provides validation methods for property: value
+// combinations.
 (function(tree) {
 
+var _ = global._ || require('underscore'),
+    ref = {};
 
-var _ = require('underscore');
-var reference = require('mapnik-reference');
+ref.setData = function(data) {
+    ref.data = data;
+    ref.selector_cache = generateSelectorCache(data);
+    ref.mapnikFunctions = generateMapnikFunctions(data);
 
-tree.Reference = {
-    data: reference.version.latest
+    ref.mapnikFunctions.matrix = [6];
+    ref.mapnikFunctions.translate = [1, 2];
+    ref.mapnikFunctions.scale = [1, 2];
+    ref.mapnikFunctions.rotate = [1, 3];
+    ref.mapnikFunctions.skewX = [1];
+    ref.mapnikFunctions.skewY = [1];
+
+    ref.required_cache = generateRequiredProperties(data);
 };
 
-tree.Reference.set = function(ref, version) {
-    reference = ref;
-    tree.Reference.setVersion(version || 'latest');
+ref.setVersion = function(version) {
+    var mapnik_reference = require('mapnik-reference');
+    if (mapnik_reference.version.hasOwnProperty(version)) {
+        ref.setData(mapnik_reference.version[version]);
+        return true;
+    } else {
+        return false;
+    }
 };
 
-tree.Reference.setVersion = function(version) {
-    tree.Reference.data = reference.version[version];
+ref.selectorData = function(selector, i) {
+    if (ref.selector_cache[selector]) return ref.selector_cache[selector][i];
 };
 
-tree.Reference.required_prop_list_cache = {};
+ref.validSelector = function(selector) { return !!ref.selector_cache[selector]; };
+ref.selectorName = function(selector) { return ref.selectorData(selector, 2); };
+ref.selector = function(selector) { return ref.selectorData(selector, 0); };
+ref.symbolizer = function(selector) { return ref.selectorData(selector, 1); };
 
-tree.Reference.selectors = tree.Reference.selectors || (function() {
-    var list = [];
-    for (var i in tree.Reference.data.symbolizers) {
-        for (var j in tree.Reference.data.symbolizers[i]) {
-            if (tree.Reference.data.symbolizers[i][j].hasOwnProperty('css')) {
-                list.push(tree.Reference.data.symbolizers[i][j].css);
+function generateSelectorCache(data) {
+    var index = {};
+    for (var i in data.symbolizers) {
+        for (var j in data.symbolizers[i]) {
+            if (data.symbolizers[i][j].hasOwnProperty('css')) {
+                index[data.symbolizers[i][j].css] = [data.symbolizers[i][j], i, j];
             }
         }
     }
-    return list;
-})();
+    return index;
+}
 
-tree.Reference.validSelector = function(selector) {
-    return tree.Reference.selectors.indexOf(selector) !== -1;
-};
-
-tree.Reference.selectorName = function(selector) {
-    for (var i in tree.Reference.data.symbolizers) {
-        for (var j in tree.Reference.data.symbolizers[i]) {
-            if (selector == tree.Reference.data.symbolizers[i][j].css) {
-                return j;
+function generateMapnikFunctions(data) {
+    var functions = {};
+    for (var i in data.symbolizers) {
+        for (var j in data.symbolizers[i]) {
+            if (data.symbolizers[i][j].type === 'functions') {
+                for (var k = 0; k < data.symbolizers[i][j].functions.length; k++) {
+                    var fn = data.symbolizers[i][j].functions[k];
+                    functions[fn[0]] = fn[1];
+                }
             }
         }
     }
-};
+    return functions;
+}
 
-tree.Reference.selector = function(selector) {
-    for (var i in tree.Reference.data.symbolizers) {
-        for (var j in tree.Reference.data.symbolizers[i]) {
-            if (selector == tree.Reference.data.symbolizers[i][j].css) {
-                return tree.Reference.data.symbolizers[i][j];
+function generateRequiredProperties(data) {
+    var cache = {};
+    for (var symbolizer_name in data.symbolizers) {
+        cache[symbolizer_name] = [];
+        for (var j in data.symbolizers[symbolizer_name]) {
+            if (data.symbolizers[symbolizer_name][j].required) {
+                cache[symbolizer_name].push(data.symbolizers[symbolizer_name][j].css);
             }
         }
     }
-};
+    return cache;
+}
 
-tree.Reference.symbolizer = function(selector) {
-    for (var i in tree.Reference.data.symbolizers) {
-        for (var j in tree.Reference.data.symbolizers[i]) {
-            if (selector == tree.Reference.data.symbolizers[i][j].css) {
-                return i;
-            }
-        }
-    }
-};
-
-/*
- * For transform properties and image-filters,
- * mapnik has its own functions.
- */
-tree.Reference.mapnikFunction = function(name) {
-    var functions = [];
-    for (var i in tree.Reference.data.symbolizers) {
-        for (var j in tree.Reference.data.symbolizers[i]) {
-            if (tree.Reference.data.symbolizers[i][j].type === 'functions') {
-                functions = functions.concat(tree.Reference.data.symbolizers[i][j].functions);
-            }
-        }
-    }
-    return _.find(functions, function(f) {
-        return f[0] === name;
-    });
-};
-
-tree.Reference.requiredPropertyList = function(symbolizer_name) {
-    if (this.required_prop_list_cache[symbolizer_name]) {
-        return this.required_prop_list_cache[symbolizer_name];
-    }
-    var properties = [];
-    for (var j in tree.Reference.data.symbolizers[symbolizer_name]) {
-        if (tree.Reference.data.symbolizers[symbolizer_name][j].required) {
-            properties.push(tree.Reference.data.symbolizers[symbolizer_name][j].css);
-        }
-    }
-    return this.required_prop_list_cache[symbolizer_name] = properties;
-};
-
-tree.Reference.requiredProperties = function(symbolizer_name, rules) {
-    var req = tree.Reference.requiredPropertyList(symbolizer_name);
+ref.requiredProperties = function(symbolizer_name, rules) {
+    var req = ref.required_cache[symbolizer_name];
     for (var i in req) {
         if (!(req[i] in rules)) {
             return 'Property ' + req[i] + ' required for defining ' +
@@ -4057,10 +5143,8 @@ tree.Reference.requiredProperties = function(symbolizer_name, rules) {
     }
 };
 
-/**
- * TODO: finish implementation - this is dead code
- */
-tree.Reference._validateValue = {
+// TODO: finish implementation - this is dead code
+ref._validateValue = {
     'font': function(env, value) {
         if (env.validation_data && env.validation_data.fonts) {
             return env.validation_data.fonts.indexOf(value) != -1;
@@ -4070,83 +5154,128 @@ tree.Reference._validateValue = {
     }
 };
 
-tree.Reference.isFont = function(selector) {
-    return tree.Reference.selector(selector).validate == 'font';
+ref.isFont = function(selector) {
+    return ref.selector(selector).validate == 'font';
 };
 
-tree.Reference.validValue = function(env, selector, value) {
+// https://gist.github.com/982927
+ref.editDistance = function(a, b){
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    var matrix = [];
+    for (var i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+    for (var j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+    for (i = 1; i <= b.length; i++) {
+        for (j = 1; j <= a.length; j++) {
+            if (b.charAt(i-1) == a.charAt(j-1)) {
+                matrix[i][j] = matrix[i-1][j-1];
+            } else {
+                matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
+                    Math.min(matrix[i][j-1] + 1, // insertion
+                    matrix[i-1][j] + 1)); // deletion
+            }
+        }
+    }
+    return matrix[b.length][a.length];
+};
+
+function validateFunctions(value, selector) {
+    if (value.value[0].is === 'string') return true;
+    for (var i in value.value) {
+        for (var j in value.value[i].value) {
+            if (value.value[i].value[j].is !== 'call') return false;
+            var f = _.find(ref
+                .selector(selector).functions, function(x) {
+                    return x[0] == value.value[i].value[j].name;
+                });
+            if (!(f && f[1] == -1)) {
+                // This filter is unknown or given an incorrect number of arguments
+                if (!f || f[1] !== value.value[i].value[j].args.length) return false;
+            }
+        }
+    }
+    return true;
+}
+
+function validateKeyword(value, selector) {
+    if (typeof ref.selector(selector).type === 'object') {
+        return ref.selector(selector).type
+            .indexOf(value.value[0].value) !== -1;
+    } else {
+        // allow unquoted keywords as strings
+        return ref.selector(selector).type === 'string';
+    }
+}
+
+ref.validValue = function(env, selector, value) {
     var i, j;
     // TODO: handle in reusable way
-    if (!tree.Reference.selector(selector)) {
+    if (!ref.selector(selector)) {
         return false;
     } else if (value.value[0].is == 'keyword') {
-        return tree.Reference
-            .selector(selector).type
-            .indexOf(value.value[0].value) !== -1;
+        return validateKeyword(value, selector);
     } else if (value.value[0].is == 'undefined') {
         // caught earlier in the chain - ignore here so that
         // error is not overridden
         return true;
-    } else if (tree.Reference.selector(selector).type == 'numbers') {
+    } else if (ref.selector(selector).type == 'numbers') {
         for (i in value.value) {
             if (value.value[i].is !== 'float') {
                 return false;
             }
         }
         return true;
-    } else if (tree.Reference.selector(selector).type == 'functions') {
+    } else if (ref.selector(selector).type == 'tags') {
+        if (!value.value) return false;
+        if (!value.value[0].value) {
+            return value.value[0].is === 'tag';
+        }
+        for (i = 0; i < value.value[0].value.length; i++) {
+            if (value.value[0].value[i].is !== 'tag') return false;
+        }
+        return true;
+    } else if (ref.selector(selector).type == 'functions') {
         // For backwards compatibility, you can specify a string for `functions`-compatible
         // values, though they will not be validated.
-        if (value.value[0].is === 'string') {
-            return true;
-        } else {
-            for (i in value.value) {
-                for (j in value.value[i].value) {
-                    if (value.value[i].value[j].is !== 'call') {
-                        return false;
-                    }
-                    var f = _.find(tree.Reference
-                        .selector(selector).functions, function(x) {
-                            return x[0] == value.value[i].value[j].name;
-                        });
-                    // This filter is unknown
-                    if (!f) return false;
-                    // The filter has been given an incorrect number of arguments
-                    if (f[1] !== value.value[i].value[j].args.length) return false;
-                }
-            }
-            return true;
-        }
-    } else if (tree.Reference.selector(selector).type == 'expression') {
-        return true;
-    } else if (tree.Reference.selector(selector).type === 'unsigned') {
+        return validateFunctions(value, selector);
+    } else if (ref.selector(selector).type === 'unsigned') {
         if (value.value[0].is === 'float') {
             value.value[0].round();
             return true;
         } else {
             return false;
         }
+    } else if ((ref.selector(selector).expression)) {
+        return true;
     } else {
-        if (tree.Reference.selector(selector).validate) {
+        if (ref.selector(selector).validate) {
             var valid = false;
             for (i = 0; i < value.value.length; i++) {
-                if (tree.Reference.selector(selector).type == value.value[i].is &&
-                    tree.Reference
+                if (ref.selector(selector).type == value.value[i].is &&
+                    ref
                         ._validateValue
-                            [tree.Reference.selector(selector).validate]
+                            [ref.selector(selector).validate]
                             (env, value.value[i].value)) {
                     return true;
                 }
             }
             return valid;
         } else {
-            return tree.Reference.selector(selector).type == value.value[0].is;
+            return ref.selector(selector).type == value.value[0].is;
         }
     }
 };
 
+tree.Reference = ref;
+
 })(require('../tree'));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../tree":7,"mapnik-reference":43,"underscore":undefined}],28:[function(require,module,exports){
 (function(tree) {
+// a rule is a single property and value combination, or variable
+// name and value combination, like
+// polygon-opacity: 1.0; or @opacity: 1.0;
 tree.Rule = function Rule(name, value, index, filename) {
     var parts = name.split('/');
     this.name = parts.pop();
@@ -4158,6 +5287,8 @@ tree.Rule = function Rule(name, value, index, filename) {
     this.filename = filename;
     this.variable = (name.charAt(0) === '@');
 };
+
+tree.Rule.prototype.is = 'rule';
 
 tree.Rule.prototype.clone = function() {
     var clone = Object.create(tree.Rule.prototype);
@@ -4172,12 +5303,18 @@ tree.Rule.prototype.clone = function() {
 };
 
 tree.Rule.prototype.updateID = function() {
-    return this.id = this.zoom + '#' + this.name;
+    return this.id = this.zoom + '#' + this.instance + '#' + this.name;
 };
 
 tree.Rule.prototype.toString = function() {
     return '[' + tree.Zoom.toString(this.zoom) + '] ' + this.name + ': ' + this.value;
 };
+
+function getMean(name) {
+    return Object.keys(tree.Reference.selector_cache).map(function(f) {
+        return [f, tree.Reference.editDistance(name, f)];
+    }).sort(function(a, b) { return a[1] - b[1]; });
+}
 
 // second argument, if true, outputs the value of this
 // rule without the usual attribute="content" wrapping. Right
@@ -4185,8 +5322,13 @@ tree.Rule.prototype.toString = function() {
 // properties in reference.json which specify serialization=content
 tree.Rule.prototype.toXML = function(env, content, sep, format) {
     if (!tree.Reference.validSelector(this.name)) {
+        var mean = getMean(this.name);
+        var mean_message = '';
+        if (mean[0][1] < 3) {
+            mean_message = '. Did you mean ' + mean[0][0] + '?';
+        }
         return env.error({
-            message: "Unrecognized rule: " + this.name,
+            message: "Unrecognized rule: " + this.name + mean_message,
             index: this.index,
             type: 'syntax',
             filename: this.filename
@@ -4204,13 +5346,20 @@ tree.Rule.prototype.toXML = function(env, content, sep, format) {
                 filename: this.filename
             });
         } else {
+            var typename;
+            if (tree.Reference.selector(this.name).validate) {
+                typename = tree.Reference.selector(this.name).validate;
+            } else if (typeof tree.Reference.selector(this.name).type === 'object') {
+                typename = 'keyword (options: ' + tree.Reference.selector(this.name).type.join(', ') + ')';
+            } else {
+                typename = tree.Reference.selector(this.name).type;
+            }
             return env.error({
                 message: 'Invalid value for ' +
                     this.name +
-                    ', a valid ' +
-                    (tree.Reference.selector(this.name).validate ||
-                        tree.Reference.selector(this.name).type) +
+                    ', the type ' + typename +
                     ' is expected. ' + this.value +
+                    ' (of type ' + this.value.value[0].is + ') ' +
                     ' was given.',
                 index: this.index,
                 type: 'syntax',
@@ -4234,17 +5383,17 @@ tree.Rule.prototype.toXML = function(env, content, sep, format) {
     }
 };
 
-/**
- * TODO: Rule eval chain should add fontsets to env.frames
- */
-tree.Rule.prototype['eval'] = function(context) {
+// TODO: Rule ev chain should add fontsets to env.frames
+tree.Rule.prototype.ev = function(context) {
     return new tree.Rule(this.name,
-        this.value['eval'](context),
+        this.value.ev(context),
         this.index,
         this.filename);
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],29:[function(require,module,exports){
 (function(tree) {
 
 tree.Ruleset = function Ruleset(selectors, rules) {
@@ -4254,27 +5403,19 @@ tree.Ruleset = function Ruleset(selectors, rules) {
     this._lookups = {};
 };
 tree.Ruleset.prototype = {
-    eval: function(env) {
-        var ruleset = new tree.Ruleset(this.selectors, this.rules.slice(0));
+    is: 'ruleset',
+    'ev': function(env) {
+        var i,
+            ruleset = new tree.Ruleset(this.selectors, this.rules.slice(0));
         ruleset.root = this.root;
 
         // push the current ruleset to the frames stack
         env.frames.unshift(ruleset);
 
-        // Evaluate imports
-        if (ruleset.root) {
-            for (var i = 0; i < ruleset.rules.length; i++) {
-                if (ruleset.rules[i] instanceof tree.Import) {
-                    Array.prototype.splice
-                         .apply(ruleset.rules, [i, 1].concat(ruleset.rules[i].eval(env)));
-                }
-            }
-        }
-
         // Evaluate everything else
-        for (var i = 0, rule; i < ruleset.rules.length; i++) {
+        for (i = 0, rule; i < ruleset.rules.length; i++) {
             rule = ruleset.rules[i];
-            ruleset.rules[i] = rule.eval ? rule.eval(env) : rule;
+            ruleset.rules[i] = rule.ev ? rule.ev(env) : rule;
         }
 
         // Pop the stack
@@ -4299,14 +5440,6 @@ tree.Ruleset.prototype = {
     variable: function(name) {
         return this.variables()[name];
     },
-    /**
-     * Extend this rule by adding rules from another ruleset
-     *
-     * Currently this is designed to accept less specific
-     * rules and add their values only if this ruleset doesn't
-     * contain them.
-     */
-
     rulesets: function() {
         if (this._rulesets) { return this._rulesets; }
         else {
@@ -4325,7 +5458,8 @@ tree.Ruleset.prototype = {
         this.rulesets().forEach(function(rule) {
             if (rule !== self) {
                 for (var j = 0; j < rule.selectors.length; j++) {
-                    if (match = selector.match(rule.selectors[j])) {
+                    match = selector.match(rule.selectors[j]);
+                    if (match) {
                         if (selector.elements.length > 1) {
                             Array.prototype.push.apply(rules, rule.find(
                                 new tree.Selector(null, null, null, selector.elements.slice(1)), self));
@@ -4339,19 +5473,35 @@ tree.Ruleset.prototype = {
         });
         return this._lookups[key] = rules;
     },
+    // Zooms can use variables. This replaces tree.Zoom objects on selectors
+    // with simple bit-arrays that we can compare easily.
+    evZooms: function(env) {
+        for (var i = 0; i < this.selectors.length; i++) {
+            var zval = tree.Zoom.all;
+            for (var z = 0; z < this.selectors[i].zoom.length; z++) {
+                zval = zval & this.selectors[i].zoom[z].ev(env).zoom;
+            }
+            this.selectors[i].zoom = zval;
+        }
+    },
     flatten: function(result, parents, env) {
-        var selectors = [];
+        var selectors = [], i, j;
         if (this.selectors.length === 0) {
             env.frames = env.frames.concat(this.rules);
         }
-        for (var i = 0; i < this.selectors.length; i++) {
+        // evaluate zoom variables on this object.
+        this.evZooms(env);
+        for (i = 0; i < this.selectors.length; i++) {
             var child = this.selectors[i];
 
-            // This is an invalid filterset.
-            if (!child.filters) continue;
+            if (!child.filters) {
+                // TODO: is this internal inconsistency?
+                // This is an invalid filterset.
+                continue;
+            }
 
             if (parents.length) {
-                for (var j = 0; j < parents.length; j++) {
+                for (j = 0; j < parents.length; j++) {
                     var parent = parents[j];
 
                     var mergedFilters = parent.filters.cloneWith(child.filters);
@@ -4361,7 +5511,9 @@ tree.Ruleset.prototype = {
                         // the zoom levels or the attachment is different too.
                         if (parent.zoom === (parent.zoom & child.zoom) &&
                             parent.frame_offset === child.frame_offset &&
-                            parent.attachment === child.attachment) {
+                            parent.attachment === child.attachment &&
+                            parent.elements.join() === child.elements.join()) {
+                            selectors.push(parent);
                             continue;
                         } else {
                             mergedFilters = parent.filters;
@@ -4391,9 +5543,10 @@ tree.Ruleset.prototype = {
         }
 
         var rules = [];
-        for (var i = 0; i < this.rules.length; i++) {
+        for (i = 0; i < this.rules.length; i++) {
             var rule = this.rules[i];
 
+            // Recursively flatten any nested rulesets
             if (rule instanceof tree.Ruleset) {
                 rule.flatten(result, selectors, env);
             } else if (rule instanceof tree.Rule) {
@@ -4404,7 +5557,7 @@ tree.Ruleset.prototype = {
         }
 
         var index = rules.length ? rules[0].index : false;
-        for (var i = 0; i < selectors.length; i++) {
+        for (i = 0; i < selectors.length; i++) {
             // For specificity sort, use the position of the first rule to allow
             // defining attachments that are under current element as a descendant
             // selector.
@@ -4418,8 +5571,8 @@ tree.Ruleset.prototype = {
     }
 };
 })(require('../tree'));
-var assert = require('assert');
 
+},{"../tree":7}],30:[function(require,module,exports){
 (function(tree) {
 
 tree.Selector = function Selector(filters, zoom, frame_offset, elements, attachment, conditions, index) {
@@ -4432,13 +5585,11 @@ tree.Selector = function Selector(filters, zoom, frame_offset, elements, attachm
     this.index = index;
 };
 
-/**
- * Determine the specificity of this selector
- * based on the specificity of its elements - calling
- * Element.specificity() in order to do so
- *
- * [ID, Class, Filters, Position in document]
- */
+// Determine the specificity of this selector
+// based on the specificity of its elements - calling
+// Element.specificity() in order to do so
+//
+// [ID, Class, Filters, Position in document]
 tree.Selector.prototype.specificity = function() {
     return this.elements.reduce(function(memo, e) {
         var spec = e.specificity();
@@ -4449,90 +5600,114 @@ tree.Selector.prototype.specificity = function() {
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],31:[function(require,module,exports){
+(function (global){
 (function(tree) {
-var _ = require('underscore');
+var _ = global._ || require('underscore');
 
-tree.Style = function Style(name, attachment, definitions) {
-    this.attachment = attachment;
-    this.definitions = definitions;
-    this.name = name + (attachment !== '__default__' ? '-' + attachment : '');
-};
-
-tree.Style.prototype.toXML = function(env) {
+// Given a style's name, attachment, definitions, and an environment object,
+// return a stringified style for Mapnik
+tree.StyleXML = function(name, attachment, definitions, env) {
     var existing = {};
+    var image_filters = [], image_filters_inflate = [], direct_image_filters = [], comp_op = [], opacity = [];
 
-    var image_filters = _.flatten(this.definitions.map(function(definition) {
-        return definition.rules.filter(function(rule) {
-            return (rule.name === 'image-filters');
-        });
-    }));
+    for (var i = 0; i < definitions.length; i++) {
+        for (var j = 0; j < definitions[i].rules.length; j++) {
+            if (definitions[i].rules[j].name === 'image-filters') {
+                image_filters.push(definitions[i].rules[j]);
+            }
+            if (definitions[i].rules[j].name === 'image-filters-inflate') {
+                image_filters_inflate.push(definitions[i].rules[j]);
+            }
+            if (definitions[i].rules[j].name === 'direct-image-filters') {
+                direct_image_filters.push(definitions[i].rules[j]);
+            }
+            if (definitions[i].rules[j].name === 'comp-op') {
+                comp_op.push(definitions[i].rules[j]);
+            }
+            if (definitions[i].rules[j].name === 'opacity') {
+                opacity.push(definitions[i].rules[j]);
+            }
+        }
+    }
 
-    var comp_op = _.flatten(this.definitions.map(function(definition) {
-        return definition.rules.filter(function(rule) {
-            return (rule.name === 'composite-operation');
-        });
-    }));
-
-    var opacity = _.flatten(this.definitions.map(function(definition) {
-        return definition.rules.filter(function(rule) {
-            return (rule.name === 'opacity');
-        });
-    }));
-
-    var rules = this.definitions.map(function(definition) {
+    var rules = definitions.map(function(definition) {
         return definition.toXML(env, existing);
     });
 
     var attrs_xml = '';
 
     if (image_filters.length) {
-        attrs_xml += ' image-filters="' + image_filters.map(function(f) {
-            return f.eval(env).toXML(env, true, ' ', 'image-filter');
-        }).join(' ') + '" ';
+        attrs_xml += ' image-filters="' + _.chain(image_filters)
+            // prevent identical filters from being duplicated in the style
+            .uniq(function(i) { return i.id; }).map(function(f) {
+            return f.ev(env).toXML(env, true, ',', 'image-filter');
+        }).value().join(',') + '"';
     }
 
-    if (comp_op.length) {
-        attrs_xml += ' comp-op="' + comp_op[0].value.eval(env).toString() + '" ';
+    if (image_filters_inflate.length) {
+        attrs_xml += ' image-filters-inflate="' + image_filters_inflate[0].value.ev(env).toString() + '"';
     }
 
-    if (opacity.length) {
-        attrs_xml += ' opacity="' + opacity[0].value.eval(env).toString() + '" ';
+    if (direct_image_filters.length) {
+        attrs_xml += ' direct-image-filters="' + _.chain(direct_image_filters)
+            // prevent identical filters from being duplicated in the style
+            .uniq(function(i) { return i.id; }).map(function(f) {
+            return f.ev(env).toXML(env, true, ',', 'direct-image-filter');
+        }).value().join(',') + '"';
     }
 
-    return '<Style name="' + this.name + '" filter-mode="first" ' + attrs_xml + '>\n' + rules.join('') + '</Style>';
+    if (comp_op.length && comp_op[0].value.ev(env).value != 'src-over') {
+        attrs_xml += ' comp-op="' + comp_op[0].value.ev(env).toString() + '"';
+    }
+
+    if (opacity.length && opacity[0].value.ev(env).value != 1) {
+        attrs_xml += ' opacity="' + opacity[0].value.ev(env).toString() + '"';
+    }
+    var rule_string = rules.join('');
+    if (!attrs_xml && !rule_string) return '';
+    return '<Style name="' + name + '" filter-mode="first"' + attrs_xml + '>\n' + rule_string + '</Style>';
 };
 
 })(require('../tree'));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../tree":7,"underscore":undefined}],32:[function(require,module,exports){
 (function(tree) {
 
 tree.URL = function URL(val, paths) {
     this.value = val;
     this.paths = paths;
-    this.is = 'uri';
 };
+
 tree.URL.prototype = {
+    is: 'uri',
     toString: function() {
         return this.value.toString();
     },
-    eval: function(ctx) {
-        return new tree.URL(this.value.eval(ctx), this.paths);
+    ev: function(ctx) {
+        return new tree.URL(this.value.ev(ctx), this.paths);
     }
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],33:[function(require,module,exports){
 (function(tree) {
 
 tree.Value = function Value(value) {
     this.value = value;
-    this.is = 'value';
 };
+
 tree.Value.prototype = {
-    eval: function(env) {
+    is: 'value',
+    ev: function(env) {
         if (this.value.length === 1) {
-            return this.value[0].eval(env);
+            return this.value[0].ev(env);
         } else {
             return new tree.Value(this.value.map(function(v) {
-                return v.eval(env);
+                return v.ev(env);
             }));
         }
     },
@@ -4547,10 +5722,26 @@ tree.Value.prototype = {
         else obj.value = this.value;
         obj.is = this.is;
         return obj;
+    },
+
+    toJS: function(env) {
+      //var v = this.value[0].value[0];
+      var val = this.ev(env);
+      var v = val.toString();
+      if(val.is === "color" || val.is === 'uri' || val.is === 'string' || val.is === 'keyword') {
+        v = "'" + v + "'";
+      } else if (val.is === 'field') {
+        // replace [variable] by ctx['variable']
+        v = v.replace(/\[(.*)\]/g, "data['$1']");
+      }
+      return "_value = " + v + ";";
     }
+
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],34:[function(require,module,exports){
 (function(tree) {
 
 tree.Variable = function Variable(name, index, filename) {
@@ -4558,20 +5749,24 @@ tree.Variable = function Variable(name, index, filename) {
     this.index = index;
     this.filename = filename;
 };
+
 tree.Variable.prototype = {
-    eval: function(env) {
+    is: 'variable',
+    toString: function() {
+        return this.name;
+    },
+    ev: function(env) {
         var variable,
             v,
-            that = this,
             name = this.name;
 
         if (this._css) return this._css;
 
         var thisframe = env.frames.filter(function(f) {
-            return f.name == that.name;
-        });
+            return f.name == this.name;
+        }.bind(this));
         if (thisframe.length) {
-            return thisframe[0].value.eval(env);
+            return thisframe[0].value.ev(env);
         } else {
             env.error({
                 message: 'variable ' + this.name + ' is undefined',
@@ -4588,28 +5783,42 @@ tree.Variable.prototype = {
 };
 
 })(require('../tree'));
+
+},{"../tree":7}],35:[function(require,module,exports){
 var tree = require('../tree');
 
 // Storage for zoom ranges. Only supports continuous ranges,
 // and stores them as bit-sequences so that they can be combined,
 // inverted, and compared quickly.
 tree.Zoom = function(op, value, index) {
-    value = parseInt(value, 10);
-    if (value > tree.Zoom.maxZoom || value < 0) {
-        throw {
-            message: 'Only zoom levels between 0 and ' +
-                tree.Zoom.maxZoom + ' supported.',
-            index: index
-        };
-    }
+    this.op = op;
+    this.value = value;
+    this.index = index;
+};
 
+tree.Zoom.prototype.setZoom = function(zoom) {
+    this.zoom = zoom;
+    return this;
+};
+
+tree.Zoom.prototype.ev = function(env) {
     var start = 0,
         end = Infinity,
+        value = parseInt(this.value.ev(env).toString(), 10),
         zoom = 0;
 
-    switch (op) {
+    if (value > tree.Zoom.maxZoom || value < 0) {
+        env.error({
+            message: 'Only zoom levels between 0 and ' +
+                tree.Zoom.maxZoom + ' supported.',
+            index: this.index
+        });
+    }
+
+    switch (this.op) {
         case '=':
-            return 1 << value;
+            this.zoom = 1 << value;
+            return this;
         case '>':
             start = value + 1;
             break;
@@ -4628,7 +5837,12 @@ tree.Zoom = function(op, value, index) {
             zoom |= (1 << i);
         }
     }
-    return zoom;
+    this.zoom = zoom;
+    return this;
+};
+
+tree.Zoom.prototype.toString = function() {
+    return this.zoom;
 };
 
 // Covers all zoomlevels from 0 to 22
@@ -4664,12 +5878,12 @@ tree.Zoom.ranges = {
 };
 
 // Only works for single range zooms. `[XXX....XXXXX.........]` is invalid.
-tree.Zoom.toXML = function(zoom) {
+tree.Zoom.prototype.toXML = function() {
     var conditions = [];
-    if (zoom != tree.Zoom.all) {
+    if (this.zoom != tree.Zoom.all) {
         var start = null, end = null;
         for (var i = 0; i <= tree.Zoom.maxZoom; i++) {
-            if (zoom & (1 << i)) {
+            if (this.zoom & (1 << i)) {
                 if (start === null) start = i;
                 end = i;
             }
@@ -4682,571 +5896,1404 @@ tree.Zoom.toXML = function(zoom) {
     return conditions;
 };
 
-
-tree.Zoom.toString = function(zoom) {
+tree.Zoom.prototype.toString = function() {
     var str = '';
     for (var i = 0; i <= tree.Zoom.maxZoom; i++) {
-        str += (zoom & (1 << i)) ? 'X' : '.';
+        str += (this.zoom & (1 << i)) ? 'X' : '.';
     }
     return str;
 };
-(function (tree) {
 
-tree.functions = {
-    rgb: function (r, g, b) {
-        return this.rgba(r, g, b, 1.0);
-    },
-    rgba: function (r, g, b, a) {
-        var rgb = [r, g, b].map(function (c) { return number(c); });
-        a = number(a);
-        return new tree.Color(rgb, a);
-    },
-    hsl: function (h, s, l) {
-        return this.hsla(h, s, l, 1.0);
-    },
-    hsla: function (h, s, l, a) {
-        h = (number(h) % 360) / 360;
-        s = number(s); l = number(l); a = number(a);
+},{"../tree":7}],36:[function(require,module,exports){
 
-        var m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
-        var m1 = l * 2 - m2;
+},{}],37:[function(require,module,exports){
+// http://wiki.commonjs.org/wiki/Unit_Testing/1.0
+//
+// THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
+//
+// Originally from narwhal.js (http://narwhaljs.org)
+// Copyright (c) 2009 Thomas Robinson <280north.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the 'Software'), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-        return this.rgba(hue(h + 1/3) * 255,
-                         hue(h)       * 255,
-                         hue(h - 1/3) * 255,
-                         a);
+// when used in node, this will actually load the util module we depend on
+// versus loading the builtin util module as happens otherwise
+// this is a bug in node module loading as far as I am concerned
+var util = require('util/');
 
-        function hue(h) {
-            h = h < 0 ? h + 1 : (h > 1 ? h - 1 : h);
-            if      (h * 6 < 1) return m1 + (m2 - m1) * h * 6;
-            else if (h * 2 < 1) return m2;
-            else if (h * 3 < 2) return m1 + (m2 - m1) * (2/3 - h) * 6;
-            else                return m1;
-        }
-    },
-    hue: function (color) {
-        return new tree.Dimension(Math.round(color.toHSL().h));
-    },
-    saturation: function (color) {
-        return new tree.Dimension(Math.round(color.toHSL().s * 100), '%');
-    },
-    lightness: function (color) {
-        return new tree.Dimension(Math.round(color.toHSL().l * 100), '%');
-    },
-    alpha: function (color) {
-        return new tree.Dimension(color.toHSL().a);
-    },
-    saturate: function (color, amount) {
-        var hsl = color.toHSL();
+var pSlice = Array.prototype.slice;
+var hasOwn = Object.prototype.hasOwnProperty;
 
-        hsl.s += amount.value / 100;
-        hsl.s = clamp(hsl.s);
-        return hsla(hsl);
-    },
-    desaturate: function (color, amount) {
-        var hsl = color.toHSL();
+// 1. The assert module provides functions that throw
+// AssertionError's when particular conditions are not met. The
+// assert module must conform to the following interface.
 
-        hsl.s -= amount.value / 100;
-        hsl.s = clamp(hsl.s);
-        return hsla(hsl);
-    },
-    lighten: function (color, amount) {
-        var hsl = color.toHSL();
+var assert = module.exports = ok;
 
-        hsl.l += amount.value / 100;
-        hsl.l = clamp(hsl.l);
-        return hsla(hsl);
-    },
-    darken: function (color, amount) {
-        var hsl = color.toHSL();
+// 2. The AssertionError is defined in assert.
+// new assert.AssertionError({ message: message,
+//                             actual: actual,
+//                             expected: expected })
 
-        hsl.l -= amount.value / 100;
-        hsl.l = clamp(hsl.l);
-        return hsla(hsl);
-    },
-    fadein: function (color, amount) {
-        var hsl = color.toHSL();
+assert.AssertionError = function AssertionError(options) {
+  this.name = 'AssertionError';
+  this.actual = options.actual;
+  this.expected = options.expected;
+  this.operator = options.operator;
+  if (options.message) {
+    this.message = options.message;
+    this.generatedMessage = false;
+  } else {
+    this.message = getMessage(this);
+    this.generatedMessage = true;
+  }
+  var stackStartFunction = options.stackStartFunction || fail;
 
-        hsl.a += amount.value / 100;
-        hsl.a = clamp(hsl.a);
-        return hsla(hsl);
-    },
-    fadeout: function (color, amount) {
-        var hsl = color.toHSL();
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, stackStartFunction);
+  }
+  else {
+    // non v8 browsers so we can have a stacktrace
+    var err = new Error();
+    if (err.stack) {
+      var out = err.stack;
 
-        hsl.a -= amount.value / 100;
-        hsl.a = clamp(hsl.a);
-        return hsla(hsl);
-    },
-    spin: function (color, amount) {
-        var hsl = color.toHSL();
-        var hue = (hsl.h + amount.value) % 360;
+      // try to strip useless frames
+      var fn_name = stackStartFunction.name;
+      var idx = out.indexOf('\n' + fn_name);
+      if (idx >= 0) {
+        // once we have located the function frame
+        // we need to strip out everything before it (and its line)
+        var next_line = out.indexOf('\n', idx + 1);
+        out = out.substring(next_line + 1);
+      }
 
-        hsl.h = hue < 0 ? 360 + hue : hue;
-
-        return hsla(hsl);
-    },
-    replace: function (entity, a, b) {
-        if (entity.is === 'field') {
-            return entity.toString + '.replace(' + a.toString() + ', ' + b.toString() + ')';
-        } else {
-            return entity.replace(a, b);
-        }
-    },
-    //
-    // Copyright (c) 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
-    // http://sass-lang.com
-    //
-    mix: function (color1, color2, weight) {
-        var p = weight.value / 100.0;
-        var w = p * 2 - 1;
-        var a = color1.toHSL().a - color2.toHSL().a;
-
-        var w1 = (((w * a == -1) ? w : (w + a) / (1 + w * a)) + 1) / 2.0;
-        var w2 = 1 - w1;
-
-        var rgb = [color1.rgb[0] * w1 + color2.rgb[0] * w2,
-                   color1.rgb[1] * w1 + color2.rgb[1] * w2,
-                   color1.rgb[2] * w1 + color2.rgb[2] * w2];
-
-        var alpha = color1.alpha * p + color2.alpha * (1 - p);
-
-        return new tree.Color(rgb, alpha);
-    },
-    greyscale: function (color) {
-        return this.desaturate(color, new tree.Dimension(100));
-    },
-    '%': function (quoted /* arg, arg, ...*/) {
-        var args = Array.prototype.slice.call(arguments, 1),
-            str = quoted.value;
-
-        for (var i = 0; i < args.length; i++) {
-            str = str.replace(/%s/,    args[i].value)
-                     .replace(/%[da]/, args[i].toString());
-        }
-        str = str.replace(/%%/g, '%');
-        return new tree.Quoted(str);
+      this.stack = out;
     }
+  }
 };
 
-var image_filter_functors = [
-    'emboss', 'blur', 'gray', 'sobel', 'edge-detect',
-    'x-gradient', 'y-gradient', 'sharpen'];
+// assert.AssertionError instanceof Error
+util.inherits(assert.AssertionError, Error);
 
-for (var i = 0; i < image_filter_functors.length; i++) {
-    var f = image_filter_functors[i]; 
-    tree.functions[f] = (function(f) {
-        return function() {
-            return new tree.ImageFilter(f);
+function replacer(key, value) {
+  if (util.isUndefined(value)) {
+    return '' + value;
+  }
+  if (util.isNumber(value) && (isNaN(value) || !isFinite(value))) {
+    return value.toString();
+  }
+  if (util.isFunction(value) || util.isRegExp(value)) {
+    return value.toString();
+  }
+  return value;
+}
+
+function truncate(s, n) {
+  if (util.isString(s)) {
+    return s.length < n ? s : s.slice(0, n);
+  } else {
+    return s;
+  }
+}
+
+function getMessage(self) {
+  return truncate(JSON.stringify(self.actual, replacer), 128) + ' ' +
+         self.operator + ' ' +
+         truncate(JSON.stringify(self.expected, replacer), 128);
+}
+
+// At present only the three keys mentioned above are used and
+// understood by the spec. Implementations or sub modules can pass
+// other keys to the AssertionError's constructor - they will be
+// ignored.
+
+// 3. All of the following functions must throw an AssertionError
+// when a corresponding condition is not met, with a message that
+// may be undefined if not provided.  All assertion methods provide
+// both the actual and expected values to the assertion error for
+// display purposes.
+
+function fail(actual, expected, message, operator, stackStartFunction) {
+  throw new assert.AssertionError({
+    message: message,
+    actual: actual,
+    expected: expected,
+    operator: operator,
+    stackStartFunction: stackStartFunction
+  });
+}
+
+// EXTENSION! allows for well behaved errors defined elsewhere.
+assert.fail = fail;
+
+// 4. Pure assertion tests whether a value is truthy, as determined
+// by !!guard.
+// assert.ok(guard, message_opt);
+// This statement is equivalent to assert.equal(true, !!guard,
+// message_opt);. To test strictly for the value true, use
+// assert.strictEqual(true, guard, message_opt);.
+
+function ok(value, message) {
+  if (!value) fail(value, true, message, '==', assert.ok);
+}
+assert.ok = ok;
+
+// 5. The equality assertion tests shallow, coercive equality with
+// ==.
+// assert.equal(actual, expected, message_opt);
+
+assert.equal = function equal(actual, expected, message) {
+  if (actual != expected) fail(actual, expected, message, '==', assert.equal);
+};
+
+// 6. The non-equality assertion tests for whether two objects are not equal
+// with != assert.notEqual(actual, expected, message_opt);
+
+assert.notEqual = function notEqual(actual, expected, message) {
+  if (actual == expected) {
+    fail(actual, expected, message, '!=', assert.notEqual);
+  }
+};
+
+// 7. The equivalence assertion tests a deep equality relation.
+// assert.deepEqual(actual, expected, message_opt);
+
+assert.deepEqual = function deepEqual(actual, expected, message) {
+  if (!_deepEqual(actual, expected)) {
+    fail(actual, expected, message, 'deepEqual', assert.deepEqual);
+  }
+};
+
+function _deepEqual(actual, expected) {
+  // 7.1. All identical values are equivalent, as determined by ===.
+  if (actual === expected) {
+    return true;
+
+  } else if (util.isBuffer(actual) && util.isBuffer(expected)) {
+    if (actual.length != expected.length) return false;
+
+    for (var i = 0; i < actual.length; i++) {
+      if (actual[i] !== expected[i]) return false;
+    }
+
+    return true;
+
+  // 7.2. If the expected value is a Date object, the actual value is
+  // equivalent if it is also a Date object that refers to the same time.
+  } else if (util.isDate(actual) && util.isDate(expected)) {
+    return actual.getTime() === expected.getTime();
+
+  // 7.3 If the expected value is a RegExp object, the actual value is
+  // equivalent if it is also a RegExp object with the same source and
+  // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
+  } else if (util.isRegExp(actual) && util.isRegExp(expected)) {
+    return actual.source === expected.source &&
+           actual.global === expected.global &&
+           actual.multiline === expected.multiline &&
+           actual.lastIndex === expected.lastIndex &&
+           actual.ignoreCase === expected.ignoreCase;
+
+  // 7.4. Other pairs that do not both pass typeof value == 'object',
+  // equivalence is determined by ==.
+  } else if (!util.isObject(actual) && !util.isObject(expected)) {
+    return actual == expected;
+
+  // 7.5 For all other Object pairs, including Array objects, equivalence is
+  // determined by having the same number of owned properties (as verified
+  // with Object.prototype.hasOwnProperty.call), the same set of keys
+  // (although not necessarily the same order), equivalent values for every
+  // corresponding key, and an identical 'prototype' property. Note: this
+  // accounts for both named and indexed properties on Arrays.
+  } else {
+    return objEquiv(actual, expected);
+  }
+}
+
+function isArguments(object) {
+  return Object.prototype.toString.call(object) == '[object Arguments]';
+}
+
+function objEquiv(a, b) {
+  if (util.isNullOrUndefined(a) || util.isNullOrUndefined(b))
+    return false;
+  // an identical 'prototype' property.
+  if (a.prototype !== b.prototype) return false;
+  //~~~I've managed to break Object.keys through screwy arguments passing.
+  //   Converting to array solves the problem.
+  if (isArguments(a)) {
+    if (!isArguments(b)) {
+      return false;
+    }
+    a = pSlice.call(a);
+    b = pSlice.call(b);
+    return _deepEqual(a, b);
+  }
+  try {
+    var ka = objectKeys(a),
+        kb = objectKeys(b),
+        key, i;
+  } catch (e) {//happens when one is a string literal and the other isn't
+    return false;
+  }
+  // having the same number of owned properties (keys incorporates
+  // hasOwnProperty)
+  if (ka.length != kb.length)
+    return false;
+  //the same set of keys (although not necessarily the same order),
+  ka.sort();
+  kb.sort();
+  //~~~cheap key test
+  for (i = ka.length - 1; i >= 0; i--) {
+    if (ka[i] != kb[i])
+      return false;
+  }
+  //equivalent values for every corresponding key, and
+  //~~~possibly expensive deep test
+  for (i = ka.length - 1; i >= 0; i--) {
+    key = ka[i];
+    if (!_deepEqual(a[key], b[key])) return false;
+  }
+  return true;
+}
+
+// 8. The non-equivalence assertion tests for any deep inequality.
+// assert.notDeepEqual(actual, expected, message_opt);
+
+assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
+  if (_deepEqual(actual, expected)) {
+    fail(actual, expected, message, 'notDeepEqual', assert.notDeepEqual);
+  }
+};
+
+// 9. The strict equality assertion tests strict equality, as determined by ===.
+// assert.strictEqual(actual, expected, message_opt);
+
+assert.strictEqual = function strictEqual(actual, expected, message) {
+  if (actual !== expected) {
+    fail(actual, expected, message, '===', assert.strictEqual);
+  }
+};
+
+// 10. The strict non-equality assertion tests for strict inequality, as
+// determined by !==.  assert.notStrictEqual(actual, expected, message_opt);
+
+assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
+  if (actual === expected) {
+    fail(actual, expected, message, '!==', assert.notStrictEqual);
+  }
+};
+
+function expectedException(actual, expected) {
+  if (!actual || !expected) {
+    return false;
+  }
+
+  if (Object.prototype.toString.call(expected) == '[object RegExp]') {
+    return expected.test(actual);
+  } else if (actual instanceof expected) {
+    return true;
+  } else if (expected.call({}, actual) === true) {
+    return true;
+  }
+
+  return false;
+}
+
+function _throws(shouldThrow, block, expected, message) {
+  var actual;
+
+  if (util.isString(expected)) {
+    message = expected;
+    expected = null;
+  }
+
+  try {
+    block();
+  } catch (e) {
+    actual = e;
+  }
+
+  message = (expected && expected.name ? ' (' + expected.name + ').' : '.') +
+            (message ? ' ' + message : '.');
+
+  if (shouldThrow && !actual) {
+    fail(actual, expected, 'Missing expected exception' + message);
+  }
+
+  if (!shouldThrow && expectedException(actual, expected)) {
+    fail(actual, expected, 'Got unwanted exception' + message);
+  }
+
+  if ((shouldThrow && actual && expected &&
+      !expectedException(actual, expected)) || (!shouldThrow && actual)) {
+    throw actual;
+  }
+}
+
+// 11. Expected to throw an error:
+// assert.throws(block, Error_opt, message_opt);
+
+assert.throws = function(block, /*optional*/error, /*optional*/message) {
+  _throws.apply(this, [true].concat(pSlice.call(arguments)));
+};
+
+// EXTENSION! This is annoying to write outside this module.
+assert.doesNotThrow = function(block, /*optional*/message) {
+  _throws.apply(this, [false].concat(pSlice.call(arguments)));
+};
+
+assert.ifError = function(err) { if (err) {throw err;}};
+
+var objectKeys = Object.keys || function (obj) {
+  var keys = [];
+  for (var key in obj) {
+    if (hasOwn.call(obj, key)) keys.push(key);
+  }
+  return keys;
+};
+
+},{"util/":42}],38:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+},{}],39:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require('_process'))
+},{"_process":40}],40:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
         };
-    })(f);
-}
-
-tree.functions['agg-stack-blur'] = function(x, y) {
-    return new tree.ImageFilter('agg-stack-blur', [x, y]);
-};
-
-function hsla(hsla) {
-    return tree.functions.hsla(hsla.h, hsla.s, hsla.l, hsla.a);
-}
-
-function number(n) {
-    if (n instanceof tree.Dimension) {
-        return parseFloat(n.unit == '%' ? n.value / 100 : n.value);
-    } else if (typeof(n) === 'number') {
-        return n;
-    } else {
-        throw new Error('Color functions take numbers as parameters.');
     }
-}
 
-function clamp(val) {
-    return Math.min(1, Math.max(0, val));
-}
+    if (canPost) {
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
 
-})(require('./tree'));
-(function(carto) {
-var tree = require('./tree');
-var _ = require('underscore');
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
 
-// monkey patch less classes
-tree.Value.prototype.toJS = function() {
-  //var v = this.value[0].value[0];
-  var val = this.eval()
-  var v = val.toString();
-  if(val.is === "color" || val.is === 'uri' || val.is === 'string' || val.is === 'keyword') {
-    v = "'" + v + "'";
-  } else if (val.is === 'field') {
-    // replace [varuable] by ctx['variable']
-    v = v.replace(/\[(.*)\]/g, "data['\$1']")
-  }
-  return "_value = " + v + ";";
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
 };
 
-Object.defineProperty(tree.Filterset.prototype, 'toJS', {
-  enumerable: false,
-  value: function(env) {
-    var opMap = {
-      '=': '==='
-    };
-    return _.map(this, function(filter) {
-      var op = filter.op;
-      if(op in opMap) {
-        op = opMap[op];
-      }
-      var val = filter.val;
-      if(filter._val !== undefined) {
-        val = filter._val.toString(true);
-      }
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
 
-      var attrs = "data";
-      return attrs + "." + filter.key  + " " + op + " " + val;
-    }).join(' && ');
+},{}],41:[function(require,module,exports){
+module.exports = function isBuffer(arg) {
+  return arg && typeof arg === 'object'
+    && typeof arg.copy === 'function'
+    && typeof arg.fill === 'function'
+    && typeof arg.readUInt8 === 'function';
+}
+},{}],42:[function(require,module,exports){
+(function (process,global){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
   }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+};
+
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+exports.deprecate = function(fn, msg) {
+  // Allow for deprecating things in the process of starting up.
+  if (isUndefined(global.process)) {
+    return function() {
+      return exports.deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  if (process.noDeprecation === true) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (process.throwDeprecation) {
+        throw new Error(msg);
+      } else if (process.traceDeprecation) {
+        console.trace(msg);
+      } else {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+};
+
+
+var debugs = {};
+var debugEnviron;
+exports.debuglog = function(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron = process.env.NODE_DEBUG || '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = process.pid;
+      debugs[set] = function() {
+        var msg = exports.format.apply(exports, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+};
+
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    exports._extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+exports.inspect = inspect;
+
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== exports.inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var numLinesEst = 0;
+  var length = output.reduce(function(prev, cur) {
+    numLinesEst++;
+    if (cur.indexOf('\n') >= 0) numLinesEst++;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = require('./support/isBuffer');
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+
+function pad(n) {
+  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+}
+
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+              'Oct', 'Nov', 'Dec'];
+
+// 26 Feb 16:19:34
+function timestamp() {
+  var d = new Date();
+  var time = [pad(d.getHours()),
+              pad(d.getMinutes()),
+              pad(d.getSeconds())].join(':');
+  return [d.getDate(), months[d.getMonth()], time].join(' ');
+}
+
+
+// log is just a thin wrapper to console.log that prepends a timestamp
+exports.log = function() {
+  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+};
+
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+exports.inherits = require('inherits');
+
+exports._extend = function(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+};
+
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":41,"_process":40,"inherits":38}],43:[function(require,module,exports){
+(function (__dirname){
+var fs = require('fs'),
+    path = require('path'),
+    existsSync = require('fs').existsSync || require('path').existsSync;
+
+// Load all stated versions into the module exports
+module.exports.version = {};
+
+var refs = [
+ '2.0.0',
+ '2.0.1',
+ '2.0.2',
+ '2.1.0',
+ '2.1.1',
+ '2.2.0',
+ '2.3.0',
+ '3.0.0'
+];
+
+refs.map(function(version) {
+    module.exports.version[version] = require(path.join(__dirname, version, 'reference.json'));
+    var ds_path = path.join(__dirname, version, 'datasources.json');
+    if (existsSync(ds_path)) {
+        module.exports.version[version].datasources = require(ds_path).datasources;
+    }
 });
 
-tree.Definition.prototype.toJS = function() {
-  var shaderAttrs = {};
-
-  // merge conditions from filters with zoom condition of the
-  // definition
-  var zoom = "(" + this.zoom + " & (1 << ctx.zoom))";
-  var frame_offset = this.frame_offset;
-  var _if = this.filters.toJS();
-  var filters = [zoom];
-  if(_if) filters.push(_if);
-  if(frame_offset) filters.push('ctx["frame-offset"] === ' + frame_offset);
-  _if = filters.join(" && ");
-  _.each(this.rules, function(rule) {
-      if(rule instanceof tree.Rule) {
-        shaderAttrs[rule.name] = shaderAttrs[rule.name] || [];
-        if (_if) {
-        shaderAttrs[rule.name].push(
-          "if(" + _if + "){" + rule.value.toJS() + "}"
-        );
-        } else {
-          shaderAttrs[rule.name].push(rule.value.toJS());
-        }
-      } else {
-        if (rule instanceof tree.Ruleset) {
-          var sh = rule.toJS();
-          for(var v in sh) {
-            shaderAttrs[v] = shaderAttrs[v] || [];
-            for(var attr in sh[v]) {
-              shaderAttrs[v].push(sh[v][attr]);
-            }
-          }
-        }
-      }
-  });
-  return shaderAttrs;
-};
-
-
-function CartoCSS(style, options) {
-  this.options = options || {};
-  if(style) {
-    this.setStyle(style);
+}).call(this,"/node_modules/mapnik-reference")
+},{"fs":36,"path":39}],44:[function(require,module,exports){
+module.exports={
+  "name": "carto",
+  "version": "0.15.0",
+  "description": "CartoCSS Stylesheet Compiler",
+  "url": "https://github.com/cartodb/carto",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cartodb/carto.git"
+  },
+  "author": {
+    "name": "CartoDB",
+    "url": "http://cartodb.com/"
+  },
+  "keywords": [
+    "maps",
+    "css",
+    "stylesheets"
+  ],
+  "contributors": [
+    "Tom MacWright <macwright@gmail.com>",
+    "Konstantin Käfer",
+    "Alexis Sellier <self@cloudhead.net>",
+    "Raul Ochoa <rochoa@cartodb.com>",
+    "Javi Santana <jsantana@cartodb.com>"
+  ],
+  "licenses": [
+    {
+      "type": "Apache"
+    }
+  ],
+  "bin": {
+    "carto": "./bin/carto"
+  },
+  "man": "./man/carto.1",
+  "main": "./lib/carto/index",
+  "engines": {
+    "node": ">=0.4.x"
+  },
+  "dependencies": {
+    "underscore": "~1.6.0",
+    "mapnik-reference": "~6.0.2",
+    "optimist": "~0.6.0"
+  },
+  "devDependencies": {
+    "mocha": "1.12.x",
+    "jshint": "0.2.x",
+    "sax": "0.1.x",
+    "istanbul": "~0.2.14",
+    "coveralls": "~2.10.1",
+    "browserify": "~7.0.0",
+    "uglify-js": "1.3.3"
+  },
+  "scripts": {
+    "pretest": "npm install",
+    "test": "mocha -R spec",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha && coveralls < ./coverage/lcov.info"
   }
 }
 
-CartoCSS.Layer = function(shader, options) {
-  this.options = options;
-  this.shader = shader;
-};
-
-CartoCSS.renderers = {};
-
-CartoCSS.renderers['svg'] = {
-
-  maps: {},
-
-  transform: function(src) {
-    var target = {};
-    for(var i in src) {
-      var t = this.maps[i];
-      if(t) {
-        target[t] = src[i];
-      } else {
-        // copy it
-        target[i] = src[i];
-      }
-    }
-    return target;
-  }
-
-};
-
-CartoCSS.renderers['canvas-2d'] = {
-
-  maps: {
-    // marker
-    'marker-width': 'point-radius',
-    'marker-line-color': 'strokeStyle',
-    'marker-line-width': 'lineWidth',
-    'marker-line-opacity': 'strokeOpacity',
-    'marker-fill-opacity': 'fillOpacity',
-    'marker-opacity': 'fillOpacity',
-    'marker-fill': 'fillStyle',
-    'marker-file': function(attr) {
-      var img = new Image();
-      img.src = attr;
-      return img;
-    },
-    // point
-    'point-color': 'fillStyle',
-    'point-file': function(attr) {
-      var img = new Image();
-      img.src = attr;
-      return img;
-    },
-    // line
-    'line-color': 'strokeStyle',
-    'line-width': 'lineWidth',
-    'line-opacity': 'globalAlpha',
-    // polygon
-    'polygon-fill': 'fillStyle',
-    'polygon-opacity': 'globalAlpha',
-    'comp-op': 'comp-op'
-  },
-
-  transform: function(src) {
-    var target = {};
-    for(var i in src) {
-      var t = this.maps[i];
-      if(t) {
-        if(typeof(t) === 'function') {
-          target[i] = t(src[i]);
-        } else {
-          target[t] = src[i];
-        }
-      } else {
-        // copy it
-        target[i] = src[i];
-      }
-    }
-    return target;
-  }
-}
-
-var renderer = CartoCSS.renderers['svg'];
-var ref = require('mapnik-reference').version.latest;
-var to_load = ['polygon', 'line', 'point', 'markers'];
-for(var ss in to_load) {
-  var s = to_load[ss];
-  for(var i in ref.symbolizers[s]) {
-    renderer.maps[ref.symbolizers[s][i].css] = i;
-  }
-}
-
-
-CartoCSS.Layer.prototype = {
-
-  fullName: function() {
-    return this.shader.attachment;
-  },
-
-  name: function() {
-    return this.fullName().split('::')[0];
-  },
-
-  // frames this layer need to be rendered
-  frames: function() {
-    return this.shader.frames;
-  },
-
-  attachment: function() {
-    return this.fullName().split('::')[1];
-  },
-
-  eval: function(prop) {
-    var p = this.shader[prop];
-    if (!p) return;
-    return p({}, { zoom: 0, 'frame-offset': 0 });
-  },
-
-  /*
-   * `target`: style, 'svg', 'canvas-2d'...
-   * `props`: feature properties
-   * `context`: rendering properties, i.e zoom
-   */
-  getStyle: function(target, props, context) {
-    var style = {};
-    for(var i in this.shader) {
-      if(i !== 'attachment' && i !== 'zoom' && i !== 'frames') {
-        style[i] = this.shader[i](props, context);
-      }
-    }
-    return CartoCSS.renderers[target].transform(style);
-  },
-
-  /**
-   * returns true if a feature needs to be rendered
-   */
-  filter: function(featureType, props, context) {
-    for(var i in this.shader) {
-     var s = this.shader[i](props, context);
-     if(s) {
-       return true;
-     }
-    }
-    return false;
-  },
-
-  //
-  // given a geoemtry type returns the transformed one acording the CartoCSS
-  // For points there are two kind of types: point and sprite, the first one 
-  // is a circle, second one is an image sprite
-  //
-  // the other geometry types are the same than geojson (polygon, linestring...)
-  //
-  transformGeometry: function(type) {
-    return type;
-  },
-
-  transformGeometries: function(geojson) {
-    return geojson;
-  }
-
-};
-
-CartoCSS.prototype = {
-
-  setStyle: function(style) {
-    var layers = this.parse(style);
-    if(!layers) {
-      throw new Error(this.parse_env.errors);
-    }
-    this.layers = layers.map(function(shader) {
-        return new CartoCSS.Layer(shader);
-    });
-  },
-
-  getLayers: function() {
-    return this.layers;
-  },
-
-  getDefault: function() {
-    return this.findLayer({ attachment: '__default__' });
-  },
-
-  findLayer: function(where) {
-    return _.find(this.layers, function(value) {
-      for (var key in where) {
-        var v = value[key];
-        if (typeof(v) === 'function') {
-          v = v.call(value);
-        }
-        if (where[key] !== v) return false;
-      }
-      return true;
-    });
-  },
-
-  _createFn: function(ops) {
-    var body = ops.join('\n');
-    if(this.options.debug) console.log(body);
-    return Function("data","ctx", "var _value = null; " +  body + "; return _value; ");
-  },
-
-  _compile: function(shader) {
-    if(typeof shader === 'string') {
-        shader = eval("(function() { return " + shader +"; })()");
-    }
-    this.shader_src = shader;
-    for(var attr in shader) {
-        var c = mapper[attr];
-        if(c) {
-            this.compiled[c] = eval("(function() { return shader[attr]; })();");
-        }
-    }
-  },
-
-  parse: function(cartocss) {
-    var parse_env = {
-      frames: [],
-      errors: [],
-      error: function(obj) {
-        this.errors.push(obj);
-      }
-    };
-    this.parse_env = parse_env;
-
-    var ruleset = null;
-    try {
-      ruleset = (new carto.Parser(parse_env)).parse(cartocss);
-    } catch(e) {
-      console.log(e.stack);
-      // add the style.mss string to match the response from the server
-      parse_env.errors.push(e.message);
-      return;
-    }
-    if(ruleset) {
-      var defs = ruleset.toList(parse_env);
-      defs.reverse();
-      // group by elements[0].value::attachment
-      var layers = {};
-      for(var i = 0; i < defs.length; ++i) {
-        var def = defs[i];
-        var key = def.elements[0] + "::" + def.attachment;
-        var layer = layers[key] = (layers[key] || {});
-        layer.frames = [];
-        layer.zoom = tree.Zoom.all;
-        var props = def.toJS();
-        for(var v in props) {
-          (layer[v] = (layer[v] || [])).push(props[v].join('\n'))
-        }
-      }
-
-      var ordered_layers = [];
-
-      var done = {};
-      for(var i = 0; i < defs.length; ++i) {
-        var def = defs[i];
-        var k = def.elements[0] + "::" + def.attachment;
-        var layer = layers[k];
-        if(!done[k]) {
-          for(var prop in layer) {
-            if (prop !== 'zoom' && prop !== 'frames') {
-
-              if(this.options.debug) console.log("****", prop);
-              layer[prop] = this._createFn(layer[prop]);
-            }
-          }
-          layer.attachment = k;
-          ordered_layers.push(layer);
-          done[k] = true;
-        }
-        layer.zoom |= def.zoom;
-        layer.frames.push(def.frame_offset);
-      }
-
-      // uniq the frames
-      for(i = 0; i < ordered_layers.length; ++i) {
-        ordered_layers[i].frames = _.uniq(ordered_layers[i].frames);
-      }
-
-      return ordered_layers;
-
-    }
-    return null;
-  }
-};
-
-
-carto.RendererJS = function (options) {
-    this.options = options || {};
-    this.options.mapnik_version = this.options.mapnik_version || 'latest';
-};
-
-// Prepare a javascript object which contains the layers
-carto.RendererJS.prototype.render = function render(cartocss, callback) {
-    tree.Reference.setVersion(this.options.mapnik_version);
-    return new CartoCSS(cartocss, this.options);
-}
-if(typeof(module) !== 'undefined') {
-  module.exports = carto.RendererJS;
-}
-
-
-})(require('../carto'));
+},{}]},{},[2])(2)
+});

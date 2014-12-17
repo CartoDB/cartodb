@@ -691,6 +691,38 @@ layer.on('mouseout', function() {
 });
 ```
 
+#### layer.loading()
+
+Called when the layer or its sublayers are about to be loaded. This is also called when any properties are changed but not yet visible.
+
+##### Example
+
+<div class="code-title">layer.on</div>
+```javascript
+layer.on("loading", function() {
+  console.log("layer about to load");
+});
+layer.getSubLayer(0).set({
+  cartocss: "#export { polygon-opacity: 0; }"
+});
+```
+
+#### layer.load()
+
+Called when the layer or its sublayers have been loaded. This is also called when any properties are changed and visible.
+
+##### Example
+
+<div class="code-title">layer.on</div>
+```javascript
+layer.on("load", function() {
+  console.log("layer loaded");
+});
+layer.getSubLayer(0).set({
+  cartocss: "#export { polygon-opacity: 0; }"
+});
+```
+
 ### subLayer
 
 #### sublayer.featureOver(_event, latlng, pos, data, layerIndex_)
@@ -1069,7 +1101,7 @@ We are committed to making sure your website works as intended no matter what ch
 We recommend that you always develop against the most recent version of CartoDB.js, right now:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.25/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.26/cartodb.js"></script>
 ```
 
 Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:

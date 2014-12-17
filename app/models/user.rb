@@ -1283,11 +1283,11 @@ class User < Sequel::Model
   end
 
   def feature_flags
-    (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
+    @feature_flag_names ||= (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
   end
 
   def has_feature_flag?(feature_flag_name)
-    self.feature_flags.include?(feature_flag_name)
+    self.feature_flags.present? && self.feature_flags.include?(feature_flag_name)
   end
 
   def create_client_application

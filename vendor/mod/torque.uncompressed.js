@@ -167,6 +167,13 @@ var _torque_reference_latest = {
             "default-meaning": "No buffer will be used",
             "doc": "Extra tolerance around the Layer extent (in pixels) used to when querying and (potentially) clipping the layer data during rendering"
         },
+        "-torque-clear-color": {
+            "css": "-torque-clear-color",
+            "type": "color",
+            "default-value": "rgba(255, 255, 255, 0)",
+            "default-meaning": "full clear",
+            "doc": "color used to clear canvas on each frame"
+        },
         "-torque-frame-count": {
             "css": "-torque-frame-count",
             "default-value": "128",
@@ -1680,7 +1687,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
     if(this.hidden) return;
     var t, tile, pos;
     var canvas = this.canvas;
-    canvas.width = canvas.width;
+    this.renderer.clearCanvas();
     var ctx = canvas.getContext('2d');
 
     // renders only a "frame"
@@ -2505,7 +2512,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     if(this.hidden) return;
     var t, tile, pos;
     var canvas = this.getCanvas();
-    canvas.width = canvas.width;
+    this.renderer.clearCanvas();
     var ctx = canvas.getContext('2d');
 
     for(t in this._tiles) {
@@ -4324,6 +4331,25 @@ var carto = global.carto || require('carto');
     '}'
   ].join('\n');
 
+  var COMP_OP_TO_CANVAS = {
+    "src": 'source-over',
+    "src-over": 'source-over',
+    "dst-over": 'destination-over',
+    "src-in": 'source-in',
+    "dst-in": 'destination-in',
+    "src-out": 'source-out',
+    "dst-out": 'destination-out',
+    "src-atop": 'source-atop',
+    "dst-atop": 'destination-atop',
+    "xor": 'xor',
+    "darken": 'darken',
+    "lighten": 'lighten'
+  }
+
+  function compop2canvas(compop) {
+    return COMP_OP_TO_CANVAS[compop] || compop;
+  }
+
   //
   // this renderer just render points depending of the value
   //
@@ -4342,6 +4368,22 @@ var carto = global.carto || require('carto');
 
   PointRenderer.prototype = {
 
+    clearCanvas: function() {
+      var canvas = this._canvas;
+      var color = this._Map['-torque-clear-color']
+      // shortcut for the default value
+      if (color  === "rgba(255, 255, 255, 0)" || !color) {
+        this._canvas.width = this._canvas.width;
+      } else {
+        var ctx = this._ctx;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        var compop = this._Map['comp-op']
+        ctx.globalCompositeOperation = compop2canvas(compop);
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    },
+
     setCanvas: function(canvas) {
       this._canvas = canvas;
       this._ctx = canvas.getContext('2d');
@@ -4359,11 +4401,13 @@ var carto = global.carto || require('carto');
       // clean sprites
       this._sprites = [];
       this._shader = shader;
+      this._Map = this._shader.getDefault().getStyle({}, { zoom: 0 });
     },
 
     clearSpriteCache: function() {
       this._sprites = [];
     },
+
 
     //
     // generate sprite based on cartocss style
@@ -4451,7 +4495,7 @@ var carto = global.carto || require('carto');
 
       var prof = Profiler.metric('torque.renderer.point.renderTile').start();
       var ctx = this._ctx;
-      var blendMode = shader.eval('comp-op') || this.options.blendmode;
+      var blendMode = compop2canvas(shader.eval('comp-op')) || this.options.blendmode;
       if(blendMode) {
         ctx.globalCompositeOperation = blendMode;
       }

@@ -69,6 +69,9 @@
   @include display-flex();
   @include align-items(center, center);
 }
+.DatasetsList-itemTitle.is--disabled {
+  color: $cTypography-help;
+}
 .DatasetsList-itemTitlePermission {
   margin-left: 10px;
 }

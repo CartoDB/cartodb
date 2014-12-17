@@ -35,7 +35,7 @@ module Cartodb
       if expected_codes.include?(response.code)
         return response.body && response.body.length >= 2 ? JSON.parse(response.body) : {}
       else
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
     end
 

@@ -272,7 +272,7 @@ module CartoDB
     },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. You can try splitting it into smaller files and then using the 'Merge Tables' functionality."
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality."
     },
     99999 => {
       title: 'Unknown',

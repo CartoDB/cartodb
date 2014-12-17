@@ -21,8 +21,13 @@ class CartoDB::Importer2::TableSampler
     @max_id = n
   end
 
+  def min_max_ids= h
+    @min_max_ids = h
+  end
+
+
   public :sample_query, :sample_indices, :sample_indices_add_method, :sample_indices_delete_method
-  public :min_id, :max_id, :min_max_ids_query
+  public :min_id, :max_id, :min_max_ids_query, :ids_count
 
 end
 
@@ -100,6 +105,16 @@ describe CartoDB::Importer2::TableSampler do
       sample_size = :any
       sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
       sampler.min_max_ids_query.should eq "SELECT min(ogc_fid), max(ogc_fid) FROM table_name"
+    end
+  end
+
+  describe '#ids_count' do
+    it 'should return 0 if there is no min_id nor max_id' do
+      db = nil
+      sample_size = :any
+      sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
+      sampler.min_max_ids = {min: nil, max: nil}
+      sampler.ids_count.should eq 0
     end
   end
 

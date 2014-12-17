@@ -15,18 +15,28 @@
   display:none;
   top:-9px;
   right:-9px;
-  width:17px;
-  height:17px;
-  background:#C74B43;
+  width:0;
+  height:0;
+  background: #C74B43;
   @include border-radius(23px);
   font-family:Arial;
   font-size:10px;
   font-weight:500;
   text-align:center;
   line-height:17px;
-  color:white;
+  color: #C74B43;
 }
 // States
+.UserNotifications.has--alerts {
+  .UserNotifications-Icon { color: #666 }
+  .UserNotifications-Count {
+    width: 17px;
+    height: 17px;
+    color: white;
+    display: block;
+  }
+}
+
 .UserNotifications:hover {
   text-decoration:none;
   
@@ -39,8 +49,5 @@
     line-height:19px;
   }
 }
-.UserNotifications.has--alerts {
-  .UserNotifications-Icon { color: #666 }
-  .UserNotifications-Count { display: block }
-}
+
 

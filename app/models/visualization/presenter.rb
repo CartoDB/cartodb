@@ -83,8 +83,9 @@ module CartoDB
           permission:   nil
         }
         table_visualization = table.table_visualization
-        permission ||= table_visualization.permission unless table_visualization.nil?
-        table_data[:permission] = permission.to_poro unless table_visualization.nil?
+        if !table_visualization.nil?
+          table_data[:permission] = !permission.nil? && table_visualization.id == permission.entity_id ? permission.to_poro : table_visualization.permission.to_poro
+        end
 
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,

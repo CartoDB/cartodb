@@ -935,10 +935,14 @@ class User < Sequel::Model
 
   private :database_exists?
 
+  def db_size_in_bytes
+    @db_size_in_bytes ||= compute_db_size_in_bytes
+  end
+
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def db_size_in_bytes
+  def compute_db_size_in_bytes
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded

@@ -555,7 +555,7 @@ module CartoDB
       end
 
       def relator
-        @relator ||= Relator.new(attributes)
+        Relator.new(attributes)
       end
 
       def name_checker

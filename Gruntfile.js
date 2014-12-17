@@ -68,7 +68,7 @@
 
       uglify: require('./lib/build/tasks/uglify.js').task(),
 
-      browserify: require('./lib/build/tasks/browserify.js').task(env.browserify_watch, env.browserify_debug, ASSETS_DIR),
+      browserify: require('./lib/build/tasks/browserify.js').task(),
 
       availabletasks: require('./lib/build/tasks/availabletasks.js').task()
     });
@@ -144,7 +144,11 @@
           grunt.config('copy.app.files.' + i + '.src', []);
         }
       }
-   });
+    });
+
+    grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
+      grunt.config.set(name, val);
+    });
 
     grunt.registerTask('test',      ['config', 'concat:js', 'jst', 'jasmine']);
     grunt.registerTask('css',       ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
@@ -152,5 +156,6 @@
     grunt.registerTask('default',   ['clean', 'config', 'js', 'css', 'manifest']);
     grunt.registerTask('minimize',  ['default', 'copy:js', 'uglify']);
     grunt.registerTask('release',   ['check_release', 'minimize', 's3', 'invalidate']);
-    grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes). Make sure to have run default task at least once to have files setup', ['browserify', 'watch']);
+    grunt.registerTask('dev',       'Typical task for frontend development (watch JS/CSS changes)',
+      ['setConfig:env.browserify_watch:true', 'browserify', 'watch']);
   };

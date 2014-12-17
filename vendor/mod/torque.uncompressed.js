@@ -4236,8 +4236,8 @@ var Profiler = require('../profiler');
     ctx.arc(0, 0, pixel_size, 0, TAU, true, true);
     ctx.closePath();
     if (st['marker-fill']) {
-      if (st['marker-fill-opacity']) {
-        ctx.globalAlpha = st['marker-fill-opacity'];
+      if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
+        ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
       }
       ctx.fill();
     }
@@ -4266,10 +4266,12 @@ var Profiler = require('../profiler');
     var w = pixel_size * 2;
 
     // fill
-    if (st['marker-fill'] && st['marker-fill-opacity']) {
-      ctx.globalAlpha = st['marker-fill-opacity'];
+    if (st['marker-fill']) {
+      if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
+        ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
+      }
+      ctx.fillRect(-pixel_size, -pixel_size, w, w)
     }
-    ctx.fillRect(-pixel_size, -pixel_size, w, w)
 
     // stroke
     ctx.globalAlpha = 1.0;

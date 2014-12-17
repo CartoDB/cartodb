@@ -370,8 +370,8 @@ var Vis = cdb.core.View.extend({
       var layers = data.layers;
 
       // check if there are slides and check all the layers
-      if (data.children && data.children.length > 0) {
-        layers = layers.concat(data.children.map(function(s) { return s.layers }));
+      if (data.slides && data.slides.length > 0) {
+        layers = layers.concat(data.slides.map(function(s) { return s.layers }));
       }
 
       this.loadModules(layers, function() {
@@ -554,9 +554,9 @@ var Vis = cdb.core.View.extend({
       this.addMobile(data.overlays, data.layers, options);
     }
 
-    if (data.children) {
+    if (data.slides) {
       cdb.config.bind('moduleLoaded:odyssey', function() {
-        self._createSlides([data].concat(data.children));
+        self._createSlides([data].concat(data.slides));
       });
       Loader.loadModule('odyssey');
     }
@@ -1023,8 +1023,10 @@ var Vis = cdb.core.View.extend({
         }
       }
       _applyLayerOptions(vizjson.layers);
-      for(var i = 0; i < vizjson.children.length; ++i) {
-        _applyLayerOptions(vizjson.children[i].layers);
+      if (vizjson.slides) {
+        for(var i = 0; i < vizjson.slides.length; ++i) {
+          _applyLayerOptions(vizjson.slides[i].layers);
+        }
       }
     }
 

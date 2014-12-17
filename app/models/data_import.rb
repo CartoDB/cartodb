@@ -49,7 +49,8 @@ class DataImport < Sequel::Model
   }
 
   # Not all constants are used, but so that we keep track of available states
-  STATE_PENDING   = 'pending'
+  STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
+  STATE_PENDING   = 'pending'   # Default state for files already at "import source" (e.g. S3 bucket)
   STATE_UNPACKING = 'unpacking'
   STATE_IMPORTING = 'importing'
   STATE_COMPLETE  = 'complete'

@@ -19,6 +19,16 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
+    view =  ( current_user.feature_flags.present? && ( current_user.feature_flags.include? 'new_dashboard' )) ? 'new-dashboard' : 'index'
+
+    respond_to do |format|
+      format.html { render view, layout: 'application' }
+    end
+
+  end #index
+
+  def resolve_visualization_and_table(request)
+    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request))
   end
 
   def show

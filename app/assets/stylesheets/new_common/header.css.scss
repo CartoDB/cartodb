@@ -1,0 +1,87 @@
+// Header
+// - Tipical Header view
+// --------------------------------------------------
+
+@import "mixins";
+@import "colors";
+
+/* Header */
+.Header {
+  display:block;
+  width:100%;
+  height:81px;
+  background-color:$cStructure-grayBkg;
+  border-bottom:1px solid $cStructure-mainLine;
+}
+.Header > .u-inner {
+  position:relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 940px;
+  margin: 0 auto;
+}
+
+.Header-navigationList {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.Header-navigationBreadcrumb {
+  @include display-flex();
+  @include align-items(center, center);
+  margin-left:20px;
+}
+.Header-navigationBreadcrumbItem {
+  padding-left:6px;
+  font-size:18px;
+  font-weight:300;
+  color:$cTypography-secondary;
+}
+.Header-navigationBreadcrumbLink {
+  position:relative;
+  padding-right:12px;
+  font-size:18px;
+  font-weight:300;
+  color:#333;
+
+  &:after {
+    content: '';
+    position:absolute;
+    right:0;
+    top:50%;
+    width:0;
+    height:0;
+    border-left:4px solid transparent;
+    border-right:4px solid transparent;
+    border-top:4px solid #999999;
+  }
+
+  &:hover {
+    color:#222;
+    &:after { border-top-color:#222 }
+  }
+}
+
+.Header-settings {
+  height:81px;
+}
+.Header-settingsList {
+  height:100%;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.Header-settingsItem {
+  position:relative;
+  margin-left:30px;
+}
+.Header-settingsLink {
+  font-weight:300;
+  color:#666;
+  
+  &:hover {
+    color:#333;
+    text-decoration: underline;
+  }
+}

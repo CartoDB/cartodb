@@ -64,7 +64,7 @@ module CartoDB
                     :basepath, :additional_tables
 
       def align_raster(scale)
-        gdalwarp_command = %Q(#{gdalwarp_path} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
+        gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -74,7 +74,7 @@ module CartoDB
       end
 
       def reproject_raster
-        gdalwarp_command = %Q(#{gdalwarp_path} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+        gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"

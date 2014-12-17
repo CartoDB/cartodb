@@ -1,3 +1,8 @@
+3.6.0 (2014-12-15)
+------------------
+* First version of new dashboard
+* Added Browserify for frontend development (check [this doc](https://github.com/CartoDB/cartodb/blob/master/CONTRIBUTING.md#grunt))
+
 3.5.0 (2014-12-11)
 ------------------
 * New features

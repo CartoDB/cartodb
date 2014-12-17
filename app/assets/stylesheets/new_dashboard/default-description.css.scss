@@ -1,0 +1,13 @@
+// Default description for datasets and maps
+// --------------------------------------------------
+
+@import "../new_common/colors";
+
+
+.DefaultDescription {
+  font-weight:300;
+  font-size:13px;
+  color:$cTypography-secondary;
+  line-height:16px;
+}
+.DefaultDescription-link {}

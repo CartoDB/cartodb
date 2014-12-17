@@ -1,0 +1,217 @@
+// Dashboard filters
+// --------------------------------------------------
+
+@import "../new_common/mixins";
+@import "../new_common/colors";
+
+
+.DashboardFilters {
+  display:block;
+  width:100%;
+}
+.DashboardFilters > .u-inner {
+  position:relative;
+  display:block;
+  width: 940px;
+  height:81px;
+  margin: 0 auto;
+  padding: 0;
+  overflow:hidden;
+}
+.DashboardFilters-inner {
+  display:block;
+  padding: 0;
+  @include transition(margin,150ms);
+}
+.DashboardFilters-separator {
+  position:absolute;
+  left:0;
+  top:80px;
+  width:100%;
+  height:1px;
+  background-color:$cStructure-softLine;
+  z-index:0;
+}
+.DashboardFilters-row {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  height:80px;
+}
+.DashboardFilters-list {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.DashboardFilters-typeItem {
+  position:relative;
+  height:80px;
+  margin:0 25px;
+
+  &:after {
+    content:'|';
+    position:absolute;
+    top:50%;
+    right:-25px;
+    margin-top:-10px;
+    font-weight:300;
+    color:$cStructure-softLine;
+  }
+
+  &:first-child { margin-left:0 }
+  &:last-child:after { display:none }
+}
+
+.DashboardFilters-searchLink {
+  line-height:80px;
+  font-size:14px;
+  color:$cTypography-help;
+}
+.DashboardFilters-searchLinkIcon {
+  @include inline-block();
+  vertical-align: middle;
+  margin-right:5px;
+  
+}
+.DashboardFilters-searchLink:hover { color: #333 }
+.DashboardFilters-searchItem {
+  display:none;
+  margin-right:0;
+  &:after { content:'' }
+}
+.DashboardFilters-searchForm {
+  position:relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  height:80px;
+  width:827px;
+}
+.DashboardFilters-searchInput {
+  width:790px;
+  padding-left:5px;
+  outline:none;
+  border:none;
+  background:none;
+  font-size:15px;
+}
+.DashboardFilters-cleanSearch {
+  position:absolute;
+  top:23px;
+  right:0;
+  width:28px;
+  height:28px;
+  @include border-radius(30px);
+  border:1px solid #CCC;
+  color:#CCC;
+  text-align: center;
+  line-height:32px;
+  
+  &:hover {
+    border:1px solid #999;
+    color:#999;
+  }
+}
+// We can't group this style :(
+.DashboardFilters-searchInput::-webkit-input-placeholder {
+  font-style:italic;
+  color:#DDD;
+}
+.DashboardFilters-searchInput::-moz-placeholder {
+  font-style:italic;
+  color:#DDD;
+}
+.DashboardFilters-searchInput:-ms-placeholder {
+  font-style:italic;
+  color:#DDD;
+}
+.DashboardFilters-typeLink {
+  line-height:80px;
+
+  &:hover {
+    color:$cTypography-linkSelected;
+    text-decoration: none;
+  }
+}
+.DashboardFilters-typeLink.is-selected {
+  color:$cTypography-linkSelected;
+
+  &:before {
+    content:'';
+    position:absolute;
+    bottom:-1px;
+    left:0;
+    right:0;
+    width:100%;
+    height:1px;
+    background:$cTypography-linkSelected;
+  } 
+  &:hover {
+    cursor:default;
+    text-decoration: none;
+  }
+}
+.DashboardFilters-order {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.DashboardFilters-orderList {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.DashboardFilters-orderItem {
+  @include inline-block();
+  margin-right:24px;
+  // font-size:13px;
+  // font-weight:300;
+  color:$cTypography-secondary;
+  line-height:19px;
+}
+.DashboardFilters-orderLink {
+  @include inline-block();
+  font-size: 19px;
+  color: #CCCCCC;
+  line-height:19px;
+  &:hover { color: #666 }
+}
+.DashboardFilters-orderLink.is-selected {
+  color:#666666;
+  &:hover { cursor: default }
+}
+.DashboardFilters-orderLink--graph {
+  line-height:26px;
+}
+
+.DashboardFilters-selectedItems {
+  font-size:15px;
+  font-weight:300;
+  color:$cTypography-secondary;
+}
+.DashboardFilters-actionsList {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.DashboardFilters-actionsLink {
+  font-size:13px;
+  padding-left:25px;
+}
+.DashboardFilters-actionsLink.is--critical {
+  color:#FF6C6C;
+}
+
+// Filters states
+.DashboardFilters-inner.items--selected {
+  margin-top:-81px;
+}
+.DashboardFilters-inner.search--enabled {
+
+  .DashboardFilters-typeItem,
+  .DashboardFilters-orderItem,
+  .Button--positive { display:none }
+
+  .DashboardFilters-searchEnabler { display:inline }
+  .DashboardFilters-searchItem { display:inherit }
+}

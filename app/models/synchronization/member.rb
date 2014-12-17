@@ -32,8 +32,6 @@ module CartoDB
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
 
-      STATES                        = %w{ success failure syncing }
-
       attribute :id,                      String
       attribute :name,                    String
       attribute :interval,                Integer,  default: 3600

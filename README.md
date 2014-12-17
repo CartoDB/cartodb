@@ -18,6 +18,25 @@ We hope you like it!
 
 ![Map View](http://cartodb.s3.amazonaws.com/github/map_view.png)
 
+---
+## Table of Contents
+
+- [What can I do with CartoDB?](#what-can-i-do-with-cartodb)
+- [What are the components of CartoDB](#what-are-the-components-of-cartodb)
+- [How do I install CartoDB?](#how-do-i-install-cartodb)
+  - [Dependencies](#what-does-cartodb-depend-on)
+  - ...
+  - [Install problems and common solutions](#install-problems-and-common-solutions)
+- [Running CartoDB](#running-cartodb)
+  - [Note on tiling SQL API and Redis](#note-on-tiling-sql-api-and-redis)
+  - [Handy tasks](#handy-tasks)
+  - [Using foreman](#using-foreman)
+- [Developing & Contributing to CartoDB](#developing--contributing-to-cartodb)
+- [How do I Upgrade CartodB?](#how-do-i-upgrade-cartodb)
+- [Testing](#testing)
+- [Contributors](#contributors)
+
+---
 
 # What can I do with CartoDB? #
 
@@ -48,22 +67,6 @@ and code.
   - A Map tiler that supports SQL and tile styling using CartoCSS
   - Authentication using OAuth if required
 
-# What does CartoDB depend on? #
-
-  - Ubuntu 12.04
-  - Postgres 9.3.x (with plpythonu extension)
-  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension
-  - Redis 2.2+
-  - Ruby 1.9.3
-  - Node.js 0.10.x
-  - CartoDB-SQL-API
-  - GEOS 3.3.4
-  - GDAL 1.10.x (Starting with CartoDB 2.2.0)
-  - PostGIS 2.1.x
-  - Mapnik 2.1.1
-  - Windshaft-cartodb
-  - Varnish 2.1+ (WARNING: must be < 3.0!)
-  - ImageMagick 6.6.9+ (for the testsuite)
 
 # How do I install CartoDB? #
 
@@ -91,6 +94,25 @@ $ git clone --recursive https://github.com/CartoDB/cartodb.git
 
 Or you can just [download the CartoDB zip
 file](https://github.com/CartoDB/cartodb/archive/master.zip).
+
+
+## What does CartoDB depend on? #
+
+  - Ubuntu 12.04
+  - Postgres 9.3.x (with plpythonu extension)
+  - [cartodb-postgresql](https://github.com/CartoDB/cartodb-postgresql) extension
+  - Redis 2.2+
+  - Ruby 1.9.3
+  - Node.js 0.10.x
+  - CartoDB-SQL-API
+  - GEOS 3.3.4
+  - GDAL 1.10.x (Starting with CartoDB 2.2.0)
+  - PostGIS 2.1.x
+  - Mapnik 2.1.1
+  - Windshaft-cartodb
+  - Varnish 2.1+ (WARNING: must be < 3.0!)
+  - ImageMagick 6.6.9+ (for the testsuite)
+
 
 ## Add CartoDB [PPA](https://help.ubuntu.com/community/PPA)s ##
 
@@ -431,16 +453,17 @@ node app.js development
 sudo apt-get install imagemagick
 ```
 
-## Optional
+## Optional installation
 These are not strictly required to run CartoDB, but if you are installing CartoDB to do change something you might need them:
-
-### Frontend assets
-Have their own README and tools since they don't run on the Rails, see [lib/build/README.md](lib/build/README.md).
 
 ### Raster import support
 Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.
 
 Access to temporary dir is also needed. Depending on your installation you might also need to run `sudo chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
+
+## Install problems and common solutions #
+
+Installing the full stack might not always be smooth due to other component updates, so if you run into problems installing CartoDB, please check [this list of problems and solutions](https://github.com/CartoDB/cartodb/wiki/Problems-faced-during-CartoDB-install-&-solutions-if-known) first to see if your problem already happened in the past and somebody else found a workaround, solution or fix to it.
 
 ## Install local instance of cold beer ##
 
@@ -517,14 +540,16 @@ You should now be able to access
 **`http://<mysubdomain>.localhost.lan:3000`**
 in your browser and login with the password specified above.
 
-# How do I upgrade CartoDB? #
+## Note on tiling, SQL API and Redis
 
-See UPGRADE file for instructions about upgrading CartoDB.
+Please ensure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all
+running for full experience.
 
-For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
-documentation.
+Manual configuration is needed for the
+`public/javascripts/environments/development.js` file which configures
+Windshaft-cartodb tile server URLs.
 
-# Handy tasks #
+## Handy tasks
 
 For a full list of CartoDB utility tasks:
 
@@ -532,8 +557,7 @@ For a full list of CartoDB utility tasks:
 bundle exec rake -T
 ```
 
-
-# Using foreman #
+## Using foreman
 
 You can also use foreman to run the full stack (cartodb server, sql api, tiler, redis and resque), using a single command:
 IMPORTANT: You need to install foreman by yourself. It's not included in the Gemfile. Run this:
@@ -549,26 +573,22 @@ bundle exec foreman start -p $PORT
 where $PORT is the port you want to attach the rails server to.
 
 
-# Note on tiling, SQL API and Redis #
+# How do I upgrade CartoDB? #
 
-Please ensure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all
-running for full experience.
+See [UPGRADE](UPGRADE) for instructions about upgrading CartoDB.
 
-Manual configuration is needed for the
-`public/javascripts/environments/development.js` file which configures
-Windshaft-cartodb tile server URLs.
+For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
+documentation.
 
+# Developing & Contributing to CartoDB
 
-# Install problems and common solutions #
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how you can improve CartoDB. :)
 
-Installing the full stack might not always be smooth due to other component updates, so if you run into problems installing CartoDB, please check [this list of problems and solutions](https://github.com/CartoDB/cartodb/wiki/Problems-faced-during-CartoDB-install-&-solutions-if-known) first to see if your problem already happened in the past and somebody else found a workaround, solution or fix to it.
+# Testing
 
+See [TESTING.md](TESTING.md)
 
-### Testing ###
-
-See TESTING.md
-
-### Contributors ###
+# Contributors
 
   - Fernando Blat ([ferblape](https://twitter.com/ferblape))
   - Javier Álvarez Medina ([xavijam](https://twitter.com/xavijam))

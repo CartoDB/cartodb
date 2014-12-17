@@ -80,7 +80,7 @@ module CartoDB
           dataset = order(dataset, filters.delete(:o))
 
           @total_entries = dataset.count
-          dataset = repository.paginate(dataset, filters)
+          dataset = repository.paginate(dataset, filters, @total_entries)
 
           collection.storage = Set.new(dataset.map { |attributes|
             Visualization::Member.new(attributes)

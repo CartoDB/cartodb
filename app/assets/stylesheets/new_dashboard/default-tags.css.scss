@@ -1,0 +1,13 @@
+// Default tags for datasets and maps
+// --------------------------------------------------
+
+@import "../new_common/colors";
+
+
+.DefaultTags {
+  font-weight:300;
+  font-size:13px;
+  color:$cTypography-secondary;
+  line-height:16px;
+}
+.DefaultTags-item {}

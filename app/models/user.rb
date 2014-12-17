@@ -1722,7 +1722,7 @@ TRIGGER
   end
 
   def cartodb_extension_version
-    self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
+    @cartodb_extension_version ||= self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
   end
 
   def cartodb_extension_version_pre_mu?

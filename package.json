@@ -60,7 +60,9 @@
     "jquery": "global:$",
     "underscore": "global:_",
     "cdb.admin": "global:cdb.admin",
+    "cdb.Utils": "global:cdb.Utils",
     "cartodb.js": "global:cdb",
-    "backbone": "global:Backbone"
+    "backbone": "global:Backbone",
+    "moment": "global:moment"
   }
 }

@@ -21,7 +21,7 @@
   $width: 140px;
   width: $width;
   position:absolute;
-  top: 65px;
+  top: 62px;
   left: -$width;
   bottom: 0;
   z-index: 1;
@@ -61,10 +61,22 @@
       cursor: move;
     }
 
+    &.fake {
+      margin: 0 auto 15px auto;
+      pointer-events: none;
+      cursor: default;
+    }
+    &.fake a.close,
+    &.fake a.info {
+      display: none;
+    }
+    &.fake:hover .count { 
+      background: rgba(#000, .1);
+    }
+
     &.active:hover .count { background: #AAC6DF; }
 
-    &:hover .count { background: #bbb; }
-
+    &:hover .count { background: #BBBBBB; }
     &:hover .close { @include opacity(1); }
 
     &.active { 

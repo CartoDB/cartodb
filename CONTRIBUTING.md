@@ -35,6 +35,8 @@ which in turns depends on some common libraries, in particular worth mentioning:
 
 Source code is located at `lib/assets/javascripts`, dependencies at `vendor/assets/javascripts`.
 
+Run `grunt jasmine` to generate `/cartodb/_SpecRunner.html`.
+
 See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.

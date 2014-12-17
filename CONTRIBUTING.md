@@ -79,8 +79,13 @@ npm install -g grunt-cli
 
 Run `grunt availabletasks` to see available tasks.
 
-For a standard developer we recommend `grunt dev`, which watches CSS/JS files and rebuild bundles automatically on
-file changes. The compiled code can be seen under `public/assets/:version`
+First time starting to work you need to run `grunt`, to build all static assets (will be written to `public/assets/:version`).
+
+After that, for typical frontend work, it's recommended to run:
+```bash
+grunt dev
+```
+This will watch CSS and JS files and rebuild bundles automatically upon changes.
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
 

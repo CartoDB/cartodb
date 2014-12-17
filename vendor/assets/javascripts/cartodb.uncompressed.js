@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.25
+// cartodb.js version: 3.11.26
 // uncompressed version: cartodb.uncompressed.js
-// sha: 70b28430e0ae178d0b86b82dd93ab8d6685f81d5
+// sha: dbeac4d18b5d89f8a8f89c29ca505994f4703723
 (function() {
   var root = this;
 
@@ -20720,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.25";
+    cdb.VERSION = "3.11.26";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22693,13 +22693,22 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     });
   },
 
+  _fixLinks: function() {
+
+    this.$el.find("a").each(function(i, link) {
+      $(this).attr("target", "_top");
+    });
+
+  },
+
   render: function() {
 
+    var self = this;
 
     this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
 
-    var self = this;
-    
+    this._fixLinks();
+
     setTimeout(function() {
       self._applyStyle();
       self._place();
@@ -23019,11 +23028,21 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
     cdb.core.View.prototype.clean.call(this);
   },
 
+  _fixLinks: function() {
+
+    this.$el.find("a").each(function(i, link) {
+      $(this).attr("target", "_top");
+    });
+
+  },
+
   render: function() {
+
+    var self = this;
 
     this.$el.html(this.template(this.model.attributes));
 
-    var self = this;
+    this._fixLinks();
 
     setTimeout(function() {
       self._applyStyle();
@@ -27116,7 +27135,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
 
-      requestFullScreen.call(docEl);
+      if (docEl.webkitRequestFullScreen) {
+        requestFullScreen.call(docEl, Element.ALLOW_KEYBOARD_INPUT);
+      } else {
+        requestFullScreen.call(docEl);
+      }
 
       if (mapView) {
 
@@ -27550,8 +27573,8 @@ Map.prototype = {
       }
       // check payload size
       var payload = JSON.stringify(this.toJSON());
-      if (payload.length < this.options.MAX_GET_SIZE) {
-        return false;
+      if (payload.length > this.options.MAX_GET_SIZE) {
+        return true;
       }
     }
     return false;

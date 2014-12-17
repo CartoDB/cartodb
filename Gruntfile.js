@@ -150,13 +150,15 @@
       grunt.config.set(name, val);
     });
 
-    grunt.registerTask('test',      '(CI env) Re-build JS files and run all tests. ' +
-      'For manual testing use `grunt jasmine` directly', ['default', 'jasmine']);
-    grunt.registerTask('css',       ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
-    grunt.registerTask('js',        ['cdb', 'browserify', 'concat:js', 'jst']);
-    grunt.registerTask('default',   ['clean', 'config', 'js', 'css', 'manifest']);
-    grunt.registerTask('minimize',  ['default', 'copy:js', 'uglify']);
-    grunt.registerTask('release',   ['check_release', 'minimize', 's3', 'invalidate']);
-    grunt.registerTask('dev',       'Typical task for frontend development (watch JS/CSS changes)',
+    // Order in terms of task dependencies
+    grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('pre_default', ['clean', 'config', 'js']);
+    grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
+    'For manual testing use `grunt jasmine` directly', ['pre_default', 'jasmine']);
+    grunt.registerTask('css',         ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
+    grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
+    grunt.registerTask('minimize',    ['default', 'copy:js', 'uglify']);
+    grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
+    grunt.registerTask('dev',         'Typical task for frontend development (watch JS/CSS changes)',
       ['setConfig:env.browserify_watch:true', 'browserify', 'watch']);
   };

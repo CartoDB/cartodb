@@ -3078,7 +3078,7 @@ div.cartodb-timeslider a.button.stop:hover {
 }
 
 div.cartodb-timeslider p {
-  width:75px;
+  width:120px;
   height:40px;
   margin:0;
   padding:0 5px 0 0;
@@ -3492,14 +3492,14 @@ div.cartodb-timeslider .slider-wrapper {
   zoom: 1;
   *display: inline;
   vertical-align:top;
-  width:298px;
+  width:253px;
   height:4px;
   _height:4px;
   padding:18px 15px;
 }
 
 div.cartodb-timeslider .slider {
-  width:298px;
+  width:253px;
   height:4px;
 }
 

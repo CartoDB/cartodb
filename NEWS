@@ -1,3 +1,12 @@
+3.11.26 ()
+- #235 - Allows to use the input fields in fullscreen on Chrome
+- #243 - Adds a target="_top" in the overlay links so they work inside iframes
+
+3.11.25 (26//11//2014)
+- #211 - Viz made with Torque between 2 different dates shows date + time
+- #223 - fixed problem with IE11 touch devices.
+- #205 - fixed problem with invalid lat lng object in touch devices.
+
 3.11.24 (11//11//2014)
 - don't render the fullscreen overlay for unsupported versions of IE
 - fixed using same callback name when there are more than one layer (#186)

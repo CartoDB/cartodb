@@ -51,17 +51,18 @@ if you're writing tests for current code or the newer browserify modules).
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
-All tests can be run by
+All tests can be run by:
 ```bash
 grunt jasmine
+
+# or if you want to run tests in browser it's preferrable to use:
+grunt jasmine-server
 ```
 
-This task generates a (non-versioned) file ./_SpecRunner.html which you can open in the browser to easier debug your code and tests.
-If you only want to run a subset of tests open this file in the browser and add the querystring
-`?spec=start-of-describe`, e.g.
+If you only want to run a subset of tests use the browser approach (see above) and append this querystring to the URL:
+`?spec=start-of-describe`, i.e.:
 ```
-# In your browser open (don't forget to change /path/to/cartodb ;):
-file:///path/to/cartodb/_SpecRunner.html?spec=cdb.admin.User
+http://0.0.0.0:8089/_SpecRunner.html?spec=cdb.admin.User
 ```
 
 

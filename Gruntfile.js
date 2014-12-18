@@ -70,6 +70,8 @@
 
       browserify: require('./lib/build/tasks/browserify.js').task(),
 
+      connect: require('./lib/build/tasks/connect.js').task(),
+
       availabletasks: require('./lib/build/tasks/availabletasks.js').task()
     });
 
@@ -148,6 +150,18 @@
 
     grunt.registerTask('setConfig', 'Set a config property', function(name, val) {
       grunt.config.set(name, val);
+    });
+
+    grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
+      grunt.task.run('jasmine:cartodbui:build');
+
+      grunt.event.once('connect.jasmine.listening', function(host, port) {
+        var specRunnerUrl = 'http://' + host + ':' + port + '/_SpecRunner.html';
+        grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
+        require('open')(specRunnerUrl);
+      });
+
+      grunt.task.run('connect:jasmine:keepalive');
     });
 
     // Order in terms of task dependencies

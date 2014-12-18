@@ -1,3 +1,7 @@
+3.6.1 ()
+------------------
+* Updates torque library with several fixes
+
 3.6.0 (2014-12-15)
 ------------------
 * First version of new dashboard

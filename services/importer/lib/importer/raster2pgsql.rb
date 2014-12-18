@@ -164,7 +164,7 @@ module CartoDB
       end
 
       def raster2pgsql_command(overviews_list)
-        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -Y -I -f #{RASTER_COLUMN_NAME} ) +
+        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} ) +
         %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name})
       end
 

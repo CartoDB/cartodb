@@ -878,18 +878,21 @@ describe Api::Json::VisualizationsController do
            }.to_json, @headers
       vis_1_body = JSON.parse(last_response.body)
 
+      # This should also set as next sibiling of vis_1 as has no prev_id/next_id set
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
            {
-             name: "CHILD 1 #{UUIDTools::UUID.timestamp_create.to_s}",
+             name: "CHILD 2 #{UUIDTools::UUID.timestamp_create.to_s}",
              type: CartoDB::Visualization::Member::TYPE_SLIDE,
              source_visualization_id: vis_1_body.fetch('id'),
              parent_id: parent_vis_id
            }.to_json, @headers
       vis_2_body = JSON.parse(last_response.body)
 
-      vis_2_body.fetch('parent_id').should eq vis_1_body.fetch('parent_id')
-      vis_2_body.fetch('id').should_not eq vis_1_body.fetch('id')
+      vis_2_body.fetch('prev_id').should eq vis_1_body.fetch('id')
 
+      vis_2_body.fetch('parent_id').should eq vis_1_body.fetch('parent_id')
+      vis_1_body.fetch('parent_id').should eq parent_vis_id
+      vis_2_body.fetch('id').should_not eq vis_1_body.fetch('id')
     end
   end
 

@@ -127,6 +127,7 @@
 }
 .DashboardFilters-typeLink {
   line-height:80px;
+  text-transform: capitalize;
 
   &:hover {
     color:$cTypography-linkSelected;

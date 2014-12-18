@@ -1093,8 +1093,8 @@ class User < Sequel::Model
     self.over_disk_quota? || self.over_table_quota?
   end
 
-  def remaining_quota(use_total = false)
-    self.quota_in_bytes - self.db_size_in_bytes
+  def remaining_quota(use_total = false, db_size_in_bytes = self.db_size_in_bytes)
+    self.quota_in_bytes - db_size_in_bytes
   end
 
   def disk_quota_overspend
@@ -1283,11 +1283,11 @@ class User < Sequel::Model
   end
 
   def feature_flags
-    (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
+    @feature_flag_names ||= (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
   end
 
   def has_feature_flag?(feature_flag_name)
-    self.feature_flags.include?(feature_flag_name)
+    self.feature_flags.present? && self.feature_flags.include?(feature_flag_name)
   end
 
   def create_client_application
@@ -1722,7 +1722,7 @@ TRIGGER
   end
 
   def cartodb_extension_version
-    self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
+    @cartodb_extension_version ||= self.in_database(:as => :superuser).fetch('select cartodb.cdb_version() as v').first[:v]
   end
 
   def cartodb_extension_version_pre_mu?

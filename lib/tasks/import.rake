@@ -24,8 +24,6 @@ namespace :cartodb do
 
   desc 'Uploads a single data import enqueued file to S3, triggering the normal flow afterwards'
   task :upload_to_s3 => [:environment] do |task, args|
-
-
     data_import_item = DataImport.where(state: DataImport::STATE_ENQUEUED).order(:created_at).first
 
     unless data_import_item.nil?
@@ -55,9 +53,15 @@ namespace :cartodb do
 
         puts "Uploaded #{data_import_item.id}"
       rescue => exception
-        puts exception
-        # TODO: Log error
-        # TODO: Set dataimport to failed
+        puts "Errored #{data_import_item.id} : #{exception}"
+
+        CartoDB::notify_exception(exception, {
+          request: 'cartodb:upload_to_s3 Rake',
+          import_id: data_import_item.id
+        })
+
+        data_import_item.state = DataImport::STATE_FAILURE
+        data_import_item.save
       end
     end
   end

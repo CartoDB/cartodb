@@ -3489,6 +3489,13 @@ var _mapnik_reference_latest = {
             }
         },
         "torque": {
+          "-torque-clear-color": {
+              "css": "-torque-clear-color",
+              "type": "color",
+              "default-value": "rgba(255, 255, 255, 0)",
+              "default-meaning": "full clear",
+              "doc": "color used to clear canvas on each frame"
+          },
           "-torque-frame-count": {
               "css": "-torque-frame-count",
               "default-value": "128",
@@ -7245,7 +7252,7 @@ refs.map(function(version) {
 },{"fs":36,"path":39}],44:[function(require,module,exports){
 module.exports={
   "name": "carto",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "CartoCSS Stylesheet Compiler",
   "url": "https://github.com/cartodb/carto",
   "repository": {

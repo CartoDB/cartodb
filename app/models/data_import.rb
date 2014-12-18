@@ -270,12 +270,10 @@ class DataImport < Sequel::Model
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
   end
 
-  # A stuck job should've started but not be finished, so it's state should not
-  # be complete nor failed, it should have been in the queue
-  # for more than 5 minutes and it shouldn't be currently
-  # processed by any active worker
+  # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
+  # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
-    ![STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
+    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
     self.created_at < 5.minutes.ago &&
     !running_import_ids.include?(self.id)
   end

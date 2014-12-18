@@ -56,7 +56,6 @@ module  FileUploadHelper
         results[:file_uri] = file_url
       else
         unless ajax_upload
-          # TODO: Check this is fast enough for timeouts
           file = save_body_to_file(params, request, random_token, filename)
         end
 
@@ -106,5 +105,8 @@ module  FileUploadHelper
       filedata = nil
       file
     end
+
+    # For rake access
+    module_function :upload_file_to_s3
 
 end

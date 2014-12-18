@@ -1,7 +1,15 @@
+3.7.0 (2014-12-xx)
+------------------
+* New features
+ - Improved import flow for big S3 updates (if configured). Now everything >50MB won't be uploaded synchronously to S3,
+   but queued instead (new DataImport state "enqueued"), so that a new cartodb:upload_to_s3 rake (intended to be run
+   from a cron) performs asynchronously this upload and then normal import flow proceeds as before.
+
 3.6.0 (2014-12-15)
 ------------------
-* First version of new dashboard
-* Added Browserify for frontend development (check [this doc](https://github.com/CartoDB/cartodb/blob/master/CONTRIBUTING.md#grunt))
+* New features
+ - First version of new dashboard
+ - Added Browserify for frontend development (check [this doc](https://github.com/CartoDB/cartodb/blob/master/CONTRIBUTING.md#grunt))
 
 3.5.0 (2014-12-11)
 ------------------

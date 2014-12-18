@@ -24,7 +24,7 @@ module CartoDB
         db_size_in_bytes: db_size_in_bytes,
         db_size_in_megabytes: db_size_in_bytes.present? ? (db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
         remaining_table_quota: self.remaining_table_quota,
-        remaining_byte_quota: self.remaining_quota.to_f,
+        remaining_byte_quota: self.remaining_quota(false, db_size_in_bytes).to_f,
         api_calls: calls,
         api_calls_quota: self.organization_user? ? self.organization.map_view_quota : self.map_view_quota,
         api_calls_block_price: self.organization_user? ? self.organization.map_view_block_price : self.map_view_block_price,

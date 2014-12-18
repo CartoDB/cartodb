@@ -49,7 +49,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       file_uri = params[:url]
       enqueue_importer_task = true
     else
-      results = upload_file_to_storage(params, request)
+      results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
       file_uri = results[:file_uri]
       enqueue_importer_task = results[:enqueue]
     end
@@ -61,6 +61,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     options = {
         user_id:                current_user.id,
         table_name:             params[:table_name].presence,
+        # Careful as this field has rules (@see DataImport data_source=)
         data_source:            file_uri.presence,
         table_id:               params[:table_id].presence,
         append:                 (params[:append].presence == 'true'),
@@ -71,10 +72,12 @@ class Api::Json::ImportsController < Api::ApplicationController
         type_guessing:          params.fetch(:type_guessing, true),
         quoted_fields_guessing: params.fetch(:quoted_fields_guessing, true),
         content_guessing:       ["true", true].include?(params[:content_guessing]),
-        state:                  enqueue_importer_task ? STATE_PENDING : STATE_ENQUEUED
+        state:                  enqueue_importer_task ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED,
+        upload_host:            Socket.gethostname
     }
 
     data_import = DataImport.create(options)
+
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if enqueue_importer_task
 
     render_jsonp({ item_queue_id: data_import.id, success: true })

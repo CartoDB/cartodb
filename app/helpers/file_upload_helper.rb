@@ -4,13 +4,15 @@ module  FileUploadHelper
 
     UPLOADS_PATH  = 'public/uploads'
     FILE_ENCODING = 'utf-8'
+    MAX_SYNC_UPLOAD_S3_FILE_SIZE = 52428800   # bytes
 
-    def upload_file_to_storage(params, request)
+    def upload_file_to_storage(params, request, s3_config = nil, timestamp = Time.now)
       results = {
         file_uri: nil,
         enqueue:  true
       }
 
+      # Used by cartodb chrome extension
       ajax_upload = false
       case
         when params[:filename].present? && request.body.present?
@@ -30,29 +32,22 @@ module  FileUploadHelper
 
       filename = filename.gsub(/ /, '_')
 
-      random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
+      random_token = Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
 
-      s3_config = Cartodb.config[:importer]['s3']
+      use_s3 = !s3_config.nil? && s3_config['access_key_id'].present? && s3_config['secret_access_key'].present? &&
+               s3_config['bucket_name'].present? && s3_config['url_ttl'].present?
+
       file = nil
       if ajax_upload
         file = save_body_to_file(params, request, random_token, filename)
         filepath = file.path
       end
 
-      if s3_config && s3_config['access_key_id'] && s3_config['secret_access_key']
-        AWS.config(
-          access_key_id: Cartodb.config[:importer]['s3']['access_key_id'],
-          secret_access_key: Cartodb.config[:importer]['s3']['secret_access_key']
-        )
-        s3 = AWS::S3.new
-        s3_bucket = s3.buckets[s3_config['bucket_name']]
+      do_long_upload = s3_config['async_long_uploads'].present? && s3_config['async_long_uploads'] &&
+        File.size(filepath) > MAX_SYNC_UPLOAD_S3_FILE_SIZE
 
-        path = "#{random_token}/#{File.basename(filename)}"
-        o = s3_bucket.objects[path]
-
-        o.write(Pathname.new(filepath), { acl: :authenticated_read })
-
-        file_url = o.url_for(:get, expires: s3_config['url_ttl']).to_s
+      if use_s3 && !do_long_upload
+        file_url = upload_file_to_s3(filepath, filename, random_token, s3_config)
 
         if ajax_upload
           File.delete(file.path)
@@ -61,13 +56,35 @@ module  FileUploadHelper
         results[:file_uri] = file_url
       else
         unless ajax_upload
+          # TODO: Check this is fast enough for timeouts
           file = save_body_to_file(params, request, random_token, filename)
         end
-        results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]
+
+        if use_s3 && do_long_upload
+          results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]
+          results[:enqueue] = false
+        else
+          results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]
+        end
       end
+
       results
     end
 
+    def upload_file_to_s3(filepath, filename, token, s3_config)
+      AWS.config(
+        access_key_id: s3_config['access_key_id'],
+        secret_access_key: s3_config['secret_access_key']
+      )
+      s3_bucket = AWS::S3.new.buckets[s3_config['bucket_name']]
+
+      path = "#{token}/#{File.basename(filename)}"
+      o = s3_bucket.objects[path]
+
+      o.write(Pathname.new(filepath), { acl: :authenticated_read })
+
+      o.url_for(:get, expires: s3_config['url_ttl']).to_s
+    end
 
     def save_body_to_file(params, request, random_token, filename)
       case

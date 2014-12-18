@@ -46,6 +46,7 @@ class DataImport < Sequel::Model
     content_guessing
     server
     host
+    upload_host
   }
 
   # Not all constants are used, but so that we keep track of available states

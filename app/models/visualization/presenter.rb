@@ -17,6 +17,8 @@ module CartoDB
       end
 
       def to_poro
+        permission = visualization.permission
+
         poro = {
           id:               visualization.id,
           name:             visualization.name,
@@ -29,7 +31,7 @@ module CartoDB
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
-          permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
+          permission:       permission.nil? ? nil : permission.to_poro,
           locked:           visualization.locked,
           source:           visualization.source,
           title:            visualization.title,
@@ -37,7 +39,7 @@ module CartoDB
           kind:             visualization.kind,
           likes:            visualization.likes.count
         }
-        poro.merge!(table: table_data_for(table))
+        poro.merge!(table: table_data_for(table, permission))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
@@ -66,7 +68,7 @@ module CartoDB
         { related_tables:   related_tables }
       end
 
-      def table_data_for(table=nil)
+      def table_data_for(table=nil, permission = nil)
         return {} unless table
         table_name = table.name
         unless @viewing_user.nil?
@@ -80,7 +82,10 @@ module CartoDB
           name:         table_name,
           permission:   nil
         }
-        table_data[:permission] = table.table_visualization.permission.to_poro unless table.table_visualization.nil?
+        table_visualization = table.table_visualization
+        if !table_visualization.nil?
+          table_data[:permission] = !permission.nil? && table_visualization.id == permission.entity_id ? permission.to_poro : table_visualization.permission.to_poro
+        end
 
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,

@@ -1423,7 +1423,6 @@ class Table < Sequel::Model(:user_tables)
       begin
         # update metadata records
         $tables_metadata.rename(old_key, new_key)
-        errored = false
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)

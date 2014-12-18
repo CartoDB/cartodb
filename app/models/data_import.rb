@@ -47,6 +47,7 @@ class DataImport < Sequel::Model
     server
     host
     upload_host
+    resque_ppid
   }
 
   # Not all constants are used, but so that we keep track of available states
@@ -88,6 +89,7 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
+    self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
     log.append "Running on server #{self.server} with PID: #{Process.pid}"
     begin
@@ -572,7 +574,8 @@ class DataImport < Sequel::Model
                   'data_type'         => self.data_type,
                   'is_sync_import'    => !self.synchronization_id.nil?,
                   'import_time'       => self.updated_at - self.created_at,
-                  'file_stats'        => ::JSON.parse(self.stats)
+                  'file_stats'        => ::JSON.parse(self.stats),
+                  'resque_ppid'              => self.resque_ppid
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)

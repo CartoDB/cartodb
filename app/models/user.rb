@@ -1178,7 +1178,7 @@ class User < Sequel::Model
     parameters.merge!(type: type_filter)      unless type_filter.nil?
     parameters.merge!(privacy: privacy_filter)   unless privacy_filter.nil?
     parameters.merge!(exclude_raster: exclude_raster_filter) if exclude_raster_filter
-    CartoDB::Visualization::Collection.new.count(parameters)
+    CartoDB::Visualization::Collection.new.count_query(parameters)
   end
 
   def last_visualization_created_at

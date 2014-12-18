@@ -69,7 +69,7 @@ module CartoDB
         self
       end
 
-      def count(filters={})
+      def count_query(filters={})
         dataset = compute_sharing_filter_dataset(filters)
         dataset.nil? ? 0 : apply_filters(dataset, filters).count
       end
@@ -94,7 +94,7 @@ module CartoDB
 
       attr_reader :collection
 
-      def compute_sharing_filter_dataset(filters={})
+      def compute_sharing_filter_dataset(filters)
         dataset = nil
         if filters[:only_shared].present? && filters[:only_shared].to_s == 'true'
           dataset = repository.collection

@@ -1,5 +1,6 @@
 3.11.27 (19//12//2014)
 - #245 - Fixed a bug with error messages named map instantiation 
+- #224 - Public method close infowindow 
 
 3.11.26 (17//12//2014)
 - #235 - Allows to use the input fields in fullscreen on Chrome

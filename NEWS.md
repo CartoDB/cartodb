@@ -4,6 +4,7 @@
  - Improved import flow for big S3 updates (if configured). Now everything >50MB won't be uploaded synchronously to S3,
    but queued instead (new DataImport state "enqueued"), so that a new cartodb:upload_to_s3 rake (intended to be run
    from a cron) performs asynchronously this upload and then normal import flow proceeds as before.
+   New Config entry: ['importer']['s3']['async_long_uploads'] (boolean)
 
 3.6.1 ()
 ------------------

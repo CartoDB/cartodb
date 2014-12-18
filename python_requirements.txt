@@ -1,4 +1,4 @@
-chardet==1.0.1
+chardet==2.3.0
 argparse==1.2.1
 brewery==0.6
 redis==2.4.9

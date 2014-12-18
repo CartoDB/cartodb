@@ -385,7 +385,7 @@ function layerView(base) {
     },
 
     error: function(e) {
-      this.trigger('error', e ? e.errors : 'unknown error');
+      this.trigger('error', e ? (e.errors || e) : 'unknown error');
       this.model.trigger('error', e?e.errors:'unknown error');
     },
 

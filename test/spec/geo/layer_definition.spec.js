@@ -961,6 +961,47 @@ describe("NamedMap", function() {
   });
 
 
+  it("should throw an error message when there is an error with the namedmaps", function(done) {
+
+    var named_map = {
+      stat_tag: 'stat_tag_named_map',
+      name: 'testing',
+      auth_token: 'auth_token_test'
+    };
+
+    namedMap = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "https",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ error: 'not found' });
+    };
+
+    var _data, _error;
+    var callb = function (dt,er){
+      _data = dt;
+      _error = er;
+    };
+
+    namedMap.getTiles(callb);
+
+    setTimeout(function() {
+      var res = "not found";
+
+      expect(_error).toEqual(res);
+      expect(true).toEqual(true);
+
+      done();
+    }, 100);
+
+  });
+
 
 });
 

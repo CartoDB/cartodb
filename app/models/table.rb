@@ -1215,6 +1215,15 @@ class Table < Sequel::Model(:user_tables)
 
   def the_geom_type
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+  rescue => e
+    # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
+    CartoDB::notify_error("Redis error at table #{self.name}, will retry", error_info: e.backtrace)
+    begin
+      $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+    rescue => e
+      CartoDB::notify_error("Redis error at table #{self.name}", error_info: e.backtrace)
+      raise e
+    end
   end
 
   def the_geom_type=(value)

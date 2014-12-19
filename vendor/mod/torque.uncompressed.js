@@ -370,6 +370,12 @@ var _torque_reference_latest = {
                 ],
                 "default-value": "ellipse",
                 "doc": "The default marker-type. If a SVG file is not given as the marker-file parameter, the renderer provides either an rectangle or an ellipse (a circle if height is equal to width)"
+            },
+             "width": {
+                "css": "marker-width",
+                "default-value": 10,
+                "doc": "The width of the marker, if using one of the default types.",
+                "type": "float"
             }
         },
         "point": {
@@ -3807,8 +3813,9 @@ var Profiler = require('../profiler');
       var e = this.options.extra_params || (this.options.extra_params = {});
       e.auth_token = this.options.auth_token;
     }
-
-    this._fetchMap();
+    if (!this.options.no_fetch_map) {
+      this._fetchMap();
+    }
   };
 
   json.prototype = {
@@ -4230,6 +4237,8 @@ var Profiler = require('../profiler');
     var pixel_size = st['marker-width'];
 
     // render a circle
+    // TODO: fill and stroke order should depend on the order of the properties
+    // in the cartocss.
 
     // fill
     ctx.beginPath();
@@ -4244,14 +4253,14 @@ var Profiler = require('../profiler');
 
     // stroke
     ctx.globalAlpha = 1.0;
-    if (st['line-color'] && st['line-width'] && st['line-width'] > LINEWIDTH_MIN_VALUE) {
-      if (st['marker-line-opacity']) {
+    if (st['marker-line-color'] && st['marker-line-width'] && st['marker-line-width'] > LINEWIDTH_MIN_VALUE) {
+      if (st['marker-line-opacity'] !== undefined) {
         ctx.globalAlpha = st['marker-line-opacity'];
       }
-      if (st['line-width']) {
-        ctx.lineWidth = st['line-width'];
+      if (st['marker-line-width'] !== undefined) {
+        ctx.lineWidth = st['marker-line-width'];
       }
-      ctx.strokeStyle = st['line-color'];
+      ctx.strokeStyle = st['marker-line-color'];
 
       // do not render for alpha = 0
       if (ctx.globalAlpha > 0) {
@@ -4275,14 +4284,14 @@ var Profiler = require('../profiler');
 
     // stroke
     ctx.globalAlpha = 1.0;
-    if (st['line-color'] && st['line-width']) {
+    if (st['marker-line-color'] && st['marker-line-width']) {
       if (st['marker-line-opacity']) {
         ctx.globalAlpha = st['marker-line-opacity'];
       }
-      if (st['line-width']) {
-        ctx.lineWidth = st['line-width'];
+      if (st['marker-line-width']) {
+        ctx.lineWidth = st['marker-line-width'];
       }
-      ctx.strokeStyle = st['line-color'];
+      ctx.strokeStyle = st['marker-line-color'];
 
       // do not render for alpha = 0
       if (ctx.globalAlpha > 0) {
@@ -4425,13 +4434,13 @@ var carto = global.carto || require('carto');
         return null;
       }
 
-      if (st['marker-opacity'] === 0 && !st['line-opacity']) {
+      if (st['marker-opacity'] === 0 && !st['marker-line-opacity']) {
         return null;
       }
 
       var canvas = this._createCanvas();
       // take into account the exterior ring to calculate the size
-      var canvasSize = (st['line-width'] || 0) + pointSize*2;
+      var canvasSize = (st['marker-line-width'] || 0) + pointSize*2;
       var ctx = canvas.getContext('2d');
       var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
       ctx.translate(w/2, w/2);

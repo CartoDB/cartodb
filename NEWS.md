@@ -1,6 +1,7 @@
-3.6.1 ()
+3.6.1 (2014-12-19)
 ------------------
 * Updates torque library with several fixes
+* Adds new fonts
 
 3.6.0 (2014-12-15)
 ------------------

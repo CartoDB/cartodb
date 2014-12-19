@@ -1215,6 +1215,15 @@ class Table < Sequel::Model(:user_tables)
 
   def the_geom_type
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+  rescue => e
+    # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
+    CartoDB::notify_error("Redis error at table #{self.name}, will retry", error_info: e.backtrace)
+    begin
+      $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+    rescue => e
+      CartoDB::notify_error("Redis error at table #{self.name}", error_info: e.backtrace)
+      raise e
+    end
   end
 
   def the_geom_type=(value)
@@ -1416,9 +1425,13 @@ class Table < Sequel::Model(:user_tables)
 
     if @name_changed_from.present? && @name_changed_from != name
       reload
+
+      old_key = Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}")
+      new_key = key
+
       begin
         # update metadata records
-        $tables_metadata.rename(Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}"), key)
+        $tables_metadata.rename(old_key, new_key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
@@ -1426,7 +1439,7 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      if register_table_only != true
+      unless register_table_only
         begin
           owner.in_database.rename_table(@name_changed_from, name) unless errored
         rescue StandardError => exception
@@ -1449,7 +1462,10 @@ class Table < Sequel::Model(:user_tables)
         end
       end
 
-      raise exception_to_raise if errored
+      if errored
+        $tables_metadata.rename(new_key, old_key)
+        raise exception_to_raise
+      end
     end
     @name_changed_from = nil
   end

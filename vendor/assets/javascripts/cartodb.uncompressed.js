@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.26
+// cartodb.js version: 3.11.28
 // uncompressed version: cartodb.uncompressed.js
-// sha: 778b7b98b23e12c49bd487fc7d54614b5e4e1b43
+// sha: 1c12ea6132f496a7525561b612026e2ef17400e2
 (function() {
   var root = this;
 
@@ -20720,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.26";
+    cdb.VERSION = "3.11.28";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22596,10 +22596,14 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
     var fontFamilyClass = "";
 
-    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
-    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
-    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
-    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
+    if      (fontFamily  == "Droid Sans")       fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")         fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")        fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")           fontFamilyClass = "roboto";
+    else if (fontFamily  == "Lato")             fontFamilyClass = "lato";
+    else if (fontFamily  == "Graduate")         fontFamilyClass = "graduate";
+    else if (fontFamily  == "Gravitas One")     fontFamilyClass = "gravitas_one";
+    else if (fontFamily  == "Old Standard TT")  fontFamilyClass = "old_standard_tt";
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)
@@ -22610,7 +22614,11 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     .removeClass("droid")
     .removeClass("vollkorn")
     .removeClass("roboto")
-    .removeClass("open_sans");
+    .removeClass("open_sans")
+    .removeClass("lato")
+    .removeClass("graduate")
+    .removeClass("gravitas_one")
+    .removeClass("old_standard_tt");
 
     this.$el.addClass(fontFamilyClass);
     this.$el.css({
@@ -22959,16 +22967,24 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     var fontFamilyClass = "";
 
-    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
-    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
-    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
-    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
+    if      (fontFamily  == "Droid Sans")       fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")         fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")        fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")           fontFamilyClass = "roboto";
+    else if (fontFamily  == "Lato")             fontFamilyClass = "lato";
+    else if (fontFamily  == "Graduate")         fontFamilyClass = "graduate";
+    else if (fontFamily  == "Gravitas One")     fontFamilyClass = "gravitas_one";
+    else if (fontFamily  == "Old Standard TT")  fontFamilyClass = "old_standard_tt";
 
     this.$el
     .removeClass("droid")
     .removeClass("vollkorn")
     .removeClass("roboto")
-    .removeClass("open_sans");
+    .removeClass("open_sans")
+    .removeClass("lato")
+    .removeClass("graduate")
+    .removeClass("gravitas_one")
+    .removeClass("old_standard_tt");
 
     this.$el.addClass(fontFamilyClass);
 
@@ -24983,6 +24999,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   updateContent: function(attributes) {
     var fields = this.get('fields');
     this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  },
+
+  closeInfowindow: function(){
+  if (this.get('visibility')) {
+      this.set("visibility", false);
+      this.trigger('close');
+    }
   }
 
 }, {
@@ -27630,14 +27653,15 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
-        if (self.visibleLayers().length === 0) {
+        if ((self.named_map !== null) && (err) ){
+          callback && callback(null, err);      
+        } else if (self.visibleLayers().length === 0) {
           callback && callback({
             tiles: [Map.EMPTY_GIF],
             grids: []
           });
           return;
         } 
-        callback && callback(null, err);
       }
     });
     return this;
@@ -29292,7 +29316,7 @@ function layerView(base) {
     },
 
     error: function(e) {
-      this.trigger('error', e ? e.errors : 'unknown error');
+      this.trigger('error', e ? (e.errors || e) : 'unknown error');
       this.model.trigger('error', e?e.errors:'unknown error');
     },
 

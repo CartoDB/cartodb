@@ -29,13 +29,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection = Visualization::Collection.new.fetch(
                    params.dup.merge(scope_for(current_user))
                  )
+
+    users_cache = {}
+
     table_data = collection.map { |vis|
       if vis.table.nil?
         nil
       else
+        users_cache[vis.user_id] ||= vis.user
         {
           name:   vis.table.name,
-          schema: vis.user.database_schema
+          schema: users_cache[vis.user_id].database_schema
         }
       end
     }.compact
@@ -290,6 +294,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.add_like_from(current_viewer.id)
        .fetch
+       .invalidate_varnish_cache
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -335,6 +340,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.remove_like_from(current_viewer.id)
        .fetch
+       .invalidate_varnish_cache
+
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -416,31 +423,41 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def rows_and_sizes_for(table_data)
     data = Hash.new
-    table_data.each { |table|
-      row = current_user.in_database.fetch(%Q{
+
+    tables_data_per_schema = table_data.group_by { |td| td[:schema] }
+
+    tables_data_per_schema.each { |schema, tables_data| 
+      table_names = tables_data.map { |td| td[:name] }
+
+      rows = current_user.in_database.fetch(%Q{
         SELECT
           relname AS table_name,
-          pg_total_relation_size(? || '.' || relname) AS total_relation_size,
+          pg_total_relation_size('"' || ? || '"."' || relname || '"') AS total_relation_size,
           reltuples::integer AS reltuples
         FROM pg_class
-        WHERE relname=?
+        WHERE relname in ?
       },
-      table[:schema],
-      table[:name]
-      ).first
-      if row.nil?
-        # don't break whole dashboard
-        data[table[:name]] = {
-          size: nil,
-          rows: nil
-        }
-      else
+      schema,
+      table_names
+      ).all
+
+      rows.map { |row|
         data[row[:table_name]] = {
           size: row[:total_relation_size].to_i / 2,
           rows: row[:reltuples]
         }
-      end
+      }
     }
+
+    # Fill missing table data
+    # don't break whole dashboard
+    table_data.select { |td| data[td[:name]].nil? }.each { |table|
+        data[table[:name]] = {
+          size: nil,
+          rows: nil
+        }
+    }
+
     data
   end
 

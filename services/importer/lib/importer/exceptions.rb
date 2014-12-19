@@ -33,7 +33,7 @@ module CartoDB
     class EncodingDetectionError                < StandardError; end
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
-    class TooManyColumnsError < GenericImportError; end
+    class TooManyColumnsError                   < GenericImportError; end
 
     # @see also app/models/synchronization/member.rb => run() for more error codes
     # @see config/initializers/carto_db.rb For the texts

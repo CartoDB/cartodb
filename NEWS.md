@@ -1,7 +1,12 @@
+3.6.1 ()
+------------------
+* Updates torque library with several fixes
+
 3.6.0 (2014-12-15)
 ------------------
 * First version of new dashboard
 * Added Browserify for frontend development (check [this doc](https://github.com/CartoDB/cartodb/blob/master/CONTRIBUTING.md#grunt))
+* Several improvements to raster imports
 
 3.5.0 (2014-12-11)
 ------------------

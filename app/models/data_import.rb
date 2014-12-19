@@ -46,15 +46,17 @@ class DataImport < Sequel::Model
     content_guessing
     server
     host
+    resque_ppid
   }
 
   # Not all constants are used, but so that we keep track of available states
   STATE_PENDING   = 'pending'
   STATE_UNPACKING = 'unpacking'
   STATE_IMPORTING = 'importing'
-  STATE_COMPLETE   = 'complete'
+  STATE_COMPLETE  = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
+  STATE_STUCK     = 'stuck'
 
   TYPE_EXTERNAL_TABLE = 'external_table'
   TYPE_FILE           = 'file'
@@ -80,11 +82,12 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE)
+    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
     values
   end
 
   def run_import!
+    self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
     log.append "Running on server #{self.server} with PID: #{Process.pid}"
     begin
@@ -145,11 +148,11 @@ class DataImport < Sequel::Model
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
     self.success  = false
-    self.state    = STATE_FAILURE
+    self.state    = STATE_STUCK
     save
 
     CartoDB::notify_exception(
-      CartoDB::Importer2::GenericImportError.new('Import timed out'),
+      CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),
       user: current_user
     )
     true
@@ -178,21 +181,15 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    # TODO: This doesn't works properly, until researched do not report false negatives
-    #if log.entries =~ /Table (.*) registered/
-      self.success  = true
-      self.state    = STATE_COMPLETE
-      table_names = results.map { |result| result.name }.select { |name| name != nil}.sort
-      self.table_names = table_names.join(' ')
-      self.tables_created_count = table_names.size
-      log.append "Import finished\n"
-      save
-      notify(results)
-      self
-    #else
-    #  log.append "Import FAILED registering table!\n"
-    #  handle_failure
-    #end
+    self.success  = true
+    self.state    = STATE_COMPLETE
+    table_names = results.map { |result| result.name }.select { |name| name != nil}.sort
+    self.table_names = table_names.join(' ')
+    self.tables_created_count = table_names.size
+    log.append "Import finished\n"
+    save
+    notify(results)
+    self
   end
 
   def handle_failure
@@ -216,7 +213,7 @@ class DataImport < Sequel::Model
 
 
   def is_raster?
-    ::JSON.parse(self.stats).select{ |item| item["type"] == ".tif" }.length > 0
+    ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
   end
 
   private
@@ -279,7 +276,7 @@ class DataImport < Sequel::Model
   # processed by any active worker
   def stuck?
     ![STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
-    self.created_at < 5.minutes.ago            &&
+    self.created_at < 5.minutes.ago &&
     !running_import_ids.include?(self.id)
   end
 
@@ -577,7 +574,8 @@ class DataImport < Sequel::Model
                   'data_type'         => self.data_type,
                   'is_sync_import'    => !self.synchronization_id.nil?,
                   'import_time'       => self.updated_at - self.created_at,
-                  'file_stats'        => ::JSON.parse(self.stats)
+                  'file_stats'        => ::JSON.parse(self.stats),
+                  'resque_ppid'              => self.resque_ppid
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)

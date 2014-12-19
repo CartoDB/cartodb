@@ -39,7 +39,7 @@ See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
-### Writing testcases
+### Writing & running tests
 
 Tests reside in the `lib/assets/test` directory. We use
  - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
@@ -50,6 +50,21 @@ When adding new files make sure they exist in an appropriate file located in `li
 if you're writing tests for current code or the newer browserify modules).
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
+
+All tests can be run by:
+```bash
+grunt jasmine
+
+# or if you want to run tests in browser it's preferrable to use:
+grunt jasmine-server
+```
+
+If you only want to run a subset of tests use the browser approach (see above) and append this querystring to the URL:
+`?spec=start-of-describe`, i.e.:
+```
+http://0.0.0.0:8089/_SpecRunner.html?spec=cdb.admin.User
+```
+
 
 ## CSS
 
@@ -75,10 +90,15 @@ npm install
 npm install -g grunt-cli
 ```
 
-Run `npm grunt availabletasks` to see available tasks.
+Run `grunt availabletasks` to see available tasks.
 
-For a standard developer we recommend `npm grunt dev`, which watches CSS/JS files and rebuild bundles automatically on
-file changes. The compiled code can be seen under `public/assets/:version`
+First time starting to work you need to run `grunt`, to build all static assets (will be written to `public/assets/:version`).
+
+After that, for typical frontend work, it's recommended to run:
+```bash
+grunt dev
+```
+This will watch CSS and JS files and rebuild bundles automatically upon changes.
 
 **Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
 

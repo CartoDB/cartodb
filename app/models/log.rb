@@ -19,6 +19,8 @@ module CartoDB
       self.entries = '' if self.entries.nil?
       self.entries << ENTRY_FORMAT % [ timestamp, content ]
       save
+    rescue => e
+      Rollbar.report_exception(e)
     end
 
     def validate

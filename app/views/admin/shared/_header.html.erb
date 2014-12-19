@@ -1,4 +1,4 @@
-<% unless current_user.feature_flags.include? 'new_dashboard' %>
+<% unless (current_user.feature_flags.include? 'new_dashboard') && params[:controller] == 'admin/visualizations' %>
 <header>
   <div class="inner">
     <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>

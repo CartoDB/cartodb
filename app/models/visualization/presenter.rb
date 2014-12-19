@@ -56,6 +56,7 @@ module CartoDB
           updated_at:       visualization.updated_at,
           title:            visualization.title,
           kind:             visualization.kind,
+          privacy:          privacy_for_vizjson.upcase,
           likes:            visualization.likes.count
         }
       end

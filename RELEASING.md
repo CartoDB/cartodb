@@ -41,7 +41,7 @@ http://libs.cartocdn.com/cartodb.js/v3/3.11.27/cartodb.js
 http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.11/cartodb.js
 http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js
 ```
-- Sometimes It takes more than 10 minutes, if it is not updated, execute ``grunt invalidate``.
+- Sometimes It takes more than 10 minutes, if it is not updated, execute ```grunt invalidate```.
 
 - And to finish: close the release and push it.
 

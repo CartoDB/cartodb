@@ -46,6 +46,20 @@ module CartoDB
         poro
       end
 
+      def to_public_poro
+        {
+          id:               visualization.id,
+          name:             visualization.name,
+          type:             visualization.type,
+          tags:             visualization.tags,
+          description:      visualization.description,
+          updated_at:       visualization.updated_at,
+          title:            visualization.title,
+          kind:             visualization.kind,
+          likes:            visualization.likes.count
+        }
+      end
+
       private
 
       attr_reader :visualization, :options, :user, :table, :synchronization,

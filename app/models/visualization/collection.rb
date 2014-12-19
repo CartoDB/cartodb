@@ -95,7 +95,6 @@ module CartoDB
       attr_reader :collection
 
       def compute_sharing_filter_dataset(filters)
-        dataset = nil
         if filters[:only_shared].present? && filters[:only_shared].to_s == 'true'
           dataset = repository.collection
           dataset = filter_by_only_shared(dataset, filters)

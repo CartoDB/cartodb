@@ -18,54 +18,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                :remove_like
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
-                                                         :is_liked, :remove_like]
-  before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like]
+                                                         :is_liked, :remove_like, :index]
+  before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
+                                                    :index]
   before_filter :link_ghost_tables, only: [:index, :show]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
                                                       :add_like, :is_liked, :remove_like]
 
   def index
-    collection = Visualization::Collection.new.fetch(
-                   params.dup.merge(scope_for(current_user))
-                 )
-
-    users_cache = {}
-
-    table_data = collection.map { |vis|
-      if vis.table.nil?
-        nil
-      else
-        users_cache[vis.user_id] ||= vis.user
-        {
-          name:   vis.table.name,
-          schema: users_cache[vis.user_id].database_schema
-        }
-      end
-    }.compact
-    synchronizations = synchronizations_by_table_name(table_data)
-    rows_and_sizes   = rows_and_sizes_for(table_data)
-    representation  = collection.map { |vis|
-      begin
-        vis.to_hash(
-          related:    false,
-          table_data: !(params[:table_data] =~ /false/),
-          user:       current_user,
-          table:      vis.table,
-          synchronization: synchronizations[vis.name],
-          rows_and_sizes: rows_and_sizes
-        )
-      rescue => exception
-        puts exception.to_s + exception.backtrace.join("\n")
-      end
-    }.compact
-
-    response        = {
-      visualizations: representation,
-      total_entries:  collection.total_entries
-    }
-    current_user.update_visualization_metrics
-    render_jsonp(response)
+    current_user ? index_logged_in : index_not_logged_in
   end
 
   def create
@@ -365,8 +327,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     CartoDB::Visualization::Locator.new
   end
 
-  def scope_for(current_user)
-    { user_id: current_user.id }
+  def scope_for(user)
+    { user_id: user.id }
   end
 
   def allow_vizjson_v1_for?(table)
@@ -467,6 +429,83 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     if params[:api_key].present?
       authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
     end
+  end
+
+  def index_not_logged_in
+    public_visualizations = []
+    user = User.where(username: CartoDB.extract_subdomain(request)).first
+
+    unless user.nil?
+      filtered_params = params.dup.merge(scope_for(user))
+      filtered_params['exclude_shared'] = true
+      filtered_params['privacy'] = Visualization::Member::PRIVACY_PUBLIC
+      filtered_params.delete('locked')
+      filtered_params.delete('map_id')
+      collection = Visualization::Collection.new.fetch(
+        filtered_params
+      )
+
+      public_visualizations  = collection.map { |vis|
+        begin
+          vis.to_hash(
+            public_fields_only: true,
+            related: false,
+            table: vis.table
+          )
+        rescue => exception
+          puts exception.to_s + exception.backtrace.join("\n")
+        end
+      }.compact
+    end
+
+    response = {
+      visualizations: public_visualizations,
+      total_entries:  public_visualizations.length
+    }
+    render_jsonp(response)
+  end
+
+  def index_logged_in
+    collection = Visualization::Collection.new.fetch(
+      params.dup.merge(scope_for(current_user))
+    )
+
+    users_cache = {}
+
+    table_data = collection.map { |vis|
+      if vis.table.nil?
+        nil
+      else
+        users_cache[vis.user_id] ||= vis.user
+        {
+          name:   vis.table.name,
+          schema: users_cache[vis.user_id].database_schema
+        }
+      end
+    }.compact
+    synchronizations = synchronizations_by_table_name(table_data)
+    rows_and_sizes   = rows_and_sizes_for(table_data)
+    representation  = collection.map { |vis|
+      begin
+        vis.to_hash(
+          related:    false,
+          table_data: !(params[:table_data] =~ /false/),
+          user:       current_user,
+          table:      vis.table,
+          synchronization: synchronizations[vis.name],
+          rows_and_sizes: rows_and_sizes
+        )
+      rescue => exception
+        puts exception.to_s + exception.backtrace.join("\n")
+      end
+    }.compact
+
+    response        = {
+      visualizations: representation,
+      total_entries:  collection.total_entries
+    }
+    current_user.update_visualization_metrics
+    render_jsonp(response)
   end
 
 end

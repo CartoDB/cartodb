@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.26
+// cartodb.js version: 3.11.27
 // uncompressed version: cartodb.uncompressed.js
-// sha: 778b7b98b23e12c49bd487fc7d54614b5e4e1b43
+// sha: af3c968bf4cf7628a39a17ffcbfc28f067647af1
 (function() {
   var root = this;
 
@@ -20720,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.26";
+    cdb.VERSION = "3.11.27";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24983,6 +24983,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   updateContent: function(attributes) {
     var fields = this.get('fields');
     this.set('content', cdb.geo.ui.InfowindowModel.contentForFields(attributes, fields));
+  },
+
+  closeInfowindow: function(){
+  if (this.get('visibility')) {
+      this.set("visibility", false);
+      this.trigger('close');
+    }
   }
 
 }, {
@@ -27630,14 +27637,15 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
-        if (self.visibleLayers().length === 0) {
+        if ((self.named_map !== null) && (err) ){
+          callback && callback(null, err);      
+        } else if (self.visibleLayers().length === 0) {
           callback && callback({
             tiles: [Map.EMPTY_GIF],
             grids: []
           });
           return;
         } 
-        callback && callback(null, err);
       }
     });
     return this;
@@ -29292,7 +29300,7 @@ function layerView(base) {
     },
 
     error: function(e) {
-      this.trigger('error', e ? e.errors : 'unknown error');
+      this.trigger('error', e ? (e.errors || e) : 'unknown error');
       this.model.trigger('error', e?e.errors:'unknown error');
     },
 

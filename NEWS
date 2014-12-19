@@ -1,3 +1,7 @@
+3.11.28 (19//12//2014)
+- #256 - Fixes loader position
+- #255 - Adds new fonts for the overlays
+
 3.11.27 (19//12//2014)
 - #245 - Fixed a bug with error messages named map instantiation 
 - #224 - Public method close infowindow 

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.27
+// cartodb.js version: 3.11.28
 // uncompressed version: cartodb.uncompressed.js
-// sha: af3c968bf4cf7628a39a17ffcbfc28f067647af1
+// sha: 1c12ea6132f496a7525561b612026e2ef17400e2
 (function() {
   var root = this;
 
@@ -20720,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.27";
+    cdb.VERSION = "3.11.28";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22596,10 +22596,14 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
     var fontFamilyClass = "";
 
-    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
-    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
-    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
-    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
+    if      (fontFamily  == "Droid Sans")       fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")         fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")        fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")           fontFamilyClass = "roboto";
+    else if (fontFamily  == "Lato")             fontFamilyClass = "lato";
+    else if (fontFamily  == "Graduate")         fontFamilyClass = "graduate";
+    else if (fontFamily  == "Gravitas One")     fontFamilyClass = "gravitas_one";
+    else if (fontFamily  == "Old Standard TT")  fontFamilyClass = "old_standard_tt";
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)
@@ -22610,7 +22614,11 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     .removeClass("droid")
     .removeClass("vollkorn")
     .removeClass("roboto")
-    .removeClass("open_sans");
+    .removeClass("open_sans")
+    .removeClass("lato")
+    .removeClass("graduate")
+    .removeClass("gravitas_one")
+    .removeClass("old_standard_tt");
 
     this.$el.addClass(fontFamilyClass);
     this.$el.css({
@@ -22959,16 +22967,24 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
     var fontFamilyClass = "";
 
-    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
-    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
-    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
-    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
+    if      (fontFamily  == "Droid Sans")       fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")         fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")        fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")           fontFamilyClass = "roboto";
+    else if (fontFamily  == "Lato")             fontFamilyClass = "lato";
+    else if (fontFamily  == "Graduate")         fontFamilyClass = "graduate";
+    else if (fontFamily  == "Gravitas One")     fontFamilyClass = "gravitas_one";
+    else if (fontFamily  == "Old Standard TT")  fontFamilyClass = "old_standard_tt";
 
     this.$el
     .removeClass("droid")
     .removeClass("vollkorn")
     .removeClass("roboto")
-    .removeClass("open_sans");
+    .removeClass("open_sans")
+    .removeClass("lato")
+    .removeClass("graduate")
+    .removeClass("gravitas_one")
+    .removeClass("old_standard_tt");
 
     this.$el.addClass(fontFamilyClass);
 

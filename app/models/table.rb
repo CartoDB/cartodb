@@ -1416,9 +1416,13 @@ class Table < Sequel::Model(:user_tables)
 
     if @name_changed_from.present? && @name_changed_from != name
       reload
+
+      old_key = Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}")
+      new_key = key
+
       begin
         # update metadata records
-        $tables_metadata.rename(Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}"), key)
+        $tables_metadata.rename(old_key, new_key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
@@ -1426,7 +1430,7 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      if register_table_only != true
+      unless register_table_only
         begin
           owner.in_database.rename_table(@name_changed_from, name) unless errored
         rescue StandardError => exception
@@ -1449,7 +1453,10 @@ class Table < Sequel::Model(:user_tables)
         end
       end
 
-      raise exception_to_raise if errored
+      if errored
+        $tables_metadata.rename(new_key, old_key)
+        raise exception_to_raise
+      end
     end
     @name_changed_from = nil
   end

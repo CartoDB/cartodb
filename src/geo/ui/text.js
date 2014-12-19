@@ -50,10 +50,14 @@ cdb.geo.ui.Text = cdb.core.View.extend({
 
     var fontFamilyClass = "";
 
-    if      (fontFamily  == "Droid Sans") fontFamilyClass = "droid";
-    else if (fontFamily  == "Vollkorn")   fontFamilyClass = "vollkorn";
-    else if (fontFamily  == "Open Sans")  fontFamilyClass = "open_sans";
-    else if (fontFamily  == "Roboto")     fontFamilyClass = "roboto";
+    if      (fontFamily  == "Droid Sans")       fontFamilyClass = "droid";
+    else if (fontFamily  == "Vollkorn")         fontFamilyClass = "vollkorn";
+    else if (fontFamily  == "Open Sans")        fontFamilyClass = "open_sans";
+    else if (fontFamily  == "Roboto")           fontFamilyClass = "roboto";
+    else if (fontFamily  == "Lato")             fontFamilyClass = "lato";
+    else if (fontFamily  == "Graduate")         fontFamilyClass = "graduate";
+    else if (fontFamily  == "Gravitas One")     fontFamilyClass = "gravitas_one";
+    else if (fontFamily  == "Old Standard TT")  fontFamilyClass = "old_standard_tt";
 
     var rgbaCol = 'rgba(' + parseInt(boxColor.slice(-6,-4),16)
     + ',' + parseInt(boxColor.slice(-4,-2),16)
@@ -64,7 +68,11 @@ cdb.geo.ui.Text = cdb.core.View.extend({
     .removeClass("droid")
     .removeClass("vollkorn")
     .removeClass("roboto")
-    .removeClass("open_sans");
+    .removeClass("open_sans")
+    .removeClass("lato")
+    .removeClass("graduate")
+    .removeClass("gravitas_one")
+    .removeClass("old_standard_tt");
 
     this.$el.addClass(fontFamilyClass);
     this.$el.css({

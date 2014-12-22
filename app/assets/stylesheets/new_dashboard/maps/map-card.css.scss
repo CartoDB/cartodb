@@ -1,6 +1,7 @@
 // Map card item
 // --------------------------------------------------
 
+@import "compass/css3/images";
 @import "../../new_common/colors";
 @import "../../new_common/mixins";
 
@@ -29,7 +30,7 @@
   position: relative;
   width: 100%;
   height: 170px;
-  background: $cStructure-softLine;
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
   @include border-radius(2px 2px 0 0);
 }
 .MapCard-headerShadow {

@@ -5,6 +5,7 @@
    but queued instead (new DataImport state "enqueued"), so that a new cartodb:upload_to_s3 rake (intended to be run
    from a cron) performs asynchronously this upload and then normal import flow proceeds as before.
    New Config entry: ['importer']['s3']['async_long_uploads'] (boolean)
+ - GET /api/v1/viz/ now works unauthenticated too, returning only the public tables of the subdomain's cartodb user.
 
 3.6.1 (2014-12-19)
 ------------------

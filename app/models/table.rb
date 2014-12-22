@@ -594,7 +594,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database({as: :superuser, statement_timeout: 600000}).run("VACUUM FULL #{qualified_table_name}")
+    owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
   end
 
   def handle_creation_error(e)
@@ -1217,11 +1217,11 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
   rescue => e
     # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
-    CartoDB::notify_error("Redis error at table #{self.name}, will retry", error_info: e.backtrace)
+    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Will retry.\n #{e.message} #{e.backtrace.join}")
     begin
       $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
     rescue => e
-      CartoDB::notify_error("Redis error at table #{self.name}", error_info: e.backtrace)
+      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
       raise e
     end
   end

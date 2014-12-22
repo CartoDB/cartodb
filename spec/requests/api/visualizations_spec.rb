@@ -23,7 +23,8 @@ describe Api::Json::VisualizationsController do
     @user = create_user(
       username: 'test',
       email:    'client@example.com',
-      password: 'clientex'
+      password: 'clientex',
+      private_tables_enabled: 'true'
     )
     @api_key = @user.api_key
   end
@@ -768,7 +769,46 @@ describe Api::Json::VisualizationsController do
     end
   end
 
+  describe 'index endpoint' do
+    it 'tests normal users authenticated and unauthenticated calls' do
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory.to_json, @headers
+      pub_vis_id = JSON.parse(last_response.body).fetch('id')
+
+      put api_v1_visualizations_update_url(user_domain: @user.username, api_key: @api_key, id: pub_vis_id),
+           {
+             privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+           }.to_json, @headers
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory.to_json, @headers
+      priv_vis_id = JSON.parse(last_response.body).fetch('id')
+
+      put api_v1_visualizations_update_url(user_domain: @user.username, api_key: @api_key, id: priv_vis_id),
+           {
+             privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+           }.to_json, @headers
+
+
+      get api_v1_visualizations_index_url(user_domain: @user.username), @headers
+      body = JSON.parse(last_response.body)
+
+      body['total_entries'].should eq 1
+      vis = body['visualizations'].first
+      vis['id'].should eq pub_vis_id
+      vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
+
+      # TODO: Make private call too
+
+      # TODO: Make /u/xxxx version with an org user
+
+    end
+  end
+
+  # Visualizations are always created with default_privacy
   def factory(attributes={})
     map   = ::Map.create(user_id: @user.id)
     name  = "visualization #{rand(9999)}"
@@ -778,10 +818,9 @@ describe Api::Json::VisualizationsController do
       map_id:       map.id,
       description:  'bogus',
       type:         'derived',
-      privacy:      'public',
       locked:       attributes.fetch(:locked, false)
     }
-  end #factory
+  end
 
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)

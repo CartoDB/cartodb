@@ -1,0 +1,14 @@
+@import "../new_common/mixins";
+
+.ContentFooter > .u-inner {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  position:relative;
+  width: 940px;
+  height:81px;
+  margin: 0 auto;
+  padding: 0;
+  overflow:hidden;
+}
+

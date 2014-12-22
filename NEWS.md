@@ -1,3 +1,9 @@
+3.7.0 (2014-12-XX)
+------------------
+* New features
+  - GET /api/v1/viz/ now works unauthenticated too, returning only the public tables of the subdomain's cartodb user.
+
+
 3.6.1 (2014-12-19)
 ------------------
 * Updates torque library with several fixes

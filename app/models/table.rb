@@ -594,7 +594,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database({as: :superuser, statement_timeout: 600000}).run("VACUUM FULL #{qualified_table_name}")
+    owner.in_database({as: :superuser, statement_timeout: 1800000}).run("VACUUM FULL #{qualified_table_name}")
   end
 
   def handle_creation_error(e)

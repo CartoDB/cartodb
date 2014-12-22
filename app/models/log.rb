@@ -20,7 +20,13 @@ module CartoDB
       self.entries << ENTRY_FORMAT % [ timestamp, content ]
       save
     rescue => e
-      Rollbar.report_exception(e)
+      Rollbar.report_message("Error appending log, likely an encoding issue", 'error', error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}")
+      begin
+        self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}"
+        self.save
+      rescue => e2
+        Rollbar.report_message("Error saving fallback log info.", 'error', error_info: "id: #{id} #{e2.backtrace.join}")
+      end
     end
 
     def validate

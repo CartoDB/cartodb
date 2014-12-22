@@ -429,24 +429,29 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     tables_data_per_schema.each { |schema, tables_data| 
       table_names = tables_data.map { |td| td[:name] }
 
-      rows = current_user.in_database.fetch(%Q{
-        SELECT
-          relname AS table_name,
-          pg_total_relation_size('"' || ? || '"."' || relname || '"') AS total_relation_size,
-          reltuples::integer AS reltuples
-        FROM pg_class
-        WHERE relname in ?
-      },
-      schema,
-      table_names
-      ).all
+      begin
+        rows = current_user.in_database.fetch(%Q{
+          SELECT
+            relname AS table_name,
+            pg_total_relation_size('"' || ? || '"."' || relname || '"') AS total_relation_size,
+            reltuples::integer AS reltuples
+          FROM pg_class
+          WHERE relname in ?
+        },
+        schema,
+        table_names
+        ).all
 
-      rows.map { |row|
-        data[row[:table_name]] = {
-          size: row[:total_relation_size].to_i / 2,
-          rows: row[:reltuples]
+        rows.map { |row|
+          data[row[:table_name]] = {
+            size: row[:total_relation_size].to_i / 2,
+            rows: row[:reltuples]
+          }
         }
-      }
+      rescue => e
+        # INFO: we don't want request to fail because of SQL error
+        CartoDB.notify_exception(e)
+      end
     }
 
     # Fill missing table data

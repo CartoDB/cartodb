@@ -6,9 +6,10 @@
    from a cron) performs asynchronously this upload and then normal import flow proceeds as before.
    New Config entry: ['importer']['s3']['async_long_uploads'] (boolean)
 
-3.6.1 ()
+3.6.1 (2014-12-19)
 ------------------
 * Updates torque library with several fixes
+* Adds new fonts
 
 3.6.0 (2014-12-15)
 ------------------

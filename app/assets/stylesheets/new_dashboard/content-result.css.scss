@@ -34,12 +34,22 @@
   height: 38px;
   border: 1px solid $cStructure-mainLine;
   @include border-radius(2px);
-}
-.ContentResult-iconError {
   line-height:36px;
-  border-color: $cHighlight-negative;
   font-size: 22px;
+  color: $cTypography-help;
+}
+// Icon types
+.ContentResult-iconNegative {
+  border-color: $cHighlight-negative;
   color: $cHighlight-negative;
+}
+.ContentResult-iconPositive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+.ContentResult-iconAlert {
+  border-color: $cHighlight-alert;
+  color: $cHighlight-alert;
 }
 .ContentResult-title,
 .ContentResult-text {

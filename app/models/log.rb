@@ -22,11 +22,21 @@ module CartoDB
     rescue => e
       Rollbar.report_message("Error appending log, likely an encoding issue", 'error', error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}")
       begin
-        self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}"
+        fix_entries_encoding
         self.save
       rescue => e2
         Rollbar.report_message("Error saving fallback log info.", 'error', error_info: "id: #{id} #{e2.backtrace.join}")
+        begin
+          self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}"
+          self.save
+        rescue => e3
+          Rollbar.report_message("Error saving stripped fallback log info.", 'error', error_info: "id: #{id} #{e3.backtrace.join}")
+        end
       end
+    end
+
+    def fix_entries_encoding
+      self.entries = self.entries.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
     end
 
     def validate

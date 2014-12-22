@@ -19,7 +19,7 @@ class Api::Json::UsersController < Api::ApplicationController
     referer = request.env["HTTP_REFERER"]
     referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
     if referer_match.nil?
-      render status: 400 and return
+      render json: { error: "Referer #{referer} does not match" }, status: 400 and return
     end
 
     if current_viewer.nil?

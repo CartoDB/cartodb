@@ -230,6 +230,10 @@ module CartoDB
       title: 'Too many columns',
       what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones."
     },
+    2005 => {
+      title: 'Duplicated column',
+      what_about: 'Your file has the same header for two or more columns. Please make column names unique and try again.'
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download."

@@ -56,7 +56,7 @@ module CartoDB
 
       def geometrify
         job.log 'geometrifying'
-        raise                               if empty?
+        raise "empty column #{column_name}" if empty?
         convert_from_wkt                    if wkt?
         convert_from_kml_multi              if kml_multi?
         convert_from_kml_point              if kml_point?

@@ -83,21 +83,10 @@ module CartoDB
       end
 
       def self.add_processed_column(db, table_name, column_name)
-        db.run(%Q{
-          ALTER TABLE #{table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);
-        })
-        db.run(%Q{
-          ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN;
-        })
-        db.run(%Q{
-          ALTER TABLE #{table_name} ALTER #{column_name} SET DEFAULT FALSE;
-        })
-        db.run(%Q{
-          CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name});
-        })
-        db.run(%Q{
-          ALTER TABLE #{table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);
-        })
+        db.run(%Q{ALTER TABLE #{table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);})
+        db.run(%Q{ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN default false;})
+        db.run(%Q{CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name});})
+        db.run(%Q{ALTER TABLE #{table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);})
       end
 
       def self.remove_processed_column(db_object, table_name, column_name)

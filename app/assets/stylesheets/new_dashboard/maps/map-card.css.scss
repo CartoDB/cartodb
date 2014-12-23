@@ -40,7 +40,7 @@
   width: 100%;
   height: 4px;
   background: black;
-  @include opacity(.2);
+  @include opacity(.1);
   z-index:2;
 }
 .MapCard-headerGraph {

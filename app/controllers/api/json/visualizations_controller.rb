@@ -350,7 +350,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def payload
     request.body.rewind
-    ::JSON.parse(request.body.read.to_s || String.new)
+    ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
   end
 
   def payload_with_default_privacy

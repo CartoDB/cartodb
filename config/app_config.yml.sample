@@ -113,6 +113,7 @@ defaults: &defaults
       secret_access_key:
       bucket_name:
       url_ttl:
+      async_long_uploads: false
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10

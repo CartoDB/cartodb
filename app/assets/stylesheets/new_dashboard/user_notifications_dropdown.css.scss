@@ -8,9 +8,23 @@
 }
 .NotificationsList-item {
   position: relative;
-  margin: 20px;
-  padding: 20px 0 0 33px!important;
-  border-top: 1px solid $cStructure-mainLine;
+  margin: 0!important;
+  padding: 20px 20px 20px 53px!important;
+  background: $cStructure-grayBkg;
+  font-size: 13px;
+}
+.NotificationsList-icon {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  width: 18px;
+  height: 18px;
+  line-height: 16px;
+  border: 1px solid $cTypography-help;
+  @include border-radius(20px);
+  font-size: 11px;
+  color: $cTypography-help;
+  text-align: center;
 }
 .NotificationsList-title {
   font-size: 15px;
@@ -21,22 +35,6 @@
   margin-top: 0!important;
   font-size: 13px;
   color: $cTypography-secondary;
-}
-.NotificationsList-text.is--new {
-  color: $cTypography-headers;
-}
-.NotificationsList-icon {
-  position: absolute;
-  top: 18px;
-  left: 0;
-  width: 18px;
-  height: 18px;
-  line-height: 16px;
-  border: 1px solid $cTypography-help;
-  @include border-radius(20px);
-  font-size: 11px;
-  color: $cTypography-help;
-  text-align: center;
 }
 .Notifications-iconCount {
   top:19px;
@@ -54,59 +52,70 @@
 .Notifications-iconCount.new--items {
   background: rgba(#C74B43, 1);
 }
-.NotificationsList-header {}
-.NotificationsList-footer {
-  margin: 0!important;
-  padding: 20px 20px 20px 53px!important;
-  background: $cStructure-grayBkg;
-  font-size: 13px;
+.NotificationsList-header {
+  background: rgba(white, 1);
+}
+.NotificationsList-item.is--new {
+  margin: 0 20px 20px!important;
+  padding: 20px 0 0 33px!important;
+  border-top: 1px solid $cStructure-mainLine;
+  background: white;
 
-  .NotificationsList-text { color: $cTypography-secondary }
+  .NotificationsList-text { color:$cTypography-headers }
   .NotificationsList-icon {
-    left: 20px;
-    color: $cTypography-help;
+    color: inherit;
+    left: 0
   }
 }
 
 // Custom icons for different messages
-.NotificationsList-icon.iconFont-trial_ends_soon,
-.NotificationsList-icon.iconFont-custom {
+.NotificationsList-item .iconFont-trial_ends_soon,
+.NotificationsList-item .iconFont-custom {
   line-height: 17px;
   &:before { content: "\E00C" }
-  &.is--new {
-    color: $cHighlight-alert;
-    border-color: $cHighlight-alert;
-  }
 }
-.NotificationsList-icon.iconFont-upgraded_message {
+.NotificationsList-item.is--new .iconFont-trial_ends_soon,
+.NotificationsList-item.is--new .iconFont-custom {
+  color: $cHighlight-alert;
+  border-color: $cHighlight-alert;
+}
+.NotificationsList-item .iconFont-upgraded_message {
   line-height: 17px;
   &:before { content: "\E004" }
-  &.is--new {
-    color: $cHighlight-positive;
-    border-color: $cHighlight-positive;
-  }
 }
-.NotificationsList-icon.iconFont-try_trial {
+.NotificationsList-item.is--new .iconFont-upgraded_message {
+  color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
+}
+.NotificationsList-item .iconFont-try_trial {
   line-height: 17px;
   &:before { content: "\E016" }
-  &.is--new {
-    color: $cHighlight-positive;
-    border-color: $cHighlight-positive;
-  }
 }
-.NotificationsList-icon.iconFont-close_limits {
+.NotificationsList-item.is--new .iconFont-try_trial {
+  color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
+}
+.NotificationsList-item .iconFont-close_limits {
+  line-height: 17px;
+  &:before { content: "\E01E" } 
+}
+.NotificationsList-item.is--new .iconFont-close_limits {
+  color: $cHighlight-alert;
+  border-color: $cHighlight-alert;
+}
+.NotificationsList-item .iconFont-limits_exceeded {
   line-height: 17px;
   &:before { content: "\E01E" }
-  &.is--new {
-    color: $cHighlight-alert;
-    border-color: $cHighlight-alert;
-  }
 }
-.NotificationsList-icon.iconFont-limits_exceeded {
+.NotificationsList-item.is--new .iconFont-limits_exceeded {
+  color: $cHighlight-negative;
+  border-color: $cHighlight-negative;
+}
+.NotificationsList-item .iconFont-new_dashboard {
   line-height: 17px;
-  &:before { content: "\E01E" }
-  &.is--new {
-    color: $cHighlight-negative;
-    border-color: $cHighlight-negative;
-  }
+  &:before { content: "\E01F" }
+}
+.NotificationsList-item.is--new .iconFont-new_dashboard {
+  color: $cHighlight-main;
+  border-color: $cHighlight-main;
 }

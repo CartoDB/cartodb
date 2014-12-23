@@ -46,8 +46,18 @@ namespace :cartodb do
                                             .sub("#{FileUploadHelper::UPLOADS_PATH}/",'')
                                             .sub('/','')
 
-
         file_uri = FileUploadHelper.upload_file_to_s3(filepath, filename, token, Cartodb.config[:importer]['s3'])
+        begin
+          File.delete(filepath)
+          folder = filepath.slice(0, filepath.rindex('/')).gsub('..','')
+          FileUtils.rm_rf(folder) unless folder.length < FileUploadHelper::UPLOADS_PATH.length
+        rescue => exception
+          puts "Errored #{data_import_item.id} : #{exception}"
+          CartoDB::notify_exception(exception, {
+            request: 'cartodb:upload_to_s3 Rake',
+            import_id: data_import_item.id
+          })
+        end
 
         data_import_item.data_source = file_uri
         data_import_item.save
@@ -65,6 +75,10 @@ namespace :cartodb do
 
         data_import_item.state = DataImport::STATE_FAILURE
         data_import_item.save
+
+        File.delete(filepath)
+        folder = filepath.slice(0, filepath.rindex('/')).gsub('..','')
+        FileUtils.rm_rf(folder) unless folder.length < FileUploadHelper::UPLOADS_PATH.length
       end
     end
   end

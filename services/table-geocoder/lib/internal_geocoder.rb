@@ -90,7 +90,7 @@ module CartoDB
 
       def copy_results_to_table
         old_timeout = connection.fetch("SHOW statement_timeout;").first[:statement_timeout]
-        statement_timeout = '30min'
+        statement_timeout = '180min'
         connection.run("SET statement_timeout TO '#{statement_timeout}';")
 
         begin

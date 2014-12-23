@@ -17,6 +17,7 @@
   padding: 28px 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+.DatasetsList-item:last-child { border: none }
 .DatasetsList-item:hover,
 .DatasetsList-item.is--selected {
   padding: 28px 19px; /* compensate for the negative margins and border */

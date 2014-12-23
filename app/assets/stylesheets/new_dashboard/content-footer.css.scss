@@ -1,5 +1,10 @@
 @import "../new_common/mixins";
+@import "../new_common/colors";
 
+.ContentFooter,
+.ContentFooter a {
+  font-size: 13px;
+}
 .ContentFooter > .u-inner {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -10,5 +15,9 @@
   margin: 0 auto;
   padding: 0;
   overflow:hidden;
+}
+.ContentFooter-lockedIcon {
+  font-size: 11px;
+  color: $cTypography-help;
 }
 

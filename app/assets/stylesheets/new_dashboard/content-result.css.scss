@@ -13,6 +13,10 @@
   margin: 80px auto 0;
   text-align: center;
 }
+.ContentResult.empty--content {
+  width: auto;
+  margin: 0 auto;
+}
 .ContentResult-loader {
   position: relative;
   margin: 0 auto;
@@ -27,6 +31,27 @@
   width: 36px;
   height: 36px;
   @include border-radius(50%);
+}
+.ContentResult-smallLoader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 600px;
+    right: 0;
+    height: 2px;
+    background: #82ABDA;
+    @include animation(pulsate 1.5s linear infinite);      
+  }
 }
 .ContentResult-icon {
   @include inline-block();
@@ -69,7 +94,12 @@
 }
 
 
-
+// Animation functions
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}
 @include keyframes(load8){
   0% { @include css3-prefix(transform, rotate(0deg)) }
   100% { @include css3-prefix(transform, rotate(360deg)) }

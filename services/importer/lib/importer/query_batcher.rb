@@ -86,7 +86,7 @@ module CartoDB
         db.run(%Q{ALTER TABLE #{table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);})
         db.run(%Q{ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN;})
         db.run(%Q{ALTER TABLE #{table_name} ALTER #{column_name} SET DEFAULT FALSE;})
-        db.run(%Q{CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name})})
+        db.run(%Q{CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name});})
         db.run(%Q{ALTER TABLE #{table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);})
       end
 

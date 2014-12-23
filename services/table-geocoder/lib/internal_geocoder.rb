@@ -89,16 +89,25 @@ module CartoDB
       end # load_results_to_temp_table
 
       def copy_results_to_table
-        CartoDB::Importer2::QueryBatcher::execute(
-          connection,
-          @query_generator.copy_results_to_table_query,
-          qualified_table_name,
-          nil, # use default logger
-          'InternalGeocoder::copy_results_to_table',
-          false, # do not capture exceptions,
-          batch_size
-        )
-      end # copy_results_to_table
+        old_timeout = connection.fetch("SHOW statement_timeout;").first[:statement_timeout]
+        statement_timeout = '180min'
+        connection.run("SET statement_timeout TO '#{statement_timeout}';")
+
+        begin
+          CartoDB::Importer2::QueryBatcher::execute(
+            connection,
+            @query_generator.copy_results_to_table_query,
+            qualified_table_name,
+            nil, # use default logger
+            'InternalGeocoder::copy_results_to_table',
+            false, # do not capture exceptions,
+            batch_size
+          )
+        ensure
+          connection.run("SET statement_timeout TO '#{old_timeout}';")
+        end
+
+      end
 
       def drop_temp_table
         connection.run("DROP TABLE IF EXISTS #{temp_table_name}")

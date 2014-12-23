@@ -12,14 +12,12 @@ class Api::Json::UsersController < Api::ApplicationController
   end
 
   def get_authenticated_users
-    subdomain = nil
     organization_name = nil
-    referer_organization_username = nil
 
     referer = request.env["HTTP_REFERER"]
     referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
     if referer_match.nil?
-      render status: 400 and return
+      render json: { error: "Referer #{referer} does not match" }, status: 400 and return
     end
 
     if current_viewer.nil?
@@ -74,7 +72,6 @@ class Api::Json::UsersController < Api::ApplicationController
   # get visualization from url
   def can_user_fork_resource(url, current_user)
     referer_match = /tables\/([^\/]+)\/public/.match(url)
-    res = nil
     if referer_match.nil?
       referer_match = /viz\/([^\/]+)/.match(url)
       unless referer_match.nil?

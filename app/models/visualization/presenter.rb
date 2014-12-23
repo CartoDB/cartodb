@@ -14,6 +14,7 @@ module CartoDB
         @rows_and_sizes  = options[:rows_and_sizes] || {}
         # Expose real privacy (used for normal JSON purposes)
         @real_privacy    = options[:real_privacy] || false
+        @user            = nil
       end
 
       def to_poro
@@ -46,10 +47,24 @@ module CartoDB
         poro
       end
 
+      def to_public_poro
+        {
+          id:               visualization.id,
+          name:             visualization.name,
+          type:             visualization.type,
+          tags:             visualization.tags,
+          description:      visualization.description,
+          updated_at:       visualization.updated_at,
+          title:            visualization.title,
+          kind:             visualization.kind,
+          privacy:          privacy_for_vizjson.upcase,
+          likes:            visualization.likes.count
+        }
+      end
+
       private
 
-      attr_reader :visualization, :options, :user, :table, :synchronization,
-                  :rows_and_sizes
+      attr_reader :visualization, :options, :user, :table, :synchronization, :rows_and_sizes
 
       # Simplify certain privacy values for the vizjson
       def privacy_for_vizjson
@@ -83,8 +98,10 @@ module CartoDB
           permission:   nil
         }
         table_visualization = table.table_visualization
-        if !table_visualization.nil?
-          table_data[:permission] = !permission.nil? && table_visualization.id == permission.entity_id ? permission.to_poro : table_visualization.permission.to_poro
+        unless table_visualization.nil?
+          table_data[:permission] = (!permission.nil? && table_visualization.id == permission.entity_id) ?
+                                      permission.to_poro : table_visualization.permission.to_poro
+          table_data[:geometry_types] = table.geometry_types
         end
 
         table_data.merge!(

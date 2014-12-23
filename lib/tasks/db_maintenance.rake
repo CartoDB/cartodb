@@ -823,5 +823,34 @@ namespace :cartodb do
       end
     end
 
+    desc 'Activates Ghost Tables fix to a % of the userbase'
+    task :activate_ghost_tables, [:percent] => :environment do |task, args|
+      opened = 0
+      percent = args[:percent].to_i
+      sleep_each = [25, percent].max
+      puts "ROLLING OUT ghost tables to #{percent}%"
+      User.all.each_with_index do |user, i|
+        if i % 500 == 0
+          puts "CHECKED: #{i}"
+        end
+        if i % 100 <= percent
+          if i % sleep_each == sleep_each
+            sleep 1
+          end
+          begin
+            unless user.ghost_tables_enabled
+              opened += 1
+              user.ghost_tables_enabled = true
+              user.save
+              puts "OK:    #{user.id} (#{user.username})"
+            end
+          rescue => exception
+            puts "ERROR: #{user.id} (#{user.username}): #{exception}"
+          end
+        end
+      end
+      puts "FINISHED rolling out to #{percent}% (#{opened} users modified)"
+    end
+
   end
 end

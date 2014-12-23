@@ -82,14 +82,14 @@ module CartoDB
         end while affected_rows_count > 0
       end
 
-      def self.add_processed_column(db_object, table_name, column_name)
-        db_object.run(%Q{
+      def self.add_processed_column(db, table_name, column_name)
+        db.run(%Q{
          ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN DEFAULT FALSE;
         })
-        db_object.run(%Q{
+        db.run(%Q{
           CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name})
         })
-      end #self.add_processed_column
+      end
 
       def self.remove_processed_column(db_object, table_name, column_name)
         db_object.run(%Q{

@@ -2,7 +2,7 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for, :available_geometries
+  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for, :available_geometries unless Rails.env.development?
 
   before_filter :load_table, only: [:create, :estimation_for]
 
@@ -117,6 +117,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
       estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
     }
   rescue => e
+    CartoDB.notify_exception(e)
     render_jsonp( { description: e.message }, 500)
   end
 

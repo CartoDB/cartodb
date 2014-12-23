@@ -8,6 +8,7 @@
 
 .UserAvatar {
   @include inline-block();
+  vertical-align: middle;
 }
 .UserAvatar--large {
   width:96px;

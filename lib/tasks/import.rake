@@ -24,7 +24,10 @@ namespace :cartodb do
 
   desc 'Uploads a single data import enqueued file to S3, triggering the normal flow afterwards'
   task :upload_to_s3 => [:environment] do |task, args|
-    data_import_item = DataImport.where(state: DataImport::STATE_ENQUEUED).order(:created_at).first
+    data_import_item = DataImport.where(state: DataImport::STATE_ENQUEUED)
+                                 .where(upload_host: Socket.gethostname)
+                                 .order(:created_at)
+                                 .first
 
     unless data_import_item.nil?
       begin

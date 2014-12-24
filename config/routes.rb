@@ -373,7 +373,7 @@ CartoDB::Application.routes.draw do
 
     # Permissions
     get '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#show',   as: :api_v1_permissions_show
-    put '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_show
+    put '(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
 
     # Organizations
     get '(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show

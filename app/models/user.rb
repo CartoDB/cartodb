@@ -1237,7 +1237,10 @@ class User < Sequel::Model
       .where { created_at > Time.now - 24.hours }.all
     running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
     imports.map do |import|
-      if import.created_at < Time.now - 5.minutes && !running_import_ids.include?(import.id)
+      # INFO: this timeout is big because huge files might make the import not to be *running*,
+      # as well as high load periods. With a smaller timeout modal window displays an error message,
+      # and a "0 out of 0 tables imported" mail gets sent
+      if import.created_at < Time.now - 60.minutes && !running_import_ids.include?(import.id)
         import.handle_failure
         nil
       else

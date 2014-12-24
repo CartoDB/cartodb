@@ -34,7 +34,7 @@ module CartoDB
         }
         limit_subquery_fragment = %Q{
            #{table_name}.CTID IN (
-            SELECT CTID FROM #{table_name} WHERE #{temp_column} != TRUE LIMIT #{batch_size}
+            SELECT CTID FROM #{table_name} WHERE #{temp_column} IS NULL LIMIT #{batch_size}
           )
         }
 
@@ -83,10 +83,8 @@ module CartoDB
       end
 
       def self.add_processed_column(db, table_name, column_name)
-        db.run(%Q{ALTER TABLE #{table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);})
-        db.run(%Q{ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN default false;})
+        db.run(%Q{ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN;})
         db.run(%Q{CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name});})
-        db.run(%Q{ALTER TABLE #{table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);})
       end
 
       def self.remove_processed_column(db_object, table_name, column_name)

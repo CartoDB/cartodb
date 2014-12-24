@@ -1033,6 +1033,29 @@ describe Api::Json::VisualizationsController do
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u1_vis_1_id
 
+      # Same with 'shared' filter (convenience alias for not handling both exclude_shared and only_shared)
+      get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
+          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at',
+          shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 2
+      body['visualizations'][0]['id'].should eq u1_vis_1_id
+      body['visualizations'][1]['id'].should eq u2_vis_1_id
+
+      get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
+          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at',
+          shared: CartoDB::Visualization::Collection::FILTER_SHARED_NO), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 1
+      body['visualizations'][0]['id'].should eq u2_vis_1_id
+
+      get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
+          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at',
+          shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 1
+      body['visualizations'][0]['id'].should eq u1_vis_1_id
+
       # Share u1 table with u2
       put api_v1_permissions_update_url(user_domain:user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),
           {acl: [{
@@ -1044,13 +1067,18 @@ describe Api::Json::VisualizationsController do
                  }]}.to_json, @headers
       last_response.status.should == 200
 
-      # Table listing checks
+      # Dunno why (rack test error?) but this call seems to cache previous params, so just call it to "flush" them
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
           type: CartoDB::Visualization::Member::CANONICAL_TYPE, order: 'updated_at',
-          # Dunno why but
+          shared: 'wadus',
           exclude_shared: false,
           only_shared: false),
           @headers
+      # -------------
+
+      # Table listing checks
+      get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
+          type: CartoDB::Visualization::Member::CANONICAL_TYPE, order: 'updated_at'), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u1_t_1_id

@@ -21,7 +21,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_fields_from_central(params[:user], :create)
     @user.enabled = true
 
-    if @user.save.reload
+    if @user.save
+      @user.reload
       @user.set_relationships_from_central(params[:user])
     end
     respond_with(:superadmin, @user)

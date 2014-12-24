@@ -101,7 +101,8 @@ module CartoDB
         unless table_visualization.nil?
           table_data[:permission] = (!permission.nil? && table_visualization.id == permission.entity_id) ?
                                       permission.to_poro : table_visualization.permission.to_poro
-          table_data[:geometry_types] = table.geometry_types
+          # TODO this requires the_geom column to exist, which is not always guaranteed
+          # table_data[:geometry_types] = table.geometry_types
         end
 
         table_data.merge!(

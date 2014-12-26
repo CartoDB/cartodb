@@ -136,12 +136,14 @@ module Concerns
         rffu.destroy
       end
 
-      self.feature_flags_user << to_add.map do | ff_id | 
+      to_add.map { | ff_id | 
         ffu = FeatureFlagsUser.new
         ffu.user_id = self.id
         ffu.feature_flag_id = ff_id
         ffu.save
-      end
+      }.each { |ffu|
+        self.feature_flags_user << ffu
+      }
 
     end
 

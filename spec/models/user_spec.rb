@@ -249,6 +249,15 @@ describe User do
     end
   end
 
+  it 'should store feature flags' do
+    ff = FactoryGirl.create(:feature_flag)
+
+    user = create_user :email => 'ff@example.com', :username => 'ff-user-01', :password => 'ff-user-01'
+    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
+    user.save
+    user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
+  end
+
   it "should have a default dashboard_viewed? false" do
     user = User.new
     user.dashboard_viewed?.should be_false

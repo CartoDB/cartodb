@@ -24,6 +24,10 @@ module CartoDB
     end
     
     class Collection
+      FILTER_SHARED_YES = 'yes'
+      FILTER_SHARED_NO = 'no'
+      FILTER_SHARED_ONLY = 'only'
+
       ALL_RECORDS = 999999
 
       def initialize(attributes={}, options={})
@@ -95,6 +99,19 @@ module CartoDB
       attr_reader :collection
 
       def compute_sharing_filter_dataset(filters)
+        shared_filter = filters.delete(:shared)
+        case shared_filter
+          when FILTER_SHARED_YES
+            filters[:only_shared] = false
+            filters[:exclude_shared] = false
+          when FILTER_SHARED_NO
+            filters[:only_shared] = false
+            filters[:exclude_shared] = true
+          when FILTER_SHARED_ONLY
+            filters[:only_shared] = true
+            filters[:exclude_shared] = false
+        end
+
         if filters[:only_shared].present? && filters[:only_shared].to_s == 'true'
           dataset = repository.collection
           dataset = filter_by_only_shared(dataset, filters)

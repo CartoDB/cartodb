@@ -95,7 +95,7 @@ class Table < Sequel::Model(:user_tables)
   end #default_privacy_values
 
   def geometry_types
-    if schema.select { |key, value| value == 'the_geom' }.length > 0
+    if schema.select { |key, value| key == :the_geom }.length > 0
       owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom

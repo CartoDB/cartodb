@@ -1418,6 +1418,17 @@ describe Table do
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table.geometry_types.should == ['ST_Point']
+
+      # Now remove the_geom and should not break
+      @user.in_database.run(%Q{
+                                ALTER TABLE #{table.name} DROP COLUMN the_geom CASCADE;
+                              })
+      # Schema gets cached, force reload
+      table.reload
+      table.schema(reload:true)
+      table.geometry_types.should == []
+
+      table.destroy
     end
 
     it "returns null values at the end when ordering desc" do

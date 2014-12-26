@@ -829,12 +829,12 @@ namespace :cartodb do
       percent = args[:percent].to_i
       sleep_each = [25, percent].max
       puts "ROLLING OUT ghost tables to #{percent}%"
-      User.all.each_with_index do |user, i|
+      User.order(:id).all.each_with_index do |user, i|
         if i % 500 == 0
           puts "CHECKED: #{i}"
         end
         if i % 100 <= percent
-          if i % sleep_each == sleep_each
+          if i % sleep_each == 0
             sleep 1
           end
           begin

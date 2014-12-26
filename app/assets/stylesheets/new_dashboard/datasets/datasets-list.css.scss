@@ -33,20 +33,21 @@
   width: 38px;
   height: 38px;
   margin-right: 20px;
-  border: 1px $cStructure-mainLine solid;
+  border: 1px rgba($cStructure-mainLine, 0.5) solid;
+  background: rgba(black, 0.05);
   @include border-radius(2px);
 }
 .DatasetsList-itemCategory.is--lineDataset {
-  @include background(image-url('layout/lines-dataset.png') no-repeat center center);
+  @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemCategory.is--polygonDataset {
-  @include background(image-url('layout/polygons-dataset.png') no-repeat center center); 
+  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white); 
 }
 .DatasetsList-itemCategory.is--pointDataset {
-  @include background(image-url('layout/points-dataset.png') no-repeat center center);
+  @include background(image-url('layout/points-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemCategory.is--rasterDataset {
-  @include background(image-url('layout/raster-dataset.png') no-repeat center center);
+  @include background(image-url('layout/raster-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();

@@ -30,6 +30,10 @@ module CartoDB
 
       ORDERING_RELATED_ATTRIBUTES = [:likes, :mapviews]
 
+      # Same as services/data-repository/backend/sequel.rb
+      PAGE          = 1
+      PER_PAGE      = 300
+
       ALL_RECORDS = 999999
 
       def initialize(attributes={}, options={})
@@ -41,6 +45,7 @@ module CartoDB
           member_class: Member
         )
         @can_paginate = true
+        @lazy_order_by = nil
       end
 
       DataRepository::Collection::INTERFACE.each do |method_name|
@@ -67,16 +72,22 @@ module CartoDB
 
           @total_entries = dataset.count
 
-          # For non basic fields
           if @can_paginate
             dataset = repository.paginate(dataset, filters, @total_entries)
+            collection.storage = Set.new(dataset.map { |attributes|
+              Visualization::Member.new(attributes)
+            })
           else
-            # TODO: order then manually paginate/slice
+            items = dataset.map { |attributes|
+              Visualization::Member.new(attributes)
+            }
+            items = lazy_order_by(items, @lazy_order_by)
+            # Manual paging
+            page = (filters.delete(:page) || PAGE).to_i
+            per_page = (filters.delete(:per_page) || PER_PAGE).to_i
+            items = items.slice((page - 1) * per_page, per_page)
+            collection.storage = Set.new(items)
           end
-
-          collection.storage = Set.new(dataset.map { |attributes|
-            Visualization::Member.new(attributes)
-          })
         end
 
         self
@@ -149,17 +160,26 @@ module CartoDB
         order(dataset, filters.delete(:o))
       end
 
-      def order_by_related_attribute(dataset, criteria={})
-        @can_paginate = false
-        key = criteria.keys.first
-        case key
+      # Note: Not implemented ascending order for now, all are descending sorts
+      def lazy_order_by(objects, field)
+        case field
           when :likes
-            # TODO
-            # visualization.likes.count
+            objects.sort! { |obj_a, obj_b|
+              obj_b.likes.count <=> obj_a.likes.count
+            }
           when :mapviews
-            #TODO
-            # visualization.stats
+            objects.sort! { |obj_a, obj_b|
+              # Stats have format [ date, value ]
+              obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
+            }
         end
+        objects
+      end
+
+      # Note: Not implemented ascending order for now
+      def order_by_related_attribute(dataset, criteria)
+        @can_paginate = false
+        @lazy_order_by = criteria.keys.first
         dataset
       end
 

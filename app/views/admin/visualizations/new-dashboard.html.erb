@@ -16,7 +16,7 @@
 
 <%= content_for(:css) do -%>
   <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
-  <%= stylesheet_link_tag 'new_common.css', 'new_dashboard.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_dashboard.css', :media => 'all' %>
 <% end %>
 
 <div class="Header">
@@ -65,19 +65,16 @@
   </div>
 </div>
 
+<div class="ContentController">
+  <div class="DashboardFilters">
+    <div class="u-inner"></div>
+  </div>
 
-<div class="DashboardFilters">
-  <div class="u-inner"></div>
-</div>
+  <div class="ContentList"></div>
 
-<div class="Maps">
-  <div class="u-inner"></div>
-</div>
-
-<div class="Datasets"></div>
-
-<div class="ContentFooter">
-  <div class="u-inner"></div>
+  <div class="ContentFooter">
+    <div class="u-inner"></div>
+  </div>
 </div>
 
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>

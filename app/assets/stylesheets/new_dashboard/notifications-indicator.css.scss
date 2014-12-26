@@ -6,17 +6,20 @@
 .UserNotifications {
   position:relative;
   @include display-flex();
+  text-decoration: none!important;
 }
 .UserNotifications-Icon {
   color: #999;
+  &:hover { color: #666 }
 }
 .UserNotifications-Count {
   position:absolute;
-  display:none;
+  display: block;
+  @include opacity(0);
   top:-9px;
   right:-9px;
-  width:0;
-  height:0;
+  width:17px;
+  height:17px;
   background: #C74B43;
   @include border-radius(23px);
   font-family:Arial;
@@ -25,28 +28,22 @@
   text-align:center;
   line-height:17px;
   color: #C74B43;
+  @include transition(all, .5s, ease-in-out);
+  @include transform(scale(0));
 }
 // States
 .UserNotifications.has--alerts {
-  .UserNotifications-Icon { color: #666 }
   .UserNotifications-Count {
-    width: 17px;
-    height: 17px;
+    @include transition(all, .1s, ease-in-out);
+    @include transform(scale(1));
+    @include opacity(1);
     color: white;
-    display: block;
   }
 }
-
-.UserNotifications:hover {
-  text-decoration:none;
-  
+.UserNotifications.has--alerts:hover {
   .UserNotifications-Count {
-    top:-10px;
-    right:-10px;
-    width:19px;
-    height:19px;
-    font-size:11px;
-    line-height:19px;
+    @include transition(all, .1s, ease-in-out);
+    @include transform(scale(1.1))
   }
 }
 

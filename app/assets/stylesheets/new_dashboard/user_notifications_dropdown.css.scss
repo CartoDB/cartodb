@@ -13,6 +13,7 @@
   background: $cStructure-grayBkg;
   font-size: 13px;
 }
+.NotificationsList-item:last-child { @include border-radius(0 0 2px 2px) }
 .NotificationsList-icon {
   position: absolute;
   top: 18px;
@@ -53,7 +54,7 @@
   background: rgba(#C74B43, 1);
 }
 .NotificationsList-header {
-  background: rgba(white, 1);
+  background: none;
 }
 .NotificationsList-item.is--new {
   margin: 0 20px 20px!important;
@@ -97,7 +98,7 @@
 }
 .NotificationsList-item .iconFont-close_limits {
   line-height: 17px;
-  &:before { content: "\E01E" } 
+  &:before { content: "\E01A" } 
 }
 .NotificationsList-item.is--new .iconFont-close_limits {
   color: $cHighlight-alert;
@@ -113,7 +114,7 @@
 }
 .NotificationsList-item .iconFont-new_dashboard {
   line-height: 17px;
-  &:before { content: "\E01F" }
+  &:before { content: "\E01B" }
 }
 .NotificationsList-item.is--new .iconFont-new_dashboard {
   color: $cHighlight-main;

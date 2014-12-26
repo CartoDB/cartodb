@@ -30,21 +30,45 @@
   &:hover { cursor: default }
 }
 .DatasetsList-itemCategory {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   margin-right: 20px;
-  border: 1px $cStructure-mainLine solid
+  border: 1px rgba($cStructure-mainLine, 0.5) solid;
+  background: rgba(black, 0.05);
+  @include border-radius(2px);
+}
+.DatasetsList-itemCategory.is--lineDataset {
+  @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
+}
+.DatasetsList-itemCategory.is--polygonDataset {
+  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white); 
+}
+.DatasetsList-itemCategory.is--pointDataset {
+  @include background(image-url('layout/points-dataset.png') no-repeat center center white);
+}
+.DatasetsList-itemCategory.is--rasterDataset {
+  @include background(image-url('layout/raster-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
   width: 480px;
-  margin-right: 20px;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 380px;
+  width: 430px;
+}
+.SizeIndicator {
+  font-weight: 300;
+  color: $cTypography-secondary;
+  font-size: 13px;
+}
+.SizeIndicator-icon {
+  font-family: 'CartoIcon';
+  font-size: 10px;
+  font-weight: 300;
+  color: $cTypography-help;
 }
 .DatasetsList-itemMeta {
   @include display-flex();

@@ -3428,7 +3428,7 @@ div.cartodb-timeslider p {
 
 /* GRADUATE */
 .cartodb-overlay.overlay-text.graduate .content > .text { font-family: 'Graduate', sans-serif; font-weight: 400; }
-.cartodb-overlay.overlay-text.graduate .content > .text strong { font-weight: 700; }
+.cartodb-overlay.overlay-text.graduate .content > .text strong { font-family: 'Graduate', sans-serif; font-weight: 400; }
 
 /* OLD STANDARD TT */
 .cartodb-overlay.overlay-text.old_standard_tt .content > .text { font-family: 'Old Standard TT', sans-serif; font-weight: 400; }
@@ -3436,7 +3436,7 @@ div.cartodb-timeslider p {
 
 /* GRAVITAS ONE */
 .cartodb-overlay.overlay-text.gravitas_one .content > .text { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
-.cartodb-overlay.overlay-text.gravitas_one .content > .text strong { font-weight: 700; }
+.cartodb-overlay.overlay-text.gravitas_one .content > .text strong { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),

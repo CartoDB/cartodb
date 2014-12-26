@@ -28,6 +28,8 @@ module CartoDB
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
+      ORDERING_RELATED_ATTRIBUTES = [:likes, :mapviews]
+
       ALL_RECORDS = 999999
 
       def initialize(attributes={}, options={})
@@ -38,6 +40,7 @@ module CartoDB
           repository:   options.fetch(:repository, Visualization.repository),
           member_class: Member
         )
+        @can_paginate = true
       end
 
       DataRepository::Collection::INTERFACE.each do |method_name|
@@ -63,7 +66,13 @@ module CartoDB
           dataset = apply_filters(dataset, filters)
 
           @total_entries = dataset.count
-          dataset = repository.paginate(dataset, filters, @total_entries)
+
+          # For non basic fields
+          if @can_paginate
+            dataset = repository.paginate(dataset, filters, @total_entries)
+          else
+            # TODO: order then manually paginate/slice
+          end
 
           collection.storage = Set.new(dataset.map { |attributes|
             Visualization::Member.new(attributes)
@@ -137,14 +146,41 @@ module CartoDB
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
-        dataset = order(dataset, filters.delete(:o))
+        order(dataset, filters.delete(:o))
+      end
+
+      def order_by_related_attribute(dataset, criteria={})
+        @can_paginate = false
+        key = criteria.keys.first
+        case key
+          when :likes
+            # TODO
+            # visualization.likes.count
+          when :mapviews
+            #TODO
+            # visualization.stats
+        end
         dataset
       end
 
+      def order_by_base_attribute(dataset, criteria={})
+        @can_paginate = true
+        dataset.order(*criteria.map { |key, order| Sequel.send(order, key) })
+      end
 
+      # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at), plus:
+      # - likes
+      # - mapviews
       def order(dataset, criteria={})
+        # {"updated_at"=>"desc"}
         return dataset if criteria.nil? || criteria.empty?
-        dataset.order(*order_params_from(criteria))
+        criteria = criteria.map { |key, order| { key.to_sym => order.to_sym} }
+                           .first   # Multiple ordering not required
+        if ORDERING_RELATED_ATTRIBUTES.include? criteria.keys.first
+          order_by_related_attribute(dataset, criteria)
+        else
+          order_by_base_attribute(dataset, criteria)
+        end
       end
 
       def filter_by_tags(dataset, tags=[])
@@ -207,10 +243,6 @@ module CartoDB
 
       def tags_from(filters={})
         filters.delete(:tags).to_s.split(',')
-      end
-
-      def order_params_from(criteria)
-        criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
       end
 
     end

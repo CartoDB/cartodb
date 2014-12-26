@@ -14,7 +14,6 @@ module CartoDB
         @rows_and_sizes  = options[:rows_and_sizes] || {}
         # Expose real privacy (used for normal JSON purposes)
         @real_privacy    = options[:real_privacy] || false
-        @user            = nil
       end
 
       def to_poro
@@ -29,7 +28,7 @@ module CartoDB
           tags:             visualization.tags,
           description:      visualization.description,
           privacy:          privacy_for_vizjson.upcase,
-          stats:            visualization.stats(user),
+          stats:            visualization.stats,
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
           permission:       permission.nil? ? nil : permission.to_poro,
@@ -64,7 +63,7 @@ module CartoDB
 
       private
 
-      attr_reader :visualization, :options, :user, :table, :synchronization, :rows_and_sizes
+      attr_reader :visualization, :options, :table, :synchronization, :rows_and_sizes
 
       # Simplify certain privacy values for the vizjson
       def privacy_for_vizjson

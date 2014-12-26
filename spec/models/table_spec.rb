@@ -1421,11 +1421,14 @@ describe Table do
 
       # Now remove the_geom and should not break
       @user.in_database.run(%Q{
-                                ALTER TABLE gadm4_export DROP  COLUMN the_geom CASCADE;
+                                ALTER TABLE #{table.name} DROP COLUMN the_geom CASCADE;
                               })
       # Schema gets cached, force reload
+      table.reload
       table.schema(reload:true)
       table.geometry_types.should == []
+
+      table.destroy
     end
 
     it "returns null values at the end when ordering desc" do

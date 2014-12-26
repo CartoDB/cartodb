@@ -36,3 +36,7 @@ $cPrivacy-other:    rgba(#F5A623, 1);
 .PrivacyIndicator.is-private:before {
   background-color: $cPrivacy-private;
 }
+.PrivacyIndicator.is-link:before,
+.PrivacyIndicator.is-password:before {
+  background-color: $cPrivacy-other;
+}

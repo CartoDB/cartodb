@@ -25,7 +25,7 @@ class Api::ApplicationController < ApplicationController
   def link_ghost_tables
     return true unless current_user.present?
 
-    if check_ghost_tables && current_user.ghost_tables_enabled && current_user.search_for_modified_table_names
+    if check_ghost_tables && current_user.search_for_modified_table_names
       # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
       # test if there is a job already for this
       if !current_user.link_ghost_tables_working

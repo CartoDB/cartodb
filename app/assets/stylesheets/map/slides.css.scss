@@ -233,7 +233,9 @@
       a .radiobutton ul li span.radio { margin: 1px 7px 0 0!Important; }
 
     }
-    li.seconds { text-align: center; }
+
+    li.seconds .form { text-align: center; }
+    li.seconds .radiobutton { margin: 0 0 10px 0; }
   }
 
 }

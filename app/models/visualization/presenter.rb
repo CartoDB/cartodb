@@ -135,7 +135,9 @@ module CartoDB
         @visualization.children.map { |vis| {
                                               id:       vis.id,
                                               prev_id:  vis.prev_id,
-                                              next_id:  vis.next_id
+                                              next_id:  vis.next_id,
+                                              transition_options: vis.transition_options,
+                                              map_id: vis.map_id
                                             }
         }
       end

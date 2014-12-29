@@ -28,7 +28,7 @@ module CartoDB
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
-      ORDERING_RELATED_ATTRIBUTES = [:likes, :mapviews]
+      ORDERING_RELATED_ATTRIBUTES = [:likes, :mapviews, :row_count, :size]
 
       # Same as services/data-repository/backend/sequel.rb
       PAGE          = 1
@@ -171,6 +171,18 @@ module CartoDB
             objects.sort! { |obj_a, obj_b|
               # Stats have format [ date, value ]
               obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
+            }
+          when :row_count
+            objects.sort! { |obj_a, obj_b|
+              a_rows = (obj_a.table.nil? ? 0 : obj_a.table.rows_and_size.fetch(:rows)) || 0
+              b_rows = (obj_b.table.nil? ? 0 : obj_b.table.rows_and_size.fetch(:rows)) || 0
+              b_rows <=> a_rows
+            }
+          when :size
+            objects.sort! { |obj_a, obj_b|
+              a_size = (obj_a.table.nil? ? 0 : obj_a.table.rows_and_size.fetch(:size)) || 0
+              b_size = (obj_b.table.nil? ? 0 : obj_b.table.rows_and_size.fetch(:size)) || 0
+              b_size <=> a_size
             }
         end
         objects

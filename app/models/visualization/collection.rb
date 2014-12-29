@@ -157,7 +157,7 @@ module CartoDB
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
-        order(dataset, filters.delete(:o))
+        order(dataset, filters.delete(:order))
       end
 
       # Note: Not implemented ascending order for now, all are descending sorts
@@ -191,24 +191,24 @@ module CartoDB
       # Note: Not implemented ascending order for now
       def order_by_related_attribute(dataset, criteria)
         @can_paginate = false
-        @lazy_order_by = criteria.keys.first
+        @lazy_order_by = criteria
         dataset
       end
 
-      def order_by_base_attribute(dataset, criteria={})
+      def order_by_base_attribute(dataset, criteria)
         @can_paginate = true
-        dataset.order(*criteria.map { |key, order| Sequel.send(order, key) })
+        dataset.order(Sequel.send(:desc, criteria))
       end
 
-      # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at), plus:
+      # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at, created_at), plus:
       # - likes
       # - mapviews
-      def order(dataset, criteria={})
-        # {"updated_at"=>"desc"}
+      # - row_count
+      # - size
+      def order(dataset, criteria=nil)
         return dataset if criteria.nil? || criteria.empty?
-        criteria = criteria.map { |key, order| { key.to_sym => order.to_sym} }
-                           .first   # Multiple ordering not required
-        if ORDERING_RELATED_ATTRIBUTES.include? criteria.keys.first
+        criteria = criteria.to_sym
+        if ORDERING_RELATED_ATTRIBUTES.include? criteria
           order_by_related_attribute(dataset, criteria)
         else
           order_by_base_attribute(dataset, criteria)

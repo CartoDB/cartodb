@@ -95,17 +95,21 @@ class Table < Sequel::Model(:user_tables)
   end #default_privacy_values
 
   def geometry_types
-    owner.in_database[ %Q{
+    if schema.select { |key, value| key == :the_geom }.length > 0
+      owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
         FROM "#{self.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
+    else
+      []
+    end
   end
 
   def is_raster?
-    schema.select { |key, value| value == "raster" }.length > 0
+    schema.select { |key, value| value == 'raster' }.length > 0
   end
 
   def_dataset_method(:search) do |query|
@@ -594,7 +598,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database({as: :superuser, statement_timeout: 600000}).run("VACUUM FULL #{qualified_table_name}")
+    owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
   end
 
   def handle_creation_error(e)
@@ -1215,6 +1219,15 @@ class Table < Sequel::Model(:user_tables)
 
   def the_geom_type
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+  rescue => e
+    # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
+    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Will retry.\n #{e.message} #{e.backtrace.join}")
+    begin
+      $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+    rescue => e
+      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
+      raise e
+    end
   end
 
   def the_geom_type=(value)
@@ -1416,9 +1429,13 @@ class Table < Sequel::Model(:user_tables)
 
     if @name_changed_from.present? && @name_changed_from != name
       reload
+
+      old_key = Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}")
+      new_key = key
+
       begin
         # update metadata records
-        $tables_metadata.rename(Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}"), key)
+        $tables_metadata.rename(old_key, new_key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
@@ -1426,7 +1443,7 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      if register_table_only != true
+      unless register_table_only
         begin
           owner.in_database.rename_table(@name_changed_from, name) unless errored
         rescue StandardError => exception
@@ -1449,7 +1466,10 @@ class Table < Sequel::Model(:user_tables)
         end
       end
 
-      raise exception_to_raise if errored
+      if errored
+        $tables_metadata.rename(new_key, old_key)
+        raise exception_to_raise
+      end
     end
     @name_changed_from = nil
   end

@@ -279,7 +279,8 @@ module CartoDB
       end
 
       def to_hash(options={})
-        Presenter.new(self, options.merge(real_privacy: true)).to_poro
+        presenter = Presenter.new(self, options.merge(real_privacy: true))
+        options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
       def to_vizjson

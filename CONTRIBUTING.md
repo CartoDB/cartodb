@@ -35,13 +35,11 @@ which in turns depends on some common libraries, in particular worth mentioning:
 
 Source code is located at `lib/assets/javascripts`, dependencies at `vendor/assets/javascripts`.
 
-Run `grunt jasmine` to generate `/cartodb/_SpecRunner.html`.
-
 See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
-### Writing testcases
+### Writing & running tests
 
 Tests reside in the `lib/assets/test` directory. We use
  - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
@@ -52,6 +50,21 @@ When adding new files make sure they exist in an appropriate file located in `li
 if you're writing tests for current code or the newer browserify modules).
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
+
+All tests can be run by:
+```bash
+grunt jasmine
+
+# or if you want to run tests in browser it's preferrable to use:
+grunt jasmine-server
+```
+
+If you only want to run a subset of tests use the browser approach (see above) and append this querystring to the URL:
+`?spec=start-of-describe`, i.e.:
+```
+http://0.0.0.0:8089/_SpecRunner.html?spec=cdb.admin.User
+```
+
 
 ## CSS
 

@@ -46,26 +46,28 @@
 .DashboardFilters-typeItem {
   position:relative;
   height:80px;
-  margin:0 25px;
-
-  &:after {
-    content:'|';
-    position:absolute;
-    top:50%;
-    right:-25px;
-    margin-top:-10px;
-    font-weight:300;
-    color:$cStructure-softLine;
-  }
+  margin:0 15px;
 
   &:first-child { margin-left:0 }
-  &:last-child:after { display:none }
 }
 
 .DashboardFilters-searchLink {
   line-height:80px;
+  margint-right:10px;
+  padding-right:25px;
   font-size:14px;
   color:$cTypography-help;
+
+  &:after {
+    content: '|';
+    position: absolute;
+    top: 50%;
+    right: -5px;
+    margin-top: -10px;
+    line-height: normal;
+    font-weight: 300;
+    color: $cStructure-softLine;
+  }
 }
 .DashboardFilters-searchLinkIcon {
   @include inline-block();
@@ -126,7 +128,8 @@
   color:#DDD;
 }
 .DashboardFilters-typeLink {
-  line-height:80px;
+  line-height: 80px;
+  font-size: 14px;
 
   &:hover {
     color:$cTypography-linkSelected;

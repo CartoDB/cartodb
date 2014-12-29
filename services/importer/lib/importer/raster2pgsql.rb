@@ -19,7 +19,6 @@ module CartoDB
         self.basepath             = filepath.slice(0, filepath.rindex('/')+1)
         self.webmercator_filepath = WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
         self.aligned_filepath     = ALIGNED_WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
-        self.sql_filepath         = SQL_FILENAME % [ basepath, table_name ]
         self.pg_options           = pg_options
         self.table_name           = table_name
         self.exit_code            = nil
@@ -42,8 +41,6 @@ module CartoDB
 
         run_raster2pgsql(overviews_list)
 
-        run_psql psql_file_command(sql_filepath)
-
         run_psql psql_inline_command(%Q{
           create index on #{SCHEMA}.#{table_name} (min(st_summarystats(#{RASTER_COLUMN_NAME},1)));
           create index on #{SCHEMA}.#{table_name} (max(st_summarystats(#{RASTER_COLUMN_NAME},1)));}
@@ -60,7 +57,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, :sql_filepath, \
+      attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, \
                     :basepath, :additional_tables
 
       def align_raster(scale)
@@ -114,9 +111,12 @@ module CartoDB
       end
 
       def run_raster2pgsql(overviews_list)
-        stdout, stderr, status  = Open3.capture3(raster2pgsql_command(overviews_list))
+        # We create a pipe and wait for it to complete the transaction in postgres
+        # In order to avoid a temporary sql, potentially pretty big
+        command = %Q(#{raster2pgsql_command(overviews_list)} | #{psql_base_command})
+        stdout, stderr, status  = Open3.capture3(command)
         output = stdout + stderr
-        output_message = "(#{status}) |#{output}| Command: #{raster2pgsql_command(overviews_list)}"
+        output_message = "(#{status}) |#{output}| Command: #{command}"
         self.command_output << "\n#{output_message}"
         self.exit_code = status.to_i
 
@@ -164,19 +164,15 @@ module CartoDB
       end
 
       def raster2pgsql_command(overviews_list)
-        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -Y -I -f #{RASTER_COLUMN_NAME} ) +
-        %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name} > #{sql_filepath})
-      end
-
-      def psql_file_command(filename)
-        psql_base_command %Q(-f #{filename})
+        %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} ) +
+        %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name})
       end
 
       def psql_inline_command(query)
         psql_base_command %Q(-c "#{query}")
       end
 
-      def psql_base_command(extra_params)
+      def psql_base_command(extra_params=nil)
         host      = pg_options.fetch(:host)
         port      = pg_options.fetch(:port)
         user      = pg_options.fetch(:user)

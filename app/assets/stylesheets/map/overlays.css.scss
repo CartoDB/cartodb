@@ -161,6 +161,27 @@
     strong { font-weight: 700; }
   }
 
+  &.lato .content > .text { 
+    font-family: 'Lato', sans-serif; font-weight: 400;
+    strong { font-weight: 700; }
+  }
+
+  &.graduate .content > .text { 
+    font-family: 'Graduate', sans-serif; font-weight: 400;
+    strong { font-weight: 700; }
+  }
+
+  &.old_standard_tt .content > .text { 
+    font-family: 'Old Standard TT', sans-serif; font-weight: 400;
+    strong { font-weight: 700; }
+  }
+
+  &.gravitas_one .content > .text { 
+    font-family: 'Gravitas One', sans-serif; font-weight: 400;
+    strong { font-weight: 700; }
+  }
+
+
 }
 
 .cartodb-logo {

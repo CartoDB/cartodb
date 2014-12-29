@@ -236,6 +236,7 @@ var carto = {
     Renderer: require('./renderer').Renderer,
     tree: require('./tree'),
     RendererJS: require('./renderer_js'),
+    default_reference: require('./torque-reference'),
 
     // @TODO
     writeError: function(ctx, options) {
@@ -330,7 +331,7 @@ function stylize(str, style) {
 }
 
 }).call(this,require('_process'),"/lib/carto")
-},{"../../package.json":44,"./functions":1,"./parser":3,"./renderer":4,"./renderer_js":5,"./tree":7,"./tree/call":8,"./tree/color":9,"./tree/comment":10,"./tree/definition":11,"./tree/dimension":12,"./tree/element":13,"./tree/expression":14,"./tree/field":15,"./tree/filter":16,"./tree/filterset":17,"./tree/fontset":18,"./tree/frame_offset":19,"./tree/imagefilter":20,"./tree/invalid":21,"./tree/keyword":22,"./tree/layer":23,"./tree/literal":24,"./tree/operation":25,"./tree/quoted":26,"./tree/reference":27,"./tree/rule":28,"./tree/ruleset":29,"./tree/selector":30,"./tree/style":31,"./tree/url":32,"./tree/value":33,"./tree/variable":34,"./tree/zoom":35,"_process":40,"fs":36,"path":39,"util":42}],3:[function(require,module,exports){
+},{"../../package.json":44,"./functions":1,"./parser":3,"./renderer":4,"./renderer_js":5,"./torque-reference":6,"./tree":7,"./tree/call":8,"./tree/color":9,"./tree/comment":10,"./tree/definition":11,"./tree/dimension":12,"./tree/element":13,"./tree/expression":14,"./tree/field":15,"./tree/filter":16,"./tree/filterset":17,"./tree/fontset":18,"./tree/frame_offset":19,"./tree/imagefilter":20,"./tree/invalid":21,"./tree/keyword":22,"./tree/layer":23,"./tree/literal":24,"./tree/operation":25,"./tree/quoted":26,"./tree/reference":27,"./tree/rule":28,"./tree/ruleset":29,"./tree/selector":30,"./tree/style":31,"./tree/url":32,"./tree/value":33,"./tree/variable":34,"./tree/zoom":35,"_process":40,"fs":36,"path":39,"util":42}],3:[function(require,module,exports){
 (function (global){
 var carto = exports,
     tree = require('./tree'),
@@ -2442,13 +2443,15 @@ var _mapnik_reference_latest = {
                 "css": "marker-width",
                 "default-value": 10,
                 "doc": "The width of the marker, if using one of the default types.",
-                "type": "expression"
+                "type": "float",
+                "expression": true
             },
             "height": {
                 "css": "marker-height",
                 "default-value": 10,
                 "doc": "The height of the marker, if using one of the default types.",
-                "type": "expression"
+                "type": "float",
+                "expression": true
             },
             "fill": {
                 "css": "marker-fill",
@@ -2572,7 +2575,8 @@ var _mapnik_reference_latest = {
         "shield": {
             "name": {
                 "css": "shield-name",
-                "type": "expression",
+                "type": "string",
+                "expression": true,
                 "serialization": "content",
                 "doc": "Value to use for a shield\"s text label. Data columns are specified using brackets like [column_name]"
             },
@@ -3194,7 +3198,8 @@ var _mapnik_reference_latest = {
         "text": {
             "name": {
                 "css": "text-name",
-                "type": "expression",
+                "type": "string",
+                "expression": true,
                 "required": true,
                 "default-value": "",
                 "serialization": "content",
@@ -3349,7 +3354,8 @@ var _mapnik_reference_latest = {
             },
             "orientation": {
                 "css": "text-orientation",
-                "type": "expression",
+                "type": "float",
+                "expression": true,
                 "doc": "Rotate the text."
             },
             "placement": {
@@ -3477,11 +3483,19 @@ var _mapnik_reference_latest = {
             "height": {
                 "css": "building-height",
                 "doc": "The height of the building in pixels.",
-                "type": "expression",
+                "type": "float",
+                "expression": true,
                 "default-value": "0"
             }
         },
         "torque": {
+          "-torque-clear-color": {
+              "css": "-torque-clear-color",
+              "type": "color",
+              "default-value": "rgba(255, 255, 255, 0)",
+              "default-meaning": "full clear",
+              "doc": "color used to clear canvas on each frame"
+          },
           "-torque-frame-count": {
               "css": "-torque-frame-count",
               "default-value": "128",
@@ -7238,7 +7252,7 @@ refs.map(function(version) {
 },{"fs":36,"path":39}],44:[function(require,module,exports){
 module.exports={
   "name": "carto",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "CartoCSS Stylesheet Compiler",
   "url": "https://github.com/cartodb/carto",
   "repository": {

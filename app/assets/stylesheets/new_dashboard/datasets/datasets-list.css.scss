@@ -52,12 +52,12 @@
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 480px;
+  width: 360px;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 430px;
+  width: 520px;
 }
 .SizeIndicator {
   font-weight: 300;

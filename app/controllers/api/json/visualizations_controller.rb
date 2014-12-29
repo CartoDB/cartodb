@@ -383,51 +383,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ]
   end
 
-  def rows_and_sizes_for(table_data)
-    data = Hash.new
-
-    tables_data_per_schema = table_data.group_by { |td| td[:schema] }
-
-    tables_data_per_schema.each { |schema, tables_data| 
-      table_names = tables_data.map { |td| td[:name] }
-
-      begin
-        rows = current_user.in_database.fetch(%Q{
-          SELECT
-            relname AS table_name,
-            pg_total_relation_size('"' || ? || '"."' || relname || '"') AS total_relation_size,
-            reltuples::integer AS reltuples
-          FROM pg_class
-          WHERE relname in ?
-        },
-        schema,
-        table_names
-        ).all
-
-        rows.map { |row|
-          data[row[:table_name]] = {
-            size: row[:total_relation_size].to_i / 2,
-            rows: row[:reltuples]
-          }
-        }
-      rescue => e
-        # INFO: we don't want request to fail because of SQL error
-        CartoDB.notify_exception(e)
-      end
-    }
-
-    # Fill missing table data
-    # don't break whole dashboard
-    table_data.select { |td| data[td[:name]].nil? }.each { |table|
-        data[table[:name]] = {
-          size: nil,
-          rows: nil
-        }
-    }
-
-    data
-  end
-
   # This only allows to authenticate if sending an API request to username.api_key subdomain,
   # but doesn't breaks the request if can't authenticate
   def optional_api_authorization
@@ -489,7 +444,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       end
     }.compact
     synchronizations = synchronizations_by_table_name(table_data)
-    rows_and_sizes   = rows_and_sizes_for(table_data)
     representation  = collection.map { |vis|
       begin
         vis.to_hash(
@@ -497,8 +451,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           table_data: !(params[:table_data] =~ /false/),
           user:       current_user,
           table:      vis.table,
-          synchronization: synchronizations[vis.name],
-          rows_and_sizes: rows_and_sizes
+          synchronization: synchronizations[vis.name]
         )
       rescue => exception
         puts exception.to_s + exception.backtrace.join("\n")

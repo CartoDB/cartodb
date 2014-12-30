@@ -28,6 +28,12 @@ module CartoDB
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
+      ORDERING_RELATED_ATTRIBUTES = [:likes, :mapviews, :row_count, :size]
+
+      # Same as services/data-repository/backend/sequel.rb
+      PAGE          = 1
+      PER_PAGE      = 300
+
       ALL_RECORDS = 999999
 
       def initialize(attributes={}, options={})
@@ -38,6 +44,8 @@ module CartoDB
           repository:   options.fetch(:repository, Visualization.repository),
           member_class: Member
         )
+        @can_paginate = true
+        @lazy_order_by = nil
       end
 
       DataRepository::Collection::INTERFACE.each do |method_name|
@@ -63,11 +71,23 @@ module CartoDB
           dataset = apply_filters(dataset, filters)
 
           @total_entries = dataset.count
-          dataset = repository.paginate(dataset, filters, @total_entries)
 
-          collection.storage = Set.new(dataset.map { |attributes|
-            Visualization::Member.new(attributes)
-          })
+          if @can_paginate
+            dataset = repository.paginate(dataset, filters, @total_entries)
+            collection.storage = Set.new(dataset.map { |attributes|
+              Visualization::Member.new(attributes)
+            })
+          else
+            items = dataset.map { |attributes|
+              Visualization::Member.new(attributes)
+            }
+            items = lazy_order_by(items, @lazy_order_by)
+            # Manual paging
+            page = (filters.delete(:page) || PAGE).to_i
+            per_page = (filters.delete(:per_page) || PER_PAGE).to_i
+            items = items.slice((page - 1) * per_page, per_page)
+            collection.storage = Set.new(items)
+          end
         end
 
         self
@@ -137,14 +157,62 @@ module CartoDB
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
-        dataset = order(dataset, filters.delete(:o))
+        order(dataset, filters.delete(:order))
+      end
+
+      # Note: Not implemented ascending order for now, all are descending sorts
+      def lazy_order_by(objects, field)
+        case field
+          when :likes
+            objects.sort! { |obj_a, obj_b|
+              obj_b.likes.count <=> obj_a.likes.count
+            }
+          when :mapviews
+            objects.sort! { |obj_a, obj_b|
+              # Stats have format [ date, value ]
+              obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
+            }
+          when :row_count
+            objects.sort! { |obj_a, obj_b|
+              a_rows = (obj_a.table.nil? ? 0 : obj_a.table.rows_and_size.fetch(:rows)) || 0
+              b_rows = (obj_b.table.nil? ? 0 : obj_b.table.rows_and_size.fetch(:rows)) || 0
+              b_rows <=> a_rows
+            }
+          when :size
+            objects.sort! { |obj_a, obj_b|
+              a_size = (obj_a.table.nil? ? 0 : obj_a.table.rows_and_size.fetch(:size)) || 0
+              b_size = (obj_b.table.nil? ? 0 : obj_b.table.rows_and_size.fetch(:size)) || 0
+              b_size <=> a_size
+            }
+        end
+        objects
+      end
+
+      # Note: Not implemented ascending order for now
+      def order_by_related_attribute(dataset, criteria)
+        @can_paginate = false
+        @lazy_order_by = criteria
         dataset
       end
 
+      def order_by_base_attribute(dataset, criteria)
+        @can_paginate = true
+        dataset.order(Sequel.send(:desc, criteria))
+      end
 
-      def order(dataset, criteria={})
+      # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at, created_at), plus:
+      # - likes
+      # - mapviews
+      # - row_count
+      # - size
+      def order(dataset, criteria=nil)
         return dataset if criteria.nil? || criteria.empty?
-        dataset.order(*order_params_from(criteria))
+        criteria = criteria.to_sym
+        if ORDERING_RELATED_ATTRIBUTES.include? criteria
+          order_by_related_attribute(dataset, criteria)
+        else
+          order_by_base_attribute(dataset, criteria)
+        end
       end
 
       def filter_by_tags(dataset, tags=[])
@@ -207,10 +275,6 @@ module CartoDB
 
       def tags_from(filters={})
         filters.delete(:tags).to_s.split(',')
-      end
-
-      def order_params_from(criteria)
-        criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
       end
 
     end

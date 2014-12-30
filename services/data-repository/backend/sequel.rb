@@ -51,7 +51,7 @@ module DataRepository
       def paginate(dataset, filter={}, record_count=nil)
         page, per_page = pagination_params_from(filter)
         dataset.paginate(page, per_page, record_count)
-      end #paginate
+      end
 
       private
 

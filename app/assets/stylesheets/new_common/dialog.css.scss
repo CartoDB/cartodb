@@ -1,0 +1,37 @@
+@import "mixins";
+@import "colors";
+
+.Dialog {
+  @include display-flex();
+  @include align-items(center, center);
+  @include justify-content(space-between, justify);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  background-color: $cStructure-mainBkg;
+  opacity: 0.9;
+}
+.Dialog-closeBtn {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 30px;
+  border: 1px solid $cTypography-help;
+  color: $cTypography-help;
+  text-align: center;
+  line-height: 45px;
+  font-weight: 300;
+  font-size: 18px;
+  &:hover {
+    border-color: $cTypography-secondary;
+    color: $cTypography-secondary;
+  }
+}
+.Dialog-content {
+  margin: 0 auto;
+}

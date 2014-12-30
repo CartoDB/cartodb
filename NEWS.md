@@ -1,3 +1,8 @@
+3.7.1 (2014-12-30)
+------------------
+* New features
+  - GET /api/v1/viz/ always sorts by descending order if `order` param set, and this supports new filters: `mapviews`, `likes`, `size`, `row_count`
+
 3.7.0 (2014-12-18)
 ------------------
 * New features

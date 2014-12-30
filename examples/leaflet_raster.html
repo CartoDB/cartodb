@@ -32,31 +32,18 @@
         })
 
         // add a base layer
-        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-          attribution: 'Stamen'
-        }).addTo(map);
 
         // add cartodb layer with one sublayer
         cartodb.createLayer(map, {
-          tiler_domain: 'localhost.lan',
-          tiler_port: 8181,
-          user_name: 'dev',
+          user_name: 'documentation',
           type: 'cartodb',
           sublayers: [{
              sql: 'select * from pop',
              cartocss: '#pop { raster-opacity: 1.0; }',
-             raster: true,
-             interactivity: 'cartodb_id'
-          }],
-          no_cdn: true
+             raster: true
+          }]
         })
         .addTo(map)
-        .done(function(layer) {
-            layer.getSubLayer(0).setCartoCSS('#pop { raster-opacity: 0.2; }');
-            setTimeout(function() {
-              layer.getSubLayer(0).setCartoCSS('#pop { raster-opacity: 1.0; }');
-            }, 3000);
-        });
 
 
       }

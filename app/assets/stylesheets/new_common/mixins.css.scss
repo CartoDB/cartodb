@@ -62,7 +62,8 @@
   flex-wrap: $v;
   // IE10 doesn't support this property  
 }
-@mixin justify-content($v, $ie-v) {
+@mixin justify-content($v, $ie-v: "") {
+  $ie-v: $v !default;
   -webkit-justify-content: $v;
   -moz-justify-content: $v;
   -ms-justify-content: $v;
@@ -70,7 +71,8 @@
   // Hello IE10
   -ms-flex-pack: $ie-v;
 }
-@mixin align-items($v, $ie-v) {
+@mixin align-items($v, $ie-v: "") {
+  $ie-v: $v !default;
   -webkit-align-items: $v;
   -moz-align-items: $v;
   -ms-align-items: $v;

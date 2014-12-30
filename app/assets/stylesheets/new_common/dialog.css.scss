@@ -3,8 +3,9 @@
 
 .Dialog {
   @include display-flex();
-  @include align-items(center, center);
-  @include justify-content(space-between, justify);
+  @include flex-direction(column);
+  @include align-items(center);
+  @include justify-content(center);
   position: fixed;
   top: 0;
   left: 0;
@@ -32,6 +33,39 @@
     color: $cTypography-secondary;
   }
 }
-.Dialog-content {
+.Dialog-header {
+  width: 940px;
+  text-align: center;
+  padding: 40px 0;
   margin: 0 auto;
+}
+.Dialog-body {
+  padding: 40px 0;
+  border-top: 1px solid $cTypography-help;
+  min-width: 940px;
+}
+.Dialog-footer {
+  border-top: 1px solid $cTypography-help;
+  padding: 40px 0;
+  width: 940px;
+  text-align: center;
+}
+.Dialog-headerIcon {
+  width: 38px;
+  height: 38px;
+  border: 1px solid $cHighlight-negative;
+  border-radius: 5px;
+  margin: 0 auto 20px auto; /* center */
+  color: $cHighlight-negative;
+  font-size: 22px;
+  line-height: 44px;
+}
+.Dialog-headerTitle {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.Dialog-headerText {
+  font-size: 18px;
+  font-weight: 300;
 }

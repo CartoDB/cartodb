@@ -355,7 +355,22 @@ var Vis = cdb.core.View.extend({
 
     }
 
-    if (!this.checkModules(data.layers)) {
+    // if the viz.json contains slides, discard the main viz.json and use the slides
+    var slides = data.slides;
+    if (slides.length > 0) {
+      data = slides[0]
+      data.slides = slides.slice(1);
+    }
+
+    // load modules needed for layers
+    var layers = data.layers;
+
+    // check if there are slides and check all the layers
+    if (data.slides && data.slides.length > 0) {
+      layers = layers.concat(_.flatten(data.slides.map(function(s) { return s.layers })));
+    }
+
+    if (!this.checkModules(layers)) {
 
       if (this.moduleChecked) {
 
@@ -366,13 +381,6 @@ var Vis = cdb.core.View.extend({
 
       this.moduleChecked = true;
 
-      // load modules needed for layers
-      var layers = data.layers;
-
-      // check if there are slides and check all the layers
-      if (data.slides && data.slides.length > 0) {
-        layers = layers.concat(data.slides.map(function(s) { return s.layers }));
-      }
 
       this.loadModules(layers, function() {
         self.load(data, options);

@@ -76,10 +76,7 @@ describe Visualization::Collection do
       Visualization::Member.new(random_attributes(name: 'viz_2')).store
 
       collection    = Visualization::Collection.new
-      records       = collection.fetch(o: { name: 'asc' })
-      records.first.name.should == 'viz_1'
-
-      records       = collection.fetch(o: { name: 'desc' })
+      records       = collection.fetch(order: :name)
       records.first.name.should == 'viz_2'
     end
 
@@ -342,7 +339,9 @@ describe Visualization::Collection do
 
 
       # Cleanup
-      Visualization::Migrator.new(@db).drop(:visualizations)
+      vis1.delete
+      vis2.delete
+      vis3.delete
     end
 
   end

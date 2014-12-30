@@ -47,6 +47,9 @@ module CartoDB
         )
         @can_paginate = true
         @lazy_order_by = nil
+        @unauthenticated_flag = false
+        @user_id = nil
+        @type = nil
       end
 
       DataRepository::Collection::INTERFACE.each do |method_name|
@@ -63,6 +66,7 @@ module CartoDB
       # - only_shared forces to use different flow because if there are no shared there's nothing else to do
       # - locked filter has special behaviour
       def fetch(filters={})
+        @user_id = filters.fetch(:user_id, nil)
         filters = restrict_filters_if_unauthenticated(filters)
         dataset = compute_sharing_filter_dataset(filters)
 
@@ -100,11 +104,6 @@ module CartoDB
         dataset.nil? ? 0 : apply_filters(dataset, filters).count
       end
 
-      def store
-        #map { |member| member.fetch.store }
-        self
-      end
-
       def destroy
         map(&:delete)
         self
@@ -114,14 +113,39 @@ module CartoDB
         map { |member| member.to_hash(related: false, table_data: true) }
       end
 
+      # @throws KeyError
       def total_shared_entries
-        # Cache kind of search/privacy and here detect to either calculate or return zero
-        0
+        if @unauthenticated_flag
+          0
+        else
+          raise KeyError.new("Can't retrieve likes count without specifying user id") if @user_id.nil?
+          0
+        end
       end
 
+      # @throws KeyError
       def total_liked_entries
-        # Cache kind of search/privacy and here detect to filter or not
-        0
+        raise KeyError.new("Can't retrieve likes count without specifying user id") if @user_id.nil?
+        raise KeyError.new("Can't retrieve likes count without specifying visualization type") if @type.nil?
+        # Inner join with visualizations to filter by type and user, then applied a distinct count
+        if @unauthenticated_flag
+          CartoDB::Like.select(:subject)
+          .join(:visualizations,
+                :id.cast(:uuid) => :subject,
+                :user_id => @user_id,
+                :type => @type,
+                :privacy => Visualization::Member::PRIVACY_PUBLIC)
+          .distinct
+          .count
+        else
+          CartoDB::Like.select(:subject)
+                       .join(:visualizations,
+                              :id.cast(:uuid) => :subject,
+                              :user_id => @user_id,
+                              :type => @type)
+                       .distinct
+                       .count
+        end
       end
 
       attr_reader :total_entries
@@ -132,11 +156,13 @@ module CartoDB
 
       # If special filter unauthenticated: true is present, will restrict data
       def restrict_filters_if_unauthenticated(filters)
+        @unauthenticated_flag = false
         unless filters.delete(FILTER_UNAUTHENTICATED).nil?
           filters[:exclude_shared] = true
           filters[:privacy] = Visualization::Member::PRIVACY_PUBLIC
           filters.delete(:locked)
           filters.delete(:map_id)
+          @unauthenticated_flag = true
         end
         filters
       end
@@ -176,6 +202,7 @@ module CartoDB
       end
 
       def apply_filters(dataset, filters)
+        @type = filters.fetch(:type, nil)
         dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))

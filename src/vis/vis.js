@@ -645,6 +645,7 @@ var Vis = cdb.core.View.extend({
           vis.setAnimationStep(step);
         });
       }
+
       function AnimationTrigger(vis, step) {
         var t = O.Trigger();
         vis.on('change:step', function (layer, currentStep) {
@@ -655,14 +656,39 @@ var Vis = cdb.core.View.extend({
         return t;
       }
 
+
+      function NextTrigger(seq, step) {
+        var t = O.Trigger();
+        var c = NextTrigger._callbacks;
+        if (!c) {
+          c = NextTrigger._callbacks = []
+          O.Keys().right().then(function() {
+            for (var i = 0; i < c.length; ++i) {
+              if (c[i] === seq.current()) {
+                t.trigger();
+                return;
+              }
+            }
+          });
+        }
+        c.push(step);
+        return t;
+      }
+
+      function WaitAction(seq, ms) {
+        return O.Step(O.Sleep(ms), O.Action(function() {
+          seq.next();
+        }));
+      }
+
       var self = this;
 
       var seq = this.sequence = O.Sequential();
       this.slides = O.Story();
 
       // transition - debug, remove
-      O.Keys().left().then(seq.prev, seq);
-      O.Keys().right().then(seq.next, seq);
+      //O.Keys().left().then(seq.prev, seq);
+      //O.Keys().right().then(seq.next, seq);
 
       this.map.actions = BackboneActions(this.map);
       this.map.layers.actions = BackboneActions(this.map.layers);
@@ -692,13 +718,13 @@ var Vis = cdb.core.View.extend({
         // overlays
         states.push(this.overlayModels.actions.reset(slide.overlays));
 
-        slide.transition_options = {
-          step: i*200
-        };
-        if (slide.transition_options && slide.transition_options.step !== undefined) {
-          var step = slide.transition_options.step;
-          AnimationTrigger(this, step).then(goTo(seq, i));
-          //states.push(SetStepAction(this, step));
+        if (slide.transition_options) {
+          var to = slide.transition_options;
+          if (to.transition_trigger === 'time') {
+            states.push(WaitAction(seq, to.time * 1000));
+          } else { //default is click 
+            NextTrigger(seq, i).then(seq.next, seq);
+          }
         }
 
         this.slides.addState(
@@ -707,6 +733,7 @@ var Vis = cdb.core.View.extend({
         );
 
       }
+      this.slides.go(0);
   },
 
   _createOverlays: function(overlays, options) {

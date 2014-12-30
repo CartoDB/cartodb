@@ -28,6 +28,8 @@ module CartoDB
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
+      FILTER_UNAUTHENTICATED = :unauthenticated
+
       ALL_RECORDS = 999999
 
       def initialize(attributes={}, options={})
@@ -54,6 +56,7 @@ module CartoDB
       # - only_shared forces to use different flow because if there are no shared there's nothing else to do
       # - locked filter has special behaviour
       def fetch(filters={})
+        filters = restrict_filters_if_unauthenticated(filters)
         dataset = compute_sharing_filter_dataset(filters)
 
         if dataset.nil?
@@ -92,11 +95,32 @@ module CartoDB
         map { |member| member.to_hash(related: false, table_data: true) }
       end
 
+      def total_shared_entries
+        # Cache kind of search/privacy and here detect to either calculate or return zero
+        0
+      end
+
+      def total_liked_entries
+        # Cache kind of search/privacy and here detect to filter or not
+        0
+      end
+
       attr_reader :total_entries
 
       private
 
       attr_reader :collection
+
+      # If special filter unauthenticated: true is present, will restrict data
+      def restrict_filters_if_unauthenticated(filters)
+        unless filters.delete(FILTER_UNAUTHENTICATED).nil?
+          filters[:exclude_shared] = true
+          filters[:privacy] = Visualization::Member::PRIVACY_PUBLIC
+          filters.delete(:locked)
+          filters.delete(:map_id)
+        end
+        filters
+      end
 
       def compute_sharing_filter_dataset(filters)
         shared_filter = filters.delete(:shared)

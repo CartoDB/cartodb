@@ -20,9 +20,9 @@ class Superadmin::SynchronizationsController < Superadmin::SuperadminController
     else
       representation = collection.map(&:to_hash)
     end
-    response  = {
+    response = {
         synchronizations: representation,
-        total_entries:    collection.total_entries
+        total_entries: collection.total_entries
     }
     respond_with(response)
   end #index

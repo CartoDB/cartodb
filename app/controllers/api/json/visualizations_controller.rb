@@ -438,17 +438,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def index_not_logged_in
     public_visualizations = []
+    total_liked_entries = 0
+    total_shared_entries = 0
     user = User.where(username: CartoDB.extract_subdomain(request)).first
 
     unless user.nil?
       filtered_params = params.dup.merge(scope_for(user))
-      filtered_params['exclude_shared'] = true
-      filtered_params['privacy'] = Visualization::Member::PRIVACY_PUBLIC
-      filtered_params.delete('locked')
-      filtered_params.delete('map_id')
-      collection = Visualization::Collection.new.fetch(
-        filtered_params
-      )
+      filtered_params[Visualization::Collection::FILTER_UNAUTHENTICATED] = true
+      collection = Visualization::Collection.new.fetch(filtered_params)
 
       public_visualizations  = collection.map { |vis|
         begin
@@ -461,11 +458,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           puts exception.to_s + exception.backtrace.join("\n")
         end
       }.compact
+
+      total_liked_entries = collection.total_liked_entries
+      total_shared_entries = collection.total_shared_entries
     end
 
     response = {
       visualizations: public_visualizations,
-      total_entries:  public_visualizations.length
+      total_entries:  public_visualizations.length,
+      total_likes:    total_liked_entries,
+      total_shared:   total_shared_entries
     }
     render_jsonp(response)
   end
@@ -505,9 +507,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       end
     }.compact
 
-    response        = {
+    response = {
       visualizations: representation,
-      total_entries:  collection.total_entries
+      total_entries:  collection.total_entries,
+      total_likes:    collection.total_liked_entries,
+      total_shared:   collection.total_shared_entries
     }
     current_user.update_visualization_metrics
     render_jsonp(response)

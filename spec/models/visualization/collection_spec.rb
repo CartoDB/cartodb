@@ -289,6 +289,7 @@ describe Visualization::Collection do
       vis1.fetch.store.fetch
 
       # TODO: Setup mapviews
+      # Visualization::Stats.new(self, user).to_poro
 
       # Actual tests start here
 

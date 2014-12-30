@@ -217,6 +217,7 @@ describe Visualization::Collection do
 
     it 'Checks all supported sorting methods work' do
       # Supported: updated_at, likes, mapviews, row_count, size
+      # TODO: Add mapviews test. As it uses redis requires more work
 
       # Restore Vis backend to normal table so Relator works
       Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
@@ -288,9 +289,6 @@ describe Visualization::Collection do
       sleep(1)   # To avoid same sec storage
       vis1.fetch.store.fetch
 
-      # TODO: Setup mapviews
-      # Visualization::Stats.new(self, user).to_poro
-
       # Actual tests start here
 
       collection = Visualization::Collection.new.fetch({
@@ -332,12 +330,6 @@ describe Visualization::Collection do
       ids = collection.map { |vis| vis.id }
       expected_size = [ vis2.id, vis3.id, vis1.id ]
       ids.should eq expected_size
-
-      # TODO: Test mapviews
-      #puts "#{vis1.name} #{vis1.id} #{vis1.updated_at}"
-      #puts "#{vis2.name} #{vis2.id} #{vis2.updated_at}"
-      #puts "#{vis3.name} #{vis3.id} #{vis3.updated_at}"
-
 
       # Cleanup
       vis1.delete

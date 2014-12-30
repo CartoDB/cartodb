@@ -1796,14 +1796,14 @@ class Table < Sequel::Model(:user_tables)
   # @param [String] cartodb_pg_func
   # @param [User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
-    from_schema = self.owner.username
+    from_schema = self.owner.database_schema
     table_name = self.name
     to_role_user = organization_user.database_username
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
   end
 
   def perform_organization_table_permission_change(cartodb_pg_func)
-    from_schema = self.owner.username
+    from_schema = self.owner.database_schema
     table_name = self.name
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
   end

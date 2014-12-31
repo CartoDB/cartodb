@@ -599,6 +599,9 @@ class Table < Sequel::Model(:user_tables)
 
   def optimize
     owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
+  rescue => e
+    CartoDB::notify_exception(e, { user: owner })
+    false
   end
 
   def handle_creation_error(e)

@@ -672,20 +672,20 @@ describe Api::Json::VisualizationsController do
       post "/api/v1/viz?api_key=#{@api_key}", factory(locked: false).to_json, @headers
       vis_2_id = JSON.parse(last_response.body).fetch('id')
 
-      get "/api/v1/viz?api_key=#{@api_key}", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.length.should eq 2
 
-      get "/api/v1/viz?api_key=#{@api_key}&locked=true", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.length.should eq 1
       collection.first.fetch('id').should eq vis_1_id
 
-      get "/api/v1/viz?api_key=#{@api_key}&locked=false", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
@@ -799,7 +799,7 @@ describe Api::Json::VisualizationsController do
            }.to_json, @headers
       last_response.status.should == 200
 
-      get api_v1_visualizations_index_url(user_domain: @user.username), @headers
+      get api_v1_visualizations_index_url(user_domain: @user.username, type: 'derived'), @headers
       body = JSON.parse(last_response.body)
 
       body['total_entries'].should eq 1
@@ -807,7 +807,8 @@ describe Api::Json::VisualizationsController do
       vis['id'].should eq pub_vis_id
       vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
 
-      get api_v1_visualizations_index_url(user_domain: @user.username, api_key: @api_key, order: 'updated_at'),
+      get api_v1_visualizations_index_url(user_domain: @user.username, type: 'derived', api_key: @api_key,
+                                          order: 'updated_at'),
         {}, @headers
       body = JSON.parse(last_response.body)
 
@@ -872,7 +873,8 @@ describe Api::Json::VisualizationsController do
           }.to_json, @headers
       last_response.status.should == 200
 
-      get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username)}", @headers
+      get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+                                                                             type: 'derived')}", @headers
       body = JSON.parse(last_response.body)
 
       body['total_entries'].should eq 1
@@ -883,6 +885,7 @@ describe Api::Json::VisualizationsController do
 
       get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
                                                                              api_key: user_2.api_key,
+                                                                             type: 'derived',
                                                                              order: 'updated_at')}", {}, @headers
       body = JSON.parse(last_response.body)
 

@@ -1,0 +1,23 @@
+@import "../mixins";
+
+@include keyframes(fade-and-bounce-up) {
+  0% {
+    opacity: 0.0;
+    @include transform(translateY(6px));
+  }
+  15% {
+    opacity: 0.8;
+    @include transform(translateY(-3px));
+  }
+  45% {
+    opacity: 1.0;
+    @include transform(translateY(2px));
+  }
+  70% {
+    @include transform(translateY(-1px));
+  }
+  100% {
+    opacity: 1.0;
+    @include transform(translateY(0));
+  }
+}

@@ -99,6 +99,11 @@ module CartoDB
         self
       end
 
+      # This method is not used for anything but called from the DataRepository::Collection interface above
+      def store
+        self
+      end
+
       def count_query(filters={})
         dataset = compute_sharing_filter_dataset(filters)
         dataset.nil? ? 0 : apply_filters(dataset, filters).count

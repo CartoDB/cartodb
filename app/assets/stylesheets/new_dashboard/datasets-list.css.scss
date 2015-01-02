@@ -7,11 +7,11 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 $_secondaryInfoWidth: 520px;
 // Remaining width after removing secondary info, icon and margins
-$_primaryInfoWidth: $sLayoutWidth - $_secondaryInfoWidth - $sIcon-layout - $sMargin-element;
+$_primaryInfoWidth: $sLayout-width - $_secondaryInfoWidth - $sIcon-layout - $sMargin-element;
 
 .DatasetsList {
   position: relative;
-  width: $sLayoutWidth;
+  width: $sLayout-width;
   margin: 0 auto;
   padding: $sMargin-group 0;
 }

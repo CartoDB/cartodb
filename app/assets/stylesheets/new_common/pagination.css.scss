@@ -23,11 +23,11 @@
   margin: 0;
 }
 .Pagination-listItem:first-child {
-  @include border-radius(5px 0 0 5px);
+  border-radius: 5px 0 0 5px;
 }
 .Pagination-listItem:last-child {
   border-right-width: 1px;
-  @include border-radius(0 5px 5px 0);
+  border-radius: 0 5px 5px 0;
 }
 .Pagination-listItem.is--current,
 .Pagination-listItem.is--current a,

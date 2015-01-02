@@ -9,7 +9,7 @@ $c: #E2DFDF;
   padding:0 10px;
   line-height:15px;
   border:1px solid $c;
-  @include border-radius(28px);
+  border-radius: 28px;
   color:$c;
   font-size:10px;
   font-weight:500;

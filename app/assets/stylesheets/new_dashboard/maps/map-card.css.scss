@@ -13,7 +13,7 @@
   margin-top:20px;
   margin-right:20px;
   border: 1px solid rgba(#DBDBDB, 1);
-  @include border-radius(4px);
+  border-radius: 4px;
 }
 
 .MapCard:hover {
@@ -31,7 +31,7 @@
   width: 100%;
   height: 170px;
   @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
-  @include border-radius(2px 2px 0 0);
+  border-radius: 2px 2px 0 0;
 }
 .MapCard-headerShadow {
   position: absolute;
@@ -50,7 +50,7 @@
   bottom:10px;
   right:12px;
   padding: 5px;
-  @include border-radius(2px);
+  border-radius: 2px;
   background:rgba(black,.4);
   z-index:2;
 }
@@ -60,7 +60,7 @@
   left:12px;
   width:29px;
   height:29px;
-  @include border-radius(2px);
+  border-radius: 2px;
   z-index:2;
 }
 .MapCard-headerLayers {
@@ -69,7 +69,7 @@
   left:12px;
   width:29px;
   height:29px;
-  @include border-radius(2px);
+  border-radius: 2px;
   z-index:2;
 }
 .MapCard-content {

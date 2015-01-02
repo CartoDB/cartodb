@@ -13,7 +13,9 @@
   background: $cStructure-grayBkg;
   font-size: 13px;
 }
-.NotificationsList-item:last-child { @include border-radius(0 0 2px 2px) }
+.NotificationsList-item:last-child {
+  border-radius: 0 0 2px 2px;
+}
 .NotificationsList-icon {
   position: absolute;
   top: 18px;
@@ -22,7 +24,7 @@
   height: 18px;
   line-height: 16px;
   border: 1px solid $cTypography-help;
-  @include border-radius(20px);
+  border-radius: 20px;
   font-size: 11px;
   color: $cTypography-help;
   text-align: center;
@@ -47,7 +49,7 @@
   font-weight: bold;
   color: white;
   text-align: center;
-  @include border-radius(20px);
+  border-radius: 20px;
   border: none;
 }
 .Notifications-iconCount.new--items {

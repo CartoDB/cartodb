@@ -32,7 +32,7 @@
 .ContentResult-loader:after {
   width: 36px;
   height: 36px;
-  @include border-radius(50%);
+  border-radius: 50%;
 }
 .ContentResult-smallLoader {
   position: absolute;
@@ -60,7 +60,7 @@
   width: 38px;
   height: 38px;
   border: 1px solid $cStructure-mainLine;
-  @include border-radius(2px);
+  border-radius: 2px;
   line-height:36px;
   font-size: 22px;
   color: $cTypography-help;

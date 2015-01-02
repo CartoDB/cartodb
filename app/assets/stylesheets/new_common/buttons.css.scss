@@ -6,7 +6,7 @@
 
 .Button {
   @include inline-block();
-  @include border-radius(28px);
+  border-radius: 28px;
   padding: 13px 29px;
   text-decoration:none;
 }

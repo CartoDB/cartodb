@@ -103,7 +103,7 @@
   right:0;
   width:28px;
   height:28px;
-  @include border-radius(30px);
+  border-radius: 30px;
   border:1px solid #CCC;
   color:#CCC;
   text-align: center;

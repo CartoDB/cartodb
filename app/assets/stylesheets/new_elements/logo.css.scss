@@ -20,7 +20,7 @@
   width:40px;
   height:40px;
   background-color:#CCCCCC;
-  @include border-radius(40px);
+  border-radius: 40px;
   line-height:50px;
   text-align:center;
   i {

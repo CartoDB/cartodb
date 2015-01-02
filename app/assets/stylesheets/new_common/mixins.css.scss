@@ -80,10 +80,6 @@
 }
 
 // CSS3 typical functions
-@mixin border-radius($r) {
-  // No more -webkit, -moz, etc.
-  border-radius: $r;
-}
 @mixin opacity($v) {
   opacity:$v;
   filter:alpha(opacity=($v*100)); // IE10

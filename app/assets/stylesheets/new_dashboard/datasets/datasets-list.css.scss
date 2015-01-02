@@ -23,7 +23,7 @@
   margin: -1px -20px 0px -20px;
   background-color: rgba(#F5FAFE, 1);
   border: 1px rgba(#BCD8F1, 1) solid;
-  @include border-radius(5px);
+  border-radius: 5px;
   cursor: pointer;
 }
 .DatasetsList-item.is--selected {
@@ -35,7 +35,7 @@
   margin-right: 20px;
   border: 1px rgba($cStructure-mainLine, 0.5) solid;
   background: rgba(black, 0.05);
-  @include border-radius(2px);
+  border-radius: 2px;
 }
 .DatasetsList-itemCategory.is--lineDataset {
   @include background(image-url('layout/lines-dataset.png') no-repeat center center white);

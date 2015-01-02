@@ -27,7 +27,7 @@
   font-size: $sFontSmaller;
   font-weight: $sFontWeightDefault;
   text-align:center;
-  line-height: $sLineHeightSmaller;
+  line-height: 17px; /* same as width/height */
   color: #C74B43;
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));

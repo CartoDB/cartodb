@@ -18,7 +18,7 @@
 }
 .NotificationsList-icon {
   position: absolute;
-  top: 18px;
+  top: 22px;
   left: 20px;
   width: 18px;
   height: 18px;
@@ -40,9 +40,6 @@
   color: $cTypography-secondary;
 }
 .Notifications-iconCount {
-  top:19px;
-  width:20px;
-  height:20px;
   background: rgba(#CCC, 1);
   font-size: $sFontLarge;
   font-weight: $sFontWeightBold;

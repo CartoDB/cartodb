@@ -2,14 +2,19 @@
 // --------------------------------------------------
 
 @import "../new_common/mixins";
+@import "../new_common/colors";
 @import "../new_common/sizes";
 
 .UserNotifications {
   position:relative;
   @include display-flex();
   text-decoration: none!important;
+  color: $cIcons-default;
 }
-.UserNotifications-Icon {
+.UserNotifications:hover {
+  color: $cIcons-active;
+}
+.UserNotifications-icon {
   color: #999;
   &:hover { color: #666 }
 }
@@ -23,9 +28,8 @@
   height:17px;
   background: #C74B43;
   border-radius: 23px;
-  font-family:Arial;
-  font-size: $sFontSmaller;
-  font-weight: $sFontWeightDefault;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-default;
   text-align:center;
   line-height: 17px; /* same as width/height */
   color: #C74B43;

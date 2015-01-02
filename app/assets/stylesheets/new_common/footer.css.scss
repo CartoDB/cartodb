@@ -16,8 +16,6 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: $sLayoutWidth;
-  margin: 0 auto;
 }
 .Footer-list {
   @include display-flex();

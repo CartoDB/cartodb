@@ -1,0 +1,7 @@
+@import "../sizes";
+
+// Center the content within the defined layout width
+.u-inner {
+  width: $sLayoutWidth;
+  margin: 0 auto;
+}

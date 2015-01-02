@@ -7,9 +7,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   position:relative;
-  width: $sLayoutWidth;
   height:81px;
-  margin: 0 auto;
   padding: 0;
   overflow:hidden;
 }

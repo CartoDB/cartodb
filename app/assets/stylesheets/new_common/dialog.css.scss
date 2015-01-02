@@ -71,17 +71,6 @@
   line-height: 48px;
 }
 .Dialog-headerIconBadge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 17px;
-  height: 17px;
-  border-radius: 30px;
-  background-color: $cHighlight-negative;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 300;
-  line-height: 17px;
   /* "backwards" to use the first keyframe's styles before animation starts */
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
 }

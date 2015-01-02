@@ -6,11 +6,13 @@
 @import "sizes";
 
 .Button {
-  @include inline-block();
+  @include display-flex();
+  @include align-items(center, center);
   border-radius: $sButtonBorderRadius;
-  padding: 13px 29px;
+  padding: 0 29px;
   text-decoration:none;
   text-align: center;
+  height: $sButtonHeight;
 }
 .Button,
 .Button span {

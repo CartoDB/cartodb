@@ -25,10 +25,16 @@ $selectedItemPaddingOnSides: $sMarginElement - 1px;
 .DatasetsList-item.is--selected {
   padding: $sMarginGroup $selectedItemPaddingOnSides;
   margin: -1px -20px 0px -20px;
-  background-color: rgba(#F5FAFE, 1);
-  border: 1px rgba(#BCD8F1, 1) solid;
   border-radius: 5px;
   cursor: pointer;
+}
+.DatasetsList-item:hover {
+  background-color: $cCard-hoverFill
+  border: 1px $cCard-hoverBorder solid;
+}
+.DatasetsList-item.is--selected {
+  background-color: $cCard-selectedFill;
+  border: 1px $cCard-selectedBorder solid;
 }
 .DatasetsList-item.is--selected {
   &:hover { cursor: default }

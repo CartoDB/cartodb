@@ -1,6 +1,6 @@
-@import "../../new_common/mixins";
-@import "../../new_common/colors";
-@import "../../new_common/sizes";
+@import "../new_common/mixins";
+@import "../new_common/colors";
+@import "../new_common/sizes";
 
 /* compensate for the negative margins and border */
 $selectedItemPaddingOnSides: $sMargin-element - 1px;

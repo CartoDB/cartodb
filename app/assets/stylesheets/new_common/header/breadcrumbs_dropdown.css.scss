@@ -12,10 +12,10 @@
   @include align-items(center, center);
 }
 .BreadcrumbsDropdown-item {
-  font-size: $sFontLarge;
-  line-height: $sLineHeightLarge;
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
 }
 .BreadcrumbsDropdown-lockIcon {
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

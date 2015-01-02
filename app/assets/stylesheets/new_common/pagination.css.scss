@@ -8,7 +8,7 @@
   @include align-items(center, center);
 }
 .Pagination-label {
-  margin-right: $sMarginElement;
+  margin-right: $sMargin-element;
 }
 .Pagination-list {
   @include display-flex();

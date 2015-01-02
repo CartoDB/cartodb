@@ -2,57 +2,57 @@
 $sLayoutWidth: 940px;
 
 // Margins
-$sMarginSection:       40px; // To separate main section
-$sMarginGroup:         28px; // To separate groups inside a section
-$sMarginElement:       20px; // To separate elements inside a group
-$sMarginElementInline: 12px; // To separate inline elements
-$sMarginMin:           4px;  // Minimum margin, special cases only
-$sMarginFormRow:       20px; // Each row should have a margin-bottom of this value.
+$sMargin-section:       40px; // To separate main section
+$sMargin-group:         28px; // To separate groups inside a section
+$sMargin-element:       20px; // To separate elements inside a group
+$sMargin-elementInline: 12px; // To separate inline elements
+$sMargin-min:           4px;  // Minimum margin, special cases only
+$sMargin-formRow:       20px; // Each row should have a margin-bottom of this value.
 
 // Font sizes
-$sFontSmaller:        10px;
-$sFontSmall:          11px;
-$sFontSmallUpperCase: 12px;
-$sFontDefault:        13px;
-$sFontLarge:          15px;
-$sFontLarger:         16px;
-$sFontLargest:        18px;
+$sFontSize-smaller:        10px;
+$sFontSize-small:          11px;
+$sFontSize-smallUpperCase: 12px;
+$sFontSize-default:        13px;
+$sFontSize-large:          15px;
+$sFontSize-larger:         16px;
+$sFontSize-largest:        18px;
 
 // Font weights
-$sFontWeightSmall:   300;
-$sFontWeightLighter: 300;
-$sFontWeightDefault: 500;
-$sFontWeightBold:    700;
+$sFontWeight-small:   300;
+$sFontWeight-lighter: 300;
+$sFontWeight-default: 500;
+$sFontWeight-bold:    700;
 
 // Line heights
-$sLineHeightSmaller: 15px;
-$sLineHeightSmall:   16px;
-$sLineHeightDefault: 20px;
-$sLineHeightLarge:   22px;
-$sLineHeightLarger:  24px;
-$sLineHeightLargest: 27px;
-$sLineHeightButton:  15px;
+$sLineHeight-smaller: 15px;
+$sLineHeight-small:   16px;
+$sLineHeight-default: 20px;
+$sLineHeight-large:   22px;
+$sLineHeight-larger:  24px;
+$sLineHeight-largest: 27px;
+$sLineHeight-button:  15px;
 
 // Buttons
-$sButtonHeight:       40px;
-$sButtonBorder:       1px;
-$sButtonBorderRadius: 28px;
+$sButton-height:       40px;
+$sButton-border:       1px;
+$sButton-borderRadius: 28px;
 
 // Avatars
-$sAvatarBorderRadius: 4px;
-$sAvatarPublic:       96px;
-$sAvatarDefault:      40px;
-$sAvatarMeta:         16px;
+$sAvatar-borderRadius: 4px;
+$sAvatar-public:       96px;
+$sAvatar-default:      40px;
+$sAvatar-meta:         16px;
 
 // Icons
-$sIconBorderRadius:   3px;
-$sIconLayout:         40px;
-$sIconAction:         20px;
-$sIconInlineWithText: 12px;
-$sIconIllustration:   50px;
+$sIcon-borderRadius:   3px;
+$sIcon-layout:         40px;
+$sIcon-action:         20px;
+$sIcon-inlineWithText: 12px;
+$sIcon-illustration:   50px;
 
 // Cards, e.g. maps
-$sCard:             300px;
+$sCard-width: 300px;
 
 // Forms
-$sFormElementHeight: 40px;
+$sForm-elementHeight: 40px;

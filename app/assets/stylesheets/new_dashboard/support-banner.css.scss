@@ -7,7 +7,7 @@
 .SupportBanner {
   display:block;
   width:100%;
-  padding: $sMarginSection 0;
+  padding: $sMargin-section 0;
   background:#384047;
 }
 .SupportBanner .u-inner {
@@ -20,13 +20,13 @@
 }
 .SupportBanner-infoTitle {
   font-size: 20px;
-  font-weight: $sFontWeightBold;
+  font-weight: $sFontWeight-bold;
   color:white;
 }
 .SupportBanner-infoDescription {
   margin-top:5px;
-  font-weight: $sFontWeightLighter;
-  font-weight: $sFontLarge;
+  font-weight: $sFontWeight-lighter;
+  font-weight: $sFontSize-large;
   color:rgba(white, .5);
 }
 .SupportBanner-infoDescriptionLink {

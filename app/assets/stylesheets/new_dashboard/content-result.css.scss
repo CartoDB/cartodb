@@ -85,17 +85,17 @@
 }
 .ContentResult-title {
   margin-top: 15px;
-  font-size: $sFontLargest;
-  font-weight: $sFontWeightDefault;
-  line-height: $sLineHeightLargest;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-default;
+  line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
 .ContentResult-text {
   margin-top: 10px;
-  font-size: $sFontLarge;
-  line-height: $sLineHeightLarge;
-  font-weight: $sFontWeightLighter;
-  color: $cTypography-paragraphs; 
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
 }
 
 

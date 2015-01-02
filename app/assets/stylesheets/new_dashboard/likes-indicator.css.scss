@@ -6,12 +6,12 @@
 @import "../new_common/sizes";
 
 .LikesIndicator {
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
 }
 .LikesIndicator-icon {
   margin-right:6px;
-  font-size: $sFontSmall;
+  font-size: $sFontSize-small;
   color: $cTypography-help;
 }
 .LikesIndicator:hover {

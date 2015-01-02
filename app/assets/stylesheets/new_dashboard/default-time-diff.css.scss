@@ -6,11 +6,11 @@
 @import "../new_common/sizes";
 
 .DefaultTimeDiff {
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
 }
 .DefaultTimeDiff-icon {
-  font-size: $sFontSmaller;
-  font-weight: $sFontWeightLighter;
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

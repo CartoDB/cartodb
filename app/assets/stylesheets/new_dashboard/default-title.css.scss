@@ -6,9 +6,9 @@
 
 
 .DefaultTitle {
-  font-weight: $sFontWeightDefault;
-  font-size: $sFontLarger;
-  line-height: $sLineHeightLarger;
+  font-weight: $sFontWeight-default;
+  font-size: $sFontSize-larger;
+  line-height: $sLineHeight-larger;
 }
 .DefaultTitle-link {
   color: $cTypography-paragraphs;

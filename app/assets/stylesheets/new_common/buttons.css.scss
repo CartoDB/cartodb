@@ -8,17 +8,17 @@
 .Button {
   @include display-flex();
   @include align-items(center, center);
-  border-radius: $sButtonBorderRadius;
+  border-radius: $sButton-borderRadius;
   padding: 0 29px;
   text-decoration:none;
   text-align: center;
-  height: $sButtonHeight;
+  height: $sButton-height;
 }
 .Button,
 .Button span {
-  font-size: $sFontSmallUpperCase;
-  line-height: $sLineHeightButton;
-  font-weight: $sFontWeightBold;
+  font-size: $sFontSize-smallUpperCase;
+  line-height: $sLineHeight-button;
+  font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
 }
@@ -37,7 +37,7 @@
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border: $sButtonBorder solid #CCCCCC;
+  border: $sButton-border solid #CCCCCC;
   color: #666666;
   background-color: rgba(white, 1);
   &:hover {
@@ -46,6 +46,6 @@
   }
 }
 .Button--overBlack {
-  border: $sButtonBorder solid white;
+  border: $sButton-border solid white;
   &:hover {}
 }

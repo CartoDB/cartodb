@@ -2,12 +2,12 @@
 @import "../new_common/sizes";
 
 .RowsIndicator {
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .RowsIndicator-icon {
-  font-size: $sFontSmaller;
-  line-height: $sLineHeightSmaller;
-  font-weight: $sFontWeightLighter;
+  font-size: $sFontSize-smaller;
+  line-height: $sLineHeight-smaller;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

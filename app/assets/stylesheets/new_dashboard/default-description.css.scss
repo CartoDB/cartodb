@@ -5,7 +5,7 @@
 @import "../new_common/sizes";
 
 .DefaultDescription {
-  font-size: $sFontDefault;
-  font-weight: $sFontWeightLighter;
+  font-size: $sFontSize-default;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }

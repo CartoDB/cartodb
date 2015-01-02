@@ -11,8 +11,8 @@
   @include inline-block();
   width: 298px;
   height: 352px;
-  margin-top: $sMarginElement;
-  margin-right: $sMarginElement;
+  margin-top: $sMargin-element;
+  margin-right: $sMargin-element;
   border: 1px solid rgba(#DBDBDB, 1);
   border-radius: 4px;
 }
@@ -79,7 +79,7 @@
   @include align-items(center, center);
   @include flex-direction(column);
   height:142px;
-  padding: $sMarginElement;
+  padding: $sMargin-element;
 }
 .MapCard-contentDetail {
   display:block;

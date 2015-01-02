@@ -3,7 +3,7 @@
 @import "../../new_common/sizes";
 
 /* compensate for the negative margins and border */
-$selectedItemPaddingOnSides: $sMarginElement - 1px;
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 /**
  * Row is distributed over the total size of $sLayoutWidth as:
@@ -18,18 +18,18 @@ $selectedItemPaddingOnSides: $sMarginElement - 1px;
 .DatasetsList-item {
   @include display-flex();
   @include justify-content(center, center);
-  padding: $sMarginGroup 0;
+  padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
 .DatasetsList-item:hover,
 .DatasetsList-item.is--selected {
-  padding: $sMarginGroup $selectedItemPaddingOnSides;
+  padding: $sMargin-group $selectedItemPaddingOnSides;
   margin: -1px -20px 0px -20px;
   border-radius: 5px;
   cursor: pointer;
 }
 .DatasetsList-item:hover {
-  background-color: $cCard-hoverFill
+  background-color: $cCard-hoverFill;
   border: 1px $cCard-hoverBorder solid;
 }
 .DatasetsList-item.is--selected {
@@ -51,7 +51,7 @@ $selectedItemPaddingOnSides: $sMarginElement - 1px;
   @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemCategory.is--polygonDataset {
-  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white); 
+  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemCategory.is--pointDataset {
   @include background(image-url('layout/points-dataset.png') no-repeat center center white);
@@ -75,10 +75,10 @@ $selectedItemPaddingOnSides: $sMarginElement - 1px;
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(center, center);
-//  line-height: $sLineHeightLarger;
+//  line-height: $sLineHeight-larger;
 }
 .DatasetsList-itemMeta > * {
-  margin-right: $sMarginElement;
+  margin-right: $sMargin-element;
 }
 .DatasetsList-itemMeta > *:last-child {
   margin-right: 0;
@@ -96,5 +96,5 @@ $selectedItemPaddingOnSides: $sMarginElement - 1px;
   color: $cTypography-help;
 }
 .DatasetsList-itemTitlePermission {
-  margin-left: $sMarginMin;
+  margin-left: $sMargin-min;
 }

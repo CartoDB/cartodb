@@ -31,21 +31,21 @@
 .Header-navigationBreadcrumb {
   @include display-flex();
   @include align-items(center, center);
-  margin-left: $sMarginElement;
+  margin-left: $sMargin-element;
 }
 .Header-navigationBreadcrumbItem {
   padding-left:6px;
-  font-size: $sFontLargest;
-  font-weight: $sFontWeightLighter;
-  line-height: $sLineHeightLargest;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-largest;
   color:$cTypography-secondary;
 }
 .Header-navigationBreadcrumbLink {
   position:relative;
-  padding-right: $sMarginElementInline;
-  font-size: $sFontLargest;
-  font-weight: $sFontWeightLighter;
-  line-height: $sLineHeightLargest;
+  padding-right: $sMargin-elementInline;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-largest;
   color:#333;
 
   &:after {
@@ -78,11 +78,11 @@
 .Header-settingsItem {
   position: relative;
   margin-left: 30px;
-  font-size: $sFontLarger;
-  line-height: $sLineHeightLarger;
+  font-size: $sFontSize-larger;
+  line-height: $sLineHeight-larger;
 }
 .Header-settingsLink {
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
   color:#666;
   
   &:hover {

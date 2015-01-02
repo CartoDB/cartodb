@@ -2,11 +2,11 @@
 @import "../new_common/sizes";
 
 .SizeIndicator {
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .SizeIndicator-icon {
-  font-size: $sFontSmall;
-  font-weight: $sFontWeightLighter;
+  font-size: $sFontSize-small;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

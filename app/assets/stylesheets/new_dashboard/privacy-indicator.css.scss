@@ -12,7 +12,7 @@ $cPrivacy-other:    rgba(#F5A623, 1);
   @include align-items(center, center);
   position: relative;
   color: $cTypography-secondary;
-  font-weight: $sFontWeightLighter;
+  font-weight: $sFontWeight-lighter;
 }
 .PrivacyIndicator:hover {
   text-decoration: none;
@@ -24,7 +24,7 @@ $cPrivacy-other:    rgba(#F5A623, 1);
   height: 8px;
   background-color: $cTypography-help;
   border-radius: 100%;
-  margin: 2px $sMarginMin 0 0;
+  margin: 2px $sMargin-min 0 0;
 }
 .PrivacyIndicator.is-public:before {
   background-color: $cPrivacy-public;

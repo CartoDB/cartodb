@@ -11,7 +11,7 @@
 
 body {
   background: $cStructure-mainBkg;
-  font: normal #{$sFontDefault}/#{$sLineHeightDefault} 'Lato', sans-serif;
+  font: normal #{$sFontSize-default}/#{$sLineHeight-default} 'Lato', sans-serif;
 }
 
 ul { list-style: none }

@@ -120,25 +120,26 @@ module CartoDB
 
       # @throws KeyError
       def total_shared_entries(raise_on_error = false)
-        if @unauthenticated_flag
-          0
-        else
-          if @user_id.nil? || @type.nil?
-            if raise_on_error
-              raise KeyError.new("Can't retrieve shared count without specifying user id") if @user_id.nil?
-              raise KeyError.new("Can't retrieve shared count without specifying visualization type") if @type.nil?
-            else
-              0
-            end
+        user_shared_count = org_shared_count = 0
+
+        unless @unauthenticated_flag
+          if @user_id.nil? && raise_on_error
+            raise KeyError.new("Can't retrieve shared count without specifying user id")
           else
             user_shared_count = CartoDB::SharedEntity.select(:entity_id)
-            .where(:recipient_id => @user_id,
+              .where(:recipient_id => @user_id,
                    :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
                    :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
-            .join(:visualizations,
-                  :visualizations__id.cast(:uuid) => :entity_id,
-                  :type => @type)
-            .count
+            if @type.nil?
+              user_shared_count = user_shared_count.join(:visualizations,
+                                                         :visualizations__id.cast(:uuid) => :entity_id)
+            else
+              user_shared_count = user_shared_count.join(:visualizations,
+                                                         :visualizations__id.cast(:uuid) => :entity_id,
+                                                         :type => @type)
+            end
+            user_shared_count = user_shared_count.count
+
             user = User.where(id: @user_id).first
             if user.nil? || user.organization.nil?
               org_shared_count = 0
@@ -147,46 +148,58 @@ module CartoDB
               .where(:recipient_id => user.organization_id,
                      :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
                      :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
-              .join(:visualizations,
-                    :visualizations__id.cast(:uuid) => :entity_id,
-                    :type => @type)
-              .count
+              if @type.nil?
+                org_shared_count = org_shared_count.join(:visualizations,
+                                                         :visualizations__id.cast(:uuid) => :entity_id)
+              else
+                org_shared_count = org_shared_count.join(:visualizations,
+                                                         :visualizations__id.cast(:uuid) => :entity_id,
+                                                          :type => @type)
+              end
+              org_shared_count = org_shared_count.count
             end
-            user_shared_count + org_shared_count
           end
         end
+        user_shared_count + org_shared_count
       end
 
       # @throws KeyError
       def total_liked_entries(raise_on_error = false)
-        if @user_id.nil? || @type.nil?
-          if raise_on_error
-            raise KeyError.new("Can't retrieve likes count without specifying user id") if @user_id.nil?
-            raise KeyError.new("Can't retrieve likes count without specifying visualization type") if @type.nil?
-          else
-            0
-          end
+        if @user_id.nil? && raise_on_error
+            raise KeyError.new("Can't retrieve likes count without specifying user id")
         else
           # Inner join with visualizations to filter by type and user, then applied a distinct count
           if @unauthenticated_flag
-            CartoDB::Like.select(:subject)
-            .join(:visualizations,
-                  :id.cast(:uuid) => :subject,
-                  :user_id => @user_id,
-                  :type => @type,
-                  :privacy => Visualization::Member::PRIVACY_PUBLIC)
-            .distinct
-            .count
+            likes_count = CartoDB::Like.select(:subject)
+            if @type.nil?
+              likes_count = likes_count.join(:visualizations,
+                                             :id.cast(:uuid) => :subject,
+                                             :user_id => @user_id,
+                                             :privacy => Visualization::Member::PRIVACY_PUBLIC)
+            else
+              likes_count = likes_count.join(:visualizations,
+                                             :id.cast(:uuid) => :subject,
+                                             :user_id => @user_id,
+                                             :type => @type,
+                                             :privacy => Visualization::Member::PRIVACY_PUBLIC)
+            end
+            likes_count = likes_count.distinct.count
           else
-            CartoDB::Like.select(:subject)
-            .join(:visualizations,
-                  :id.cast(:uuid) => :subject,
-                  :user_id => @user_id,
-                  :type => @type)
-            .distinct
-            .count
+            likes_count = CartoDB::Like.select(:subject)
+            if @type.nil?
+              likes_count = likes_count.join(:visualizations,
+                                             :id.cast(:uuid) => :subject,
+                                             :user_id => @user_id)
+            else
+              likes_count = likes_count.join(:visualizations,
+                                             :id.cast(:uuid) => :subject,
+                                             :user_id => @user_id,
+                                             :type => @type)
+            end
+            likes_count = likes_count.distinct.count
           end
         end
+        likes_count
       end
 
       attr_reader :total_entries

@@ -16,7 +16,7 @@
   height: 100%;
   z-index: 50;
   background-color: $cStructure-mainBkg;
-  opacity: 0.9;
+  @include opacity(0.9);
   /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
   @include animation(fade-and-scale-in 100ms ease-out);
 }

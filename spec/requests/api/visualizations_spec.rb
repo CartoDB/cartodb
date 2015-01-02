@@ -672,20 +672,20 @@ describe Api::Json::VisualizationsController do
       post "/api/v1/viz?api_key=#{@api_key}", factory(locked: false).to_json, @headers
       vis_2_id = JSON.parse(last_response.body).fetch('id')
 
-      get "/api/v1/viz?api_key=#{@api_key}", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived", {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.length.should eq 2
 
-      get "/api/v1/viz?api_key=#{@api_key}&locked=true", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=true", {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.length.should eq 1
       collection.first.fetch('id').should eq vis_1_id
 
-      get "/api/v1/viz?api_key=#{@api_key}&locked=false", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived&locked=false", {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
@@ -799,7 +799,7 @@ describe Api::Json::VisualizationsController do
            }.to_json, @headers
       last_response.status.should == 200
 
-      get api_v1_visualizations_index_url(user_domain: @user.username), @headers
+      get api_v1_visualizations_index_url(user_domain: @user.username, type: 'derived'), @headers
       body = JSON.parse(last_response.body)
 
       body['total_entries'].should eq 1
@@ -807,7 +807,8 @@ describe Api::Json::VisualizationsController do
       vis['id'].should eq pub_vis_id
       vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
 
-      get api_v1_visualizations_index_url(user_domain: @user.username, api_key: @api_key, order: 'updated_at'),
+      get api_v1_visualizations_index_url(user_domain: @user.username, type: 'derived', api_key: @api_key,
+                                          order: 'updated_at'),
         {}, @headers
       body = JSON.parse(last_response.body)
 
@@ -872,7 +873,8 @@ describe Api::Json::VisualizationsController do
           }.to_json, @headers
       last_response.status.should == 200
 
-      get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username)}", @headers
+      get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+                                                                             type: 'derived')}", @headers
       body = JSON.parse(last_response.body)
 
       body['total_entries'].should eq 1
@@ -883,6 +885,7 @@ describe Api::Json::VisualizationsController do
 
       get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
                                                                              api_key: user_2.api_key,
+                                                                             type: 'derived',
                                                                              order: 'updated_at')}", {}, @headers
       body = JSON.parse(last_response.body)
 
@@ -937,7 +940,6 @@ describe Api::Json::VisualizationsController do
 
       table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: user_2.id)
       u2_t_1_id = table.table_visualization.id
-      #u2_t_1_perm_id = table.table_visualization.permission.id
 
       post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
            factory.to_json, @headers
@@ -949,7 +951,6 @@ describe Api::Json::VisualizationsController do
            factory.to_json, @headers
       last_response.status.should == 200
       u2_vis_1_id = JSON.parse(last_response.body).fetch('id')
-      #u2_vis_1_perm_id = JSON.parse(last_response.body).fetch('permission').fetch('id')
 
       get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
           type: CartoDB::Visualization::Member::CANONICAL_TYPE), @headers
@@ -1123,7 +1124,203 @@ describe Api::Json::VisualizationsController do
       body['visualizations'][0]['id'].should eq u1_t_1_id
     end
 
-  end
+    it 'tests totals calculations' do
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+      user_1 = create_user(
+          username: "test#{rand(9999)}-1",
+          email: "client#{rand(9999)}@cartodb.com",
+          password: 'clientex',
+          private_tables_enabled: false
+      )
+
+      user_2 = create_user(
+          username: "test#{rand(9999)}-2",
+          email: "client#{rand(9999)}@cartodb.com",
+          password: 'clientex',
+          private_tables_enabled: false
+      )
+
+      organization = Organization.new
+      organization.name = "org#{rand(9999)}"
+      organization.quota_in_bytes = 1234567890
+      organization.seats = 5
+      organization.save
+      organization.valid?.should eq true
+
+      user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
+      user_org.promote_user_to_admin
+      organization.reload
+      user_1.reload
+
+      user_2.organization_id = organization.id
+      user_2.save.reload
+      organization.reload
+
+      # user 1 will have 1 table and 1 vis
+      # user 2 will have 2 of each
+      # user 2 will share 1 table and 1 vis with the org
+      # user 2 will share the other table and other vis with user 1
+
+      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: user_1.id)
+      u1_t_1_id = table.table_visualization.id
+
+      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+      u2_t_1_id = table.table_visualization.id
+      u2_t_1_perm_id = table.table_visualization.permission.id
+
+      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+      u2_t_2_id = table.table_visualization.id
+      u2_t_2_perm_id = table.table_visualization.permission.id
+
+      post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
+           factory.to_json, @headers
+      last_response.status.should == 200
+      u1_vis_1_id = JSON.parse(last_response.body).fetch('id')
+
+      post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
+           factory.to_json, @headers
+      last_response.status.should == 200
+      u2_vis_1_id = JSON.parse(last_response.body).fetch('id')
+      u2_vis_1_perm_id = JSON.parse(last_response.body).fetch('permission').fetch('id')
+
+      post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
+           factory.to_json, @headers
+      last_response.status.should == 200
+      u2_vis_2_id = JSON.parse(last_response.body).fetch('id')
+      u2_vis_2_perm_id = JSON.parse(last_response.body).fetch('permission').fetch('id')
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::CANONICAL_TYPE), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 1
+      body['total_likes'].should eq 0
+      body['total_shared'].should eq 0
+      vis = body['visualizations'].first
+      vis['id'].should eq u1_t_1_id
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::DERIVED_TYPE), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 1
+      body['total_likes'].should eq 0
+      body['total_shared'].should eq 0
+      vis = body['visualizations'].first
+      vis['id'].should eq u1_vis_1_id
+
+      # Share u2 vis1 with organization
+      put api_v1_permissions_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: u2_vis_1_perm_id),
+          {acl: [{
+                     type: CartoDB::Permission::TYPE_ORGANIZATION,
+                     entity: {
+                         id:   organization.id,
+                     },
+                     access: CartoDB::Permission::ACCESS_READONLY
+                 }]}.to_json, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 2
+      body['total_likes'].should eq 0
+      body['total_shared'].should eq 1
+
+      # Share u2 vis2 with u1
+      put api_v1_permissions_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: u2_vis_2_perm_id),
+          {acl: [{
+                     type: CartoDB::Permission::TYPE_USER,
+                     entity: {
+                         id:   user_1.id,
+                     },
+                     access: CartoDB::Permission::ACCESS_READONLY
+                 }]}.to_json, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 3
+      body['total_likes'].should eq 0
+      body['total_shared'].should eq 2
+
+      post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 3
+      body['total_likes'].should eq 1
+      body['total_shared'].should eq 2
+
+      # Multiple likes to same vis shouldn't increment total as is per vis
+      post api_v1_visualizations_add_like_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_1.api_key)
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::DERIVED_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 3
+      body['total_likes'].should eq 1
+      body['total_shared'].should eq 2
+
+
+      # Share u2 table1 with org
+      put api_v1_permissions_update_url(user_domain:user_2.username, api_key: user_2.api_key, id: u2_t_1_perm_id),
+          {acl: [{
+                     type: CartoDB::Permission::TYPE_ORGANIZATION,
+                     entity: {
+                         id:   organization.id,
+                     },
+                     access: CartoDB::Permission::ACCESS_READONLY
+                 }]}.to_json, @headers
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::CANONICAL_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 2
+      body['total_likes'].should eq 0
+      body['total_shared'].should eq 1
+
+      # Share u2 table2 with org
+      put api_v1_permissions_update_url(user_domain:user_2.username, api_key: user_2.api_key, id: u2_t_2_perm_id),
+          {acl: [{
+                     type: CartoDB::Permission::TYPE_USER,
+                     entity: {
+                         id:   user_1.id,
+                     },
+                     access: CartoDB::Permission::ACCESS_READONLY
+                 }]}.to_json, @headers
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::CANONICAL_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 3
+      body['total_likes'].should eq 0
+      body['total_shared'].should eq 2
+
+      post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_1.api_key)
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::CANONICAL_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 3
+      body['total_likes'].should eq 1
+      body['total_shared'].should eq 2
+
+      # Multiple likes to same table shouldn't increment total as is per vis
+      post api_v1_visualizations_add_like_url(user_domain: user_1.username, id: u1_t_1_id, api_key: user_2.api_key)
+
+      get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
+                                          type: CartoDB::Visualization::Member::CANONICAL_TYPE, order: 'updated_at'), @headers
+      body = JSON.parse(last_response.body)
+      body['total_entries'].should eq 3
+      body['total_likes'].should eq 1
+      body['total_shared'].should eq 2
+    end
+
+end
+
 
   # Visualizations are always created with default_privacy
   def factory(attributes={})

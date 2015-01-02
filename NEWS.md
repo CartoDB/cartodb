@@ -2,6 +2,9 @@
 ------------------
 * New features
   - GET /api/v1/viz/ always sorts by descending order if `order` param set, and this supports new filters: `mapviews`, `likes`, `size`, `row_count`
+  - GET /api/v1/viz/ returns more totals:
+        `total_likes` (visualizations count with likes, filtered to public for unauthenticated calls,
+        `total_shared` (visualizations count shared to the user, 0 for unauthenticated calls)
 
 3.7.0 (2014-12-18)
 ------------------

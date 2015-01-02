@@ -5,15 +5,15 @@
 /* compensate for the negative margins and border */
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
-/**
- * Row is distributed over the total size of $sLayoutWidth as:
- * Category(40px) + margin(20px) PrimaryInfo(480px) + margin(20px) + SecondaryInfo(380px)
- */
+$_secondaryInfoWidth: 520px;
+// Remaining width after removing secondary info, icon and margins
+$_primaryInfoWidth: $sLayoutWidth - $_secondaryInfoWidth - $sIcon-layout - $sMargin-element;
+
 .DatasetsList {
   position: relative;
   width: $sLayoutWidth;
   margin: 0 auto;
-  padding: 28px 0;
+  padding: $sMargin-group 0;
 }
 .DatasetsList-item {
   @include display-flex();
@@ -24,8 +24,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-item:hover,
 .DatasetsList-item.is--selected {
   padding: $sMargin-group $selectedItemPaddingOnSides;
-  margin: -1px -20px 0px -20px;
-  border-radius: 5px;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  border-radius: 4px;
   cursor: pointer;
 }
 .DatasetsList-item:hover {
@@ -40,12 +40,12 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   &:hover { cursor: default }
 }
 .DatasetsList-itemCategory {
-  width: 38px;
-  height: 38px;
-  margin-right: 20px;
+  width: $sIcon-layout;
+  height: $sIcon-layout;
+  margin-right: $sMargin-element;
   border: 1px rgba($cStructure-mainLine, 0.5) solid;
   background: rgba(black, 0.05);
-  border-radius: 2px;
+  border-radius: $sIcon-borderRadius;
 }
 .DatasetsList-itemCategory.is--lineDataset {
   @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
@@ -62,12 +62,12 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 360px;
+  width: $_primaryInfoWidth;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 520px;
+  width: $_secondaryInfoWidth;
 }
 
 .DatasetsList-itemMeta,

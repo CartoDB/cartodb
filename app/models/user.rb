@@ -1069,7 +1069,9 @@ class User < Sequel::Model
   end
 
   def link_deleted_tables
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
+    # Sync tables replace contents without touching metadata DB, so if this method triggers meanwhile sync will fail
+    # so we discard synced tables
+    metadata_tables_ids = self.tables.all.select{ |table| table.synchronization.nil? }.map(&:table_id)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
 
     # Remove tables with oids that don't exist on the db

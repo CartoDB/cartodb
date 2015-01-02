@@ -3,24 +3,25 @@
 
 @import "mixins";
 @import "colors";
+@import "sizes";
 
 .Button {
   @include inline-block();
-  border-radius: 28px;
+  border-radius: $sButtonBorderRadius;
   padding: 13px 29px;
   text-decoration:none;
+  text-align: center;
 }
 .Button,
 .Button span {
-  font-size: 12px;
-  line-height: 15px;
-  font-weight: 700;
+  font-size: $sFontSmallUpperCase;
+  line-height: $sLineHeightButton;
+  font-weight: $sFontWeightBold;
   color: white;
   text-transform: uppercase;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
-
 .Button--main {
   background-color: $cHighlight-main;
   &:hover { background-color: rgba(#007FBD, 1) }
@@ -34,7 +35,7 @@
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border:2px solid #CCCCCC;
+  border: $sButtonBorder solid #CCCCCC;
   color: #666666;
   background-color: rgba(white, 1);
   &:hover {
@@ -43,6 +44,6 @@
   }
 }
 .Button--overBlack {
-  border:2px solid white;
+  border: $sButtonBorder solid white;
   &:hover {}
 }

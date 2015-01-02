@@ -2,6 +2,7 @@
 // --------------------------------------------------
 
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 
 .DefaultEditInline {
@@ -17,9 +18,8 @@
 // It is not possible to be grouped :(
 .DefaultEditInline-input::-webkit-input-placeholder {
   font-style: italic;
+  font-weight: $sFontWeightLighter;
   color: $cTypography-link;
-  font-size:13px;
-  font-weight:300;
 }
 .DefaultEditInline-input:hover::-webkit-input-placeholder {
   color: $cTypography-linkHover;

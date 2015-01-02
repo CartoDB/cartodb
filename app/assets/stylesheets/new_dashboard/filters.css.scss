@@ -3,6 +3,7 @@
 
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 
 .Filters {
@@ -12,7 +13,7 @@
 .Filters > .u-inner {
   position:relative;
   display:block;
-  width: 940px;
+  width: $sLayoutWidth;
   height:81px;
   margin: 0 auto;
   padding: 0;
@@ -65,7 +66,7 @@
     right: -5px;
     margin-top: -10px;
     line-height: normal;
-    font-weight: 300;
+    font-weight: $sFontWeightLighter;
     color: $cStructure-softLine;
   }
 }
@@ -95,7 +96,7 @@
   outline:none;
   border:none;
   background:none;
-  font-size:15px;
+  font-size: $sFontLarge;
 }
 .Filters-cleanSearch {
   position:absolute;
@@ -167,8 +168,6 @@
 .Filters-orderItem {
   @include inline-block();
   margin-right:24px;
-  // font-size:13px;
-  // font-weight:300;
   color:$cTypography-secondary;
   line-height:19px;
 }

@@ -1,5 +1,6 @@
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .Pagination {
   @include display-flex();
@@ -7,7 +8,7 @@
   @include align-items(center, center);
 }
 .Pagination-label {
-  margin-right: 20px;
+  margin-right: $sMarginElement;
 }
 .Pagination-list {
   @include display-flex();
@@ -16,7 +17,6 @@
 }
 .Pagination-listItem {
   display: inline-block;
-  font-size: 13px;
   border: 1px $cStructure-mainLine solid;
   border-right-width: 0;
   padding: 10px 15px;

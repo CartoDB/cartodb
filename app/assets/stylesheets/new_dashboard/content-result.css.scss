@@ -7,6 +7,7 @@
 
 @import "../new_common/colors";
 @import "../new_common/mixins";
+@import "../new_common/sizes";
 
 .ContentResult {
   width: 460px;
@@ -84,14 +85,16 @@
 }
 .ContentResult-title {
   margin-top: 15px;
-  font-size: 18px;
-  font-weight: 400;
+  font-size: $sFontLargest;
+  font-weight: $sFontWeightDefault;
+  line-height: $sLineHeightLargest;
   color: $cTypography-paragraphs;
 }
 .ContentResult-text {
   margin-top: 10px;
-  font-size: 15px;
-  font-weight: 300;
+  font-size: $sFontLarge;
+  line-height: $sLineHeightLarge;
+  font-weight: $sFontWeightLighter;
   color: $cTypography-paragraphs; 
 }
 

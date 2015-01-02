@@ -1,5 +1,6 @@
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .BreadcrumbsDropdown {
   min-width: 200px;
@@ -10,8 +11,11 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+.BreadcrumbsDropdown-item {
+  font-size: $sFontLarge;
+  line-height: $sLineHeightLarge;
+}
 .BreadcrumbsDropdown-lockIcon {
-  font-size: 13px;
-  font-weight:300;
+  font-weight: $sFontWeightLighter;
   color: $cTypography-help;
 }

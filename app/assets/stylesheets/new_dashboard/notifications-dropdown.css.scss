@@ -1,5 +1,6 @@
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .NotificationsList {
   width: 258px;
@@ -9,9 +10,8 @@
 .NotificationsList-item {
   position: relative;
   margin: 0!important;
-  padding: 20px 20px 20px 53px!important;
+  padding: $sMarginElement $sMarginElement $sMarginElement 53px!important;
   background: $cStructure-grayBkg;
-  font-size: 13px;
 }
 .NotificationsList-item:last-child {
   border-radius: 0 0 2px 2px;
@@ -22,21 +22,21 @@
   left: 20px;
   width: 18px;
   height: 18px;
-  line-height: 16px;
   border: 1px solid $cTypography-help;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: $sFontSmall;
+  line-height: $sLineHeightSmall;
   color: $cTypography-help;
   text-align: center;
 }
 .NotificationsList-title {
-  font-size: 15px;
+  font-size: $sFontLarge;
+  line-height: $sLineHeightLarge;
   text-transform: capitalize;
   color: $cTypography-headers;
 }
 .NotificationsList-text {
   margin-top: 0!important;
-  font-size: 13px;
   color: $cTypography-secondary;
 }
 .Notifications-iconCount {
@@ -44,9 +44,9 @@
   width:20px;
   height:20px;
   background: rgba(#CCC, 1);
-  line-height: 20px;
-  font-size: 13px;
-  font-weight: bold;
+  font-size: $sFontLarge;
+  font-weight: $sFontWeightBold;
+  line-height: $sLineHeightLarge;
   color: white;
   text-align: center;
   border-radius: 20px;
@@ -59,8 +59,8 @@
   background: none;
 }
 .NotificationsList-item.is--new {
-  margin: 0 20px 20px!important;
-  padding: 20px 0 0 33px!important;
+  margin: 0 $sMarginElement $sMarginElement!important;
+  padding: $sMarginElement 0 0 33px!important;
   border-top: 1px solid $cStructure-mainLine;
   background: white;
 

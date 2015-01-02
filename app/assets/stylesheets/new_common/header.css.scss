@@ -4,6 +4,7 @@
 
 @import "mixins";
 @import "colors";
+@import "sizes";
 
 /* Header */
 .Header {
@@ -18,7 +19,7 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: 940px;
+  width: $sLayoutWidth;
   margin: 0 auto;
 }
 
@@ -30,19 +31,21 @@
 .Header-navigationBreadcrumb {
   @include display-flex();
   @include align-items(center, center);
-  margin-left:20px;
+  margin-left: $sMarginElement;
 }
 .Header-navigationBreadcrumbItem {
   padding-left:6px;
-  font-size:18px;
-  font-weight:300;
+  font-size: $sFontLargest;
+  font-weight: $sFontWeightLighter;
+  line-height: $sLineHeightLargest;
   color:$cTypography-secondary;
 }
 .Header-navigationBreadcrumbLink {
   position:relative;
-  padding-right:12px;
-  font-size:18px;
-  font-weight:300;
+  padding-right: $sMarginElementInline;
+  font-size: $sFontLargest;
+  font-weight: $sFontWeightLighter;
+  line-height: $sLineHeightLargest;
   color:#333;
 
   &:after {
@@ -73,11 +76,13 @@
   @include align-items(center, center);
 }
 .Header-settingsItem {
-  position:relative;
-  margin-left:30px;
+  position: relative;
+  margin-left: 30px;
+  font-size: $sFontLarger;
+  line-height: $sLineHeightLarger;
 }
 .Header-settingsLink {
-  font-weight:300;
+  font-weight: $sFontWeightLighter;
   color:#666;
   
   &:hover {

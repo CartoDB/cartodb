@@ -2,12 +2,9 @@
 // --------------------------------------------------
 
 @import "../new_common/colors";
-
+@import "../new_common/sizes";
 
 .DefaultTags {
-  font-weight:300;
-  font-size:13px;
   color:$cTypography-secondary;
-  line-height:16px;
+  font-weight: $sFontWeightLighter;
 }
-.DefaultTags-item {}

@@ -3,17 +3,15 @@
 
 @import "../new_common/colors";
 @import "../new_common/mixins";
-
+@import "../new_common/sizes";
 
 .LikesIndicator {
-  font-size:13px;
-  font-weight:300;
+  font-weight: $sFontWeightLighter;
   color:$cTypography-secondary;
 }
 .LikesIndicator-icon {
   margin-right:6px;
-  font-family: 'CartoIcon';
-  font-size:11px;
+  font-size: $sFontSmall;
   color: $cTypography-help;
 }
 .LikesIndicator:hover {

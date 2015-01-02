@@ -2,6 +2,7 @@
 // --------------------------------------------------
 
 @import "../new_common/mixins";
+@import "../new_common/sizes";
 
 .UserNotifications {
   position:relative;
@@ -23,10 +24,10 @@
   background: #C74B43;
   border-radius: 23px;
   font-family:Arial;
-  font-size:10px;
-  font-weight:500;
+  font-size: $sFontSmaller;
+  font-weight: $sFontWeightDefault;
   text-align:center;
-  line-height:17px;
+  line-height: $sLineHeightSmaller;
   color: #C74B43;
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));

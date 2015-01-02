@@ -2,16 +2,18 @@
 // --------------------------------------------------
 
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 
 .DefaultTitle {
-  font-weight:400;
-  font-size:16px;
+  font-weight: $sFontWeightDefault;
+  font-size: $sFontLarger;
+  line-height: $sLineHeightLarger;
 }
 .DefaultTitle-link {
   color: $cTypography-paragraphs;
   &:hover {
     color: $cTypography-headers;
-    text-decoration:underline;
+    text-decoration: underline;
   }
 }

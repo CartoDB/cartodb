@@ -1,0 +1,18 @@
+@import "../new_common/mixins";
+@import "../new_common/colors";
+
+.Badge {
+  position: absolute;
+  display: block;
+  top: -9px;
+  right: -9px;
+  width: 17px;
+  height: 17px;
+  @include border-radius(23px);
+  background-color: $cHighlight-negative;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 300;
+  line-height: 17px;
+  text-align: center;
+}

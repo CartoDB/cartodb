@@ -1,0 +1,88 @@
+@import "mixins";
+@import "colors";
+@import "animations/fade-and-scale-in";
+@import "animations/fade-and-scale-out";
+@import "animations/fade-and-bounce-up";
+
+.Dialog {
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(center);
+  @include justify-content(center);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  background-color: $cStructure-mainBkg;
+  @include opacity(0.9);
+  /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
+  @include animation(fade-and-scale-in 100ms ease-out);
+}
+.Dialog--closing {
+  /* "forwards" to keep the last keyframe's styles after animation ended */
+  @include animation(fade-and-scale-out 80ms ease-in forwards);
+}
+.Dialog-closeBtn {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 30px;
+  border: 1px solid $cTypography-help;
+  color: $cTypography-help;
+  text-align: center;
+  line-height: 45px;
+  font-weight: 300;
+  font-size: 18px;
+  &:hover {
+    border-color: $cTypography-secondary;
+    color: $cTypography-secondary;
+  }
+}
+.Dialog-header {
+  width: 940px;
+  text-align: center;
+  padding: 40px 0;
+  margin: 0 auto;
+}
+.Dialog-body {
+  padding: 40px 0;
+  border-top: 1px solid $cTypography-help;
+  min-width: 940px;
+}
+.Dialog-footer {
+  border-top: 1px solid $cTypography-help;
+  padding: 40px 0;
+  width: 940px;
+  text-align: center;
+}
+.Dialog-headerIcon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cHighlight-negative;
+  border-radius: 5px;
+  margin: 0 auto 20px auto; /* center */
+  color: $cHighlight-negative;
+  font-size: 22px;
+  line-height: 48px;
+}
+.Dialog-headerIconBadge {
+  /* "backwards" to use the first keyframe's styles before animation starts */
+  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+}
+.Dialog-headerTitle {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.Dialog-headerText {
+  font-size: 18px;
+  font-weight: 300;
+}
+.Dialog-footerBtn {
+  margin-right: 20px;
+}

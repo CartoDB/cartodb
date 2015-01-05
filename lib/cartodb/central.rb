@@ -17,6 +17,10 @@ module Cartodb
       @host
     end
 
+    def google_signup_url
+      "#{self.host}/google/signup"
+    end
+
     def build_request(path, body, method, timeout = 200)
       Typhoeus::Request.new(
         "#{ @host }/#{ path }",

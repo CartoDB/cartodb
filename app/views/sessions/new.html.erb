@@ -8,7 +8,8 @@
     if(typeof authResult.access_token === 'undefined') {
       console.log('no access_token');
     } else {
-      if (authResult['status']['signed_in']) {
+      var access_token_field = document.getElementById('access_token');
+      if (authResult['status']['signed_in'] && access_token_field.value === '') {
         var googleAccessTokenField = document.getElementById('google_access_token');
         googleAccessTokenField.value = authResult.access_token;
         googleAccessTokenField.form.submit();
@@ -59,6 +60,16 @@
         </span>
       </div>
     <% end %>
+
+    <form action="<%= @google_signup_action %>" method="POST">
+      <input type="hidden" value="<%= @unauthenticated_valid_google_access_token %>" id="access_token" name="access_token" />
+    </form>
+    <script>
+      var access_token_field = document.getElementById('access_token');
+      if(access_token_field.value != '') {
+        access_token_field.form.submit();
+      }
+    </script>
   </div>
   <div class="footer">
     <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>

@@ -8,6 +8,10 @@ class SessionsController < ApplicationController
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
+  def initialize
+    @google_signup_action = Cartodb::Central.new.google_signup_url
+  end
+
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
@@ -18,13 +22,21 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = if(params[:google_access_token].present?)
+    user = if params[:google_access_token].present?
       # TODO: improve this, since this sometimes triggers user validation twice (first for getting the domain if not present)
-      user_domain = params[:user_domain].present? ? params[:user_domain] : GooglePlusAPI.new.get_user(params[:google_access_token]).subdomain
-      authenticate!(:google_access_token, scope: user_domain)
+      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      if user.present?
+        user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+        authenticate!(:google_access_token, scope: user_domain)
+      else
+        @unauthenticated_valid_google_access_token = params[:google_access_token]
+        nil
+      end
     else
-      authenticate!(:password, scope: extract_user_id(request_params))
+      authenticate!(:password, scope: extract_user_id(request, params))
     end
+
+    render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
     user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
     CartodbStats.increment_login_counter(user.email)

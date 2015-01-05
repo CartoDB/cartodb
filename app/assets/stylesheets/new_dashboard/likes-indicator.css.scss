@@ -3,19 +3,18 @@
 
 @import "../new_common/colors";
 @import "../new_common/mixins";
+@import "../new_common/sizes";
 @import "../new_common/animations/pulse";
 
-
 .LikesIndicator {
-  font-size:13px;
-  font-weight:300;
+  font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
   cursor: pointer;
 }
 .LikesIndicator-icon {
   @include transform(1);
   margin-right:6px;
-  font-size:11px;
+  font-size: $sFontSize-small;
   color: $cTypography-help;
 }
 .LikesIndicator:hover {

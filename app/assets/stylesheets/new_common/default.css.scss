@@ -2,6 +2,7 @@
 // --------------------------------------------------
 
 @import "colors";
+@import "sizes";
 
 * {
   margin: 0;
@@ -9,8 +10,8 @@
 }
 
 body {
-  background: white;
-  font-family: 'Lato', sans-serif;
+  background: $cStructure-mainBkg;
+  font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} 'Lato', sans-serif;
 }
 
 ul { list-style: none }

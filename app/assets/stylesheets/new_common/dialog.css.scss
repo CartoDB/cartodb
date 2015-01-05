@@ -1,5 +1,6 @@
 @import "mixins";
 @import "colors";
+@import "sizes";
 @import "animations/fade-and-scale-in";
 @import "animations/fade-and-scale-out";
 @import "animations/fade-and-bounce-up";
@@ -26,16 +27,16 @@
 }
 .Dialog-closeBtn {
   position: absolute;
-  top: 40px;
-  right: 40px;
-  width: 40px;
-  height: 40px;
+  top: $sMargin-section;
+  right: $sMargin-section;
+  width: $sMargin-section;
+  height: $sMargin-section;
   border-radius: 30px;
   border: 1px solid $cTypography-help;
   color: $cTypography-help;
   text-align: center;
   line-height: 45px;
-  font-weight: 300;
+  font-weight: $sFontWeight-lighter;
   font-size: 18px;
   &:hover {
     border-color: $cTypography-secondary;
@@ -43,29 +44,25 @@
   }
 }
 .Dialog-header {
-  width: 940px;
   text-align: center;
-  padding: 40px 0;
-  margin: 0 auto;
+  padding: $sMargin-group 0;
 }
 .Dialog-body {
-  padding: 40px 0;
+  padding: $sMargin-section 0;
   border-top: 1px solid $cTypography-help;
-  min-width: 940px;
+  min-width: $sLayout-width;
 }
 .Dialog-footer {
   border-top: 1px solid $cTypography-help;
-  padding: 40px 0;
-  width: 940px;
-  text-align: center;
+  padding: $sMargin-group 0;
 }
 .Dialog-headerIcon {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: $sIcon-layout;
+  height: $sIcon-layout;
   border: 1px solid $cHighlight-negative;
-  border-radius: 5px;
-  margin: 0 auto 20px auto; /* center */
+  border-radius: $sIcon-borderRadius;
+  margin: 0 auto $sMargin-element auto; /* center icon */
   color: $cHighlight-negative;
   font-size: 22px;
   line-height: 48px;
@@ -75,14 +72,15 @@
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
 }
 .Dialog-headerTitle {
-  margin-bottom: 10px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
 }
 .Dialog-headerText {
-  font-size: 18px;
-  font-weight: 300;
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
 }
 .Dialog-footerBtn {
-  margin-right: 20px;
+  margin-right: $sMargin-element;
 }

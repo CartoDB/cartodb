@@ -3,20 +3,24 @@
 
 @import "mixins";
 @import "colors";
+@import "sizes";
 
 $buttonBorderSize: 1px;
 
 .Button {
-  @include inline-block();
-  @include border-radius(28px);
-  padding: 13px 29px;
+  @include display-flex();
+  @include align-items(center, center);
+  border-radius: $sButton-borderRadius;
+  padding: 0 29px;
   text-decoration:none;
+  text-align: center;
+  height: $sButton-height;
 }
 .Button,
 .Button span {
-  font-size: 12px;
-  line-height: 15px;
-  font-weight: 700;
+  font-size: $sFontSize-smallUpperCase;
+  line-height: $sLineHeight-button;
+  font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
 }
@@ -25,7 +29,6 @@ $buttonBorderSize: 1px;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
-
 .Button--main {
   background-color: $cHighlight-main;
   border-color: $cHighlight-main;
@@ -42,7 +45,7 @@ $buttonBorderSize: 1px;
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border: $buttonBorderSize solid #CCCCCC;
+  border: $sButton-border solid #CCCCCC;
   color: #666666;
   background-color: rgba(white, 1);
   &:hover {
@@ -52,9 +55,4 @@ $buttonBorderSize: 1px;
 }
 .Button--secondary span {
   color: #666666;
-}
-.Button--overBlack,
-.Button--overBlack span {
-  border: $buttonBorderSize solid white;
-  &:hover {}
 }

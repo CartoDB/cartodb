@@ -1,5 +1,6 @@
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .NotificationsList {
   width: 258px;
@@ -9,56 +10,59 @@
 .NotificationsList-item {
   position: relative;
   margin: 0!important;
-  padding: 20px 20px 20px 53px!important;
+  padding: $sMargin-element $sMargin-element $sMargin-element 53px!important;
   background: $cStructure-grayBkg;
-  font-size: 13px;
 }
-.NotificationsList-item:last-child { @include border-radius(0 0 2px 2px) }
+.NotificationsList-item:last-child {
+  border-radius: 0 0 2px 2px;
+}
 .NotificationsList-icon {
   position: absolute;
-  top: 18px;
+  top: 22px;
   left: 20px;
   width: 18px;
   height: 18px;
-  line-height: 16px;
   border: 1px solid $cTypography-help;
-  @include border-radius(20px);
-  font-size: 11px;
+  border-radius: 20px;
+  font-size: $sFontSize-small;
+  line-height: $sLineHeight-small;
   color: $cTypography-help;
   text-align: center;
 }
 .NotificationsList-title {
-  font-size: 15px;
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
   text-transform: capitalize;
   color: $cTypography-headers;
 }
 .NotificationsList-text {
   margin-top: 0!important;
-  font-size: 13px;
   color: $cTypography-secondary;
 }
 .Notifications-iconCount {
-  top:19px;
-  width:20px;
-  height:20px;
+  top:21px;
+  width: $sLineHeight-normal;
+  height: $sLineHeight-normal;
   background: rgba(#CCC, 1);
-  line-height: 20px;
-  font-size: 13px;
-  font-weight: bold;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-bold;
+  line-height: $sLineHeight-normal;
   color: white;
   text-align: center;
-  @include border-radius(20px);
+  border-radius: 20px;
   border: none;
 }
 .Notifications-iconCount.new--items {
   background: rgba(#C74B43, 1);
 }
 .NotificationsList-header {
+  @include display-flex();
+  @include align-items(center, center);
   background: none;
 }
 .NotificationsList-item.is--new {
-  margin: 0 20px 20px!important;
-  padding: 20px 0 0 33px!important;
+  margin: 0 $sMargin-element $sMargin-element!important;
+  padding: $sMargin-element 0 0 33px!important;
   border-top: 1px solid $cStructure-mainLine;
   background: white;
 

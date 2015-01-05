@@ -3,13 +3,18 @@
 
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .UserNotifications {
   position:relative;
   @include display-flex();
   text-decoration: none!important;
+  color: $cIcons-default;
 }
-.UserNotifications-Icon {
+.UserNotifications:hover {
+  color: $cIcons-active;
+}
+.UserNotifications-icon {
   color: #999;
   &:hover { color: #666 }
 }

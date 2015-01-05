@@ -1,13 +1,12 @@
 @import "../new_common/colors";
 @import "../new_common/sizes";
 
-.RowsIndicator {
+.SizeIndicator {
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
-.RowsIndicator-icon {
-  font-size: $sFontSize-smaller;
-  line-height: $sLineHeight-smaller;
+.SizeIndicator-icon {
+  font-size: $sFontSize-small;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

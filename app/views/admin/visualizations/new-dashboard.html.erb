@@ -19,7 +19,7 @@
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_dashboard.css', :media => 'all' %>
 <% end %>
 
-<div class="Header">
+<div class="Header" id="header">
   <div class="u-inner">
     <div class="Header-navigation">
       <ul class="Header-navigationList">
@@ -50,7 +50,7 @@
         <li class="Header-settingsItem">
           <a href="http://docs.cartodb.com/" class="Header-settingsLink">Learn</a>
         </li>
-        <li class="Header-settingsItem Header-settingsItemNotifications">
+        <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
           <a href="#/notifications" class="UserNotifications">
             <i class="UserNotifications-Icon iconFont iconFont-Alert"></i>
           </a>
@@ -65,20 +65,20 @@
   </div>
 </div>
 
-<div class="ContentController">
-  <div class="DashboardFilters">
-    <div class="u-inner"></div>
+<div class="ContentController" id="content-controller">
+  <div class="Filters">
+    <div class="u-inner" id="filters"></div>
   </div>
 
-  <div class="ContentList"></div>
+  <div class="ContentList" id="content-list"></div>
 
-  <div class="ContentFooter">
-    <div class="u-inner"></div>
+  <div class="ContentFooter" id="content-footer">
+    <div class="u-inner" id="content-footer-inner"></div>
   </div>
 </div>
 
 <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-  <div class="SupportBanner"></div>
+  <div class="SupportBanner" id="support-banner"></div>
 <% end %>
 
 <div class="Footer">

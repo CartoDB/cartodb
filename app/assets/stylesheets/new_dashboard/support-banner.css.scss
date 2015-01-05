@@ -2,11 +2,12 @@
 // --------------------------------------------------
 
 @import "../new_common/mixins";
+@import "../new_common/sizes";
 
 .SupportBanner {
   display:block;
   width:100%;
-  padding:40px 0;
+  padding: $sMargin-section 0;
   background:#384047;
 }
 .SupportBanner .u-inner {
@@ -14,19 +15,16 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: 940px;
-  margin: 0 auto;
 }
 .SupportBanner-infoTitle {
-  font-family: 'Lato', sans-serif;
-  font-size:20px;
-  font-weight:400;
+  font-size: 20px;
+  font-weight: $sFontWeight-bold;
   color:white;
 }
 .SupportBanner-infoDescription {
   margin-top:5px;
-  font-weight:300;
-  font-size:15px;
+  font-weight: $sFontWeight-lighter;
+  font-weight: $sFontSize-large;
   color:rgba(white, .5);
 }
 .SupportBanner-infoDescriptionLink {

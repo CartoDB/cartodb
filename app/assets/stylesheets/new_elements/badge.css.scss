@@ -1,5 +1,6 @@
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .Badge {
   position: absolute;
@@ -8,11 +9,11 @@
   right: -9px;
   width: 17px;
   height: 17px;
-  @include border-radius(23px);
+  line-height: 17px; /* same as width/height */
+  border-radius: 23px;
   background-color: $cHighlight-negative;
   color: #fff;
-  font-size: 10px;
-  font-weight: 300;
-  line-height: 17px;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
   text-align: center;
 }

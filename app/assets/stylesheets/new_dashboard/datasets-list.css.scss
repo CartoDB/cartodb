@@ -1,47 +1,57 @@
-@import "../../new_common/mixins";
-@import "../../new_common/colors";
+@import "../new_common/mixins";
+@import "../new_common/colors";
+@import "../new_common/sizes";
 
-/**
- * Row is distributed over the total size of 940px as:
- * Category(40px) + margin(20px) PrimaryInfo(480px) + margin(20px) + SecondaryInfo(380px)
- */
+/* compensate for the negative margins and border */
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+
+$_secondaryInfoWidth: 520px;
+// Remaining width after removing secondary info, icon and margins
+$_primaryInfoWidth: $sLayout-width - $_secondaryInfoWidth - $sIcon-layout - $sMargin-element;
+
 .DatasetsList {
   position: relative;
-  width: 940px;
+  width: $sLayout-width;
   margin: 0 auto;
-  padding: 20px 0;
+  padding: $sMargin-group 0;
 }
 .DatasetsList-item {
   @include display-flex();
   @include justify-content(center, center);
-  padding: 28px 0;
+  padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
 .DatasetsList-item:hover,
 .DatasetsList-item.is--selected {
-  padding: 28px 19px; /* compensate for the negative margins and border */
-  margin: -1px -20px 0px -20px;
-  background-color: rgba(#F5FAFE, 1);
-  border: 1px rgba(#BCD8F1, 1) solid;
-  @include border-radius(5px);
+  padding: $sMargin-group $selectedItemPaddingOnSides;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  border-radius: 4px;
   cursor: pointer;
+}
+.DatasetsList-item:hover {
+  background-color: $cCard-hoverFill;
+  border: 1px $cCard-hoverBorder solid;
+}
+.DatasetsList-item.is--selected {
+  background-color: $cCard-selectedFill;
+  border: 1px $cCard-selectedBorder solid;
 }
 .DatasetsList-item.is--selected {
   &:hover { cursor: default }
 }
 .DatasetsList-itemCategory {
-  width: 38px;
-  height: 38px;
-  margin-right: 20px;
+  width: $sIcon-layout;
+  height: $sIcon-layout;
+  margin-right: $sMargin-element;
   border: 1px rgba($cStructure-mainLine, 0.5) solid;
   background: rgba(black, 0.05);
-  @include border-radius(2px);
+  border-radius: $sIcon-borderRadius;
 }
 .DatasetsList-itemCategory.is--lineDataset {
   @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemCategory.is--polygonDataset {
-  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white); 
+  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white);
 }
 .DatasetsList-itemCategory.is--pointDataset {
   @include background(image-url('layout/points-dataset.png') no-repeat center center white);
@@ -52,33 +62,23 @@
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 360px;
+  width: $_primaryInfoWidth;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: 520px;
+  width: $_secondaryInfoWidth;
 }
-.SizeIndicator {
-  font-weight: 300;
-  color: $cTypography-secondary;
-  font-size: 13px;
-}
-.SizeIndicator-icon {
-  font-family: 'CartoIcon';
-  font-size: 10px;
-  font-weight: 300;
-  color: $cTypography-help;
-}
-.DatasetsList-itemMeta {
+
+.DatasetsList-itemMeta,
+.DatasetsList-itemMeta:not(*){
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(center, center);
-  font-size: 16px;
-  line-height: 19px;
+//  line-height: $sLineHeight-larger;
 }
 .DatasetsList-itemMeta > * {
-  margin-right: 20px;
+  margin-right: $sMargin-element;
 }
 .DatasetsList-itemMeta > *:last-child {
   margin-right: 0;
@@ -87,7 +87,6 @@
   @include display-flex();
   @include justify-content(flex-end, flex-end);
   @include align-items(flex-end, flex-end);
-  margin-top: 5px;
 }
 .DatasetsList-itemTitle {
   @include display-flex();
@@ -97,8 +96,5 @@
   color: $cTypography-help;
 }
 .DatasetsList-itemTitlePermission {
-  margin-left: 10px;
-}
-.DatasetsList-itemDescription {
-  margin-top: 7px;
+  margin-left: $sMargin-min;
 }

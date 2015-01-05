@@ -7,6 +7,7 @@
 
 @import "../new_common/colors";
 @import "../new_common/mixins";
+@import "../new_common/sizes";
 
 .ContentResult {
   width: 460px;
@@ -32,7 +33,7 @@
 .ContentResult-loader:after {
   width: 36px;
   height: 36px;
-  @include border-radius(50%);
+  border-radius: 50%;
 }
 .ContentResult-smallLoader {
   position: absolute;
@@ -60,7 +61,7 @@
   width: 38px;
   height: 38px;
   border: 1px solid $cStructure-mainLine;
-  @include border-radius(2px);
+  border-radius: 2px;
   line-height:36px;
   font-size: 22px;
   color: $cTypography-help;
@@ -84,15 +85,17 @@
 }
 .ContentResult-title {
   margin-top: 15px;
-  font-size: 18px;
-  font-weight: 400;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
 .ContentResult-text {
   margin-top: 10px;
-  font-size: 15px;
-  font-weight: 300;
-  color: $cTypography-paragraphs; 
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
 }
 
 

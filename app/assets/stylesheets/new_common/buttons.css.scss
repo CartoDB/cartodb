@@ -56,8 +56,3 @@ $buttonBorderSize: 1px;
 .Button--secondary span {
   color: #666666;
 }
-.Button--overBlack,
-.Button--overBlack span {
-  border: $sButton-border solid white;
-  &:hover {}
-}

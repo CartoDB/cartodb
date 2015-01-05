@@ -3,6 +3,7 @@
 require 'typhoeus'
 require 'json'
 require 'gibbon'
+require 'addressable/uri'
 require_relative '../base_oauth'
 
 module CartoDB
@@ -13,7 +14,7 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'mailchimp'
 
-        AUTHORIZE_URI = 'https://login.mailchimp.com/oauth2/authorize'
+        AUTHORIZE_URI = 'https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=%s&redirect_uri=%s'
         ACCESS_TOKEN_URI = 'https://login.mailchimp.com/oauth2/token'
         MAILCHIMP_METADATA_URI = 'https://login.mailchimp.com/oauth2/metadata'
 
@@ -31,12 +32,16 @@ module CartoDB
           super
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
+          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME) unless config.include?('app_key')
+          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME) unless config.include?('app_secret')
           raise MissingConfigurationError.new('callback_url'. DATASOURCE_NAME) unless config.include?('callback_url')
           raise MissingConfigurationError.new('timeout_minutes', DATASOURCE_NAME) unless config.include?('timeout_minutes')
 
           @user = user
-          @timeout_mins = config.fetch('timeout_minutes')
+          @app_key = config.fetch('app_key')
+          @app_secret = config.fetch('app_secret')
           @callback_url = config.fetch('callback_url')
+          @timeout_mins = config.fetch('timeout_minutes')
 
           Gibbon::API.timeout = @timeout_mins
           Gibbon::API.throws_exceptions = true
@@ -65,7 +70,7 @@ module CartoDB
         # @param use_callback_flow : bool
         def get_auth_url(use_callback_flow=true)
           if use_callback_flow
-            AUTHORIZE_URI
+            AUTHORIZE_URI % [@app_key, Addressable::URI.encode(@callback_url)]
           else
             raise ExternalServiceError.new("This datasource doesn't allows non-callback flows", DATASOURCE_NAME)
           end
@@ -81,16 +86,40 @@ module CartoDB
         # Validates the authorization callback
         # @param params : mixed
         def validate_callback(params)
-          # TODO: Receives a 'code', must call ACCESS_TOKEN_URI
+          code = params.fetch('code')
+          if code.nil? || code == ''
+            raise "Empty callback code"
+          end
+
+          token_call_params = {
+            grant_type: 'authorization_code',
+            client_id: @app_key,
+            client_secret: @app_secret,
+            code: code,
+            redirect_uri: @callback_url
+          }
+
+          token_response = Typhoeus.post(ACCESS_TOKEN_URI, http_options(token_call_params, :post))
+          unless token_response.code == 200
+            raise "Bad token response: #{token_response.body.inspect} (#{token_response.code})"
+          end
+          token_data = ::JSON.parse(token_response.body)
+
+          partial_access_token = token_data['access_token']
 
           # Afterwards, must do another call to metadata endpoint to retrieve API details
           # @see https://apidocs.mailchimp.com/oauth2/
 
+          metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
+                                             'Authorization' => "OAuth #{partial_access_token}"}))
 
+          unless metadata_response.code == 200
+            raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"
+          end
+          metadata_data = ::JSON.parse(metadata_response.body)
 
-
-
-          @access_token
+          # This specially formed token behaves as an API Key for client calls using API
+          @access_token = "#{partial_access_token}-#{metadata_data['dc']}"
         rescue => ex
           raise AuthError.new("validate_callback(#{params.inspect}): #{ex.message}", DATASOURCE_NAME)
         end
@@ -101,9 +130,7 @@ module CartoDB
         # @throws AuthError
         def token=(token)
           @access_token = token
-          @client = DropboxClient.new(@access_token)
-        rescue => ex
-          handle_error(ex, "token= : #{ex.message}")
+          @api_client = Gibbon::API.new(@access_token)
         end
 
         # Retrieve set token
@@ -120,17 +147,10 @@ module CartoDB
         # @throws DataDownloadError
         def get_resources_list(filter=[])
           all_results = []
-          self.filter = filter
 
-          @formats.each do |search_query|
-            response = @client.search('/', search_query)
-            response.each do |item|
-              all_results.push(format_item_data(item))
-            end
-          end
+          # TODO: Get here list of resources from @api_client
+
           all_results
-        rescue => ex
-          handle_error(ex, "get_resources_list(): #{ex.message}")
         end
 
         # Retrieves a resource and returns its contents
@@ -140,10 +160,11 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource(id)
-          contents,  = @client.get_file_and_metadata(id)
+          contents = ''
+
+          # TODO: Get here data form a list from @api_client
+
           contents
-        rescue => ex
-          handle_error(ex, "get_resource() #{id}: #{ex.message}")
         end
 
         # @param id string
@@ -151,34 +172,24 @@ module CartoDB
         # @throws TokenExpiredOrInvalidError
         # @throws AuthError
         # @throws DataDownloadError
+        # @throws UninitializedError
         def get_resource_metadata(id)
-          raise DropboxPermissionError.new('No Dropbox client', DATASOURCE_NAME) unless @client.present?
+          raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
-          response = @client.metadata(id)
-          item_data = format_item_data(response)
-
-          item_data.to_hash
-        rescue => ex
-          handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")
+          #response = @client.metadata(id)
+          #item_data = format_item_data(response)
+          {}
         end
 
         # Retrieves current filters
         # @return {}
         def filter
-          @formats
+          []
         end
 
         # Sets current filters
         # @param filter_data {}
         def filter=(filter_data=[])
-          @formats = []
-          FORMATS_TO_SEARCH_QUERIES.each do |id, queries|
-            if filter_data.empty? || filter_data.include?(id)
-              queries.each do |query|
-                @formats = @formats.push(query)
-              end
-            end
-          end
         end
 
         # Just return datasource name
@@ -203,21 +214,14 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-        # Any call would do, we just want to see if communicates or refuses the token
-          @client.account_info
+          # TODO: Implement
+          # Any call would do, we just want to see if communicates or refuses the token
           true
-        rescue DropboxError => ex
-          error_code = ex.http_response.code.to_i
-          raise AuthError.new("token_valid? : #{ex.message}") unless (error_code == 401 || error_code == 403)
-          false
         end
 
         # Revokes current set token
         def revoke_token
-          @client.disable_access_token
-          true
-        rescue => ex
-          raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+          # TODO: Implement
         end
 
         # Sets an error reporting component
@@ -228,25 +232,19 @@ module CartoDB
 
         private
 
-        # Handles
-        # @param original_exception mixed
-        # @param message string
-        # @throws TokenExpiredOrInvalidError
-        # @throws AuthError
-        # @throws mixed
-        def handle_error(original_exception, message)
-          if original_exception.kind_of? DropboxError
-            error_code = original_exception.http_response.code.to_i
-            if error_code == 401 || error_code == 403
-              raise TokenExpiredOrInvalidError.new(message, DATASOURCE_NAME)
-            else
-              raise AuthError.new(message)
-            end
-          elsif original_exception.kind_of? ArgumentError
-            raise DataDownloadError.new(message, DATASOURCE_NAME)
-          else
-            raise original_exception
-          end
+        def http_options(params={}, method=:get, extra_headers={})
+          {
+            method:           method,
+            params:           method == :get ? params : {},
+            body:             method == :post ? params : {},
+            followlocation:   true,
+            ssl_verifypeer:   false,
+            headers:          {
+                                'Accept' => 'application/json'
+                              }.merge(extra_headers),
+            ssl_verifyhost:   0,
+            timeout:          60
+          }
         end
 
         # Formats all data to comply with our desired format

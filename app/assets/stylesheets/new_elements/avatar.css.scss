@@ -3,25 +3,25 @@
 // --------------------------------------------------
 
 @import "../new_common/mixins";
-
-/* UserAvatar */
+@import "../new_common/sizes";
 
 .UserAvatar {
   @include inline-block();
   vertical-align: middle;
 }
 .UserAvatar--large {
-  width:96px;
-  height:96px;
-  border-radius: 2px;
+  width: $sAvatar-public;
+  height: $sAvatar-public;
+  border-radius: $sAvatar-borderRadius;
 }
 .UserAvatar--medium {
-  width:40px;
-  height:40px;
-  border-radius: 2px;
+  width: $sAvatar-default;
+  height: $sAvatar-default;
+  border-radius: $sAvatar-borderRadius;
 }
 .UserAvatar--small {
-  width:16px;
-  height:16px;
-  border-radius: 16px;
+  width: $sAvatar-meta;
+  height: $sAvatar-meta;
+  border-radius: $sAvatar-borderRadius;
+
 }

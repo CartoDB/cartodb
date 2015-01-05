@@ -16,8 +16,13 @@ class SessionsController < ApplicationController
     if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
     else
-      @google_client_id = Cartodb.config[:google_plus]['client_id']
-      @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
+      if Cartodb.config[:google_plus].present?
+        @google_client_id = Cartodb.config[:google_plus]['client_id']
+        @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
+      else
+        @google_client_id = nil
+        @google_cookie_policy = nil
+      end
     end
   end
 

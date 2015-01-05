@@ -148,7 +148,15 @@ module CartoDB
         def get_resources_list(filter=[])
           all_results = []
 
-          # TODO: Get here list of resources from @api_client
+          response = @api_client.lists.list
+          errors = response.fetch('errors', [])
+          unless errors.empty?
+            raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
+          end
+          response_data = response.fetch('data', [])
+          response_data.each do |item|
+            all_results.push(format_item_data(item))
+          end
 
           all_results
         end
@@ -251,24 +259,16 @@ module CartoDB
         # @param item_data Hash : Single item returned from Dropbox API
         # @return { :id, :title, :url, :service, :size }
         def format_item_data(item_data)
-          filename = item_data.fetch('path').split('/').last
+          filename = item_data.fetch('name').gsub(' ', '_')
 
           {
-            id:       item_data.fetch('path'),
-            title:    filename,
+            id:       item_data.fetch('id'),
+            title:    item_data.fetch('name'),
             filename: filename,
             service:  DATASOURCE_NAME,
-            checksum: checksum_of(item_data.fetch('rev')),
-            size:     item_data.fetch('bytes').to_i
+            checksum: '',
+            size:     0
           }
-        end
-
-        # Calculates a checksum of given input
-        # @param origin string
-        # @return string
-        def checksum_of(origin)
-          #noinspection RubyArgCount
-          Zlib::crc32(origin).to_s
         end
 
       end

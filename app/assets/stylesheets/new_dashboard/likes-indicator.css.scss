@@ -10,7 +10,7 @@
   font-size:13px;
   font-weight:300;
   color:$cTypography-secondary;
-  z-index: 100;
+  cursor: pointer;
 }
 .LikesIndicator-icon {
   @include transform(1);

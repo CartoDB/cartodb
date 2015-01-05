@@ -1,0 +1,19 @@
+@import "../new_common/mixins";
+
+@include keyframes(pulse)  {
+  0% {
+    @include transform(scale(1));
+  }
+  25% {
+    @include transform(scale(1.3));
+  }
+  50% {
+    @include transform(scale(.8));
+  }
+  75% {
+    @include transform(scale(1.3));
+  }
+  100% {
+    @include transform(scale(1));
+  }
+}

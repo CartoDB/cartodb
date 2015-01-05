@@ -1,3 +1,9 @@
+3.8.0 (2015-01-xx)
+------------------
+* Mailchimp user lists importer dataset.
+  New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
+
+
 3.7.1 (2014-12-30)
 ------------------
 * New features

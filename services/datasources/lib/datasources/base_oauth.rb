@@ -8,7 +8,7 @@ module CartoDB
 
       # Return the url to be displayed or sent the user to to authenticate and get authorization code
       # @param use_callback_flow : bool
-      def get_auth_url(use_callback_flow=false)
+      def get_auth_url(use_callback_flow=true)
         raise 'To be implemented in child classes'
       end #get_auth_url
 

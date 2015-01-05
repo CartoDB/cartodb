@@ -1,6 +1,22 @@
 <%= content_for(:js) do %>
   <%= javascript_include_tag 'cdb.js', 'application.js', 'login.js' %>
 <% end %>
+<script src="https://apis.google.com/js/client:platform.js" async defer></script>
+<script>
+  function signinCallback(authResult) {
+    console.dir(authResult);
+    if(typeof authResult.access_token === 'undefined') {
+      console.log('no access_token');
+    } else {
+      if (authResult['status']['signed_in']) {
+        var googleAccessTokenField = document.getElementById('google_access_token');
+        googleAccessTokenField.value = authResult.access_token;
+        googleAccessTokenField.form.submit();
+      }
+    }
+  }
+</script>
+
 
 <section class="sessions shadow">
   <div class="content">
@@ -22,6 +38,7 @@
           <div class="field_with_errors">
         <% end %>
         <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password", :class => (flash[:alert] || @error ? 'error' : nil) %>
+        <input type="hidden" value="" id="google_access_token" name="google_access_token" />
         <% if @error %>
           </div>
           <div class="field_error"><%= @error %></div>
@@ -29,6 +46,17 @@
       </div>
       <div class="field margin25">
         <%= submit_tag "Sign in", :class => "green border sessions" %>
+      </div>
+      <div>
+        <span id="signinButton">
+          <span
+            class="g-signin"
+            data-callback="signinCallback"
+            data-clientid="<%= @google_client_id %>"
+            data-cookiepolicy="<%= @google_cookie_policy %>"
+            data-scope="email">
+          </span>
+        </span>
       </div>
     <% end %>
   </div>

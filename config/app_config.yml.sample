@@ -45,6 +45,9 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
+  google_plus:
+    client_id: ''
+    cookie_policy: 'single_host_origin'
   rollbar:
     token: ''
   tumblr:

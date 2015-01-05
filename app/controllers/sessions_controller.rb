@@ -11,15 +11,25 @@ class SessionsController < ApplicationController
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
+    else
+      @google_client_id = Cartodb.config[:google_plus]['client_id']
+      @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
     end
   end
 
   def create
-    user_id = extract_user_id(request, params)
-    user = authenticate!(:password, scope: user_id)
-    CartodbStats.increment_login_counter(params[:email])
+    user = if(params[:google_access_token].present?)
+      # TODO: improve this, since this sometimes triggers user validation twice (first for getting the domain if not present)
+      user_domain = params[:user_domain].present? ? params[:user_domain] : GooglePlusAPI.new.get_user(params[:google_access_token]).subdomain
+      authenticate!(:google_access_token, scope: user_domain)
+    else
+      authenticate!(:password, scope: extract_user_id(request_params))
+    end
 
-    destination_url = dashboard_path(user_domain: params[:user_domain], trailing_slash: true)
+    user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+    CartodbStats.increment_login_counter(user.email)
+
+    destination_url = dashboard_path(user_domain: user_domain, trailing_slash: true)
     if user.organization.nil?
       destination_url = CartoDB.base_url(user.username) << destination_url
     else

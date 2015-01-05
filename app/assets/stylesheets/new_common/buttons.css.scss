@@ -5,6 +5,8 @@
 @import "colors";
 @import "sizes";
 
+$buttonBorderSize: 1px;
+
 .Button {
   @include display-flex();
   @include align-items(center, center);
@@ -22,18 +24,24 @@
   color: white;
   text-transform: uppercase;
 }
+.Button {
+  border: $buttonBorderSize solid $cStructure-mainBkg;
+}
 .Button:hover,
 .Button span:hover { text-decoration:none }
 .Button--main {
   background-color: $cHighlight-main;
+  border-color: $cHighlight-main;
   &:hover { background-color: rgba(#007FBD, 1) }
 }
 .Button--positive {
   background-color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
   &:hover { background-color: rgba(#7FA538, 1) }
 }
 .Button--negative {
   background-color: $cHighlight-negative;
+  border-color: $cHighlight-negative;
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
@@ -45,7 +53,11 @@
     color:white;
   }
 }
-.Button--overBlack {
+.Button--secondary span {
+  color: #666666;
+}
+.Button--overBlack,
+.Button--overBlack span {
   border: $sButton-border solid white;
   &:hover {}
 }

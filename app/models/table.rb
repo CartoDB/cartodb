@@ -1224,13 +1224,17 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
   rescue => e
     # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
-    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Will retry.\n #{e.message} #{e.backtrace.join}")
+    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Will retry.\n #{e.message} #{e.backtrace.join}")
     begin
       $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
     rescue => e
-      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
+      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
       raise e
     end
+  end
+
+  def redis_connection_info
+    "#{$tables_metadata.client.host}:#{$tables_metadata.client.port}, db: #{$tables_metadata.client.db}, timeout: #{$tables_metadata.client.timeout}"
   end
 
   def the_geom_type=(value)

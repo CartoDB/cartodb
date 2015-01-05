@@ -18,27 +18,15 @@
   color: #999;
   &:hover { color: #666 }
 }
-.UserNotifications-Count {
-  position:absolute;
-  display: block;
+.UserNotifications-badge {
   @include opacity(0);
-  top:-9px;
-  right:-9px;
-  width:17px;
-  height:17px;
-  background: #C74B43;
-  border-radius: 23px;
-  font-size: $sFontSize-smallUpperCase;
-  font-weight: $sFontWeight-normal;
-  text-align:center;
-  line-height: 17px; /* same as width/height */
-  color: #C74B43;
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));
+  color: $cHighlight-negative;
 }
 // States
 .UserNotifications.has--alerts {
-  .UserNotifications-Count {
+  .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1));
     @include opacity(1);
@@ -46,7 +34,7 @@
   }
 }
 .UserNotifications.has--alerts:hover {
-  .UserNotifications-Count {
+  .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1.1))
   }

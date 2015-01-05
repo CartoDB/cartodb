@@ -1069,7 +1069,15 @@ class User < Sequel::Model
   end
 
   def link_deleted_tables
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
+    # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
+    syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).map(&:name).compact
+
+    # Avoid fetching full models
+    metadata_tables = self.tables.select(:table_id, :name)
+                                 .map {|table| { table_id: table.table_id, name: table.name } }
+    metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
+                                         .map{ |table| table[:table_id] }
+
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
 
     # Remove tables with oids that don't exist on the db

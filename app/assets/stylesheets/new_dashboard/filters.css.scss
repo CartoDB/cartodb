@@ -51,11 +51,11 @@
 }
 
 .Filters-searchLink {
-  line-height:80px;
-  margint-right:10px;
-  padding-right:25px;
-  font-size:14px;
-  color:$cTypography-help;
+  margin-right: 10px;
+  padding-right: 25px;
+  font-size: 14px;
+  line-height: 80px;
+  color: $cTypography-help;
 
   &:after {
     content: '|';

@@ -4,11 +4,12 @@ class SessionsController < ApplicationController
   layout 'front_layout'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
+  before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
-  def initialize
+  def initialize_google_plus_config
     @google_signup_action = Cartodb::Central.new.google_signup_url
     if Cartodb.config[:google_plus].present?
       # TODO: use parameters when this is checked in staging

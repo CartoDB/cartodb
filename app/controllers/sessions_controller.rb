@@ -1,4 +1,5 @@
 # coding: UTF-8
+require_relative '../../lib/google_plus_api'
 
 class SessionsController < ApplicationController
   layout 'front_layout'
@@ -11,16 +12,16 @@ class SessionsController < ApplicationController
 
   def initialize_google_plus_config
     @google_signup_action = Cartodb::Central.new.google_signup_url
-    #if Cartodb.config[:google_plus].present?
-      # TODO: use parameters when this is checked in staging
-      #@google_client_id = Cartodb.config[:google_plus]['client_id']
-      #@google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
-      @google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
-      @google_cookie_policy = 'https://cartodb-staging.com'
-    #else
-    #  @google_client_id = nil
-    #  @google_cookie_policy = nil
-    #end
+    if Cartodb.config[:google_plus].present?
+      @google_client_id = Cartodb.config[:google_plus]['client_id']
+      @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
+    else
+      @google_client_id = nil
+      @google_cookie_policy = nil
+    end
+    # TODO: use parameters when this is checked in staging
+    @google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
+    @google_cookie_policy = 'https://cartodb-staging.com'
   end
 
   def new

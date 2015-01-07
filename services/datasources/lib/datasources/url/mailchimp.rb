@@ -143,9 +143,11 @@ module CartoDB
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
         # @throws TokenExpiredOrInvalidError
-        # @throws AuthError
+        # @throws UninitializedError
         # @throws DataDownloadError
         def get_resources_list(filter=[])
+          raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
+
           all_results = []
 
           response = @api_client.lists.list
@@ -164,29 +166,47 @@ module CartoDB
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
-        # @throws TokenExpiredOrInvalidError
-        # @throws AuthError
+        # @throws UninitializedError
         # @throws DataDownloadError
         def get_resource(id)
+          raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
+
           contents = ''
 
-          # TODO: Get here data form a list from @api_client
+          export_api = @api_client.get_exporter
+
+          content_iterator = export_api.list({id: id})
+          content_iterator.each { |line|
+            contents << streamed_json_to_csv(line)
+          }
 
           contents
         end
 
         # @param id string
         # @return Hash
-        # @throws TokenExpiredOrInvalidError
-        # @throws AuthError
-        # @throws DataDownloadError
         # @throws UninitializedError
+        # @throws DataDownloadError
         def get_resource_metadata(id)
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
-          #response = @client.metadata(id)
-          #item_data = format_item_data(response)
-          {}
+          item_data = {}
+
+          # No metadata call at API, so just retrieve same info
+          response = @api_client.lists.list
+          errors = response.fetch('errors', [])
+          unless errors.empty?
+            raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
+          end
+          response_data = response.fetch('data', [])
+
+          response_data.each do |item|
+            if item.fetch('id') == id
+              item_data = format_item_data(item)
+            end
+          end
+
+          item_data
         end
 
         # Retrieves current filters
@@ -256,7 +276,7 @@ module CartoDB
         end
 
         # Formats all data to comply with our desired format
-        # @param item_data Hash : Single item returned from Dropbox API
+        # @param item_data Hash : Single item returned from MailChimp API
         # @return { :id, :title, :url, :service, :size }
         def format_item_data(item_data)
           filename = item_data.fetch('name').gsub(' ', '_')
@@ -264,11 +284,21 @@ module CartoDB
           {
             id:       item_data.fetch('id'),
             title:    item_data.fetch('name'),
-            filename: filename,
+            filename: "#{filename}.csv",
             service:  DATASOURCE_NAME,
             checksum: '',
             size:     0
           }
+        end
+
+        # @see https://apidocs.mailchimp.com/export/1.0/#overview_description
+        def streamed_json_to_csv(contents='[]')
+          contents = ::JSON.parse(contents)
+          contents.each_with_index { |field, index|
+            contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
+          }
+          data = contents.join(',')
+          data << "\n"
         end
 
       end

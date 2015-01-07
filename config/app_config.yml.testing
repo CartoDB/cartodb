@@ -1,5 +1,4 @@
 defaults: &defaults
-  raster_import_active: true
   users_dumps:
     service:
       port: 0000

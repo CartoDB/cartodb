@@ -3,27 +3,26 @@
 
 @import "../new_common/mixins";
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 
-.DashboardFilters {
+.Filters {
   display:block;
   width:100%;
 }
-.DashboardFilters > .u-inner {
+.Filters > .u-inner {
   position:relative;
   display:block;
-  width: 940px;
   height:81px;
-  margin: 0 auto;
   padding: 0;
   overflow:hidden;
 }
-.DashboardFilters-inner {
+.Filters-inner {
   display:block;
   padding: 0;
   @include transition(margin,150ms);
 }
-.DashboardFilters-separator {
+.Filters-separator {
   position:absolute;
   left:0;
   top:80px;
@@ -32,18 +31,18 @@
   background-color:$cStructure-softLine;
   z-index:0;
 }
-.DashboardFilters-row {
+.Filters-row {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
 }
-.DashboardFilters-list {
+.Filters-list {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.DashboardFilters-typeItem {
+.Filters-typeItem {
   position:relative;
   height:80px;
   margin:0 15px;
@@ -51,12 +50,12 @@
   &:first-child { margin-left:0 }
 }
 
-.DashboardFilters-searchLink {
-  line-height:80px;
-  margint-right:10px;
-  padding-right:25px;
-  font-size:14px;
-  color:$cTypography-help;
+.Filters-searchLink {
+  margin-right: 10px;
+  padding-right: 25px;
+  font-size: 14px;
+  line-height: 80px;
+  color: $cTypography-help;
 
   &:after {
     content: '|';
@@ -65,23 +64,23 @@
     right: -5px;
     margin-top: -10px;
     line-height: normal;
-    font-weight: 300;
+    font-weight: $sFontWeight-lighter;
     color: $cStructure-softLine;
   }
 }
-.DashboardFilters-searchLinkIcon {
+.Filters-searchLinkIcon {
   @include inline-block();
   vertical-align: middle;
   margin-right:5px;
   
 }
-.DashboardFilters-searchLink:hover { color: #333 }
-.DashboardFilters-searchItem {
+.Filters-searchLink:hover { color: #333 }
+.Filters-searchItem {
   display:none;
   margin-right:0;
   &:after { content:'' }
 }
-.DashboardFilters-searchForm {
+.Filters-searchForm {
   position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -89,21 +88,21 @@
   height:80px;
   width:827px;
 }
-.DashboardFilters-searchInput {
+.Filters-searchInput {
   width:790px;
   padding-left:5px;
   outline:none;
   border:none;
   background:none;
-  font-size:15px;
+  font-size: $sFontSize-large;
 }
-.DashboardFilters-cleanSearch {
+.Filters-cleanSearch {
   position:absolute;
   top:23px;
   right:0;
   width:28px;
   height:28px;
-  @include border-radius(30px);
+  border-radius: 30px;
   border:1px solid #CCC;
   color:#CCC;
   text-align: center;
@@ -115,19 +114,19 @@
   }
 }
 // We can't group this style :(
-.DashboardFilters-searchInput::-webkit-input-placeholder {
+.Filters-searchInput::-webkit-input-placeholder {
   font-style:italic;
   color:#DDD;
 }
-.DashboardFilters-searchInput::-moz-placeholder {
+.Filters-searchInput::-moz-placeholder {
   font-style:italic;
   color:#DDD;
 }
-.DashboardFilters-searchInput:-ms-placeholder {
+.Filters-searchInput:-ms-placeholder {
   font-style:italic;
   color:#DDD;
 }
-.DashboardFilters-typeLink {
+.Filters-typeLink {
   line-height: 80px;
   font-size: 14px;
 
@@ -136,7 +135,7 @@
     text-decoration: none;
   }
 }
-.DashboardFilters-typeLink.is-selected {
+.Filters-typeLink.is-selected {
   color:$cTypography-linkSelected;
 
   &:before {
@@ -154,67 +153,65 @@
     text-decoration: none;
   }
 }
-.DashboardFilters-order {
+.Filters-order {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.DashboardFilters-orderList {
+.Filters-orderList {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.DashboardFilters-orderItem {
+.Filters-orderItem {
   @include inline-block();
   margin-right:24px;
-  // font-size:13px;
-  // font-weight:300;
   color:$cTypography-secondary;
   line-height:19px;
 }
-.DashboardFilters-orderLink {
+.Filters-orderLink {
   @include inline-block();
   font-size: 19px;
   color: #CCCCCC;
   line-height:19px;
   &:hover { color: #666 }
 }
-.DashboardFilters-orderLink.is-selected {
+.Filters-orderLink.is-selected {
   color:#666666;
   &:hover { cursor: default }
 }
-.DashboardFilters-orderLink--graph {
+.Filters-orderLink--graph {
   line-height:26px;
 }
 
-.DashboardFilters-selectedItems {
+.Filters-selectedItems {
   font-size:15px;
   font-weight:300;
   color:$cTypography-secondary;
 }
-.DashboardFilters-actionsList {
+.Filters-actionsList {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.DashboardFilters-actionsLink {
+.Filters-actionsLink {
   font-size:13px;
   padding-left:25px;
 }
-.DashboardFilters-actionsLink.is--critical {
+.Filters-actionsLink.is--critical {
   color:#FF6C6C;
 }
 
 // Filters states
-.DashboardFilters-inner.items--selected {
+.Filters-inner.items--selected {
   margin-top:-81px;
 }
-.DashboardFilters-inner.search--enabled {
+.Filters-inner.search--enabled {
 
-  .DashboardFilters-typeItem,
-  .DashboardFilters-orderItem,
+  .Filters-typeItem,
+  .Filters-orderItem,
   .Button--positive { display:none }
 
-  .DashboardFilters-searchEnabler { display:inline }
-  .DashboardFilters-searchItem { display:inherit }
+  .Filters-searchEnabler { display:inline }
+  .Filters-searchItem { display:inherit }
 }

@@ -15,7 +15,7 @@
   display:block;
   width:100%;
   height: $h;
-  @include border-radius($r);
+  border-radius: $r;
   background:#E5E5E5;
   overflow:hidden;
 
@@ -29,7 +29,7 @@
     @if $min {
       min-width:$min;
     }
-    @include border-radius($r);
+    border-radius: $r;
 
     @if $grad {
       &:after {

@@ -3,38 +3,49 @@
 
 @import "mixins";
 @import "colors";
+@import "sizes";
+
+$buttonBorderSize: 1px;
 
 .Button {
-  @include inline-block();
-  @include border-radius(28px);
-  padding: 13px 29px;
+  @include display-flex();
+  @include align-items(center, center);
+  border-radius: $sButton-borderRadius;
+  padding: 0 29px;
   text-decoration:none;
+  text-align: center;
+  height: $sButton-height;
 }
 .Button,
 .Button span {
-  font-size: 12px;
-  line-height: 15px;
-  font-weight: 700;
+  font-size: $sFontSize-smallUpperCase;
+  line-height: $sLineHeight-button;
+  font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
 }
+.Button {
+  border: $buttonBorderSize solid $cStructure-mainBkg;
+}
 .Button:hover,
 .Button span:hover { text-decoration:none }
-
 .Button--main {
   background-color: $cHighlight-main;
+  border-color: $cHighlight-main;
   &:hover { background-color: rgba(#007FBD, 1) }
 }
 .Button--positive {
   background-color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
   &:hover { background-color: rgba(#7FA538, 1) }
 }
 .Button--negative {
   background-color: $cHighlight-negative;
+  border-color: $cHighlight-negative;
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border:2px solid #CCCCCC;
+  border: $sButton-border solid #CCCCCC;
   color: #666666;
   background-color: rgba(white, 1);
   &:hover {
@@ -42,7 +53,6 @@
     color:white;
   }
 }
-.Button--overBlack {
-  border:2px solid white;
-  &:hover {}
+.Button--secondary span {
+  color: #666666;
 }

@@ -2,12 +2,10 @@
 // --------------------------------------------------
 
 @import "../new_common/colors";
-
+@import "../new_common/sizes";
 
 .DefaultDescription {
-  font-weight:300;
-  font-size:13px;
-  color:$cTypography-secondary;
-  line-height:16px;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
 }
-.DefaultDescription-link {}

@@ -9,7 +9,8 @@
       console.log('no access_token');
     } else {
       var access_token_field = document.getElementById('access_token');
-      if (authResult['status']['signed_in'] && access_token_field.value === '') {
+      var google_user_registered_field = document.getElementById('google_user_registered');
+      if (authResult['status']['signed_in'] && access_token_field.value === '' && google_user_registered.value != 'false') {
         var googleAccessTokenField = document.getElementById('google_access_token');
         googleAccessTokenField.value = authResult.access_token;
         googleAccessTokenField.form.submit();
@@ -48,17 +49,20 @@
       <div class="field margin25">
         <%= submit_tag "Sign in", :class => "green border sessions" %>
       </div>
-      <div>
-        <span id="signinButton">
-          <span
-            class="g-signin"
-            data-callback="signinCallback"
-            data-clientid="<%= @google_client_id %>"
-            data-cookiepolicy="<%= @google_cookie_policy %>"
-            data-scope="email">
+      <% if @google_client_id.present? %>
+        <input type="hidden" value="<%= @google_user_registered %>" id="google_user_registered" name="access_token" />
+        <div>
+          <span id="signinButton">
+            <span
+              class="g-signin"
+              data-callback="signinCallback"
+              data-clientid="<%= @google_client_id %>"
+              data-cookiepolicy="<%= @google_cookie_policy %>"
+              data-scope="email">
+            </span>
           </span>
-        </span>
-      </div>
+        </div>
+      <% end %>
     <% end %>
 
     <form action="<%= @google_signup_action %>" method="POST">

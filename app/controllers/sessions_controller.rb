@@ -10,19 +10,18 @@ class SessionsController < ApplicationController
 
   def initialize
     @google_signup_action = Cartodb::Central.new.google_signup_url
+    if Cartodb.config[:google_plus].present?
+      @google_client_id = Cartodb.config[:google_plus]['client_id']
+      @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
+    else
+      @google_client_id = nil
+      @google_cookie_policy = nil
+    end
   end
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
-    else
-      if Cartodb.config[:google_plus].present?
-        @google_client_id = Cartodb.config[:google_plus]['client_id']
-        @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
-      else
-        @google_client_id = nil
-        @google_cookie_policy = nil
-      end
     end
   end
 
@@ -39,6 +38,10 @@ class SessionsController < ApplicationController
           @unauthenticated_valid_google_access_token = params[:google_access_token]
           nil
         end
+      else
+        @unauthenticated_valid_google_access_token = params[:google_access_token]
+        @google_user_registered = false
+        nil
       end
     else
       authenticate!(:password, scope: extract_user_id(request, params))

@@ -15,9 +15,10 @@ class GooglePlusAPI
     nil
   end
 
+  # Returns user if access_token is valid and user is known, nil if it's valid but unknown, and false otherwise
   def get_user(access_token)
     google_user_data = GooglePlusAPI.new.get_user_data(access_token)
-    google_user_data.present? ? User.where(email: google_user_data.email).first : nil
+    google_user_data.present? ? User.where(email: google_user_data.email).first : false
   end
 
   def request_user_data(access_token)

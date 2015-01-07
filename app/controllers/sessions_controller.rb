@@ -11,6 +11,8 @@ class SessionsController < ApplicationController
   skip_before_filter :ensure_org_url_if_org_user
 
   def initialize_google_plus_config
+    schema = Rails.env.development? ? 'http' : 'https'
+    @google_plus_iframe_src = "#{schema}://#{Cartodb.config[:account_host]}/google_plus"
     @google_signup_action = Cartodb::Central.new.google_signup_url
     if Cartodb.config[:google_plus].present?
       @google_client_id = Cartodb.config[:google_plus]['client_id']
@@ -20,8 +22,8 @@ class SessionsController < ApplicationController
       @google_cookie_policy = nil
     end
     # TODO: use parameters when this is checked in staging
-    @google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
-    @google_cookie_policy = 'https://cartodb-staging.com'
+    #@google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
+    #@google_cookie_policy = 'https://cartodb-staging.com'
   end
 
   def new

@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <script src="https://apis.google.com/js/client:platform.js" async defer></script>
+    <script>
+      function signinCallback(authResult) {
+        console.log(authResult);
+        console.log(parent);
+        parent.signinCallback(authResult);
+      }
+    </script>
+  </head>
+  <body>
+    <span id="signinButton">
+      <span
+        class="g-signin"
+        data-callback="signinCallback"
+        data-clientid="<%= @client_id %>"
+        data-cookiepolicy="<%= @cookie_policy %>"
+        data-scope="email">
+      </span>
+    </span>
+  </body>
+</html>

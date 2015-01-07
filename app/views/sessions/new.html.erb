@@ -53,13 +53,7 @@
         <input type="hidden" value="<%= @google_user_registered %>" id="google_user_registered" name="access_token" />
         <div>
           <span id="signinButton">
-            <span
-              class="g-signin"
-              data-callback="signinCallback"
-              data-clientid="<%= @google_client_id %>"
-              data-cookiepolicy="<%= @google_cookie_policy %>"
-              data-scope="email">
-            </span>
+            <iframe src="<%= @google_plus_iframe_src %>" width="300" height="100"></iframe>
           </span>
         </div>
       <% end %>

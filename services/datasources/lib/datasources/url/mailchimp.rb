@@ -9,6 +9,8 @@ require_relative '../base_oauth'
 module CartoDB
   module Datasources
     module Url
+      # Note:
+      # - MailChimp access tokens don't expire, no need to handle that logic
       class MailChimp < BaseOAuth
 
         # Required for all datasources
@@ -18,6 +20,7 @@ module CartoDB
         ACCESS_TOKEN_URI = 'https://login.mailchimp.com/oauth2/token'
         MAILCHIMP_METADATA_URI = 'https://login.mailchimp.com/oauth2/metadata'
 
+        API_TIMEOUT_SECS = 60
 
         # Constructor
         # @param config Array
@@ -35,17 +38,15 @@ module CartoDB
           raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME) unless config.include?('app_key')
           raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME) unless config.include?('app_secret')
           raise MissingConfigurationError.new('callback_url'. DATASOURCE_NAME) unless config.include?('callback_url')
-          raise MissingConfigurationError.new('timeout_minutes', DATASOURCE_NAME) unless config.include?('timeout_minutes')
 
           @user = user
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
           @callback_url = config.fetch('callback_url')
-          @timeout_mins = config.fetch('timeout_minutes')
 
-          Gibbon::API.timeout = @timeout_mins
+          Gibbon::API.timeout = API_TIMEOUT_SECS
           Gibbon::API.throws_exceptions = true
-          Gibbon::Export.timeout = @timeout_mins
+          Gibbon::Export.timeout = API_TIMEOUT_SECS
           Gibbon::Export.throws_exceptions = false
 
           @access_token = nil
@@ -68,6 +69,8 @@ module CartoDB
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @param use_callback_flow : bool
+        # @return string : URL to navigate to for the authorization flow
+        # @throws ExternalServiceError
         def get_auth_url(use_callback_flow=true)
           if use_callback_flow
             AUTHORIZE_URI % [@app_key, Addressable::URI.encode(@callback_url)]
@@ -79,12 +82,14 @@ module CartoDB
         # Validate authorization code and store token
         # @param auth_code : string
         # @return string : Access token
+        # @throws ExternalServiceError
         def validate_auth_code(auth_code)
           raise ExternalServiceError.new("This datasource doesn't allows non-callback flows", DATASOURCE_NAME)
         end
 
         # Validates the authorization callback
         # @param params : mixed
+        # @throws AuthError
         def validate_callback(params)
           code = params.fetch('code')
           if code.nil? || code == ''
@@ -109,7 +114,6 @@ module CartoDB
 
           # Afterwards, must do another call to metadata endpoint to retrieve API details
           # @see https://apidocs.mailchimp.com/oauth2/
-
           metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
 
@@ -127,10 +131,14 @@ module CartoDB
         # Set the token
         # @param token string
         # @throws TokenExpiredOrInvalidError
-        # @throws AuthError
         def token=(token)
           @access_token = token
           @api_client = Gibbon::API.new(@access_token)
+        rescue Gibbon::MailChimpError => exception
+          raise TokenExpiredOrInvalidError.new("token=() : #{exception.message} (API code: #{exception.code})",
+                                               DATASOURCE_NAME)
+        rescue => exception
+          raise TokenExpiredOrInvalidError.new("token=() : #{exception.inspect}", DATASOURCE_NAME)
         end
 
         # Retrieve set token
@@ -142,25 +150,42 @@ module CartoDB
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
-        # @throws TokenExpiredOrInvalidError
         # @throws UninitializedError
         # @throws DataDownloadError
         def get_resources_list(filter=[])
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
           all_results = []
+          offset = 0
+          limit = 100
+          total = nil
 
-          response = @api_client.lists.list
-          errors = response.fetch('errors', [])
-          unless errors.empty?
-            raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
-          end
-          response_data = response.fetch('data', [])
-          response_data.each do |item|
-            all_results.push(format_item_data(item))
-          end
+          begin
+            response = @api_client.lists.list({
+                                                start: offset,
+                                                limit: limit
+                                              })
+            errors = response.fetch('errors', [])
+            unless errors.empty?
+              raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
+            end
+
+            total = response.fetch('total', 0).to_i if total.nil?
+
+            response_data = response.fetch('data', [])
+            response_data.each do |item|
+              all_results.push(format_item_data(item))
+            end
+
+            offset += limit
+          end while offset < total
 
           all_results
+        rescue Gibbon::MailChimpError => exception
+          raise DataDownloadError.new("get_resources_list(): #{exception.message} (API code: #{exception.code}",
+                                      DATASOURCE_NAME)
+        rescue => exception
+          raise DataDownloadError.new("get_resources_list(): #{exception.inspect}", DATASOURCE_NAME)
         end
 
         # Retrieves a resource and returns its contents
@@ -181,6 +206,11 @@ module CartoDB
           }
 
           contents
+        rescue Gibbon::MailChimpError => exception
+          raise DataDownloadError.new("get_resource(): #{exception.message} (API code: #{exception.code}",
+                                      DATASOURCE_NAME)
+        rescue => exception
+          raise DataDownloadError.new("get_resource(): #{exception.inspect}", DATASOURCE_NAME)
         end
 
         # @param id string
@@ -192,8 +222,8 @@ module CartoDB
 
           item_data = {}
 
-          # No metadata call at API, so just retrieve same info
-          response = @api_client.lists.list
+          # No metadata call at API, so just retrieve same info but from specific list id
+          response = @api_client.lists.list({ filters: { list_id: id } })
           errors = response.fetch('errors', [])
           unless errors.empty?
             raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
@@ -207,6 +237,11 @@ module CartoDB
           end
 
           item_data
+        rescue Gibbon::MailChimpError => exception
+          raise DataDownloadError.new("get_resource_metadata(): #{exception.message} (API code: #{exception.code}",
+                                      DATASOURCE_NAME)
+        rescue => exception
+          raise DataDownloadError.new("get_resource_metadata(): #{exception.inspect}", DATASOURCE_NAME)
         end
 
         # Retrieves current filters
@@ -242,14 +277,20 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-          # TODO: Implement
+          raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
+
           # Any call would do, we just want to see if communicates or refuses the token
-          true
+          # This call is available to all roles
+          response = @api_client.users.profile
+          # 'errors' only appears in failure scenarios, while 'username' only if went ok
+          response.fetch('errors', nil).nil? && !response.fetch('username', nil).nil?
+        rescue
+          false
         end
 
         # Revokes current set token
         def revoke_token
-          # TODO: Implement
+          # not supported
         end
 
         # Sets an error reporting component
@@ -280,10 +321,10 @@ module CartoDB
         # @return { :id, :title, :url, :service, :size }
         def format_item_data(item_data)
           filename = item_data.fetch('name').gsub(' ', '_')
-
+          stats = item_data.fetch('stats').fetch('member_count')
           {
             id:       item_data.fetch('id'),
-            title:    item_data.fetch('name'),
+            title:    "#{item_data.fetch('name')} (#{stats} subscribers)",
             filename: "#{filename}.csv",
             service:  DATASOURCE_NAME,
             checksum: '',

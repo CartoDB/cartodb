@@ -216,7 +216,6 @@ defaults: &defaults
       app_key:              ''
       app_secret:           ''
       callback_url:         ''
-      timeout_minutes:      15  # Minutes before timing out a request for data
   datasource_search:
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
     twitter_search:

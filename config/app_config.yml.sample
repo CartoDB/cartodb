@@ -1,5 +1,4 @@
 defaults: &defaults
-  raster_import_active: false
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false

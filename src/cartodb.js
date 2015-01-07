@@ -22,6 +22,7 @@
 
     root.cdb.config = {};
     root.cdb.core = {};
+    root.cdb.image = {};
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
     root.cdb.geo.geocoder = {};
@@ -58,6 +59,7 @@
         'core/template.js',
         'core/model.js',
         'core/view.js',
+        'core/image.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',

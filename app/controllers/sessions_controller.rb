@@ -22,8 +22,8 @@ class SessionsController < ApplicationController
       @google_cookie_policy = nil
     end
     # TODO: use parameters when this is checked in staging
-    #@google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
-    #@google_cookie_policy = 'https://cartodb-staging.com'
+    @google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
+    @google_cookie_policy = 'https://cartodb-staging.com'
   end
 
   def new

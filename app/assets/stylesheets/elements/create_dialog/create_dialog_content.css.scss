@@ -222,6 +222,12 @@
         @include elements-sprite(create-tabs-icons, $offset-x:-290px);
       }
 
+      &.mailchimp {
+        width:33px;
+        height:36px;
+        @include elements-sprite(create-tabs-icons, $offset-x:-378px);
+      }
+
       &.error {
         width:42px;
         @include elements-sprite(create-tabs-icons, $offset-x:-211px); 

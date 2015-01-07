@@ -116,7 +116,6 @@ module CartoDB
           # @see https://apidocs.mailchimp.com/oauth2/
           metadata_response = Typhoeus.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
                                              'Authorization' => "OAuth #{partial_access_token}"}))
-
           unless metadata_response.code == 200
             raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"
           end

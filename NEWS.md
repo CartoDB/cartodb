@@ -2,6 +2,7 @@
 ------------------
 * Mailchimp user lists importer dataset.
   New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
+  Requires also a feature_flag enabled either globally or to a specific users: 'mailchimp_import'
 
 
 3.7.1 (2014-12-30)

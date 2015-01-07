@@ -2,10 +2,20 @@
   <head>
     <script src="https://apis.google.com/js/client:platform.js" async defer></script>
     <script>
+      document.domain = '<%= @domain %>'
+
       function signinCallback(authResult) {
-        console.log(authResult);
-        console.log(parent);
-        parent.signinCallback(authResult);
+        if(inIframe()) { 
+          parent.signinCallback(authResult);
+        }
+      }
+
+      function inIframe () {
+          try {
+              return window.self !== window.top;
+          } catch (e) {
+              return true;
+          }
       }
     </script>
   </head>

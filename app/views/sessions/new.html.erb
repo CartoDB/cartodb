@@ -3,6 +3,8 @@
 <% end %>
 <script src="https://apis.google.com/js/client:platform.js" async defer></script>
 <script>
+  document.domain = '<%= @domain %>'
+
   function signinCallback(authResult) {
     console.dir(authResult);
     if(typeof authResult.access_token === 'undefined') {

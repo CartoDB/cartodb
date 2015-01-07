@@ -12,6 +12,7 @@ class SessionsController < ApplicationController
 
   def initialize_google_plus_config
     schema = Rails.env.development? ? 'http' : 'https'
+    @domain = Cartodb.config[:account_host].scan(/([^:]*)(:.*)?/).first.first
     @google_plus_iframe_src = "#{schema}://#{Cartodb.config[:account_host]}/google_plus"
     @google_signup_action = Cartodb::Central.new.google_signup_url
     if Cartodb.config[:google_plus].present?

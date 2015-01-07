@@ -20,12 +20,10 @@
 .MapCard:hover {
   background-color: #F5FAFE;
   border-color: #BCD8F1;
-  cursor: pointer;
 }
 .MapCard.is--selected {
   background-color: #EFF8FF;
   border-color: #BCD8F1;
-  &:hover { cursor: default }
 }
 .MapCard-header {
   position: relative;

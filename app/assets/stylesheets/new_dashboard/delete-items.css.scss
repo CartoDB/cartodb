@@ -1,5 +1,5 @@
-@import "../new_common/mixins";
-@import "../new_common/sizes";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
 
 .DeleteItems-affectedEntities {
   @include display-flex();

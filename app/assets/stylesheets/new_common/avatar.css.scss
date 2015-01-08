@@ -5,9 +5,9 @@
 //  </div>
 // --------------------------------------------------
 
-@import "../new_common/mixins";
-@import "../new_common/colors";
-@import "../new_common/sizes";
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
 
 .UserAvatar {
   @include inline-block();
@@ -29,7 +29,7 @@
   border-radius: $sAvatar-borderRadius;
 }
 // to just show [...], used in delete items for example
-// Example usage: <div class="UserAvatar"><span class="UserAvatar--moreItems" /></div>
+// Example usage: <div class="UserAvatar"><span class="UserAvatar--moreItems../div>
 .UserAvatar--moreItems {
   @include display-flex();
   @include justify-content(center, center);

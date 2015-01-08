@@ -1,9 +1,9 @@
 // Time diff indicator (2 weeks ago by ...)
 // --------------------------------------------------
 
-@import "../new_common/colors";
-@import "../new_common/mixins";
-@import "../new_common/sizes";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
 
 .DefaultTimeDiff {
   font-weight: $sFontWeight-lighter;

@@ -1,9 +1,6 @@
-@import "mixins";
-@import "colors";
-@import "sizes";
-@import "animations/fade-and-scale-in";
-@import "animations/fade-and-scale-out";
-@import "animations/fade-and-bounce-up";
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
 
 .Dialog {
   @include display-flex();

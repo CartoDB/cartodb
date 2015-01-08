@@ -1,6 +1,60 @@
 (function() {
 
+  function Queue() {
+
+    // callback storage
+    this._methods = [];
+
+    // reference to the response
+    this._response = null;
+
+    // all queues start off unflushed
+    this._flushed = false;
+
+  };
+
+  Queue.prototype = {
+
+    // adds callbacks to the queue
+    add: function(fn) {
+
+      // if the queue had been flushed, return immediately
+      if (this._flushed) {
+
+        // otherwise push it on the queue
+        fn(this._response);
+
+      } else {
+        this._methods.push(fn);
+      }
+
+    },
+
+    flush: function(resp) {
+
+      // flush only ever happens once
+      if (this._flushed) {
+        return;
+      }
+
+      // store the response for subsequent calls after flush()
+      this._response = resp;
+
+      // mark that it's been flushed
+      this._flushed = true;
+
+      // shift 'em out and call 'em back
+      while (this._methods[0]) {
+        this._methods.shift()(resp);
+      }
+
+    }
+
+  };
+
   cdb.image.Image = cdb.core.Model.extend({
+
+    ajax: window.$ ? window.$.ajax : reqwest.compat,
 
     defaults: {
       width: 320,
@@ -11,38 +65,157 @@
 
       var self = this;
 
-      cdb.image.Loader.get(this.get("url"), function(data){
-        console.log(data)
+      this.endpoint = "http://santiago-st.cartodb-staging.com/api/v1/map";
+
+    },
+
+    load: function(vizjson) {
+
+      this.set("vizjson", vizjson);
+
+      cdb.image.Loader.get(vizjson, function(data){
+
         if (data) {
           self.set("zoom", data.zoom);
           self.set("center", data.center);
           self.set("bounds", data.bounds);
         }
+
       });
 
       return this;
 
     },
 
+    loadLayerDefinition: function(layer_definition) {
+
+      this.queue = new Queue;
+
+      layer_definition = {
+        "version": "1.3.0-alpha",
+        "layers": [
+          {
+          "type": "mapnik",
+          "options": {
+            "sql": "select null::geometry the_geom_webmercator",
+            "cartocss": "#layer {\n\tpolygon-fill: #FF3300;\n\tpolygon-opacity: 0;\n\tline-color: #333;\n\tline-width: 0;\n\tline-opacity: 0;\n}",
+            "cartocss_version": "2.2.0"
+          }
+        }
+        ]
+      };
+
+      var self = this;
+
+      this._requestPOST(layer_definition, function(data) {
+
+        if (data) {
+
+          self.set("layergroupid", data.layergroupid)
+          console.log(data.layergroupid);
+
+          self.queue.flush(this);
+        }
+
+      });
+
+    },
+
+    _requestPOST: function(params, callback) {
+
+      this.ajax({
+        crossOrigin: true,
+        type: 'POST',
+        method: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        url: this.endpoint,
+        data: JSON.stringify(params),
+        success: function(data) {
+          callback(data);
+        },
+        error: function(xhr) {
+          callback(null);
+        }
+      });
+
+    },
+
+    _tilerHost: function() {
+      var opts = this.options;
+      return opts.tiler_protocol +
+        "://" + ((opts.user_name) ? opts.user_name+".":"")  +
+      opts.tiler_domain +
+        ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    },
+
+    _host: function(subhost) {
+      var opts = this.options;
+      if (opts.no_cdn) {
+        return this._tilerHost();
+      } else {
+        var h = opts.tiler_protocol + "://";
+        if (subhost) {
+          h += subhost + ".";
+        }
+        var cdn_host = opts.cdn_url || cdb.CDB_HOST;
+        if(!cdn_host.http && !cdn_host.https) {
+          throw new Error("cdn_host should contain http and/or https entries");
+        }
+        h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
+        return h;
+      }
+    },
+
     zoom: function(zoom) {
-      this.set("zoom", zoom);
+
+      var self = this;
+
+      this.queue.add(function() {
+        self.set("zoom", zoom);
+      });
+
       return this;
+
     },
 
     center: function(center) {
-      this.set("center", center);
+
+      var self = this;
+
+      this.queue.add(function() {
+        self.set("center", center);
+      });
+
       return this;
+
     },
 
     size: function(width, height) {
-      this.set({ width: width, height: height });
+
+      var self = this;
+
+      this.queue.add(function() {
+        self.set({ width: width, height: height });
+      });
+
       return this;
+
     },
 
     write: function() {
+
       var self = this;
+
+      this.queue.add(function() {
+        console.log(self.attributes);
+      });
+
+      return this;
+
+      /*var self = this;
       if (!this.loaded) {
-        cdb.image.Loader.get(this.get("url"), function(data){
+        cdb.image.Loader.get(this.get("vizjson"), function(data){
           console.log(data)
           self.loaded = true;
 
@@ -50,18 +223,26 @@
             self.set("zoom", data.zoom);
             self.set("center", data.center);
             self.set("bounds", data.bounds);
-
           }
         });
-      }
-      //debugger;
+      }*/
     }
 
 
   })
 
-  cdb.Image = function(url) {
-    return new cdb.image.Image({ url: url });
+  cdb.Image = function(data) {
+
+    var image = new cdb.image.Image();
+
+    if (typeof data === 'string') {
+      image.load(data);
+    } else {
+      image.loadLayerDefinition(data);
+    }
+
+    return image;
+
   };
 
   var ImageLoader = cdb.image.Loader = {

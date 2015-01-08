@@ -58,7 +58,7 @@ gem 'em-pg-client',            '0.2.1'
 # Service components (/services)
 gem 'virtus',                   '1.0.0.beta3' #, git: 'https://github.com/solnic/virtus.git'
 gem 'aequitas',                 '0.0.2'
-gem 'uuidtools',                '2.1.3'
+gem 'uuidtools',                '2.1.5'
 
 # Markdown
 gem 'redcarpet', '3.1.1'

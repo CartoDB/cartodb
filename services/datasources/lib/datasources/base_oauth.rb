@@ -6,7 +6,7 @@ module CartoDB
 
       # At least for CartoDB SaaS, this will be parsed by oauth endpoint to rewrite the url, so must be filled with
       # e.g. CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
-      # And appended anywhere in the querystring used as callback url
+      # And appended anywhere in the querystring used as callback url with param "state=xxxxxx"
       CALLBACK_STATE_DATA_PLACEHOLDER = '__user__service__'
 
       # Return the url to be displayed or sent the user to to authenticate and get authorization code

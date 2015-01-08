@@ -5,7 +5,7 @@
       document.domain = '<%= @domain %>'
 
       function signinCallback(authResult) {
-        if(inIframe()) { 
+        if(inIframe() && parentInSameDomain()) {
           parent.signinCallback(authResult);
         }
       }
@@ -16,6 +16,10 @@
           } catch (e) {
               return true;
           }
+      }
+
+      function parentInSameDomain() {
+        return parent.document.domain.match(document.domain + "$").length > 0;
       }
     </script>
   </head>

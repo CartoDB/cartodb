@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
   end
 
   def initialize_google_plus_config
-    @google_plus_config = Cartodb.config[:google_plus].present? ? GooglePlusConfig.new : nil
+    @google_plus_config = Cartodb.config[:google_plus].present? ? GooglePlusConfig.new(Cartodb.config, Cartodb::Central.new.google_signup_url) : nil
   end
 
   def new

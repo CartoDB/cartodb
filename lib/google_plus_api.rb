@@ -55,14 +55,21 @@ class GooglePlusConfig
   attr_reader :domain, :signup_action, :iframe_src, :client_id, :cookie_policy, :access_token_field_id
   attr_accessor :unauthenticated_valid_access_token
 
-  def initialize(access_token_field_id = 'google_access_token')
+  def initialize(config, signup_action, access_token_field_id = 'google_access_token')
     schema = Rails.env.development? ? 'http' : 'https'
-    @domain = Cartodb.config[:account_host].scan(/([^:]*)(:.*)?/).first.first
-    @signup_action = Cartodb::Central.new.google_signup_url
-    @iframe_src = "#{schema}://#{Cartodb.config[:account_host]}/google_plus"
+
+    @domain = config[:domain_name].present? ? config[:domain_name] : config[:account_host].scan(/([^:]*)(:.*)?/).first.first
+
+    @signup_action = signup_action
+
+    iframe_host = config[:account_host].present? ? config[:account_host] : @domain
+    @iframe_src = "#{schema}://#{iframe_host}/google_plus"
+
     @access_token_field_id = access_token_field_id
-    @client_id = Cartodb.config[:google_plus]['client_id']
-    @cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
+
+    @client_id = config[:google_plus]['client_id']
+
+    @cookie_policy = config[:google_plus]['cookie_policy']
   end
 
 end

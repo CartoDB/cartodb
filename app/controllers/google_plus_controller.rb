@@ -6,7 +6,7 @@ class GooglePlusController < ApplicationController
   layout 'front_layout'
 
   def google_plus
-    @config = GooglePlusConfig.new
+    @config = GooglePlusConfig.new(Cartodb.config, Cartodb::Central.new.google_signup_url)
     render 'google_plus'
   end
   

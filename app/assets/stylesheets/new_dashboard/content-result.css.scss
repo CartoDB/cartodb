@@ -5,9 +5,9 @@
 // loading, ...) 
 // --------------------------------------------------
 
-@import "../new_common/colors";
-@import "../new_common/mixins";
-@import "../new_common/sizes";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
 
 .ContentResult {
   width: 460px;
@@ -79,25 +79,14 @@
   border-color: $cHighlight-alert;
   color: $cHighlight-alert;
 }
-.ContentResult-title,
-.ContentResult-text {
-  display: block;
-}
 .ContentResult-title {
-  margin-top: 15px;
+  display: block;
+  margin: 15px 0 10px 0;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
-.ContentResult-text {
-  margin-top: 10px;
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-paragraphs;
-}
-
 
 // Animation functions
 @include keyframes(pulsate) {

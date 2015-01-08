@@ -1,0 +1,10 @@
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.DefaultParagraph {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
+  
+}

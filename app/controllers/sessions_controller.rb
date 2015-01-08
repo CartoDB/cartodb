@@ -1,30 +1,23 @@
 # coding: UTF-8
 require_relative '../../lib/google_plus_api'
+require_relative '../../lib/cartodb/user_creation_strategies'
 
 class SessionsController < ApplicationController
   layout 'front_layout'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
+  before_filter :initialize_user_creation_strategy
   before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
+  def initialize_user_creation_strategy
+    @user_creation_strategy = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::CentralUserCreationStrategy.new : LocalUserCreationStrategy.new
+  end
+
   def initialize_google_plus_config
-    schema = Rails.env.development? ? 'http' : 'https'
-    @domain = Cartodb.config[:account_host].scan(/([^:]*)(:.*)?/).first.first
-    @google_plus_iframe_src = "#{schema}://#{Cartodb.config[:account_host]}/google_plus"
-    @google_signup_action = Cartodb::Central.new.google_signup_url
-    if Cartodb.config[:google_plus].present?
-      @google_client_id = Cartodb.config[:google_plus]['client_id']
-      @google_cookie_policy = Cartodb.config[:google_plus]['cookie_policy']
-    else
-      @google_client_id = nil
-      @google_cookie_policy = nil
-    end
-    # TODO: use parameters when this is checked in staging
-    @google_client_id = '739127875539-5uqdnrdr6n2levhtihsdgo7qolnd5is4.apps.googleusercontent.com'
-    @google_cookie_policy = 'https://cartodb-staging.com'
+    @google_plus_config = Cartodb.config[:google_plus].present? ? GooglePlusConfig.new : nil
   end
 
   def new
@@ -34,21 +27,19 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = if params[:google_access_token].present?
+    user = if params[:google_access_token].present? && @google_plus_config.present?
       # TODO: improve this, since this sometimes triggers user validation twice (first for getting the domain if not present)
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
         # INFO: user == false implies not valid access token
-        if user.present?
-          user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
-          authenticate!(:google_access_token, scope: user_domain)
-        else
-          @unauthenticated_valid_google_access_token = params[:google_access_token]
-          nil
-        end
+        user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+        authenticate!(:google_access_token, scope: user_domain)
+      elsif user == false
+        # token not valid
+        nil
       else
-        @unauthenticated_valid_google_access_token = params[:google_access_token]
-        @google_user_registered = false
+        # token valid, unknown user
+        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
         nil
       end
     else

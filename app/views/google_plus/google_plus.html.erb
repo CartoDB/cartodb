@@ -2,7 +2,7 @@
   <head>
     <script src="https://apis.google.com/js/client:platform.js" async defer></script>
     <script>
-      document.domain = '<%= @domain %>'
+      document.domain = '<%= @config.domain %>'
 
       function signinCallback(authResult) {
         if(inIframe() && parentInSameDomain()) {
@@ -28,8 +28,8 @@
       <span
         class="g-signin"
         data-callback="signinCallback"
-        data-clientid="<%= @client_id %>"
-        data-cookiepolicy="<%= @cookie_policy %>"
+        data-clientid="<%= @config.client_id %>"
+        data-cookiepolicy="<%= @config.cookie_policy %>"
         data-scope="email">
       </span>
     </span>

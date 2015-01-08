@@ -1,31 +1,14 @@
 <%= content_for(:js) do %>
   <%= javascript_include_tag 'cdb.js', 'application.js', 'login.js' %>
 <% end %>
-<script src="https://apis.google.com/js/client:platform.js" async defer></script>
-<script>
-  document.domain = '<%= @domain %>'
-
-  function signinCallback(authResult) {
-    console.dir(authResult);
-    if(typeof authResult.access_token === 'undefined') {
-      console.log('no access_token');
-    } else {
-      var access_token_field = document.getElementById('access_token');
-      var google_user_registered_field = document.getElementById('google_user_registered');
-      if (authResult['status']['signed_in'] && access_token_field.value === '' && google_user_registered.value != 'false') {
-        var googleAccessTokenField = document.getElementById('google_access_token');
-        googleAccessTokenField.value = authResult.access_token;
-        googleAccessTokenField.form.submit();
-      }
-    }
-  }
-</script>
-
 
 <section class="sessions shadow">
   <div class="content">
     <h2 class="center">Login to your CartoDB</h2>
     <%= form_tag create_session_path do %>
+
+      <input type="hidden" value="" id="google_access_token" name="google_access_token" />
+
       <div class="field margin30">
         <% @error = @login_error %>
         <% if @error %>
@@ -42,7 +25,6 @@
           <div class="field_with_errors">
         <% end %>
         <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password", :class => (flash[:alert] || @error ? 'error' : nil) %>
-        <input type="hidden" value="" id="google_access_token" name="google_access_token" />
         <% if @error %>
           </div>
           <div class="field_error"><%= @error %></div>
@@ -51,26 +33,15 @@
       <div class="field margin25">
         <%= submit_tag "Sign in", :class => "green border sessions" %>
       </div>
-      <% if @google_client_id.present? %>
-        <input type="hidden" value="<%= @google_user_registered %>" id="google_user_registered" name="access_token" />
-        <div>
-          <span id="signinButton">
-            <iframe src="<%= @google_plus_iframe_src %>" width="300" height="100"></iframe>
-          </span>
-        </div>
-      <% end %>
     <% end %>
 
-    <form action="<%= @google_signup_action %>" method="POST">
-      <input type="hidden" value="<%= @unauthenticated_valid_google_access_token %>" id="access_token" name="access_token" />
-    </form>
-    <script>
-      var access_token_field = document.getElementById('access_token');
-      if(access_token_field.value != '') {
-        access_token_field.form.submit();
-      }
-    </script>
+    <% if @google_plus_config.present? %>
+      <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+        
+    <% end %>
+
   </div>
+
   <div class="footer">
     <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
   </div>

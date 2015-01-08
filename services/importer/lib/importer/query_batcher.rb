@@ -62,7 +62,7 @@ module CartoDB
         end
 
         log.log "FINISHED: #{log_message}"
-      end #self.execute
+      end
 
       def self.process_batched_query(db_object, batched_query, log, capture_exceptions)
         total_rows_processed = 0
@@ -91,15 +91,15 @@ module CartoDB
         db_object.run(%Q{
          ALTER TABLE #{table_name} DROP #{column_name};
         })
-      end # self.remove_processed_column
+      end
 
-    end #QueryBatcher
+    end
 
     class ConsoleLog
       def log(message)
         puts message
-      end #log
-    end #ConsoleLog
+      end
+    end
 
-  end #Importer2
-end #CartoDB
+  end
+end

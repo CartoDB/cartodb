@@ -32,6 +32,8 @@ module CartoDB
                             FORMAT CONTROLLER ACTION
                           }
 
+      BATCH_SIZE_FOR_HEAVY_OPERATIONS = 2500
+
       def initialize(db, table_name, column_name, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})
         @db           = db
@@ -118,7 +120,8 @@ module CartoDB
           qualified_table_name,
           job,
           'Creating temporally geometry to convert from GeoJSON',
-          @capture_exceptions
+          @capture_exceptions,
+          BATCH_SIZE_FOR_HEAVY_OPERATIONS
         )
 
         # 4) delete geometries with bounding boxes greater than allowed threshold
@@ -137,7 +140,8 @@ module CartoDB
           qualified_table_name,
           job,
           'Removing too big bounding boxes',
-          capture_exceptions=false
+          capture_exceptions=false,
+          BATCH_SIZE_FOR_HEAVY_OPERATIONS
         )
 
         # 5) grab random point inside valid bounding boxes and store into the_geom
@@ -161,7 +165,8 @@ module CartoDB
               qualified_table_name,
               job,
               'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
-              capture_exceptions=false
+              capture_exceptions=false,
+              BATCH_SIZE_FOR_HEAVY_OPERATIONS
           )
         rescue => exception
           job.log "Error generating points inside bounding boxes: #{exception.to_s}"
@@ -182,7 +187,8 @@ module CartoDB
           qualified_table_name,
           job,
           'Converting geometry from GeoJSON (transforming points) to WKB',
-          @capture_exceptions
+          @capture_exceptions,
+          BATCH_SIZE_FOR_HEAVY_OPERATIONS
         )
 
         # 7) Remove temp column

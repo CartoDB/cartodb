@@ -1,10 +1,9 @@
 // Likes indicator (12♥)
 // --------------------------------------------------
 
-@import "../new_common/colors";
-@import "../new_common/mixins";
-@import "../new_common/sizes";
-@import "../new_common/animations/pulse";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
 
 .LikesIndicator {
   font-weight: $sFontWeight-lighter;

@@ -42,7 +42,9 @@ module CartoDB
           @user = user
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
-          @callback_url = config.fetch('callback_url')
+
+          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
+          @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
           Gibbon::API.timeout = API_TIMEOUT_SECS
           Gibbon::API.throws_exceptions = true

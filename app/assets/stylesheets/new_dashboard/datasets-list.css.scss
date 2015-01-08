@@ -1,6 +1,6 @@
-@import "../new_common/mixins";
-@import "../new_common/colors";
-@import "../new_common/sizes";
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
 
 /* compensate for the negative margins and border */
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
@@ -26,7 +26,6 @@ $_primaryInfoWidth: $sLayout-width - $_secondaryInfoWidth - $sIcon-layout - $sMa
   padding: $sMargin-group $selectedItemPaddingOnSides;
   margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
   border-radius: 4px;
-  cursor: pointer;
 }
 .DatasetsList-item:hover {
   background-color: $cCard-hoverFill;
@@ -35,9 +34,6 @@ $_primaryInfoWidth: $sLayout-width - $_secondaryInfoWidth - $sIcon-layout - $sMa
 .DatasetsList-item.is--selected {
   background-color: $cCard-selectedFill;
   border: 1px $cCard-selectedBorder solid;
-}
-.DatasetsList-item.is--selected {
-  &:hover { cursor: default }
 }
 .DatasetsList-itemCategory {
   width: $sIcon-layout;

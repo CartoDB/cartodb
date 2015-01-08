@@ -13,8 +13,8 @@
  * The tick can be placed horizontally by .tick_left/center/right, or vertically by .tick_top/middle/bottom, in
  * combination with horizontal_left/right and vertical_top/bottom.
  */
-@import "../new_common/mixins";
-@import "../new_common/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
 
 .dropdown {
   position: absolute;

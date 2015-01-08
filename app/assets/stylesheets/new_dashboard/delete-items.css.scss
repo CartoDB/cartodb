@@ -1,12 +1,12 @@
 @import "../new_common/mixins";
 @import "../new_common/sizes";
 
-.DeleteItems-affectedUsers {
+.DeleteItems-affectedEntities {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.DeleteItems-affectedUsersAvatar {
+.DeleteItems-affectedEntitiesAvatar {
   margin-left: $sMargin-min;
 }
 .DeleteItems-footer {

@@ -19,13 +19,13 @@
   ],
   "devDependencies": {
     "aws-sdk": "2.0.0-rc11",
-    "browserify": "^6.3.2",
-    "browserify-shim": "^3.8.2",
+    "browserify": "6.1.0",
+    "browserify-shim": "3.8.0",
     "git-rev": "~0.2.1",
     "grunt": "~0.4.4",
     "grunt-available-tasks": "^0.5.4",
     "grunt-aws": "~0.3.0",
-    "grunt-browserify": "^3.2.0",
+    "grunt-browserify": "3.2.1",
     "grunt-cli": "~0.1.13",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-compass": "~0.7.2",
@@ -43,14 +43,14 @@
     "load-grunt-tasks": "~0.2.0",
     "moment": "^2.8.4",
     "open": "0.0.5",
-    "remapify": "^1.3.0",
+    "queue-async": "^1.0.7",
+    "remapify": "1.4.2",
     "rewireify": "0.0.13",
     "shelljs": "~0.2.6",
     "source-map-support": "^0.2.8",
     "uglify-js": "1.3.3",
     "underscore": "~1.6.0",
-    "watchify": "^2.1.1",
-    "miller-rabin": "1.1.1"
+    "watchify": "^2.1.1"
   },
   "files": [
     "dist"

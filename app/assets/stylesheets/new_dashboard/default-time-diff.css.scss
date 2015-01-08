@@ -1,17 +1,16 @@
 // Time diff indicator (2 weeks ago by ...)
 // --------------------------------------------------
 
-@import "../new_common/colors";
-@import "../new_common/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
 
 .DefaultTimeDiff {
-  font-weight:300;
+  font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
-  font-size:13px;
 }
 .DefaultTimeDiff-icon {
-  font-family: 'CartoIcon';
-  font-size:10px;
-  font-weight:300;
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

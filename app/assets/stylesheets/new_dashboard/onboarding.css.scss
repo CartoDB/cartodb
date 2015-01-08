@@ -1,0 +1,14 @@
+// Empty map view
+// 
+// Map view when user doesn't have any map item
+// --------------------------------------------------
+
+.OnBoarding {
+  width: 100%;
+  height: 500px;
+}
+.OnBoarding-map {
+  width: 100%;
+  height: 100%;
+}
+.OnBoarding-map .leaflet-control-attribution { display: none }

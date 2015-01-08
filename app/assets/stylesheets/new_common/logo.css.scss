@@ -1,0 +1,31 @@
+// Logo
+// - Different ways to show CartoDB logo
+// --------------------------------------------------
+
+@import "../new_variables/mixins";
+
+
+.Logo {
+  @include inline-block();
+}
+.Logo--text {
+  width:90px;
+  height:16px;
+  i {
+    font-size:17px;
+    color: #333333;
+  }
+}
+.Logo--round {
+  width:40px;
+  height:40px;
+  background-color:#CCCCCC;
+  border-radius: 40px;
+  line-height:50px;
+  text-align:center;
+  i {
+    font-size:24px;
+    color: white;
+  }
+}
+

@@ -1,6 +1,7 @@
-@import "../new_common/mixins";
-@import "../new_common/colors";
-@import "../new_elements/progress-bar";
+@import "../../new_variables/mixins";
+@import "../../new_variables/colors";
+@import "../../new_variables/sizes";
+@import "../../new_variables/progress-bar";
 
 .SettingsDropdown {
   min-width: 220px;
@@ -19,10 +20,8 @@
   @include flex-wrap(nowrap);
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  line-height:16px;
 }
 .SettingsDropdown-accountType {
-  font-size: 13px;
   color: $cTypography-secondary;
   text-transform: capitalize;
 }
@@ -46,4 +45,7 @@
   background: #E8E8E8;
   z-index: 0;
 }
-.SettingsDropdown-itemLink { font-size: 15px }
+.SettingsDropdown-itemLink {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+}

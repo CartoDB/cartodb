@@ -1,13 +1,13 @@
 @import "../new_common/colors";
+@import "../new_common/sizes";
 
 .RowsIndicator {
-  font-weight: 300;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
-  font-size: 13px;
 }
 .RowsIndicator-icon {
-  font-family: 'CartoIcon';
-  font-size: 10px;
-  font-weight: 300;
+  font-size: $sFontSize-smaller;
+  line-height: $sLineHeight-smaller;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

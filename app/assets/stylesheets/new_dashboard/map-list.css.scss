@@ -1,7 +1,8 @@
 // Maps list
 // --------------------------------------------------
 
-@import "../../new_common/mixins";
+@import "../new_common/mixins";
+@import "../new_common/sizes";
 
 
 .Maps {
@@ -15,8 +16,6 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: 940px;
-  margin: 0 auto;
 }
 .Maps-list {
   display:block;

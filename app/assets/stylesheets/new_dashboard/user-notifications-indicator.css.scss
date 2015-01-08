@@ -2,38 +2,31 @@
 // --------------------------------------------------
 
 @import "../new_common/mixins";
+@import "../new_common/colors";
+@import "../new_common/sizes";
 
 .UserNotifications {
   position:relative;
   @include display-flex();
   text-decoration: none!important;
+  color: $cIcons-default;
 }
-.UserNotifications-Icon {
+.UserNotifications:hover {
+  color: $cIcons-active;
+}
+.UserNotifications-icon {
   color: #999;
   &:hover { color: #666 }
 }
-.UserNotifications-Count {
-  position:absolute;
-  display: block;
+.UserNotifications-badge {
   @include opacity(0);
-  top:-9px;
-  right:-9px;
-  width:17px;
-  height:17px;
-  background: #C74B43;
-  @include border-radius(23px);
-  font-family:Arial;
-  font-size:10px;
-  font-weight:500;
-  text-align:center;
-  line-height:17px;
-  color: #C74B43;
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));
+  color: $cHighlight-negative;
 }
 // States
 .UserNotifications.has--alerts {
-  .UserNotifications-Count {
+  .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1));
     @include opacity(1);
@@ -41,7 +34,7 @@
   }
 }
 .UserNotifications.has--alerts:hover {
-  .UserNotifications-Count {
+  .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1.1))
   }

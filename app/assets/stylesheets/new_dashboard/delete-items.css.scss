@@ -1,0 +1,6 @@
+@import "../new_common/mixins";
+
+.DeleteItems-footer {
+  @include display-flex();
+  @include justify-content(center, center);
+}

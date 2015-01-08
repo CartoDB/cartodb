@@ -20,7 +20,7 @@
   position: absolute;
   display: none;
   background: $cStructure-mainBkg;
-  @include border-radius(4px);
+  border-radius: 4px;
 
   /* x-offset, y-offset, blur, size, color */
   box-shadow: 0 0 5px 1px $cStructure-mainLine;

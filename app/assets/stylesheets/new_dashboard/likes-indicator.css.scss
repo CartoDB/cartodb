@@ -3,21 +3,34 @@
 
 @import "../new_common/colors";
 @import "../new_common/mixins";
-
+@import "../new_common/sizes";
+@import "../new_common/animations/pulse";
 
 .LikesIndicator {
-  font-size:13px;
-  font-weight:300;
+  font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
+  cursor: pointer;
 }
 .LikesIndicator-icon {
+  @include transform(1);
   margin-right:6px;
-  font-family: 'CartoIcon';
-  font-size:11px;
+  font-size: $sFontSize-small;
   color: $cTypography-help;
 }
 .LikesIndicator:hover {
   color:$cTypography-paragraphs;
   text-decoration:none;
-  .LikesIndicator-icon { color:#D93F56 }
+  .LikesIndicator-icon {
+    color:#D93F56;
+  }
+}
+.LikesIndicator--liked {
+  .LikesIndicator-icon {
+    color:#D93F56;
+  }
+}
+.LikesIndicator--animated {
+  .LikesIndicator-icon {
+    @include animation(pulse 400ms both ease-in);
+  }
 }

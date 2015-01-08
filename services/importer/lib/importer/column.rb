@@ -32,7 +32,7 @@ module CartoDB
                             FORMAT CONTROLLER ACTION
                           }
 
-      BATCH_SIZE_FOR_HEAVY_OPERATIONS = 5000
+      BATCH_SIZE_FOR_HEAVY_OPERATIONS = 2500
 
       def initialize(db, table_name, column_name, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})

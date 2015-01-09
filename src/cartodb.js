@@ -59,7 +59,7 @@
         'core/template.js',
         'core/model.js',
         'core/view.js',
-        'core/image.js',
+
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -84,6 +84,7 @@
 
         'geo/layer_definition.js',
         'geo/common.js',
+        'core/image.js',
 
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',

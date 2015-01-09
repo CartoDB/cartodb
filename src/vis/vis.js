@@ -563,10 +563,15 @@ var Vis = cdb.core.View.extend({
     }
 
     if (data.slides) {
-      cdb.config.bind('moduleLoaded:odyssey', function() {
+      function odysseyLoaded() {
         self._createSlides([data].concat(data.slides));
-      });
-      Loader.loadModule('odyssey');
+      };
+      if (cartodb.odyssey === undefined) {
+        cdb.config.bind('moduleLoaded:odyssey', odysseyLoaded);
+        Loader.loadModule('odyssey');
+      } else {
+        odysseyLoaded();
+      }
     }
 
     _.defer(function() {

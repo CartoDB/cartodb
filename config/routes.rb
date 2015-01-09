@@ -23,6 +23,7 @@ CartoDB::Application.routes.draw do
   get   '(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
   get '/google_plus' => 'google_plus#google_plus'
+  post '/google/signup' => 'google_plus#google_signup'
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do

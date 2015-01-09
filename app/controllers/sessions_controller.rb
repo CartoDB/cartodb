@@ -11,7 +11,8 @@ class SessionsController < ApplicationController
   skip_before_filter :ensure_org_url_if_org_user
 
   def initialize_google_plus_config
-    @google_plus_config = GooglePlusConfig.instance(Cartodb.config, Cartodb::Central.new.google_signup_url)
+    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+    @google_plus_config = GooglePlusConfig.instance(Cartodb.config, signup_action)
   end
 
   def new
@@ -22,7 +23,6 @@ class SessionsController < ApplicationController
 
   def create
     user = if params[:google_access_token].present? && @google_plus_config.present?
-      # TODO: improve this, since this sometimes triggers user validation twice (first for getting the domain if not present)
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
         user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain

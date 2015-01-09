@@ -25,6 +25,7 @@ describe Search::Twitter do
 
   describe '#search' do
     it 'tests basic full search flow with streaming' do
+      pending 'needs new tweets dataset input'
       user_quota = 100
       user_mock = Doubles::User.new({twitter_datasource_quota: user_quota})
       data_import_mock = Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})

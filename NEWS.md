@@ -1,3 +1,10 @@
+
+3.7.2 (2015-xx-xx)
+------------------
+* New features
+  - Instagram connector. Imports all your geotagged photos and setups a basic infowindow displaying some data of them.
+
+
 3.7.1 (2014-12-30)
 ------------------
 * New features

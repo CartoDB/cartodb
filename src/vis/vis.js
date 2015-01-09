@@ -709,16 +709,21 @@ var Vis = cdb.core.View.extend({
         var slide = slides[i];
         var states = [];
 
-        // generate states
-        states.push(this.map.actions.set({
-          'center': typeof slide.center === 'string' ? JSON.parse(slide.center): slide.center,
-          'zoom': slide.zoom
-        }));
+        var mapChanges = O.Step(
+          // map movement
+          this.map.actions.set({
+            'center': typeof slide.center === 'string' ? JSON.parse(slide.center): slide.center,
+            'zoom': slide.zoom
+          }),
+          // wait a little bit
+          O.Sleep(350),
+          // layer change
+          this.map.layers.actions.reset(_.map(slide.layers, function(layerData) {
+            return Layers.create(layerData.type || layerData.kind, self, layerData);
+          }))
+        );
 
-        // layers
-        states.push(this.map.layers.actions.reset(_.map(slide.layers, function(layerData) {
-          return Layers.create(layerData.type || layerData.kind, self, layerData);
-        })));
+        states.push(mapChanges);
 
         // overlays
         states.push(this.overlayModels.actions.reset(slide.overlays));

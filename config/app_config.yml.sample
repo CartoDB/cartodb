@@ -209,6 +209,12 @@ defaults: &defaults
       app_key:              ''
       app_secret:           ''
       callback_url:         ''
+    # Mailchimp datasource. Setup at https://admin.mailchimp.com/account/oauth2/ then fill here.
+    # If fields are present but empty, option won't appear at editor import window
+    mailchimp:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
   datasource_search:
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
     twitter_search:

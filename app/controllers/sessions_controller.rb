@@ -1,20 +1,14 @@
 # coding: UTF-8
 require_relative '../../lib/google_plus_api'
-require_relative '../../lib/cartodb/user_creation_strategies'
 
 class SessionsController < ApplicationController
   layout 'front_layout'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
-  before_filter :initialize_user_creation_strategy
   before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
-
-  def initialize_user_creation_strategy
-    @user_creation_strategy = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::CentralUserCreationStrategy.new : LocalUserCreationStrategy.new
-  end
 
   def initialize_google_plus_config
     @google_plus_config = GooglePlusConfig.instance(Cartodb.config, Cartodb::Central.new.google_signup_url)

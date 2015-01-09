@@ -548,7 +548,6 @@ var Vis = cdb.core.View.extend({
 
     this.overlayModels.reset(data.overlays);
 
-
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {
       this._setupSublayers(data.layers, options);
@@ -559,7 +558,7 @@ var Vis = cdb.core.View.extend({
       if (options.legends === undefined) {
         options.legends = this.legends ? true : false;
       }
-      this.addMobile(data.overlays, data.layers, data.slides, options);
+      this.addMobile(data, options);
     }
 
     if (data.slides) {
@@ -794,10 +793,10 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addMobile: function(overlays, data_layers, slides, options) {
+  addMobile: function(data, options) {
 
     var layers;
-    var layer = data_layers[1];
+    var layer = data.layers[1];
 
     if (layer.options && layer.options.layer_definition) {
       layers = layer.options.layer_definition.layers;
@@ -808,7 +807,8 @@ var Vis = cdb.core.View.extend({
     this.addOverlay({
       type: 'mobile',
       layers: layers,
-      overlays: overlays,
+      slides: data.slides,
+      overlays: data.overlays,
       options: options,
       torqueLayer: this.torqueLayer
     });

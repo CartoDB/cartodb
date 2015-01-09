@@ -1,0 +1,93 @@
+
+/**
+ *  Public table styles
+ */
+
+
+@import "compass/css3/opacity";
+@import "compass/css3/images";
+@import "../common/vars";
+
+
+body .inner { width: auto; }
+
+.embed-left-col{
+  float: left;
+  width: 100%;
+  margin-left: -245px; /* The size of the fixed block. */
+}
+
+.embed-right-col {
+  float: right;
+  width: 245px;
+}
+
+.embed-left-col .content {
+  max-width:  689px;
+  margin-left: 245px;
+  border-right: 1px solid #D1D1D1;
+  padding-right: 48px;
+}
+
+// Separator 
+div.separator {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 1px;
+  background: #808080; /*IE*/
+  background: #000;
+  @include opacity(.2);
+  z-index: 1000; 
+  
+  &.top { top: 67px; }
+  &.bottom { top: -1px; position: relative; }
+}
+
+
+// Hello media queries
+
+@media only screen and (max-width: 710px) {
+  .navigation {
+    max-width: 1024px;
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+    padding: 0 20px;
+  }
+
+  .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
+  .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
+  .inner .embed-right-col { float: none;  width: 100%; }
+}
+
+/* iPhone portrait */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px)
+and (orientation : portrait) {
+  .cartodb-public-wrapper div.separator.top { top: 66px }
+
+  .navigation {
+    max-width: 1024px;
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+    padding: 0 20px;
+  }
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+  .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
+  .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
+  .inner .embed-right-col { float: none;  width: 100%; }
+
+  .navigation {
+    max-width: 1024px;
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+    padding: 0 20px;
+  }
+
+}

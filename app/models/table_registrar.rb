@@ -10,7 +10,8 @@ module CartoDB
     def register(table_name, data_import_id)
       self.table                    = table_klass.new
       table.user_id                 = user.id
-      table.name                    = table_name
+      # INFO: we're not creating but registering an existent table, so we want fixed, known name
+      table.instance_eval { self[:name] = table_name }
       table.migrate_existing_table  = table_name
       table.data_import_id          = data_import_id
       table.save
@@ -24,7 +25,7 @@ module CartoDB
 
     def get_valid_table_name(table_name)
       table_klass.get_valid_table_name(table_name, {
-          name_candidates: user.reload.tables.map(&:name),
+          connection: user.in_database,
           database_schema: user.database_schema
         })
     end

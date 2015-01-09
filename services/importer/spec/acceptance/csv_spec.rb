@@ -1,64 +1,70 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
+require_relative '../doubles/log'
+require_relative 'cdb_importer_context'
+require_relative 'acceptance_helpers'
+require_relative '../../spec/doubles/importer_stats'
 
 include CartoDB::Importer2
 
 describe 'csv regression tests' do
-  before do
-    @pg_options  = Factories::PGConnection.new.pg_options
-  end
+  include AcceptanceHelpers
+  include_context "cdb_importer schema"
 
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
-    geometry_type_for(runner).must_equal 'POINT'
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'imports XLS files' do
-    skip
+    #TODO: changed 'skipped' for a simple ngos.xlsx import, but should be improved for some file with geometry import data
+    filepath    = path_to('../../../../spec/support/data/ngos.xlsx')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@job, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
-    runner.exit_code.must_equal 0
-
-    geometry_type_for(runner).wont_be_empty
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
 
   it 'imports files exported from the SQL API' do
     filepath    = path_to('ne_10m_populated_places_simple.csv')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
-    geometry_type_for(runner).must_equal 'POINT'
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'imports files from Google Fusion Tables' do
+    #TODO: this spec depends on network connection
     url = "https://www.google.com/fusiontables/exporttable" +
           "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
     downloader  = Downloader.new(url)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
-    geometry_type_for(runner).must_equal 'POINT'
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'imports files with a the_geom column in GeoJSON' do
     filepath    = path_to('csv_with_geojson.csv')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
-    geometry_type_for(runner).must_equal 'MULTIPOLYGON'
+    geometry_type_for(runner).should eq 'MULTIPOLYGON'
   end
 
   it 'imports files with spaces as delimiters' do
@@ -68,16 +74,31 @@ describe 'csv regression tests' do
   it 'imports files with & in the name' do
     filepath    = path_to('ne_10m_populated_places_&simple.csv')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
-    geometry_type_for(runner).must_equal 'POINT'
+    geometry_type_for(runner).should eq 'POINT'
   end
 
-  it 'imports records with in cell line breaks' do
+  it 'import files named "all"' do
+    runner = runner_with_fixture('all.csv')
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
+  it 'import big row files' do
+    runner = runner_with_fixture('big_row.csv')
+    runner.run
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
+  it 'imports records with cell line breaks' do
     filepath    = path_to('in_cell_line_breaks.csv')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader)
+    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run
 
     result = runner.results.first
@@ -85,23 +106,22 @@ describe 'csv regression tests' do
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
-    }].first.fetch(:count).must_equal 7
+    }].first.fetch(:count).should eq 7
   end
 
-  def path_to(filepath)
-    File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-  end #path_to
+  it 'displays a specific error message for a file with too many columns' do
+    runner = runner_with_fixture('too_many_columns.csv')
+    runner.run
 
-  def geometry_type_for(runner)
-    result      = runner.results.first
-    table_name  = result.tables.first
-    schema      = result.schema
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
 
-    runner.db[%Q{
-      SELECT public.GeometryType(the_geom)
-      FROM "#{schema}"."#{table_name}"
-    }].first.fetch(:geometrytype)
-  end #geometry_type_for
+  it 'displays a specific error message for a file with 10000 columns' do
+    runner = runner_with_fixture('10000_columns.csv')
+    runner.run
+
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
 
   def sample_for(job)
     job.db[%Q{
@@ -109,5 +129,11 @@ describe 'csv regression tests' do
       FROM #{job.qualified_table_name}
     }].first
   end #sample_for
-end # csv regression tests
 
+  def runner_with_fixture(file)
+    filepath = path_to(file)
+    downloader = Downloader.new(filepath)
+    Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+  end
+
+end # csv regression tests

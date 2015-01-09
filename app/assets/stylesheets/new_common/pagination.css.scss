@@ -1,0 +1,36 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.Pagination {
+  @include display-flex();
+  @include justify-content(center, center);
+  @include align-items(center, center);
+}
+.Pagination-label {
+  margin-right: $sMargin-element;
+}
+.Pagination-list {
+  @include display-flex();
+  @include justify-content(center, center);
+  @include align-items(center, center);
+}
+.Pagination-listItem {
+  display: inline-block;
+  border: 1px $cStructure-mainLine solid;
+  border-right-width: 0;
+  padding: 10px 15px;
+  margin: 0;
+}
+.Pagination-listItem:first-child {
+  border-radius: 5px 0 0 5px;
+}
+.Pagination-listItem:last-child {
+  border-right-width: 1px;
+  border-radius: 0 5px 5px 0;
+}
+.Pagination-listItem.is--current,
+.Pagination-listItem.is--current a,
+.Pagination-listItem.is--current a:hover {
+  color: $cTypography-headers;
+}

@@ -74,6 +74,13 @@
           span.dot-separator { display:none }
         }
       }
+
+      .LikeButton {
+        line-height:.0;
+      }
+      .LikeButton .LikeButton-icon {
+        margin: 0 0 0 0;
+      }
     }
 
     // Synchronization
@@ -108,6 +115,11 @@
           @include dashboard-sprite(feed_error);
         }
       }
+    }
+
+    // Table kind
+    .table-kind {
+      text-transform: capitalize;
     }
 
     // Table sharing
@@ -167,10 +179,14 @@
         .table-info { width:50% }
         .table-desc { width:50% }
 
+        // Shared type
         &.shared {
           .table-info { width:55% }
           .table-desc { width:45% }
         }
+
+        // Raster type
+        &.raster { cursor:default }
       }
 
       & + .table-item {

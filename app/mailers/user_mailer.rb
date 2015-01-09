@@ -45,12 +45,4 @@ class UserMailer < ActionMailer::Base
          :subject => "#{@visualization_owner_name} has stopped sharing a CartoDB visualization with you"
   end
 
-  def data_import_finished(user, imported_tables, total_tables)
-    @imported_tables = imported_tables
-    @total_tables = total_tables
-    @link = "#{user.public_url}#{tables_index_path}"
-    mail :to => user.email,
-         :subject => "Table import finished"
-  end
-  
 end

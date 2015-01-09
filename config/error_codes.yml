@@ -27,3 +27,7 @@ cartodb_errors:
     code: 6
     message: Disk Quota Exceeded!
     hint: "Please remove some tables or upgrade your plan"    
+  invalid_interval:
+    code: 7
+    message: Invalid interval
+    hint: "Sync interval must be at least 15 minutes"

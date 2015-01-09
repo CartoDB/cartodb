@@ -76,10 +76,7 @@ describe Visualization::Collection do
       Visualization::Member.new(random_attributes(name: 'viz_2')).store
 
       collection    = Visualization::Collection.new
-      records       = collection.fetch(o: { name: 'asc' })
-      records.first.name.should == 'viz_1'
-
-      records       = collection.fetch(o: { name: 'desc' })
+      records       = collection.fetch(order: :name)
       records.first.name.should == 'viz_2'
     end
 
@@ -125,7 +122,7 @@ describe Visualization::Collection do
       # Filter by user_id (includes shared)
       records = collection.fetch(user_id: user1_id).map { |item| item }
       records.count.should eq 2
-      ((records[0].name == vis_1_name || records[0].name == vis_2_name) && \
+      ((records[0].name == vis_1_name || records[0].name == vis_2_name) &&
        (records[1].name == vis_1_name || records[1].name == vis_2_name)).should eq true
 
       # Filter by user_id excluding shared
@@ -217,6 +214,129 @@ describe Visualization::Collection do
       records.count.should eq 1
       records.map { |record| record.name }.first.should eq vis_1_name
     end
+
+    it 'Checks all supported sorting methods work' do
+      # Supported: updated_at, likes, mapviews, row_count, size
+      # TODO: Add mapviews test. As it uses redis requires more work
+
+      # Restore Vis backend to normal table so Relator works
+      Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
+      begin
+        Visualization::Migrator.new(@db).drop(:visualizations)
+      rescue
+        # Do nothing, visualizations table not existed before
+      end
+      Visualization::Migrator.new(@db).migrate(:visualizations)
+
+
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(user)
+
+      table1 = Table.new
+      table1.user_id = user.id
+      table1.name = "viz#{rand(999)}_1"
+      table1.save
+      table2 = Table.new
+      table2.user_id = user.id
+      table2.name = "viz#{rand(999)}_2"
+      table2.save
+      table3 = Table.new
+      table3.user_id = user.id
+      table3.name = "viz#{rand(999)}_3"
+      table3.save
+
+      vis1 = table1.table_visualization
+      vis2 = table2.table_visualization
+      vis3 = table3.table_visualization
+
+      # Biggest row count
+      vis3.table.add_column!(name: "test_col", type: "text")
+      vis3.table.insert_row!(test_col: "333")
+      vis3.table.insert_row!(test_col: "333")
+      vis3.table.insert_row!(test_col: "333")
+      vis3.table.insert_row!(test_col: "333")
+      vis3.table.insert_row!(test_col: "333")
+      vis3.table.insert_row!(test_col: "333")
+      # pg_class.reltuples only get updated after VACUUMs, etc.
+      user.in_database.run(%Q{ VACUUM #{table3.name} })
+      vis3.add_like_from(user.id)
+      vis3.fetch.store.fetch
+
+      # Biggest in size and likes
+      long_string = ""
+      2000.times do
+        long_string << rand(999).to_s
+      end
+      vis2.table.add_column!(name: "test_col", type: "text")
+      vis2.table.add_column!(name: "test_col2", type: "text")
+      vis2.table.add_column!(name: "test_col3", type: "text")
+      vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
+      vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
+      vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
+      vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
+      user.in_database.run(%Q{ VACUUM #{table2.name} })
+      vis2.add_like_from(user.id)
+      vis2.add_like_from(user2.id)
+      sleep(1)   # To avoid same sec storage
+      vis2.fetch.store.fetch
+
+      # Latest edited
+      vis1.table.add_column!(name: "test_col", type: "text")
+      table = vis1.table
+      table.insert_row!(test_col: "111")
+      user.in_database.run(%Q{ VACUUM #{table1.name} })
+      sleep(1)   # To avoid same sec storage
+      vis1.fetch.store.fetch
+
+      # Actual tests start here
+
+      collection = Visualization::Collection.new.fetch({
+                                                           user_id: user.id,
+                                                           order: 'updated_at',
+                                                           exclude_shared: true
+                                                       })
+      collection.count.should eq 3
+      ids = collection.map { |vis| vis.id }
+      expected_updated_ats = [ vis1.id, vis2.id, vis3.id ]
+      ids.should eq expected_updated_ats
+
+      collection = Visualization::Collection.new.fetch({
+                                                           user_id: user.id,
+                                                           order: :row_count,
+                                                           exclude_shared: true
+                                                       })
+      collection.count.should eq 3
+      ids = collection.map { |vis| vis.id }
+      expected_row_count = [ vis3.id, vis2.id, vis1.id ]
+      ids.should eq expected_row_count
+
+      collection = Visualization::Collection.new.fetch({
+                                                           user_id: user.id,
+                                                           order: :likes,
+                                                           exclude_shared: true
+                                                       })
+      collection.count.should eq 3
+      ids = collection.map { |vis| vis.id }
+      expected_likes = [ vis2.id, vis3.id, vis1.id ]
+      ids.should eq expected_likes
+
+      collection = Visualization::Collection.new.fetch({
+                                                           user_id: user.id,
+                                                           order: :size,
+                                                           exclude_shared: true
+                                                       })
+      collection.count.should eq 3
+      ids = collection.map { |vis| vis.id }
+      expected_size = [ vis2.id, vis3.id, vis1.id ]
+      ids.should eq expected_size
+
+      # Cleanup
+      vis1.delete
+      vis2.delete
+      vis3.delete
+    end
+
   end
 
   def random_attributes(attributes={})
@@ -231,7 +351,9 @@ describe Visualization::Collection do
       locked:       attributes.fetch(:locked, false),
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      kind:         attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
+      map_id:       attributes.fetch(:map_id, nil)
     }
   end #random_attributes
 end # Visualization::Collection

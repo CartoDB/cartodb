@@ -1,0 +1,28 @@
+
+/**
+ *  Styles for map data (no map)
+ *
+ */
+
+@import "../common/vars";
+
+.cartodb-map-data {
+  position:relative;
+  width: 100%;
+  background:#fff;
+}
+
+.cartodb-map-data .inner {
+  max-width: 1024px;
+  margin: auto;
+  clear:both;
+  overflow:hidden;
+  padding: 0 20px;
+}
+
+.cartodb-map-data .no_script,
+.cartodb-map-data .dsq-brlink {
+  font-family: $text-fonts;
+  font-size:15px;
+  color: #397DB8;
+}

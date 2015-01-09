@@ -82,7 +82,7 @@ class Map < Sequel::Model
       view_bounds_sw: "[#{result[:miny]}, #{result[:minx]}]"
     )
   rescue Sequel::DatabaseError => exception
-    notify_airbrake(exception)
+    CartoDB::notify_exception(exception, { user: user } )
   end
 
   def viz_updated_at
@@ -119,11 +119,6 @@ class Map < Sequel::Model
         visualization.store
       end
     end
-  end
-
-  def set_tile_style_from(layer)
-    return self unless is_table_visualization?
-    table_visualization.table.send_tile_style_request(layer)
   end
 
   private

@@ -1,9 +1,8 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require 'fileutils'
 require 'json'
 require_relative '../../lib/importer/json2csv'
+require_relative '../../../../services/importer/spec/doubles/log'
 
 include CartoDB::Importer2
 
@@ -12,71 +11,75 @@ describe Json2Csv do
     @data = [{ name: 'bogus name', description: 'bogus description' }]
   end
 
+  def json2csv_instance(filepath)
+    Json2Csv.new(filepath, nil, CartoDB::Importer2::Doubles::Log.new)
+  end
+
   describe '#run' do
     it 'converts a JSON file to CSV' do
       filepath  = json_factory
-      converter = Json2Csv.new(filepath)
+      converter = json2csv_instance(filepath)
       converter.run
 
       data = File.open(converter.converted_filepath).readlines
-      data.to_a.first.chomp.must_equal 'name,description'
+      data.to_a.first.chomp.should eq 'name,description'
     end
   end #run
 
   describe '#csv_from' do
     it 'generates a CSV from parsed JSON data' do 
-      converter = Json2Csv.new(Object.new)
+      converter = json2csv_instance(Object.new)
       converter.csv_from(@data).lines.to_a.first.chomp
-        .must_equal("name,description")
+        .should eq("name,description")
       converter.csv_from(@data).lines.to_a.last.chomp
-        .must_equal("bogus name,bogus description")
+        .should eq("bogus name,bogus description")
     end
   end #csv_from
 
   describe '#csv_header_from' do
     it 'generates a CSV header from parsed JSON data' do
-      converter = Json2Csv.new(Object.new)
-      converter.csv_header_from(@data).must_equal "name,description"
+      converter = json2csv_instance(Object.new)
+      converter.csv_header_from(@data).should eq "name,description"
     end
   end #csv_header_from
 
   describe '#csv_rows_from' do
     it 'generates CSV rows from parsed JSON data' do
-      converter = Json2Csv.new(Object.new)
+      converter = json2csv_instance(Object.new)
       converter.csv_rows_from(@data)
-        .must_equal "bogus name,bogus description"
+        .should eq "bogus name,bogus description"
     end
   end
 
   describe '#transform' do
     it 'generates a row from a parse JSON record' do
-      converter = Json2Csv.new(Object.new)
+      converter = json2csv_instance(Object.new)
       converter.transform(@data.first)
-        .must_equal "bogus name,bogus description"
+        .should eq "bogus name,bogus description"
     end
   end #transform
 
   describe '#complex?' do
     it 'returns true if parse JSON data has nested arrays' do
-      converter = Json2Csv.new(Object.new)
-      converter.complex?([@data]).must_equal true
-      converter.complex?(@data).must_equal false
+      converter = json2csv_instance(Object.new)
+      converter.complex?([@data]).should eq true
+      converter.complex?(@data).should eq false
     end
   end
 
   describe '#converted_filepath' do
     it 'returns the .csv filepath for a .json filepath' do
-      converter = Json2Csv.new('/var/tmp/foo.json')
-      converter.converted_filepath.must_equal '/var/tmp/foo.csv'
+      converter = json2csv_instance('/var/tmp/foo.json')
+      converter.converted_filepath.should eq '/var/tmp/foo.csv'
     end
   end #converted_filepath
 
   describe '#parse' do
     it 'returns parsed data from a JSON file' do
       filepath  = json_factory
-      converter = Json2Csv.new(filepath)
+      converter = json2csv_instance(filepath)
       data = converter.parse(filepath)
-      data.first.keys.must_include 'name'
+      data.first.keys.should include 'name'
     end
   end
 

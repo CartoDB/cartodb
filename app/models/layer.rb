@@ -72,7 +72,6 @@ class Layer < Sequel::Model
   def after_save
     super
     maps.each(&:invalidate_vizjson_varnish_cache)
-    maps.each { |map| map.set_tile_style_from(self) }   if data_layer?
     affected_tables.each(&:invalidate_varnish_cache)    if data_layer?
     register_table_dependencies                         if data_layer?
   end

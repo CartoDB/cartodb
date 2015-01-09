@@ -57,6 +57,7 @@ module CartoDB
       user.organization          = attributes[:organization] || nil
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
+      user.dynamic_cdn_enabled   = attributes[:dynamic_cdn_enabled] || false
 
       user
     end
@@ -77,17 +78,13 @@ module CartoDB
       user.save
     end
 
-    def reload_user_data user
-
+    def reload_user_data(user)
       delete_user_data user
-
-      fixture     = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-      data_import = create_import(@user, fixture)
-      fixture     = "#{Rails.root}/db/fake_data/twitters.csv"
-      data_import = create_import(@user, fixture)
+      create_import(@user, "#{Rails.root}/db/fake_data/import_csv_1.csv")
+      create_import(@user, "#{Rails.root}/db/fake_data/twitters.csv")
     end
 
-    def create_import user, file_name, name=nil
+    def create_import(user, file_name, name=nil)
       data_import  = DataImport.create(
         user_id:      user.id,
         data_source:  file_name,

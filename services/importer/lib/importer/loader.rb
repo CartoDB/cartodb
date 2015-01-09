@@ -11,7 +11,7 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
-require_relative './exceptions'
+require_relative 'importer_stats'
 
 module CartoDB
   module Importer2
@@ -37,21 +37,37 @@ module CartoDB
         self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
+        self.options        = {}
         @post_import_handler = nil
+        @importer_stats = ImporterStats.instance
+      end
+
+      def set_importer_stats(importer_stats)
+        @importer_stats = importer_stats
       end
 
       def run(post_import_handler_instance=nil)
-        @post_import_handler = post_import_handler_instance
+        @importer_stats.timing('loader') do
 
-        normalize
-        job.log "Detected encoding #{encoding}"
-        job.log "Using database connection with #{job.concealed_pg_options}"
+          @post_import_handler = post_import_handler_instance
 
-        run_ogr2ogr
+          @importer_stats.timing('normalize') do
+            normalize
+          end
 
-        post_ogr2ogr_tasks
+          job.log "Detected encoding #{encoding}"
+          job.log "Using database connection with #{job.concealed_pg_options}"
 
-        self
+          @importer_stats.timing('ogr2ogr') do
+            run_ogr2ogr
+          end
+
+          @importer_stats.timing('post_ogr2ogr_tasks') do
+            post_ogr2ogr_tasks
+          end
+
+          self
+        end
       end
 
       def streamed_run_init
@@ -80,10 +96,6 @@ module CartoDB
         georeferencer.run
         job.log 'Georeferenced'
 
-        job.log 'Typecasting...'
-        typecaster.run
-        job.log 'Typecasted'
-
         if post_import_handler.has_fix_geometries_task?
           job.log 'Fixing geometry...'
           # At this point the_geom column is renamed
@@ -94,14 +106,17 @@ module CartoDB
       def normalize
         converted_filepath = normalizers_for(source_file.extension)
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
-            normalizer = normalizer_klass.new(filepath, job)
 
-            FORCE_NORMALIZER_REGEX.each { |regex|
-              normalizer.force_normalize if regex =~ source_file.path
-            }
+            @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
+              normalizer = normalizer_klass.new(filepath, job)
 
-            normalizer.run
-                      .converted_filepath
+              FORCE_NORMALIZER_REGEX.each { |regex|
+                normalizer.force_normalize if regex =~ source_file.path
+              }
+
+              normalizer.run
+                        .converted_filepath
+            end
           }
         layer = source_file.layer
         @source_file = SourceFile.new(converted_filepath)
@@ -116,14 +131,28 @@ module CartoDB
       end
 
       def ogr2ogr_options
-        options = { encoding: encoding }
-        if source_file.extension == '.shp'
-          options.merge!(shape_encoding: shape_encoding) 
+        ogr_options = { encoding: encoding }
+        unless options[:ogr2ogr_binary].nil?
+          ogr_options.merge!(ogr2ogr_binary: options[:ogr2ogr_binary])
         end
-        options
+        unless options[:ogr2ogr_csv_guessing].nil?
+          ogr_options.merge!(ogr2ogr_csv_guessing: options[:ogr2ogr_csv_guessing])
+        end
+        unless options[:quoted_fields_guessing].nil?
+          ogr_options.merge!(quoted_fields_guessing: options[:quoted_fields_guessing])
+        end
+
+        if source_file.extension == '.shp'
+          ogr_options.merge!(shape_encoding: shape_encoding)
+        end
+        ogr_options
       end
 
       def encoding
+        @encoding ||= encoding_guess
+      end
+
+      def encoding_guess
         normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
           normalizer.supported?(source_file.extension)
         }
@@ -140,7 +169,15 @@ module CartoDB
       end
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(job.db, job.table_name, SCHEMA, job, geometry_columns)
+        if @georeferencer.nil?
+          @georeferencer = Georeferencer.new(job.db, job.table_name, georeferencer_options, SCHEMA, job, geometry_columns)
+          @georeferencer.set_importer_stats(@importer_stats)
+        end
+        @georeferencer
+      end
+
+      def georeferencer_options
+        options.select { |key, value| [:guessing, :geocoder, :tracker].include? key }
       end
 
       def post_import_handler
@@ -169,7 +206,12 @@ module CartoDB
         source_file.extension =~ /\.osm/
       end
 
-      attr_accessor   :source_file
+      # Not used for now, but for compatibility with tiff_loader
+      def additional_support_tables
+        []
+      end
+
+      attr_accessor   :source_file, :options
 
       private
 
@@ -186,12 +228,13 @@ module CartoDB
           job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
         end
 
+        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output[0..200] =~ /specified more than once/
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+        raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
 
         if ogr2ogr.exit_code != 0
           # OOM
-          if ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/
+          if ( (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || (ogr2ogr.exit_code == 35072 && ogr2ogr.command_output =~ /Killed/) )
             raise FileTooBigError.new(job.logger)
           end
           # Could be OOM, could be wrong input
@@ -207,4 +250,3 @@ module CartoDB
     end
   end
 end
-

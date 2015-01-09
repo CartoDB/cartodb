@@ -3,6 +3,7 @@
 require 'typhoeus'
 require 'json'
 require 'addressable/uri'
+require_relative '../base_direct_stream'
 
 module CartoDB
   module Datasources
@@ -17,7 +18,7 @@ module CartoDB
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
-        FEATURE_DATA_URL = '%s/query?objectIds=%s&outFields=%s&outSR=4326&f=json'
+        FEATURE_DATA_POST_URL = '%s/query'
         LAYERS_URL       = '%s/layers?f=json'
 
         MINIMUM_SUPPORTED_VERSION = 10.1
@@ -28,9 +29,10 @@ module CartoDB
         # Amount to multiply or divide
         BLOCK_FACTOR = 2
         MIN_BLOCK_SIZE = 1
-        # Lots of ids can generate too long urls. This size, with a dozen fields fits up to 6 digit ids
-        # @see http://www.iis.net/configreference/system.webserver/security/requestfiltering/requestlimits
-        MAX_BLOCK_SIZE = 175
+        # GeoJSON can get too big in memory, or ArcGIS have mem problems, so keep reasonable number
+        MAX_BLOCK_SIZE = 100
+        # In seconds, use 0 to disable
+        BLOCK_SLEEP_TIME = 1
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying
         MAX_RETRIES = 0
@@ -142,6 +144,7 @@ module CartoDB
             @last_stream_status = @current_stream_status
             @current_stream_status = true
             retries = 0
+            sleep(BLOCK_SLEEP_TIME) unless BLOCK_SLEEP_TIME == 0
           rescue ExternalServiceError => exception
             if @block_size == MIN_BLOCK_SIZE && retries >= MAX_RETRIES
               if SKIP_FAILED_IDS
@@ -178,7 +181,9 @@ module CartoDB
         # @throws InvalidServiceError
         # @throws ServiceDisabledError
         def get_resource_metadata(id)
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless @user.arcgis_datasource_enabled?
+          unless @user.nil?
+            raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.arcgis_datasource_enabled?
+          end
 
           if is_multiresource?(id)
             @url = sanitize_id(id)
@@ -248,10 +253,10 @@ module CartoDB
             @metadata = {
               arcgis_version:             data.fetch(:currentVersion),
               name:                       data.fetch(:name),
-              description:                data.fetch(:description),
+              description:                data.fetch(:description, ''),
               type:                       data.fetch(:type),
               geometry_type:              data.fetch(:geometryType),
-              copyright:                  data.fetch(:copyrightText),
+              copyright:                  data.fetch(:copyrightText, ''),
               fields:                     data.fetch(:fields).map{ |field|
                 {
                   name: field['name'],
@@ -260,7 +265,7 @@ module CartoDB
               },
               max_records_per_query:      data.fetch(:maxRecordCount, 500),
               supported_formats:          data.fetch(:supportedQueryFormats).gsub(' ', '').split(','),
-              advanced_queries_supported: data.fetch(:supportsAdvancedQueries)
+              advanced_queries_supported: data.fetch(:supportsAdvancedQueries, false)
             }
           rescue => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
@@ -379,22 +384,34 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
-          # Doesn't encodes properly even using an external gem, good job Ruby!
-          prepared_ids    = Addressable::URI.encode(ids.map { |id| "#{id}" }.join(',')).gsub(',','%2C')
-          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(',')).gsub(',','%2C')
+          if ids.length == 1
+            ids_field = {objectIds: ids.first}
+          else
+            ids_field = {where: "OBJECTID >=#{ids.first} AND OBJECTID <=#{ids.last}"}
+          end
 
-          prepared_url = FEATURE_DATA_URL % [url, prepared_ids, prepared_fields]
+          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
 
-          puts "#{prepared_url}" if DEBUG
+          prepared_url = FEATURE_DATA_POST_URL % [url]
+          # @see http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#/Query_Map_Service_Layer/02r3000000p1000000/
+          params_data = {
+            outFields:  prepared_fields,
+            outSR:      4326,
+            f:          'json'
+          }
 
-          response = Typhoeus.get(prepared_url, http_options)
+          params_data.merge! ids_field
+
+          puts "#{prepared_url} (POST) Params:#{params_data}" if DEBUG
+          response = Typhoeus.post(prepared_url, http_options(params_data, :post))
 
           # Timeout connecting to ArcGIS
           if response.code == 0
             raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.body} #{self.to_s}")
           end
           if response.code != 200
-            raise DataDownloadError.new("ERROR: #{prepared_url} (#{response.code}) : #{response.body} #{self.to_s}")
+            raise DataDownloadError.new("ERROR: #{prepared_url} POST " +
+                                        "#{params_data} (#{response.code}) : #{response.body} #{self.to_s}")
           end
 
           begin
@@ -463,10 +480,11 @@ module CartoDB
           @block_size
         end
 
-        def http_options(params={})
+        def http_options(params={}, method=:get)
           {
-            params:           params,
-            method:           :get,
+            method:           method,
+            params:           method == :get ? params : {},
+            body:             method == :post ? params : {},
             followlocation:   true,
             ssl_verifypeer:   false,
             accept_encoding:  'gzip',

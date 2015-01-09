@@ -30,11 +30,15 @@ module CartoDB
         @records  = [] 
       end #initialize
 
+      def print_log(message, error=false)
+        puts message if error || ENV['VERBOSE']
+      end
+
       def run
         fetch
         process
 
-        puts 'Pass finished'
+        print_log 'Pass finished'
       end #run
 
       # Fetches and enqueues all syncs that should run
@@ -58,13 +62,13 @@ module CartoDB
           success = true
         rescue Exception => e
           success = false
-          puts "ERROR fetching sync tables: #{e.message}, #{e.backtrace}"
+          print_log("ERROR fetching sync tables: #{e.message}, #{e.backtrace}", true)
         end
 
         if success
-          puts "Populating #{query.count} records after fetch"
+          print_log "Populating #{query.count} records after fetch"
           hydrate(query).each { |record|
-            puts "Enqueueing #{record.name} (#{record.id})"
+            print_log "Enqueueing #{record.name} (#{record.id})"
            record.enqueue
           }
         end
@@ -86,13 +90,13 @@ module CartoDB
           success = true
         rescue Exception => e
           success = false
-          puts "ERROR fetching stalled sync tables: #{e.message}, #{e.backtrace}"
+          print_log("ERROR fetching stalled sync tables: #{e.message}, #{e.backtrace}", true)
         end
 
         if success
-          puts "Populating #{query.count} records after stalled fetch"
+          print_log "Populating #{query.count} records after stalled fetch"
           hydrate(query).each { |record|
-            puts "Enqueueing #{record.name} (#{record.id})"
+            print_log "Enqueueing #{record.name} (#{record.id})"
             record.enqueue
           }
         end
@@ -100,9 +104,9 @@ module CartoDB
 
       # This is probably for testing purposes only, as fetch also does the processing
       def process(members=@members)
-        puts "Processing #{members.size} records"
+        print_log "Processing #{members.size} records"
         members.each { |member|
-          puts "Enqueueing #{member.name} (#{member.id})"
+          print_log "Enqueueing #{member.name} (#{member.id})"
           member.enqueue
         }
       end #process

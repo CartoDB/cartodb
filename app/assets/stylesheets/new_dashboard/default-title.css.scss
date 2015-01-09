@@ -1,0 +1,19 @@
+// Default title for datasets and maps
+// --------------------------------------------------
+
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+
+.DefaultTitle {
+  font-weight: $sFontWeight-normal;
+  font-size: $sFontSize-larger;
+  line-height: $sLineHeight-larger;
+}
+.DefaultTitle-link {
+  color: $cTypography-paragraphs;
+  &:hover {
+    color: $cTypography-headers;
+    text-decoration: underline;
+  }
+}

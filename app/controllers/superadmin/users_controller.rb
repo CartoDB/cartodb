@@ -21,12 +21,16 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_fields_from_central(params[:user], :create)
     @user.enabled = true
 
-    @user.save
+    if @user.save
+      @user.reload
+      @user.set_relationships_from_central(params[:user])
+    end
     respond_with(:superadmin, @user)
   end
 
   def update
     @user.set_fields_from_central(params[:user], :update)
+    @user.set_relationships_from_central(params[:user])
 
     @user.save
     respond_with(:superadmin, @user)
@@ -75,8 +79,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       {
         id: entry.id,
         data_type: entry.data_type,
-        date: entry.updated_at
-        }
+        date: entry.updated_at,
+        status: entry.success.nil? ? false : entry.success
+      }
     })
   end
 

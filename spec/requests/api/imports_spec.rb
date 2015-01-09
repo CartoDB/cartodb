@@ -316,4 +316,15 @@ describe "Imports API" do
     @user.reload.tables.count.should == 1
   end
 
+  it 'updates tables_created_count upon finished import' do
+    post api_v1_imports_create_url, 
+        params.merge(:filename => upload_file('spec/support/data/zipped_ab.zip', 'application/octet-stream'))
+
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'complete'
+    last_import.tables_created_count.should eq 2
+    last_import.table_names.should eq 'zipped_a zipped_b'
+  end
+
 end

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'dropbox_sdk'
+require_relative '../base_oauth'
 
 module CartoDB
   module Datasources
@@ -165,6 +166,8 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource_metadata(id)
+          raise DropboxPermissionError.new('No Dropbox client', DATASOURCE_NAME) unless @client.present?
+
           response = @client.metadata(id)
           item_data = format_item_data(response)
 

@@ -5,16 +5,17 @@ module CartoDB
       table = ::Table.new(attributes)
       table.user_id = if attributes[:user_id].nil?
         UUIDTools::UUID.timestamp_create.to_s
-        #create_user.id
       else
         attributes.delete(:user_id)
       end
+
       table.name = if attributes.keys.include?(:name) && attributes[:name] == nil
         attributes.delete(:name)
         nil
       else
         attributes[:name] || String.random(10)
       end
+      
       table
     end
 

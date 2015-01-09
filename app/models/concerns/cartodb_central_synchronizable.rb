@@ -1,5 +1,3 @@
-require 'httparty'
-
 module Concerns
   module CartodbCentralSynchronizable
 
@@ -43,17 +41,21 @@ module Concerns
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
-          :twitter_datasource_block_price, :twitter_datasource_quota]
+          :twitter_datasource_block_price, :twitter_datasource_quota,
+          :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
+          :new_dashboard_enabled]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
-          :twitter_datasource_block_price, :twitter_datasource_quota]
+          :twitter_datasource_block_price, :twitter_datasource_quota,
+          :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
+          :new_dashboard_enabled]
         end
       elsif self.is_a?(User)
         [:account_type, :admin, :crypted_password, :database_host,
-        :database_timeout, :description, :disqus_shortname, :email,
+        :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
         :geocoding_block_price, :geocoding_quota, :map_view_block_price,
         :map_view_quota, :max_layers, :name, :notification, :organization_id,
         :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
@@ -62,8 +64,9 @@ module Concerns
         :twitter_datasource_enabled, :twitter_datasource_block_size,
         :twitter_datasource_block_price, :twitter_datasource_quota,
         :soft_twitter_datasource_limit,
-        :arcgis_datasource_enabled
-        ]
+        :arcgis_datasource_enabled,
+        :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
+        :new_dashboard_enabled]
       end
     end
 
@@ -78,7 +81,7 @@ module Concerns
         end
       elsif self.is_a?(User)
         attrs = self.values.slice(:account_type, :admin, :crypted_password,
-          :database_host, :database_timeout, :description, :disqus_shortname,
+          :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers, :name, :notification, :organization_id,
           :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
@@ -101,10 +104,17 @@ module Concerns
     def set_fields_from_central(params, action)
       return self unless params.present? && action.present?
       self.set(params.slice(*allowed_attributes_from_central(action)))
+
       if self.is_a?(User) && params.has_key?(:password)
         self.password = self.password_confirmation = params[:password]
       end
       self
+    end
+
+    def set_relationships_from_central(params)
+      if params.present? && params.has_key?(:feature_flags)
+        update_feature_flags(params[:feature_flags])
+      end
     end
 
     def sync_data_with_cartodb_central?
@@ -113,6 +123,28 @@ module Concerns
 
     def cartodb_central_client
       @cartodb_central_client ||= Cartodb::Central.new
+    end
+
+    def update_feature_flags(feature_flag_ids)
+      feature_flag_ids = feature_flag_ids.compact.reject(&:empty?)
+      current_feature_flag_ids = self.feature_flags_user.map { | ffu | ffu.feature_flag_id }
+      to_add = feature_flag_ids - current_feature_flag_ids
+      to_remove = current_feature_flag_ids - feature_flag_ids
+
+      removed_feature_flags_user = self.feature_flags_user.select { | ffu | to_remove.include?(ffu.feature_flag_id) }
+      removed_feature_flags_user.map do | rffu | 
+        rffu.destroy
+      end
+
+      to_add.map { | ff_id | 
+        ffu = FeatureFlagsUser.new
+        ffu.user_id = self.id
+        ffu.feature_flag_id = ff_id
+        ffu.save
+      }.each { |ffu|
+        self.feature_flags_user << ffu
+      }
+
     end
 
   end

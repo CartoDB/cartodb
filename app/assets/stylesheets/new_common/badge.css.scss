@@ -1,0 +1,19 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.Badge {
+  position: absolute;
+  display: block;
+  top: -9px;
+  right: -9px;
+  width: 17px;
+  height: 17px;
+  line-height: 17px; /* same as width/height */
+  border-radius: 23px;
+  background-color: $cHighlight-negative;
+  color: #fff;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  text-align: center;
+}

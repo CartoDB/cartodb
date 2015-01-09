@@ -5,6 +5,7 @@ require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'
+require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
@@ -26,13 +27,38 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
-    error_code queue_id get_error_text tables_created_count
-    synchronization_id service_name service_item_id }
+  PUBLIC_ATTRIBUTES = %W{
+    id
+    user_id
+    table_id
+    data_type
+    table_name
+    state
+    error_code
+    queue_id
+    get_error_text
+    tables_created_count
+    synchronization_id
+    service_name
+    service_item_id
+    type_guessing
+    quoted_fields_guessing
+    content_guessing
+    server
+    host
+    upload_host
+    resque_ppid
+  }
 
-  STATE_SUCCESS   = 'complete'
+  # Not all constants are used, but so that we keep track of available states
+  STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
+  STATE_PENDING   = 'pending'   # Default state for files already at "import source" (e.g. S3 bucket)
+  STATE_UNPACKING = 'unpacking'
+  STATE_IMPORTING = 'importing'
+  STATE_COMPLETE  = 'complete'
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
+  STATE_STUCK     = 'stuck'
 
   TYPE_EXTERNAL_TABLE = 'external_table'
   TYPE_FILE           = 'file'
@@ -43,8 +69,8 @@ class DataImport < Sequel::Model
   def after_initialize
     instantiate_log
     self.results  = []
-    self.state    ||= STATE_UPLOADING
-  end #after_initialize
+    self.state    ||= STATE_PENDING
+  end
 
   def before_save
     self.logger = self.log.id unless self.logger.present?
@@ -58,12 +84,14 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_SUCCESS || state == STATE_FAILURE)
+    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
     values
   end
 
   def run_import!
-    log.append "Running on server #{Socket.gethostname} with PID: #{Process.pid}"
+    self.resque_ppid = Process.ppid
+    self.server = Socket.gethostname
+    log.append "Running on server #{self.server} with PID: #{Process.pid}"
     begin
       success = !!dispatch
     rescue TokenExpiredOrInvalidError => ex
@@ -87,6 +115,10 @@ class DataImport < Sequel::Model
     success ? handle_success : handle_failure
     Rails.logger.debug log.to_s
     self
+  rescue CartoDB::QuotaExceeded => quota_exception
+    CartoDB::notify_warning_exception(quota_exception)
+    handle_failure
+    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
@@ -97,7 +129,11 @@ class DataImport < Sequel::Model
   end
 
   def get_error_text
-    self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    if self.error_code.nil?
+      nil
+    else
+      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    end
   end
 
   def raise_over_table_quota_error
@@ -114,11 +150,11 @@ class DataImport < Sequel::Model
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
     self.success  = false
-    self.state    = STATE_FAILURE
+    self.state    = STATE_STUCK
     save
 
     CartoDB::notify_exception(
-      CartoDB::Importer2::GenericImportError.new('Import timed out'),
+      CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),
       user: current_user
     )
     true
@@ -147,17 +183,15 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    if log.entries =~ /Table (.*) registered/
-      self.success  = true
-      self.state    = STATE_SUCCESS
-      log.append "Import finished\n"
-      save
-      notify(results)
-      self
-    else
-      log.append "Import FAILED registering table!\n"
-      handle_failure
-    end
+    self.success  = true
+    self.state    = STATE_COMPLETE
+    table_names = results.map { |result| result.name }.select { |name| name != nil}.sort
+    self.table_names = table_names.join(' ')
+    self.tables_created_count = table_names.size
+    log.append "Import finished\n"
+    save
+    notify(results)
+    self
   end
 
   def handle_failure
@@ -179,9 +213,15 @@ class DataImport < Sequel::Model
     ::Table.where(id: table_id, user_id: user_id).first
   end
 
+
+  def is_raster?
+    ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
+  end
+
   private
 
   def dispatch
+    self.state = STATE_UPLOADING
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
     new_importer
@@ -232,13 +272,11 @@ class DataImport < Sequel::Model
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
   end
 
-  # A stuck job shouldn't be finished, so it's state should not
-  # be complete nor failed, it should have been in the queue
-  # for more than 5 minutes and it shouldn't be currently
-  # processed by any active worker
+  # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
+  # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
-    !%w(complete failure).include?(self.state) &&
-    self.created_at < 5.minutes.ago            &&
+    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
+    self.created_at < 5.minutes.ago &&
     !running_import_ids.include?(self.id)
   end
 
@@ -276,7 +314,7 @@ class DataImport < Sequel::Model
 
     candidates =  current_user.tables.select_map(:name)
     table_name = ::Table.get_valid_table_name(name, {
-        name_candidates: candidates,
+        connection: current_user.in_database,
         database_schema: current_user.database_schema
     })
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
@@ -339,6 +377,29 @@ class DataImport < Sequel::Model
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end
 
+  def ogr2ogr_options
+    options = Cartodb.config.fetch(:ogr2ogr, {})
+    if options['binary'].nil? || options['csv_guessing'].nil?
+      {}
+    else
+      {
+        ogr2ogr_binary:         options['binary'],
+        ogr2ogr_csv_guessing:   options['csv_guessing'] && self.type_guessing,
+        quoted_fields_guessing: self.quoted_fields_guessing
+      }
+    end
+  end
+
+  def content_guessing_options
+    guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
+    geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
+    if guessing_config[:enabled] and self.content_guessing and geocoder_config
+      { guessing: guessing_config, geocoder: geocoder_config }
+    else
+      { guessing: { enabled: false } }
+    end
+  end
+
   def new_importer
     manual_fields = {}
     had_errors = false
@@ -390,15 +451,24 @@ class DataImport < Sequel::Model
         when Search::Twitter::DATASOURCE_NAME
           post_import_handler.add_transform_geojson_geom_column
       end
+      
+      database_options = pg_options
+      self.host = database_options[:host]
 
       runner        = CartoDB::Importer2::Runner.new(
-        pg_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
+        database_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
       )
+      runner.loader_options = ogr2ogr_options.merge content_guessing_options
+      graphite_conf = Cartodb.config[:graphite]
+      unless graphite_conf.nil?
+        runner.set_importer_stats_options(graphite_conf['host'], graphite_conf['port'], Socket.gethostname)
+      end
       registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database
       destination_schema = current_user.database_schema
-      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id, destination_schema)
+      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
+                                                       destination_schema, current_user.public_user_roles)
       log.append 'Before importer run'
       importer.run(tracker)
       log.append 'After importer run'
@@ -503,7 +573,8 @@ class DataImport < Sequel::Model
                   'data_type'         => self.data_type,
                   'is_sync_import'    => !self.synchronization_id.nil?,
                   'import_time'       => self.updated_at - self.created_at,
-                  'file_stats'        => ::JSON.parse(self.stats)
+                  'file_stats'        => ::JSON.parse(self.stats),
+                  'resque_ppid'              => self.resque_ppid
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
@@ -604,4 +675,3 @@ class DataImport < Sequel::Model
   end
 
 end
-

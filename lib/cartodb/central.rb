@@ -1,10 +1,8 @@
+require 'typhoeus'
+
 # encoding: utf-8
 module Cartodb
   class Central
-    include HTTParty
-    default_timeout 200 # Default HTTParty timeout
-    format :json
-    headers "Accept" => "application/json"
 
     def initialize
       @host = "http#{'s' if Rails.env.production? || Rails.env.staging?}://#{ Cartodb.config[:cartodb_central_api]['host'] }"
@@ -15,107 +13,83 @@ module Cartodb
       }
     end
 
-    def get_organization_users(organization_name)
-      options = { basic_auth: @auth, timeout: 600, verify: Rails.env.production? }
-      response = self.class.get "#{ @host }/api/organizations/#{ organization_name }/users", options
+    def host
+      @host
+    end
 
-      unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
+    def build_request(path, body, method, timeout = 200)
+      Typhoeus::Request.new(
+        "#{ @host }/#{ path }",
+        method: method,
+        body: body.to_json,
+        userpwd: "#{ @auth[:username] }:#{ @auth[:password] }",
+        headers: { "Content-Type" => "application/json" },
+        ssl_verifypeer: Rails.env.production?,
+        timeout: timeout
+      )
+    end
+
+    def send_request(path, body, method, expected_codes, timeout = nil)
+      request = build_request(path, body, method, timeout)
+      response = request.run
+      if expected_codes.include?(response.code)
+        return response.body && response.body.length >= 2 ? JSON.parse(response.body) : {}
+      else
+        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
       end
-      response.parsed_response
+    end
+
+    def get_organization_users(organization_name)
+      return send_request("api/organizations/#{ organization_name }/users", nil, :get, [200], 600)
     end # get_organization_users
 
     def get_organization_user(organization_name, username)
-      options = { basic_auth: @auth, verify: Rails.env.production? }
-      response = self.class.get "#{ @host }/api/organizations/#{ organization_name }/users/#{ username }", options
-
-      unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
-      response.parsed_response
+      return send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :get, [200])
     end # get_organization_user
 
     def create_organization_user(organization_name, user_attributes)
-      options = { body: { user: user_attributes }, basic_auth: @auth, verify: Rails.env.production? }
-
-      response = self.class.post "#{ @host }/api/organizations/#{ organization_name }/users", options
-
-      unless response.code == 201
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
-
-      response.parsed_response
+      body = {user: user_attributes}
+      return send_request("api/organizations/#{ organization_name }/users", body, :post, [201])
     end # create_organization_user
 
     def update_organization_user(organization_name, username, user_attributes)
-      options = { body: { user: user_attributes }, basic_auth: @auth, verify: Rails.env.production?}
-
-      response = self.class.send :put, "#{ @host }/api/organizations/#{ organization_name }/users/#{ username }", options
-
-      unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
+      body = {user: user_attributes}
+      return send_request("api/organizations/#{ organization_name }/users/#{ username }", body, :put, [204])
     end # update_organization_user
 
     def delete_organization_user(organization_name, username)
-      options ={ basic_auth: @auth , verify: Rails.env.production? }
-      response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization_name }/users/#{username}", options
-
-      unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
+      return send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :delete, [204])
     end # delete_organization_user
 
     ############################################################################
     # Organizations
 
     def get_organizations
-      options = { basic_auth: @auth, timeout: 600 , verify: Rails.env.production? }
-      response = self.class.get "#{ @host }/api/organizations", options
-      unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
-      response.parsed_response
+      return send_request("api/organizations", nil, :get, [200], 600)
     end # get_organizations
 
     def get_organization(organization_name)
-      options = { basic_auth: @auth, verify: Rails.env.production? }
-      response = self.class.get "#{ @host }/api/organizations/#{ organization_name }", options
-      unless response.code == 200
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
-      response.parsed_response
+      return send_request("api/organizations/#{ organization_name }", nil, :get, [200])
     end # get_organization
 
     # Returns remote organization attributes if response code is 201
     # otherwise returns nil
+    # luisico asks: Not sure why organization_name is passed to this method. It's not used
+    # rilla answers: That's right, but this methods is just a stub: org creation from the editor is still unsupported
     def create_organization(organization_name, organization_attributes)
-      options = { body: { organization: organization_attributes }, basic_auth: @auth, verify: Rails.env.production? }
-
-      response = self.class.send :post, "#{ @host }/api/organizations", options
-
-      unless response.code == 201
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
-      response.parsed_response
+      body = {organization: organization_attributes}
+      return send_request("api/organizations", body, :post, [201])
     end # create_organization
 
     def update_organization(organization_name, organization_attributes)
-      options = { body: { organization: organization_attributes }, basic_auth: @auth, verify: Rails.env.production?}
-
-      response = self.class.send :put, "#{ @host }/api/organizations/#{ organization_name }", options
-      unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
+      body = {organization: organization_attributes}
+      return send_request("api/organizations/#{ organization_name }", body, :put, [204])
     end # update_organization
 
     def delete_organization(organization_name)
-      options = { basic_auth: @auth, verify: Rails.env.production? }
-      response = self.class.send :delete, "#{ @host }/api/organizations/#{ organization_name }", options
-      unless response.code == 204
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }"
-      end
+      return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
 
-  end # AppServer
+  end
+
 end # CartodbCentral

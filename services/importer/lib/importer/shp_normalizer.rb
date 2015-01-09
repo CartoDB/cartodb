@@ -12,19 +12,23 @@ module CartoDB
 
       def self.supported?(extension)
         %w{ .shp .tab }.include?(extension)
-      end #self.supported?
+      end
 
       def initialize(filepath, job)
         @job      = job
         @filepath = filepath
-      end #initialize
+      end
 
       def encoding
         return 'UTF-8' if ['LATIN1', 'ISO-8859-1'].include?(shape_encoding)
         shape_encoding
-      end #encoding
+      end
 
       def shape_encoding
+        @shape_encoding ||= shape_encoding_guessing
+      end
+
+      def shape_encoding_guessing
         normalize
         dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
         encoding  = DBF::Table.new(dbf).encoding || 
@@ -59,11 +63,11 @@ module CartoDB
         raise ShpNormalizationError unless status.to_i == 0 
         raise ShpNormalizationError unless !!normalizer_output
         self
-      end #normalize
+      end
 
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
-      end #prj?
+      end
 
       def tab?
         File.extname(filepath) == '.tab'
@@ -71,38 +75,38 @@ module CartoDB
 
       def dbf?
         File.exists?(filepath.gsub(%r{\.shp$}, '.dbf'))
-      end #dbf?
+      end
 
       def shx?
         File.exists?(filepath.gsub(%r{\.shp$}, '.shx'))
-      end #shx?
+      end
 
       attr_accessor :exit_code, :command_output, :normalizer_output, :filepath,
                     :job
 
       def python_bin_path
         `which python`.strip
-      end #python_bin_path
+      end
 
       def normalizer_path
         File.expand_path(NORMALIZER_RELATIVE_PATH, __FILE__) 
-      end #normalizer_path
+      end
 
       def normalizer_command
         %Q(#{python_bin_path} -Wignore #{normalizer_path} ) +
         %Q("#{filepath}" #{job.table_name})
-      end #normalizer_command
+      end
 
       def codepage_for(encoding)
         encoding = encoding.gsub(/windows-|cp/, 'WIN')
         return DEFAULT_ENCODING unless encoding =~ /WIN\d{4}/
         encoding
-      end #codepage_for
+      end
 
       def windows?(encoding)
         !!(encoding =~ /(windows-|cp)\d+/)
-      end #windows?
-    end # ShpNormalizer
-  end # Importer
-end # CartoDB
+      end
+    end
+  end
+end
 

@@ -26,4 +26,9 @@ module CartoDB
   def self.notify_error(message, additional_data={})
     Rollbar.report_message(message, 'error', additional_data)
   end
+
+  def self.notify_warning_exception(exception)
+    Rollbar.report_exception(exception, nil, nil, 'warning')
+  end
+
 end

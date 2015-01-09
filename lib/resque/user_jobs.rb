@@ -1,11 +1,30 @@
 # encoding: utf-8
 require_relative './base_job'
+require 'resque-metrics'
 
 module Resque
   module UserJobs
+
+    module SyncTables
+
+      module LinkGhostTables 
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(user_id)
+          u = User.where(id: user_id).first
+          u.link_ghost_tables
+        end
+
+      end
+
+    end
+
+
     module Mail
 
       module NewOrganizationUser
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)
@@ -15,6 +34,7 @@ module Resque
       end
 
       module ShareVisualization
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_id, user_id)
@@ -25,6 +45,7 @@ module Resque
       end
       
       module ShareTable
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(table_id, user_id)
@@ -35,6 +56,7 @@ module Resque
       end
     
       module UnshareVisualization
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_name, visualization_owner_name, user_id)
@@ -45,6 +67,7 @@ module Resque
       end
       
       module UnshareTable
+        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(table_name, table_owner_name, user_id)
@@ -55,11 +78,12 @@ module Resque
       end
 
       module DataImportFinished
+        extend ::Resque::Metrics
         @queue = :users
 
-        def self.perform(user_id, imported_tables, total_tables)
-          user = User.where(id: user_id).first
-          UserMailer.data_import_finished(user, imported_tables, total_tables).deliver
+        def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors)
+          u = User.where(id: user_id).first
+          ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors).deliver
         end
       end
 

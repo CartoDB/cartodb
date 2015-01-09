@@ -1,8 +1,11 @@
 # encoding: utf-8
 require_relative '../../lib/importer/georeferencer.rb'
 require_relative '../factories/pg_connection'
+require_relative '../../../../services/importer/spec/doubles/log'
 
 include CartoDB
+
+include CartoDB::Importer2
 
 describe Importer2::Georeferencer do
   before(:all) do
@@ -36,7 +39,7 @@ describe Importer2::Georeferencer do
         Importer2::Georeferencer.new(Object.new)
       }.to raise_error(ArgumentError)
 
-      Importer2::Georeferencer.new(Object.new, 'bogus')
+      georeferencer_instance(Object.new, 'bogus')
     end
   end #initialize
 
@@ -46,7 +49,7 @@ describe Importer2::Georeferencer do
 
       10.times { dataset.insert(random_record) }
 
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.run
 
       dataset.first.fetch(:the_geom).should_not be_nil
@@ -67,7 +70,7 @@ describe Importer2::Georeferencer do
         :bogus_2      => rand(180)
       )
 
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.run.should eq georeferencer
 
       dataset.to_a.first.keys.include?(:the_geom).should eq false
@@ -85,7 +88,7 @@ describe Importer2::Georeferencer do
         longitude_column: lon
       )
 
-      georeferencer = Importer2::Georeferencer.new(@db, table_name)
+      georeferencer = georeferencer_instance(@db, table_name)
       dataset       = @db[table_name.to_sym]
 
       georeferencer.create_the_geom_in(table_name)
@@ -98,9 +101,9 @@ describe Importer2::Georeferencer do
 
       dataset.first.fetch(:the_geom).should be_nil
       georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
-      dataset.first.fetch(:the_geom).should be_nil
+      dataset.first.fetch(:the_geom).should_not be_nil
     end
-  end #georeference
+  end
 
   describe '#create_the_geom_in' do
     before do
@@ -108,7 +111,7 @@ describe Importer2::Georeferencer do
     end
 
     it 'adds a the_geom column to a table' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
 
       georeferencer.column_exists_in?(@table_name, 'the_geom').should eq false
       georeferencer.create_the_geom_in(@table_name)
@@ -116,7 +119,7 @@ describe Importer2::Georeferencer do
     end
 
     it 'returns false if the_geom column already exists' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
 
       georeferencer.column_exists_in?(@table_name, 'the_geom').should eq false
       georeferencer.create_the_geom_in(@table_name)
@@ -126,7 +129,7 @@ describe Importer2::Georeferencer do
 
   describe '#column_exists_in?' do
     it 'return true if the column exists in the table' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.column_exists_in?(@table_name, 'non_existent')
         .should eq false
       georeferencer.column_exists_in?(@table_name, 'name')
@@ -136,7 +139,7 @@ describe Importer2::Georeferencer do
 
   describe '#columns_in' do
     it 'returns the names of columns in a table' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.columns_in(@table_name).should include :name
       georeferencer.columns_in(@table_name).should include :description
       georeferencer.columns_in(@table_name).should include :lat
@@ -147,7 +150,7 @@ describe Importer2::Georeferencer do
   describe '#latitude_column_name_in' do
     it 'returns the name of a latitude column within a set of candidates, if
     existing' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.latitude_column_name_in.should eq 'lat'
     end
   end
@@ -155,7 +158,7 @@ describe Importer2::Georeferencer do
   describe '#longitude_column_name_in' do
     it 'returns the name of a longitude column within a set of candidates, if
     existing' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.longitude_column_name_in.should eq 'lon'
     end
   end
@@ -163,7 +166,7 @@ describe Importer2::Georeferencer do
   describe '#find_column_in' do
     it 'returns the name of a column in a set of possible names if one of them
     actually exists in the table' do
-      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer = georeferencer_instance
       georeferencer.find_column_in(@table_name, "'name','bogus'")
         .should eq 'name'
 
@@ -171,12 +174,15 @@ describe Importer2::Georeferencer do
     end
   end #find_column_in
 
+  def georeferencer_instance(db = @db, table_name = @table_name)
+    options = { guessing: {enabled: false} }
+    Importer2::Georeferencer.new(@db, table_name, options, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=CartoDB::Importer2::Doubles::Log.new)
+  end
+
   # Attempts to create a new database schema
   # Does not raise exception if the schema already exists
   def create_schema(db, schema)
-    db.run(%Q{CREATE SCHEMA #{schema}})
-  rescue Sequel::DatabaseError => e
-    raise unless e.message =~ /schema .* already exists/
+    db.run(%Q{CREATE SCHEMA IF NOT EXISTS #{schema}})
   end #create_schema
 
   def create_table(db, options={})

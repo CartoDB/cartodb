@@ -1,0 +1,150 @@
+
+/**
+ *  Public export styles
+ *
+ */
+
+@import "compass/css3/images";
+@import "compass/css3/inline-block";
+@import "../common/mixins";
+
+.extra_options {
+  float:left;
+  clear:both;
+  width:100%;
+  padding: 13px 0 0 0;
+  margin: 30px 0 0 0;
+  @include clearfix();
+
+  &.disabled { display:none }
+
+  border-top: 1px solid #E5E5E5;
+
+  .row_count {
+    @include inline-block();
+    vertical-align: middle;
+    color: #858585;
+    font-size: 15px;
+  }
+
+  .download_options {
+    @include clearfix();
+    @include inline-block();
+    vertical-align: middle;
+    margin: 0 0 0 5px;
+
+    .download {
+      @include inline-block();
+      vertical-align: middle;
+      color: #858585;
+      font-size: 15px;
+      margin: 0 5px 0 3px;
+
+      &:after {
+        content: '·';
+        position: relative;
+        float: left;
+        margin-right: 9px;
+      }
+    }
+
+    .loading {
+      @include inline-block();
+      vertical-align: middle;
+      color: #858585;
+      font-size: 15px;
+      img { margin: 0 5px 0 0; vertical-align: middle; }
+    }
+
+    a { 
+      @include inline-block();
+      margin:0;
+      padding:0 11px;
+      text-transform: uppercase;
+      text-shadow: none;
+      font-family:'Arial';
+      font-size:11px;
+      line-height:27px;
+    }
+
+    h2 {
+      @include inline-block();
+      line-height: normal;
+    }
+  }
+
+  .generating {
+    display: block;
+  }
+
+}
+
+.extra_options .user-options {
+  float:right;
+}
+
+.extra_options .button.green.clone {
+  position:relative;
+  display:none;
+  padding:0 9px 0 28px;
+  text-transform: uppercase;
+  text-shadow: none;
+  font-size:11px;
+  line-height:27px;
+  font-family:'Arial';
+  letter-spacing:0;
+
+  i.clone-icon {
+    position:absolute;
+    left:10px;
+    top:7px;
+    width:14px;
+    height:13px;
+    @include background(image-url('layout/clone-icon.png') no-repeat 0 0);
+  }
+}
+.extra_options .button.grey.edit {
+  position:relative;
+  display:none;
+  padding:0 9px;
+  text-transform: uppercase;
+  text-shadow: none;
+  font-size:11px;
+  line-height:27px;
+  font-family:'Arial';
+  letter-spacing:0;
+}
+
+@media only screen and (max-width: 710px) {
+  body.public-map .extra_options,
+  body.public .extra_options {
+    
+    .download_options {
+      display:block!important;
+      margin: 10px 0 20px 0!Important;
+
+      .download { display: none!important; }
+    }
+
+    .user-options {
+      float:left!important;
+      width:100%;
+      margin-top:0px;
+    }
+  }
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+  body.public-map .extra_options,
+  body.public .extra_options {
+    
+    .download_options {
+      display:block!important;
+      margin: 10px 0 20px 0!Important;
+
+      .download { display: none!important; }
+    }
+
+    .user-options { margin-top:28px }
+  }
+}

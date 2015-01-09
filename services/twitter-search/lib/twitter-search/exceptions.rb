@@ -9,6 +9,16 @@ module CartoDB
     class TwitterHTTPException < TwitterException
       def initialize(http_code, url, additional_data = '')
         super("Error fetching results: #{url} (#{http_code}) #{additional_data}")
+        @http_code = http_code
+        @additional_data = additional_data
+      end
+
+      def http_code
+        @http_code
+      end
+
+      def additional_data
+        @additional_data
       end
     end
 

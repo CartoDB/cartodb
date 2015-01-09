@@ -1,0 +1,79 @@
+
+/**
+ *  Styles for public map showed in (public table or map)
+ *
+ */
+
+@import "../common/mixins";
+
+
+// Public map
+.cartodb-map.public {
+
+  @include position(65px, 0, 0, 0);
+
+  border-top:1px solid #999999;
+
+  .cartodb-map-wrapper.with_header div.cartodb-zoom,
+  .cartodb-map-wrapper.with_header div.cartodb-share,
+  .cartodb-map-wrapper.with_header div.cartodb-searchbox,
+  .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
+    margin-top: 70px;
+  }
+
+  div.cartodb-fullscreen {
+    position:relative;
+    margin: 41px 0 0 20px;
+  }
+
+  div.cartodb-layer-selector-box { 
+    position:relative;
+    float:right;
+    margin: 20px 20px 0 0;
+  }
+
+  div.cartodb-share {
+    display:none;
+    position:relative;
+    float:right;
+    margin: 20px 20px 0 0;
+    z-index: 5;
+  }
+
+  div.cartodb-tiles-loader {
+    position:relative;
+    float:left;
+    display:block;
+    left:0;
+    top:0;
+  }
+
+  div.cartodb-tiles-loader div.loader {
+    position:absolute;
+    display:block;
+    top:70px;
+    left:-30px;
+    margin:20px 0 0 0;
+    width: 28px;
+    height:28px;
+  }
+
+  div.cartodb-zoom { 
+    position:absolute; 
+    top: 0px;
+    margin: 20px 0 0 20px;
+  }
+
+  div.cartodb-tiles-loader {
+    position:absolute;
+    top:80px;
+  }
+
+  div.cartodb-searchbox{
+    margin-right:0px;
+  }
+
+  .leaflet-right .leaflet-control, #cartodb_attribution {
+    margin-right: 0px!important;
+  }
+}

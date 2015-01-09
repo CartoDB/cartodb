@@ -13,62 +13,33 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
-  
-  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching
+
+  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
+               :remove_like
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
+  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
+                                                         :is_liked, :remove_like, :index]
+  before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
+                                                    :index]
   before_filter :link_ghost_tables, only: [:index, :show]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2, :notify_watching, :list_watching]
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
+                                                      :notify_watching, :list_watching, :likes_count, :likes_list,
+                                                      :add_like, :is_liked, :remove_like]
 
   def index
-    collection = Visualization::Collection.new.fetch(
-                   params.dup.merge(scope_for(current_user))
-                 )
-    table_data = collection.map { |vis|
-      if vis.table.nil?
-        nil
-      else
-        {
-          name:   vis.table.name,
-          schema: vis.user.database_schema
-        }
-      end
-    }.compact
-    synchronizations = synchronizations_by_table_name(table_data)
-    rows_and_sizes   = rows_and_sizes_for(table_data)
-
-    representation  = collection.map { |vis|
-      begin
-        vis.to_hash(
-          related:    false,
-          table_data: !(params[:table_data] =~ /false/),
-          user:       current_user,
-          table:      vis.table,
-          synchronization: synchronizations[vis.name],
-          rows_and_sizes: rows_and_sizes
-        )
-      rescue => exception
-        puts exception.to_s + exception.backtrace.join("\n")
-      end
-    }.compact
-
-    response        = {
-      visualizations: representation,
-      total_entries:  collection.total_entries
-    }
-    current_user.update_visualization_metrics
-    render_jsonp(response)
+    current_user ? index_logged_in : index_not_logged_in
   end
 
   def create
     payload.delete(:permission) if payload[:permission].present?
     payload.delete[:permission_id] if payload[:permission_id].present?
+    vis = nil
 
     if params[:source_visualization_id]
-      #TODO: check permissions to read
       source = Visualization::Collection.new.fetch(
         id: params.fetch(:source_visualization_id),
-        user_id: current_user.id
+        user_id: current_user.id,
+        exclude_raster: true
       ).first
       return(head 403) if source.nil?
 
@@ -246,6 +217,102 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(watcher.list)
   end
 
+  # Does not mandate a current_viewer except if vis is not public
+  def likes_count
+    vis = Visualization::Member.new(id: @table_id).fetch
+    if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+    end
+
+    render_jsonp({
+                   id: vis.id,
+                   likes: vis.likes.count
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  # Does not mandate a current_viewer except if vis is not public
+  def likes_list
+    vis = Visualization::Member.new(id: @table_id).fetch
+    if vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+      raise KeyError if current_viewer.nil? || !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+    end
+
+    render_jsonp({
+                   id: vis.id,
+                   likes: vis.likes.map { |like| {actor_id: like.actor } }
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  def add_like
+    return(head 403) unless current_viewer
+
+    vis = Visualization::Member.new(id: @table_id).fetch
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
+      vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+
+    vis.add_like_from(current_viewer.id)
+       .fetch
+       .invalidate_varnish_cache
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: vis.liked_by?(current_viewer.id)
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  rescue AlreadyLikedError
+    render(text: "You've already liked this visualization", status: 400)
+  end
+
+  def is_liked
+    if current_viewer
+      vis = Visualization::Member.new(id: @table_id).fetch
+      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
+                        vis.privacy != Visualization::Member::PRIVACY_LINK &&
+                        !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)
+      render_jsonp({
+                     id:    vis.id,
+                     likes: vis.likes.count,
+                     liked: vis.liked_by?(current_viewer.id)
+                   })
+    else
+      vis = Visualization::Member.new(id: @table_id).fetch
+      raise KeyError if vis.privacy != Visualization::Member::PRIVACY_PUBLIC &&
+                        vis.privacy != Visualization::Member::PRIVACY_LINK
+      render_jsonp({
+                     id:    vis.id,
+                     likes: vis.likes.count,
+                     liked: false
+                   })
+    end
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
+  def remove_like
+    return(head 403) unless current_viewer
+
+    vis = Visualization::Member.new(id: @table_id).fetch
+    raise KeyError if !vis.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY) &&
+      vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
+
+    vis.remove_like_from(current_viewer.id)
+       .fetch
+       .invalidate_varnish_cache
+
+    render_jsonp({
+                   id:    vis.id,
+                   likes: vis.likes.count,
+                   liked: false
+                 })
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
+  end
+
   private
 
   def table_and_schema_from_params
@@ -260,8 +327,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     CartoDB::Visualization::Locator.new
   end
 
-  def scope_for(current_user)
-    { user_id: current_user.id }
+  def scope_for(user)
+    { user_id: user.id }
   end
 
   def allow_vizjson_v1_for?(table)
@@ -283,7 +350,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def payload
     request.body.rewind
-    ::JSON.parse(request.body.read.to_s || String.new)
+    ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
   end
 
   def payload_with_default_privacy
@@ -316,39 +383,92 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ]
   end
 
-  def rows_and_sizes_for(table_data)
-    data = Hash.new
-    table_data.each { |table|
-      row = current_user.in_database.fetch(%Q{
-        SELECT
-          relname AS table_name,
-          pg_total_relation_size(? || '.' || relname) AS total_relation_size,
-          reltuples::integer AS reltuples
-        FROM pg_class
-        WHERE relname=?
-      },
-      table[:schema],
-      table[:name]
-      ).first
-      if row.nil?
-        CartoDB.notify_error(
-          "Table #{table[:schema]}.#{table[:name]} not found at pg_class for username #{current_user.username}", {
-          user: current_user.username,
-          action: 'Api::Json::VisualizationsController.rows_and_sizes_for()'
-        })
-        # don't break whole dashboard
-        data[table[:name]] = {
-          size: nil,
-          rows: nil
-        }
+  # This only allows to authenticate if sending an API request to username.api_key subdomain,
+  # but doesn't breaks the request if can't authenticate
+  def optional_api_authorization
+    if params[:api_key].present?
+      authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    end
+  end
+
+  def index_not_logged_in
+    public_visualizations = []
+    total_liked_entries = 0
+    total_shared_entries = 0
+    user = User.where(username: CartoDB.extract_subdomain(request)).first
+
+    unless user.nil?
+      filtered_params = params.dup.merge(scope_for(user))
+      filtered_params[Visualization::Collection::FILTER_UNAUTHENTICATED] = true
+      collection = Visualization::Collection.new.fetch(filtered_params)
+
+      public_visualizations  = collection.map { |vis|
+        begin
+          vis.to_hash(
+            public_fields_only: true,
+            related: false,
+            table: vis.table
+          )
+        rescue => exception
+          puts exception.to_s + exception.backtrace.join("\n")
+        end
+      }.compact
+
+      total_liked_entries = collection.total_liked_entries
+      total_shared_entries = collection.total_shared_entries
+    end
+
+    response = {
+      visualizations: public_visualizations,
+      total_entries:  public_visualizations.length,
+      total_likes:    total_liked_entries,
+      total_shared:   total_shared_entries
+    }
+    render_jsonp(response)
+  end
+
+  def index_logged_in
+    collection = Visualization::Collection.new.fetch(
+      params.dup.merge(scope_for(current_user))
+    )
+
+    users_cache = {}
+
+    table_data = collection.map { |vis|
+      if vis.table.nil?
+        nil
       else
-        data[row[:table_name]] = {
-          size: row[:total_relation_size].to_i / 2,
-          rows: row[:reltuples]
+        users_cache[vis.user_id] ||= vis.user
+        {
+          name:   vis.table.name,
+          schema: users_cache[vis.user_id].database_schema
         }
       end
+    }.compact
+    synchronizations = synchronizations_by_table_name(table_data)
+    representation  = collection.map { |vis|
+      begin
+        vis.to_hash(
+          related:    false,
+          table_data: !(params[:table_data] =~ /false/),
+          user:       current_user,
+          table:      vis.table,
+          synchronization: synchronizations[vis.name]
+        )
+      rescue => exception
+        puts exception.to_s + exception.backtrace.join("\n")
+      end
+    }.compact
+
+    response = {
+      visualizations: representation,
+      total_entries:  collection.total_entries,
+      total_likes:    collection.total_liked_entries,
+      total_shared:   collection.total_shared_entries
     }
-    data
+    current_user.update_visualization_metrics
+    render_jsonp(response)
   end
+
 end
 

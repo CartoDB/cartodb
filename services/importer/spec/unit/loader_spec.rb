@@ -4,21 +4,19 @@ require_relative '../../lib/importer/source_file'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
-
-include CartoDB::Importer2
+require_relative '../../spec/doubles/importer_stats'
 
 RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-describe Loader do
+describe CartoDB::Importer2::Loader do
   before do
-    @job            = Doubles::Job.new
-    @source_file    = SourceFile.new('/var/tmp/foo')
-    @ogr2ogr        = Doubles::Ogr2ogr.new
-    @georeferencer  = Doubles::Georeferencer.new
-
-    @loader         = Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+    @job            = CartoDB::Importer2::Doubles::Job.new
+    @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
+    @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
+    @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
+    @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
   end
 
   describe '#run' do
@@ -30,12 +28,12 @@ describe Loader do
 
     it 'runs the ogr2ogr command to load the file' do
       ogr2ogr_mock = mock
-      ogr2ogr_mock.stubs(:command).returns('')
-      ogr2ogr_mock.stubs(:command_output).returns('')
-      ogr2ogr_mock.stubs(:exit_code).returns(0)
-      ogr2ogr_mock.stubs(:run).returns(Object.new)
+      ogr2ogr_mock.stubs(:command).returns('').at_least_once
+      ogr2ogr_mock.stubs(:command_output).returns('').at_least_once
+      ogr2ogr_mock.stubs(:exit_code).returns(0).at_least_once
+      ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
-      loader   = Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
+      loader   = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
 
       loader.run
     end
@@ -55,15 +53,39 @@ describe Loader do
 
     it 'returns the passed ogr2ogr instance' do
       ogr2ogr = Object.new
-      loader  = Loader.new(@job, @source_file, layer=nil, ogr2ogr, @georeferencer)
+      loader  = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr, @georeferencer)
 
       loader.ogr2ogr.should eq ogr2ogr
     end
 
     it 'initializes an ogr2ogr command wrapper if none passed' do
-      loader  = Loader.new(@job, @source_file)
+      loader  = CartoDB::Importer2::Loader.new(@job, @source_file)
       loader.ogr2ogr.class.name.should eq 'CartoDB::Importer2::Ogr2ogr'
     end
   end
+
+  describe 'stats logger' do
+    before do
+      @job            = CartoDB::Importer2::Doubles::Job.new
+      @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
+      @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
+      @georeferencer  = CartoDB::Importer2::Doubles::Georeferencer.new
+      @loader         = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      @importer_stats_spy = CartoDB::Doubles::ImporterStats.instance
+    end
+
+    it 'logs stats' do
+      loader  = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
+      loader.set_importer_stats(@importer_stats_spy)
+      loader.run
+      @importer_stats_spy.timed_block_suffix_count('loader').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.normalize').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.ogr2ogr').should eq 1
+      @importer_stats_spy.timed_block_suffix_count('loader.post_ogr2ogr_tasks').should eq 1
+
+    end
+
+  end
+
 end
 

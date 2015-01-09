@@ -32,7 +32,10 @@ module CartoDB
         user_id = @data_import.user_id
         imported_tables = @results.select {|r| r.success }.length
         total_tables = @results.length
-        @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user_id, imported_tables, total_tables)
+        first_imported_table = imported_tables == 0 ? nil : @results.select {|r| r.success }.first
+        first_table = @results.first
+        errors = imported_tables == total_tables ? nil : @data_import.get_error_text
+        @mail_sent = @resque.enqueue(::Resque::UserJobs::Mail::DataImportFinished, user_id, imported_tables, total_tables, first_imported_table, first_table, errors)
       end
 
       def mail_sent?

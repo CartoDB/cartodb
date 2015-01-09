@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'minitest/autorun'
 require_relative '../../../backend/sequel'
 require_relative '../../../../../app/models/visualization/member'
 
@@ -7,7 +6,7 @@ include CartoDB
 
 describe DataRepository::Backend::Sequel do
   before do
-    db = Sequel.sqlite
+    db = Rails::Sequel.connection
     db.create_table :visualizations do
       String    :id, primary_key: true
       String    :name
@@ -25,6 +24,7 @@ describe DataRepository::Backend::Sequel do
       String    :url_options
       String    :permission_id
       Boolean   :locked
+      String    :kind
     end
 
     db.create_table :overlays do
@@ -35,10 +35,8 @@ describe DataRepository::Backend::Sequel do
       String    :visualization_id,  index: true
     end
 
-    Visualization.repository = 
-      DataRepository::Backend::Sequel.new(db, :visualizations)
-    Overlay.repository = 
-      DataRepository::Backend::Sequel.new(db, :overlays)
+    Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
+    Overlay.repository = DataRepository::Backend::Sequel.new(db, :overlays)
   end
 
   describe '#store' do
@@ -51,7 +49,7 @@ describe DataRepository::Backend::Sequel do
 
       rehydrated_member = Visualization::Member.new(id: member.id)
       rehydrated_member.fetch
-      rehydrated_member.name.must_equal member.name
+      rehydrated_member.name.should eq member.name
     end
 
     it 'updates the visualization if existing' do
@@ -60,21 +58,15 @@ describe DataRepository::Backend::Sequel do
         tags: ['foo', 'bar']
       )
       member.store
-      Visualization.repository.collection(id: member.id).to_a.size
-        .must_equal 1
+      Visualization.repository.collection(id: member.id).to_a.size.should eq 1
 
       member.store
-      Visualization.repository.collection(id: member.id).to_a.size
-        .must_equal 1
+      Visualization.repository.collection(id: member.id).to_a.size.should eq 1
 
       Visualization::Member.new(id: member.id).fetch.store
-      Visualization.repository.collection(id: member.id).to_a.size
-        .must_equal 1
+      Visualization.repository.collection(id: member.id).to_a.size.should eq 1
     end
-  end #store
-
-  describe '#fetch' do
-  end #fetch
+  end
 
   describe '#delete' do
     it 'deletes a visualization from persistence' do
@@ -84,26 +76,26 @@ describe DataRepository::Backend::Sequel do
       ).store
 
       id = member.id
-      Visualization.repository.fetch(id).wont_be_nil
+      Visualization.repository.fetch(id).nil?.should eq false
       member.delete
-      Visualization.repository.fetch(id).must_be_nil
+      Visualization.repository.fetch(id).nil?.should eq true
     end
-  end #delete
+  end
 
   describe '#collection' do
     it 'gets a collection of records using the passed filter' do
-      member1 = Visualization::Member.new(
+      Visualization::Member.new(
         name:   'visualization 1',
         map_id: 1
       ).store
-      member2 = Visualization::Member.new(
+      Visualization::Member.new(
         name: 'visualization 2',
         map_id: 1
       ).store
 
       records = Visualization.repository.collection(map_id: 1)
-      records.to_a.size.must_equal 2
+      records.to_a.size.should eq 2
     end
-  end #collection
-end # Visualization::Repository
+  end
+end
 

@@ -66,13 +66,19 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
-    it 'is invalid with a "layergroup" name' do
+    it 'is renames "layergroup" to "layergroup_t"' do
       table         = Table.new
       table.user_id = @user.id
       table.name    = 'layergroup'
+      table.valid?.should == true
+    end
 
-      table.valid?.should == false
-      table.errors.fetch(:name).first.should =~ /reserved keyword/
+    it 'renames "all" to "all_t"' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'all'
+      table.name.should eq 'all_t'
+      table.valid?.should == true
     end
 
     it "should set a table_id value" do
@@ -772,11 +778,10 @@ describe Table do
       resp.should == {:name => "name", :type => "double precision", :cartodb_type => "number"}
     end
 
-    it "should not modify the name of a column to a number" do
+    it "should not modify the name of a column to a number, sanitizing it to make it valid" do
       table = create_table(:user_id => @user.id)
-      lambda {
-        table.modify_column!(:name => "name", :new_name => "1")
-      }.should raise_error(CartoDB::InvalidColumnName)
+      resp = table.modify_column!(:name => "name", :new_name => "1")
+      resp.should == {:name => "_1", :type => "text", :cartodb_type => "string"}
     end
 
     it "can modify its schema" do
@@ -976,54 +981,63 @@ describe Table do
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
 
-    it "can add a column called 'action'" do
+    it "can add a column called 'action' but gets renamed" do
+      column_name = "action"
+      sanitized_column_name = "_action"
+
       table = create_table(:user_id => @user.id)
 
-      resp = table.add_column!(:name => "action", :type => "number")
-      resp.should == {:name => "action", :type => "double precision", :cartodb_type => "number"}
+      resp = table.add_column!(:name => column_name, :type => "number")
+      resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
       table.reload
-      table.schema(:cartodb_types => false).should include([:action, "double precision"])
+      table.schema(:cartodb_types => false).should include([sanitized_column_name.to_sym, "double precision"])
     end
 
     it "can have a column with a reserved psql word as its name" do
+      column_name = "where"
+      sanitized_column_name = "_where"
+
       table = create_table(:user_id => @user.id)
 
-      resp = table.add_column!(:name => "where", :type => "number")
-      resp.should == {:name => "where", :type => "double precision", :cartodb_type => "number"}
+      resp = table.add_column!(:name => column_name, :type => "number")
+      resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
       table.reload
-      table.schema(:cartodb_types => false).should include([:where, "double precision"])
+      table.schema(:cartodb_types => false).should include([sanitized_column_name.to_sym, "double precision"])
     end
 
     it 'nullifies the collumn when converting from boolean to date' do
+      column_name = "new"
+      sanitized_column_name = "_new"
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'new', type: 'boolean')
-      table.insert_row!(new: 't')
-      table.modify_column!(name: 'new', type: 'date')
+
+      table.add_column!(name: column_name, type: 'boolean')
+      table.insert_row!(sanitized_column_name.to_sym => 't')
+      table.modify_column!(name: sanitized_column_name, type: 'date')
       
-      table.records[:rows][0][:new].should be_nil
+      table.records[:rows][0][sanitized_column_name.to_sym].should be_nil
 
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'new', type: 'boolean')
-      table.insert_row!(new: 'f')
-      table.modify_column!(name: 'new', type: 'date')
+      table.add_column!(name: sanitized_column_name, type: 'boolean')
+      table.insert_row!(sanitized_column_name.to_sym => 'f')
+      table.modify_column!(name: sanitized_column_name, type: 'date')
       
-      table.records[:rows][0][:new].should be_nil
+      table.records[:rows][0][sanitized_column_name.to_sym].should be_nil
     end
 
     it 'nullifies the collumn when converting from number to date' do
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'number', type: 'double precision')
-      table.insert_row!(number: 12345.67)
-      table.modify_column!(name: 'number', type: 'date')
+      table.add_column!(name: 'numeric_col', type: 'double precision')
+      table.insert_row!(numeric_col: 12345.67)
+      table.modify_column!(name: 'numeric_col', type: 'date')
       
-      table.records[:rows][0][:number].should be_nil
+      table.records[:rows][0][:numeric_col].should be_nil
 
       table = create_table(user_id: @user.id)
-      table.add_column!(name: 'number', type: 'double precision')
-      table.insert_row!(number: 12345)
-      table.modify_column!(name: 'number', type: 'date')
+      table.add_column!(name: 'numeric_col', type: 'double precision')
+      table.insert_row!(numeric_col: 12345)
+      table.modify_column!(name: 'numeric_col', type: 'date')
       
-      table.records[:rows][0][:number].should be_nil
+      table.records[:rows][0][:numeric_col].should be_nil
     end
 
     it 'normalizes digit separators when converting from string to number' do
@@ -1229,15 +1243,16 @@ describe Table do
       table.records[:rows].first[:description].should be == "Description 123"
     end
 
-    it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
-      table = create_table(:name => 'where', :user_id => @user.id)
-      table.add_column!(:name => 'where', :type => 'string')
+    # No longer used, now we automatically rename reserved word columns
+    #it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
+      #table = create_table(:name => 'where', :user_id => @user.id)
+      #table.add_column!(:name => 'where', :type => 'string')
 
-      pk1 = table.insert_row!({:where => 'random string'})
+      #pk1 = table.insert_row!({:_where => 'random string'})
 
-      table.records[:rows].should have(1).rows
-      table.records[:rows].first[:where].should be == 'random string'
-    end
+      #table.records[:rows].should have(1).rows
+      #table.records[:rows].first[:_where].should be == 'random string'
+    #end
   end
 
   context "preimport tests" do
@@ -1351,11 +1366,10 @@ describe Table do
       }.should raise_error(CartoDB::InvalidColumnName)
     end
 
-    it "should raise an error when renaming a column with reserved name" do
+    it "should not raise an error when renaming a column with reserved name" do
       table = create_table(:user_id => @user.id)
-      lambda {
-        table.modify_column!(:name => "name", :new_name => "xmin")
-      }.should raise_error(CartoDB::InvalidColumnName)
+      resp = table.modify_column!(:name => "name", :new_name => "xmin")
+      resp.should == {:name => "_xmin", :type => "text", :cartodb_type => "string"}
     end
 
     it "should add a cartodb_id serial column as primary key when importing a
@@ -1404,6 +1418,17 @@ describe Table do
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table.geometry_types.should == ['ST_Point']
+
+      # Now remove the_geom and should not break
+      @user.in_database.run(%Q{
+                                ALTER TABLE #{table.name} DROP COLUMN the_geom CASCADE;
+                              })
+      # Schema gets cached, force reload
+      table.reload
+      table.schema(reload:true)
+      table.geometry_types.should == []
+
+      table.destroy
     end
 
     it "returns null values at the end when ordering desc" do

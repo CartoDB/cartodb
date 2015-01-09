@@ -1,7 +1,7 @@
 # What is CartoDB? #
 
-[![Build Status](http://travis-ci.org/CartoDB/cartodb.png)]
-(http://travis-ci.org/CartoDB/cartodb)
+[![Build Status](http://clinker.cartodb.net/desktop/plugin/public/status/CartoDB-master-testing)]
+(http://clinker.cartodb.net/jenkins/job/CartoDB-master-testing)
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
 
 CartoDB is an open source tool that allows for the storage and
@@ -18,6 +18,25 @@ We hope you like it!
 
 ![Map View](http://cartodb.s3.amazonaws.com/github/map_view.png)
 
+---
+## Table of Contents
+
+- [What can I do with CartoDB?](#what-can-i-do-with-cartodb)
+- [What are the components of CartoDB](#what-are-the-components-of-cartodb)
+- [How do I install CartoDB?](#how-do-i-install-cartodb)
+  - [Dependencies](#what-does-cartodb-depend-on)
+  - ...
+  - [Install problems and common solutions](#install-problems-and-common-solutions)
+- [Running CartoDB](#running-cartodb)
+  - [Note on tiling SQL API and Redis](#note-on-tiling-sql-api-and-redis)
+  - [Handy tasks](#handy-tasks)
+  - [Using foreman](#using-foreman)
+- [Developing & Contributing to CartoDB](#developing--contributing-to-cartodb)
+- [How do I Upgrade CartodB?](#how-do-i-upgrade-cartodb)
+- [Testing](#testing)
+- [Contributors](#contributors)
+
+---
 
 # What can I do with CartoDB? #
 
@@ -48,7 +67,36 @@ and code.
   - A Map tiler that supports SQL and tile styling using CartoCSS
   - Authentication using OAuth if required
 
-# What does CartoDB depend on? #
+
+# How do I install CartoDB? #
+
+This README is intended for Ubuntu 12.04. This doesn't mean that it can't 
+be installed on other Linux versions or OSX systems, but that it's guaranteed 
+to work only in Ubuntu 12.04.
+If anyone wants to share with us the installation process for any other system 
+we will be more than happy to point it from this README.
+That said, there are also many successful installations on Amazon EC2, Linode,
+dedicated instances and development machines running OS X and Ubuntu 12.04+.
+
+CartoDB is under heavy development. This means that this README 
+can fail at some point. If see any issues, please let us know and we will fix 
+them as soon as we can. Also if you feel that something is wrong or even
+missing we will be happy to fix it.
+
+For any doubt about the process you can ask in our [Google 
+Group](https://groups.google.com/forum/#!forum/cartodb).
+
+If you want to give it a try, download CartoDB by cloning this repository:
+
+```bash
+$ git clone --recursive https://github.com/CartoDB/cartodb.git
+```
+
+Or you can just [download the CartoDB zip
+file](https://github.com/CartoDB/cartodb/archive/master.zip).
+
+
+## What does CartoDB depend on? #
 
   - Ubuntu 12.04
   - Postgres 9.3.x (with plpythonu extension)
@@ -65,34 +113,13 @@ and code.
   - Varnish 2.1+ (WARNING: must be < 3.0!)
   - ImageMagick 6.6.9+ (for the testsuite)
 
-# How do I install CartoDB? #
 
-This is README is intended for Ubuntu 12.04. This doesn't mean that it can't 
-be installed in other Linux versions or OSX systems, but that it's guaranteed 
-to work only in Ubuntu 12.04.
-If anyone wants to share with us the installation process for any other system 
-we will be more than happy to point it from this README.
-That said, there are also many successful installations on Amazon EC2, Linode,
-dedicated instances and development machines running OS X and Ubuntu 12.04+.
+## Add CartoDB [PPA](https://help.ubuntu.com/community/PPA)s ##
 
-CartoDB is under heavy development. This means that at some point this README 
-can fail at some point. If you detect it, please let us know and we will fix 
-it as soon as we can. Also if you feel that something is wrong or even it's 
-missing we will be also happy to fix it.
-
-For any doubt about the process you can ask in our [Google 
-Group](https://groups.google.com/forum/#!forum/cartodb)
-
-If you want to give it a try, download CartoDB by cloning this repository:
-
-```bash
-$ git clone --recursive https://github.com/CartoDB/cartodb.git
+First install python software properties to be able to run `add-apt-repository`
 ```
-
-Or you can just [download the CartoDB zip
-file](https://github.com/CartoDB/cartodb/archive/master.zip).
-
-## Add CartoDB PPAs ##
+sudo apt-get install python-software-properties
+```
 
 Add CartoDB Base PPA
 ```bash
@@ -134,6 +161,17 @@ sudo apt-get update
 ```
 
 ## Some dependencies ##
+
+Installations assume you use UTF8, you can set it like this:
+```bash
+echo -e 'LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8' | sudo tee /etc/default/locale
+source /etc/default/locale
+```
+
+[make](https://help.ubuntu.com/community/CompilingEasyHowTo) is required to compile sources
+```bash
+sudo apt-get install build-essential checkinstall
+```
 
 unp is required for archive file upload support
 
@@ -192,7 +230,8 @@ sudo apt-get install postgresql-plpython-9.3
 Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
 
 ```bash
-/etc/postgresql/9.3/main$ sudo vim pg_hba.conf
+cd /etc/postgresql/9.3/main
+sudo vim pg_hba.conf
 ```
 
 And change inside all local connections from peer/md5/... to trust.
@@ -219,29 +258,8 @@ sudo make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
-`template_postgis`. In the example script below (can be saved for examples as `template_postgis.sh`), make sure that the
-path to each SQL file is correct:
+`template_postgis`. 
 
-```bash
-#!/usr/bin/env bash
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
-createdb -E UTF8 template_postgis
-createlang -d template_postgis plpgsql
-psql -d postgres -c \
- "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
-psql -d template_postgis -c "CREATE EXTENSION postgis"
-psql -d template_postgis -c "CREATE EXTENSION postgis_topology"
-psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
-psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
-```
-
-Before executing the script, change to the postgres user:
-```bash
-sudo su - postgres
-./template_postgis.sh
-```
-
-Alternatively, you may run the lines of the `template_postgis.sh` script one by one by entering Postgres as follows:
 ```bash
 sudo su - postgres
 POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
@@ -258,6 +276,7 @@ exit
 ## Install cartodb-postgresql ##
 
 ```bash
+cd /tmp
 git clone https://github.com/CartoDB/pg_schema_triggers.git
 cd pg_schema_triggers
 sudo make all install PGUSER=postgres
@@ -270,16 +289,26 @@ sudo make all install
 sudo PGUSER=postgres make installcheck # to run tests
 ```
 
-NOTE: if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
-You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf
+**NOTE:** if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
+You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
+
+```
+$ sudo vim /etc/postgresql/9.3/main/postgresql.conf
+...
+shared_preload_libraries = 'schema_triggers.so'
+
+$ sudo service postgresql restart # restart postgres
+```
+
+After this change the 2nd installcheck of cartodb-postresql should be OK.
 
 Check https://github.com/cartodb/cartodb-postgresql/ for further reference
 
 ## Install Ruby ##
 
-We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.3. You can use rvm:
+We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language, you'll need to install Ruby 1.9.3. You can use rvm, rbenv or a system install, up to you. For rvm and rbenv:
 
+### rvm
 ```bash
 sudo curl -L https://get.rvm.io | bash
 sudo su
@@ -296,27 +325,31 @@ sudo apt-get install ruby-bundler
 sudo apt-get install rubygems
 ```
 
+### rbenv
+Follow the official guide on https://github.com/sstephenson/rbenv#installation
+
+For bundler simply run:
+
+```bash
+gem install bundler
+```
+
 ## Install Node.js ##
 The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 
 ```bash
-sudo apt-get install nodejs npm
 sudo add-apt-repository ppa:cartodb/nodejs-010
-sudo apt-get update; sudo apt-get upgrade
-sudo apt-get dist-upgrade
+sudo apt-get update
+sudo apt-get install nodejs
 ```
 
-We currently run our node apps against version 0.10. You can install NVM 
-to handle multiple versions in the same system:
-
-```bash
-curl https://raw.github.com/creationix/nvm/master/install.sh | sh
-```
+We currently run our node apps against version 0.10. You can install [NVM](https://github.com/creationix/nvm) 
+to handle multiple versions in the same system.
 
 Then you can install and use any version, for example:
 ```bash
-nvm install v0.8.9
-nvm use 0.8.9
+nvm install v0.10
+nvm use 0.10
 ```
 
 
@@ -364,7 +397,7 @@ accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API.
 
 ```bash
-sudo apt-get install varnish=2.1.0-2cdb~precise1
+sudo apt-get install varnish=2.1.5-2~cdb2 #or any version <3.x
 ```
 
 Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
@@ -420,6 +453,18 @@ node app.js development
 sudo apt-get install imagemagick
 ```
 
+## Optional installation
+These are not strictly required to run CartoDB, but if you are installing CartoDB to do change something you might need them:
+
+### Raster import support
+Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.
+
+Access to temporary dir is also needed. Depending on your installation you might also need to run `sudo chown 501:staff /usr/local/src/postgis-2.1.2/raster/loader/.libs` (maybe replacing `501:staff` with your installation /usr/local/src/postgis-2.1.2/raster/loader/ group and owner).
+
+## Install problems and common solutions #
+
+Installing the full stack might not always be smooth due to other component updates, so if you run into problems installing CartoDB, please check [this list of problems and solutions](https://github.com/CartoDB/cartodb/wiki/Problems-faced-during-CartoDB-install-&-solutions-if-known) first to see if your problem already happened in the past and somebody else found a workaround, solution or fix to it.
+
 ## Install local instance of cold beer ##
 
 Congratulations!
@@ -449,19 +494,21 @@ redis-server
 
 # If you are using rvm, create a new gemset
 rvm use 1.9.3@cartodb --create && bundle install
-
 # If it's a system wide installation
 sudo bundle install
-
 # Make the created gemset your default one
 rvm use 1.9.3@cartodb --default
 
+# If you are using rbenv simply run:
+rbenv global ruby 1.9.3-p547
+bundle install
+
 # Configure the application constants
-mv config/app_config.yml.sample config/app_config.yml
+cp config/app_config.yml.sample config/app_config.yml
 vim config/app_config.yml
 
 # Configure your postgres database connection details
-mv config/database.yml.sample config/database.yml
+cp config/database.yml.sample config/database.yml
 vim config/database.yml
 
 # Add entries to /etc/hosts needed in development
@@ -493,34 +540,7 @@ You should now be able to access
 **`http://<mysubdomain>.localhost.lan:3000`**
 in your browser and login with the password specified above.
 
-# How do I upgrade CartoDB? #
-
-See UPGRADE file for instructions about upgrading CartoDB.
-
-For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
-documentation.
-
-# Handy tasks #
-
-For a full list of CartoDB utility tasks:
-
-```
-bundle exec rake -T
-```
-
-
-# Using foreman #
-
-You can also use foreman to run the full stack (cartodb server, sql api, tiler, redis and resque), using a single command:
-
-```
-bundle exec foreman start -p $PORT
-```
-
-where $PORT is the port you want to attach the rails server to.
-
-
-# Note on tiling, SQL API and Redis #
+## Note on tiling, SQL API and Redis
 
 Please ensure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all
 running for full experience.
@@ -529,17 +549,46 @@ Manual configuration is needed for the
 `public/javascripts/environments/development.js` file which configures
 Windshaft-cartodb tile server URLs.
 
+## Handy tasks
 
-# Install problems and common solutions #
+For a full list of CartoDB utility tasks:
 
-Installing the full stack might not always be smooth due to other component updates, so if you run into problems installing CartoDB, please check [this list of problems and solutions](https://github.com/CartoDB/cartodb/wiki/Problems-faced-during-CartoDB-install-&-solutions-if-known) first to see if your problem already happened in the past and somebody else found a workaround, solution or fix to it.
+```
+bundle exec rake -T
+```
+
+## Using foreman
+
+You can also use foreman to run the full stack (cartodb server, sql api, tiler, redis and resque), using a single command:
+IMPORTANT: You need to install foreman by yourself. It's not included in the Gemfile. Run this:
+
+```
+bundle exec gem install foreman
+```
+
+```
+bundle exec foreman start -p $PORT
+```
+
+where $PORT is the port you want to attach the rails server to.
 
 
-### Testing ###
+# How do I upgrade CartoDB? #
 
-See TESTING
+See [UPGRADE](UPGRADE) for instructions about upgrading CartoDB.
 
-### Contributors ###
+For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
+documentation.
+
+# Developing & Contributing to CartoDB
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how you can improve CartoDB. :)
+
+# Testing
+
+See [TESTING.md](TESTING.md)
+
+# Contributors
 
   - Fernando Blat ([ferblape](https://twitter.com/ferblape))
   - Javier Álvarez Medina ([xavijam](https://twitter.com/xavijam))
@@ -563,3 +612,5 @@ See TESTING
   - Diego Muñoz ([kartones](https://twitter.com/kartones))
   - Raul Ochoa ([rochoa](https://twitter.com/rochoa))
   - Nicolás M. Jaremek ([NickJaremek](https://twitter.com/NickJaremek))
+  - Jaime Chapinal ([Xatpy](https://twitter.com/chapi13))
+  - Nicklas Gummesson ([ViddoBamBam](https://twitter.com/ViddoBamBam))

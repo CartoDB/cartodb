@@ -20,10 +20,12 @@
     font-weight:normal;
   }
 
-  div.map div.dropdown.basemap ul li > a .thumbs li> a.nokia_reduced_day div.thumb {
+  div.map div.dropdown.basemap ul li > a .thumbs li > a.nokia_reduced_day div.thumb {
     // TODO: remove this background url
     background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
   }
+
+  // Custom basemap icon
 
   & > .thumb {
 
@@ -55,9 +57,14 @@
 
 }
 
+div.dropdown.basemap ul li ul.stamen li a.terrain_stamen div.thumb {
+  background-image: url("https://stamen-tiles-a.a.ssl.fastly.net/terrain/4/4/6.jpg")!Important;
+}
+
 div.dropdown.basemap {
 
   border: 1px solid #999999;
+
 
   div.custom {
     display:inline;

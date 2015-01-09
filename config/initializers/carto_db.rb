@@ -19,7 +19,11 @@ module CartoDB
 
   # Actually the two previous methods return the requested username, not the real subdomain
   def self.extract_real_subdomain(request)
-      request.host.to_s.gsub(self.session_domain, '')
+    request.host.to_s.gsub(self.session_domain, '')
+  end
+
+  def self.user_url(username, organization = nil)
+    organization.nil? ? self.base_url(username) : self.base_url(organization, username)
   end
 
   def self.base_url(subdomain, org_username=nil)
@@ -91,6 +95,12 @@ module CartoDB
     VERSION_1 = "v1"
   end
 
+  begin
+    CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
+  rescue
+    CARTODB_REV = nil
+  end
+
   PUBLIC_DB_USER  = 'publicuser'
   PUBLIC_DB_USER_PASSWORD  = 'publicuser'
   TILE_DB_USER    = 'tileuser'
@@ -116,6 +126,8 @@ module CartoDB
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
 
+  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
+  # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
   POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
                                   CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
                                   CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
@@ -123,6 +135,8 @@ module CartoDB
                                   LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY
                                   REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
                                   USING VERBOSE WHEN WHERE XMIN XMAX }
+
+  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION }
 
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
@@ -160,6 +174,10 @@ module CartoDB
       title: 'Invalid SHP file',
       what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, <a href='mailto:support@cartodb.com?subject=Invalid SHP file'>contact us</a>."
     },
+    1007 => {
+      title: 'Too many nodes',
+      what_about: 'You requested too many nodes. Either request a smaller area, or use planet.osm.'
+    },
     1008 => {
       title: 'Unable to download file',
       what_about: "We couldn't download your file, check the URL and try again."
@@ -170,7 +188,7 @@ module CartoDB
     },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
     1011 => {
         title: 'Error retrieving data from datasource',
@@ -184,6 +202,18 @@ module CartoDB
       title: 'Invalid ArcGIS version',
       what_about: "The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards."
     },
+    1014 => {
+      title: 'Invalid name',
+      what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again."
+    },
+    1015 => {
+      title: 'No results',
+      what_about: "Query was correct but returned no results, please change the parameters and run it again."
+    },
+    1016 => {
+      title: 'Dropbox permission revoked',
+      what_about: "CartoDB has not permission to access your files at Dropbox. Please import file again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -194,7 +224,15 @@ module CartoDB
     },
     2003 => {
       title: 'Malformed CSV',
-      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields."
+      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV."
+    },
+    2004 => {
+      title: 'Too many columns',
+      what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones."
+    },
+    2005 => {
+      title: 'Duplicated column',
+      what_about: 'Your file has the same header for two or more columns. Please make column names unique and try again.'
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
@@ -238,7 +276,7 @@ module CartoDB
     },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. You can try splitting it into smaller files and then using the 'Merge Tables' functionality."
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality."
     },
     99999 => {
       title: 'Unknown',

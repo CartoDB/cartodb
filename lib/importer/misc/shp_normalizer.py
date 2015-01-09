@@ -102,22 +102,24 @@ try:
 
     detector = UniversalDetector()
 
-    # 100 rows should be enough to figure encoding
-    # TODO: more broader and automated testing, allow
-    #       setting limit by command line param
-    for row in itertools.islice(db, 100):
+    # TODO: Make this a % of total table size and stop guessing correct values for guessing
+    for row in itertools.islice(db, 1000):
       # Feed detector with concatenated string fields
       detector.feed( ''.join(row[fno] for fno in sfields) )
       if detector.done: break
     dbf.close()
     detector.close()
     encoding = detector.result["encoding"]
+    confidence = detector.result["confidence"]
     if encoding=="ascii":
         encoding="LATIN1" # why not UTF8 here ?
-    # There's problems detecting LATIN1 encodings,
-    # it detects KOI8-R instead of LATIN1
+    # There's problems detecting LATIN1 encodings, it detects KOI8-R instead of LATIN1
     if encoding=="KOI8-R":
         encoding="LATIN1"
+    # Fix for #1336: since ISO-8859-2 is unlikely and UniversalDetector doesn't support ISO-8859-1, 
+    # we'll fallback to ISO-8859-1 if confidence is not high
+    if encoding=="ISO-8859-2" and confidence < 0.75:
+        encoding="ISO-8859-1"
 except Exception as err:
     encoding="None" # why not UTF8 here ?
     #sys.stderr.write(repr(err)+'\n')

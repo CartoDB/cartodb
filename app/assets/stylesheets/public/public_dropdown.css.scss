@@ -1,0 +1,24 @@
+
+// Public dropdown styles // --------------------------------------------------
+
+@import "../common/vars";
+// Default dropdown styles
+@import "../elements/dropdown";
+
+div.dropdown {
+  -webkit-transform: translate3d(0, 0, 10px) translateZ(10px);
+  z-index:1000;
+  
+  a {
+    color:#2483B4;
+    font-size: 13px;
+    text-decoration: none;
+    font-family: $text-fonts;
+
+    &:hover {
+      color:black;
+      text-decoration: underline;
+    }
+  }
+
+}

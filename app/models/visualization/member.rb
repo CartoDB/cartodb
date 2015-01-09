@@ -8,6 +8,7 @@ require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
 require_relative './relator'
+require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
@@ -29,6 +30,10 @@ module CartoDB
 
       CANONICAL_TYPE  = 'table'
       DERIVED_TYPE    =  'derived'
+
+      KIND_GEOM   = 'geom'
+      KIND_RASTER = 'raster'
+
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -45,6 +50,7 @@ module CartoDB
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/models/visualization/collection_spec.rb -> random_attributes
       # spec/models/visualization/member_spec.rb -> random_attributes
+      # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
       attribute :map_id,              String
@@ -64,6 +70,7 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :kind,                String, default: KIND_GEOM
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -77,6 +84,8 @@ module CartoDB
         @named_maps     = nil
         @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
+        # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
+        self.register_table_only = false
       end
 
       def default_privacy(owner)
@@ -150,14 +159,16 @@ module CartoDB
           end
         end
 
+        support_tables.delete_all
+
         invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
-        map.destroy if map
-        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
-        permission.destroy if permission
-        repository.delete(id)
+        safe_sequel_delete { map.destroy } if map
+        safe_sequel_delete { table.destroy } if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        safe_sequel_delete { permission.destroy } if permission
+        safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
         self
@@ -232,7 +243,8 @@ module CartoDB
       end
 
       def to_hash(options={})
-        Presenter.new(self, options.merge(real_privacy: true)).to_poro
+        presenter = Presenter.new(self, options.merge(real_privacy: true))
+        options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
       def to_vizjson
@@ -241,7 +253,8 @@ module CartoDB
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
-          viewer_user: user
+          viewer_user: user,
+          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
         }
         VizJSON.new(self, options, configuration).to_poro
       end
@@ -374,6 +387,33 @@ module CartoDB
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
       end
 
+      # @param user_id String UUID of the actor that likes the visualization
+      # @throws AlreadyLikedError
+      def add_like_from(user_id)
+        Like.create(actor: user_id, subject: id)
+        reload_likes
+        self
+      rescue Sequel::DatabaseError => exception
+        if exception.message =~ /duplicate key/i
+          raise AlreadyLikedError
+        else
+          raise exception
+        end
+      end
+
+      def remove_like_from(user_id)
+        item = likes.select { |like| like.actor == user_id }
+        item.first.destroy unless item.first.nil?
+        reload_likes
+        self
+      end
+
+      def liked_by?(user_id)
+        !(likes.select { |like| like.actor == user_id }.first.nil?)
+      end
+
+      attr_accessor :register_table_only
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -408,7 +448,7 @@ module CartoDB
         end
 
         # when visualization turns private remove the acl
-        if not organization? and privacy_changed
+        if privacy == PRIVACY_PRIVATE && permission.acl.size > 0 && privacy_changed
           permission.clear
         end
 
@@ -491,7 +531,11 @@ module CartoDB
       # @param table Table
       def propagate_name_to(table)
         table.name = self.name
+        table.register_table_only = self.register_table_only
         table.update(name: self.name)
+        if name_changed
+          support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
+        end
         self
       rescue => exception
         revert_name_change(old_name) if name_changed
@@ -561,6 +605,13 @@ module CartoDB
       def secure_digest(*args)
         #noinspection RubyArgCount
         Digest::SHA256.hexdigest(args.flatten.join)
+      end
+
+      def safe_sequel_delete
+        yield
+      rescue Sequel::NoExistingObject => exception
+        # INFO: don't fail on nonexistant object delete
+        CartoDB.notify_exception(exception)
       end
 
     end

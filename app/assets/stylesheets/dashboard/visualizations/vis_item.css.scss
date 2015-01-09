@@ -76,16 +76,27 @@
     // Info about the visualization
     .vis-desc {
       padding:22px 22px 10px;
+      @include clearfix();
 
       h3 {
+        float:left;
         display:block;
         max-width:100%;
       }
 
       p {
+        float: left;
+        clear:both;
         display:block;
         word-wrap:break-word;
       }
+    }
+
+    .LikeButton {
+      position:absolute;
+      padding: 10px;
+      top: 12px;
+      right: 12px;
     }
 
     .vis-shared {

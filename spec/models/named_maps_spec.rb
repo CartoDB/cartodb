@@ -706,7 +706,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-
       vizjson[:layers].size.should eq 2
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
@@ -724,7 +723,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:named_map][:params].include?(:layer0).should eq true
       vizjson[:layers][1][:options][:named_map][:params].include?(:layer1).should eq true
       vizjson[:layers][1][:options][:named_map][:params][:layer0].should eq 1
-      vizjson[:layers][1][:options][:named_map][:params][:layer1].should eq 1
+      vizjson[:layers][1][:options][:named_map][:params][:layer1].should eq 0
 
       vizjson[:layers][1][:options][:named_map][:layers].size.should eq 2
       vizjson[:layers][1][:options][:named_map][:layers][0].deep_symbolize_keys()
@@ -735,46 +734,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options][:named_map][:layers][1][:interactivity].should eq 'cartodb_id'
     end
   end #two_normal_layers
-
-  describe 'exception_raising_on_missing_tiler' do
-    it 'checks that if presenter has missing tiler config throws exceptions' do
-
-      expect {
-        CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
-            tiler: {}
-        })
-      }.to raise_exception(CartoDB::NamedMapsWrapper::NamedMapsPresenterError)
-
-      expect {
-        CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
-            tiler: {
-                'internal' => { a: 1 }
-            }
-        })
-      }.to raise_exception(CartoDB::NamedMapsWrapper::NamedMapsPresenterError)
-
-      expect {
-        CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
-            tiler: {
-                'internal'  => { a: 1 },
-                'private'   => { a: 1 }
-            }
-        })
-      }.to raise_exception(CartoDB::NamedMapsWrapper::NamedMapsPresenterError)
-
-      presenter = CartoDB::NamedMapsWrapper::Presenter.new(nil, {}, {
-          tiler: {
-              'internal'  => { a: 1 },
-              'private'   => { a: 1 },
-              'public'    => { a: 1 }
-          }
-      })
-
-      presenter.should_not eq nil
-
-    end
-  end #exception_raising_on_missing_tiler
-
 
   private
 

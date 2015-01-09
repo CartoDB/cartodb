@@ -1,4 +1,10 @@
 # encoding: utf-8
+require_relative './url/arcgis'
+require_relative './url/dropbox'
+require_relative './url/gdrive'
+require_relative './url/instagram_oauth'
+require_relative './url/public_url'
+require_relative 'search/twitter'
 
 module CartoDB
   module Datasources
@@ -17,6 +23,7 @@ module CartoDB
         # @return mixed
         # @throws MissingConfigurationError
         def self.get_datasource(datasource_name, user, additional_config = {})
+
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME
               Url::Dropbox.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
@@ -67,11 +74,21 @@ module CartoDB
           if includes_customized_config
             custom_config_orgs = config[datasource_name].fetch(:customized_orgs_list.to_s, [])
             custom_config_users = config[datasource_name][:customized_user_list.to_s]
-            if (!user.organization.nil? && custom_config_orgs.include?(user.organization.name)) \
-               || custom_config_users.include?(user.username)
-              config[datasource_name][:customized.to_s]
+
+            if !user.organization.nil? && custom_config_orgs.include?(user.organization.name)
+              key = user.organization.name
+            elsif custom_config_users.include?(user.username)
+              key = user.username
             else
+              key = nil
+            end
+
+            if key.nil?
               config[datasource_name][:standard.to_s]
+            else
+              # This code assumes config is ok
+              name_config_map = config[datasource_name]['entity_to_config_map'].select { |u| !u[key].nil? }.first
+              config[datasource_name][:customized.to_s][name_config_map[key]]
             end
           else
             config.fetch(datasource_name)

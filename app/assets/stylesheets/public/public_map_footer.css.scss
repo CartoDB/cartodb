@@ -1,0 +1,60 @@
+
+/**
+ *  Public map footer styles
+ *
+ */
+
+@import "../common/vars";
+
+.cartodb-footer {
+  font-size:13px;
+  font-family: $text-fonts;
+  color: #999999;
+  background: #F6F6F6;
+  border-top: 1px solid #D1D1D1;
+  padding: 40px 0;
+
+  a {
+    font-size:13px;
+    color: #2483B2;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      color: #333;
+    }
+  }
+
+  .embed-left-col .content { border-right: none }
+}
+
+
+
+// Hello media queries
+
+@media only screen and (max-width: 710px) {
+
+  div.cartodb-footer .inner .embed-left-col  {
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  div.cartodb-footer .inner .embed-right-col  {
+    text-align: center;
+  }
+
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+
+  div.cartodb-footer .inner .embed-left-col  {
+    float:left;
+    width: 50%;
+  }
+
+  div.cartodb-footer .inner .embed-right-col  {
+    float: right;
+    width: 50%;
+    text-align:right;
+  }
+}

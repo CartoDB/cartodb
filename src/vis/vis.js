@@ -357,7 +357,7 @@ var Vis = cdb.core.View.extend({
 
     // if the viz.json contains slides, discard the main viz.json and use the slides
     var slides = data.slides;
-    if (slides.length > 0) {
+    if (slides && slides.length > 0) {
       data = slides[0]
       data.slides = slides.slice(1);
     }
@@ -559,7 +559,7 @@ var Vis = cdb.core.View.extend({
       if (options.legends === undefined) {
         options.legends = this.legends ? true : false;
       }
-      this.addMobile(data.overlays, data.layers, options);
+      this.addMobile(data.overlays, data.layers, data.slides, options);
     }
 
     if (data.slides) {
@@ -794,7 +794,7 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addMobile: function(overlays, data_layers, options) {
+  addMobile: function(overlays, data_layers, slides, options) {
 
     var layers;
     var layer = data_layers[1];

@@ -1,5 +1,14 @@
-@import "../new_common/mixins";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
 
+.DeleteItems-affectedEntities {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.DeleteItems-affectedEntitiesAvatar {
+  margin-left: $sMargin-min;
+}
 .DeleteItems-footer {
   @include display-flex();
   @include justify-content(center, center);

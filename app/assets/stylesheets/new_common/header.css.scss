@@ -2,9 +2,9 @@
 // - Tipical Header view
 // --------------------------------------------------
 
-@import "mixins";
-@import "colors";
-@import "sizes";
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
 
 /* Header */
 .Header {

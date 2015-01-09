@@ -52,22 +52,64 @@
 
   };
 
-  cdb.image.Image = cdb.core.Model.extend({
-
-    ajax: window.$ ? window.$.ajax : reqwest.compat,
-
+  ImageModel = cdb.core.Model.extend({
     defaults: {
-      width: 320,
+      format: "png",
+      width:  320,
       height: 240
-    },
+    }
+  });
 
-    initialize: function() {
+  var Image = function() {
 
-      var self = this;
+    var self = this;
 
-      this.endpoint = "http://santiago-st.cartodb-staging.com/api/v1/map";
+    this.model = new ImageModel();
 
-    },
+    this.layers = [];
+
+    var one = {
+      "type": "mapnik",
+      "options": {
+        "sql": "select null::geometry the_geom_webmercator",
+        "cartocss": "#layer {\n\tpolygon-fill: #FF3300;\n\tpolygon-opacity: 0;\n\tline-color: #333;\n\tline-width: 0;\n\tline-opacity: 0;\n}",
+        "cartocss_version": "2.2.0"
+      }
+    };
+
+    this.layers.push(one);
+
+    options = {}
+
+    this.options = _.defaults(options, {
+      ajax: window.$ ? window.$.ajax : reqwest.compat,
+      pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
+      gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
+      cors: this.isCORSSupported(),
+      btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
+      MAX_GET_SIZE: 2033,
+      force_cors: false,
+      instanciateCallback: function() {
+        return '_cdbc_' + self._callbackName();
+      }
+    });
+
+    this.layerToken = null;
+    this.urls = null;
+    this.silent = false;
+    this.interactionEnabled = []; //TODO: refactor, include inside layer
+    this._layerTokenQueue = [];
+    this._timeout = -1;
+    this._queue = [];
+    this._waiting = false;
+    this.lastTimeUpdated = null;
+    this._refreshTimer = -1;
+
+    this.endpoint = "http://santiago-st.cartodb-staging.com/api/v1/map"; // TODO: replace with the real one
+
+  };
+
+  Image.prototype = _.extend({}, Map.prototype, {
 
     load: function(vizjson) {
 
@@ -76,15 +118,19 @@
       cdb.image.Loader.get(vizjson, function(data){
 
         if (data) {
-          self.set("zoom", data.zoom);
-          self.set("center", data.center);
-          self.set("bounds", data.bounds);
+          self.model.set("zoom", data.zoom);
+          self.model.set("center", data.center);
+          self.model.set("bounds", data.bounds);
         }
 
       });
 
       return this;
 
+    },
+
+    toJSON: function() {
+      return this.layers[0];
     },
 
     loadLayerDefinition: function(layer_definition) {
@@ -111,7 +157,7 @@
 
         if (data) {
 
-          self.set("layergroupid", data.layergroupid)
+          self.model.set("layergroupid", data.layergroupid)
           console.log(data.layergroupid);
 
           self.queue.flush(this);
@@ -123,7 +169,7 @@
 
     _requestPOST: function(params, callback) {
 
-      this.ajax({
+      this.options.ajax({
         crossOrigin: true,
         type: 'POST',
         method: 'POST',
@@ -172,7 +218,19 @@
       var self = this;
 
       this.queue.add(function() {
-        self.set("zoom", zoom);
+        self.model.set({ zoom: zoom });
+      });
+
+      return this;
+
+    },
+
+    bbox: function(bbox) {
+
+      var self = this;
+
+      this.queue.add(function() {
+        self.model.set({ bbox: bbox });
       });
 
       return this;
@@ -184,7 +242,19 @@
       var self = this;
 
       this.queue.add(function() {
-        self.set("center", center);
+        self.model.set({ center: center });
+      });
+
+      return this;
+
+    },
+
+    format: function(format) {
+
+      var self = this;
+
+      this.queue.add(function() {
+        self.model.set({ format: format });
       });
 
       return this;
@@ -196,10 +266,19 @@
       var self = this;
 
       this.queue.add(function() {
-        self.set({ width: width, height: height });
+        self.model.set({ width: width, height: height });
       });
 
       return this;
+
+    },
+
+    getUrl: function(callback) {
+
+      this.queue.add(function(response) {
+        console.log(response);
+        // document.write goes here
+      });
 
     },
 
@@ -208,24 +287,11 @@
       var self = this;
 
       this.queue.add(function() {
-        console.log(self.attributes);
+        console.log(1, self.attributes);
+        // document.write goes here
       });
 
       return this;
-
-      /*var self = this;
-      if (!this.loaded) {
-        cdb.image.Loader.get(this.get("vizjson"), function(data){
-          console.log(data)
-          self.loaded = true;
-
-          if (data) {
-            self.set("zoom", data.zoom);
-            self.set("center", data.center);
-            self.set("bounds", data.bounds);
-          }
-        });
-      }*/
     }
 
 
@@ -233,7 +299,11 @@
 
   cdb.Image = function(data) {
 
-    var image = new cdb.image.Image();
+    //var image = new cdb.image.Image();
+
+    var image = new Image();
+
+    //image.load(data);
 
     if (typeof data === 'string') {
       image.load(data);

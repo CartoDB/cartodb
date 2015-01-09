@@ -554,13 +554,6 @@ var Vis = cdb.core.View.extend({
     }
     this._setLayerOptions(options);
 
-    if (this.mobile_enabled) {
-      if (options.legends === undefined) {
-        options.legends = this.legends ? true : false;
-      }
-      this.addMobile(data, options);
-    }
-
     if (data.slides) {
       function odysseyLoaded() {
         self._createSlides([data].concat(data.slides));
@@ -571,6 +564,13 @@ var Vis = cdb.core.View.extend({
       } else {
         odysseyLoaded();
       }
+    }
+
+    if (this.mobile_enabled) {
+      if (options.legends === undefined) {
+        options.legends = this.legends ? true : false;
+      }
+      this.addMobile(data, options);
     }
 
     _.defer(function() {

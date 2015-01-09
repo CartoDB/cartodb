@@ -31,7 +31,6 @@ class SessionsController < ApplicationController
       # TODO: improve this, since this sometimes triggers user validation twice (first for getting the domain if not present)
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
-        # INFO: user == false implies not valid access token
         user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
         authenticate!(:google_access_token, scope: user_domain)
       elsif user == false

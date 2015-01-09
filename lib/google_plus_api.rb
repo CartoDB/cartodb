@@ -62,8 +62,7 @@ class GooglePlusConfig
 
     @signup_action = signup_action
 
-    iframe_host = config[:account_host].present? ? config[:account_host] : @domain
-    @iframe_src = "#{schema}://#{iframe_host}/google_plus"
+    @iframe_src = config[:account_host].present? ? "#{schema}://#{config[:account_host]}/google_plus" : "#{@domain}/google_plus"
 
     @access_token_field_id = access_token_field_id
 

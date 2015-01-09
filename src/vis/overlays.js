@@ -32,6 +32,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
+    slides: data.slides,
     layerView: data.layerView,
     visibility_options: data.options,
     torqueLayer: data.torqueLayer,

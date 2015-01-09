@@ -548,19 +548,11 @@ var Vis = cdb.core.View.extend({
 
     this.overlayModels.reset(data.overlays);
 
-
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {
       this._setupSublayers(data.layers, options);
     }
     this._setLayerOptions(options);
-
-    if (this.mobile_enabled) {
-      if (options.legends === undefined) {
-        options.legends = this.legends ? true : false;
-      }
-      this.addMobile(data.overlays, data.layers, data.slides, options);
-    }
 
     if (data.slides) {
       function odysseyLoaded() {
@@ -572,6 +564,13 @@ var Vis = cdb.core.View.extend({
       } else {
         odysseyLoaded();
       }
+    }
+
+    if (this.mobile_enabled) {
+      if (options.legends === undefined) {
+        options.legends = this.legends ? true : false;
+      }
+      this.addMobile(data, options);
     }
 
     _.defer(function() {
@@ -804,10 +803,10 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addMobile: function(overlays, data_layers, slides, options) {
+  addMobile: function(data, options) {
 
     var layers;
-    var layer = data_layers[1];
+    var layer = data.layers[1];
 
     if (layer.options && layer.options.layer_definition) {
       layers = layer.options.layer_definition.layers;
@@ -818,7 +817,8 @@ var Vis = cdb.core.View.extend({
     this.addOverlay({
       type: 'mobile',
       layers: layers,
-      overlays: overlays,
+      slides: data.slides,
+      overlays: data.overlays,
       options: options,
       torqueLayer: this.torqueLayer
     });

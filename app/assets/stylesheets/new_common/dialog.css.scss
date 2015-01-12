@@ -42,6 +42,11 @@
     color: $cTypography-secondary;
   }
 }
+.Dialog-content {
+}
+.Dialog-content.is-newContent {
+  @include animation(fade-and-scale-in 100ms ease-out);
+}
 .Dialog-header {
   text-align: center;
   padding: $sMargin-group 0;

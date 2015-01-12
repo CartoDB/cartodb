@@ -20,7 +20,7 @@ describe('LeafletMapView', function() {
 
     spy = {
       zoomChanged: function(){},
-      keyboard: function(){},
+      keyboardChanged: function(){},
       centerChanged: function(){},
       changed: function() {}
     };

@@ -172,6 +172,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.hasLayerSelector = false;
+
+    this.hasSlides = this.options.slides_data ? true : false;
+
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     this.visibility_options = this.options.visibility_options || {};
@@ -180,13 +183,30 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.map      = this.mapView.map;
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-    this.overlays = this.options.overlays;
+
+    this._selectOverlays();
 
     this._setupModel();
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
     this._addWheelEvent();
+
+  },
+
+  _selectOverlays: function() {
+
+    if (this.hasSlides && this.options.slides) { // if there are slides…
+
+      var state = this.options.slides.state();
+
+      if (state == 0) this.overlays = this.options.overlays; // first slide == master vis
+      else {
+        this.overlays = this.options.slides_data[state - 1].overlays;
+      }
+    } else { // otherwise we load the regular overlays
+      this.overlays = this.options.overlays;
+    }
 
   },
 
@@ -751,7 +771,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderSlidesController: function() {
 
-    if (this.options.slides) {
+    if (this.hasSlides) {
 
       this.slidesController = new cdb.geo.ui.MobileSlideController({
         slides_data: this.options.slides_data,

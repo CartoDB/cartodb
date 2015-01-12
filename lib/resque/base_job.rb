@@ -1,9 +1,11 @@
 # encoding: utf-8
 
 require 'sequel'
+require 'resque-metrics'
 
 module Resque
   class BaseJob
+    extend ::Resque::Metrics
     MAX_RETRIES = 3
 
     @@queue = ''

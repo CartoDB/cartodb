@@ -13,11 +13,11 @@ module CartoDB
 
         attr_reader :service_name
 
-        def initialize(message = 'General error', service = UNKNOWN_SERVICE)
+        def initialize(message = 'General error', service = UNKNOWN_SERVICE, username = nil)
           @service_name  = service
-
           message = "#{message}"
           message << " @ #{@service_name}" if @service_name != UNKNOWN_SERVICE
+          message << " User: #{username}" unless username.nil?
           super(message)
         end
       end
@@ -29,11 +29,21 @@ module CartoDB
       class DataDownloadError           < DatasourceBaseError; end
       class MissingConfigurationError   < DatasourceBaseError; end
       class UninitializedError          < DatasourceBaseError; end
+      class NoResultsError              < DatasourceBaseError; end
       class ParameterError              < DatasourceBaseError; end
-      class ServiceDisabledError        < DatasourceBaseError; end
+
       class OutOfQuotaError             < DatasourceBaseError; end
       class InvalidInputDataError       < DatasourceBaseError; end
       class ResponseError               < DatasourceBaseError; end
       class ExternalServiceError        < DatasourceBaseError; end
+
+      class ServiceDisabledError < DatasourceBaseError
+        def initialize(service = UNKNOWN_SERVICE, username = nil)
+          super("Service disabled", service, username)
+        end
+      end
+
+      class DropboxPermissionError      < DatasourceBaseError; end
+
   end
 end

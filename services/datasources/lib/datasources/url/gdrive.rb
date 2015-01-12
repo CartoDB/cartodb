@@ -80,7 +80,8 @@ module CartoDB
         # @return string | nil
         def get_auth_url(use_callback_flow=true)
           if use_callback_flow
-            @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
+            @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
+                                                                         .sub('service', DATASOURCE_NAME)
           else
             @client.authorization.redirect_uri = REDIRECT_URI
           end
@@ -159,7 +160,7 @@ module CartoDB
             batch_request.add(
               api_method: @drive.files.list,
               parameters: {
-                trashed:  'false',
+                trashed:  false,
                 q:        "mime_type = '#{mime_type}'",
                 fields:   FIELDS_TO_RETRIEVE
               }

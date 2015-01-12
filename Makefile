@@ -4,7 +4,7 @@ all:
 	bundle install
 	# I cannot remmeber why gdal is being skipped from this list...
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
-	cd lib/build && npm install && cd ../..
+	npm install
 
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
@@ -30,6 +30,7 @@ WORKING_SPECS_2 = \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   spec/lib/image_metadata_spec.rb \
+  spec/lib/central_spec.rb \
   $(NULL)
 
 WORKING_SPECS_3 = \
@@ -43,8 +44,10 @@ WORKING_SPECS_3 = \
   services/importer/spec/acceptance/shp_spec.rb \
   services/importer/spec/acceptance/sql_spec.rb \
   services/importer/spec/acceptance/zip_spec.rb \
+  services/importer/spec/acceptance/raster2pgsql_spec.rb \
   services/importer/spec/unit/column_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
+	services/importer/spec/unit/shp_normalizer_spec.rb \
   services/importer/spec/unit/downloader_spec.rb \
   services/importer/spec/unit/georeferencer_spec.rb \
   services/importer/spec/unit/importer_stats_spec.rb \
@@ -116,8 +119,7 @@ WORKING_SPECS_8 = \
   spec/models/shared_entity_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
-  # Warning, run only 'uses locked filter' as the others fail
-  spec/requests/api/visualizations_spec.rb:630 \
+  spec/requests/api/visualizations_spec.rb \
   $(NULL)
 
 WORKING_SPECS_9 = \
@@ -127,7 +129,7 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
   $(NULL)
-  
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
@@ -160,7 +162,7 @@ check-prepared: check-1 check-2 check-3 check-4 check-5 check-6 check-7 check-8 
 
 check: prepare-test-db check-prepared
 check-frontend:
-	cd lib/build && grunt test
+	grunt test
 
 travis: check-frontend check
 

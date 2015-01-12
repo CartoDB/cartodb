@@ -181,7 +181,9 @@ module CartoDB
         # @throws InvalidServiceError
         # @throws ServiceDisabledError
         def get_resource_metadata(id)
-          raise ServiceDisabledError.new("Service disabled", DATASOURCE_NAME) unless @user.arcgis_datasource_enabled?
+          unless @user.nil?
+            raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.arcgis_datasource_enabled?
+          end
 
           if is_multiresource?(id)
             @url = sanitize_id(id)
@@ -251,10 +253,10 @@ module CartoDB
             @metadata = {
               arcgis_version:             data.fetch(:currentVersion),
               name:                       data.fetch(:name),
-              description:                data.fetch(:description),
+              description:                data.fetch(:description, ''),
               type:                       data.fetch(:type),
               geometry_type:              data.fetch(:geometryType),
-              copyright:                  data.fetch(:copyrightText),
+              copyright:                  data.fetch(:copyrightText, ''),
               fields:                     data.fetch(:fields).map{ |field|
                 {
                   name: field['name'],
@@ -263,7 +265,7 @@ module CartoDB
               },
               max_records_per_query:      data.fetch(:maxRecordCount, 500),
               supported_formats:          data.fetch(:supportedQueryFormats).gsub(' ', '').split(','),
-              advanced_queries_supported: data.fetch(:supportsAdvancedQueries)
+              advanced_queries_supported: data.fetch(:supportsAdvancedQueries, false)
             }
           rescue => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")

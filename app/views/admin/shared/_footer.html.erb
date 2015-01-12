@@ -1,3 +1,4 @@
+<% unless (current_user.feature_flags.include? 'new_dashboard') && params[:controller] == 'admin/visualizations' %>
 <footer>
   <div class="inner">
     <nav class="left">
@@ -10,3 +11,4 @@
     <p class="right">CartoDB is a product of <%= link_to "Vizzuality", "http://vizzuality.com", :target => "blank" %></p>
   </div>
 </footer>
+<% end %>

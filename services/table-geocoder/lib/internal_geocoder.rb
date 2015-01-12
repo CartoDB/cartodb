@@ -95,8 +95,10 @@ module CartoDB
           qualified_table_name,
           nil, # use default logger
           'InternalGeocoder::copy_results_to_table',
+          false, # do not capture exceptions,
+          batch_size
         )
-      end # copy_results_to_table
+      end
 
       def drop_temp_table
         connection.run("DROP TABLE IF EXISTS #{temp_table_name}")

@@ -25,7 +25,12 @@ module CartoDB
         @from_geojson_with_transform = false
         @options = options
         @tracker = @options[:tracker] || lambda { |state| state }
-        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options)
+        @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options, @job)
+        @importer_stats = ImporterStats.instance
+      end
+
+      def set_importer_stats(importer_stats)
+        @importer_stats = importer_stats
       end
 
       def mark_as_from_geojson_with_transform
@@ -108,13 +113,26 @@ module CartoDB
       def create_the_geom_from_country_guessing
         return false if not @content_guesser.enabled?
         job.log 'Trying country guessing...'
-        @tracker.call('guessing')
-        country_column_name = @content_guesser.country_column
-        if country_column_name
-          job.log "Found country column: #{country_column_name}"
-          return geocode_countries country_column_name
+        begin
+          country_column_name = nil
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            country_column_name = @content_guesser.country_column
+            @tracker.call('importing')
+          end
+          if country_column_name
+            job.log "Found country column: #{country_column_name}"
+            create_the_geom_in table_name
+            return geocode_countries country_column_name
+          end
+        rescue Exception => ex
+          message = "create_the_geom_from_country_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
+          return false
         end
-        return false
       end
 
       #TODO these two methods are very similar, refactor
@@ -131,23 +149,27 @@ module CartoDB
       end
 
       def geocode_countries country_column_name
-        job.log "Geocoding countries..."
-        @tracker.call('geocoding')
-        create_the_geom_in(table_name)
-        config = @options[:geocoder].merge(
-          table_schema: schema,
-          table_name: table_name,
-          qualified_table_name: qualified_table_name,
-          connection: db,
-          formatter: country_column_name,
-          geometry_type: 'polygon',
-          kind: 'admin0',
-          max_rows: nil,
-          country_column: nil
-        )
-        geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-        geocoder.run
-        job.log "Geocoding finished"
+        geocoder = nil
+        @importer_stats.timing('geocoding') do
+          job.log "Geocoding countries..."
+          @tracker.call('geocoding')
+          create_the_geom_in(table_name)
+          config = @options[:geocoder].merge(
+            table_schema: schema,
+            table_name: table_name,
+            qualified_table_name: qualified_table_name,
+            connection: db,
+            formatter: country_column_name,
+            geometry_type: 'polygon',
+            kind: 'admin0',
+            max_rows: nil,
+            country_column: nil
+          )
+          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+          geocoder.run
+          @tracker.call('importing')
+          job.log "Geocoding finished"
+        end
         geocoder.state == 'completed'
       end
 

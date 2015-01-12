@@ -56,12 +56,13 @@ module CartoDB
 
       def geometrify
         job.log 'geometrifying'
-        raise                               if empty?
+        raise "empty column #{column_name}" if empty?
         convert_from_wkt                    if wkt?
         convert_from_kml_multi              if kml_multi?
         convert_from_kml_point              if kml_point?
         convert_from_geojson_with_transform if geojson? && @from_geojson_with_transform
         convert_from_geojson                if geojson?
+
         cast_to('geometry')
         convert_to_2d
         job.log 'geometrified'
@@ -84,111 +85,25 @@ module CartoDB
       end
 
       def convert_from_geojson_with_transform
-        temp_col = 'temporal_the_geom'
-        threshold = 150000              #hectares
-
-        # 1) Add temp column for storing temporal geometries
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} ADD #{temp_col} geometry DEFAULT NULL;
-        })
-
-        # 2) Cast to proper null the geom column
+        # 1) cast to proper null the geom column
         db.run(%Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} = NULL
           WHERE #{column_name} = ''
         })
 
-        # 3) Populate temp column, empty the_geom
+        # 2) Normal geojson behavior
         QueryBatcher::execute(
           db,
           %Q{
             UPDATE #{qualified_table_name}
-            SET #{temp_col} = ST_Envelope(
-              ST_SetSRID(
-                ST_GeomFromGeoJSON(#{column_name})
-              , #{DEFAULT_SRID})
-            ),
-            #{column_name} = NULL
-            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE
-              #{column_name} IS NOT NULL
-              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
           },
           qualified_table_name,
           job,
-          'Creating temporally geometry to convert from GeoJSON',
+          'Converting geometry from GeoJSON with transform to WKB',
           @capture_exceptions
         )
-
-        # 4) delete geometries with bounding boxes greater than allowed threshold
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET
-              #{temp_col} = NULL
-            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE
-              #{temp_col} IS NOT NULL
-              AND ST_area(#{temp_col}::geography)/10000 > #{threshold}
-              #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-          },
-          qualified_table_name,
-          job,
-          'Removing too big bounding boxes',
-          capture_exceptions=false
-        )
-
-        # 5) grab random point inside valid bounding boxes and store into the_geom
-        begin
-          QueryBatcher::execute(
-              db,
-              %Q{
-              UPDATE #{qualified_table_name}
-              SET #{column_name} =
-                ST_SetSRID(
-                  ST_MakePoint(
-                    ST_XMin(#{temp_col}) + (ST_XMax(#{temp_col}) - ST_XMin(#{temp_col})) * random(),
-                    ST_YMin(#{temp_col}) + (ST_YMax(#{temp_col}) - ST_YMin(#{temp_col})) * random()
-                  )
-                , #{DEFAULT_SRID})
-              #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-              WHERE
-                ST_GeometryType(#{temp_col}) = 'ST_Polygon'
-                #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-            },
-              qualified_table_name,
-              job,
-              'Converting geometry from GeoJSON (transforming polygons to points) to WKB',
-              capture_exceptions=false
-          )
-        rescue => exception
-          job.log "Error generating points inside bounding boxes: #{exception.to_s}"
-        end
-
-        # 6) copy normal points into the_geom
-        QueryBatcher::execute(
-          db,
-          %Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} =
-            ST_SetSRID(#{temp_col}, #{DEFAULT_SRID})
-          #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-          WHERE
-            ST_GeometryType(#{temp_col}) = 'ST_Point'
-            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-          },
-          qualified_table_name,
-          job,
-          'Converting geometry from GeoJSON (transforming points) to WKB',
-          @capture_exceptions
-        )
-
-        # 7) Remove temp column
-        db.run(%Q{
-          ALTER TABLE #{qualified_table_name} DROP #{temp_col};
-        })
 
         self
       end

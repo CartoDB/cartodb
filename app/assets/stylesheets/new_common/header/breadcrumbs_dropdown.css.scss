@@ -1,0 +1,21 @@
+@import "../../new_variables/mixins";
+@import "../../new_variables/colors";
+@import "../../new_variables/sizes";
+
+.BreadcrumbsDropdown {
+  min-width: 200px;
+}
+.BreadcrumbsDropdown-sameline {
+  @include display-flex();
+  @include flex-wrap(nowrap);
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.BreadcrumbsDropdown-item {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+}
+.BreadcrumbsDropdown-lockIcon {
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-help;
+}

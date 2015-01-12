@@ -15,27 +15,27 @@ module DataRepository
         ::Sequel.extension(:pagination)
         ::Sequel.extension(:connection_validator)
         @db.extension :pg_array if postgres?(@db)
-      end #initialize
+      end
 
       def collection(filters={}, available_filters=[])
         apply_filters(db[relation], filters, available_filters)
-      end #collection
+      end
 
       def store(key, data={})
         naive_upsert_exposed_to_race_conditions(data)
-      end #store
+      end
 
       def fetch(key)
         parse( db[relation].where(id: key).first )
-      end #fetch
+      end
 
       def delete(key)
         db[relation].where(id: key).delete
-      end #delete
+      end
 
       def next_id
         UUIDTools::UUID.timestamp_create
-      end #next_id
+      end
 
       def apply_filters(dataset, filters={}, available_filters=[])
         return dataset if filters.nil? || filters.empty?
@@ -48,10 +48,10 @@ module DataRepository
         dataset.where(filters)
       end
 
-      def paginate(dataset, filter={})
+      def paginate(dataset, filter={}, record_count=nil)
         page, per_page = pagination_params_from(filter)
-        dataset.paginate(page, per_page)
-      end #paginate
+        dataset.paginate(page, per_page, record_count)
+      end
 
       private
 
@@ -60,15 +60,15 @@ module DataRepository
       def naive_upsert_exposed_to_race_conditions(data={})
         data = send("serialize_for_#{backend_type}", data)
         insert(data) unless update(data)
-      end #naive_upsert_exposed_to_race_conditions
+      end
 
       def insert(data={})
         db[relation].insert(data)
-      end #insert
+      end
 
       def update(data={})
         db[relation].where(id: data.fetch(:id)).update(data) != 0
-      end #update
+      end
 
       def serialize_for_postgres(data)
         Hash[
@@ -77,7 +77,7 @@ module DataRepository
             [key, value]
           }
         ]
-      end #serialize_for_postgres
+      end
 
       def serialize_for_other_database(data={})
         Hash[
@@ -86,16 +86,15 @@ module DataRepository
             [key, value]
           }
         ]
-      end #serialize_for_other_database
+      end
 
       def backend_type
-        return :postgres if postgres?(db)
-        return :other_database
-      end #backend_type
+        postgres?(db) ? :postgres : :other_database
+      end
 
       def postgres?(db)
         db.database_type == :postgres
-      end #postgres?
+      end
 
       def parse(attributes={})
         return unless attributes
@@ -107,23 +106,23 @@ module DataRepository
             [key, value]
           end
         ]
-      end #parse
+      end
 
       def symbolize_elements(array=[])
         array.map { |k| k.to_sym}
-      end #symbolize_elements
+      end
 
       def symbolize_keys(hash={})
         Hash[ hash.map { |k, v| [k.to_sym, v] } ]
-      end #symbolize_keys
+      end
 
       def pagination_params_from(filter)
         page      = (filter.delete(:page)      || PAGE).to_i
         per_page  = (filter.delete(:per_page)  || PER_PAGE).to_i
 
         [page, per_page]
-      end #pagination_params_from
-    end # Sequel
-  end # Backend
-end # DataRepository
+      end
+    end
+  end
+end
 

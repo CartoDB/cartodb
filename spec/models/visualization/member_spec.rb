@@ -4,6 +4,7 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
+require_relative '../../doubles/support_tables.rb'
 
 include CartoDB
 
@@ -26,6 +27,9 @@ describe Visualization::Member do
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+
+    support_tables_mock = Doubles::Visualization::SupportTables.new
+    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
   end
 
   describe '#initialize' do
@@ -511,15 +515,73 @@ describe Visualization::Member do
     end
   end #default_privacy_values
 
-  it 'should not allow to change permission from the outside' do
-    @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
-    member = Visualization::Member.new(random_attributes({user_id: @user.id}))
-    member.store
-    member = Visualization::Member.new(id: member.id).fetch
-    member.permission.should_not be nil
-    member.permission_id = UUIDTools::UUID.timestamp_create.to_s
-    member.valid?.should eq false
-    @user.destroy
+  describe '#permissions' do
+    it 'should not allow to change permission from the outside' do
+      @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+      member = Visualization::Member.new(random_attributes({user_id: @user.id}))
+      member.store
+      member = Visualization::Member.new(id: member.id).fetch
+      member.permission.should_not be nil
+      member.permission_id = UUIDTools::UUID.timestamp_create.to_s
+      member.valid?.should eq false
+      @user.destroy
+    end
+  end
+
+  describe '#likes' do
+    it 'should properly relate likes to a visualization' do
+      user_id = UUIDTools::UUID.timestamp_create.to_s
+      user_mock = mock
+      user_mock.stubs(:id).returns(user_id)
+
+      user_id_2 = UUIDTools::UUID.timestamp_create.to_s
+      user_id_3 = UUIDTools::UUID.timestamp_create.to_s
+      user_id_4 = UUIDTools::UUID.timestamp_create.to_s
+
+      member = Visualization::Member.new(random_attributes({user_id: user_id}))
+      member.store.fetch
+
+      member.likes.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq false
+
+      member.add_like_from(user_id_2)
+      member.likes.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq true
+      member.liked_by?(user_id_3).should eq false
+
+      expect {
+        member.add_like_from(user_id_2)
+      }.to raise_error AlreadyLikedError
+
+      member.add_like_from(user_id_3)
+      member.likes.count.should eq 2
+      member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_3 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq true
+      member.liked_by?(user_id_3).should eq true
+
+      member.remove_like_from(user_id_3)
+
+      member.likes.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_3 }.count.should eq 0
+      member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
+      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
+
+      member.liked_by?(user_id_2).should eq true
+      member.liked_by?(user_id_3).should eq false
+
+      member.remove_like_from(user_id_2)
+      member.likes.count.should eq 0
+
+      member.remove_like_from(user_id_2)
+
+    end
   end
 
   def random_attributes(attributes={})
@@ -534,7 +596,8 @@ describe Visualization::Member do
       active_layer_id: random,
       title:        attributes.fetch(:title, ''),
       source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, '')
+      license:      attributes.fetch(:license, ''),
+      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM)
     }
   end #random_attributes
 end # Visualization

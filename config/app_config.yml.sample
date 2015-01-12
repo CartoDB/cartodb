@@ -6,7 +6,7 @@ defaults: &defaults
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
-  account_host:       'localhost:3000'
+  account_host:       'localhost.lan:3000'
   account_path:       '/account'
   watcher:
     ttl:              60
@@ -102,15 +102,17 @@ defaults: &defaults
       api_key: ''
       table_name: ''
   importer:
-    content_guessing:    # Depends on geocoding
-      enabled:     false # Disabled if false or not present
-      threshold:   0.8   # 80% or more matches
-      sample_size: 400   # +-5% error. See http://en.wikipedia.org/wiki/Sample_size_determination#Estimating_proportions_and_means
+    content_guessing:        # Depends on geocoding
+      enabled:         false # Disabled if false or not present
+      threshold:       0.9   # 90% or more matches
+      minimum_entropy: 0.9   # Normalized entropy, between 0.0 and 1.0. See http://en.wikipedia.org/wiki/Entropy_(information_theory)
+      sample_size:     400   # +-5% error. See http://en.wikipedia.org/wiki/Sample_size_determination#Estimating_proportions_and_means
     s3:
       access_key_id:
       secret_access_key:
       bucket_name:
       url_ttl:
+      async_long_uploads: false
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
@@ -188,6 +190,9 @@ defaults: &defaults
     api_key: ""
     app_id: ""
   enforce_non_empty_layer_css: true
+  users_dumps:
+    service:
+      port: 00000
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
@@ -201,6 +206,12 @@ defaults: &defaults
       app_secret:           ''
       callback_url:         ''
     instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    # Mailchimp datasource. Setup at https://admin.mailchimp.com/account/oauth2/ then fill here.
+    # If fields are present but empty, option won't appear at editor import window
+    mailchimp:
       app_key:              ''
       app_secret:           ''
       callback_url:         ''
@@ -229,6 +240,13 @@ defaults: &defaults
             ratelimit_concurrency:  3
             ratelimit_ttl:          4
             ratelimit_wait_secs:    0.1
+  feature_flags:
+    ghost_tables:
+      restricted: true 
+    rainbow_maps:
+      restricted: false
+  user_feature_flags:
+    rambo:    ['ghost_tables']
 
 development:
   <<: *defaults

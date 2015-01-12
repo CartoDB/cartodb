@@ -206,14 +206,26 @@
 
       &.arcgis {
         width:37px;
-        height:43px;
+        height:40px;
         @include elements-sprite(create-tabs-icons, $offset-x:-253px);
+      }
+
+      &.salesforce {
+        width:50px;
+        height:40px;
+        @include elements-sprite(create-tabs-icons, $offset-x:-328px, $offset-y:1px);
       }
 
       &.instagram {
         width:37px;
         height:43px;
         @include elements-sprite(create-tabs-icons, $offset-x:-290px);
+      }
+
+      &.mailchimp {
+        width:33px;
+        height:36px;
+        @include elements-sprite(create-tabs-icons, $offset-x:-378px);
       }
 
       &.error {

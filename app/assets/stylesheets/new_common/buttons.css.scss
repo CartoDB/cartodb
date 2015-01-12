@@ -1,0 +1,58 @@
+// Buttons
+// --------------------------------------------------
+
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+$buttonBorderSize: 1px;
+
+.Button {
+  @include display-flex();
+  @include align-items(center, center);
+  border-radius: $sButton-borderRadius;
+  padding: 0 29px;
+  text-decoration:none;
+  text-align: center;
+  height: $sButton-height;
+}
+.Button,
+.Button span {
+  font-size: $sFontSize-smallUpperCase;
+  line-height: $sLineHeight-button;
+  font-weight: $sFontWeight-bold;
+  color: white;
+  text-transform: uppercase;
+}
+.Button {
+  border: $buttonBorderSize solid $cStructure-mainBkg;
+}
+.Button:hover,
+.Button span:hover { text-decoration:none }
+.Button--main {
+  background-color: $cHighlight-main;
+  border-color: $cHighlight-main;
+  &:hover { background-color: rgba(#007FBD, 1) }
+}
+.Button--positive {
+  background-color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
+  &:hover { background-color: rgba(#7FA538, 1) }
+}
+.Button--negative {
+  background-color: $cHighlight-negative;
+  border-color: $cHighlight-negative;
+  &:hover { background-color: rgba(#B93F37, 1) }
+}
+.Button--secondary {
+  border: $sButton-border solid #CCCCCC;
+  color: #666666;
+  background-color: rgba(white, 1);
+  &:hover {
+    background-color: rgba(#CCCCCC, 1);
+    color:white;
+  }
+}
+.Button--secondary span {
+  color: #666666;
+}

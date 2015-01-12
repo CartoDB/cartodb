@@ -20,7 +20,7 @@ $dashboard-sprites: sprite-map("sprites/dashboard/*.png",
   $dashboard-download_dataset-spacing:        40px,
   $dashboard-download_dataset_people-spacing: 40px
 );
- 
+
 // All sprites should extend this class
 // The dashboard-sprite mixin will do so for you.
 #{$dashboard-sprite-base-class} {

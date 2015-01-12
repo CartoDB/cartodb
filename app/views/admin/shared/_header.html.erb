@@ -1,7 +1,8 @@
+<% unless (current_user.feature_flags.include? 'new_dashboard') && params[:controller] == 'admin/visualizations' %>
 <header>
   <div class="inner">
     <h1 class="left"><%= link_to "CartoDB", dashboard_path(user_domain: params[:user_domain], trailing_slash: true) %></h1>
-    <ul class="right">      
+    <ul class="right">
       <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
       <li><%= link_to 'visualizations', visualizations_index_path(user_domain: params[:user_domain]), :class => :visualizations %></a></li>
       <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path.include? 'common_data') %></a></li>
@@ -12,5 +13,5 @@
     </ul>
   </div>
 </header>
-
 <%= yield :account_settings %>
+<% end %>

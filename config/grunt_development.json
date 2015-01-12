@@ -1,0 +1,6 @@
+{
+  "browserify_debug": true,
+  "browserify_watch": false,
+  "use_minify": false,
+  "http_path_prefix": ""
+}

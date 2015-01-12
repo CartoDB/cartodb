@@ -1,0 +1,28 @@
+// Default styles
+// --------------------------------------------------
+
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: $cStructure-mainBkg;
+  font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} 'Lato', sans-serif;
+}
+
+ul { list-style: none }
+
+a {
+  text-decoration: none;
+  color: $cTypography-link;
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: underline;
+  }
+}
+
+i { font-style: normal }

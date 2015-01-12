@@ -34,7 +34,7 @@ module CartoDB
         }
         limit_subquery_fragment = %Q{
            #{table_name}.CTID IN (
-            SELECT CTID FROM #{table_name} WHERE #{temp_column} != TRUE LIMIT #{batch_size}
+            SELECT CTID FROM #{table_name} WHERE #{temp_column} IS NULL LIMIT #{batch_size}
           )
         }
 
@@ -62,7 +62,7 @@ module CartoDB
         end
 
         log.log "FINISHED: #{log_message}"
-      end #self.execute
+      end
 
       def self.process_batched_query(db_object, batched_query, log, capture_exceptions)
         total_rows_processed = 0
@@ -82,28 +82,24 @@ module CartoDB
         end while affected_rows_count > 0
       end
 
-      def self.add_processed_column(db_object, table_name, column_name)
-        db_object.run(%Q{
-         ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN DEFAULT FALSE;
-        })
-        db_object.run(%Q{
-          CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name})
-        })
-      end #self.add_processed_column
+      def self.add_processed_column(db, table_name, column_name)
+        db.run(%Q{ALTER TABLE #{table_name} ADD #{column_name} BOOLEAN;})
+        db.run(%Q{CREATE INDEX idx_#{column_name} ON #{table_name} (#{column_name});})
+      end
 
       def self.remove_processed_column(db_object, table_name, column_name)
         db_object.run(%Q{
          ALTER TABLE #{table_name} DROP #{column_name};
         })
-      end # self.remove_processed_column
+      end
 
-    end #QueryBatcher
+    end
 
     class ConsoleLog
       def log(message)
         puts message
-      end #log
-    end #ConsoleLog
+      end
+    end
 
-  end #Importer2
-end #CartoDB
+  end
+end

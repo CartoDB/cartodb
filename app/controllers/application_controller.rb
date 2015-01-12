@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
   after_filter  :remove_flash_cookie
+  after_filter  :add_revision_header
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
@@ -168,8 +169,32 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def add_revision_header
+    response.headers['X-CartoDB-Rev'] = CartoDB::CARTODB_REV unless CartoDB::CARTODB_REV.nil?
+  end
+
   def current_user
     super(CartoDB.extract_subdomain(request))
+  end
+
+  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
+  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
+  # - Else: the first session found at request.session that comes from warden
+  def current_viewer
+    if @current_viewer.nil?
+      authenticated_usernames = request.session.select {|k,v| k.start_with?("warden.user")}.values
+      current_user_present = authenticated_usernames.select { |username|
+        CartoDB.extract_subdomain(request) == username
+      }.first
+
+      if current_user_present.nil?
+        authenticated_username = authenticated_usernames.first
+        @current_viewer = authenticated_username.nil? ? nil : User.where(username: authenticated_username).first
+      else
+        @current_viewer = current_user
+      end
+    end
+    @current_viewer
   end
 
   protected :current_user

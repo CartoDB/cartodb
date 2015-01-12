@@ -66,13 +66,19 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
-    it 'is invalid with a "layergroup" name' do
+    it 'is renames "layergroup" to "layergroup_t"' do
       table         = Table.new
       table.user_id = @user.id
       table.name    = 'layergroup'
+      table.valid?.should == true
+    end
 
-      table.valid?.should == false
-      table.errors.fetch(:name).first.should =~ /reserved keyword/
+    it 'renames "all" to "all_t"' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'all'
+      table.name.should eq 'all_t'
+      table.valid?.should == true
     end
 
     it "should set a table_id value" do
@@ -1412,6 +1418,17 @@ describe Table do
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table.geometry_types.should == ['ST_Point']
+
+      # Now remove the_geom and should not break
+      @user.in_database.run(%Q{
+                                ALTER TABLE #{table.name} DROP COLUMN the_geom CASCADE;
+                              })
+      # Schema gets cached, force reload
+      table.reload
+      table.schema(reload:true)
+      table.geometry_types.should == []
+
+      table.destroy
     end
 
     it "returns null values at the end when ordering desc" do

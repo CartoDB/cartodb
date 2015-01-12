@@ -20,7 +20,7 @@ module CartoDB
         sample  = data.read(CHARACTER_LIMIT)
         data.close
 
-        raise KmlNetworkLinkError if sample =~ /NetworkLink/
+        raise KmlNetworkLinkError if sample =~ /NetworkLink.*href.*NetworkLink/m
         self
       end
 

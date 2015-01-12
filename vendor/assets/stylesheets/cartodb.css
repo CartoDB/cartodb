@@ -1995,11 +1995,11 @@ only screen and (                min-resolution: 2dppx) {
   width: 50px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.time {
-  width: 80px;
+  width: 120px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.last {
   position:absolute;
-  left:145px;
+  left: 180px;
   right: 10px;
 }
 .cartodb-mobile div.cartodb-timeslider ul li.controls a.button {
@@ -2588,19 +2588,15 @@ div.cartodb-zoom-info {
 /* Tiles loader control */
 
 div.cartodb-tiles-loader {
-  position:relative;
   float:left;
   display:block;
-  left:0;
-  top:0;
+  clear: both;
 }
 
 div.cartodb-tiles-loader div.loader {
-  position:absolute;
+  position:relative;
   display:block;
-  top:70px;
-  left:-30px;
-  margin:20px 0 0 0;
+  margin: 15px 0 0 20px;
   width: 28px;
   height:28px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
@@ -3078,7 +3074,7 @@ div.cartodb-timeslider a.button.stop:hover {
 }
 
 div.cartodb-timeslider p {
-  width:75px;
+  width:120px;
   height:40px;
   margin:0;
   padding:0 5px 0 0;
@@ -3307,6 +3303,105 @@ div.cartodb-timeslider p {
   src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(//themes.googleusercontent.com/static/fonts/robotoslab/v3/dazS1PrQQuCxC3iOAJFEJRbnBKKEOwRKgsHDreGcocg.woff) format('woff');
 }
 
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(//fonts.gstatic.com/s/lato/v11/8qcEw_nrk_5HEcCpYdJu8BTbgVql8nDJpwnrE27mub0.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(//fonts.gstatic.com/s/lato/v11/MDadn8DQ_3oT6kvnUq_2rxTbgVql8nDJpwnrE27mub0.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url(//fonts.gstatic.com/s/lato/v11/rZPI2gHXi8zxUjnybc2ZQFKPGs1ZzpMvnHX-7fPOuAc.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url(//fonts.gstatic.com/s/lato/v11/MgNNr5y1C_tIEuLEmicLm1KPGs1ZzpMvnHX-7fPOuAc.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lato Italic'), local('Lato-Italic'), url(//fonts.gstatic.com/s/lato/v11/cT2GN3KRBUX69GVJ2b2hxn-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lato Italic'), local('Lato-Italic'), url(//fonts.gstatic.com/s/lato/v11/1KWMyx7m-L0fkQGwYhWwun-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Lato Bold Italic'), local('Lato-BoldItalic'), url(//fonts.gstatic.com/s/lato/v11/AcvTq8Q0lyKKNxRlL28Rn4X0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Lato Bold Italic'), local('Lato-BoldItalic'), url(//fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYEIX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+@font-face {
+  font-family: 'Graduate';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Graduate'), local('Graduate-Regular'), url(//fonts.gstatic.com/s/graduate/v4/xBquLOzic3rRbJsTs3BiEBkAz4rYn47Zy2rvigWQf6w.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+@font-face {
+  font-family: 'Old Standard TT';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Old Standard TT Regular'), local('OldStandardTT-Regular'), url(//fonts.gstatic.com/s/oldstandardtt/v7/n6RTCDcIPWSE8UNBa4k-DLF-2NVkvf-rOuDmUqmzvVM.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'Old Standard TT';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Old Standard TT Bold'), local('OldStandardTT-Bold'), url(//fonts.gstatic.com/s/oldstandardtt/v7/5Ywdce7XEbTSbxs__4X1_C-wBZwrdXnFg8S-xRZijWL3rGVtsTkPsbDajuO5ueQw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: 'Old Standard TT';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Old Standard TT Italic'), local('OldStandardTT-Italic'), url(//fonts.gstatic.com/s/oldstandardtt/v7/QQT_AUSp4AV4dpJfIN7U5L2K6DRqiD5gep8WjK7yGlo.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+@font-face {
+  font-family: 'Gravitas One';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Gravitas One'), local('GravitasOne'), url(//fonts.gstatic.com/s/gravitasone/v6/nBHdBv6zVNU8MtP6w9FwTRVuXpl7XtNjpLlhhhGlVqc.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+
 /* HELVETICA */
 .cartodb-overlay.overlay-text .content > .text { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400; }
 .cartodb-overlay.overlay-text .content > .text strong { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 700; }
@@ -3326,6 +3421,22 @@ div.cartodb-timeslider p {
 /* OPEN SANS */
 .cartodb-overlay.overlay-text.open_sans .content > .text { font-family: 'Open Sans', sans-serif; font-weight: 400; }
 .cartodb-overlay.overlay-text.open_sans .content > .text strong { font-family: 'Open Sans', sans-serif; font-weight: 700; }
+
+/* LATO */
+.cartodb-overlay.overlay-text.lato .content > .text { font-family: 'Lato', sans-serif; font-weight: 400;}
+.cartodb-overlay.overlay-text.lato .content > .text strong { font-family: 'Lato', sans-serif; font-weight: 700; }
+
+/* GRADUATE */
+.cartodb-overlay.overlay-text.graduate .content > .text { font-family: 'Graduate', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-text.graduate .content > .text strong { font-family: 'Graduate', sans-serif; font-weight: 400; }
+
+/* OLD STANDARD TT */
+.cartodb-overlay.overlay-text.old_standard_tt .content > .text { font-family: 'Old Standard TT', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-text.old_standard_tt .content > .text strong { font-family: 'Old Standard TT', sans-serif; font-weight: 700; }
+
+/* GRAVITAS ONE */
+.cartodb-overlay.overlay-text.gravitas_one .content > .text { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
+.cartodb-overlay.overlay-text.gravitas_one .content > .text strong { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
@@ -3492,14 +3603,14 @@ div.cartodb-timeslider .slider-wrapper {
   zoom: 1;
   *display: inline;
   vertical-align:top;
-  width:298px;
+  width:253px;
   height:4px;
   _height:4px;
   padding:18px 15px;
 }
 
 div.cartodb-timeslider .slider {
-  width:298px;
+  width:253px;
   height:4px;
 }
 

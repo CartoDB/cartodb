@@ -154,7 +154,7 @@ module CartoDB
         @options[:guessing][:threshold]
       end
 
-      def is_text_type? column
+      def is_country_column_type? column
         ['character varying', 'varchar', 'text'].include? column[:data_type]
       end
 

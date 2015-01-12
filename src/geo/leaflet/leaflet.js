@@ -324,8 +324,8 @@
     addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
       if(pos !== undefined) {
-        if(v.setZIndex) {
-          v.setZIndex(pos);
+        if (layer_view.setZIndex) {
+          layer_view.setZIndex(pos);
         }
       }
     },

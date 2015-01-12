@@ -413,6 +413,48 @@ describe('api.layers', function() {
 
       });
 
+      it("should have several 'addTo' with zIndex set", function(done) {
+        var layer;
+        var layer2;
+
+        cartodb.createLayer(map, {
+          type: 'cartodb',
+          sublayers: [{
+            sql: 'select * from table',
+            cartocss: 'test',
+            interactivity: 'testi'
+          }]
+        })
+        .addTo(map,0)
+        .done(function(lyr) {
+          layer = lyr;
+        });
+
+        cartodb.createLayer(map, {
+          type: 'cartodb',
+          sublayers: [{
+            sql: 'select * from table2',
+            cartocss: 'test2',
+            interactivity: 'testii'
+          }]
+        })
+        .addTo(map,1)
+        .done(function(lyr) {
+          layer2 = lyr;
+        });
+
+        setTimeout(function() {
+          expect(layer).not.toEqual(undefined);
+          if(map.overlayMapTypes) {
+            expect(layer).toBe(map.overlayMapTypes.getAt(0));
+          } else {
+            expect(layer).toBe(map._layers[L.stamp(layer)]);
+          }
+          done();
+        }, 100);
+
+      });
+
     //});
 
     });

@@ -77,10 +77,20 @@ module CartoDB
         @importer_stats.gauge('country_proportion', proportion)
       end
 
+      def log_ip_guessing_match_metrics(proportion)
+        @importer_stats.gauge('ip_proportion', proportion)
+      end
+
       def is_ip_column?(column)
         return false unless is_text_type? column
         return false unless metric_entropy(column) > minimum_entropy
-        return ip_proportion(column) > threshold
+        proportion  = ip_proportion(column)
+        if proportion > threshold
+          log_ip_guessing_match_metrics(proportion)
+          true
+        else
+          false
+        end
       end
 
 

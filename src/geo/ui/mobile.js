@@ -751,11 +751,16 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderSlidesController: function() {
 
-    this.slidesController = new cdb.geo.ui.MobileSlideController({
-      slides_data: this.options.slides_data,
-      slides: this.options.slides
-    });
-    this.$el.append(this.slidesController.render().$el);
+    if (this.options.slides) {
+
+      this.slidesController = new cdb.geo.ui.MobileSlideController({
+        slides_data: this.options.slides_data,
+        slides: this.options.slides
+      });
+
+      this.$el.append(this.slidesController.render().$el);
+
+    }
 
   },
 

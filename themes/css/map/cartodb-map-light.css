@@ -393,6 +393,7 @@ only screen and (                min-resolution: 2dppx) {
 /* MOBILE */
 
 .cartodb-mobile {
+  position:absolute;
   width: 100%;
   height: 100%;
   z-index: 100000000;
@@ -941,6 +942,51 @@ only screen and (                min-resolution: 2dppx) {
 }
 .cartodb-mobile .cartodb-attribution-button:hover:before {
   border: 3px solid rgba(0, 0, 0, 0.7);
+}
+.cartodb-mobile .cartodb-mobile-slides-controller {
+  position:absolute;
+  bottom: 20px;
+  left: 50%;
+  width: 200px;
+  margin-left: -100px;
+  z-index: 100;
+}
+.cartodb-mobile .cartodb-mobile-slides-controller {
+  position:absolute;
+  bottom: 20px;
+  left: 50%;
+  width: 200px;
+  margin-left: -100px;
+  text-align: center;
+  z-index: 100;
+}
+.cartodb-mobile .cartodb-mobile-slides-controller a.prev {
+  margin: 5px;
+}
+.cartodb-mobile .cartodb-mobile-slides-controller a {
+  margin: 0 10px 0 10px;
+  vertical-align: middle;
+  zoom: 1;
+  display: -moz-inline-stack;
+  display: inline-block;
+  zoom: 1;
+
+  padding: 10px;
+  color: #999999;
+  text-align: center;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #999999;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border: 4px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+}
+
+.cartodb-mobile .cartodb-mobile-slides-controller a:hover {
+  color: #333;
 }
 
 /* LEGENDS */
@@ -2261,7 +2307,7 @@ div.cartodb-timeslider p {
 
 /* LATO */
 .cartodb-overlay.overlay-text.lato .content > .text { font-family: 'Lato', sans-serif; font-weight: 400;}
-.cartodb-overlay.overlay-text.lato .content > .text strong { font-weight: 700; }
+.cartodb-overlay.overlay-text.lato .content > .text strong { font-family: 'Lato', sans-serif; font-weight: 700; }
 
 /* GRADUATE */
 .cartodb-overlay.overlay-text.graduate .content > .text { font-family: 'Graduate', sans-serif; font-weight: 400; }
@@ -2269,7 +2315,7 @@ div.cartodb-timeslider p {
 
 /* OLD STANDARD TT */
 .cartodb-overlay.overlay-text.old_standard_tt .content > .text { font-family: 'Old Standard TT', sans-serif; font-weight: 400; }
-.cartodb-overlay.overlay-text.old_standard_tt .content > .text strong { font-weight: 700; }
+.cartodb-overlay.overlay-text.old_standard_tt .content > .text strong { font-family: 'Old Standard TT', sans-serif; font-weight: 700; }
 
 /* GRAVITAS ONE */
 .cartodb-overlay.overlay-text.gravitas_one .content > .text { font-family: 'Gravitas One', sans-serif; font-weight: 400; }

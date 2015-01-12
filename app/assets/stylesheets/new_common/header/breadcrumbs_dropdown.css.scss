@@ -3,7 +3,7 @@
 @import "../../new_variables/sizes";
 
 .BreadcrumbsDropdown {
-  min-width: 200px;
+  width: 260px;
 }
 .BreadcrumbsDropdown-sameline {
   @include display-flex();

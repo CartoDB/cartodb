@@ -139,8 +139,12 @@ module CartoDB
         return false if not @content_guesser.enabled?
         job.log 'Trying ip guessing...'
         begin
-          @tracker.call('guessing')
-          ip_column_name = @content_guesser.ip_column
+          ip_column_name = nil
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            ip_column_name = @content_guesser.ip_column
+            @tracker.call('importing')
+          end
           if ip_column_name
             job.log "Found ip column: #{ip_column_name}"
             return geocode_ips ip_column_name

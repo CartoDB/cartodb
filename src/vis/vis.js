@@ -219,7 +219,7 @@ var Vis = cdb.core.View.extend({
     _.defer(loaded);
   },
 
-  /* addLegends: function(layers) {
+  addLegends: function(layers) {
 
     if (this.legends) {
       this.legends.remove();
@@ -230,24 +230,6 @@ var Vis = cdb.core.View.extend({
     });
 
     if (!this.mobile_enabled) {
-      this.mapView.addOverlay(this.legends);
-    }
-
-  },*/
-
-  addLegends: function(layers) {
-
-    if (this.legends) {
-      this.legends.remove();
-    }
-
-    this.legends = null;
-
-    if (!this.mobile_enabled) {
-      var legends = this.createLegendView(layers);//layers.map(function(lyr) { return lyr.attributes; }))
-      this.legends = new cdb.geo.ui.StackedLegend({
-        legends: legends
-      });
       this.mapView.addOverlay(this.legends);
     }
 

@@ -1,5 +1,6 @@
 require 'typhoeus'
 require_relative './google_plus_api_user_data'
+require_relative './google_plus_config'
 
 class GooglePlusAPI
 

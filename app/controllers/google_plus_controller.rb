@@ -24,8 +24,9 @@ class GooglePlusController < ApplicationController
     user = User.new
     user.username = username
     user.email = email
-    user.password = 'dummy'
-    user.password_confirmation = 'dummy'
+    dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
+    user.password = dummy_password
+    user.password_confirmation = dummy_password
     user.save(raise_on_failure: true)
     user.create_in_central
 

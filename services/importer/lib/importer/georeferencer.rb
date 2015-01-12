@@ -135,17 +135,24 @@ module CartoDB
         end
       end
 
-      #TODO these two methods are very similar, refactor
       def create_the_geom_from_ip_guessing
         return false if not @content_guesser.enabled?
         job.log 'Trying ip guessing...'
-        @tracker.call('guessing')
-        ip_column_name = @content_guesser.ip_column
-        if ip_column_name
-          job.log "Found ip column: #{ip_column_name}"
-          return geocode_ips ip_column_name
+        begin
+          @tracker.call('guessing')
+          ip_column_name = @content_guesser.ip_column
+          if ip_column_name
+            job.log "Found ip column: #{ip_column_name}"
+            return geocode_ips ip_column_name
+          end
+        rescue Exception => ex
+          message = "create_the_geom_from_ip_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
+          return false
         end
-        return false
       end
 
       def geocode_countries country_column_name

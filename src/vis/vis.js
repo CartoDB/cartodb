@@ -219,21 +219,14 @@ var Vis = cdb.core.View.extend({
     _.defer(loaded);
   },
 
-  /* remove
-  _addLayers: function(layers, options) {
-    for(var i = 0; i < layers.length; ++i) {
-      var layerData = layers[i];
-      this.loadLayer(layerData, options);
-    }
-  },
-  */
-
   addLegends: function(layers) {
 
     if (this.legends) {
       this.legends.remove();
     }
+
     this.legends = null;
+
     if (!this.mobile_enabled) {
       var legends = this.createLegendView(layers);//layers.map(function(lyr) { return lyr.attributes; }))
       this.legends = new cdb.geo.ui.StackedLegend({
@@ -294,6 +287,7 @@ var Vis = cdb.core.View.extend({
     while (this.overlays.length !== 0) {
       this.overlays.pop().clean();
     }
+
     this._createOverlays(overlays, options);
   },
 
@@ -528,7 +522,7 @@ var Vis = cdb.core.View.extend({
 
     this.overlayModels.bind('reset', function(overlays, options) {
       this._addOverlays(overlays, options);
-      this._addMobile(data);
+      this._addMobile(data, options);
     }, this);
 
     this.mapView.bind('newLayerView', this._addLoading, this);
@@ -574,17 +568,6 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
-
-  },
-
-  _addMobile: function(data, options) {
-
-    if (this.mobile_enabled) {
-      if (options && options.legends === undefined) {
-        options.legends = this.legends ? true : false;
-      }
-      this.addMobile(data, options);
-    }
 
   },
 
@@ -809,25 +792,31 @@ var Vis = cdb.core.View.extend({
 
   },
 
-  addMobile: function(data, options) {
+  _addMobile: function(data, options) {
 
     var layers;
     var layer = data.layers[1];
 
-    if (layer.options && layer.options.layer_definition) {
-      layers = layer.options.layer_definition.layers;
-    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
-      layers = layer.options.named_map.layers;
-    }
+    if (this.mobile_enabled) {
+      if (options && options.legends === undefined) {
+        options.legends = this.legends ? true : false;
+      }
 
-    this.addOverlay({
-      type: 'mobile',
-      layers: layers,
-      slides: data.slides,
-      overlays: data.overlays,
-      options: options,
-      torqueLayer: this.torqueLayer
-    });
+      if (layer.options && layer.options.layer_definition) {
+        layers = layer.options.layer_definition.layers;
+      } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
+        layers = layer.options.named_map.layers;
+      }
+
+      this.addOverlay({
+        type: 'mobile',
+        layers: layers,
+        slides: data.slides,
+        overlays: data.overlays,
+        options: options,
+        torqueLayer: this.torqueLayer
+      });
+    }
 
   },
 

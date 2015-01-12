@@ -599,17 +599,6 @@ var Vis = cdb.core.View.extend({
     return false;
   },
 
-  _addFullScreen: function() {
-
-    this.addOverlay({
-      options: {
-        allowWheelOnFullscreen: true
-      },
-      type: 'fullscreen'
-    });
-
-  },
-
   _createSlides: function(slides) {
 
       function BackboneActions(model) {
@@ -764,30 +753,33 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+      if (!this.mobile_enabled) {
 
-      if (!this.mobile_enabled && (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined)) overlay.show();
+        if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
+        if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+        if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
-      if (!this.mobile_enabled && type === 'header') {
+        if (type === 'header') {
 
-        var m = overlay.model;
+          var m = overlay.model;
 
-        if (options.title !== undefined) {
-          m.set("show_title", options.title);
+          if (options.title !== undefined) {
+            m.set("show_title", options.title);
+          }
+
+          if (options.description !== undefined) {
+            m.set("show_description", options.description);
+          }
+
+          if (m.get('show_title') || m.get('show_description')) {
+            $(".cartodb-map-wrapper").addClass("with_header");
+          }
+
+          overlay.render();
         }
-
-        if (options.description !== undefined) {
-          m.set("show_description", options.description);
-        }
-
-        if (m.get('show_title') || m.get('show_description')) {
-          $(".cartodb-map-wrapper").addClass("with_header");
-        }
-
-        overlay.render();
       }
+
 
     }, this);
 

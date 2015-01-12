@@ -189,6 +189,8 @@ defaults: &defaults
   gdrive: 
     api_key: ""
     app_id: ""
+  olark: 
+    app_id: ''
   enforce_non_empty_layer_css: true
   users_dumps:
     service:

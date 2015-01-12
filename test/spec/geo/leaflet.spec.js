@@ -410,7 +410,7 @@ describe('LeafletMapView', function() {
         expect(view.options.tms).toEqual(false);
       });
 
-      it("should change keyboard", function() {
+      xit("should change keyboard", function() {
         mapView._setKeyboard(null, false);
         expect(spy.keyboardChanged).toHaveBeenCalled();
       });

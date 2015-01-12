@@ -42,8 +42,8 @@
         // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
 
-        // Disable the scrollwheel
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+        if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
 
       } else {
 
@@ -184,6 +184,14 @@
 
       // do not change by elder
       cdb.core.View.prototype.clean.call(this);
+    },
+
+    _setKeyboard: function(model, z) {
+      if (z) {
+        this.map_leaflet.keyboard.enable();
+      } else {
+        this.map_leaflet.keyboard.disable();
+      }
     },
 
     _setScrollWheel: function(model, z) {

@@ -20,14 +20,17 @@ describe('LeafletMapView', function() {
 
     spy = {
       zoomChanged: function(){},
+      keyboard: function(){},
       centerChanged: function(){},
       changed: function() {}
     };
 
     spyOn(spy, 'zoomChanged');
+    spyOn(spy, 'keyboardChanged');
     spyOn(spy, 'centerChanged');
     spyOn(spy, 'changed');
     map.bind('change:zoom', spy.zoomChanged);
+    map.bind('change:keyboard', spy.keyboardChanged);
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
   });
@@ -406,6 +409,12 @@ describe('LeafletMapView', function() {
       it("shouldn't use osgeo's TMS setting", function() {
         expect(view.options.tms).toEqual(false);
       });
+
+      it("should change keyboard", function() {
+        mapView._setKeyboard(null, false);
+        expect(spy.keyboardChanged).toHaveBeenCalled();
+      });
+
     });
   });
 

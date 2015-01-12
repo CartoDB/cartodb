@@ -269,6 +269,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     minZoom: 0,
     maxZoom: 40,
     scrollwheel: true,
+    keyboard: true,
     provider: 'leaflet'
   },
 
@@ -297,6 +298,18 @@ cdb.geo.Map = cdb.core.Model.extend({
   setZoom: function(z) {
     this.set({
       zoom: z
+    });
+  },
+
+  enableKeyboard: function() {
+    this.set({
+      keyboard: true
+    });
+  },
+
+  disableKeyboard: function() {
+    this.set({
+      keyboard: false
     });
   },
 
@@ -642,6 +655,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
+    this.map.bind('change:keyboard',        this._setKeyboard, this);
     this.map.bind('change:center',          this._setCenter, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },
@@ -652,6 +666,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.unbind('change:view_bounds_ne',  null, this);
     this.map.unbind('change:zoom',            null, this);
     this.map.unbind('change:scrollwheel',     null, this);
+    this.map.unbind('change:keyboard',        null, this);
     this.map.unbind('change:center',          null, this);
     this.map.unbind('change:attribution',     null, this);
   },

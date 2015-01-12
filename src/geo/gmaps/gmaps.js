@@ -120,6 +120,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this._isReady = true;
     },
 
+    _setKeyboard: function(model, z) {
+      this.map_googlemaps.setOptions({ keyboardShortcuts: z });
+    },
+
     _setScrollWheel: function(model, z) {
       this.map_googlemaps.setOptions({ scrollwheel: z });
     },

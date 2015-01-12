@@ -219,6 +219,22 @@ var Vis = cdb.core.View.extend({
     _.defer(loaded);
   },
 
+  /* addLegends: function(layers) {
+
+    if (this.legends) {
+      this.legends.remove();
+    }
+
+    this.legends = new cdb.geo.ui.StackedLegend({
+      legends: this.createLegendView(layers)
+    });
+
+    if (!this.mobile_enabled) {
+      this.mapView.addOverlay(this.legends);
+    }
+
+  },*/
+
   addLegends: function(layers) {
 
     if (this.legends) {
@@ -553,15 +569,20 @@ var Vis = cdb.core.View.extend({
     this._setLayerOptions(options);
 
     if (data.slides) {
+
+      this.map.disableKeyboard();
+
       function odysseyLoaded() {
         self._createSlides([data].concat(data.slides));
       };
+
       if (cartodb.odyssey === undefined) {
         cdb.config.bind('moduleLoaded:odyssey', odysseyLoaded);
         Loader.loadModule('odyssey');
       } else {
         odysseyLoaded();
       }
+
     }
 
     _.defer(function() {

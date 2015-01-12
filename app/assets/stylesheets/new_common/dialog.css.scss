@@ -16,9 +16,11 @@
   background-color: $cStructure-mainBkg;
   @include opacity(0.9);
   /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
+}
+.Dialog.is-opening {
   @include animation(fade-and-scale-in 100ms ease-out);
 }
-.Dialog--closing {
+.Dialog.is-closing {
   /* "forwards" to keep the last keyframe's styles after animation ended */
   @include animation(fade-and-scale-out 80ms ease-in forwards);
 }

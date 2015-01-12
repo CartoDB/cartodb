@@ -277,6 +277,7 @@ var Vis = cdb.core.View.extend({
   },
 
   _addOverlays: function(overlays, options) {
+
     overlays = overlays.toJSON();
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function(overlay) {
@@ -520,7 +521,7 @@ var Vis = cdb.core.View.extend({
 
     map.layers.bind('reset', this.addLegends, this);
 
-    this.overlayModels.bind('reset', function(overlays, options) {
+    this.overlayModels.bind('reset', function(overlays) {
       this._addOverlays(overlays, options);
       this._addMobile(data, options);
     }, this);

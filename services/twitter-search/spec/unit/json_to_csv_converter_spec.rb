@@ -6,6 +6,7 @@ include CartoDB::TwitterSearch
 describe JSONToCSVConverter do
   describe '#conversion' do
     it 'checks conversion of fields' do
+      pending 'Need to extract new sample datasets'
       conversor = JSONToCSVConverter.new
 
       results = conversor.process(json_data_from_file('sample_tweets.json'))
@@ -13,6 +14,7 @@ describe JSONToCSVConverter do
     end
 
     it 'checks additional fields are added' do
+      pending 'Need to extract new sample datasets'
       conversor = JSONToCSVConverter.new
 
       additional_fields = {

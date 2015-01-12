@@ -193,6 +193,7 @@ module CartoDB
       def calculate_the_geom(row)
         output = nil
 
+        # Point
         if !row[:geo].nil? && !row[:geo].empty?
           # Twitter/Gnip bug: They give GeoJSON-like with (lat,lon) point, so transform to proper GeoJSON (lon,lat)
           # Only happens here, location geo is fine, bounding boxes are fine, geo-enrichment is fine too
@@ -200,22 +201,21 @@ module CartoDB
           row[:geo][:coordinates][0] = row[:geo][:coordinates][1]
           row[:geo][:coordinates][1] = lat
           output = ::JSON.dump(row[:geo])
-        elsif !row[:location].nil? && !row[:location].empty? \
-           && !row[:location][:geo].nil?  && !row[:location][:geo].empty?
+        # Bounding box (no longer used)
+        #elsif !row[:location].nil? && !row[:location].empty? && !row[:location][:geo].nil?  &&
+        #      !row[:location][:geo].empty?
+        #  output = ::JSON.dump(row[:location][:geo])
 
-          output = ::JSON.dump(row[:location][:geo])
-
-          # Geo-enrichment
-        elsif !row[:gnip].nil? && !row[:gnip].empty? \
-           && !row[:gnip][:profileLocations].nil? && !row[:gnip][:profileLocations].empty?
+        # Geo-enrichment
+        elsif !row[:gnip].nil? && !row[:gnip].empty? && !row[:gnip][:profileLocations].nil? &&
+              !row[:gnip][:profileLocations].empty?
 
           row[:gnip][:profileLocations].each { |location|
             # Store first point found (only)
-            if !location[:geo].nil? && !location[:geo].empty? && !location[:geo][:type].nil? \
-               && !location[:geo][:type].empty? && location[:geo][:type] == 'point' && output.nil?
+            if !location[:geo].nil? && !location[:geo].empty? && !location[:geo][:type].nil? &&
+               !location[:geo][:type].empty? && location[:geo][:type] == 'point' && output.nil?
 
               output = ::JSON.dump(location[:geo])
-
             end
           }
         end

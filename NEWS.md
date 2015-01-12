@@ -1,3 +1,19 @@
+3.8.0 (2015-01-xx)
+------------------
+* Mailchimp user lists importer dataset.
+  New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
+  Requires also a feature_flag enabled either globally or to a specific users: 'mailchimp_import'
+* Added icon font source ([how to make changes](http://github.com/CartoDB/cartodb/blob/master/app/assets/fonts/icon_font/README.md))
+
+
+3.7.1 (2014-12-30)
+------------------
+* New features
+  - GET /api/v1/viz/ always sorts by descending order if `order` param set, and this supports new filters: `mapviews`, `likes`, `size`, `row_count`
+  - GET /api/v1/viz/ returns more totals:
+        `total_likes` (visualizations count with likes, filtered to public for unauthenticated calls,
+        `total_shared` (visualizations count shared to the user, 0 for unauthenticated calls)
+
 3.7.0 (2014-12-18)
 ------------------
 * New features

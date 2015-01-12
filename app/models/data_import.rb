@@ -383,7 +383,6 @@ class DataImport < Sequel::Model
       {}
     else
       {
-        raster_import_active:   Cartodb.config.fetch(:raster_import_active, nil),
         ogr2ogr_binary:         options['binary'],
         ogr2ogr_csv_guessing:   options['csv_guessing'] && self.type_guessing,
         quoted_fields_guessing: self.quoted_fields_guessing

@@ -3,6 +3,7 @@ require_relative './url/arcgis'
 require_relative './url/dropbox'
 require_relative './url/gdrive'
 require_relative './url/instagram_oauth'
+require_relative './url/mailchimp'
 require_relative './url/public_url'
 require_relative 'search/twitter'
 
@@ -35,6 +36,8 @@ module CartoDB
               Url::PublicUrl.get_new
             when Url::ArcGIS::DATASOURCE_NAME
               Url::ArcGIS.get_new(user)
+            when Url::MailChimp::DATASOURCE_NAME
+              Url::MailChimp.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Search::Twitter::DATASOURCE_NAME
               Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user),
                                       user, additional_config[:redis_storage])
@@ -56,7 +59,8 @@ module CartoDB
           includes_customized_config = false
 
           case datasource_name
-            when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME
+            when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
+                 Url::MailChimp::DATASOURCE_NAME
               config = (config_source[:oauth] rescue nil)
               config ||= (config_source[:oauth.to_s] rescue nil)
             when Search::Twitter::DATASOURCE_NAME

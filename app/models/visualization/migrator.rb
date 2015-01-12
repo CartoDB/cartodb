@@ -15,7 +15,7 @@ module CartoDB
           String    :id, primary_key: true
           String    :name
           String    :description
-          String    :map_id, index: true
+          UUID      :map_id, index: true
           String    :active_layer_id
           String    :type
           String    :privacy

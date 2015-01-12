@@ -27,7 +27,7 @@ module CartoDB
           tags: visualization.tags,
           description: visualization.description,
           privacy: privacy_for_vizjson.upcase,
-          stats: visualization.stats(user),
+          stats: visualization.stats,
           created_at: visualization.created_at,
           updated_at: visualization.updated_at,
           permission: permission.nil? ? nil : permission.to_poro,

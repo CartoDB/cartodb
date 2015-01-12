@@ -68,6 +68,7 @@ WORKING_SPECS_3 = \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/source_file_spec.rb \
   services/importer/spec/unit/content_guesser_spec.rb \
+  services/importer/spec/unit/table_sampler_spec.rb \
   $(NULL)
 
 WORKING_SPECS_4 = \

@@ -93,7 +93,7 @@ module CartoDB
       def shannon_entropy(column)
         sum = 0.0
         frequencies(column).each { |freq| sum += (freq * Math.log(freq)) }
-        return -sum
+        return sum.abs
       end
 
       # Returns an array with the relative frequencies of the elements of that column

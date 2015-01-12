@@ -229,14 +229,15 @@ describe CartoDB::Importer2::ContentGuesser do
          {candidate_column_name: '1400US601'},
          {candidate_column_name: '1400US602'}
       ]
-      guesser.metric_entropy(column).should < 0.5
+      guesser.metric_entropy(column).should > 0.99
+      guesser.metric_entropy(column, guesser.country_name_normalizer).should < 0.5
     end
   end
 
-  describe '#normalize' do
+  describe '#country_name_normalizer' do
     it 'should handle gracefully nil values' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
-      guesser.normalize(nil).should == ''
+      guesser.country_name_normalizer.call(nil).should == ''
     end
   end
 

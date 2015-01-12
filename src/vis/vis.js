@@ -525,9 +525,12 @@ var Vis = cdb.core.View.extend({
     this.mapView = mapView;
 
     map.layers.bind('reset', this.addLegends, this);
-    this.overlayModels.bind('reset', this._addOverlays, this);
 
-    // loader
+    this.overlayModels.bind('reset', function(overlays, options) {
+      this._addOverlays(overlays, options);
+      this._addMobile(data);
+    }, this);
+
     this.mapView.bind('newLayerView', this._addLoading, this);
 
     if (options.time_slider) {
@@ -538,7 +541,7 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addInfowindow, this);
     }
 
-    if(this.tooltip) {
+    if (this.tooltip) {
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
@@ -566,18 +569,22 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (this.mobile_enabled) {
-      if (options.legends === undefined) {
-        options.legends = this.legends ? true : false;
-      }
-      this.addMobile(data, options);
-    }
-
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
     })
 
     return this;
+
+  },
+
+  _addMobile: function(data, options) {
+
+    if (this.mobile_enabled) {
+      if (options && options.legends === undefined) {
+        options.legends = this.legends ? true : false;
+      }
+      this.addMobile(data, options);
+    }
 
   },
 
@@ -659,7 +666,6 @@ var Vis = cdb.core.View.extend({
         });
         return t;
       }
-
 
       function NextTrigger(seq, step) {
         var t = O.Trigger();

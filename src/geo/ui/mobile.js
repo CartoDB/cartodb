@@ -1,3 +1,57 @@
+cdb.geo.ui.MobileSlideController = cdb.core.View.extend({
+
+  events: {
+    'click a.next': "_next",
+    'click a.prev': "_prev"
+  },
+
+  tagName: "div",
+
+  className: "cartodb-mobile-slides-controller",
+
+  template: cdb.core.Template.compile("<a href='#' class='prev'>Prev</a><a href='#' class='next'>Next</a>"),
+
+  initialize: function() {
+    this.slidesCount = this.options.slides_data.length + 1;
+  },
+
+  _prev: function(e) {
+    if (e) this.killEvent(e);
+
+    var currentSlide = this.options.slides.state();
+
+    if (currentSlide > 0) {
+      currentSlide--;
+    } else {
+      currentSlide = this.options.slides_data.length;
+    }
+
+    this.options.slides.go(currentSlide)
+
+  },
+
+  _next: function(e) {
+    if (e) this.killEvent(e);
+
+    var currentSlide = this.options.slides.state();
+
+    if (currentSlide <= this.options.slides_data.length - 1) {
+      currentSlide++;
+    } else {
+      currentSlide = 0;
+    }
+
+    this.options.slides.go(currentSlide)
+
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    return this;
+  }
+
+});
+
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
@@ -695,13 +749,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   },
 
-  render:function() {
+  _renderSlidesController: function() {
+
+    this.slidesController = new cdb.geo.ui.MobileSlideController({
+      slides_data: this.options.slides_data,
+      slides: this.options.slides
+    });
+    this.$el.append(this.slidesController.render().$el);
+
+  },
+
+  render: function() {
 
     this._bindOrientationChange();
 
     this.$el.html(this.template(this.options));
 
     this._renderOverlays();
+
+    this._renderSlidesController();
 
     this._addAttributions();
 

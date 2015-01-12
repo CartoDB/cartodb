@@ -1,4 +1,5 @@
 require 'typhoeus'
+require_relative './google_plus_api_user_data'
 
 class GooglePlusAPI
 
@@ -33,46 +34,4 @@ class GooglePlusAPI
 
 end
 
-class GooglePlusAPIUserData
 
-  def initialize(parsed_response)
-    @parsed_response = parsed_response
-  end
-
-  def email
-    @parsed_response['emails'].select { |mail| mail['type'] == 'account' }.first['value']
-  rescue
-    nil
-  end
-
-  def id
-    @parsed_response['id']
-  end
-
-end
-
-class GooglePlusConfig
-  attr_reader :domain, :signup_action, :iframe_src, :client_id, :cookie_policy, :access_token_field_id
-  attr_accessor :unauthenticated_valid_access_token
-
-  def self.instance(config, signup_action, access_token_field_id = 'google_access_token')
-    config[:oauth]['google_plus'].present? ? GooglePlusConfig.new(config, signup_action, access_token_field_id) : nil
-  end
-
-  def initialize(config, signup_action, access_token_field_id = 'google_access_token')
-    schema = Rails.env.development? ? 'http' : 'https'
-
-    @domain = config[:domain_name].present? ? config[:domain_name] : config[:account_host].scan(/([^:]*)(:.*)?/).first.first
-
-    @signup_action = signup_action
-
-    @iframe_src = config[:account_host].present? ? "#{schema}://#{config[:account_host]}/google_plus" : "#{@domain}/google_plus"
-
-    @access_token_field_id = access_token_field_id
-
-    @client_id = config[:oauth]['google_plus']['client_id']
-
-    @cookie_policy = config[:oauth]['google_plus']['cookie_policy']
-  end
-
-end

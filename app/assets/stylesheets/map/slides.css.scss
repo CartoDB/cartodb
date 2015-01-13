@@ -54,6 +54,8 @@
 
   .slide_view {
 
+    text-align: center;
+
     &.ui-sortable-helper {
       width: 104px!Important;
       height: 63px!Important;
@@ -159,11 +161,10 @@
     }
 
     .info {
-      $width: 59px;
+      position: relative;
+      top: 14px;
       margin: auto;
       height: 16px;
-      @include absolute-landscape-center($width);
-      bottom: -20px;
       padding: 4px;
       background: #333;
       @include border-radius(2px);

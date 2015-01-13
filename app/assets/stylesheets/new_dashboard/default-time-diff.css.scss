@@ -6,6 +6,7 @@
 @import "../new_variables/sizes";
 
 .DefaultTimeDiff {
+  font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
 }

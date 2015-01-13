@@ -165,9 +165,9 @@
 }
 .Filters-orderItem {
   @include inline-block();
-  margin-right:24px;
-  color:$cTypography-secondary;
-  line-height:19px;
+  margin-right: 24px;
+  color: $cTypography-secondary;
+  line-height: normal;
 }
 .Filters-orderLink {
   @include inline-block();
@@ -180,8 +180,10 @@
   color:#666666;
   &:hover { cursor: default }
 }
-.Filters-orderLink--graph {
-  line-height:26px;
+.Filters-orderLink--graph { line-height: 26px }
+.Filters-orderLink--size {
+  font-size: 17px;
+  line-height: 17px;
 }
 
 .Filters-selectedItems {

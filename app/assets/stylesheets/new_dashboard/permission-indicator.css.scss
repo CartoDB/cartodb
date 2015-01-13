@@ -15,3 +15,6 @@ $c: #E2DFDF;
   line-height: $sLineHeight-smaller;
   font-weight: $sFontWeight-normal;
 }
+.PermissionIndicator:before {
+  content: 'READ'
+}

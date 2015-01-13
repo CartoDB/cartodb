@@ -13,7 +13,8 @@
 }
 .DefaultEditInline-input {
   border:none;
-  background:none;  
+  background:none;
+  outline: none;
 }
 // It is not possible to be grouped :(
 .DefaultEditInline-input::-webkit-input-placeholder {
@@ -44,7 +45,4 @@
 .DefaultEditInline-input:hover:-ms-input-placeholder {
   color: $cTypography-linkHover;
 }
-
-.DefaultEditInline-input:focus:-ms-input-placeholder {
-
-}
+.DefaultEditInline-input:focus:-ms-input-placeholder {}

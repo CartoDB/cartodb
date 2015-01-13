@@ -87,6 +87,12 @@
   line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
+.ContentResult-text {
+  display: block;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-lighter;
+}
 
 // Animation functions
 @include keyframes(pulsate) {

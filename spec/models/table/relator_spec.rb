@@ -17,7 +17,7 @@ describe CartoDB::TableRelator do
       @user.destroy
     end
 
-    it 'checks rows_and_size relator method' do
+    it 'checks row_count_and_size relator method' do
       @user.in_database { |database| @db = database }
 
       table_name  = "test_#{rand(999)}"
@@ -27,9 +27,9 @@ describe CartoDB::TableRelator do
                                name: table_name
                            })
 
-      expected_data = { size: 16384 , rows: 0}
+      expected_data = { size: 16384 , row_count: 0}
 
-      table.rows_and_size.should eq expected_data
+      table.row_count_and_size.should eq expected_data
 
       @db.drop_table?(table_name)
     end

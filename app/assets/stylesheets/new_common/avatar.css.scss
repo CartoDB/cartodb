@@ -24,6 +24,11 @@
   border-radius: $sAvatar-borderRadius;
 }
 .UserAvatar--small {
+  width: $sAvatar-small;
+  height: $sAvatar-small;
+  border-radius: 2px;
+}
+.UserAvatar--smaller {
   width: $sAvatar-meta;
   height: $sAvatar-meta;
   border-radius: $sAvatar-borderRadiusSmall;

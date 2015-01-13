@@ -41,6 +41,43 @@
     @include animation(pulsate 1.5s linear infinite);      
   }
 }
+.ContentResult-icon {
+  @include inline-block();
+  width: 38px;
+  height: 38px;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 2px;
+  line-height:36px;
+  font-size: 22px;
+  color: $cTypography-help;
+}
+// Icon types
+.ContentResult-iconNegative {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+.ContentResult-iconPositive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+.ContentResult-iconAlert {
+  border-color: $cHighlight-alert;
+  color: $cHighlight-alert;
+}
+.ContentResult-title {
+  display: block;
+  margin: 15px 0 10px 0;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
+  color: $cTypography-paragraphs;
+}
+.ContentResult-text {
+  display: block;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-lighter;
+}
 
 @include keyframes(pulsate) {
   0% {right:100%;}

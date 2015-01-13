@@ -24,9 +24,9 @@
   }
 }
 .LikesIndicator--liked {
-  .LikesIndicator-icon {
-    color:#D93F56;
-  }
+  color: #D93F56;
+  .LikesIndicator-icon { color: #D93F56 }
+  &:hover { color: #D93F56 }
 }
 .LikesIndicator--animated {
   .LikesIndicator-icon {

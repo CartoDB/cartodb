@@ -18,9 +18,8 @@ gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 
-# It's used in the dataimport and arcgis. Just two calls.
-# It's a replacement for the ruby uri that it's supposed to
-# perform better parsing of a URI
+# It's used in the dataimport and arcgis.
+# It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI
 gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
@@ -37,19 +36,18 @@ group :assets do
   gem "compass",               "0.12.3"
 end
 
-# Importer
+# Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machine',           '1.1.2'
 gem 'typhoeus',                '0.6.7'
 gem 'charlock_holmes',         '0.7.2'
 gem 'dbf',                     '2.0.6'
-
-# Sync tables
 gem 'faraday',                 '0.9.0'
 gem 'retriable',               '1.4.1'  # google-api-client needs this
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
 gem 'instagram',               '1.1.3'
+gem 'gibbon',                  '1.1.4'
 
 # Synchronizer
 gem 'eventmachine',            '1.0.3'

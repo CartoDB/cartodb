@@ -13,7 +13,7 @@ module CartoDB
       affected_visualizations
       synchronization
       serialize_synchronization
-      rows_and_size
+      row_count_and_size
     }
 
     def initialize(db, table)
@@ -73,7 +73,7 @@ module CartoDB
       (synchronization || {}).to_hash
     end
 
-    def rows_and_size
+    def row_count_and_size
       begin
         # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_CheckQuota()
         size_calc = @table.is_raster? ? "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"')"
@@ -82,7 +82,7 @@ module CartoDB
         data = @table.owner.in_database.fetch(%Q{
               SELECT
                 #{size_calc} AS size,
-                reltuples::integer AS rows
+                reltuples::integer AS row_count
               FROM pg_class
               WHERE relname = ?
             },
@@ -94,7 +94,7 @@ module CartoDB
         # INFO: we don't want code to fail because of SQL error
         CartoDB.notify_exception(exception)
       end
-      data = { size: nil, rows: nil } if data.nil?
+      data = { size: nil, row_count: nil } if data.nil?
 
       data
     end

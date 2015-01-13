@@ -82,6 +82,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include justify-content(flex-end, flex-end);
   @include align-items(flex-end, flex-end);
 }
+.DatasetsList-itemTags .DefaultEditInline-input { width: 56px }
 .DatasetsList-itemTitle {
   @include display-flex();
   @include align-items(center, center);

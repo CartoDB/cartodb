@@ -38,7 +38,6 @@ describe('api.layers', function() {
   // shared specs for each map
   //
   function loadLayerSpecs(mapFn) {
-
     describe("(shared)", function() {
       var map;
       beforeEach(function() {
@@ -414,8 +413,8 @@ describe('api.layers', function() {
       });
 
       it("should have several 'addTo' with zIndex set", function(done) {
-        var layer;
-        var layer2;
+        debugger
+        var layer0, layer1;
 
         cartodb.createLayer(map, {
           type: 'cartodb',
@@ -427,7 +426,7 @@ describe('api.layers', function() {
         })
         .addTo(map,0)
         .done(function(lyr) {
-          layer = lyr;
+          layer0 = lyr;
         });
 
         cartodb.createLayer(map, {
@@ -440,15 +439,16 @@ describe('api.layers', function() {
         })
         .addTo(map,1)
         .done(function(lyr) {
-          layer2 = lyr;
+          layer1 = lyr;
         });
 
         setTimeout(function() {
-          expect(layer).not.toEqual(undefined);
-          if(map.overlayMapTypes) {
-            expect(layer).toBe(map.overlayMapTypes.getAt(0));
-          } else {
-            expect(layer).toBe(map._layers[L.stamp(layer)]);
+          //Test only for Leaflet 
+          if(map.overlayMapTypes === undefined) {
+            expect(layer0).not.toEqual(undefined);
+            expect(layer0.options.zIndex).toEqual(0);
+            expect(layer1).not.toEqual(undefined);
+            expect(layer1.options.zIndex).toEqual(1);
           }
           done();
         }, 100);

@@ -196,6 +196,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+.Filters-actionsText { color: $cTypography-help }
 .Filters-actionsLink {
   font-size:13px;
   padding-left:25px;

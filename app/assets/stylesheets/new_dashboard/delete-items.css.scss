@@ -16,6 +16,9 @@
   @include justify-content(center);
   @include align-items(center);
 }
+.DeleteItems-affectedMapsCard:last-child {
+  margin-right: 0;
+}
 .DeleteItems-footer {
   @include display-flex();
   @include justify-content(center);

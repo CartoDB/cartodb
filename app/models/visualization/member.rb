@@ -353,6 +353,7 @@ module CartoDB
 
       def invalidate_varnish_cache
         CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+        parent.invalidate_varnish_cache unless parent_id.nil?
       end
 
       def invalidate_cache_and_refresh_named_map

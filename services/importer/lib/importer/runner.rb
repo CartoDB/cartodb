@@ -231,9 +231,6 @@ module CartoDB
 
       def loader_for(source_file)
         loaders = LOADERS
-        if @loader_options[:raster_import_active].nil? || @loader_options[:raster_import_active] != true
-          loaders = loaders.select{ |loader_class| loader_class != TiffLoader }
-        end
         loaders.find(DEFAULT_LOADER) { |loader_klass|
           loader_klass.supported?(source_file.extension)
         }

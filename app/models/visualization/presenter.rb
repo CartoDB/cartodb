@@ -11,10 +11,8 @@ module CartoDB
         @viewing_user    = options.fetch(:user, nil)
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
-        @rows_and_sizes  = options[:rows_and_sizes] || {}
         # Expose real privacy (used for normal JSON purposes)
         @real_privacy    = options[:real_privacy] || false
-        @user            = nil
       end
 
       def to_poro
@@ -29,7 +27,7 @@ module CartoDB
           tags: visualization.tags,
           description: visualization.description,
           privacy: privacy_for_vizjson.upcase,
-          stats: visualization.stats(user),
+          stats: visualization.stats,
           created_at: visualization.created_at,
           updated_at: visualization.updated_at,
           permission: permission.nil? ? nil : permission.to_poro,
@@ -70,7 +68,7 @@ module CartoDB
 
       private
 
-      attr_reader :visualization, :options, :user, :table, :synchronization, :rows_and_sizes
+      attr_reader :visualization, :options, :table, :synchronization
 
       # Simplify certain privacy values for the vizjson
       def privacy_for_vizjson
@@ -117,16 +115,7 @@ module CartoDB
           updated_at:   table.updated_at
         )
 
-        unless rows_and_sizes.nil? || rows_and_sizes.empty?
-          if rows_and_sizes[table.name][:size].nil? || rows_and_sizes[table.name][:rows].nil?
-            # don't add anything but don't break, UI supports detection of missing rows/size
-          else
-            table_data.merge!(
-                size:         rows_and_sizes[table.name][:size],
-                row_count:    rows_and_sizes[table.name][:rows]
-            )
-          end
-        end
+        table_data.merge!(table.rows_and_size)
 
         table_data
       end

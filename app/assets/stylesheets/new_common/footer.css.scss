@@ -1,8 +1,9 @@
 // Footer styles
 // --------------------------------------------------
 
-@import "mixins";
-@import "colors";
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
 
 .Footer {
   display:block;
@@ -15,8 +16,6 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: 940px;
-  margin: 0 auto;
 }
 .Footer-list {
   @include display-flex();
@@ -31,4 +30,3 @@
 }
 .Footer-listItem:first-child { padding-left:0 }
 .Footer-listItem:last-child { padding-right:0 }
-.Footer-listLink { font-size:13px }

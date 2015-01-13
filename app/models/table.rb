@@ -599,6 +599,9 @@ class Table < Sequel::Model(:user_tables)
 
   def optimize
     owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
+  rescue => e
+    CartoDB::notify_exception(e, { user: owner })
+    false
   end
 
   def handle_creation_error(e)
@@ -1221,13 +1224,17 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
   rescue => e
     # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
-    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Will retry.\n #{e.message} #{e.backtrace.join}")
+    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Will retry.\n #{e.message} #{e.backtrace.join}")
     begin
       $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
     rescue => e
-      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
+      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
       raise e
     end
+  end
+
+  def redis_connection_info
+    "#{$tables_metadata.client.host}:#{$tables_metadata.client.port}, db: #{$tables_metadata.client.db}, timeout: #{$tables_metadata.client.timeout}"
   end
 
   def the_geom_type=(value)
@@ -1796,14 +1803,14 @@ class Table < Sequel::Model(:user_tables)
   # @param [String] cartodb_pg_func
   # @param [User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
-    from_schema = self.owner.username
+    from_schema = self.owner.database_schema
     table_name = self.name
     to_role_user = organization_user.database_username
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
   end
 
   def perform_organization_table_permission_change(cartodb_pg_func)
-    from_schema = self.owner.username
+    from_schema = self.owner.database_schema
     table_name = self.name
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
   end

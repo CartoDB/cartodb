@@ -1,0 +1,134 @@
+@import "compass/css3/images";
+
+// Mixins
+// - Necessary SCSS functions
+// - Browser support:
+//  · IE => 10
+//  · Chrome => 21
+//  · Sarafi => 6
+//  · Firefox => 24
+//  · Opera => 12
+// --------------------------------------------------
+
+/* ADDS A BROWSER PREFIX TO THE PROPERTY */
+@mixin css3-prefix($property, $value) {
+  -webkit-#{$property}: #{$value};
+   -khtml-#{$property}: #{$value};
+     -moz-#{$property}: #{$value};
+      -ms-#{$property}: #{$value};
+       -o-#{$property}: #{$value};
+          #{$property}: #{$value};
+}
+
+// Display inline 
+@mixin inline-block() {
+  display:inline-block;
+  vertical-align: top;
+}
+
+// Display flex functions
+@mixin display-flex() {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+@mixin flex($v) {
+  -webkit-box-flex: $v;
+  -moz-box-flex:  $v;
+  -webkit-flex:  $v;
+  -ms-flex:  $v;
+  flex:  $v;
+}
+@mixin flex-direction($v) {
+  -webkit-flex-direction: $v;
+  -moz-flex-direction: $v;
+  -ms-flex-direction: $v;
+  flex-direction: $v;
+  // IE10 doesn't support this property
+}
+@mixin flex-grow($v) {
+  -webkit-flex-grow: $v;
+  -moz-flex-grow: $v;
+  -ms-flex-grow: $v;
+  flex-grow: $v;
+  // IE10 doesn't support this property
+}
+@mixin flex-wrap($v) {
+  -webkit-flex-wrap: $v;
+  -moz-flex-wrap: $v;
+  -ms-flex-wrap: $v;
+  flex-wrap: $v;
+  // IE10 doesn't support this property  
+}
+@mixin justify-content($v, $ie-v: "") {
+  $ie-v: $v !default;
+  -webkit-justify-content: $v;
+  -moz-justify-content: $v;
+  -ms-justify-content: $v;
+  justify-content: $v;
+  // Hello IE10
+  -ms-flex-pack: $ie-v;
+}
+@mixin align-items($v, $ie-v: "") {
+  $ie-v: $v !default;
+  -webkit-align-items: $v;
+  -moz-align-items: $v;
+  -ms-align-items: $v;
+  align-items: $v;
+  // Hello IE10
+  -ms-flex-align: $ie-v;
+}
+
+// CSS3 typical functions
+@mixin opacity($v) {
+  opacity:$v;
+  filter:alpha(opacity=($v*100)); // IE10
+}
+
+/* TRANSFORM  */
+@mixin transform($params) {
+  @include css3-prefix('transform', $params);
+}
+
+/* TRANSFORM STYLE */
+@mixin transform-style($style: preserve-3d) {
+  @include css3-prefix('transform-style', $style);
+}
+
+/* TRANSITION */
+@mixin transition($properties...) {
+  
+  @if length($properties) >= 1 {
+    @include css3-prefix('transition', $properties);
+  }
+
+  @else {
+    @include css3-prefix('transition', $what: all, $length: 1s, $easing: ease-in-out);
+  }
+}
+
+/* KEYFRAMES */
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @-moz-keyframes #{$animation-name} {
+    @content;
+  }  
+  @-ms-keyframes #{$animation-name} {
+    @content;
+  }
+  @-o-keyframes #{$animation-name} {
+    @content;
+  }  
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+
+/* ANIMATION */
+@mixin animation($str) {
+  @include css3-prefix('animation', $str);
+}

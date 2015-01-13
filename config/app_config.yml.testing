@@ -1,5 +1,4 @@
 defaults: &defaults
-  raster_import_active: true
   users_dumps:
     service:
       port: 0000
@@ -187,6 +186,10 @@ defaults: &defaults
       app_secret: ''
       callback_url: ''
     instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    mailchimp:
       app_key:              ''
       app_secret:           ''
       callback_url:         ''

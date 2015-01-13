@@ -1,5 +1,4 @@
 defaults: &defaults
-  raster_import_active: false
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     false
@@ -207,6 +206,12 @@ defaults: &defaults
       app_secret:           ''
       callback_url:         ''
     instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    # Mailchimp datasource. Setup at https://admin.mailchimp.com/account/oauth2/ then fill here.
+    # If fields are present but empty, option won't appear at editor import window
+    mailchimp:
       app_key:              ''
       app_secret:           ''
       callback_url:         ''

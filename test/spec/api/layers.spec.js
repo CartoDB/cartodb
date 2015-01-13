@@ -38,6 +38,7 @@ describe('api.layers', function() {
   // shared specs for each map
   //
   function loadLayerSpecs(mapFn) {
+    
     describe("(shared)", function() {
       var map;
       beforeEach(function() {

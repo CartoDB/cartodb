@@ -5,10 +5,6 @@
 /* compensate for the negative margins and border */
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
-$_secondaryInfoWidth: 520px;
-// Remaining width after removing secondary info, icon and margins
-$_primaryInfoWidth: $sLayout-width - $_secondaryInfoWidth - $sIcon-layout - $sMargin-element;
-
 .DatasetsList {
   position: relative;
   width: $sLayout-width;
@@ -58,12 +54,14 @@ $_primaryInfoWidth: $sLayout-width - $_secondaryInfoWidth - $sIcon-layout - $sMa
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: $_primaryInfoWidth;
+  flex-grow: 1;
+  max-width: 560px;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
-  width: $_secondaryInfoWidth;
+  flex-grow: 1;
+  min-width: 340px;
 }
 
 .DatasetsList-itemMeta,

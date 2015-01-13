@@ -548,6 +548,7 @@ var Vis = cdb.core.View.extend({
     if (!options.sublayer_options) {
       this._setupSublayers(data.layers, options);
     }
+
     this._setLayerOptions(options);
 
     if (data.slides) {
@@ -643,6 +644,24 @@ var Vis = cdb.core.View.extend({
         return t;
       }
 
+      function PrevTrigger(seq, step) {
+        var t = O.Trigger();
+        var c = PrevTrigger._callbacks;
+        if (!c) {
+          c = PrevTrigger._callbacks = []
+          O.Keys().left().then(function() {
+            for (var i = 0; i < c.length; ++i) {
+              if (c[i] === seq.current()) {
+                t.trigger();
+                return;
+              }
+            }
+          });
+        }
+        c.push(step);
+        return t;
+      }
+
       function NextTrigger(seq, step) {
         var t = O.Trigger();
         var c = NextTrigger._callbacks;
@@ -715,6 +734,7 @@ var Vis = cdb.core.View.extend({
             states.push(WaitAction(seq, to.time * 1000));
           } else { //default is click 
             NextTrigger(seq, i).then(seq.next, seq);
+            PrevTrigger(seq, i).then(seq.prev, seq);
           }
         }
 

@@ -55,13 +55,13 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  max-width: 560px;
+  max-width: 500px;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  min-width: 340px;
+  min-width: 400px;
 }
 
 .DatasetsList-itemMeta,

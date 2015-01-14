@@ -2,11 +2,11 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
+/* set by base dialog */
+body.is-inDialog {
+  overflow: hidden;
+}
 .Dialog {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(center);
-  @include justify-content(center);
   position: fixed;
   top: 0;
   left: 0;
@@ -15,8 +15,17 @@
   z-index: 50;
   background-color: $cStructure-mainBkg;
   @include opacity(0.9);
-  /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
+  overflow: scroll;
 }
+.Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(center);
+  @include justify-content(center);
+  width: 100%;
+  height: 100%;
+}
+/* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
 .Dialog.is-opening {
   @include animation(fade-and-scale-in 100ms ease-out);
 }
@@ -25,7 +34,7 @@
   @include animation(fade-and-scale-out 80ms ease-in forwards);
 }
 .Dialog-closeBtn {
-  position: absolute;
+  position: fixed;
   top: $sMargin-section;
   right: $sMargin-section;
   width: $sMargin-section;

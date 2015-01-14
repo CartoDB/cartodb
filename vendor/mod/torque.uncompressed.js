@@ -29,6 +29,7 @@ var cancelAnimationFrame = global.cancelAnimationFrame
     this._t0 = +new Date();
     this.callback = callback;
     this._time = 0.0;
+    this.itemsReady = false;
 
     this.options = torque.extend({
         animationDelay: 0,
@@ -44,9 +45,9 @@ var cancelAnimationFrame = global.cancelAnimationFrame
   Animator.prototype = {
 
     start: function() {
-      this.running = true;
-      requestAnimationFrame(this._tick);
-      this.options.onStart && this.options.onStart();
+        this.running = true;
+        requestAnimationFrame(this._tick);
+        this.options.onStart && this.options.onStart();
     },
 
     isRunning: function() {
@@ -2305,6 +2306,7 @@ L.Mixin.TileLoader = {
       this.fire("tilesLoading");
 
   }
+
 }
 
 },{}],14:[function(require,module,exports){
@@ -2395,6 +2397,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
+      var fixedPoint = new L.Point(t.x, t.y);
+      this._adjustTilePoint(fixedPoint);
+      t.corrected = {};
+      t.corrected.x = fixedPoint.x;
+      t.corrected.y = fixedPoint.y;
       var tileData = this.provider.getTileData(t, t.zoom, function(tileData) {
         // don't load tiles that are not being shown
         if (t.zoom !== self._map.getZoom()) return;
@@ -2406,7 +2413,39 @@ L.TorqueLayer = L.CanvasLayer.extend({
       });
     }, this);
 
+  },
 
+  _adjustTilePoint: function (tilePoint) {
+
+    var limit = this._getWrapTileNum();
+
+    // wrap tile coordinates
+    if (!this.options.continuousWorld && !this.options.noWrap) {
+      tilePoint.x = ((tilePoint.x % limit.x) + limit.x) % limit.x;
+    }
+
+    if (this.options.tms) {
+      tilePoint.y = limit.y - tilePoint.y - 1;
+    }
+  },
+
+  _getWrapTileNum: function () {
+    var crs = this._map.options.crs,
+        size = crs.getSize(this._map.getZoom());
+    return size.divideBy(this._getTileSize())._floor();
+  },
+  
+  _getTileSize: function () {
+    var map = this._map,
+        zoom = map.getZoom() + this.options.zoomOffset,
+        zoomN = this.options.maxNativeZoom,
+        tileSize = this.options.tileSize;
+
+    if (zoomN && zoom > zoomN) {
+      tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
+    }
+
+    return tileSize;
   },
 
   _clearTileCaches: function() {
@@ -4061,10 +4100,10 @@ var Profiler = require('../profiler');
       var self = this;
       var prof_fetch_time = Profiler.metric('torque.provider.windshaft.tile.fetch').start();
       var subdomains = this.options.subdomains || '0123';
-      var index = Math.abs(coord.x + coord.y) % subdomains.length;
+      var index = Math.abs(coord.corrected.x + coord.corrected.y) % subdomains.length;
       var url = this.templateUrl
-                .replace('{x}', coord.x)
-                .replace('{y}', coord.y)
+                .replace('{x}', coord.corrected.x)
+                .replace('{y}', coord.corrected.y)
                 .replace('{z}', zoom)
                 .replace('{s}', subdomains[index])
 
@@ -4300,12 +4339,10 @@ var Profiler = require('../profiler');
     }
   }
 
-  function renderSprite(ctx, st) {
-    var img = st['point-file'] || st['marker-file'];
-    var ratio = img.height/img.width;
-    var w = st['marker-width'] || img.width;
-    var h = st['marker-width'] || st['marker-height'] || w*ratio;
-    ctx.drawImage(img, 0, 0, w, h);
+  function renderSprite(ctx, img) {
+    if(img.complete){
+      ctx.drawImage(img, -img.w/2, -img.h/2, img.w, img.h);
+    }
   }
 
 module.exports = {
@@ -4375,9 +4412,11 @@ var carto = global.carto || require('carto');
     this._shader = null;
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
     this.TILE_SIZE = 256;
+    this._icons = {};
+    this._forcePoints = false;
   }
 
-  PointRenderer.prototype = {
+  torque.extend(PointRenderer.prototype, torque.Event, {
 
     clearCanvas: function() {
       var canvas = this._canvas;
@@ -4424,6 +4463,7 @@ var carto = global.carto || require('carto');
     // generate sprite based on cartocss style
     //
     generateSprite: function(shader, value, shaderVars) {
+      var self = this;
       var prof = Profiler.metric('torque.renderer.point.generateSprite').start();
       var st = shader.getStyle({
         value: value
@@ -4445,9 +4485,16 @@ var carto = global.carto || require('carto');
       var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
       ctx.translate(w/2, w/2);
 
-      if(st['point-file'] || st['marker-file']) {
-        cartocss.renderSprite(ctx, st);
-      } else {
+      var img_names = this._shader.getImageURLs();
+      this._preloadIcons(img_names);
+      if (img_names.length > 0 && this._icons.itemsToLoad === 0) {
+        var img_name = st["marker-file"] || st["point-file"];
+        var img = this._icons[img_name];
+        img.w = st['marker-width'] || img.width;
+        img.h = st['marker-width'] || st['marker-height'];
+        cartocss.renderSprite(ctx, img);
+      } 
+      else {
         var mt = st['marker-type'];
         if (mt && mt === 'rectangle') {
           cartocss.renderRectangle(ctx, st);
@@ -4502,12 +4549,12 @@ var carto = global.carto || require('carto');
     // the torque tile
     //
     _renderTile: function(tile, key, frame_offset, sprites, shader, shaderVars) {
-      if(!this._canvas) return;
+      if (!this._canvas) return;
 
       var prof = Profiler.metric('torque.renderer.point.renderTile').start();
       var ctx = this._ctx;
       var blendMode = compop2canvas(shader.eval('comp-op')) || this.options.blendmode;
-      if(blendMode) {
+      if (blendMode) {
         ctx.globalCompositeOperation = blendMode;
       }
       if (this.options.cumulative && key > tile.maxDate) {
@@ -4516,14 +4563,14 @@ var carto = global.carto || require('carto');
       }
       var tileMax = this.options.resolution * (this.TILE_SIZE/this.options.resolution - 1)
       var activePixels = tile.timeCount[key];
-      if(activePixels) {
+      if (activePixels) {
         var pixelIndex = tile.timeIndex[key];
         for(var p = 0; p < activePixels; ++p) {
           var posIdx = tile.renderDataPos[pixelIndex + p];
           var c = tile.renderData[pixelIndex + p];
-          if(c) {
+          if (c) {
            var sp = sprites[c];
-           if(sp === undefined) {
+           if (sp === undefined) {
              sp = sprites[c] = this.generateSprite(shader, c, torque.extend({ zoom: tile.z, 'frame-offset': frame_offset }, shaderVars));
            }
            if (sp) {
@@ -4604,9 +4651,40 @@ var carto = global.carto || require('carto');
         }
       }
       return null;
-    }
+    },
+    _preloadIcons: function(img_names){
+      var self = this;
+      if (img_names.length > 0 && !this._forcePoints){
+        if (Object.keys(this._icons).length === 0){
+          for (var i = 0; i<img_names.length; i++){
+            var new_img = this._createImage();
+            this._icons[img_names[i]] = null;
+            if (typeof self._icons.itemsToLoad === 'undefined'){
+              this._icons.itemsToLoad = img_names.length;
+            }
+            new_img.onload = function(e){
+              self._icons[this.src] = this;
+              if (Object.keys(self._icons).length === img_names.length + 1){
+                self._icons.itemsToLoad--;
+                if (self._icons.itemsToLoad === 0){
+                  self.clearSpriteCache();
+                  self.fire("allIconsLoaded");
+                }
+              }
+            };
+            new_img.onerror = function(){
+              self._forcePoints = true;
+              self.clearSpriteCache();
+              console.error("Couldn't get marker-file " + this.src);
+            };
+            new_img.src = img_names[i];
+          }
+          
+        }
+      }
 
-  };
+  }
+});
 
 
   // exports public api

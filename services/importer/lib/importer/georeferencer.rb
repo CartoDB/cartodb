@@ -45,6 +45,7 @@ module CartoDB
         create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
         create_the_geom_from_country_guessing ||
+        create_the_geom_from_ip_guessing      ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -124,9 +125,36 @@ module CartoDB
             create_the_geom_in table_name
             return geocode_countries country_column_name
           end
-        rescue ContentGuesserException => e
-          Rollbar.report_exception(e)
-          job.log 'ERROR: #{e}'
+        rescue Exception => ex
+          message = "create_the_geom_from_country_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
+          return false
+        end
+      end
+
+      def create_the_geom_from_ip_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying ip guessing...'
+        begin
+          ip_column_name = nil
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            ip_column_name = @content_guesser.ip_column
+            @tracker.call('importing')
+          end
+          if ip_column_name
+            job.log "Found ip column: #{ip_column_name}"
+            return geocode_ips ip_column_name
+          end
+        rescue Exception => ex
+          message = "create_the_geom_from_ip_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
           return false
         end
       end
@@ -155,6 +183,28 @@ module CartoDB
         end
         geocoder.state == 'completed'
       end
+
+      def geocode_ips ip_column_name
+        job.log "Geocoding ips..."
+        @tracker.call('geocoding')
+        create_the_geom_in(table_name)
+        config = @options[:geocoder].merge(
+          table_schema: schema,
+          table_name: table_name,
+          qualified_table_name: qualified_table_name,
+          connection: db,
+          formatter: ip_column_name,
+          geometry_type: 'point',
+          kind: 'ipaddress',
+          max_rows: nil,
+          country_column: nil
+        )
+        geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+        geocoder.run
+        job.log "Geocoding finished"
+        geocoder.state == 'completed'
+      end
+
 
       # Note: Performs a really simple ',' to '.' normalization.
       # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"

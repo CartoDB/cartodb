@@ -11,12 +11,13 @@ module CartoDB
         @viewing_user    = options.fetch(:user, nil)
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
-        @rows_and_sizes  = options[:rows_and_sizes] || {}
         # Expose real privacy (used for normal JSON purposes)
         @real_privacy    = options[:real_privacy] || false
       end
 
       def to_poro
+        permission = visualization.permission
+
         poro = {
           id:               visualization.id,
           name:             visualization.name,
@@ -26,25 +27,42 @@ module CartoDB
           tags:             visualization.tags,
           description:      visualization.description,
           privacy:          privacy_for_vizjson.upcase,
-          stats:            visualization.stats(user),
+          stats:            visualization.stats,
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
-          permission:       visualization.permission.nil? ? nil : visualization.permission.to_poro,
+          permission:       permission.nil? ? nil : permission.to_poro,
           locked:           visualization.locked,
           source:           visualization.source,
           title:            visualization.title,
-          license:          visualization.license
+          license:          visualization.license,
+          kind:             visualization.kind,
+          likes:            visualization.likes.count
         }
-        poro.merge!(table: table_data_for(table))
+        poro.merge!(table: table_data_for(table, permission))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
+        poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
         poro
+      end
+
+      def to_public_poro
+        {
+          id:               visualization.id,
+          name:             visualization.name,
+          type:             visualization.type,
+          tags:             visualization.tags,
+          description:      visualization.description,
+          updated_at:       visualization.updated_at,
+          title:            visualization.title,
+          kind:             visualization.kind,
+          privacy:          privacy_for_vizjson.upcase,
+          likes:            visualization.likes.count
+        }
       end
 
       private
 
-      attr_reader :visualization, :options, :user, :table, :synchronization,
-                  :rows_and_sizes
+      attr_reader :visualization, :options, :table, :synchronization
 
       # Simplify certain privacy values for the vizjson
       def privacy_for_vizjson
@@ -63,7 +81,7 @@ module CartoDB
         { related_tables:   related_tables }
       end
 
-      def table_data_for(table=nil)
+      def table_data_for(table=nil, permission = nil)
         return {} unless table
         table_name = table.name
         unless @viewing_user.nil?
@@ -77,23 +95,19 @@ module CartoDB
           name:         table_name,
           permission:   nil
         }
-        table_data[:permission] = table.table_visualization.permission.to_poro unless table.table_visualization.nil?
+        table_visualization = table.table_visualization
+        unless table_visualization.nil?
+          table_data[:permission] = (!permission.nil? && table_visualization.id == permission.entity_id) ?
+                                      permission.to_poro : table_visualization.permission.to_poro
+          table_data[:geometry_types] = table.geometry_types
+        end
 
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,
           updated_at:   table.updated_at
         )
 
-        unless rows_and_sizes.nil? || rows_and_sizes.empty?
-          if rows_and_sizes[table.name][:size].nil? || rows_and_sizes[table.name][:rows].nil?
-            # don't add anything but don't break, UI supports detection of missing rows/size
-          else
-            table_data.merge!(
-                size:         rows_and_sizes[table.name][:size],
-                row_count:    rows_and_sizes[table.name][:rows]
-            )
-          end
-        end
+        table_data.merge!(table.row_count_and_size)
 
         table_data
       end

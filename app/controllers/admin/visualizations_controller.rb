@@ -16,6 +16,12 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
+    view =  current_user.has_feature_flag?('new_dashboard') ? 'new-dashboard' : 'index'
+
+    respond_to do |format|
+      format.html { render view, layout: 'application' }
+    end
+
   end #index
 
   def resolve_visualization_and_table(request)
@@ -45,7 +51,7 @@ class Admin::VisualizationsController < ApplicationController
     respond_to { |format| format.html }
 
     update_user_last_activity
-  end #show
+  end
 
   def public_table
     @visualization, @table = resolve_visualization_and_table(request)
@@ -110,8 +116,12 @@ class Admin::VisualizationsController < ApplicationController
 
     @user_domain = user_domain_variable(request)
 
+    @visualization_id = @visualization.id
+    @is_liked         = is_liked(@visualization)
+    @likes_count      = @visualization.likes.count
+
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
 
     @non_dependent_visualizations = @table.non_dependent_visualizations.select{
         |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -187,8 +197,11 @@ class Admin::VisualizationsController < ApplicationController
 
     @user_domain = user_domain_variable(request)
 
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    @is_liked    = is_liked(@visualization)
+    @likes_count = @visualization.likes.count
 
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
@@ -199,7 +212,7 @@ class Admin::VisualizationsController < ApplicationController
     end
   rescue
     embed_forbidden
-  end #public_map
+  end
 
   def show_organization_public_map
     @visualization, @table = resolve_visualization_and_table(request)
@@ -220,7 +233,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     # We need to know if visualization logo is visible or not
@@ -271,7 +284,7 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     # We need to know if visualization logo is visible or not
@@ -282,7 +295,7 @@ class Admin::VisualizationsController < ApplicationController
     end    
   rescue
     public_map_protected
-  end #show_protected_public_map
+  end
 
   def show_protected_embed_map
     submitted_password = params.fetch(:password)
@@ -305,7 +318,7 @@ class Admin::VisualizationsController < ApplicationController
     end    
   rescue
     embed_protected
-  end #show_protected_embed_map
+  end
 
   def embed_map
     @visualization, @table = resolve_visualization_and_table(request)
@@ -329,26 +342,26 @@ class Admin::VisualizationsController < ApplicationController
     end
   rescue
     embed_forbidden
-  end #embed_map
+  end
 
   # Renders input password view
   def embed_protected
     render 'embed_map_password', :layout => 'application_password_layout'
-  end #embed_protected
+  end
 
   def public_map_protected
     render 'public_map_password', :layout => 'application_password_layout'
-  end #public_map_protected
+  end
 
   def embed_forbidden
     render 'embed_map_error', layout: false, status: :forbidden
-  end #embed_forbidden
+  end
 
   def track_embed
     response.headers['X-Cache-Channel'] = "embeds_google_analytics"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render 'track', layout: false
-  end #track_embed
+  end
 
   # Check if visualization logo should be hidden or not
   def is_logo_hidden(vis, parameters)
@@ -357,6 +370,11 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   private
+
+  def resolve_visualization_and_table(request)
+    filters = { exclude_raster: true }
+    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+  end
 
   # If user A shares to user B a table link (being both from same org), attept to rewrite the url to the correct format
   # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
@@ -404,21 +422,21 @@ class Admin::VisualizationsController < ApplicationController
     id
   end
 
-  def public_url()
+  def public_url
     if request.path_info =~ %r{/tables/}
       public_table_path(user_domain: params[:user_domain], id: full_table_id)
     else
       public_visualization_path(user_domain: params[:user_domain], id: full_table_id)
     end
-  end #public_url_for
+  end
 
-  def public_map_url()
+  def public_map_url
     if request.path_info =~ %r{/tables/}
       public_table_map_path(user_domain: params[:user_domain], id: full_table_id)
     else
       public_visualizations_public_map_path(user_domain: params[:user_domain], id: full_table_id)
     end
-  end #public_map_url_for
+  end
 
   def embed_map_url_for(id)
     if request.path_info =~ %r{/tables/}
@@ -426,7 +444,7 @@ class Admin::VisualizationsController < ApplicationController
     else
       public_visualizations_embed_map_path(user_domain: params[:user_domain], id: id)
     end
-  end #embed_map_url_for
+  end
 
   def download_formats(table, format)
     format.sql  { send_data table.to_sql, data_for(table, 'zip', 'zip') }
@@ -442,6 +460,11 @@ class Admin::VisualizationsController < ApplicationController
     }
   end
 
+  def is_liked(vis)
+    return false unless current_user.present?
+    vis.liked_by?(current_user.id) 
+  end
+
   def update_user_last_activity
     return false unless current_user.present?
     current_user.set_last_active_time
@@ -450,7 +473,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def pretty_404
     render(file: "public/404", layout: false, status: 404)
-  end #pretty_404
+  end
 
   def user_domain_variable(request)
     if params[:user_domain].present?
@@ -462,5 +485,5 @@ class Admin::VisualizationsController < ApplicationController
 
   def locator
     CartoDB::Visualization::Locator.new
-  end #locator
-end # VisualizationsController
+  end
+end

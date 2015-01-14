@@ -66,7 +66,12 @@ module CartoDB
       end
 
       def ids_count
-        @ids_count ||= max_id - min_id + 1
+        @ids_count ||=
+          if max_id && min_id then
+            max_id - min_id + 1
+          else
+            0
+          end
       end
 
       def min_id

@@ -1,15 +1,8 @@
 <% if @visualization.map.provider == 'googlemaps' %>
   <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
-<% else %>
-  <!-- if you are using google maps, uncomment the following line -->
-  <!-- <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> -->
 <% end %>
 
-<% if !Rails.env.production? %>
-  <%= javascript_include_tag 'cdb.js' %>
-<% else %>
-  <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-<% end %>
+<%= javascript_include_tag 'cdb.js', 'public_like.js' %>
 
 <script>
 
@@ -121,13 +114,19 @@
       cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
     })
 
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
+    var loadingTime  = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
     var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
     cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
       visReadyTime.end();
       vis.on('load', function() {
         loadingTime.end();
+      });
+
+      var like = new cdb.open.LikeView({ 
+        el: $(".js-like"),
+        auto_fetch: false,
+        model: new cdb.open.Like({ vis_id: "<%= @visualization.id %>", likes: <%= @visualization.to_vizjson[:likes] %> })
       });
 
       window.vis = vis;

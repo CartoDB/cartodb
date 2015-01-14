@@ -149,6 +149,10 @@ module CartoDB
       end
 
       def encoding
+        @encoding ||= encoding_guess
+      end
+
+      def encoding_guess
         normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
           normalizer.supported?(source_file.extension)
         }
@@ -202,6 +206,11 @@ module CartoDB
         source_file.extension =~ /\.osm/
       end
 
+      # Not used for now, but for compatibility with tiff_loader
+      def additional_support_tables
+        []
+      end
+
       attr_accessor   :source_file, :options
 
       private
@@ -219,8 +228,9 @@ module CartoDB
           job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
         end
 
+        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output[0..200] =~ /specified more than once/
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise MalformedCSVException.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+        raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
 
         if ogr2ogr.exit_code != 0
           # OOM

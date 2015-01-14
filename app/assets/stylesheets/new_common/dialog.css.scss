@@ -1,0 +1,150 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+/* set by base dialog */
+body.is-inDialog {
+  overflow: hidden;
+}
+.Dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  background-color: rgba($cStructure-mainBkg, 0.90);
+  overflow: scroll;
+}
+.Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(center);
+  @include justify-content(center);
+  width: 100%;
+  height: 100%;
+}
+/* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
+.Dialog.is-opening {
+  @include animation(fade-and-scale-in 100ms ease-out);
+}
+.Dialog.is-closing {
+  /* "forwards" to keep the last keyframe's styles after animation ended */
+  @include animation(fade-and-scale-out 80ms ease-in forwards);
+}
+.Dialog-closeBtn {
+  position: fixed;
+  top: $sMargin-section;
+  right: $sMargin-section;
+  width: $sMargin-section;
+  height: $sMargin-section;
+  border-radius: 30px;
+  border: 1px solid $cTypography-help;
+  color: $cTypography-help;
+  text-align: center;
+  line-height: 45px;
+  font-weight: $sFontWeight-lighter;
+  font-size: 18px;
+  &:hover {
+    border-color: $cTypography-secondary;
+    color: $cTypography-secondary;
+  }
+}
+.Dialog-content {
+}
+.Dialog-content.is-newContent {
+  @include animation(fade-and-scale-in 100ms ease-out);
+}
+.Dialog-header {
+  text-align: center;
+  padding: $sMargin-group 0;
+}
+.Dialog-body {
+  padding: $sMargin-group 0;
+  border-top: 1px solid $cTypography-help;
+  min-width: $sLayout-width;
+}
+.Dialog-footer {
+  border-top: 1px solid $cTypography-help;
+  padding: $sMargin-group 0;
+}
+.Dialog-headerIcon {
+  position: relative;
+  width: $sIcon-layout;
+  height: $sIcon-layout;
+  border: 1px solid $cHighlight-negative;
+  border-radius: $sIcon-borderRadius;
+  margin: 0 auto $sMargin-element auto; /* center icon */
+  color: $cHighlight-negative;
+  font-size: 22px;
+  line-height: 48px;
+}
+.Dialog-headerIconBadge {
+  /* "backwards" to use the first keyframe's styles before animation starts */
+  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+}
+.Dialog-headerTitle {
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
+}
+.Dialog-headerText {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
+}
+.Dialog-footerBtn {
+  margin-right: $sMargin-element;
+}
+
+@include keyframes(fade-and-scale-in) {
+  0% {
+    @include opacity(0.0);
+    @include transform(scale(2.0));
+  }
+  10% {
+    @include opacity(0.9);
+    @include transform(scale(1.1));
+  }
+  100% {
+    @include opacity(1.0);
+    @include transform(scale(1.0));
+  }
+}
+
+@include keyframes(fade-and-bounce-up) {
+  0% {
+    @include opacity(0.0);
+    @include transform(translateY(6px));
+  }
+  15% {
+    @include opacity(0.8);
+    @include transform(translateY(-3px));
+  }
+  45% {
+    @include opacity(1.0);
+    @include transform(translateY(2px));
+  }
+  70% {
+    @include transform(translateY(-1px));
+  }
+  100% {
+    @include opacity(1.0);
+    @include transform(translateY(0));
+  }
+}
+
+@include keyframes(fade-and-scale-out) {
+  0% {
+    @include opacity(1.0);
+    @include transform(scale(1.0));
+  }
+  80% {
+    @include opacity(0.05);
+    @include transform(scale(1.40));
+  }
+  100% {
+    @include opacity(0.0);
+    @include transform(scale(2.0));
+  }
+}

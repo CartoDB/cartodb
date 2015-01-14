@@ -29,6 +29,12 @@
         <% end %>
         <span class="username"><%= username %></span>
       </a>
+
+      <a href="#like" class="like js-like">
+        <span class="icon"></span>
+        <span class="counter"><%= @visualization.to_vizjson[:likes] %></span>
+      </a>
+
     </div>
   <% end %>
 <% end %>

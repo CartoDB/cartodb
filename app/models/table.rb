@@ -29,9 +29,14 @@ class Table < Sequel::Model(:user_tables)
       PRIVACY_LINK => PRIVACY_LINK_TEXT
   }
 
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
+
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
+
+  RESERVED_TABLE_NAMES = %W{ layergroup all }
+
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
@@ -90,13 +95,21 @@ class Table < Sequel::Model(:user_tables)
   end #default_privacy_values
 
   def geometry_types
-    owner.in_database[ %Q{
+    if schema.select { |key, value| key == :the_geom }.length > 0
+      owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
         FROM "#{self.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
+    else
+      []
+    end
+  end
+
+  def is_raster?
+    schema.select { |key, value| value == 'raster' }.length > 0
   end
 
   def_dataset_method(:search) do |query|
@@ -247,7 +260,7 @@ class Table < Sequel::Model(:user_tables)
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if self.name == 'layergroup'
+    ) if RESERVED_TABLE_NAMES.include?(self.name) 
 
     # privacy setting must be a sane value
     if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
@@ -585,7 +598,10 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database(as: :superuser).run("VACUUM FULL #{qualified_table_name}")
+    owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
+  rescue => e
+    CartoDB::notify_exception(e, { user: owner })
+    false
   end
 
   def handle_creation_error(e)
@@ -619,6 +635,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_visualization
+    kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
+
     member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
@@ -626,7 +644,8 @@ class Table < Sequel::Model(:user_tables)
       description:  self.description,
       tags:         (tags.split(',') if tags),
       privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
-      user_id:      self.owner.id
+      user_id:      self.owner.id,
+      kind:         kind
     )
 
     member.store
@@ -757,9 +776,7 @@ class Table < Sequel::Model(:user_tables)
 
   def make_geom_valid
     begin
-      # make timeout here long, but not infinite. 10mins = 600000 ms.
-      # TODO: extend .run to take a "long_running" indicator? See #730.
-      owner.in_database.run(%Q{SET statement_timeout TO 600000;UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT})
+      owner.in_database({statement_timeout: 600000}).run(%Q{UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);})
     rescue => e
       CartoDB::Logger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
     end
@@ -1205,6 +1222,19 @@ class Table < Sequel::Model(:user_tables)
 
   def the_geom_type
     $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+  rescue => e
+    # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
+    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Will retry.\n #{e.message} #{e.backtrace.join}")
+    begin
+      $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
+    rescue => e
+      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
+      raise e
+    end
+  end
+
+  def redis_connection_info
+    "#{$tables_metadata.client.host}:#{$tables_metadata.client.port}, db: #{$tables_metadata.client.db}, timeout: #{$tables_metadata.client.timeout}"
   end
 
   def the_geom_type=(value)
@@ -1318,24 +1348,37 @@ class Table < Sequel::Model(:user_tables)
         SELECT cartodb._CDB_create_timestamp_columns('#{table_name}'::REGCLASS);
       })
 
-      exists_geom_cols = user_database[%Q{
-        SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
-      }].first
+      # Avoid breaking on extension versions < 0.5.0
+      begin
+        is_raster = user_database[%Q{
+          SELECT cartodb._CDB_is_raster_table('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS) AS is_raster;
+        }].first
+      rescue
+        is_raster = nil
+      end
 
-      exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
+      if !is_raster.nil? && is_raster[:is_raster]
+        user_database.run(%Q{
+          SELECT cartodb._CDB_create_raster_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        })
+      else
+        exists_geom_cols = user_database[%Q{
+          SELECT cartodb._CDB_create_the_geom_columns('#{table_name}'::REGCLASS);
+        }].first
+        exists_geoms = "'{" + exists_geom_cols[:_cdb_create_the_geom_columns].join(',') + "}'::BOOLEAN[]"
 
-      # This are the two hot zones
-      user_database.run(%Q{
-        SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
-      })
-      user_database.run(%Q{
-        SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
-      })
+        # This are the two hot zones
+        user_database.run(%Q{
+          SELECT cartodb._CDB_populate_the_geom_from_the_geom_webmercator('#{table_name}'::REGCLASS, #{exists_geoms});
+        })
+          user_database.run(%Q{
+          SELECT cartodb._CDB_populate_the_geom_webmercator_from_the_geom('#{table_name}'::REGCLASS, #{exists_geoms});
+        })
 
-      user_database.run(%Q{
-        SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
-      })
-
+        user_database.run(%Q{
+          SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
+        })
+      end
     end
 
     self.schema(reload:true)
@@ -1393,9 +1436,13 @@ class Table < Sequel::Model(:user_tables)
 
     if @name_changed_from.present? && @name_changed_from != name
       reload
+
+      old_key = Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}")
+      new_key = key
+
       begin
         # update metadata records
-        $tables_metadata.rename(Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}"), key)
+        $tables_metadata.rename(old_key, new_key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
@@ -1403,7 +1450,7 @@ class Table < Sequel::Model(:user_tables)
         errored = true
       end
 
-      if register_table_only != true
+      unless register_table_only
         begin
           owner.in_database.rename_table(@name_changed_from, name) unless errored
         rescue StandardError => exception
@@ -1426,7 +1473,10 @@ class Table < Sequel::Model(:user_tables)
         end
       end
 
-      raise exception_to_raise if errored
+      if errored
+        $tables_metadata.rename(new_key, old_key)
+        raise exception_to_raise
+      end
     end
     @name_changed_from = nil
   end
@@ -1528,13 +1578,15 @@ class Table < Sequel::Model(:user_tables)
 
     return name if name == options[:current_name]
 
+    name = "#{name}_t" if RESERVED_TABLE_NAMES.include?(name)
+
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
     # We don't want to use an existing table name
     # 
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
-    existing_names = existing_names + User::SYSTEM_TABLE_NAMES
+    existing_names = existing_names + SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)
@@ -1751,14 +1803,14 @@ class Table < Sequel::Model(:user_tables)
   # @param [String] cartodb_pg_func
   # @param [User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
-    from_schema = self.owner.username
+    from_schema = self.owner.database_schema
     table_name = self.name
     to_role_user = organization_user.database_username
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
   end
 
   def perform_organization_table_permission_change(cartodb_pg_func)
-    from_schema = self.owner.username
+    from_schema = self.owner.database_schema
     table_name = self.name
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
   end

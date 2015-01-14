@@ -80,6 +80,21 @@ describe 'csv regression tests' do
     geometry_type_for(runner).should eq 'POINT'
   end
 
+  it 'import files named "all"' do
+    runner = runner_with_fixture('all.csv')
+    runner.run
+
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
+  it 'import big row files' do
+    runner = runner_with_fixture('big_row.csv')
+    runner.run
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
   it 'imports records with cell line breaks' do
     filepath    = path_to('in_cell_line_breaks.csv')
     downloader  = Downloader.new(filepath)
@@ -94,10 +109,31 @@ describe 'csv regression tests' do
     }].first.fetch(:count).should eq 7
   end
 
+  it 'displays a specific error message for a file with too many columns' do
+    runner = runner_with_fixture('too_many_columns.csv')
+    runner.run
+
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
+
+  it 'displays a specific error message for a file with 10000 columns' do
+    runner = runner_with_fixture('10000_columns.csv')
+    runner.run
+
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[TooManyColumnsError]
+  end
+
   def sample_for(job)
     job.db[%Q{
       SELECT *
       FROM #{job.qualified_table_name}
     }].first
   end #sample_for
+
+  def runner_with_fixture(file)
+    filepath = path_to(file)
+    downloader = Downloader.new(filepath)
+    Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+  end
+
 end # csv regression tests

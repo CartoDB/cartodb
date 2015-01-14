@@ -1,0 +1,86 @@
+// Content Result
+// 
+// Show the result of any action made in the
+// dashboard, example (search, no results, error,
+// loading, ...) 
+// --------------------------------------------------
+
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
+
+.ContentResult {
+  width: 460px;
+  min-height: 360px;
+  margin: 80px auto 0;
+  text-align: center;
+}
+.ContentResult.is-empty {
+  width: auto;
+  margin: 0 auto;
+  min-height: 0;
+}
+.ContentResult-smallLoader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 600px;
+    right: 0;
+    height: 2px;
+    background: #82ABDA;
+    @include animation(pulsate 1.5s linear infinite);      
+  }
+}
+.ContentResult-icon {
+  @include inline-block();
+  width: 38px;
+  height: 38px;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 2px;
+  line-height:36px;
+  font-size: 22px;
+  color: $cTypography-help;
+}
+// Icon types
+.ContentResult-iconNegative {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+.ContentResult-iconPositive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+.ContentResult-iconAlert {
+  border-color: $cHighlight-alert;
+  color: $cHighlight-alert;
+}
+.ContentResult-title {
+  display: block;
+  margin: 15px 0 10px 0;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
+  color: $cTypography-paragraphs;
+}
+.ContentResult-text {
+  display: block;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-lighter;
+}
+
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}

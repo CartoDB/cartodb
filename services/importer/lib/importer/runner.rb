@@ -24,7 +24,8 @@ module CartoDB
       # @param available_quota int|nil
       # @param unpacker Unp|nil
       # @param post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil, importer_stats_options = nil)
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil, \
+                     importer_stats_options = nil)
         @pg_options          = pg_options
         @downloader          = downloader
         @log                 = log             || new_logger
@@ -35,7 +36,8 @@ module CartoDB
         @post_import_handler = post_import_handler || nil
         @loader_options      = {}
         importer_stats_options ||= { host: nil, port: nil}
-        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port], importer_stats_options[:queue_id])
+        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port], \
+                                                     importer_stats_options[:queue_id])
       end
 
       def loader_options=(value)
@@ -169,7 +171,7 @@ module CartoDB
       def import(source_file, downloader, job=nil, loader_object=nil)
         job     ||= Job.new({ logger: log, pg_options: pg_options })
         loader = loader_object || loader_for(source_file).new(job, source_file)
-        if(loader.respond_to?(:set_importer_stats))
+        if loader.respond_to?(:set_importer_stats)
           loader.set_importer_stats(@importer_stats)
         end
         loader.options = @loader_options.merge(tracker: tracker)
@@ -197,15 +199,24 @@ module CartoDB
         job.log "Finished importing data from #{source_file.fullpath}"
 
         job.success_status = true
-        @results.push(result_for(job, source_file, loader.valid_table_names))
+        @results.push(result_for(job, source_file, loader.valid_table_names, loader.additional_support_tables))
       rescue => exception
+        if loader.nil?
+          valid_table_names = []
+          additional_support_tables = []
+        else
+          valid_table_names = loader.valid_table_names
+          additional_support_tables = loader.additional_support_tables
+        end
+
         job.log "Errored importing data from #{source_file.fullpath}:"
         job.log "#{exception.class.to_s}: #{exception.to_s}"
         job.log '----------------------------------------------------'
         job.log exception.backtrace
         job.log '----------------------------------------------------'
         job.success_status = false
-        @results.push(result_for(job, source_file, loader.valid_table_names, exception.class))
+        @results.push(
+          result_for(job, source_file, valid_table_names, additional_support_tables, exception.class))
       end
 
       def report
@@ -219,7 +230,8 @@ module CartoDB
       end
 
       def loader_for(source_file)
-        LOADERS.find(DEFAULT_LOADER) { |loader_klass|
+        loaders = LOADERS
+        loaders.find(DEFAULT_LOADER) { |loader_klass|
           loader_klass.supported?(source_file.extension)
         }
       end
@@ -258,7 +270,7 @@ module CartoDB
       attr_reader :pg_options, :unpacker, :available_quota
       attr_writer :results, :tracker
 
-      def result_for(job, source_file, table_names, exception_klass=nil)
+      def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
         Result.new(
           name:           source_file.name,
           schema:         source_file.target_schema,
@@ -269,7 +281,8 @@ module CartoDB
           tables:         table_names,
           success:        job.success_status,
           error_code:     error_for(exception_klass),
-          log_trace:      job.logger.to_s
+          log_trace:      job.logger.to_s,
+          support_tables: support_table_names
         )
       end
 

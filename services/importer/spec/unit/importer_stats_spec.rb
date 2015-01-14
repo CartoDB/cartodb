@@ -14,6 +14,8 @@ module CartoDB
       TIMING_TEST_KEY_A = 'test'
       TIMING_TEST_KEY_B = 'timing'
       TIMING_TEST_KEY = "#{TIMING_TEST_KEY_A}.#{TIMING_TEST_KEY_B}"
+      GAUGE_TEST_KEY = 'gauge'
+      GAUGE_TEST_VALUE = 0.5
       HOST_INFO = "fake-test-queue"
 
       EXPECTED_PREFIX = "importer.#{HOST_INFO}"
@@ -60,6 +62,21 @@ module CartoDB
           end
         end
 
+      end
+
+      describe '#gauge' do
+
+        it 'sends key with importer prefix' do
+          expected_send("#{EXPECTED_PREFIX}.#{GAUGE_TEST_KEY}")
+          ImporterStats.instance(TEST_HOST, TEST_PORT, HOST_INFO).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
+        end
+
+        it "doesn't send anything if host or port are not met" do
+          expected_send_nothing
+          ImporterStats.instance(nil, nil).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
+          ImporterStats.instance(nil, TEST_PORT).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
+          ImporterStats.instance(TEST_HOST, nil).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
+        end
       end
 
       def foo

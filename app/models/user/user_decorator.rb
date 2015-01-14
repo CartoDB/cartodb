@@ -3,9 +3,13 @@ module CartoDB
     def data(options = {})
       calls = self.get_api_calls(from: self.last_billing_cycle, to: Date.today)
       calls.fill(0, calls.size..29)
+
+      db_size_in_bytes = self.db_size_in_bytes
+
       data = {
         id: self.id,
         email: self.email,
+        name: self.name,
         username: self.username,
         account_type: self.account_type,
         table_quota: self.table_quota,
@@ -17,10 +21,10 @@ module CartoDB
         import_count: self.import_count,
         last_visualization_created_at: self.last_visualization_created_at,
         quota_in_bytes: self.quota_in_bytes,
-        db_size_in_bytes: self.db_size_in_bytes,
-        db_size_in_megabytes: self.db_size_in_bytes.present? ? (self.db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
+        db_size_in_bytes: db_size_in_bytes,
+        db_size_in_megabytes: db_size_in_bytes.present? ? (db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
         remaining_table_quota: self.remaining_table_quota,
-        remaining_byte_quota: self.remaining_quota.to_f,
+        remaining_byte_quota: self.remaining_quota(false, db_size_in_bytes).to_f,
         api_calls: calls,
         api_calls_quota: self.organization_user? ? self.organization.map_view_quota : self.map_view_quota,
         api_calls_block_price: self.organization_user? ? self.organization.map_view_block_price : self.map_view_block_price,
@@ -57,11 +61,13 @@ module CartoDB
         },
         notification: self.notification,
         avatar_url: self.avatar_url,
+        new_dashboard_enabled: self.new_dashboard_enabled,
         available_basemaps: {
           here: self.here_maps_enabled,
           stamen: self.stamen_maps_enabled,
           rainbow: self.rainbow_maps_enabled
-        }
+        },
+        feature_flags: self.feature_flags
       }
 
       data[:organization] = self.organization.to_poro(self) if self.organization.present?

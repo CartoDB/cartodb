@@ -1,9 +1,80 @@
+3.8.0 (2015-01-xx)
+------------------
+* Mailchimp user lists importer dataset.
+  New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
+  Requires also a feature_flag enabled either globally or to a specific users: 'mailchimp_import'
+* Added icon font source ([how to make changes](http://github.com/CartoDB/cartodb/blob/master/app/assets/fonts/icon_font/README.md))
+* Integrated Olark chat within CartoDB editor
+* IP guessing on import: try to georeference the imported table by IP if there's no other geocodifiable column [#1149](https://github.com/CartoDB/cartodb/issues/1149)
+
+
+3.7.1 (2014-12-30)
+------------------
+* New features
+  - GET /api/v1/viz/ always sorts by descending order if `order` param set, and this supports new filters: `mapviews`, `likes`, `size`, `row_count`
+  - GET /api/v1/viz/ returns more totals:
+        `total_likes` (visualizations count with likes, filtered to public for unauthenticated calls,
+        `total_shared` (visualizations count shared to the user, 0 for unauthenticated calls)
+
+3.7.0 (2014-12-18)
+------------------
+* New features
+ - Improved import flow for big S3 updates (if configured). Now everything >50MB won't be uploaded synchronously to S3,
+   but queued instead (new DataImport state "enqueued"), so that a new cartodb:upload_to_s3 rake (intended to be run
+   from a cron) performs asynchronously this upload and then normal import flow proceeds as before.
+   New Config entry: ['importer']['s3']['async_long_uploads'] (boolean)
+ - GET /api/v1/viz/ now works unauthenticated too, returning only the public tables of the subdomain's cartodb user.
+ - GET /api/v1/viz/ supports new 'shared' filter, with values 'yes'/'no'/'only' to return all tables/visualizations including shared, excluding shared or only if are shared.
+
+3.6.1 (2014-12-19)
+------------------
+* Updates torque library with several fixes
+* Adds new fonts
+
+3.6.0 (2014-12-15)
+------------------
+* New features
+ - First version of new dashboard
+ - Added Browserify for frontend development (check [this doc](https://github.com/CartoDB/cartodb/blob/master/CONTRIBUTING.md#grunt))
+ - Several improvements to raster imports
+
+3.5.0 (2014-12-11)
+------------------
+* New features
+  - Likes on Visualizations & Datasets lists. Also prepared backend code for inminent like button on public map pages.
+ * Fixed bugs and improvements
+   - fixed metadata tables being dropped if they were in more than one account #1349
+
+3.4.1 (2014-12-01)
+------------------
+ * Fixed bugs and improvements
+   - Modified signature of cartodb:db:load_functions rake task, to both reduce required params (added default values) and
+     allowing to specify a cartodb-postgresql extension version, so existing users can keep with their versions while
+     load_functions loads (optionally) a different one.
+
+3.4.0 (2014-12-01)
+------------------
+* New features
+  - Raster import: Drag & drop geotiff files to get them imported into cartodb. Cannot be viewed yet, but can used from PostGIS. NOTE: Raster overviews import is not yet fully working, this release handles streamlined import itself.
+    This requires a rake to run to activate raster for users ("cartodb:db:grant_general_raster_permissions").
+
+3.3.1 (2014-11-25)
+------------------
+ * Fixed bugs
+   - Country guessing: normalize content before checking for duplicates.
+
+3.3.0 (2014-11-24)
+-------------------
+ * New features
+  - Shows a warning message when editing a visualization that has a Google Maps basemap.
+
 3.2.15 (2014-11-21)
 -------------------
  * Fixed bugs and improvements
    - ContentGuesser: added param for sync and import APIs, checks for different id columns, performance metrics, etc.
    - Country guessing fix: must be done with at least 2 chars.
    - Geocoding: fixed geocoder by postalcode when column type is numeric
+   - #1095 Add feature button in Torque maps
 
 3.2.14 (2014-11-17)
 -------------------
@@ -44,8 +115,10 @@
 3.2.9 (2014-11-03)
 ------------------
 * New features
-  * Enabled ghost tables. Tables created with SQL API are visible in the editor
+  * Implemented raster import into the editor. Only table import, yet no viewer/editor.
+  * Enabled ghost tables. Tables created with SQL API are visible in the editor. See [documentation](https://github.com/CartoDB/cartodb/wiki/creating-tables-though-the-SQL-API)
   * Enables fullscreen for IE11.
+  * Deprecate GMaps support, substitute GMaps basemaps with equivalent ones for Leaflet instead (#1061)
 
 3.2.8 (2014-11-03)
 ------------------

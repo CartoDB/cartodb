@@ -188,7 +188,7 @@ module CartoDB
     },
     1010 => {
       title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
     1011 => {
         title: 'Error retrieving data from datasource',
@@ -206,6 +206,14 @@ module CartoDB
       title: 'Invalid name',
       what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again."
     },
+    1015 => {
+      title: 'No results',
+      what_about: "Query was correct but returned no results, please change the parameters and run it again."
+    },
+    1016 => {
+      title: 'Dropbox permission revoked',
+      what_about: "CartoDB has not permission to access your files at Dropbox. Please import file again."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -217,6 +225,14 @@ module CartoDB
     2003 => {
       title: 'Malformed CSV',
       what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV."
+    },
+    2004 => {
+      title: 'Too many columns',
+      what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones."
+    },
+    2005 => {
+      title: 'Duplicated column',
+      what_about: 'Your file has the same header for two or more columns. Please make column names unique and try again.'
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
@@ -260,7 +276,7 @@ module CartoDB
     },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. You can try splitting it into smaller files and then using the 'Merge Tables' functionality."
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality."
     },
     99999 => {
       title: 'Unknown',

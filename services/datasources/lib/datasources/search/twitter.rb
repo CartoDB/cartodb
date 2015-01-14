@@ -375,6 +375,10 @@ module CartoDB
 
           log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
 
+          # ogr2org fails when there's no result. Since importing is done through a file
+          # that hides metadata we must raise an error to handle it gracefully
+          raise NoResultsError.new if exception.nil? && total_results == 0
+
           # If fails on the first request, do not fail silently
           if !exception.nil? && total_results == 0
             log("ERROR: 0 results & exception: #{exception} (HTTP #{exception.http_code}) #{exception.additional_data}")

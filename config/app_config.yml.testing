@@ -92,6 +92,7 @@ defaults: &defaults
       secret_access_key:
       bucket_name:
       url_ttl:
+      async_long_uploads: false
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
@@ -152,8 +153,8 @@ defaults: &defaults
   cartodb_com_hosted: true
   cartodb_central_domain_name: 'cartodb.com'
   cartodb_central_api:
-    host: 'fake.url'
-    port: 9999
+    host: 'admin.localhost.lan'
+    port: 4000
     username: 'api'
     password: 'test'
   aws:
@@ -185,6 +186,10 @@ defaults: &defaults
       app_secret: ''
       callback_url: ''
     instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    mailchimp:
       app_key:              ''
       app_secret:           ''
       callback_url:         ''

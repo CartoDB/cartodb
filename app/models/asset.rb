@@ -72,7 +72,7 @@ class Asset < Sequel::Model
     o = s3_bucket.objects["#{target_asset_path}#{filename}"]
     o.write(Pathname.new(@file.path), {
       acl: :public_read,
-      content_type: MIME::Types.type_for(@file.path).first.to_s
+      content_type: MIME::Types.type_for(filename).first.to_s
     })
     o.public_url.to_s
   end

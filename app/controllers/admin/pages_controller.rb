@@ -50,7 +50,7 @@ class Admin::PagesController < ApplicationController
 
     @avatar_url = viewed_user.avatar
 
-    @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
+    @tables_num = viewed_user.public_table_count
     @vis_num    = viewed_user.public_visualization_count
 
     datasets = Visualization::Collection.new.fetch({
@@ -62,7 +62,8 @@ class Admin::PagesController < ApplicationController
       order:    'updated_at',
       o:        {updated_at: :desc},
       tags:     params[:tag],
-      exclude_shared: true
+      exclude_shared: true,
+      exclude_raster: true
     })
 
     @datasets = []
@@ -108,7 +109,8 @@ class Admin::PagesController < ApplicationController
         privacy:  Visualization::Member::PRIVACY_PUBLIC,
         order:    'updated_at',
         o:        {updated_at: :desc},
-        exclude_shared: true
+        exclude_shared: true,
+        exclude_raster: true
       })
     end
 
@@ -158,7 +160,7 @@ class Admin::PagesController < ApplicationController
 
     @avatar_url = viewed_user.avatar
 
-    @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
+    @tables_num = viewed_user.public_table_count
     @vis_num    = viewed_user.public_visualization_count
 
     visualizations = Visualization::Collection.new.fetch({
@@ -170,7 +172,8 @@ class Admin::PagesController < ApplicationController
       order:    'updated_at',
       o:        {updated_at: :desc},
       tags:     params[:tag],
-      exclude_shared: true
+      exclude_shared: true,
+      exclude_raster: true
     })
 
     @visualizations = []
@@ -202,7 +205,7 @@ class Admin::PagesController < ApplicationController
   def public_organization(organization)
     @organization = organization
 
-    @name = ( !@organization.display_name.empty? ? @organization.display_name : @organization.name )
+    @name = ( !@organization.display_name.blank? ? @organization.display_name : @organization.name )
     @avatar_url = @organization.avatar_url
 
     @twitter_username = @organization.twitter_username 

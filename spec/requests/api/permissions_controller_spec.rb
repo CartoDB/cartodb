@@ -127,7 +127,7 @@ describe Api::Json::PermissionsController do
     end
   end
 
-  describe 'POST /api/v1/perm' do
+  describe 'PUT /api/v1/perm' do
     it 'modifies an existing permission' do
       entity_id = UUIDTools::UUID.timestamp_create.to_s
       entity_type = Permission::ENTITY_TYPE_VISUALIZATION

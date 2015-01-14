@@ -26,6 +26,7 @@
 }
 // States
 .UserNotifications.has--alerts {
+  color: #666;
   .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1));

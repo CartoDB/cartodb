@@ -6,6 +6,9 @@ require_relative './csv_normalizer'
 module CartoDB
   module Importer2
     class Excel2Csv
+
+      NEWLINE_REMOVER_RELPATH = "../../../../../lib/importer/misc/csv_remove_newlines.py"
+
       def self.supported?(extension)
         extension == ".#{@format}"
       end #self.supported?
@@ -18,10 +21,7 @@ module CartoDB
 
       def run
         job.log "Converting #{@format.upcase} to CSV"
-        %x[in2csv #{filepath} > #{converted_filepath}]
-
-        #TODO implement
-        #spreadsheet = remove_newlines(spreadsheet)
+        %x[in2csv #{filepath} | #{newline_remover_path} > #{converted_filepath}]
 
         # Can be check locally using wc -l ... (converted_filepath)
         job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"
@@ -38,6 +38,12 @@ module CartoDB
           File.basename(filepath, File.extname(filepath))
         ) + '.csv'
       end #converted_filepath
+
+      protected
+
+      def newline_remover_path
+        File.expand_path(NEWLINE_REMOVER_RELPATH, __FILE__)
+      end
 
       attr_reader :filepath, :job
     end #Excel2Csv

@@ -2,21 +2,9 @@
 // --------------------------------------------------
 
 @import "../new_variables/mixins";
+@import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-
-.Maps {
-  display:block;
-  width:100%;
-  margin:20px 0 30px;
-  background:white;
-}
-.Maps > .u-inner {
-  position:relative;
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
-}
 .Maps-list {
   display:block;
   width:100%;
@@ -24,7 +12,12 @@
 .Maps-listItem {
   @include inline-block();
 }
-
 .Maps-listItem:nth-child(3n) .MapCard {
   margin-right:0
+}
+.Maps-listItemCard {
+  margin-top: $sMargin-element;
+}
+.Maps-listItemCardContent {
+  height: 142px;
 }

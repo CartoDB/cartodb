@@ -26,12 +26,12 @@
 .UserAvatar--small {
   width: $sAvatar-small;
   height: $sAvatar-small;
-  border-radius: 2px;
+  border-radius: $sAvatar-borderRadiusSmall;
 }
 .UserAvatar--smaller {
   width: $sAvatar-meta;
   height: $sAvatar-meta;
-  border-radius: $sAvatar-meta;
+  border-radius: $sAvatar-borderRadiusSmall;
 }
 // to just show [...], used in delete items for example
 // Example usage: <div class="UserAvatar"><span class="UserAvatar--moreItems../div>

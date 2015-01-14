@@ -234,10 +234,11 @@
       text-align: left;
 
       a { padding: 0; }
-      a.radiobutton span.radio { margin: 0 7px 0 0!Important; }
+      a.radiobutton span.radio { margin: 1px 7px 0 0!Important; }
 
       &.seconds {
         .form { text-align: center; }
+        a.radiobutton { margin: 0 3px 0 0; }
         a.radiobutton, .form {
           @include inline-block();
         }

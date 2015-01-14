@@ -33,13 +33,13 @@
     top: 0px;
     bottom: 0;
     position:absolute;
-    overflow: hidden;
+    /*overflow: hidden;*/
     outline:none;
     width: 100%;
 
     &:hover .jspVerticalBar { @include opacity(1); }
 
-    .jspContainer { overflow: hidden; position: relative; }
+    .jspContainer { /*overflow: hidden;*/ position: relative; }
     .jspPane { position: absolute; }
     .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
     .jspVerticalBar * { margin: 0; padding: 0; }
@@ -165,7 +165,7 @@
       top: 14px;
       margin: auto;
       height: 16px;
-      padding: 4px;
+      padding: 4px 6px;
       background: #333;
       @include border-radius(2px);
       @include box-sizing(border-box);
@@ -226,17 +226,23 @@
 
   .dropdown.slide_transition_dropdown {
 
-    width: 109px;
+    width: 150px;
 
-    li { 
+    ul li { 
+
       padding: 10px;
+      text-align: left;
+
       a { padding: 0; }
-      a .radiobutton ul li span.radio { margin: 1px 7px 0 0!Important; }
+      a.radiobutton span.radio { margin: 0 7px 0 0!Important; }
 
+      &.seconds {
+        .form { text-align: center; }
+        a.radiobutton, .form {
+          @include inline-block();
+        }
+      }
     }
-
-    li.seconds .form { text-align: center; }
-    li.seconds .radiobutton { margin: 0 0 10px 0; }
   }
 
 }

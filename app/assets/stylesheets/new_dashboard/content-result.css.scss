@@ -12,12 +12,14 @@
 .ContentResult {
   width: 460px;
   min-height: 360px;
-  margin: 80px auto 0;
+  margin: 0 auto;
+  padding-top: 160px;
   text-align: center;
 }
 .ContentResult.is-empty {
   width: auto;
   margin: 0 auto;
+  padding-top: 0;
   min-height: 0;
 }
 .ContentResult-smallLoader {
@@ -29,6 +31,7 @@
   height: 2px;
   background: transparent;
   overflow: hidden;
+  z-index: 100;
 
   &:before {
     content: '';

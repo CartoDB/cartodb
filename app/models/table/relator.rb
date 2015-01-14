@@ -52,8 +52,9 @@ module CartoDB
 
     def preview_for(object)
       data = {
-          id:   object.id,
-          name: object.name
+        id:         object.id,
+        name:       object.name,
+        updated_at: object.updated_at
       }
       if object[:permission_id].present? && !object.permission.nil?
         data[:permission] = object.permission.to_poro.select {|key, val|

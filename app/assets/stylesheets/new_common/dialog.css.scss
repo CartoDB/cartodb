@@ -13,8 +13,7 @@ body.is-inDialog {
   width: 100%;
   height: 100%;
   z-index: 50;
-  background-color: $cStructure-mainBkg;
-  @include opacity(0.9);
+  background-color: rgba($cStructure-mainBkg, 0.90);
   overflow: scroll;
 }
 .Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show

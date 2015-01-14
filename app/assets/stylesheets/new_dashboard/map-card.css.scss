@@ -22,11 +22,11 @@
 //      ...
 //
 .MapCard {
-  position:relative;
+  position: relative;
   @include inline-block();
   width: $sCard-width;
   margin-right: $sMargin-element;
-  box-shadow: 0 0 0 1px #DBDBDB inset; // use box-shadow to get border inside of the box
+  border: 1px solid #DBDBDB;
   border-radius: $sCard-borderRadius;
 }
 .MapCard--selectable:hover {
@@ -75,6 +75,8 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   @include flex-direction(column);
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
 }
 .MapCard-contentBody {

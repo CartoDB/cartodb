@@ -26,7 +26,7 @@
 .UserAvatar--small {
   width: $sAvatar-small;
   height: $sAvatar-small;
-  border-radius: 2px;
+  border-radius: $sAvatar-borderRadiusSmall;
 }
 .UserAvatar--smaller {
   width: $sAvatar-meta;

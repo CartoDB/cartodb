@@ -5,6 +5,7 @@
   Requires also a feature_flag enabled either globally or to a specific users: 'mailchimp_import'
 * Added icon font source ([how to make changes](http://github.com/CartoDB/cartodb/blob/master/app/assets/fonts/icon_font/README.md))
 * Integrated Olark chat within CartoDB editor
+* IP guessing on import: try to georeference the imported table by IP if there's no other geocodifiable column [#1149](https://github.com/CartoDB/cartodb/issues/1149)
 
 
 3.7.1 (2014-12-30)

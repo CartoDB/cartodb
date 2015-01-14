@@ -15,6 +15,7 @@
   background: white;
   z-index: 10;
 }
+// Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
   
@@ -29,6 +30,8 @@
     z-index: 0;
   }
 }
+// Positionate relative to the content
+.Filters.is-relative { position: relative }
 .Filters > .u-inner {
   position:relative;
   display:block;

@@ -12,7 +12,8 @@
 .ContentResult {
   width: 460px;
   min-height: 360px;
-  margin: 80px auto 0;
+  margin: 0 auto;
+  padding-top: 160px;
   text-align: center;
 }
 .ContentResult.empty--content {

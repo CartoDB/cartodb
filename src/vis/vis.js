@@ -551,12 +551,6 @@ var Vis = cdb.core.View.extend({
       if (this.mobile_enabled && type === "zoom")   return;
       if (this.mobile_enabled && type === 'header') return;
 
-      // We don't render zoom control if it was specified in the vis options
-      if (type === "zoom" && this.zoomControl !== undefined && !this.zoomControl) return;
-
-      // We don't render searchControl if it was specified in the vis options
-      if (type === "search" && this.searchControl !== undefined && !this.searchControl) return;
-
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
 
@@ -807,7 +801,7 @@ var Vis = cdb.core.View.extend({
       remove_overlay('share');
     }
 
-    if (this.mobile) {
+    if ( this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
       remove_overlay('zoom');
     }
 
@@ -855,14 +849,6 @@ var Vis = cdb.core.View.extend({
           o.auth_token = token;
         }
       }
-    }
-
-    if (opt.zoomControl !== undefined) {
-      this.zoomControl = opt.zoomControl; 
-    }
-
-    if (opt.searchControl !== undefined) {
-      this.searchControl = opt.searchControl;
     }
 
   },

@@ -255,6 +255,28 @@ describe("Vis", function() {
     expect(this.vis.$('.cartodb-header h1 > a').length).toEqual(0);
   });
 
+  it("should add zoom", function() {
+    this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
+    this.vis.load(this.mapConfig);
+    expect(this.vis.$('.cartodb-zoom').length).toEqual(1);
+  });
+
+  it("should enable zoom if specified by zoomControl option", function() {
+    this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
+    this.vis.load(this.mapConfig, {
+      zoomControl: true
+    });
+    expect(this.vis.$('.cartodb-zoom').length).toEqual(1);
+  });
+
+  it("should disable zoom if specified by zoomControl option", function() {
+    this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
+    this.vis.load(this.mapConfig, {
+      zoomControl: false
+    });
+    expect(this.vis.$('.cartodb-zoom').length).toEqual(0);
+  });
+
   it("should use zoom", function() {
     this.vis.load(this.mapConfig, {
       zoom: 10,

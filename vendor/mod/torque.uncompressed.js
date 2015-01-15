@@ -4410,9 +4410,10 @@ var carto = global.carto || require('carto');
     this._ctx = canvas.getContext('2d');
     this._sprites = []; // sprites per layer
     this._shader = null;
+    this._icons = {};
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
     this.TILE_SIZE = 256;
-    this._icons = {};
+    
     this._forcePoints = false;
   }
 
@@ -4452,6 +4453,8 @@ var carto = global.carto || require('carto');
       this._sprites = [];
       this._shader = shader;
       this._Map = this._shader.getDefault().getStyle({}, { zoom: 0 });
+      var img_names = this._shader.getImageURLs();
+      this._preloadIcons(img_names);
     },
 
     clearSpriteCache: function() {
@@ -4485,14 +4488,12 @@ var carto = global.carto || require('carto');
       var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
       ctx.translate(w/2, w/2);
 
-      var img_names = this._shader.getImageURLs();
-      this._preloadIcons(img_names);
-      if (img_names.length > 0 && this._icons.itemsToLoad === 0) {
-        var img_name = st["marker-file"] || st["point-file"];
-        var img = this._icons[img_name];
-        img.w = st['marker-width'] || img.width;
-        img.h = st['marker-width'] || st['marker-height'];
-        cartocss.renderSprite(ctx, img);
+      var img_name = st["marker-file"] || st["point-file"];
+      if (img_name && this._icons.itemsToLoad === 0) {
+          var img = this._icons[img_name];
+          img.w = st['marker-width'] || img.width;
+          img.h = st['marker-width'] || st['marker-height'];
+          cartocss.renderSprite(ctx, img);
       } 
       else {
         var mt = st['marker-type'];

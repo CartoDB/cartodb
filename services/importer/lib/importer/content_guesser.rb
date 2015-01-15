@@ -157,12 +157,19 @@ module CartoDB
 
       def ip_proportion(column)
         column_name_sym = column[:column_name].to_sym
-        matches = sample.count { |row| is_ip(row[column_name_sym]) }
+        matches = sample.count { |row| is_ip?(row[column_name_sym]) }
         matches.to_f / sample.count
       end
 
-      def is_ip(str)
-        (IPAddr.new(str) && true) rescue false
+      def is_ip?(str)
+        # The is_integer? check is required because of a bug in IPAddr solved
+        # in recent versions of the ruby interpreter. It can be removed in
+        # future versions.
+        !is_integer?(str) && (IPAddr.new(str) && true) rescue false
+      end
+
+      def is_integer?(str)
+        /\A[-+]?\d+\z/ === str
       end
 
 

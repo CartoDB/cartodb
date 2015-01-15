@@ -32,11 +32,11 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   border: 1px $cCard-selectedBorder solid;
 }
 .DatasetsList-itemCategory {
-  width: $sIcon-layout;
-  height: $sIcon-layout;
+  width: $sIcon-layout - 2;
+  height: $sIcon-layout - 2;
   margin-right: $sMargin-element;
   border: 1px rgba($cStructure-mainLine, 0.5) solid;
-  background: rgba(black, 0.05);
+  @include background(image-url('layout/no-geometry-dataset.png') no-repeat center center white);
   border-radius: $sIcon-borderRadius;
 }
 .DatasetsList-itemCategory.is--lineDataset {

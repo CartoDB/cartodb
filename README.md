@@ -500,7 +500,7 @@ sudo bundle install
 rvm use 1.9.3@cartodb --default
 
 # If you are using rbenv simply run:
-rbenv global ruby 1.9.3-p547
+rbenv local 1.9.3-p551
 bundle install
 
 # Configure the application constants

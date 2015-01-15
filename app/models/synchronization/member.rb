@@ -199,6 +199,11 @@ module CartoDB
           set_failure_state_from(importer)
         end
 
+        if exception.kind_of?(NotFoundDownloadError)
+          Rollbar.report_message('Sync file not found', 'error', error_info: "Sync #{self.id} will be marked as failure because file no longer exists")
+          self.state = STATE_FAILURE
+        end
+
         store
 
         if exception.kind_of?(TokenExpiredOrInvalidError)

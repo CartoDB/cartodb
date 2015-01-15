@@ -45,19 +45,7 @@
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color:#333;
-
-  &:after {
-    content: '';
-    position:absolute;
-    right:0;
-    top:50%;
-    width:0;
-    height:0;
-    border-left:4px solid transparent;
-    border-right:4px solid transparent;
-    border-top:4px solid #999999;
-  }
-
+  
   &:hover {
     color:#222;
     &:after { border-top-color:#222 }

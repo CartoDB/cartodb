@@ -241,4 +241,33 @@ describe CartoDB::Importer2::ContentGuesser do
     end
   end
 
+  describe '#is_ip_column?' do
+
+    it "returns true if column contains IP's" do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: '192.168.1.1'},
+         {candidate_column_name: '162.243.83.87'},
+         {candidate_column_name: '173.194.66.104'}
+      ]
+      guesser.stubs(:threshold).returns 0.9
+
+      guesser.is_ip_column?(column).should eq true
+    end
+
+    it 'returns false if sample contains a bunch of integers #1803' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: '12345'},
+         {candidate_column_name: '67891'},
+         {candidate_column_name: '1024'}
+      ]
+      guesser.stubs(:threshold).returns 0.9
+
+      guesser.is_ip_column?(column).should eq false
+    end
+  end
+
 end

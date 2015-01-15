@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.28
+// cartodb.js version: 3.11.30
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5aef9f16758b265d6564f03b3b38141a92e768f4
+// sha: 50a1c39a3d6776836fad608b077676b7f36ca682
 (function() {
   var root = this;
 
@@ -20720,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.28";
+    cdb.VERSION = "3.11.30";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -29862,8 +29862,8 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
     addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
       if(pos !== undefined) {
-        if(v.setZIndex) {
-          v.setZIndex(pos);
+        if (layer_view.setZIndex) {
+          layer_view.setZIndex(pos);
         }
       }
     },

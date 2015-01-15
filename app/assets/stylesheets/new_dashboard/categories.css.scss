@@ -43,10 +43,15 @@ $iconSelectedColor: #4A90E2;
   line-height: $sIcon-layout - 2;
   border: 1px solid $iconStandardColor;
   border-radius: $sIcon-borderRadius;
+  &:hover {
+    border-color: $iconSelectedColor;
+    .Categories-optionIcon { color: $iconSelectedColor }
+  }
 }
 .Categories-optionIcon {
   font-size: 17px;
   line-height: 38px;
+  color: $cTypography-help;
 }
 .Categories-option.is-selected {
   border-color: $iconSelectedColor;

@@ -295,7 +295,7 @@ module CartoDB
       end
 
       def set_general_failure_state_from(exception, error_code = 99999)
-        log.append     '******** synchronization raised exception ********'
+        log.append     '******** synchronization raised exception ********' if log.present?
         self.log_trace      = ''
         self.state          = STATE_FAILURE
         self.error_code     = error_code
@@ -389,6 +389,8 @@ module CartoDB
         log_attributes.merge(user_id: user.id) if user
 
         @log = CartoDB::Log.where(log_attributes).first
+      rescue e
+        Rollbar.report_exception(e)
       end
 
       def valid_uuid?(text)

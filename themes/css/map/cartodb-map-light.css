@@ -2001,6 +2001,9 @@ div.cartodb-timeslider p {
   color: #fff;
   font-size:13px;
 }
+.cartodb-header .cartodb-slides-controller {
+  background: none;
+}
 .cartodb-overlay.overlay-annotation {
   display:none;
 }
@@ -2318,3 +2321,55 @@ div.cartodb-timeslider p {
 /* GRAVITAS ONE */
 .cartodb-overlay.overlay-text.gravitas_one .content > .text { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
 .cartodb-overlay.overlay-text.gravitas_one .content > .text strong { font-family: 'Gravitas One', sans-serif; font-weight: 400; }
+
+.cartodb-slides-controller {
+  width: 100%;
+  background: rgba(0,0,0,.5);
+  /*position:absolute;*/
+  position:relative;
+  text-align: center;
+  top: 0;
+  left: 0;
+  z-index: 1000000;
+}
+.cartodb-slides-controller .slides-controller-content {
+  margin: auto;
+  padding: 10px;
+}
+.cartodb-slides-controller .prev {
+  display:inline-block; *display:inline; vertical-align:middle;
+  width: 16px;
+  height: 15px;
+  margin: 0 15px 0 0;
+  background: url('../img/slide_left.png') no-repeat;
+  border-radius: 100px;
+  opacity: .5;
+}
+.cartodb-slides-controller .next {
+  display:inline-block; *display:inline; vertical-align:middle;
+  margin: 0 0 0 15px;
+  width: 16px;
+  height: 15px;
+  background: url('../img/slide_right.png') no-repeat;
+  border-radius: 100px;
+  opacity: .5;
+}
+.cartodb-slides-controller ul {
+  display:inline-block; *display:inline;
+  text-align: center;
+}
+.cartodb-slides-controller ul li {
+  display:inline-block; *display:inline; vertical-align:middle;
+  margin: 0 2px;
+}
+.cartodb-slides-controller ul li a {
+  width: 10px;
+  height: 10px;
+  display: block;
+  background:#fff;
+  border-radius: 100px;
+  opacity: .4;
+}
+.cartodb-slides-controller ul li a.active {
+  opacity: 1;
+}

@@ -96,5 +96,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   color: $cTypography-help;
 }
 .DatasetsList-itemTitlePermission {
-  margin-left: $sMargin-min;
+  margin-left: $sMargin-elementInline;
+  background: white;
 }

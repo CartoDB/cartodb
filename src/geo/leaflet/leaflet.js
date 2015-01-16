@@ -102,6 +102,11 @@
         self._setModelProperty({ center: [c.lat, c.lng] });
       });
 
+      this.map_leaflet.on('dragend', function() {
+        var c = self.map_leaflet.getCenter();
+        this.trigger('dragend', [c.lat, c.lng]);
+      }, this);
+
       this.map_leaflet.on('drag', function() {
         var c = self.map_leaflet.getCenter();
         self._setModelProperty({

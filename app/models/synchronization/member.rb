@@ -189,20 +189,17 @@ module CartoDB
       rescue => exception
         if exception.kind_of?(NotFoundDownloadError)
           Rollbar.report_message('Sync file not found', 'error', error_info: "Sync #{self.id} will be marked as failure because file no longer exists")
-          self.state = STATE_FAILURE
-        end
-
-        store
-
-        Rollbar.report_exception(exception)
-        log.append exception.message
-        log.append exception.backtrace
-
-        if importer.nil?
+          set_general_failure_state_from(exception, 1017)
+        elsif importer.nil?
           set_general_failure_state_from(exception)
         else
           set_failure_state_from(importer)
         end
+
+        store
+
+        log.append exception.message
+        log.append exception.backtrace
 
         if exception.kind_of?(TokenExpiredOrInvalidError)
           begin
@@ -293,11 +290,11 @@ module CartoDB
         self.retried_times  = self.retried_times + 1
       end
 
-      def set_general_failure_state_from(exception)
+      def set_general_failure_state_from(exception, error_code = 99999)
         log.append     '******** synchronization raised exception ********'
         self.log_trace      = ''
         self.state          = STATE_FAILURE
-        self.error_code     = 99999
+        self.error_code     = error_code
         self.error_message  = exception.message + ' ' + exception.backtrace
         self.retried_times  = self.retried_times + 1
       end

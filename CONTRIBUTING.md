@@ -20,6 +20,10 @@ app_assets: 
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 
+# Documentation
+
+Documentation that don't fit well inline (e.g. high-level stuff) should be placed in the [/doc directory](doc/README.md).
+
 # Frontend
 
 The frontend is really standalone code, but is integrated with/served by the Rails application.

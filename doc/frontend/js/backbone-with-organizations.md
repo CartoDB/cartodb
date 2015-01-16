@@ -1,7 +1,3 @@
-# Frontend documentation
-
-## Organizations
-
 This document contains some notes on how to work with backbone models related to organization
 
 ## Models related to organization

@@ -189,7 +189,7 @@ module CartoDB
       rescue => exception
         if exception.kind_of?(NotFoundDownloadError)
           Rollbar.report_message('Sync file not found', 'error', error_info: "Sync #{self.id} will be marked as failure because file no longer exists")
-          set_general_failure_state_from(exception, 1017)
+          set_general_failure_state_from(exception, 1017, "File has been deleted from GDrive and won't be synced again.")
         elsif importer.nil?
           set_general_failure_state_from(exception)
         else
@@ -290,12 +290,13 @@ module CartoDB
         self.retried_times  = self.retried_times + 1
       end
 
-      def set_general_failure_state_from(exception, error_code = 99999)
+      def set_general_failure_state_from(exception, error_code = 99999, error_message = 'Unknown error, please try again')
         self.state          = STATE_FAILURE
         self.error_code     = error_code
         self.log_trace      = ''
         self.retried_times  = self.retried_times + 1
-        self.error_message  = exception.message + ' ' + exception.backtrace.join("\n")
+        self.log_trace      = exception.message + ' ' + exception.backtrace.join("\n")
+        self.error_message  = error_message
         log.append     '******** synchronization raised exception ********'
       rescue => e
         Rollbar.report_exception(e)

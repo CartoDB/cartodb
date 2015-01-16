@@ -27,6 +27,7 @@
   width: $sCard-width;
   margin-right: $sMargin-element - 3;
   border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
 }
 .MapCard--selectable:hover {
@@ -75,7 +76,6 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   @include flex-direction(column);
-  background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
 }
@@ -85,6 +85,7 @@
 .MapCard-contentBodyRow {
   margin-bottom: $sMargin-min;
 }
+.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
 .MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);

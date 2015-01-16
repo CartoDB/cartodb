@@ -196,11 +196,14 @@ module CartoDB
           set_failure_state_from(importer)
         end
 
+          Rollbar.report_message('Will store sync', 'info')
         store
+          Rollbar.report_message('Did store sync', 'info')
 
         log.append exception.message
         log.append exception.backtrace
 
+          Rollbar.report_message('Ending sync', 'info')
         if exception.kind_of?(TokenExpiredOrInvalidError)
           begin
             user.oauths.remove(exception.service_name)
@@ -230,6 +233,7 @@ module CartoDB
         log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
+        Rollbar.report_message("continuing sync... #{datasource_provider.providers_download_url?}", 'info')
         if datasource_provider.providers_download_url?
           resource_url = (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url
 

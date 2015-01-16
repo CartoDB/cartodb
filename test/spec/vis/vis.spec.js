@@ -261,7 +261,7 @@ describe("Vis", function() {
     expect(this.vis.$('.cartodb-zoom').length).toEqual(1);
   });
 
-  it("should enable zoom if specified by zoomControl option", function() {
+  it("should enable zoom if it's specified by zoomControl option", function() {
     this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
     this.vis.load(this.mapConfig, {
       zoomControl: true
@@ -269,12 +269,34 @@ describe("Vis", function() {
     expect(this.vis.$('.cartodb-zoom').length).toEqual(1);
   });
 
-  it("should disable zoom if specified by zoomControl option", function() {
+  it("should disable zoom if it's specified by zoomControl option", function() {
     this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
     this.vis.load(this.mapConfig, {
       zoomControl: false
     });
     expect(this.vis.$('.cartodb-zoom').length).toEqual(0);
+  });
+
+  it("should add search", function() {
+    this.mapConfig.overlays = [{ type: 'search' }];
+    this.vis.load(this.mapConfig);
+    expect(this.vis.$('.cartodb-searchbox').length).toEqual(1);
+  });
+
+  it("should enable search if it's specified by searchControl", function() {
+    this.mapConfig.overlays = [{ type: 'search' }];
+    this.vis.load(this.mapConfig, {
+      searchControl: true
+    });
+    expect(this.vis.$('.cartodb-searchbox').length).toEqual(1);
+  });
+
+  it("should disable search if it's specified by searchControl", function() {
+    this.mapConfig.overlays = [{ type: 'search' }];
+    this.vis.load(this.mapConfig, {
+      searchControl: false
+    });
+    expect(this.vis.$('.cartodb-searchbox').length).toEqual(0);
   });
 
   it("should use zoom", function() {

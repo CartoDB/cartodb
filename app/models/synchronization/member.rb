@@ -295,12 +295,14 @@ module CartoDB
       end
 
       def set_general_failure_state_from(exception, error_code = 99999)
-        log.append     '******** synchronization raised exception ********' if log.present?
-        self.log_trace      = ''
         self.state          = STATE_FAILURE
         self.error_code     = error_code
-        self.error_message  = exception.message + ' ' + exception.backtrace
+        self.log_trace      = ''
         self.retried_times  = self.retried_times + 1
+        self.error_message  = exception.message + ' ' + exception.backtrace
+        log.append     '******** synchronization raised exception ********'
+      rescue => e
+        Rollbar.report_exception(e)
       end
 
       # Tries to run automatic geocoding if present

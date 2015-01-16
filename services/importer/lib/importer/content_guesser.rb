@@ -83,7 +83,6 @@ module CartoDB
 
       def is_ip_column?(column)
         return false unless is_text_type? column
-        return false unless metric_entropy(column) > minimum_entropy
         proportion  = ip_proportion(column)
         if proportion > threshold
           log_ip_guessing_match_metrics(proportion)

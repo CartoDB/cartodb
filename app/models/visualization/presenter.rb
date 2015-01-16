@@ -122,9 +122,10 @@ module CartoDB
 
       def children
         @visualization.children.map { |vis| {
-                                              id:       vis.id,
-                                              prev_id:  vis.prev_id,
-                                              next_id:  vis.next_id,
+                                              id: vis.id,
+                                              prev_id: vis.prev_id,
+                                              type: Visualization::Member::TYPE_SLIDE,
+                                              next_id: vis.next_id,
                                               transition_options: vis.transition_options,
                                               map_id: vis.map_id
                                             }

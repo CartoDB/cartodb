@@ -138,7 +138,8 @@ module CartoDB
       def valid?
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
-        validator.validate_uniqueness_of(:name, available_name?)
+        # do not validate names for slides, it's never used
+        validator.validate_uniqueness_of(:name, available_name?) unless type_slide?
 
         if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
@@ -154,6 +155,8 @@ module CartoDB
 
         if type_slide?
           validator.errors.store(:parent_id, 'Slides must have a parent') if parent_id.nil?
+        else
+          validator.errors.store(:parent_id, 'derived must not have parent') unless parent_id.nil?
         end
 
         unless permission_id.nil?

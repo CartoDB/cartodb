@@ -107,3 +107,8 @@
 .MapCard-contentFooterTimeDiff {
   padding-left: 14px;
 }
+.MapCard-contentBodyTimeDiff .UserAvatar,
+.MapCard-contentFooterTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
+}

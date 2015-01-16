@@ -4,6 +4,17 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
+cdb.vis.Overlay.register('slides_controller', function(data, vis) {
+
+  var slides_controller = new cdb.geo.ui.SlidesController({
+    slides: vis.slides,
+    slides_data: data.slides
+  });
+
+  return slides_controller.render();
+
+});
+
 cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
@@ -137,6 +148,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var widget = new cdb.geo.ui.Header({
     model: new cdb.core.Model(options),
+    slides: vis.slides,
+    slides_data: data.slides,
     template: template
   });
 

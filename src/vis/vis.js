@@ -274,7 +274,7 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  _addOverlays: function(overlays, options) {
+  _addOverlays: function(overlays, data, options) {
 
     overlays = overlays.toJSON();
     // Sort the overlays by its internal order
@@ -287,7 +287,7 @@ var Vis = cdb.core.View.extend({
       this.overlays.pop().clean();
     }
 
-    this._createOverlays(overlays, options);
+    this._createOverlays(overlays, data, options);
   },
 
   addTimeSlider: function(torqueLayer) {
@@ -520,7 +520,7 @@ var Vis = cdb.core.View.extend({
     map.layers.bind('reset', this.addLegends, this);
 
     this.overlayModels.bind('reset', function(overlays) {
-      this._addOverlays(overlays, options);
+      this._addOverlays(overlays, data, options);
       this._addMobile(data, options);
     }, this);
 
@@ -747,7 +747,12 @@ var Vis = cdb.core.View.extend({
       this.slides.go(0);
   },
 
-  _createOverlays: function(overlays, options) {
+  _createOverlays: function(overlays, vis_data, options) {
+
+    // if there's no header overlay, we need to explicitly create the slide controller
+    if (!_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+      this._addSlideController(vis_data);
+    }
 
     _(overlays).each(function(data) {
       var type = data.type;
@@ -768,8 +773,12 @@ var Vis = cdb.core.View.extend({
         }
       }
 
-      // We add the overlay
-      var overlay = this.addOverlay(data);
+      // We add the header overlay
+      if (type === 'header') {
+        var overlay = this._addHeader(data, vis_data);
+      } else {
+        var overlay = this.addOverlay(data);
+      }
 
       // We show/hide the overlays
       if (overlay && (type in options) && options[type] === false) overlay.hide();
@@ -805,6 +814,27 @@ var Vis = cdb.core.View.extend({
 
 
     }, this);
+
+  },
+
+  _addSlideController: function(data) {
+
+    if (data.slides && data.slides.length > 0) {
+      return this.addOverlay({
+        type: 'slides_controller',
+        slides: data.slides
+      });
+    }
+
+  },
+
+  _addHeader: function(data, vis_data) {
+
+    return this.addOverlay({
+      type: 'header',
+      options: data.options,
+      slides: vis_data.slides
+    });
 
   },
 

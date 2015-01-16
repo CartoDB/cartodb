@@ -387,8 +387,6 @@ module CartoDB
         log_attributes.merge(user_id: user.id) if user
 
         @log = CartoDB::Log.where(log_attributes).first
-      rescue e
-        Rollbar.report_exception(e)
       end
 
       def valid_uuid?(text)

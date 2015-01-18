@@ -210,6 +210,7 @@ cartodb.createVis('map', url)
   - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
   - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'. 
   - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
+  - **no_cdn**: true to disable CDN when fetching tiles
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ##### Returns

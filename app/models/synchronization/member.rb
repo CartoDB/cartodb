@@ -192,7 +192,11 @@ module CartoDB
         log.append exception.backtrace.join('\n')
 
         if importer.nil?
-          set_general_failure_state_from(exception)
+          if(exception.kind_of?(NotFoundDownloadError))
+            set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
+          else
+            set_general_failure_state_from(exception)
+          end
         else
           set_failure_state_from(importer)
         end

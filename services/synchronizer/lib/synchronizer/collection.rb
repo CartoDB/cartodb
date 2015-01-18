@@ -55,7 +55,11 @@ module CartoDB
             query = db.query(%Q(
               SELECT * FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-              AND state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
+              AND 
+                (
+                  state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
+              OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}' and retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES})
+                )
             ))
           end
 

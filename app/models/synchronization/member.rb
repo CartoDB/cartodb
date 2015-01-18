@@ -203,9 +203,6 @@ module CartoDB
 
         store
 
-        log.append exception.message
-        log.append exception.backtrace
-
         if exception.kind_of?(TokenExpiredOrInvalidError)
           begin
             user.oauths.remove(exception.service_name)

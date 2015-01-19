@@ -414,7 +414,6 @@ describe('api.layers', function() {
       });
 
       it("should have several 'addTo' with zIndex set", function(done) {
-        debugger
         var layer0, layer1;
 
         cartodb.createLayer(map, {

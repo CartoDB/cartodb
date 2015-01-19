@@ -86,6 +86,7 @@ module CartoDB
         proportion  = ip_proportion(column)
         if proportion > threshold
           log "ip_proportion(#{column[:column_name]}) = #{proportion}; threshold = #{threshold}; sample.count = #{sample.count}"
+          log "sample.first(4) = #{sample.first(4)}"
           log_ip_guessing_match_metrics(proportion)
           true
         else

@@ -7,9 +7,31 @@
 
 
 .Filters {
+  position: absolute;
   display:block;
+  top: 0;
+  left: 0;
   width:100%;
+  background: white;
+  z-index: 10;
 }
+// Moved with scroll behaviour
+.Filters.is-fixed {
+  position: fixed;
+  
+  &:before {
+    content: '';
+    position:absolute;
+    left: 0;
+    top: 80px;
+    width: 100%;
+    height: 1px;
+    background-color: $cStructure-softLine;
+    z-index: 0;
+  }
+}
+// Positionate relative to the content
+.Filters.is-relative { position: relative }
 .Filters > .u-inner {
   position:relative;
   display:block;
@@ -31,6 +53,7 @@
   background-color:$cStructure-softLine;
   z-index:0;
 }
+.Filters.is--fixed .Filters-separator { display: none }
 .Filters-row {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -45,14 +68,14 @@
 .Filters-typeItem {
   position:relative;
   height:80px;
-  margin:0 15px;
+  margin:0 10px;
 
   &:first-child { margin-left:0 }
 }
 
 .Filters-searchLink {
-  margin-right: 10px;
-  padding-right: 25px;
+  margin-right: 15px;
+  padding-right: 2px;
   font-size: 14px;
   line-height: 80px;
   color: $cTypography-help;
@@ -165,9 +188,9 @@
 }
 .Filters-orderItem {
   @include inline-block();
-  margin-right:24px;
-  color:$cTypography-secondary;
-  line-height:19px;
+  margin-right: 24px;
+  color: $cTypography-secondary;
+  line-height: normal;
 }
 .Filters-orderLink {
   @include inline-block();
@@ -180,8 +203,10 @@
   color:#666666;
   &:hover { cursor: default }
 }
-.Filters-orderLink--graph {
-  line-height:26px;
+.Filters-orderLink--graph { line-height: 26px }
+.Filters-orderLink--size {
+  font-size: 17px;
+  line-height: 17px;
 }
 
 .Filters-selectedItems {
@@ -194,6 +219,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+.Filters-actionsText { color: $cTypography-help }
 .Filters-actionsLink {
   font-size:13px;
   padding-left:25px;

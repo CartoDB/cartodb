@@ -283,14 +283,14 @@ module CartoDB
             }
           when :row_count
             objects.sort! { |obj_a, obj_b|
-              a_rows = (obj_a.table.nil? ? 0 : obj_a.table.rows_and_size.fetch(:rows)) || 0
-              b_rows = (obj_b.table.nil? ? 0 : obj_b.table.rows_and_size.fetch(:rows)) || 0
+              a_rows = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:row_count)) || 0
+              b_rows = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:row_count)) || 0
               b_rows <=> a_rows
             }
           when :size
             objects.sort! { |obj_a, obj_b|
-              a_size = (obj_a.table.nil? ? 0 : obj_a.table.rows_and_size.fetch(:size)) || 0
-              b_size = (obj_b.table.nil? ? 0 : obj_b.table.rows_and_size.fetch(:size)) || 0
+              a_size = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:size)) || 0
+              b_size = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:size)) || 0
               b_size <=> a_size
             }
         end

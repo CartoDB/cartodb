@@ -5,3 +5,9 @@
   width: $sLayout-width;
   margin: 0 auto;
 }
+
+.u-ellipsLongText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

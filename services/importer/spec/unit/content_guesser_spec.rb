@@ -126,17 +126,17 @@ describe CartoDB::Importer2::ContentGuesser do
 
   end
 
-  describe '#is_country_column_type?' do
+  describe '#is_text_type?' do
     it 'returns false if the column type is not compatible' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       column = {data_type: 'integer'}
-      guesser.is_country_column_type?(column).should eq false
+      guesser.is_text_type?(column).should eq false
     end
 
     it 'returns true if the column type is of a compatible type' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
       column = {data_type: 'text'}
-      guesser.is_country_column_type?(column).should eq true
+      guesser.is_text_type?(column).should eq true
     end
   end
 
@@ -229,14 +229,44 @@ describe CartoDB::Importer2::ContentGuesser do
          {candidate_column_name: '1400US601'},
          {candidate_column_name: '1400US602'}
       ]
-      guesser.metric_entropy(column).should < 0.5
+      guesser.metric_entropy(column).should > 0.99
+      guesser.metric_entropy(column, guesser.country_name_normalizer).should < 0.5
     end
   end
 
-  describe '#normalize' do
+  describe '#country_name_normalizer' do
     it 'should handle gracefully nil values' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
-      guesser.normalize(nil).should == ''
+      guesser.country_name_normalizer.call(nil).should == ''
+    end
+  end
+
+  describe '#is_ip_column?' do
+
+    it "returns true if column contains IP's" do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: '192.168.1.1'},
+         {candidate_column_name: '162.243.83.87'},
+         {candidate_column_name: '173.194.66.104'}
+      ]
+      guesser.stubs(:threshold).returns 0.9
+
+      guesser.is_ip_column?(column).should eq true
+    end
+
+    it 'returns false if sample contains a bunch of integers #1803' do
+      guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
+      column = {column_name: 'candidate_column_name', data_type: 'text'}
+      guesser.stubs(:sample).returns [
+         {candidate_column_name: '12345'},
+         {candidate_column_name: '67891'},
+         {candidate_column_name: '1024'}
+      ]
+      guesser.stubs(:threshold).returns 0.9
+
+      guesser.is_ip_column?(column).should eq false
     end
   end
 

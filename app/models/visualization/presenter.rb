@@ -115,7 +115,7 @@ module CartoDB
           updated_at:   table.updated_at
         )
 
-        table_data.merge!(table.rows_and_size)
+        table_data.merge!(table.row_count_and_size)
 
         table_data
       end

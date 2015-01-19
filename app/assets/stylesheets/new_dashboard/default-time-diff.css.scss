@@ -6,12 +6,15 @@
 @import "../new_variables/sizes";
 
 .DefaultTimeDiff {
+  @include display-flex();
+  @include align-items(center, center);
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
 }
 .DefaultTimeDiff-icon {
-  font-size: $sFontSize-smaller;
+  margin-right: 5px;
+  font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

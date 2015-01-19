@@ -118,3 +118,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin-left: $sMargin-elementInline;
   background: white;
 }
+.DatasetsList-itemTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
+}

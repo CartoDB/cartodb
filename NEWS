@@ -1,3 +1,6 @@
+3.11.30 (13//01//2014)
+- #264 - Fix addTo (when the second param specifies index)
+
 3.11.29 (30//12//2014)
 - #257 - Fixes rendering of several bold typefaces
 

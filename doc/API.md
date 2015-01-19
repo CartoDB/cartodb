@@ -210,6 +210,7 @@ cartodb.createVis('map', url)
   - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
   - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'. 
   - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
+  - **no_cdn**: true to disable CDN when fetching tiles
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ##### Returns
@@ -1101,7 +1102,7 @@ We are committed to making sure your website works as intended no matter what ch
 We recommend that you always develop against the most recent version of CartoDB.js, right now:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.29/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.30/cartodb.js"></script>
 ```
 
 Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:

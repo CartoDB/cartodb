@@ -1,0 +1,23 @@
+@import "../../new_variables/mixins";
+@import "../../new_variables/colors";
+@import "../../new_variables/sizes";
+
+
+
+.ConnectDialog {
+
+}
+.ConnectDialog .Dialog-content { width: 100% }
+.ConnectDialog-body {
+  min-height: 500px;
+  background: $cStructure-grayBkg;
+}
+.ConnectDialog-footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  margin-left: -470px;
+  border: none;
+  text-align: center;
+  z-index: 1;
+}

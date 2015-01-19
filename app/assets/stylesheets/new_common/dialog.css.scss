@@ -78,6 +78,10 @@ body.is-inDialog {
   font-size: 22px;
   line-height: 48px;
 }
+.Dialog-headerIcon--main {
+  color: $cHighlight-main;
+  border-color: $cHighlight-main;
+}
 .Dialog-headerIcon--negative {
   color: $cHighlight-negative;
   border-color: $cHighlight-negative;
@@ -94,11 +98,13 @@ body.is-inDialog {
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-largest;
+  color: $cTypography-paragraphs;
 }
 .Dialog-headerText {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;

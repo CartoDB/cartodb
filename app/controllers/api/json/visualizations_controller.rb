@@ -395,13 +395,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     public_visualizations = []
     total_liked_entries = 0
     total_shared_entries = 0
+    total_user_entries = 0
     user = User.where(username: CartoDB.extract_subdomain(request)).first
 
     unless user.nil?
       filtered_params = params.dup.merge(scope_for(user))
       filtered_params[Visualization::Collection::FILTER_UNAUTHENTICATED] = true
-      collection = Visualization::Collection.new.fetch(filtered_params)
 
+      total_user_entries = Visualization::Collection.new.count_total(filtered_params)
+
+      collection = Visualization::Collection.new.fetch(filtered_params)
       public_visualizations  = collection.map { |vis|
         begin
           vis.to_hash(
@@ -420,19 +423,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     response = {
       visualizations: public_visualizations,
-      total_entries:  public_visualizations.length,
-      total_likes:    total_liked_entries,
-      total_shared:   total_shared_entries
+      total_entries: public_visualizations.length,
+      total_user_entries: total_user_entries,
+      total_likes: total_liked_entries,
+      total_shared: total_shared_entries
     }
     render_jsonp(response)
   end
 
   def index_logged_in
-    collection = Visualization::Collection.new.fetch(
-      params.dup.merge(scope_for(current_user))
-    )
-
     users_cache = {}
+    filters = params.dup.merge(scope_for(current_user))
+
+    collection = Visualization::Collection.new.fetch(filters)
+
+    total_user_entries = Visualization::Collection.new.count_total(filters)
 
     table_data = collection.map { |vis|
       if vis.table.nil?
@@ -463,6 +468,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     response = {
       visualizations: representation,
       total_entries:  collection.total_entries,
+      total_user_entries: total_user_entries,
       total_likes:    collection.total_liked_entries,
       total_shared:   collection.total_shared_entries
     }

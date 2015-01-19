@@ -393,7 +393,6 @@ only screen and (                min-resolution: 2dppx) {
 /* MOBILE */
 
 .cartodb-mobile {
-  position:absolute;
   width: 100%;
   height: 100%;
   z-index: 100000000;
@@ -433,6 +432,7 @@ only screen and (                min-resolution: 2dppx) {
   line-height: normal;
   z-index: 99999;
 }
+.cartodb-mobile.with-slides .cartodb-header,
 .cartodb-mobile.with-header .cartodb-header {
   background-color: rgba(0, 0, 0, 0.5);
 }
@@ -943,48 +943,18 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile .cartodb-attribution-button:hover:before {
   border: 3px solid rgba(0, 0, 0, 0.7);
 }
-.cartodb-mobile .cartodb-mobile-slides-controller {
+.cartodb-mobile .cartodb-slides-controller {
   position:absolute;
-  bottom: 10px;
-  left: 50%;
-  width: 200px;
-  margin-left: -100px;
-  z-index: 100;
+  bottom: 0;
+  top: auto;
+  padding: 0;
+  z-index: 9;
 }
-.cartodb-mobile .cartodb-mobile-slides-controller {
-  position:absolute;
-  bottom: 20px;
-  left: 50%;
-  width: 200px;
-  margin-left: -100px;
-  text-align: center;
-  z-index: 100;
+.cartodb-mobile .cartodb-slides-controller .slides-controller-content {
+  padding: 20px 0;
 }
-.cartodb-mobile .cartodb-mobile-slides-controller a {
-
-  margin: 0 5px;
-  padding: 10px;
-
-  vertical-align: middle;
-  display: -moz-inline-stack;
-  display: inline-block;
-  zoom: 1;
-
-  color: #999999;
-  text-align: center;
-  text-decoration: none;
-  background: #fff;
-  border: 1px solid #999999;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-}
-
-.cartodb-mobile .cartodb-mobile-slides-controller a:hover {
-  color: #333;
+.cartodb-mobile .cartodb-slides-controller .slides-controller-content ul {
+  display: none;
 }
 
 /* LEGENDS */
@@ -2000,9 +1970,6 @@ div.cartodb-timeslider p {
   line-height: normal;
   color: #fff;
   font-size:13px;
-}
-.cartodb-header .cartodb-slides-controller {
-  background: none;
 }
 .cartodb-overlay.overlay-annotation {
   display:none;

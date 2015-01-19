@@ -1,57 +1,3 @@
-cdb.geo.ui.MobileSlideController = cdb.core.View.extend({
-
-  events: {
-    'click a.next': "_next",
-    'click a.prev': "_prev"
-  },
-
-  tagName: "div",
-
-  className: "cartodb-mobile-slides-controller",
-
-  template: cdb.core.Template.compile("<a href='#' class='prev'>Prev</a><a href='#' class='next'>Next</a>"),
-
-  initialize: function() {
-    this.slidesCount = this.options.slides_data.length + 1;
-  },
-
-  _prev: function(e) {
-    if (e) this.killEvent(e);
-
-    var currentSlide = this.options.slides.state();
-
-    if (currentSlide > 0) {
-      currentSlide--;
-    } else {
-      currentSlide = this.options.slides_data.length;
-    }
-
-    this.options.slides.go(currentSlide)
-
-  },
-
-  _next: function(e) {
-    if (e) this.killEvent(e);
-
-    var currentSlide = this.options.slides.state();
-
-    if (currentSlide <= this.options.slides_data.length - 1) {
-      currentSlide++;
-    } else {
-      currentSlide = 0;
-    }
-
-    this.options.slides.go(currentSlide)
-
-  },
-
-  render: function() {
-    this.$el.html(this.template());
-    return this;
-  }
-
-});
-
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
@@ -648,6 +594,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         show_description = true;
       }
 
+      if (this.hasSlides) {
+        has_header = true;
+      }
+
       var $hgroup = title_template({ 
         title: extra.title,
         show_title:show_title,
@@ -773,7 +723,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     if (this.hasSlides) {
 
-      this.slidesController = new cdb.geo.ui.MobileSlideController({
+      this.$el.addClass("with-slides");
+
+      this.slidesController = new cdb.geo.ui.SlidesController({
         slides_data: this.options.slides_data,
         slides: this.options.slides
       });
@@ -790,14 +742,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.html(this.template(this.options));
 
+    this.$header = this.$el.find(".cartodb-header");
+    this.$header.show();
+
     this._renderOverlays();
 
     this._renderSlidesController();
 
     this._addAttributions();
-
-    this.$header = this.$el.find(".cartodb-header");
-    this.$header.show();
 
     this._getLayers();
     this._renderLayers();

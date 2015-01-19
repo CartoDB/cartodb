@@ -290,6 +290,9 @@ module CartoDB
         self.error_code     = error_code
         self.error_message  = error_message
         self.retried_times  = self.retried_times + 1
+        if self.retried_times < MAX_RETRIES
+          self.run_at         = Time.now + interval
+        end
       rescue => e
         Rollbar.report_exception(e)
       end

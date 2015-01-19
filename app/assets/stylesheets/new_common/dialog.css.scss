@@ -64,6 +64,10 @@ body.is-inDialog {
   border-top: 1px solid $cTypography-help;
   min-width: $sLayout-width;
 }
+.Filters.Dialog-bodyFilters {
+  position: relative;
+  background: none;
+}
 .Dialog-footer {
   border-top: 1px solid $cTypography-help;
   padding: $sMargin-group 0;

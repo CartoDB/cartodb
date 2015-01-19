@@ -31,6 +31,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     geocoding.user     = current_user
     geocoding.table_id = @table.try(:id)
     geocoding.raise_on_save_failure = true
+    geocoding.triggered_by = Geocoding::TRIGGERED_BY_USER
 
     geocoding.formatter = "{#{ params[:column_name] }}" if params[:column_name].present?
 

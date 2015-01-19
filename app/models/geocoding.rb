@@ -6,11 +6,12 @@ require_relative '../../lib/cartodb/metrics'
 class Geocoding < Sequel::Model
 
   DEFAULT_TIMEOUT = 15.minutes
+  TRIGGERED_BY_USER = 'user'
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota, :country_column]
+                       :used_credits, :remaining_quota, :country_column, :triggered_by]
 
   many_to_one :user
   many_to_one :table
@@ -202,7 +203,11 @@ class Geocoding < Sequel::Model
       price:            price,
       cost:             cost,
       used_credits:     used_credits,
-      remaining_quota:  remaining_quota
+      remaining_quota:  remaining_quota,
+      type_guessing: type_guessing,
+      quoted_fields_guessing: quoted_fields_guessing,
+      content_guessing: content_guessing,
+      triggered_by:     triggered_by
     }
     if state == 'finished' && exception.nil?
       payload.merge!(

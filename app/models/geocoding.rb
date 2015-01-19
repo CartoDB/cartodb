@@ -204,9 +204,6 @@ class Geocoding < Sequel::Model
       cost:             cost,
       used_credits:     used_credits,
       remaining_quota:  remaining_quota,
-      type_guessing: type_guessing,
-      quoted_fields_guessing: quoted_fields_guessing,
-      content_guessing: content_guessing,
       triggered_by:     triggered_by
     }
     if state == 'finished' && exception.nil?

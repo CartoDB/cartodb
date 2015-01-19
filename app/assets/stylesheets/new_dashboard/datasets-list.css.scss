@@ -13,7 +13,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 .DatasetsList-item {
   @include display-flex();
-  @include justify-content(center, center);
+  @include justify-content(space-between, justify);
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
@@ -32,9 +32,11 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   border: 1px $cCard-selectedBorder solid;
 }
 .DatasetsList-itemCategory {
+  position: relative;
   width: $sIcon-layout - 2;
   height: $sIcon-layout - 2;
   margin-right: $sMargin-element;
+  margin-top: 3px;
   border: 1px rgba($cStructure-mainLine, 0.5) solid;
   @include background(image-url('layout/no-geometry-dataset.png') no-repeat center center white);
   border-radius: $sIcon-borderRadius;
@@ -51,17 +53,39 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-itemCategory.is--rasterDataset {
   @include background(image-url('layout/raster-dataset.png') no-repeat center center white);
 }
+.DatasetsList-itemStatus {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 17px;
+  height: 17px;
+  line-height: 17px;
+  border: 1px solid #CCC;
+  border-radius: 17px;
+  background: white;
+  font-size: 9px;
+  color: $cHighlight-alert;
+  text-align: center;
+  z-index: 2;
+}
+.DatasetsList-itemStatus.is-failure { color: $cHighlight-negative }
+.DatasetsList-itemStatus.is-success { color: $cHighlight-positive }
+
 .DatasetsList-itemPrimaryInfo {
   @include display-flex();
-  @include flex-direction(column);
-  flex-grow: 1;
-  max-width: 500px;
 }
 .DatasetsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
   min-width: 400px;
+}
+
+.DatasetsList-itemInfo {
+  @include display-flex();
+  @include flex-direction(column);
+  flex-grow: 1;
+  max-width: 500px; 
 }
 
 .DatasetsList-itemMeta,
@@ -91,5 +115,10 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   color: $cTypography-help;
 }
 .DatasetsList-itemTitlePermission {
-  margin-left: $sMargin-min;
+  margin-left: $sMargin-elementInline;
+  background: white;
+}
+.DatasetsList-itemTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
 }

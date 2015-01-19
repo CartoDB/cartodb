@@ -278,6 +278,9 @@ module CartoDB
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
+        if self.retried_times < MAX_RETRIES
+          self.run_at         = Time.now + interval
+        end
       end
 
       def set_general_failure_state_from(exception, error_code = 99999, error_message = 'Unknown error, please try again')

@@ -72,12 +72,19 @@ body.is-inDialog {
   position: relative;
   width: $sIcon-layout;
   height: $sIcon-layout;
-  border: 1px solid $cHighlight-negative;
+  border: 1px solid $cStructure-softLine;
   border-radius: $sIcon-borderRadius;
   margin: 0 auto $sMargin-element auto; /* center icon */
-  color: $cHighlight-negative;
   font-size: 22px;
   line-height: 48px;
+}
+.Dialog-headerIcon--negative {
+  color: $cHighlight-negative;
+  border-color: $cHighlight-negative;
+}
+.Dialog-headerIcon--positive {
+  color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
 }
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */

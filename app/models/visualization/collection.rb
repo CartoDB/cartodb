@@ -212,6 +212,7 @@ module CartoDB
       def restrict_filters_if_unauthenticated(filters)
         @unauthenticated_flag = false
         unless filters.delete(FILTER_UNAUTHENTICATED).nil?
+          filters[:only_shared] = false
           filters[:exclude_shared] = true
           filters[:privacy] = Visualization::Member::PRIVACY_PUBLIC
           filters.delete(:locked)

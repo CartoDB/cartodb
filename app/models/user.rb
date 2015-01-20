@@ -687,6 +687,8 @@ class User < Sequel::Model
   end
 
   def private_maps_enabled
+    enabled = super
+    return enabled if enabled.present? && enabled == true
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 

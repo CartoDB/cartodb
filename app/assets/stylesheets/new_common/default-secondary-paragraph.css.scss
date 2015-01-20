@@ -1,0 +1,10 @@
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.DefaultSecondaryParagraph {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+  
+}

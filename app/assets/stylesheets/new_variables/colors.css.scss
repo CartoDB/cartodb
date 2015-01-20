@@ -26,6 +26,14 @@ $cHighlight-positive: rgba(#8FB83F, 1);
 $cHighlight-negative: rgba(#C74B43, 1);
 $cHighlight-alert:    rgba(#C67B44, 1);
 
+// Illustration
+$cIllustration-neutral:  $cHighlight-main;
+$cIllustration-positive: $cHighlight-positive;
+$cIllustration-notice:   rgba(#F2C000, 1);
+$cIllustration-alert:    rgba(#EA703D, 1);
+$cIllustration-negative: rgba(#CB3F29, 1);
+$cIllustration-royal:    rgba(#7882B9, 1);
+
 // Icons
 $cIcons-default: rgba(#CCC, 1);
 $cIcons-active:  rgba(#666, 1); // Active & hover

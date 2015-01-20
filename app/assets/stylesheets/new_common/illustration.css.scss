@@ -1,0 +1,40 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+//  Filled circles with an icon in the middle, typically used together with a iconFont.
+//
+// Example usage:
+//   <div class="Illustration Illustration--royal"> 
+//     <i class="iconFont iconFont-Unlock"></i>
+//   </div>
+//
+.Illustration {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: $sIllustration-circle;
+  height: $sIllustration-circle;
+  color: white;
+  border-radius: 30px;
+  font-size: $sIllustration-iconFontSize;
+}
+
+.Illustration--neutral { 
+  backgroun-color: $cIllustration-neutral;
+}
+.Illustration--positive {
+  background-color: $cIllustration-positive;
+}
+.Illustration--notice {
+  background-color: $cIllustration-notice;
+}
+.Illustration--alert {
+  background-color: $cIllustration-alert;
+}
+.Illustration--negative {
+  background-color: $cIllustration-negative;
+}
+.Illustration--royal {
+  background-color: $cIllustration-royal;
+}

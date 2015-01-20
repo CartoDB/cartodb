@@ -400,7 +400,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     unless user.nil?
       filtered_params = params.dup.merge(scope_for(user))
-      filtered_params[Visualization::Collection::FILTER_UNAUTHENTICATED] = true
+      filtered_params[:unauthenticated] = true
 
       total_user_entries = Visualization::Collection.new.count_total(filtered_params)
 

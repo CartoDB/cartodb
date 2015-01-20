@@ -9,15 +9,6 @@ module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
 
-    # 'unauthenticated' overrides other filters
-    # 'user_id' filtered by default if present upon fetch()
-    # 'locked' is filtered but before the rest
-    # 'exclude_shared' and 'only_shared' are other filtes applied
-    AVAILABLE_FILTERS   = %w{ name type description map_id privacy id }
-
-    # Keys in this list are the only filters that should be kept for calculating totals (if present)
-    KEYS_ALLOWED_FOR_TOTALS = [ :type, :user_id, :unauthenticated ]
-
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -31,12 +22,22 @@ module CartoDB
     end
     
     class Collection
+      # 'unauthenticated' overrides other filters
+      # 'user_id' filtered by default if present upon fetch()
+      # 'locked' is filtered but before the rest
+      # 'exclude_shared' and
+      # 'only_shared' are other filtes applied
+      # 'only_liked'
+      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id }
+
+      # Keys in this list are the only filters that should be kept for calculating totals (if present)
+      FILTERS_ALLOWED_AT_TOTALS = [ :type, :user_id, :unauthenticated ]
+
       FILTER_SHARED_YES = 'yes'
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
-      FILTER_UNAUTHENTICATED = :unauthenticated
-      ORDERING_RELATED_ATTRIBUTES = [:likes, :mapviews, :row_count, :size]
+      ALLOWED_ORDERING_FIELDS = [:likes, :mapviews, :row_count, :size]
 
       # Same as services/data-repository/backend/sequel.rb
       PAGE          = 1
@@ -44,7 +45,7 @@ module CartoDB
 
       ALL_RECORDS = 999999
 
-      def initialize(attributes={}, options={})
+      def initialize(options={})
         @total_entries = 0
 
         @collection = DataRepository::Collection.new(
@@ -68,15 +69,16 @@ module CartoDB
       end
 
       # NOTES:
-      # - if user_id is present as filter, will fetch visualizations shared with the user,
-      #   except if exclude_shared filter is also present and true,
-      # - only_shared forces to use different flow because if there are no shared there's nothing else to do
-      # - locked filter has special behaviour
+      # - if 'user_id' is present as filter, will fetch visualizations shared with the user,
+      #   except if 'exclude_shared' filter is also present and true,
+      # - 'only_shared' forces to use different flow because if there are no shared there's nothing else to do
+      # - 'locked' filter has special behaviour
       def fetch(filters={})
         filters = filters.dup   # Avoid changing state
         @user_id = filters.fetch(:user_id, nil)
         filters = restrict_filters_if_unauthenticated(filters)
         dataset = compute_sharing_filter_dataset(filters)
+        dataset = compute_liked_filter_dataset(dataset, filters)
 
         if dataset.nil?
           @total_entries = 0
@@ -100,8 +102,8 @@ module CartoDB
       def count_total(filters={})
         total_user_entries = 0
 
-        cleaned_filters = filters.keep_if { |key, value|
-          KEYS_ALLOWED_FOR_TOTALS.include?(key.to_sym)
+        cleaned_filters = filters.keep_if { |key, |
+          FILTERS_ALLOWED_AT_TOTALS.include?(key.to_sym)
         }
         cleaned_filters.merge!({ exclude_shared: true })
 
@@ -166,6 +168,7 @@ module CartoDB
 
       attr_reader :collection
 
+      # noinspection RubyArgCount
       def unauthenticated_likes_without_type
         CartoDB::Like.select(:subject)
         .join(:visualizations,
@@ -176,6 +179,7 @@ module CartoDB
         .count
       end
 
+      # noinspection RubyArgCount
       def unauthenticated_likes_with_type
         CartoDB::Like.select(:subject)
         .join(:visualizations,
@@ -187,6 +191,7 @@ module CartoDB
         .count
       end
 
+      # noinspection RubyArgCount
       def authenticated_likes_without_type
         CartoDB::Like.select(:subject)
         .join(:visualizations,
@@ -196,6 +201,7 @@ module CartoDB
         .count
       end
 
+      # noinspection RubyArgCount
       def authenticated_likes_with_type
         CartoDB::Like.select(:subject)
         .join(:visualizations,
@@ -264,7 +270,7 @@ module CartoDB
       # If special filter unauthenticated: true is present, will restrict data
       def restrict_filters_if_unauthenticated(filters)
         @unauthenticated_flag = false
-        unless filters.delete(FILTER_UNAUTHENTICATED).nil?
+        unless filters.delete(:unauthenticated).nil?
           filters[:only_shared] = false
           filters[:exclude_shared] = true
           filters[:privacy] = Visualization::Member::PRIVACY_PUBLIC
@@ -273,6 +279,26 @@ module CartoDB
           @unauthenticated_flag = true
         end
         filters
+      end
+
+      def compute_liked_filter_dataset(dataset, filters)
+        if filters.delete(:only_liked)
+          if @user_id.nil?
+            nil
+          else
+            # If no order supplied, order by likes
+            filters[:order] = :likes if filters.fetch(:order, nil).nil?
+
+            liked_vis = user_liked_vis(@user_id)
+            if liked_vis.nil? || liked_vis.empty?
+              nil
+            else
+              dataset.where(id: liked_vis)
+            end
+          end
+        else
+          dataset
+        end
       end
 
       def compute_sharing_filter_dataset(filters)
@@ -311,7 +337,7 @@ module CartoDB
 
       def apply_filters(dataset, filters)
         @type = filters.fetch(:type, nil)
-        dataset = repository.apply_filters(dataset, filters, AVAILABLE_FILTERS)
+        dataset = repository.apply_filters(dataset, filters, AVAILABLE_FIELD_FILTERS)
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
@@ -382,7 +408,7 @@ module CartoDB
       def order(dataset, criteria=nil)
         return dataset if criteria.nil? || criteria.empty?
         criteria = criteria.to_sym
-        if ORDERING_RELATED_ATTRIBUTES.include? criteria
+        if ALLOWED_ORDERING_FIELDS.include? criteria
           order_by_related_attribute(dataset, criteria)
         else
           order_by_base_attribute(dataset, criteria)
@@ -445,6 +471,10 @@ module CartoDB
         .map { |entity|
           entity.entity_id
         }
+      end
+
+      def user_liked_vis(user_id)
+        Like.where(actor: user_id).all.map{ |like| like.subject }
       end
 
       def tags_from(filters={})

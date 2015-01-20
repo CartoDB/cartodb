@@ -322,13 +322,14 @@ module CartoDB
         # @return { :id, :title, :url, :service, :size }
         def format_item_data(item_data)
           filename = item_data.fetch('name').gsub(' ', '_')
-          stats = item_data.fetch('stats').fetch('member_count')
+          member_count = item_data.fetch('stats').fetch('member_count')
           {
             id:       item_data.fetch('id'),
-            title:    "#{item_data.fetch('name')} (#{stats} subscribers)",
+            title:    "#{item_data.fetch('name')}",
             filename: "#{filename}.csv",
             service:  DATASOURCE_NAME,
             checksum: '',
+            member_count: member_count,
             size:     0
           }
         end

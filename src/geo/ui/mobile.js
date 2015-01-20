@@ -461,6 +461,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var hasSearchOverlay  = false;
     var hasZoomOverlay    = false;
+    var hasLoaderOverlay  = false;
     var hasLayerSelector  = false;
 
     _.each(this.overlays, function(overlay) {
@@ -472,10 +473,17 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         }
       }
 
-      if (!this.visibility_options.zoomControl && overlay.type == 'zoom') {
+      if (!this.visibility_options.zoomControl && overlay.type === 'zoom') {
         if (this.visibility_options.zoomControl !== "false") {
           this._addZoom();
           hasZoomOverlay = true;
+        }
+      }
+
+      if (!this.visibility_options.loaderControl && overlay.type === 'loader') {
+        if (this.visibility_options.loaderControl !== "false") {
+          this._addLoader();
+          hasLoaderOverlay = true;
         }
       }
 
@@ -493,12 +501,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
-    var search_visibility = this.visibility_options.search === "true" || this.visibility_options.search === true;
-    var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl === true;
+    var search_visibility = this.visibility_options.search === true        || this.visibility_options.search === "true";
+    var zoom_visibility   = this.visibility_options.zoomControl === true   || this.visibility_options.zoomControl === "true";
+    var loader_visibility = this.visibility_options.loaderControl === true || this.visibility_options.loaderControl === "true";
     var layer_selector_visibility  = this.visibility_options.layer_selector;
 
-    if (!hasSearchOverlay && search_visibility) this._addSearch();
-    if (!hasZoomOverlay   && zoom_visibility) this._addZoom();
+    if (!hasSearchOverlay  && search_visibility) this._addSearch();
+    if (!hasZoomOverlay    && zoom_visibility)   this._addZoom();
+    if (!hasLoaderOverlay  && loader_visibility) this._addLoader();
     if (layer_selector_visibility || hasLayerSelector && layer_selector_visibility == undefined) this.hasLayerSelector = true;
 
   },
@@ -534,6 +544,19 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.append(zoom.render().$el);
     this.$el.addClass("with-zoom");
+
+  },
+
+  _addLoader: function() {
+
+    var template = cdb.core.Template.compile('<div class="loader"></div>', 'mustache');
+
+    var loader = new cdb.geo.ui.TilesLoader({
+      template: template
+    });
+
+    this.$el.append(loader.render().$el);
+    this.$el.addClass("with-loader");
 
   },
 

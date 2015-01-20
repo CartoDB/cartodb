@@ -758,8 +758,7 @@ var Vis = cdb.core.View.extend({
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && type === "zoom")   return;
-      if (this.mobile_enabled && type === 'header') return;
+      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;

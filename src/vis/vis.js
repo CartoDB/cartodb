@@ -752,7 +752,7 @@ var Vis = cdb.core.View.extend({
   _createOverlays: function(overlays, vis_data, options) {
 
     // if there's no header overlay, we need to explicitly create the slide controller
-    if (!_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+    if (!this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
       this._addSlideController(vis_data);
     }
 
@@ -760,8 +760,7 @@ var Vis = cdb.core.View.extend({
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && type === "zoom")   return;
-      if (this.mobile_enabled && type === 'header') return;
+      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;

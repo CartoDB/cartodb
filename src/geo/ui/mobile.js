@@ -749,6 +749,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       this.$el.addClass("with-slides");
 
       this.slidesController = new cdb.geo.ui.SlidesController({
+        show_counter: true,
         slides_data: this.options.slides_data,
         slides: this.options.slides
       });

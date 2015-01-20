@@ -43,6 +43,10 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
 
 cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
+  defaults: {
+    show_counter: false
+  },
+
   events: {
     'click a.next': "_next",
     'click a.prev': "_prev"
@@ -52,7 +56,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   className: "cartodb-slides-controller",
 
-  template: cdb.core.Template.compile("<div class='slides-controller-content'><a href='#' class='prev'></a><ul></ul><a href='#' class='next'></a></div>"),
+  template: cdb.core.Template.compile("<div class='slides-controller-content'><a href='#' class='prev'></a><% if (show_counter) {%><div class='counter'></div><% } else { %><ul></ul><% } %><a href='#' class='next'></a></div>"),
 
   initialize: function() {
     this.slidesCount = this.options.slides_data.length + 1;
@@ -103,17 +107,29 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   },
 
+  _renderCounter: function() {
+    var currentActiveSlide = this.options.slides.state() + 1;
+    this.$el.find(".counter").html(currentActiveSlide + "/" + (this.options.slides_data.length + 1))
+  },
+
   _onSlideClick: function(slide) {
     this.options.slides.go(slide.options.num);
   },
 
   render: function() {
 
-    this.$el.html(this.template());
+    var options = _.extend(this.defaults, this.options);
+
+    this.$el.html(this.template(options));
 
     if (this.options.slides) {
       this._renderDots();
     }
+
+    if (this.options.slides && options.show_counter) {
+      this._renderCounter();
+    }
+
 
     return this;
   }

@@ -462,6 +462,30 @@ describe User do
     end
   end
 
+  describe '#private_maps_enabled' do
+    it 'should not have private maps enabled by default' do
+      user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
+      user_missing_private_maps.private_maps_enabled.should eq false
+    end
+
+    it 'should have private maps if enabled' do
+      user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
+      user_with_private_maps.private_maps_enabled.should eq true
+    end
+
+    it 'should not have private maps if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
+      user_without_private_maps.private_maps_enabled.should eq false
+    end
+
+    it 'should have private maps if he is AMBASSADOR even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
+      user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
+      user_without_private_maps.private_maps_enabled.should eq true
+    end
+
+  end
+
   describe '#get_geocoding_calls' do
     before do
       delete_user_data @user

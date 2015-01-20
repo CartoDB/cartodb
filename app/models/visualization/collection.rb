@@ -84,23 +84,7 @@ module CartoDB
         else
           dataset = apply_filters(dataset, filters)
           @total_entries = dataset.count
-
-          if @can_paginate
-            dataset = repository.paginate(dataset, filters, @total_entries)
-            collection.storage = Set.new(dataset.map { |attributes|
-              Visualization::Member.new(attributes)
-            })
-          else
-            items = dataset.map { |attributes|
-              Visualization::Member.new(attributes)
-            }
-            items = lazy_order_by(items, @lazy_order_by)
-            # Manual paging
-            page = (filters.delete(:page) || PAGE).to_i
-            per_page = (filters.delete(:per_page) || PER_PAGE).to_i
-            items = items.slice((page - 1) * per_page, per_page)
-            collection.storage = Set.new(items)
-          end
+          collection.storage = Set.new(paginate_and_get_entries(dataset, filters))
         end
 
         self
@@ -148,86 +132,32 @@ module CartoDB
 
       # @throws KeyError
       def total_shared_entries(raise_on_error = false)
-        user_shared_count = org_shared_count = 0
-
+        total = 0
         unless @unauthenticated_flag
           if @user_id.nil? && raise_on_error
             raise KeyError.new("Can't retrieve shared count without specifying user id")
           else
-            user_shared_count = CartoDB::SharedEntity.select(:entity_id)
-              .where(:recipient_id => @user_id,
-                   :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
-                   :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
-            if @type.nil?
-              user_shared_count = user_shared_count.join(:visualizations,
-                                                         :visualizations__id.cast(:uuid) => :entity_id)
-            else
-              user_shared_count = user_shared_count.join(:visualizations,
-                                                         :visualizations__id.cast(:uuid) => :entity_id,
-                                                         :type => @type)
-            end
-            user_shared_count = user_shared_count.count
-
-            user = User.where(id: @user_id).first
-            if user.nil? || user.organization.nil?
-              org_shared_count = 0
-            else
-              org_shared_count = CartoDB::SharedEntity.select(:entity_id)
-              .where(:recipient_id => user.organization_id,
-                     :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
-                     :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
-              if @type.nil?
-                org_shared_count = org_shared_count.join(:visualizations,
-                                                         :visualizations__id.cast(:uuid) => :entity_id)
-              else
-                org_shared_count = org_shared_count.join(:visualizations,
-                                                         :visualizations__id.cast(:uuid) => :entity_id,
-                                                          :type => @type)
-              end
-              org_shared_count = org_shared_count.count
-            end
+            total = user_shared_entities_count + organization_shared_entities_count
           end
         end
-        user_shared_count + org_shared_count
+        total
       end
 
       # @throws KeyError
       def total_liked_entries(raise_on_error = false)
-        if @user_id.nil? && raise_on_error
+        if @user_id.nil?
+          if raise_on_error
             raise KeyError.new("Can't retrieve likes count without specifying user id")
-        else
-          # Inner join with visualizations to filter by type and user, then applied a distinct count
-          if @unauthenticated_flag
-            likes_count = CartoDB::Like.select(:subject)
-            if @type.nil?
-              likes_count = likes_count.join(:visualizations,
-                                             :id.cast(:uuid) => :subject,
-                                             :user_id => @user_id,
-                                             :privacy => Visualization::Member::PRIVACY_PUBLIC)
-            else
-              likes_count = likes_count.join(:visualizations,
-                                             :id.cast(:uuid) => :subject,
-                                             :user_id => @user_id,
-                                             :type => @type,
-                                             :privacy => Visualization::Member::PRIVACY_PUBLIC)
-            end
-            likes_count = likes_count.distinct.count
           else
-            likes_count = CartoDB::Like.select(:subject)
-            if @type.nil?
-              likes_count = likes_count.join(:visualizations,
-                                             :id.cast(:uuid) => :subject,
-                                             :user_id => @user_id)
-            else
-              likes_count = likes_count.join(:visualizations,
-                                             :id.cast(:uuid) => :subject,
-                                             :user_id => @user_id,
-                                             :type => @type)
-            end
-            likes_count = likes_count.distinct.count
+            return 0
           end
         end
-        likes_count
+
+        if @unauthenticated_flag
+          @type.nil? ? unauthenticated_likes_without_type : unauthenticated_likes_with_type
+        else
+          @type.nil? ? authenticated_likes_without_type : authenticated_likes_with_type
+        end
       end
 
       attr_reader :total_entries
@@ -235,6 +165,101 @@ module CartoDB
       private
 
       attr_reader :collection
+
+      def unauthenticated_likes_without_type
+        CartoDB::Like.select(:subject)
+        .join(:visualizations,
+              :id.cast(:uuid) => :subject,
+              :user_id => @user_id,
+              :privacy => Visualization::Member::PRIVACY_PUBLIC)
+        .distinct
+        .count
+      end
+
+      def unauthenticated_likes_with_type
+        CartoDB::Like.select(:subject)
+        .join(:visualizations,
+              :id.cast(:uuid) => :subject,
+              :user_id => @user_id,
+              :privacy => Visualization::Member::PRIVACY_PUBLIC,
+              :type => @type)
+        .distinct
+        .count
+      end
+
+      def authenticated_likes_without_type
+        CartoDB::Like.select(:subject)
+        .join(:visualizations,
+              :id.cast(:uuid) => :subject,
+              :user_id => @user_id)
+        .distinct
+        .count
+      end
+
+      def authenticated_likes_with_type
+        CartoDB::Like.select(:subject)
+        .join(:visualizations,
+              :id.cast(:uuid) => :subject,
+              :user_id => @user_id,
+              :type => @type)
+        .distinct
+        .count
+      end
+
+      def paginate_and_get_entries(dataset, filters)
+        if @can_paginate
+          dataset = repository.paginate(dataset, filters, @total_entries)
+          dataset.map { |attributes|
+            Visualization::Member.new(attributes)
+          }
+        else
+          items = dataset.map { |attributes|
+            Visualization::Member.new(attributes)
+          }
+          items = lazy_order_by(items, @lazy_order_by)
+          # Manual paging
+          page = (filters.delete(:page) || PAGE).to_i
+          per_page = (filters.delete(:per_page) || PER_PAGE).to_i
+          items.slice((page - 1) * per_page, per_page)
+        end
+      end
+
+      def user_shared_entities_count
+        user_shared_count = CartoDB::SharedEntity.select(:entity_id)
+        .where(:recipient_id => @user_id,
+               :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
+               :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
+        if @type.nil?
+          user_shared_count = user_shared_count.join(:visualizations,
+                                                     :visualizations__id.cast(:uuid) => :entity_id)
+        else
+          user_shared_count = user_shared_count.join(:visualizations,
+                                                     :visualizations__id.cast(:uuid) => :entity_id,
+                                                     :type => @type)
+        end
+        user_shared_count.count
+      end
+
+      def organization_shared_entities_count
+        user = User.where(id: @user_id).first
+        if user.nil? || user.organization.nil?
+          0
+        else
+          org_shared_count = CartoDB::SharedEntity.select(:entity_id)
+          .where(:recipient_id => user.organization_id,
+                 :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
+                 :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
+          if @type.nil?
+            org_shared_count = org_shared_count.join(:visualizations,
+                                                     :visualizations__id.cast(:uuid) => :entity_id)
+          else
+            org_shared_count = org_shared_count.join(:visualizations,
+                                                     :visualizations__id.cast(:uuid) => :entity_id,
+                                                     :type => @type)
+          end
+          org_shared_count.count
+        end
+      end
 
       # If special filter unauthenticated: true is present, will restrict data
       def restrict_filters_if_unauthenticated(filters)
@@ -297,28 +322,44 @@ module CartoDB
       def lazy_order_by(objects, field)
         case field
           when :likes
-            objects.sort! { |obj_a, obj_b|
-              obj_b.likes.count <=> obj_a.likes.count
-            }
+            lazy_order_by_likes(objects)
           when :mapviews
-            objects.sort! { |obj_a, obj_b|
-              # Stats have format [ date, value ]
-              obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
-            }
+            lazy_order_by_mapviews(objects)
           when :row_count
-            objects.sort! { |obj_a, obj_b|
-              a_rows = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:row_count)) || 0
-              b_rows = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:row_count)) || 0
-              b_rows <=> a_rows
-            }
+            lazy_order_by_row_count(objects)
           when :size
-            objects.sort! { |obj_a, obj_b|
-              a_size = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:size)) || 0
-              b_size = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:size)) || 0
-              b_size <=> a_size
-            }
+            lazy_order_by_size(objects)
         end
         objects
+      end
+
+      def lazy_order_by_likes(objects)
+        objects.sort! { |obj_a, obj_b|
+          obj_b.likes.count <=> obj_a.likes.count
+        }
+      end
+
+      def lazy_order_by_mapviews(objects)
+        objects.sort! { |obj_a, obj_b|
+          # Stats have format [ date, value ]
+          obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
+        }
+      end
+
+      def lazy_order_by_row_count(objects)
+        objects.sort! { |obj_a, obj_b|
+          a_rows = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:row_count)) || 0
+          b_rows = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:row_count)) || 0
+          b_rows <=> a_rows
+        }
+      end
+
+      def lazy_order_by_size(objects)
+        objects.sort! { |obj_a, obj_b|
+          a_size = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:size)) || 0
+          b_size = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:size)) || 0
+          b_size <=> a_size
+        }
       end
 
       # Note: Not implemented ascending order for now

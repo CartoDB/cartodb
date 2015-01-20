@@ -21,6 +21,12 @@
   background-color: $cStructure-mainBkg;
   width: 25%; // Assumes that there are exatly 4 items
 }
+.ChangePrivacyList-item.is-disabled {
+  background-color: $cStructure-grayBkg;
+}
+.ChangePrivacyList-item.is-selected {
+  border-color: $cCard-selectedBorder;
+}
 .ChangePrivacyList-item:not(:last-child) {
   margin-right: $sMargin-element;
 }

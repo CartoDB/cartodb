@@ -989,33 +989,42 @@ class User < Sequel::Model
   end
 
   # this method search for tables with all the columns needed in a cartodb table.
-  # it does not check column types or triggers attached
+  # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
   # returns the list of tables in the database with those columns but not in metadata database
   def search_for_cartodbfied_tables
     metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
+
     db = self.in_database(:as => :superuser)
     reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
     cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
     sql = %Q{
       WITH a as (
         SELECT table_name, count(column_name::text) cdb_columns_count
-        FROM information_schema.columns c, pg_tables t
+        FROM information_schema.columns c, pg_tables t, pg_trigger tg
         WHERE
-        t.tablename = c.table_name AND
-        t.schemaname = c.table_schema AND
-        t.tableowner = '#{database_username}' AND
+          t.tablename = c.table_name AND
+          t.schemaname = c.table_schema AND
+          c.table_schema = '#{database_schema}' AND
+          t.tableowner = '#{database_username}' AND
     }
 
     if metadata_table_names.length != 0
-      sql += "c.table_name not in (#{metadata_table_names}) AND"
+      sql += %Q{
+        c.table_name NOT IN (#{metadata_table_names}) AND
+      }
     end
 
     sql += %Q{
-          column_name in (#{cartodb_columns})
-          group by 1
+          column_name IN (#{cartodb_columns}) AND
+
+          tg.tgrelid = (t.schemaname || '.' || t.tablename)::regclass::oid AND
+          tg.tgname = 'test_quota_per_row'
+
+          GROUP BY 1
       )
-      select table_name from a where cdb_columns_count = #{reserved_columns.length}
+      SELECT table_name FROM a WHERE cdb_columns_count = #{reserved_columns.length}
     }
+
     db[sql].all.map { |t| t[:table_name] }
   end
 

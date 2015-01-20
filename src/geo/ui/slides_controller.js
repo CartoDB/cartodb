@@ -62,8 +62,6 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     if (e) this.killEvent(e);
     
-    console.log(this.options.slides.state());
-
     var currentSlide = this.options.slides.state();
 
     if (currentSlide > 0) {
@@ -80,7 +78,6 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
     if (e) this.killEvent(e);
 
     var currentSlide = this.options.slides.state();
-    console.log(this.options.slides.state());
 
     if (currentSlide <= this.options.slides_data.length - 1) {
       currentSlide++;

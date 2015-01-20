@@ -4,7 +4,7 @@
 
 .ChangePrivacyList {
   @include display-flex();
-  @include justify-content(space-between, justify);
+  @include justify-content(center);
   @include align-items(stretch);
   @include align-content(space-between, justify);
 }

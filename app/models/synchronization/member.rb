@@ -179,8 +179,6 @@ module CartoDB
 
         if importer.success?
           set_success_state_from(importer)
-        elsif retried_times < MAX_RETRIES
-          set_retry_state_from(importer)
         else
           set_failure_state_from(importer)
         end
@@ -189,12 +187,14 @@ module CartoDB
       rescue => exception
         Rollbar.report_exception(exception)
         log.append exception.message
-        log.append exception.backtrace
-        puts exception.message
-        puts exception.backtrace
+        log.append exception.backtrace.join('\n')
 
         if importer.nil?
-          set_general_failure_state_from(exception)
+          if(exception.kind_of?(NotFoundDownloadError))
+            set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
+          else
+            set_general_failure_state_from(exception)
+          end
         else
           set_failure_state_from(importer)
         end
@@ -270,16 +270,6 @@ module CartoDB
         self
       end
 
-      def set_retry_state_from(importer)
-        log.append     '******** synchronization failed, will retry ********'
-        self.log_trace      = importer.runner_log_trace
-        self.log.append     "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
-        self.state          = STATE_SUCCESS
-        self.error_code     = importer.error_code
-        self.error_message  = importer.error_message
-        self.retried_times  = self.retried_times + 1
-      end
-
       def set_failure_state_from(importer)
         log.append     '******** synchronization failed ********'
         self.log_trace      = importer.runner_log_trace
@@ -288,15 +278,23 @@ module CartoDB
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
+        if self.retried_times < MAX_RETRIES
+          self.run_at         = Time.now + interval
+        end
       end
 
-      def set_general_failure_state_from(exception)
+      def set_general_failure_state_from(exception, error_code = 99999, error_message = 'Unknown error, please try again')
         log.append     '******** synchronization raised exception ********'
-        self.log_trace      = ''
+        self.log_trace      = exception.message + ' ' + exception.backtrace.join("\n")
         self.state          = STATE_FAILURE
-        self.error_code     = 99999
-        self.error_message  = exception.message + ' ' + exception.backtrace
+        self.error_code     = error_code
+        self.error_message  = error_message
         self.retried_times  = self.retried_times + 1
+        if self.retried_times < MAX_RETRIES
+          self.run_at         = Time.now + interval
+        end
+      rescue => e
+        Rollbar.report_exception(e)
       end
 
       # Tries to run automatic geocoding if present

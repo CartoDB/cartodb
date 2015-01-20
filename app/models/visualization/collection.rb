@@ -287,7 +287,8 @@ module CartoDB
       end
 
       def compute_liked_filter_dataset(dataset, filters)
-        if filters.delete(:only_liked) === true
+        only_liked = filters.delete(:only_liked)
+        if only_liked == true || only_liked == "true"
           if @user_id.nil?
             nil
           else

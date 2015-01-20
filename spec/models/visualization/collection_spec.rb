@@ -49,7 +49,7 @@ describe Visualization::Collection do
       Visualization::Member.new(attributes1).store
       Visualization::Member.new(attributes2).store
 
-      collection    = Visualization::Collection.new({})
+      collection    = Visualization::Collection.new
       collection.fetch(tags: 'tag 1').count.should == 1
     end
 
@@ -208,7 +208,6 @@ describe Visualization::Collection do
       records = collection.fetch(user_id: user1_id, locked:false)
       records.count.should eq 3
 
-
       # Only user vis, no shared vis at all
       records = collection.fetch(user_id: user1_id, locked:true)
       records.count.should eq 1
@@ -335,6 +334,116 @@ describe Visualization::Collection do
       vis1.delete
       vis2.delete
       vis3.delete
+    end
+
+    it "checks filtering by 'liked' " do
+      # Restore Vis backend to normal table so Relator works
+      Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
+      begin
+        Visualization::Migrator.new(@db).drop(:visualizations)
+      rescue
+        # Do nothing, visualizations table not existed before
+      end
+      Visualization::Migrator.new(@db).migrate(:visualizations)
+
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(user)
+
+      table1 = Table.new
+      table1.user_id = user.id
+      table1.name = "viz#{rand(999)}_1"
+      table1.save
+      table2 = Table.new
+      table2.user_id = user.id
+      table2.name = "viz#{rand(999)}_2"
+      table2.save
+      table3 = Table.new
+      table3.user_id = user.id
+      table3.name = "viz#{rand(999)}_3"
+      table3.save
+      table4 = Table.new
+      table4.user_id = user.id
+      table4.name = "viz#{rand(999)}_4"
+      table4.save
+
+      vis2 = table2.table_visualization
+      vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
+      vis2.store
+
+      vis3 = table3.table_visualization
+      vis3.privacy = Visualization::Member::PRIVACY_PUBLIC
+      vis3.store
+
+      vis4 = table4.table_visualization
+
+      # vis1 0 likes
+
+      vis2.add_like_from(user.id)
+      vis2.add_like_from(user2.id)
+
+      vis3.add_like_from(user.id)
+
+      vis4.add_like_from(user.id)
+      vis4.add_like_from(user2.id)
+      vis4.add_like_from(user3.id)
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user.id
+                                                       })
+      collection.count.should eq 4
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user.id,
+                                                         only_liked: true,
+                                                       })
+      collection.count.should eq 3
+      ids = collection.map { |vis| vis.id }
+      expected_likes = [ vis4.id, vis2.id, vis3.id ]
+      ids.should eq expected_likes
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user.id,
+                                                         type: Visualization::Member::CANONICAL_TYPE,
+                                                         only_liked: true
+                                                       })
+      collection.count.should eq 3
+      ids = collection.map { |vis| vis.id }
+      expected_likes = [ vis4.id, vis2.id, vis3.id ]
+      ids.should eq expected_likes
+
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user.id,
+                                                         only_liked: true,
+                                                         unauthenticated: true
+                                                       })
+      collection.count.should eq 2
+      ids = collection.map { |vis| vis.id }
+      expected_likes = [ vis2.id, vis3.id ]
+      ids.should eq expected_likes
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user.id,
+                                                         only_liked: true,
+                                                         privacy: Visualization::Member::PRIVACY_PRIVATE
+                                                       })
+      collection.count.should eq 1
+      ids = collection.map { |vis| vis.id }
+      expected_likes = [ vis4.id ]
+      ids.should eq expected_likes
+
+      collection = Visualization::Collection.new.fetch({
+                                                         only_liked: true
+                                                       })
+      collection.count.should eq 0
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user2.id,
+                                                         only_liked: true
+                                                       })
+      collection.count.should eq 0
     end
   end
 

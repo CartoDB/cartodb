@@ -120,7 +120,12 @@ module CartoDB
 
       def count_query(filters={})
         dataset = compute_sharing_filter_dataset(filters)
-        dataset.nil? ? 0 : apply_filters(dataset, filters).count
+        if dataset.nil?
+          0
+        else
+          dataset = compute_liked_filter_dataset(dataset, filters)
+          dataset.nil? ? 0 : apply_filters(dataset, filters).count
+        end
       end
 
       def destroy

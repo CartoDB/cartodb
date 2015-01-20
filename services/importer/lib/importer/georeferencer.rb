@@ -178,7 +178,6 @@ module CartoDB
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
           geocoder.run
-          @tracker.call('importing')
           job.log "Geocoding finished"
         end
         geocoder.state == 'completed'

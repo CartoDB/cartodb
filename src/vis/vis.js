@@ -517,7 +517,9 @@ var Vis = cdb.core.View.extend({
 
     this.mapView = mapView;
 
-    map.layers.bind('reset', this.addLegends, this);
+    if (options.legends) {
+      map.layers.bind('reset', this.addLegends, this);
+    }
 
     this.overlayModels.bind('reset', function(overlays) {
       this._addOverlays(overlays, data, options);

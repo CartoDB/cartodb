@@ -34,11 +34,14 @@ body.public-map { min-width:inherit }
 
 .cartodb-header  { line-height: 0; }
 .cartodb-header .content { display:none; line-height: normal; }
-
 .cartodb-mobile.with-header .cartodb-header .content,
 .cartodb-mobile.with-search .cartodb-header .content,
 .cartodb-mobile.with-layers .cartodb-header .content { 
   display:block!Important;
+}
+
+.cartodb-header .cartodb-slides-controller {
+  background: none;
 }
 
 .cartodb-mobile .cartodb-header .content .fullscreen,

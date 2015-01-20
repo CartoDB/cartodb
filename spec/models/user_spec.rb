@@ -961,6 +961,21 @@ describe User do
 
     it "should return cartodbfied tables" do
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.in_database.run('create table non_ghost_table (test integer)')
       tables = @user.search_for_cartodbfied_tables
       tables.should =~ ['ghost_table']
@@ -969,6 +984,21 @@ describe User do
     it "should link a table in the database" do
       tables = @user.tables.all.map(&:name)
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.link_ghost_tables
       new_tables = @user.tables.all.map(&:name)
       new_tables.should include('ghost_table')
@@ -977,6 +1007,21 @@ describe User do
     it "should link a renamed table in the database" do
       tables = @user.tables.all.map(&:name)
       @user.in_database.run('create table ghost_table_2 (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table_2 EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.link_ghost_tables
       @user.in_database.run('alter table ghost_table_2 rename to ghost_table_renamed')
       @user.link_ghost_tables

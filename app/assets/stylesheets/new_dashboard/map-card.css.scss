@@ -25,8 +25,9 @@
   position: relative;
   @include inline-block();
   width: $sCard-width;
-  margin-right: $sMargin-element;
+  margin-right: $sMargin-element - 3;
   border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
 }
 .MapCard--selectable:hover {
@@ -75,7 +76,6 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   @include flex-direction(column);
-  background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
 }
@@ -85,6 +85,10 @@
 .MapCard-contentBodyRow {
   margin-bottom: $sMargin-min;
 }
+.MapCard-contentBodyTitle {
+  width: 205px;
+}
+.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
 .MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -105,4 +109,9 @@
 }
 .MapCard-contentFooterTimeDiff {
   padding-left: 14px;
+}
+.MapCard-contentBodyTimeDiff .UserAvatar,
+.MapCard-contentFooterTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
 }

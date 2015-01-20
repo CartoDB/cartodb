@@ -7,9 +7,31 @@
 
 
 .Filters {
+  position: absolute;
   display:block;
+  top: 0;
+  left: 0;
   width:100%;
+  background: white;
+  z-index: 10;
 }
+// Moved with scroll behaviour
+.Filters.is-fixed {
+  position: fixed;
+  
+  &:before {
+    content: '';
+    position:absolute;
+    left: 0;
+    top: 80px;
+    width: 100%;
+    height: 1px;
+    background-color: $cStructure-softLine;
+    z-index: 0;
+  }
+}
+// Positionate relative to the content
+.Filters.is-relative { position: relative }
 .Filters > .u-inner {
   position:relative;
   display:block;
@@ -31,6 +53,7 @@
   background-color:$cStructure-softLine;
   z-index:0;
 }
+.Filters.is--fixed .Filters-separator { display: none }
 .Filters-row {
   @include display-flex();
   @include justify-content(space-between, justify);

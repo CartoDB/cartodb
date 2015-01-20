@@ -336,6 +336,58 @@ describe Visualization::Collection do
       vis2.delete
       vis3.delete
     end
+  end
+
+  describe 'single methods' do
+    it 'checks count_total method' do
+      vis_1_name = 'viz_1'
+      vis_2_name = 'viz_2'
+      vis_3_name = 'viz_3'
+      vis_4_name = 'viz_4'
+      user1_id = UUIDTools::UUID.timestamp_create.to_s
+      user2_id = UUIDTools::UUID.timestamp_create.to_s
+      Visualization::Member.new(random_attributes(name: vis_1_name, user_id: user1_id)).store
+      Visualization::Member.new(random_attributes(name: vis_2_name, privacy: 'private', user_id: user1_id)).store
+      vis_user2 = Visualization::Member.new(random_attributes(name: vis_3_name, user_id: user2_id)).store
+      vis2_user2 = Visualization::Member.new(random_attributes(name: vis_4_name, user_id: user2_id)).store
+
+      shared_entity = CartoDB::SharedEntity.new(
+        recipient_id:   user1_id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      vis_user2.id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      shared_entity.save
+      shared_entity.reload
+
+      collection = Visualization::Collection.new
+      collection.stubs(:user_shared_vis).with(user1_id).returns([vis_user2.id])
+
+      records = collection.fetch(user_id: user1_id)
+      records.count.should eq 3
+
+      collection.count_total(user_id: user1_id).should eq 2
+
+      # Other filters should be skipped
+      collection.count_total(user_id: user1_id, id: vis_user2.id).should eq 2
+      collection.count_total(user_id: user1_id, id: vis2_user2.id).should eq 2
+      collection.count_total(user_id: user1_id, name: 'test').should eq 2
+      collection.count_total(user_id: user1_id, description: 'test').should eq 2
+      collection.count_total(user_id: user1_id, privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE).should eq 2
+      collection.count_total(user_id: user1_id, locked: true).should eq 2
+      collection.count_total(user_id: user1_id, exclude_shared: false).should eq 2
+      collection.count_total(user_id: user1_id, only_shared: false).should eq 2
+
+      # If unauthenticated remove private ones
+      collection.count_total(user_id: user1_id, unauthenticated: true).should eq 1
+
+      # Type filters are allowed
+      collection.count_total(user_id: user1_id, type: CartoDB::Visualization::Member::CANONICAL_TYPE).should eq 2
+      collection.count_total(user_id: user1_id, type: CartoDB::Visualization::Member::DERIVED_TYPE).should eq 0
+
+      # And filtering by user_id
+      collection.count_total(user_id: user2_id).should eq 2
+    end
 
   end
 

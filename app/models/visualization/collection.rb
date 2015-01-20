@@ -8,9 +8,16 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
+
+    # 'unauthenticated' overrides other filters
     # 'user_id' filtered by default if present upon fetch()
     # 'locked' is filtered but before the rest
+    # 'exclude_shared' and 'only_shared' are other filtes applied
     AVAILABLE_FILTERS   = %w{ name type description map_id privacy id }
+
+    # Keys in this list are the only filters that should be kept for calculating totals (if present)
+    KEYS_ALLOWED_FOR_TOTALS = [ :type, :user_id, :unauthenticated ]
+
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -66,6 +73,7 @@ module CartoDB
       # - only_shared forces to use different flow because if there are no shared there's nothing else to do
       # - locked filter has special behaviour
       def fetch(filters={})
+        filters = filters.dup   # Avoid changing state
         @user_id = filters.fetch(:user_id, nil)
         filters = restrict_filters_if_unauthenticated(filters)
         dataset = compute_sharing_filter_dataset(filters)
@@ -75,7 +83,6 @@ module CartoDB
           collection.storage = Set.new
         else
           dataset = apply_filters(dataset, filters)
-
           @total_entries = dataset.count
 
           if @can_paginate
@@ -102,6 +109,27 @@ module CartoDB
       # This method is not used for anything but called from the DataRepository::Collection interface above
       def store
         self
+      end
+
+      # Counts the total results, only taking into account general filters like type or privacy or sharing options
+      # so no name or map_id filtering.
+      def count_total(filters={})
+        total_user_entries = 0
+
+        cleaned_filters = filters.keep_if { |key, value|
+          KEYS_ALLOWED_FOR_TOTALS.include?(key.to_sym)
+        }
+        cleaned_filters.merge!({ exclude_shared: true })
+
+        cleaned_filters = restrict_filters_if_unauthenticated(cleaned_filters)
+        dataset = compute_sharing_filter_dataset(cleaned_filters)
+
+        unless dataset.nil?
+          dataset = apply_filters(dataset, cleaned_filters)
+          total_user_entries = dataset.count
+        end
+
+        total_user_entries
       end
 
       def count_query(filters={})
@@ -212,6 +240,7 @@ module CartoDB
       def restrict_filters_if_unauthenticated(filters)
         @unauthenticated_flag = false
         unless filters.delete(FILTER_UNAUTHENTICATED).nil?
+          filters[:only_shared] = false
           filters[:exclude_shared] = true
           filters[:privacy] = Visualization::Member::PRIVACY_PUBLIC
           filters.delete(:locked)

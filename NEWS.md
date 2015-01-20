@@ -9,6 +9,7 @@
 * Disable georeference by feature flag (georef_disabled) [#1227](https://github.com/CartoDB/cartodb/issues/1227)
 * Faster excel imports [#913](https://github.com/CartoDB/cartodb/issues/913). You'll need to install `csvkit`. Either do `pip install --no-use-wheel -r python_requirements.txt` or `pip install csvkit`.
 * Added `total_user_entries` to viz endpoint, to know the total amount of own visualizations/tables/both (shared don't count). If unauthenticated counts only public items.
+* Added Mailchimp 'members count' info [#1701](https://github.com/CartoDB/cartodb/issues/1701)
 
 3.7.1 (2014-12-30)
 ------------------

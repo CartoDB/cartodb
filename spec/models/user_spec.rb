@@ -479,7 +479,7 @@ describe User do
     end
 
     it 'should have private maps if he is AMBASSADOR even if disabled' do
-      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
+      user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
       user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
       user_without_private_maps.private_maps_enabled.should eq true
     end

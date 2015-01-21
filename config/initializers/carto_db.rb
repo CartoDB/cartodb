@@ -28,15 +28,29 @@ module CartoDB
 
   def self.base_url(subdomain, org_username=nil)
     protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
-    base_url ="#{protocol}://#{subdomain}#{self.session_domain}:#{self.http_port}"
+    base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{self.http_port}"
     unless org_username.nil?
       base_url << "/u/#{org_username}"
     end
     base_url
   end
 
+  def self.hostname
+    @@hostname ||= self._get_hostname
+  end
+
+  def self._get_hostname
+    protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
+    "#{protocol}://#{self.domain}#{self.http_port}"
+  end
+
   def self.http_port
-    @@http_port ||= Cartodb.config[:http_port]
+    @@http_port ||= self._get_http_port
+  end
+
+  def self._get_http_port
+    config_port = Cartodb.config[:http_port]
+    config_port.nil? ? '' : ":#{config_port}"
   end
 
   def self.session_domain
@@ -44,30 +58,16 @@ module CartoDB
   end
 
   def self.domain
-    @@domain ||= _get_domain
+    @@domain ||= self._get_domain
   end
 
-  def _get_domain
+  def self._get_domain
     if Rails.env.production? || Rails.env.staging?
       `hostname -f`.strip
     elsif Rails.env.development?
-      "vizzuality#{session_domain}"
+      "vizzuality#{self.session_domain}"
     else
-      "test#{session_domain}"
-    end
-  end
-
-  def self.hostname
-    @@hostname ||= _get_hostname
-  end
-
-  def _get_hostname
-    if Rails.env.production? || Rails.env.staging?
-      "https://#{domain}"
-    elsif Rails.env.development?
-      "http://#{domain}:3000"
-    else
-      "http://#{domain}:53716"
+      "test#{self.session_domain}"
     end
   end
 

@@ -4,6 +4,6 @@ Sequel.migration do
   end
   
   down do
-      add_column :users, :ghost_tables_enabled, :boolean
+    add_column :users, :ghost_tables_enabled, :boolean
   end
 end

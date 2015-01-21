@@ -85,7 +85,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  max-width: 500px; 
+  max-width: 440px; 
 }
 
 .DatasetsList-itemMeta,

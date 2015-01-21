@@ -16,8 +16,8 @@ module CartoDB
 
       def taken_names_for(user)
         Visualization::Collection.new
-        .fetch(user_id: user.id)
-        .map(&:name)
+                                 .fetch(user_id: user.id)
+                                 .map(&:name)
       end #taken_names
 
       attr_reader :user

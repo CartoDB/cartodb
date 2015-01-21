@@ -27,6 +27,7 @@ module CartoDB
       class TokenExpiredOrInvalidError  < AuthError; end
       class InvalidServiceError         < DatasourceBaseError; end
       class DataDownloadError           < DatasourceBaseError; end
+      class NotFoundDownloadError       < DatasourceBaseError; end
       class MissingConfigurationError   < DatasourceBaseError; end
       class UninitializedError          < DatasourceBaseError; end
       class NoResultsError              < DatasourceBaseError; end

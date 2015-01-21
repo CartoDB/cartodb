@@ -27,7 +27,7 @@
   width: 38px;
   height: 38px;
   border: 1px solid $cStructure-mainLine;
-  border-radius: 2px;
+  border-radius: $sIcon-borderRadius;
   line-height:36px;
   font-size: 22px;
   color: $cTypography-help;

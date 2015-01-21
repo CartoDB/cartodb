@@ -33,8 +33,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def create
     vis_data = payload
 
-    vis_data.delete(:permission) if vis_data[:permission].present?
-    vis_data.delete[:permission_id] if vis_data[:permission_id].present?
+    vis_data.delete(:permission)
+    vis_data.delete(:permission_id)
 
     # Don't allow to modify next_id/prev_id, force to use set_next_id()
     prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')

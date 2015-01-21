@@ -27,6 +27,10 @@
 .ChangePrivacyList-item.is-selected {
   border-color: $cCard-selectedBorder;
 }
+.ChangePrivacyList-item:not(.is-disabled):hover {
+  border-color: $cCard-hoverBorder;
+  background-color: $cCard-hoverFill;
+}
 .ChangePrivacyList-item:not(:last-child) {
   margin-right: $sMargin-element;
 }

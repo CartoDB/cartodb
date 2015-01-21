@@ -23,6 +23,7 @@
 }
 .ChangePrivacyList-item.is-disabled {
   background-color: $cStructure-grayBkg;
+  @include opacity(0.5);
 }
 .ChangePrivacyList-item.is-selected {
   border-color: $cCard-selectedBorder;

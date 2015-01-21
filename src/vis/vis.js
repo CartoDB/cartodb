@@ -518,7 +518,7 @@ var Vis = cdb.core.View.extend({
 
     this.mapView = mapView;
 
-    if (options.legends) {
+    if (options.legends === undefined || options.legends) {
       map.layers.bind('reset', this.addLegends, this);
     }
 

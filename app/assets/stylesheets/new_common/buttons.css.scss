@@ -30,6 +30,10 @@ $buttonBorderSize: 1px;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
+.Button.is-disabled {
+  @include opacity(0.5);
+  &:hover { cursor: default }
+}
 .Button--main {
   background-color: $cHighlight-main;
   border-color: $cHighlight-main;
@@ -61,9 +65,12 @@ $buttonBorderSize: 1px;
 .Button--secondary span {
   color: #666666;
 }
-.Button.is-disabled {
-  @include opacity(0.5);
+.Button--light {
+  border: $sButton-border solid white;
+  color: #384047;
+  background-color: rgba(white, 1);
   &:hover {
-    cursor: default;
+    background-color: rgba(#384047, 1);
+    color:white;
   }
 }

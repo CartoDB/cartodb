@@ -7,17 +7,30 @@
   -webkit-padding-start:0;
   -webkit-padding-end:0;
 }
+@-webkit-keyframes loading {
+  to { opacity: 1; }
+}
+@-moz-keyframes loading {
+  to { opacity: 1; }
+}
+@-ms-keyframes loading {
+  to  { opacity: 1; }
+}
+@keyframes loading {
+  to { opacity: 1; }
+}
+
 @-webkit-keyframes pulse {
-  to { -webkit-transform: scale(1); }
+  to { opacity: 1; -webkit-transform: scale(1); }
 }
 @-moz-keyframes pulse {
-  to { -moz-transform: scale(1); }
+  to { opacity: 1; -moz-transform: scale(1); }
 }
 @-ms-keyframes pulse {
-  to { -ms-transform: scale(1); }
+  to { opacity: 1; -ms-transform: scale(1); }
 }
 @keyframes pulse {
-  to { transform: scale(1); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 div.cartodb-share {
@@ -2355,6 +2368,13 @@ div.cartodb-timeslider p {
   text-align: center;
   padding: 0;
 }
+.cartodb-slides-controller .slides-controller-content .counter.loading {
+  opacity: .2;
+  animation: loading .35s infinite ease-out  alternate;
+  -ms-animation: loading .35s infinite ease-out  alternate;
+  -moz-animation: loading .35s infinite ease-out  alternate;
+  -webkit-animation: loading .35s infinite ease-out  alternate;
+}
 .cartodb-slides-controller .slides-controller-content ul li {
   display:inline-block; *display:inline; vertical-align:middle;
   margin: 0 2px;
@@ -2373,10 +2393,11 @@ div.cartodb-timeslider p {
 .cartodb-slides-controller .slides-controller-content ul li a.active.time {
   width: 10px;
   height: 10px;
-  transform: scale(.7);
-  -ms-transform: scale(.7);
-  -moz-transform: scale(.7);
-  -webkit-transform: scale(.7);
+  opacity: .5;
+  transform: scale(.5);
+  -ms-transform: scale(.5);
+  -moz-transform: scale(.5);
+  -webkit-transform: scale(.5);
   animation: pulse .35s infinite ease-out  alternate;
   -ms-animation: pulse .35s infinite ease-out  alternate;
   -moz-animation: pulse .35s infinite ease-out  alternate;

@@ -100,18 +100,27 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
     var currentActiveSlide = this.options.slides.state();
 
     for (var i = 0; i < this.options.transitions.length; i++) {
-
       var item = new cdb.geo.ui.SlidesControllerItem({ num: i, transition_options: this.options.transitions[i], active: i == currentActiveSlide });
       item.bind("onClick", this._onSlideClick, this);
       this.$el.find("ul").append(item.render().$el);
-
     }
 
   },
 
   _renderCounter: function() {
-    var currentActiveSlide = this.options.slides.state() + 1;
-    this.$el.find(".counter").html(currentActiveSlide + "/" + this.options.transitions.length)
+
+    var currentActiveSlide = this.options.slides.state();
+    var currentTransition = this.options.transitions[currentActiveSlide];
+
+    var $counter = this.$el.find(".counter");
+
+    if (currentTransition && currentTransition.transition_trigger === "time") {
+      $counter.addClass("loading");
+    } else {
+      $counter.removeClass("loading");
+    }
+
+    $counter.html((currentActiveSlide + 1) + "/" + this.options.transitions.length)
   },
 
   _onSlideClick: function(slide) {
@@ -125,13 +134,14 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
     this.$el.html(this.template(options));
 
     if (this.options.slides && this.options.transitions) {
-      this._renderDots();
-    }
 
-    if (this.options.slides && options.show_counter) {
-      this._renderCounter();
-    }
+      if (options.show_counter) {
+        this._renderCounter(); // we render: 1/N
+      } else {
+        this._renderDots(); // we render a list of dots
+      }
 
+    }
 
     return this;
   }

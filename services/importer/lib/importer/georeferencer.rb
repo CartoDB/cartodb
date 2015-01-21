@@ -171,7 +171,7 @@ module CartoDB
 
       def geocode(formatter, geometry_type, kind)
         geocoder = nil
-        @importer_stats.timing('geocoding') do
+        @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
           create_the_geom_in(table_name)
           config = @options[:geocoder].merge(
@@ -186,10 +186,40 @@ module CartoDB
             country_column: nil
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-          geocoder.run
+
+          begin
+            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name)
+            geocoding.force_geocoder(geocoder)
+            geocoding.user = user
+            geocoding.data_import_id = data_import.id
+            geocoding.raise_on_save_failure = true
+            geocoding.run_geocoding!(row_count)
+            raise "Geocoding failed" if geocoding.state == 'failed'
+          rescue => e
+            Rollbar.report_message('Georeferencer could not register geocoding, fallback to geocoder.run',
+                                   'error', { user_id: user_id, backtrace: e.backtrace, config: config })
+            geocoder.run
+          end
+
           job.log "Geocoding finished"
         end
         geocoder.state == 'completed'
+      end
+
+      def row_count
+        @row_count ||= db[%Q{select count(1) from #{qualified_table_name}}].first[:count]
+      end
+
+      def data_import
+        @data_import ||= DataImport.where(logger: @job.logger.id).first
+      end
+
+      def user
+        @user ||= User.where(id: user_id).first
+      end
+
+      def user_id
+        @job.logger.user_id
       end
 
       # Note: Performs a really simple ',' to '.' normalization.

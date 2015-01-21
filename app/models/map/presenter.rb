@@ -45,7 +45,8 @@ module CartoDB
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
-      rescue #=> exception
+      rescue => exception
+        CartoDB::notify_exception(exception, user: current_user)
         nil
       end
     end

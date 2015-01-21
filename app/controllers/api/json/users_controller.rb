@@ -60,7 +60,8 @@ class Api::Json::UsersController < Api::ApplicationController
     end
 
     render json: {
-      urls: ["#{CartoDB.user_url(current_viewer.username, organization_name)}/dashboard"],
+      # TODO: Change this to use rails xxx_url helpers instead of handcrafting urls
+      urls: ["#{current_viewer.full_profile_url(organization_name)}/dashboard"],
       can_fork: can_fork,
       username: current_viewer.username,
       avatar_url: current_viewer.avatar_url

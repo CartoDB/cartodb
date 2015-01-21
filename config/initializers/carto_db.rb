@@ -2,11 +2,7 @@ module CartoDB
 
   # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
-    if request.params[:user_domain].nil?
-      request.host.to_s.gsub(self.session_domain, '')
-    else
-      request.params[:user_domain]
-    end
+    self.subdomains_allowed? ? self.extract_subdomain_flexible(request) : self.extract_subdomain_strict(request)
   end
 
   def self.extract_host_subdomain(request)
@@ -22,10 +18,6 @@ module CartoDB
     request.host.to_s.gsub(self.session_domain, '')
   end
 
-  def self.user_url(username, organization = nil)
-    organization.nil? ? self.base_url(username) : self.base_url(organization, username)
-  end
-
   def self.base_url(subdomain, org_username=nil)
     protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
     base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{self.http_port}"
@@ -36,39 +28,26 @@ module CartoDB
   end
 
   def self.hostname
-    @@hostname ||= self._get_hostname
-  end
-
-  def self._get_hostname
-    protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
-    "#{protocol}://#{self.domain}#{self.http_port}"
+    @@hostname ||= self.get_hostname
   end
 
   def self.http_port
-    @@http_port ||= self._get_http_port
+    @@http_port ||= self.get_http_port
   end
 
-  def self._get_http_port
-    config_port = Cartodb.config[:http_port]
-    config_port.nil? ? '' : ":#{config_port}"
-  end
-
+  # Stores the non-user part of the domain (e.g. '.cartodb.com')
   def self.session_domain
     @@session_domain ||= Cartodb.config[:session_domain]
   end
 
   def self.domain
-    @@domain ||= self._get_domain
+    @@domain ||= self.get_domain
   end
 
-  def self._get_domain
-    if Rails.env.production? || Rails.env.staging?
-      `hostname -f`.strip
-    elsif Rails.env.development?
-      "vizzuality#{self.session_domain}"
-    else
-      "test#{self.session_domain}"
-    end
+  # If true, we allow both 'user.cartodb.com' and 'org.cartodb.com/u/user'
+  # if false, only cartodb.com/u/user is allowed (and organizations won't work)
+  def self.subdomains_allowed?
+    @@subdomains_allowed ||= Cartodb.config[:subdomains_allowed]
   end
 
   def self.account_host
@@ -256,5 +235,42 @@ module CartoDB
       uploading your file again, or <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly."
     }
   }
+
+  # "private" methods, not intended for direct usage
+
+  # Allows both 'user.cartodb.com' and 'org.cartodb.com/u/user'
+  def self.extract_subdomain_flexible(request)
+    if request.params[:user_domain].nil?
+      request.host.to_s.gsub(self.session_domain, '')
+    else
+      request.params[:user_domain]
+    end
+  end
+
+  # Allows 'org.cartodb.com/u/user' only
+  def self.extract_subdomain_strict(request)
+    request.params[:user_domain]
+  end
+
+  def self.get_hostname
+    protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
+    "#{protocol}://#{self.domain}#{self.http_port}"
+  end
+
+  def self.get_http_port
+    config_port = Cartodb.config[:http_port]
+    config_port.nil? ? '' : ":#{config_port}"
+  end
+
+  def self.get_domain
+    if Rails.env.production? || Rails.env.staging?
+      `hostname -f`.strip
+    elsif Rails.env.development?
+      "vizzuality#{self.session_domain}"
+    else
+      "test#{self.session_domain}"
+    end
+  end
+
 end
 

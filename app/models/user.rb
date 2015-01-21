@@ -2118,6 +2118,11 @@ TRIGGER
     CartoDB.base_url(subdomain, user_name)
   end
 
+  def full_profile_url(org_name_override=nil)
+    organization.nil? ? CartoDB.base_url(username) :
+                        CartoDB.base_url(org_name_override.nil? ? organization.name : org_name_override, username)
+  end
+
   private
 
   def name_exists_in_organizations?

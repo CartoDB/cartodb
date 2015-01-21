@@ -15,8 +15,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user_id = extract_user_id(request, params)
-    user = authenticate!(:password, scope: user_id)
+    username = extract_username(request, params)
+    user = authenticate!(:password, scope: username)
     CartodbStats.increment_login_counter(params[:email])
 
     destination_url = dashboard_path(user_domain: params[:user_domain], trailing_slash: true)
@@ -55,7 +55,7 @@ class SessionsController < ApplicationController
 
   private
 
-  def extract_user_id(request, params)
+  def extract_username(request, params)
     (params[:email].present? ? username_from_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
   end
 

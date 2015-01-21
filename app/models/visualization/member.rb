@@ -453,7 +453,7 @@ module CartoDB
             self.next_id = other_vis.id
             other_vis.prev_id = self.id
             other_vis.store
-            other_vis.fetch
+                     .fetch
           end
 
           store
@@ -474,14 +474,14 @@ module CartoDB
               other_vis.prev_id = nil
             else
               other_vis.prev_id = self.prev_id
-              next_item = prev_list_item
-              next_item.next_id = other_vis.id
-              next_item.store
+              prev_item = prev_list_item
+              prev_item.next_id = other_vis.id
+              prev_item.store
             end
             self.prev_id = other_vis.id
             other_vis.next_id = self.id
             other_vis.store
-            .fetch
+                     .fetch
           end
 
           store

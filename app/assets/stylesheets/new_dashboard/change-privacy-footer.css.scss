@@ -1,0 +1,13 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.ChangePrivacyFooter {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
+.ChangePrivacyFooter-password {
+  margin-right: 120px;
+}

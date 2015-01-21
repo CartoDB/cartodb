@@ -3,6 +3,7 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 * {
   margin: 0;
@@ -26,3 +27,16 @@ a {
 }
 
 i { font-style: normal }
+
+input {
+  border: 1px solid $cStructure-secondaryLines;
+  height: $sForm-elementHeight;
+  color: $cTypography-paragraphs;
+  border-radius: $sForm-borderRadius;
+  padding: 0 $sMargin-elementInline;
+  
+  ::-webkit-input-placeholder { color: $cTypography-help;  }
+  :-moz-placeholder { color: $cTypography-help;  }
+  ::-moz-placeholder {  color: $cTypography-help;  }
+  :-ms-input-placeholder {  color: $cTypography-help;  }
+}

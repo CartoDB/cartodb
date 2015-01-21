@@ -1,3 +1,8 @@
+3.9.0 (2015-01-xx)
+------------------
+* New features
+  - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
+
 3.8.0 (2015-01-xx)
 ------------------
 * Mailchimp user lists importer dataset.

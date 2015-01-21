@@ -26,10 +26,13 @@
 }
 .ChangePrivacyList-item.is-selected {
   border-color: $cCard-selectedBorder;
+  background-color: $cCard-hoverFill;
+  cursor: default;
 }
-.ChangePrivacyList-item:not(.is-disabled):hover {
+.ChangePrivacyList-item:not(.is-disabled):not(.is-selected):hover {
   border-color: $cCard-hoverBorder;
   background-color: $cCard-hoverFill;
+  cursor: pointer;
 }
 .ChangePrivacyList-item:not(:last-child) {
   margin-right: $sMargin-element;

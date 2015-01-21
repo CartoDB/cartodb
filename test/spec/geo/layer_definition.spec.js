@@ -589,6 +589,51 @@
     });
   });
 
+  describe("raster", function() {
+    var layerDefinitionRaster;
+    beforeEach(function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [{
+           type: 'cartodb', 
+           options: {
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: red; }',
+             raster: true,
+           }
+         }
+        ]
+      };
+      layerDefinitionRaster = new LayerDefinition(layer_definition, {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "http",
+        user_name: 'rambo',
+        no_cdn: true,
+        subdomains: [null]
+      });
+    });
+
+    it ("should include raster information when raster is true", function() {
+      expect(layerDefinitionRaster.toJSON()).toEqual({
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [{
+           type: 'cartodb', 
+           options: {
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: red; }',
+             cartocss_version: '2.3.0',
+             geom_column: 'the_raster_webmercator',
+             geom_type: 'raster'
+           }
+         }
+        ]
+      });
+    });
+  });
+
 });
 
 describe("NamedMap", function() {

@@ -4655,32 +4655,30 @@ var carto = global.carto || require('carto');
     },
     _preloadIcons: function(img_names){
       var self = this;
+      this._icons = {};
       if (img_names.length > 0 && !this._forcePoints){
-        if (Object.keys(this._icons).length === 0){
-          for (var i = 0; i<img_names.length; i++){
-            var new_img = this._createImage();
-            this._icons[img_names[i]] = null;
-            if (typeof self._icons.itemsToLoad === 'undefined'){
-              this._icons.itemsToLoad = img_names.length;
-            }
-            new_img.onload = function(e){
-              self._icons[this.src] = this;
-              if (Object.keys(self._icons).length === img_names.length + 1){
-                self._icons.itemsToLoad--;
-                if (self._icons.itemsToLoad === 0){
-                  self.clearSpriteCache();
-                  self.fire("allIconsLoaded");
-                }
-              }
-            };
-            new_img.onerror = function(){
-              self._forcePoints = true;
-              self.clearSpriteCache();
-              console.error("Couldn't get marker-file " + this.src);
-            };
-            new_img.src = img_names[i];
+        for (var i = 0; i<img_names.length; i++){
+          var new_img = this._createImage();
+          this._icons[img_names[i]] = null;
+          if (typeof self._icons.itemsToLoad === 'undefined'){
+            this._icons.itemsToLoad = img_names.length;
           }
-          
+          new_img.onload = function(e){
+            self._icons[this.src] = this;
+            if (Object.keys(self._icons).length === img_names.length + 1){
+              self._icons.itemsToLoad--;
+              if (self._icons.itemsToLoad === 0){
+                self.clearSpriteCache();
+                self.fire("allIconsLoaded");
+              }
+            }
+          };
+          new_img.onerror = function(){
+            self._forcePoints = true;
+            self.clearSpriteCache();
+            console.error("Couldn't get marker-file " + this.src);
+          };
+          new_img.src = img_names[i];
         }
       }
 

@@ -450,7 +450,7 @@ Map.prototype = {
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
-          callback && callback(null, err);      
+          callback && callback(null, err);
         } else if (self.visibleLayers().length === 0) {
           callback && callback({
             tiles: [Map.EMPTY_GIF],
@@ -880,15 +880,26 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
       var layer = layers[i];
-      obj.layers.push({
+      var layer_def = {
         type: 'cartodb',
         options: {
           sql: layer.options.sql,
           cartocss: layer.options.cartocss,
           cartocss_version: layer.options.cartocss_version || '2.1.0',
-          interactivity: this._cleanInteractivity(layer.options.interactivity)
         }
-      });
+      };
+
+      if (layer.options.interactivity) {
+        layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
+      }
+
+      if (layer.options.raster) {
+        layer_def.options.geom_column = "the_raster_webmercator";
+        layer_def.options.geom_type = "raster";
+        // raster needs 2.3.0 to work
+        layer_def.options.cartocss_version = layer.options.cartocss_version || '2.3.0';
+      }
+      obj.layers.push(layer_def);
     }
     return obj;
   },

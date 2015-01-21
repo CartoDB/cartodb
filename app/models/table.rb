@@ -38,7 +38,7 @@ class Table < Sequel::Model(:user_tables)
   RESERVED_TABLE_NAMES = %W{ layergroup all }
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
+  # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
       :id                           => :id,
@@ -58,6 +58,8 @@ class Table < Sequel::Model(:user_tables)
   }
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
+
+  VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
 
   # Associations
   many_to_one  :map
@@ -1248,7 +1250,7 @@ class Table < Sequel::Model(:user_tables)
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end
-    raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
+    raise CartoDB::InvalidGeomType unless VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
     if owner.in_database.table_exists?(name)
       $tables_metadata.hset(key, 'the_geom_type', the_geom_type_value)
     else
@@ -1602,11 +1604,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def get_new_column_type(invalid_column)
+    next_cartodb_type = {
+      "number" => "double precision",
+      "string" => "text"
+    }
+
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema(cartodb_types: false).flatten
     flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    CartoDB::NEXT_TYPE[cartodb_column_type]
+    next_cartodb_type[cartodb_column_type]
   end
 
   def set_the_geom_column!(type = nil)
@@ -1650,7 +1657,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
-    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 
     type = type.to_s.upcase
 

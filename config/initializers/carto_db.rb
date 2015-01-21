@@ -49,7 +49,11 @@ module CartoDB
   end
 
   def self.domain
-    @@domain ||= if Rails.env.production? || Rails.env.staging?
+    @@domain ||= _get_domain
+  end
+
+  def _get_domain
+    if Rails.env.production? || Rails.env.staging?
       `hostname -f`.strip
     elsif Rails.env.development?
       "vizzuality#{session_domain}"
@@ -59,7 +63,11 @@ module CartoDB
   end
 
   def self.hostname
-    @@hostname ||= if Rails.env.production? || Rails.env.staging?
+    @@hostname ||= _get_hostname
+  end
+
+  def _get_hostname
+    if Rails.env.production? || Rails.env.staging?
       "https://#{domain}"
     elsif Rails.env.development?
       "http://#{domain}:3000"
@@ -76,21 +84,6 @@ module CartoDB
     Cartodb.config[:account_path]
   end
 
-  # TODO move to separated file and activate in order
-  # to enable CartoDB plugins
-  # module Plugin
-  #   class << self
-  #     def register(plugin)
-  #       @registered_plugins ||= []
-  #       @registered_plugins << plugin
-  #     end
-      
-  #     def registered
-  #       @registered_plugins
-  #     end
-  #   end
-  # end
-
   module API
     VERSION_1 = "v1"
   end
@@ -104,27 +97,7 @@ module CartoDB
   PUBLIC_DB_USER  = 'publicuser'
   PUBLIC_DB_USER_PASSWORD  = 'publicuser'
   TILE_DB_USER    = 'tileuser'
-  GOOGLE_SRID     = 3857
   SRID            = 4326
-  USER_REQUESTS_PER_DAY = 10000
-
-  TYPES = {
-    "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial", "real"],
-    "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/, /char\s*\(\d+\)/, /character\s*\(\d+\)/],
-    "boolean" => ["boolean"],
-    "date"    => [
-      "timestamptz",
-      "timestamp with time zone",
-      "timestamp without time zone"
-    ]
-  }
-
-  NEXT_TYPE = {
-    "number" => "double precision",
-    "string" => "text"
-  }
-
-  VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
@@ -136,7 +109,7 @@ module CartoDB
                                   REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
                                   USING VERBOSE WHEN WHERE XMIN XMAX }
 
-  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION }
+  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid }
 
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 

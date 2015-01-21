@@ -404,7 +404,8 @@ var Vis = cdb.core.View.extend({
     if (this.mobile) this.cartodb_logo = false;
     else if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true; // We set the logo by default
 
-    var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -752,7 +753,7 @@ var Vis = cdb.core.View.extend({
   _createOverlays: function(overlays, vis_data, options) {
 
     // if there's no header overlay, we need to explicitly create the slide controller
-    if (!this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
       this._addSlideController(vis_data);
     }
 

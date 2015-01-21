@@ -609,7 +609,7 @@ describe Visualization::Member do
   it 'checks that slides can have a parent_id' do
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-    expected_errors = { parent_id: 'Slides must have a parent' }
+    expected_errors = { parent_id: 'Type slide must have a parent' }
 
     member = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
                                                                           type: Visualization::Member::TYPE_DERIVED }))
@@ -640,19 +640,24 @@ describe Visualization::Member do
     child_member.parent_id.should eq member.id
     child_member.parent.id.should eq member.id
 
-    # Allowed but unused
-    table_member = Visualization::Member.new(random_attributes_for_vis_member({
-      user_id: @user_mock.id,
-      type:       Visualization::Member::TYPE_CANONICAL,
-      parent_id:  member.id
-    }))
-    table_member.store
-    table_member = Visualization::Member.new(random_attributes_for_vis_member({
-      user_id: @user_mock.id,
-      type:       Visualization::Member::TYPE_CANONICAL,
-      parent_id:  member.id
-    }))
-    table_member.store
+    expect {
+      table_member = Visualization::Member.new(
+        random_attributes_for_vis_member({
+                                           user_id: @user_mock.id,
+                                           type: Visualization::Member::TYPE_CANONICAL,
+                                           parent_id: member.id
+                                         }))
+      table_member.store
+    }.to raise_exception CartoDB::InvalidMember
+    expect {
+      table_member = Visualization::Member.new(
+        random_attributes_for_vis_member({
+                                           user_id: @user_mock.id,
+                                           type:       Visualization::Member::TYPE_DERIVED,
+                                           parent_id:  member.id
+                                         }))
+      table_member.store
+    }.to raise_exception CartoDB::InvalidMember
   end
 
   it 'tests transition_options field jsonification' do

@@ -154,9 +154,9 @@ module CartoDB
         end
 
         if type_slide?
-          validator.errors.store(:parent_id, 'Slides must have a parent') if parent_id.nil?
+          validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
         else
-          validator.errors.store(:parent_id, 'derived must not have parent') unless parent_id.nil?
+          validator.errors.store(:parent_id, "Type #{type} must not have parent") unless parent_id.nil?
         end
 
         unless permission_id.nil?

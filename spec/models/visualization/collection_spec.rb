@@ -436,7 +436,7 @@ describe Visualization::Collection do
 
       collection = Visualization::Collection.new.fetch({
                                                          user_id: user.id,
-                                                         type: Visualization::Member::CANONICAL_TYPE,
+                                                         type: Visualization::Member::TYPE_CANONICAL,
                                                          only_liked: true
                                                        })
       collection.count.should eq 3
@@ -522,8 +522,8 @@ describe Visualization::Collection do
       collection.count_total(user_id: user1_id, unauthenticated: true).should eq 1
 
       # Type filters are allowed
-      collection.count_total(user_id: user1_id, type: CartoDB::Visualization::Member::CANONICAL_TYPE).should eq 2
-      collection.count_total(user_id: user1_id, type: CartoDB::Visualization::Member::DERIVED_TYPE).should eq 0
+      collection.count_total(user_id: user1_id, type: CartoDB::Visualization::Member::TYPE_CANONICAL).should eq 2
+      collection.count_total(user_id: user1_id, type: CartoDB::Visualization::Member::TYPE_DERIVED).should eq 0
 
       # And filtering by user_id
       collection.count_total(user_id: user2_id).should eq 2
@@ -620,7 +620,7 @@ describe Visualization::Collection do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
+      type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
       user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
       locked:       attributes.fetch(:locked, false),
       title:        attributes.fetch(:title, ''),

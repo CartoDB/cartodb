@@ -58,5 +58,5 @@ $buttonBorderSize: 1px;
   color: #666666;
 }
 .Button.is-disabled {
-  @include opacity(0.5);
+  @include opacity(0.4);
 }

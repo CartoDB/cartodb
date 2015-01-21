@@ -160,9 +160,9 @@ module CartoDB
       end
 
       def geocode_countries country_column_name
+        job.log "Geocoding countries..."
         geocoder = nil
         @importer_stats.timing('geocoding') do
-          job.log "Geocoding countries..."
           @tracker.call('geocoding')
           create_the_geom_in(table_name)
           config = @options[:geocoder].merge(
@@ -185,22 +185,25 @@ module CartoDB
 
       def geocode_ips ip_column_name
         job.log "Geocoding ips..."
-        @tracker.call('geocoding')
-        create_the_geom_in(table_name)
-        config = @options[:geocoder].merge(
-          table_schema: schema,
-          table_name: table_name,
-          qualified_table_name: qualified_table_name,
-          connection: db,
-          formatter: ip_column_name,
-          geometry_type: 'point',
-          kind: 'ipaddress',
-          max_rows: nil,
-          country_column: nil
-        )
-        geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-        geocoder.run
-        job.log "Geocoding finished"
+        geocoder = nil
+        @importer_stats.timing('geocoding') do
+          @tracker.call('geocoding')
+          create_the_geom_in(table_name)
+          config = @options[:geocoder].merge(
+            table_schema: schema,
+            table_name: table_name,
+            qualified_table_name: qualified_table_name,
+            connection: db,
+            formatter: ip_column_name,
+            geometry_type: 'point',
+            kind: 'ipaddress',
+            max_rows: nil,
+            country_column: nil
+          )
+          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
+          geocoder.run
+          job.log "Geocoding finished"
+        end
         geocoder.state == 'completed'
       end
 

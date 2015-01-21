@@ -977,32 +977,38 @@ describe Api::Json::VisualizationsController do
       CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
-      collection = CartoDB::Visualization::Collection.new.fetch(user_id: @user.id)
+      user_2 = create_user(
+        username: 'testindexauth',
+        email:    'test_auth@example.com',
+        password: 'testauth'
+      )
+
+      collection = CartoDB::Visualization::Collection.new.fetch(user_id: user_2.id)
       collection.map(&:delete)
 
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+      post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
            factory.to_json, @headers
       last_response.status.should == 200
       pub_vis_id = JSON.parse(last_response.body).fetch('id')
 
-      put api_v1_visualizations_update_url(user_domain: @user.username, api_key: @api_key, id: pub_vis_id),
+      put api_v1_visualizations_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: pub_vis_id),
            {
              privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
            }.to_json, @headers
       last_response.status.should == 200
 
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+      post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
            factory.to_json, @headers
       last_response.status.should == 200
       priv_vis_id = JSON.parse(last_response.body).fetch('id')
 
-      put api_v1_visualizations_update_url(user_domain: @user.username, api_key: @api_key, id: priv_vis_id),
+      put api_v1_visualizations_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: priv_vis_id),
            {
              privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
            }.to_json, @headers
       last_response.status.should == 200
 
-      get api_v1_visualizations_index_url(user_domain: @user.username, type: 'derived'), @headers
+      get api_v1_visualizations_index_url(user_domain: user_2.username, type: 'derived'), @headers
       body = JSON.parse(last_response.body)
 
       body['total_entries'].should eq 1
@@ -1010,7 +1016,7 @@ describe Api::Json::VisualizationsController do
       vis['id'].should eq pub_vis_id
       vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
 
-      get api_v1_visualizations_index_url(user_domain: @user.username, type: 'derived', api_key: @api_key,
+      get api_v1_visualizations_index_url(user_domain: user_2.username, type: 'derived', api_key: user_2.api_key,
                                           order: 'updated_at'),
         {}, @headers
       body = JSON.parse(last_response.body)

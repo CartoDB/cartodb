@@ -321,19 +321,18 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
+  var timeSlider = vis.timeSlider;
+  if (timeSlider) {
+    layerSelector.bind('change:visible', function(visible, order, layer) {
+      if (layer.get('type') === 'torque') {
+        timeSlider[visible ? 'show': 'hide']();
+      }
+    });
+  }
   if (vis.legends) {
 
     layerSelector.bind('change:visible', function(visible, order, layer) {
 
-      if (layer.get('type') === 'torque') {
-
-        var timeSlider = vis.getOverlay('time_slider');
-
-        if (timeSlider) {
-          timeSlider[visible ? 'show': 'hide']();
-        }
-
-      }
 
       if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
 

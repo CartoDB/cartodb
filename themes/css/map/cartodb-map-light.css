@@ -278,30 +278,24 @@ only screen and (                min-resolution: 2dppx) {
   div.cartodb-header > p {
     width:80%;
   }
-
   div.cartodb-zoom a {
     background:url('../img/other@2x.png') no-repeat 0 0!Important;
     background-size: 113px 34px!Important;
   }
-
   div.cartodb-zoom a.zoom_in {
     background-position: -68px 9px!important
   }
-
   div.cartodb-zoom a.zoom_out {
     background-position:-94px 10px!important;
   }
-
   div.cartodb-header div.social a.facebook {
     background:url('../img/other@2x.png') no-repeat 0 0!Important;
     background-size: 113px 34px!Important;
   }
-
   div.cartodb-header div.social a.twitter {
     background:url('../img/other@2x.png') no-repeat -26px 0!Important;
     background-size: 113px 34px!Important;
   }
-
   div.cartodb-searchbox span.loader {
     background: url('../img/loader@2x.gif') no-repeat center center white!Important;
     background-size: 16px 16px!Important;
@@ -310,23 +304,25 @@ only screen and (                min-resolution: 2dppx) {
     background: url('../img/dark_loader@2x.gif') no-repeat center center #292929!Important;
     background-size: 16px 16px!Important;
   }
-
-
   div.cartodb-tiles-loader div.loader {
     background: url('../img/loader@2x.gif') no-repeat center center white!Important;
     background-size: 16px 16px!Important;
   }
-
   div.cartodb-searchbox input.submit {
     background:url('../img/other@2x.png') no-repeat -56px 0!Important;
     background-size: 113px 34px!Important;
   }
-
   .cartodb-mobile .aside .cartodb-searchbox input.submit {
     background:url('../img/mobile_zoom.png') no-repeat 0 0!Important;
   }
-
-
+  .cartodb-mobile div.cartodb-slides-controller div.slides-controller-content a.prev {
+    background: url('../img/slide_left@2x.png') no-repeat;
+    background-size: 16px 15px;
+  }
+  .cartodb-mobile div.cartodb-slides-controller div.slides-controller-content a.next {
+    background: url('../img/slide_right@2x.png') no-repeat;
+    background-size: 16px 15px;
+  }
 }
 
 .cartodb-share-dialog .block .buttons li a.twitter {

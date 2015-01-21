@@ -822,9 +822,12 @@ var Vis = cdb.core.View.extend({
   _addSlideController: function(data) {
 
     if (data.slides && data.slides.length > 0) {
+
+      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
+
       return this.addOverlay({
         type: 'slides_controller',
-        slides: data.slides
+        transitions: transitions
       });
     }
 
@@ -832,10 +835,12 @@ var Vis = cdb.core.View.extend({
 
   _addHeader: function(data, vis_data) {
 
+    var transitions = [vis_data.transition_options].concat(_.pluck(vis_data.slides, "transition_options"))
+
     return this.addOverlay({
       type: 'header',
       options: data.options,
-      slides: vis_data.slides
+      transitions: transitions
     });
 
   },
@@ -856,10 +861,13 @@ var Vis = cdb.core.View.extend({
         layers = layer.options.named_map.layers;
       }
 
+      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
+
       this.addOverlay({
         type: 'mobile',
         layers: layers,
         slides: data.slides,
+        transitions:transitions,
         overlays: data.overlays,
         options: options,
         torqueLayer: this.torqueLayer

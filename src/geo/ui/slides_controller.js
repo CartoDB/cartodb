@@ -6,7 +6,7 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
     "click a": "_onClick",
   },
 
-  template: cdb.core.Template.compile("<a href='#'></a>"),
+  template: cdb.core.Template.compile('<a href="#" class="<%= transition_trigger %>"></a>'),
 
   initialize: function() {
 
@@ -32,7 +32,9 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template());
+    var options = _.extend({ transition_trigger: "click" }, this.options.transition_options);
+
+    this.$el.html(this.template(options));
 
     this._onChangeActive();
 
@@ -59,7 +61,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
   template: cdb.core.Template.compile("<div class='slides-controller-content'><a href='#' class='prev'></a><% if (show_counter) {%><div class='counter'></div><% } else { %><ul></ul><% } %><a href='#' class='next'></a></div>"),
 
   initialize: function() {
-    this.slidesCount = this.options.slides_data.length + 1;
+    this.slidesCount = this.options.transitions.length;
   },
 
   _prev: function(e) {
@@ -71,7 +73,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
     if (currentSlide > 0) {
       currentSlide--;
     } else {
-      currentSlide = this.options.slides_data.length;
+      currentSlide = this.options.transitions.length;
     }
 
     this.options.slides.go(currentSlide)
@@ -83,7 +85,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     var currentSlide = this.options.slides.state();
 
-    if (currentSlide <= this.options.slides_data.length - 1) {
+    if (currentSlide <= this.options.transitions.length - 1) {
       currentSlide++;
     } else {
       currentSlide = 0;
@@ -97,9 +99,9 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     var currentActiveSlide = this.options.slides.state();
 
-    for (var i = 0; i < this.options.slides_data.length + 1; i++) {
+    for (var i = 0; i < this.options.transitions.length; i++) {
 
-      var item = new cdb.geo.ui.SlidesControllerItem({ num: i, active: i == currentActiveSlide });
+      var item = new cdb.geo.ui.SlidesControllerItem({ num: i, transition_options: this.options.transitions[i], active: i == currentActiveSlide });
       item.bind("onClick", this._onSlideClick, this);
       this.$el.find("ul").append(item.render().$el);
 
@@ -109,7 +111,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   _renderCounter: function() {
     var currentActiveSlide = this.options.slides.state() + 1;
-    this.$el.find(".counter").html(currentActiveSlide + "/" + (this.options.slides_data.length + 1))
+    this.$el.find(".counter").html(currentActiveSlide + "/" + this.options.transitions.length)
   },
 
   _onSlideClick: function(slide) {
@@ -122,7 +124,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     this.$el.html(this.template(options));
 
-    if (this.options.slides) {
+    if (this.options.slides && this.options.transitions) {
       this._renderDots();
     }
 

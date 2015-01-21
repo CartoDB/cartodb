@@ -1,12 +1,23 @@
 /**
  *  CartoDB map style components
  */
-
 * {
   -webkit-margin-after:0;
   -webkit-margin-before:0;
   -webkit-padding-start:0;
   -webkit-padding-end:0;
+}
+@-webkit-keyframes pulse {
+  to { -webkit-transform: scale(1); }
+}
+@-moz-keyframes pulse {
+  to { -moz-transform: scale(1); }
+}
+@-ms-keyframes pulse {
+  to { -ms-transform: scale(1); }
+}
+@keyframes pulse {
+  to { transform: scale(1); }
 }
 
 div.cartodb-share {
@@ -629,11 +640,11 @@ only screen and (                min-resolution: 2dppx) {
   height: 100%;
 }
 .cartodb-mobile .aside .scrollpane {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    outline:none;
-    /*padding-bottom: 25px;*/
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline:none;
+  /*padding-bottom: 25px;*/
 }
 .cartodb-mobile .aside .scrollpane .jspContainer { overflow: hidden; position: relative; }
 .cartodb-mobile .aside .scrollpane .jspPane { position: absolute; }
@@ -940,6 +951,7 @@ only screen and (                min-resolution: 2dppx) {
   bottom: 0;
   top: auto;
   padding: 0;
+  line-height: 0;
   z-index: 9;
 }
 .cartodb-mobile .cartodb-slides-controller .slides-controller-content {
@@ -2297,6 +2309,7 @@ div.cartodb-timeslider p {
   top: 0;
   left: 0;
   background: rgba(0,0,0,.5);
+  line-height: 0;
   z-index: 1000000;
 }
 .cartodb-slides-controller .slides-controller-content {
@@ -2340,6 +2353,7 @@ div.cartodb-timeslider p {
 .cartodb-slides-controller .slides-controller-content ul {
   display:inline-block; *display:inline;
   text-align: center;
+  padding: 0;
 }
 .cartodb-slides-controller .slides-controller-content ul li {
   display:inline-block; *display:inline; vertical-align:middle;
@@ -2355,4 +2369,16 @@ div.cartodb-timeslider p {
 }
 .cartodb-slides-controller .slides-controller-content ul li a.active {
   opacity: 1;
+}
+.cartodb-slides-controller .slides-controller-content ul li a.active.time {
+  width: 10px;
+  height: 10px;
+  transform: scale(.7);
+  -ms-transform: scale(.7);
+  -moz-transform: scale(.7);
+  -webkit-transform: scale(.7);
+  animation: pulse .35s infinite ease-out  alternate;
+  -ms-animation: pulse .35s infinite ease-out  alternate;
+  -moz-animation: pulse .35s infinite ease-out  alternate;
+  -webkit-animation: pulse .35s infinite ease-out  alternate;
 }

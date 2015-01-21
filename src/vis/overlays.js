@@ -7,8 +7,8 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 
   var slides_controller = new cdb.geo.ui.SlidesController({
-    slides: vis.slides,
-    slides_data: data.slides
+    transitions: data.transitions,
+    slides: vis.slides
   });
 
   return slides_controller.render();
@@ -44,6 +44,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     mapView: vis.mapView,
     overlays: data.overlays,
     slides: vis.slides,
+    transitions: data.transitions,
     slides_data: data.slides,
     layerView: data.layerView,
     visibility_options: data.options,
@@ -148,8 +149,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var widget = new cdb.geo.ui.Header({
     model: new cdb.core.Model(options),
+    transitions: data.transitions,
     slides: vis.slides,
-    slides_data: data.slides,
     template: template
   });
 

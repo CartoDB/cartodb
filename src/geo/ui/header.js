@@ -46,8 +46,8 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     if (this.options.slides) {
       this.slides_controller = new cdb.geo.ui.SlidesController({
-        slides: this.options.slides,
-        slides_data: this.options.slides_data
+        transitions: this.options.transitions,
+        slides: this.options.slides
       });
 
       this.$el.append(this.slides_controller.render().$el);

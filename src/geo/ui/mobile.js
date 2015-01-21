@@ -750,7 +750,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       this.slidesController = new cdb.geo.ui.SlidesController({
         show_counter: true,
-        slides_data: this.options.slides_data,
+        transitions: this.options.transitions,
         slides: this.options.slides
       });
 

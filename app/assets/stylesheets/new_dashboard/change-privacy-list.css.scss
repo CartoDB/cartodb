@@ -27,7 +27,6 @@
 }
 .ChangePrivacyList-item.is-selected {
   border-color: $cCard-selectedBorder;
-  background-color: $cCard-hoverFill;
   cursor: default;
 }
 .ChangePrivacyList-item:not(.is-disabled):not(.is-selected):hover {

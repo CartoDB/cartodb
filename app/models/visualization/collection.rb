@@ -26,8 +26,8 @@ module CartoDB
       # 'locked' is filtered but before the rest
       # 'exclude_shared' and
       # 'only_shared' are other filtes applied
-      # 'only_liked'
-      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id }
+      # 'only_liked'jA
+      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id parent_id}
 
       # Keys in this list are the only filters that should be kept for calculating totals (if present)
       FILTERS_ALLOWED_AT_TOTALS = [ :type, :user_id, :unauthenticated ]

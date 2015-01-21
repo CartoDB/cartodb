@@ -27,10 +27,6 @@ class Admin::VisualizationsController < ApplicationController
 
   end #index
 
-  def resolve_visualization_and_table(request)
-    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request))
-  end
-
   def show
     unless current_user.present?
       if request.original_fullpath =~ %r{/tables/}
@@ -62,7 +58,8 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(pretty_404) if disallowed_type?(@visualization)
 
-    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
+    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain],
+                                                            id: request.params[:id])) \
       if @visualization.derived?
 
     if current_user.nil? && !request.params[:redirected].present?
@@ -108,7 +105,8 @@ class Admin::VisualizationsController < ApplicationController
     owner = @visualization.user
     # set user to current user only if the user is in the same organization
     # this allows to enable "copy this table to your tables" button
-    if current_user && current_user.organization.present? && owner.organization.present? && current_user.organization_id == owner.organization_id
+    if current_user && current_user.organization.present? && owner.organization.present? &&
+        current_user.organization_id == owner.organization_id
       @user = current_user
       response.headers['Cache-Control'] = "no-cache,private"
     else
@@ -163,8 +161,8 @@ class Admin::VisualizationsController < ApplicationController
 
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
-    if current_user && @visualization.organization? \
-       && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.organization? &&
+        @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       return(show_organization_public_map)
     end
 
@@ -222,8 +220,7 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_public_map
     @visualization, @table = resolve_visualization_and_table(request)
 
-    return(embed_forbidden) unless (current_user && @visualization && @visualization.organization? \
-      && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY))
+    return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
     @can_fork = @visualization.related_tables.map { |t|
@@ -254,8 +251,7 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_embed_map
     @visualization, @table = resolve_visualization_and_table(request)
 
-    return(embed_forbidden) unless (current_user && @visualization && @visualization.organization? \
-      && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY))
+    return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
     return(pretty_404) if disallowed_type?(@visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -339,10 +335,7 @@ class Admin::VisualizationsController < ApplicationController
 
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
-    if current_user && @visualization.organization? \
-       && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-      return(show_organization_embed_map)
-    end
+    return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -392,6 +385,11 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   private
+
+  def org_user_has_map_permissions?(user, visualization)
+    user && visualization && visualization.organization? &&
+      visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
+  end
 
   def resolve_visualization_and_table(request)
     filters = { exclude_raster: true }

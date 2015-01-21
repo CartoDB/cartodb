@@ -18,10 +18,8 @@
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="icon-font_35_Add" sketch:type="MSLayerGroup">
             <path d="M316.204051,0 L0,0 L0,442 L382.352941,442 L382.352941,66.1488901 L316.204051,1.64313008e-14 Z" id="Rectangle-112" opacity="0.9" fill="#000000" filter="url(#filter-1)" sketch:type="MSShapeGroup"></path>
-            <rect id="Rectangle-477" fill="#FFFFFF" sketch:type="MSShapeGroup" x="117.647059" y="206.266667" width="264.705882" height="29.4666667"></rect>
+            <path d="M157.202669,206.266667 L382.352941,206.266667 L382.352941,235.733333 L156.513193,235.733333 L156.513193,235.733333 L206.31154,285.53168 L188.646276,303.196945 L121.182665,235.733333 L117.647059,235.733333 L117.647059,206.266667 L121.872141,206.266667 L188.646276,139.492532 L206.31154,157.157796 L157.202669,206.266667 Z" id="Rectangle-477" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
             <rect id="Rectangle-478" fill="#000000" sketch:type="MSShapeGroup" x="382.352941" y="206.266667" width="117.647059" height="29.4666667"></rect>
-            <rect id="Rectangle-486" fill="#FFFFFF" sketch:type="MSShapeGroup" x="112.199327" y="246.549125" width="99.9112441" height="24.9824561"></rect>
-            <rect id="Rectangle-484" fill="#FFFFFF" sketch:type="MSShapeGroup" x="112.199327" y="171.157895" width="99.9112441" height="24.9824561"></rect>
         </g>
     </g>
 </svg>

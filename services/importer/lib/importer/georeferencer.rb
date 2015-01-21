@@ -161,6 +161,10 @@ module CartoDB
 
       def geocode_countries country_column_name
         job.log "Geocoding countries..."
+        formatter = country_column_name
+        geometry_type = 'polygon'
+        kind = 'admin0'
+
         geocoder = nil
         @importer_stats.timing('geocoding') do
           @tracker.call('geocoding')
@@ -170,9 +174,9 @@ module CartoDB
             table_name: table_name,
             qualified_table_name: qualified_table_name,
             connection: db,
-            formatter: country_column_name,
-            geometry_type: 'polygon',
-            kind: 'admin0',
+            formatter: formatter,
+            geometry_type: geometry_type,
+            kind: kind,
             max_rows: nil,
             country_column: nil
           )
@@ -185,6 +189,10 @@ module CartoDB
 
       def geocode_ips ip_column_name
         job.log "Geocoding ips..."
+        formatter = ip_column_name
+        geometry_type = 'point'
+        kind = 'ipaddress'
+
         geocoder = nil
         @importer_stats.timing('geocoding') do
           @tracker.call('geocoding')
@@ -194,9 +202,9 @@ module CartoDB
             table_name: table_name,
             qualified_table_name: qualified_table_name,
             connection: db,
-            formatter: ip_column_name,
-            geometry_type: 'point',
-            kind: 'ipaddress',
+            formatter: formatter,
+            geometry_type: geometry_type,
+            kind: kind,
             max_rows: nil,
             country_column: nil
           )

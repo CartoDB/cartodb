@@ -11,9 +11,14 @@
   height: 17px;
   line-height: 17px; /* same as width/height */
   border-radius: 23px;
-  background-color: $cHighlight-negative;
   color: #fff;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-normal;
   text-align: center;
+}
+.Badge--negative {
+  background-color: $cHighlight-negative;
+}
+.Badge--positive {
+  background-color: $cHighlight-positive;
 }

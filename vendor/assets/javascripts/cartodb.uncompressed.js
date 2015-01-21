@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.29
+// cartodb.js version: 3.11.30
 // uncompressed version: cartodb.uncompressed.js
-// sha: d9471dca76df0fb06b461ea988f8565a232ed82e
+// sha: 766599675a29fb2ecf800860578f8e16acd7eac2
 (function() {
   var root = this;
 
@@ -3682,6 +3682,13 @@ L.Map = L.Class.extend({
 
 		// TODO looks ugly, refactor
 		if (this.options.zoomAnimation && L.TileLayer && (layer instanceof L.TileLayer)) {
+            if (this._tryAnimatedZoom && this._animatingZoom) {
+              // call _catchTransitionEnd 
+              console.log('_catchTransitionEnd');
+              if (this._nothingToAnimate()) {
+                this._onZoomTransitionEnd();
+              }
+            }
 			this._tileLayersNum--;
 			this._tileLayersToLoad--;
 			layer.off('load', this._onTileLayerLoad, this);
@@ -10584,6 +10591,7 @@ L.PosAnimation = L.Class.extend({
 	_onStep: function () {
 		var stepPos = this._getPos();
 		if (!stepPos) {
+            console.log("!stepPos YOOO");
 			this._onTransitionEnd();
 			return;
 		}
@@ -20720,7 +20728,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.29";
+    cdb.VERSION = "3.11.30";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20789,6 +20797,7 @@ this.LZMA = LZMA;
         'geo/ui/header.js',
         'geo/ui/search.js',
         'geo/ui/layer_selector.js',
+        'geo/ui/slides_controller.js',
         'geo/ui/mobile.js',
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
@@ -23287,6 +23296,8 @@ cdb.geo.ui.Share = cdb.core.View.extend({
 
     $(".cartodb-map-wrapper").append(this.dialog.render().$el);
 
+    this.addView(this.dialog);
+
   },
 
   render: function() {
@@ -25776,6 +25787,15 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     this.$el.html(this.options.template(this.model.attributes));
 
+    if (this.options.slides) {
+      this.slides_controller = new cdb.geo.ui.SlidesController({
+        slides: this.options.slides,
+        slides_data: this.options.slides_data
+      });
+
+      this.$el.append(this.slides_controller.render().$el);
+    }
+
     this.$title       = this.$el.find(".content div.title");
     this.$description = this.$el.find(".content div.description");
 
@@ -26106,7 +26126,50 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
     }
   }
 });
-cdb.geo.ui.MobileSlideController = cdb.core.View.extend({
+cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
+
+  tagName: "li",
+
+  events: {
+    "click a": "_onClick",
+  },
+
+  template: cdb.core.Template.compile("<a href='#'></a>"),
+
+  initialize: function() {
+
+    this.model = new cdb.core.Model(this.options);
+    this.model.bind("change:active", this._onChangeActive, this);
+
+  },
+
+  _onChangeActive: function(e) {
+
+    if (this.model.get("active")) {
+      this.$el.find("a").addClass("active");
+    } else {
+      this.$el.find("a").removeClass("active");
+    }
+
+  },
+
+  _onClick: function(e) {
+    if (e) this.killEvent(e);
+    this.trigger("onClick", this)
+  },
+
+  render: function() {
+
+    this.$el.html(this.template());
+
+    this._onChangeActive();
+
+    return this;
+  }
+
+});
+
+cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   events: {
     'click a.next': "_next",
@@ -26115,17 +26178,18 @@ cdb.geo.ui.MobileSlideController = cdb.core.View.extend({
 
   tagName: "div",
 
-  className: "cartodb-mobile-slides-controller",
+  className: "cartodb-slides-controller",
 
-  template: cdb.core.Template.compile("<a href='#' class='prev'>Prev</a><a href='#' class='next'>Next</a>"),
+  template: cdb.core.Template.compile("<div class='slides-controller-content'><a href='#' class='prev'></a><ul></ul><a href='#' class='next'></a></div>"),
 
   initialize: function() {
     this.slidesCount = this.options.slides_data.length + 1;
   },
 
   _prev: function(e) {
-    if (e) this.killEvent(e);
 
+    if (e) this.killEvent(e);
+    
     var currentSlide = this.options.slides.state();
 
     if (currentSlide > 0) {
@@ -26149,17 +26213,40 @@ cdb.geo.ui.MobileSlideController = cdb.core.View.extend({
       currentSlide = 0;
     }
 
-    this.options.slides.go(currentSlide)
+    this.options.slides.go(currentSlide);
 
   },
 
+  _renderDots: function() {
+
+    var currentActiveSlide = this.options.slides.state();
+
+    for (var i = 0; i < this.options.slides_data.length + 1; i++) {
+
+      var item = new cdb.geo.ui.SlidesControllerItem({ num: i, active: i == currentActiveSlide });
+      item.bind("onClick", this._onSlideClick, this);
+      this.$el.find("ul").append(item.render().$el);
+
+    }
+
+  },
+
+  _onSlideClick: function(slide) {
+    this.options.slides.go(slide.options.num);
+  },
+
   render: function() {
+
     this.$el.html(this.template());
+
+    if (this.options.slides) {
+      this._renderDots();
+    }
+
     return this;
   }
 
 });
-
 cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   events: {
@@ -26623,6 +26710,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var hasSearchOverlay  = false;
     var hasZoomOverlay    = false;
+    var hasLoaderOverlay  = false;
     var hasLayerSelector  = false;
 
     _.each(this.overlays, function(overlay) {
@@ -26634,10 +26722,17 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         }
       }
 
-      if (!this.visibility_options.zoomControl && overlay.type == 'zoom') {
+      if (!this.visibility_options.zoomControl && overlay.type === 'zoom') {
         if (this.visibility_options.zoomControl !== "false") {
           this._addZoom();
           hasZoomOverlay = true;
+        }
+      }
+
+      if (!this.visibility_options.loaderControl && overlay.type === 'loader') {
+        if (this.visibility_options.loaderControl !== "false") {
+          this._addLoader();
+          hasLoaderOverlay = true;
         }
       }
 
@@ -26655,12 +26750,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     }, this);
 
-    var search_visibility = this.visibility_options.search === "true" || this.visibility_options.search === true;
-    var zoom_visibility = this.visibility_options.zoomControl === "true" || this.visibility_options.zoomControl === true;
+    var search_visibility = this.visibility_options.search === true        || this.visibility_options.search === "true";
+    var zoom_visibility   = this.visibility_options.zoomControl === true   || this.visibility_options.zoomControl === "true";
+    var loader_visibility = this.visibility_options.loaderControl === true || this.visibility_options.loaderControl === "true";
     var layer_selector_visibility  = this.visibility_options.layer_selector;
 
-    if (!hasSearchOverlay && search_visibility) this._addSearch();
-    if (!hasZoomOverlay   && zoom_visibility) this._addZoom();
+    if (!hasSearchOverlay  && search_visibility) this._addSearch();
+    if (!hasZoomOverlay    && zoom_visibility)   this._addZoom();
+    if (!hasLoaderOverlay  && loader_visibility) this._addLoader();
     if (layer_selector_visibility || hasLayerSelector && layer_selector_visibility == undefined) this.hasLayerSelector = true;
 
   },
@@ -26696,6 +26793,19 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.append(zoom.render().$el);
     this.$el.addClass("with-zoom");
+
+  },
+
+  _addLoader: function() {
+
+    var template = cdb.core.Template.compile('<div class="loader"></div>', 'mustache');
+
+    var loader = new cdb.geo.ui.TilesLoader({
+      template: template
+    });
+
+    this.$el.append(loader.render().$el);
+    this.$el.addClass("with-loader");
 
   },
 
@@ -26754,6 +26864,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       if (this.visibility_options.description || this.visibility_options.description != false && extra.show_description) {
         has_header = true;
         show_description = true;
+      }
+
+      if (this.hasSlides) {
+        has_header = true;
       }
 
       var $hgroup = title_template({ 
@@ -26881,7 +26995,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     if (this.hasSlides) {
 
-      this.slidesController = new cdb.geo.ui.MobileSlideController({
+      this.$el.addClass("with-slides");
+
+      this.slidesController = new cdb.geo.ui.SlidesController({
         slides_data: this.options.slides_data,
         slides: this.options.slides
       });
@@ -26898,14 +27014,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.html(this.template(this.options));
 
+    this.$header = this.$el.find(".cartodb-header");
+    this.$header.show();
+
     this._renderOverlays();
 
     this._renderSlidesController();
 
     this._addAttributions();
-
-    this.$header = this.$el.find(".cartodb-header");
-    this.$header.show();
 
     this._getLayers();
     this._renderLayers();
@@ -29805,6 +29921,11 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
         self._setModelProperty({ center: [c.lat, c.lng] });
       });
 
+      this.map_leaflet.on('dragend', function() {
+        var c = self.map_leaflet.getCenter();
+        this.trigger('dragend', [c.lat, c.lng]);
+      }, this);
+
       this.map_leaflet.on('drag', function() {
         var c = self.map_leaflet.getCenter();
         self._setModelProperty({
@@ -31030,6 +31151,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
       google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
         self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
+      });
+
+      google.maps.event.addListener(this.map_googlemaps, 'dragend', function(e) {
+        var c = self.map_googlemaps.getCenter();
+        self.trigger('dragend', e, [c.lat(), c.lng()]);
       });
 
       google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
@@ -32563,7 +32689,7 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  _addOverlays: function(overlays, options) {
+  _addOverlays: function(overlays, data, options) {
 
     overlays = overlays.toJSON();
     // Sort the overlays by its internal order
@@ -32576,7 +32702,7 @@ var Vis = cdb.core.View.extend({
       this.overlays.pop().clean();
     }
 
-    this._createOverlays(overlays, options);
+    this._createOverlays(overlays, data, options);
   },
 
   addTimeSlider: function(torqueLayer) {
@@ -32806,10 +32932,12 @@ var Vis = cdb.core.View.extend({
 
     this.mapView = mapView;
 
-    map.layers.bind('reset', this.addLegends, this);
+    if (options.legends) {
+      map.layers.bind('reset', this.addLegends, this);
+    }
 
     this.overlayModels.bind('reset', function(overlays) {
-      this._addOverlays(overlays, options);
+      this._addOverlays(overlays, data, options);
       this._addMobile(data, options);
     }, this);
 
@@ -33036,14 +33164,18 @@ var Vis = cdb.core.View.extend({
       this.slides.go(0);
   },
 
-  _createOverlays: function(overlays, options) {
+  _createOverlays: function(overlays, vis_data, options) {
+
+    // if there's no header overlay, we need to explicitly create the slide controller
+    if (!this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+      this._addSlideController(vis_data);
+    }
 
     _(overlays).each(function(data) {
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && type === "zoom")   return;
-      if (this.mobile_enabled && type === 'header') return;
+      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && $.browser.msie && parseFloat($.browser.version) <= 10) return;
@@ -33057,8 +33189,12 @@ var Vis = cdb.core.View.extend({
         }
       }
 
-      // We add the overlay
-      var overlay = this.addOverlay(data);
+      // We add the header overlay
+      if (type === 'header') {
+        var overlay = this._addHeader(data, vis_data);
+      } else {
+        var overlay = this.addOverlay(data);
+      }
 
       // We show/hide the overlays
       if (overlay && (type in options) && options[type] === false) overlay.hide();
@@ -33094,6 +33230,27 @@ var Vis = cdb.core.View.extend({
 
 
     }, this);
+
+  },
+
+  _addSlideController: function(data) {
+
+    if (data.slides && data.slides.length > 0) {
+      return this.addOverlay({
+        type: 'slides_controller',
+        slides: data.slides
+      });
+    }
+
+  },
+
+  _addHeader: function(data, vis_data) {
+
+    return this.addOverlay({
+      type: 'header',
+      options: data.options,
+      slides: vis_data.slides
+    });
 
   },
 
@@ -33817,6 +33974,17 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
+cdb.vis.Overlay.register('slides_controller', function(data, vis) {
+
+  var slides_controller = new cdb.geo.ui.SlidesController({
+    slides: vis.slides,
+    slides_data: data.slides
+  });
+
+  return slides_controller.render();
+
+});
+
 cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
@@ -33950,6 +34118,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var widget = new cdb.geo.ui.Header({
     model: new cdb.core.Model(options),
+    slides: vis.slides,
+    slides_data: data.slides,
     template: template
   });
 
@@ -34559,7 +34729,9 @@ Layers.register('torque', function(vis, data) {
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], ((mobileEnabled && options.mobile_layout) || options.force_mobile));
+          var layerModel = cdb.vis.Layers.create(layerData.type || layerData.kind, viz, layerData);
+
+          viz.addLegends(new cdb.geo.Layers([layerModel]), ((mobileEnabled && options.mobile_layout) || options.force_mobile));
         }
 
         if(options.time_slider && layerView.model.get('type') === 'torque') {

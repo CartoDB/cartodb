@@ -30,7 +30,12 @@ module CartoDB
           String    :license
           String    :source
           String    :title
+          String    :parent_id
           String    :kind
+          String    :prev_id
+          String    :next_id
+          String    :slide_transition_options
+          String    :active_child
         end
 
         @db.run(%Q{

@@ -24,7 +24,12 @@ describe DataRepository::Backend::Sequel do
       String    :url_options
       String    :permission_id
       Boolean   :locked
+      String    :parent_id
       String    :kind
+      String    :prev_id
+      String    :next_id
+      String    :slide_transition_options
+      String    :active_child
     end
 
     db.create_table :overlays do

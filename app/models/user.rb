@@ -1206,10 +1206,6 @@ class User < Sequel::Model
       .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
-  def metric_key
-    "cartodb.#{Rails.env.production? ? "user" : Rails.env + "-user"}.#{self.username}"
-  end
-
   def rebuild_quota_trigger
     puts "Setting user quota in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |db|

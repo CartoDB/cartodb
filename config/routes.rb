@@ -13,7 +13,6 @@ CartoDB::Application.routes.draw do
   get   '(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
-  match '/limits' => 'home#limits', as: :limits
   match '/status' => 'home#app_status'
 
   # OAuth

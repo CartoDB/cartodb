@@ -74,6 +74,7 @@
         'geo/ui/header.js',
         'geo/ui/search.js',
         'geo/ui/layer_selector.js',
+        'geo/ui/slides_controller.js',
         'geo/ui/mobile.js',
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',

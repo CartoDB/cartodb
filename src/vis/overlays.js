@@ -4,6 +4,17 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 
 });
 
+cdb.vis.Overlay.register('slides_controller', function(data, vis) {
+
+  var slides_controller = new cdb.geo.ui.SlidesController({
+    transitions: data.transitions,
+    slides: vis.slides
+  });
+
+  return slides_controller.render();
+
+});
+
 cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
@@ -32,6 +43,9 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
+    slides: vis.slides,
+    transitions: data.transitions,
+    slides_data: data.slides,
     layerView: data.layerView,
     visibility_options: data.options,
     torqueLayer: data.torqueLayer,
@@ -135,6 +149,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var widget = new cdb.geo.ui.Header({
     model: new cdb.core.Model(options),
+    transitions: data.transitions,
+    slides: vis.slides,
     template: template
   });
 
@@ -305,19 +321,18 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
+  var timeSlider = vis.timeSlider;
+  if (timeSlider) {
+    layerSelector.bind('change:visible', function(visible, order, layer) {
+      if (layer.get('type') === 'torque') {
+        timeSlider[visible ? 'show': 'hide']();
+      }
+    });
+  }
   if (vis.legends) {
 
     layerSelector.bind('change:visible', function(visible, order, layer) {
 
-      if (layer.get('type') === 'torque') {
-
-        var timeSlider = vis.getOverlay('time_slider');
-
-        if (timeSlider) {
-          timeSlider[visible ? 'show': 'hide']();
-        }
-
-      }
 
       if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
 

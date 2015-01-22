@@ -137,14 +137,7 @@ module.exports = function(grunt) {
   grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
 
   grunt.registerTask('build', [
-      'prompt:bump',
-      'replace',
-      'gitinfo',
-      'clean:dist',
-      'concurrent:dist',
-      'useminPrepare',
-      'concat',
-      'autoprefixer:dist',
+      'js',
       'cssmin',
       'copy:distStatic',
       'imagemin',
@@ -153,6 +146,17 @@ module.exports = function(grunt) {
       'usemin',
       'htmlmin',
       'uglify'
+  ]);
+
+  grunt.registerTask('js', [
+      'prompt:bump',
+      'replace',
+      'gitinfo',
+      'clean:dist',
+      'concurrent:dist',
+      'useminPrepare',
+      'concat',
+      'autoprefixer:dist'
   ]);
 
   grunt.registerTask('dist', [

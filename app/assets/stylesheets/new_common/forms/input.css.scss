@@ -6,10 +6,10 @@
 // -------------------------------------------------------------------------------------------------------------------
 
 .Input {
-  border: 1px solid $cStructure-secondaryLines;
-  height: $sForm-elementHeight;
+  border: 1px solid $cForms-border;
+  height: $sForms-elementHeight;
   color: $cTypography-paragraphs;
-  border-radius: $sForm-borderRadius;
+  border-radius: $sForms-borderRadius;
   padding: 0 $sMargin-elementInline;
 
   ::-webkit-input-placeholder { color: $cTypography-help;  }

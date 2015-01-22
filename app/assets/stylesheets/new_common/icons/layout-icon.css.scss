@@ -16,10 +16,10 @@
   @include align-items(center);
   width: $sIcon-layout;
   height: $sIcon-layout;
-  border: 1px solid $cStructure-secondaryLines;
+  border: 1px solid $cIcons-default;
   border-radius: $sIcon-borderRadius;
-  font-size: $sIcon-illustrationFontSize;
-  color: $cTypography-help;
+  font-size: 22px;
+  color: $cIcons-default;
 }
 .LayoutIcon--positive {
   border-color: $cHighlight-positive;

@@ -14,3 +14,17 @@
   text-overflow: ellipsis;
   display: block; // required for text-overflow to work with some elements that are inline by default (e.g. <a> tags)
 }
+
+.u-flexHorizontalSpaceBetween {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+}
+
+.u-flexVerticalCenter {
+  @include align-items(center);
+}
+
+.u-marginRightElement {
+  margin-right: $sMargin-element;
+}
+

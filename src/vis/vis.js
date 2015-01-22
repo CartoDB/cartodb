@@ -263,8 +263,7 @@ var Vis = cdb.core.View.extend({
       if(subLayer.model && subLayer.model.get('type') === 'torque') {
         if (o.visible === false) {
           subLayer.model.set('visible', false);
-          var timeSlider = this.getOverlay('time_slider');
-          if (timeSlider) {
+          if (this.timeSlider) {
             timeSlider.hide();
           }
         }

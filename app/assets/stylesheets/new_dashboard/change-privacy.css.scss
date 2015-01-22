@@ -1,0 +1,34 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.ChangePrivacy-list {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
+.ChangePrivacy-banner {
+  @include align-items(center);
+  background-color: rgba(#E8F0D6, 0.3);
+}
+.ChangePrivacy-bannerInner {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  margin: 0 $sMargin-group;
+}
+.ChangePrivacy-bannerIcon {
+  margin-right: $sMargin-group;
+  color: rgba(#ADAFA8, 1);
+}
+.ChangePrivacy-footer {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
+.ChangePrivacy-footerInput {
+  width: 200px;
+  margin-right: 120px;
+}

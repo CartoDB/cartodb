@@ -73,6 +73,7 @@ class Geocoding < Sequel::Model
 
   # INFO: table_geocoder method is very coupled to table model, and we want to use this model during imports, without table yet.
   # this method allows to inject the dependency to the geocoder
+  # TODO: refactor geocoder instantiation out of this class
   def force_geocoder geocoder
     @table_geocoder = geocoder
   end
@@ -105,10 +106,10 @@ class Geocoding < Sequel::Model
     started = Time.now
     begin
       self.update(table_geocoder.update_geocoding_status)
-      puts "Processed: #{processed_rows}"
       raise 'Geocoding timeout' if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
       raise 'Geocoding failed'  if state == 'failed'
-      # TODO: what is this sleep for?
+      # INFO: this loop polls database
+      # TODO: check whether this is always neccesary. Probably not (always) async.
       sleep(2)
     end until ['completed', 'cancelled'].include? state
     return false if state == 'cancelled'

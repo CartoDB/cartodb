@@ -1,5 +1,10 @@
 // Default styles
-// --------------------------------------------------
+//
+// NOTICE!
+// Do NOT add default styles to common elements (e.g. input) unless you have OK'd it with the rest of us. We want to
+// avoid having unforeseen side-effects upon changes, and avoid having to reset unwanted styles for custom components.
+// 
+// --------------------------------------------------------------------------------------------------------------------
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
@@ -27,16 +32,3 @@ a {
 }
 
 i { font-style: normal }
-
-input {
-  border: 1px solid $cStructure-secondaryLines;
-  height: $sForm-elementHeight;
-  color: $cTypography-paragraphs;
-  border-radius: $sForm-borderRadius;
-  padding: 0 $sMargin-elementInline;
-  
-  ::-webkit-input-placeholder { color: $cTypography-help;  }
-  :-moz-placeholder { color: $cTypography-help;  }
-  ::-moz-placeholder {  color: $cTypography-help;  }
-  :-ms-input-placeholder {  color: $cTypography-help;  }
-}

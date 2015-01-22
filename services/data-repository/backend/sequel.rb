@@ -53,6 +53,10 @@ module DataRepository
         dataset.paginate(page, per_page, record_count)
       end
 
+      def transaction(&block)
+        db.transaction(&block)
+      end
+
       private
 
       attr_reader :relation, :db

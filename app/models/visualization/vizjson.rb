@@ -25,10 +25,10 @@ module CartoDB
       # Return a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
-        {
+        poro_data = {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
-          title:          qualify_vis_name,
+          title:          visualization.qualified_name(@user),
           likes:          visualization.likes.count,
           description:    visualization.description_md,
           scrollwheel:    map.scrollwheel,
@@ -40,14 +40,25 @@ module CartoDB
           zoom:           map.zoom,
           updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
-          overlays:       overlays_for(visualization)
+          overlays:       overlays_for(visualization),
+          prev:           visualization.prev_id,
+          next:           visualization.next_id,
+          transition_options: visualization.transition_options
         }
+
+        children = children_for(visualization)
+        poro_data.merge!({slides: children}) if children.length > 0
+        unless visualization.parent_id.nil?
+          poro_data[:title] = visualization.parent.qualified_name(@user)
+          poro_data[:description] = visualization.parent.description_md
+        end
+
+        poro_data
       end
 
       def layer_group_for(visualization)
         LayerGroup::Presenter.new(visualization.layers(:cartodb), options, configuration).to_poro
       end
-
 
       def other_layers_for(visualization, named_maps_presenter = nil)
         layer_index = visualization.layers(:cartodb).size
@@ -127,20 +138,18 @@ module CartoDB
         end
       end
 
+      def children_for(visualization)
+        visualization.children.map do |vis|
+          vis.to_vizjson
+        end
+      end
+
       def ordered_overlays_for(visualization)
         visualization.overlays.to_a
       end
 
       def default_options
         { full: true, visualization_id: visualization.id }
-      end
-
-      def qualify_vis_name
-        if @user.nil? || @visualization.is_owner?(@user)
-          visualization.name
-        else
-          "#{@visualization.user.sql_safe_database_schema}.#{visualization.name}"
-        end
       end
 
     end

@@ -16,7 +16,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
                :remove_like
-  ssl_required :index, :show, :create, :update, :destroy
+  ssl_required :index, :show, :create, :update, :destroy, :set_next_id
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like, :index]
   before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
@@ -24,15 +24,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   before_filter :link_ghost_tables, only: [:index, :show]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
-                                                      :add_like, :is_liked, :remove_like]
+                                                      :add_like, :is_liked, :remove_like, :set_next_id]
 
   def index
     current_user ? index_logged_in : index_not_logged_in
   end
 
   def create
-    payload.delete(:permission) if payload[:permission].present?
-    payload.delete[:permission_id] if payload[:permission_id].present?
+    vis_data = payload
+
+    vis_data.delete(:permission)
+    vis_data.delete(:permission_id)
+
+    # Don't allow to modify next_id/prev_id, force to use set_next_id()
+    prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+    next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
     vis = nil
 
     if params[:source_visualization_id]
@@ -43,9 +49,18 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       ).first
       return(head 403) if source.nil?
 
+      copy_overlays = params.fetch(:copy_overlays, true)
+      copy_layers = params.fetch(:copy_layers, true)
+
+      additional_fields = {
+        type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
+        parent_id:  params.fetch(:parent_id, nil)
+      }
+
       vis = Visualization::Copier.new(
         current_user, source, name_candidate
-      ).copy
+      ).copy(copy_overlays, copy_layers, additional_fields)
+
     elsif params[:tables]
       viewed_user = User.find(:username => CartoDB.extract_subdomain(request))
       tables = params[:tables].map { |table_name|
@@ -56,7 +71,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       blender = Visualization::TableBlender.new(current_user, tables)
       map = blender.blend
       vis = Visualization::Member.new(
-        payload.merge(
+        vis_data.merge(
           name:     name_candidate,
           map_id:   map.id,
           type:     'derived',
@@ -69,7 +84,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       Visualization::Overlays.new(vis).create_default_overlays
     else
       vis = Visualization::Member.new(
-        payload_with_default_privacy.merge(
+        add_default_privacy(vis_data).merge(
           name: name_candidate,
           user_id:  current_user.id
         )
@@ -78,7 +93,31 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.privacy = vis.default_privacy(current_user)
 
+    # both null, make sure is the first children or automatically link to the tail of the list
+    if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
+      parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
+      return head(403) unless parent_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      if parent_vis.children.length > 0
+        prev_id = parent_vis.children.last.id
+      end
+    end
+
     vis.store
+
+    # Setup prev/next
+    if !prev_id.nil?
+      prev_vis = Visualization::Member.new(id: prev_id).fetch
+      return head(403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      prev_vis.set_next_list_item!(vis)
+    elsif !next_id.nil?
+      next_vis = Visualization::Member.new(id: next_id).fetch
+      return head(403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      next_vis.set_prev_list_item!(vis)
+    end
+
     current_user.update_visualization_metrics
     render_jsonp(vis)
   rescue CartoDB::InvalidMember
@@ -103,16 +142,22 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis = Visualization::Member.new(id: @table_id).fetch
     return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
-    payload.delete(:permission) if payload[:permission].present?
-    payload.delete[:permission_id] if payload[:permission_id].present?
+    vis_data = payload
+
+    vis_data.delete(:permission) || vis_data.delete('permission')
+    vis_data.delete(:permission_id)  || vis_data.delete('permission_id')
+
+    # Don't allow to modify next_id/prev_id, force to use set_next_id()
+    vis_data.delete(:prev_id) || vis_data.delete('prev_id')
+    vis_data.delete(:next_id) || vis_data.delete('next_id')
 
     # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
     # This is far from perfect, but works without messing with table-vis sync and their two backends
     if vis.table?
       old_vis_name = vis.name
 
-      payload.delete(:url_options) if payload[:url_options].present?
-      vis.attributes = payload
+      vis_data.delete(:url_options) if vis_data[:url_options].present?
+      vis.attributes = vis_data
       new_vis_name = vis.name
       old_table_name = vis.table.name
       vis.store.fetch
@@ -121,7 +166,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         vis.store.fetch
       end
     else
-      vis.attributes = payload  
+      vis.attributes = vis_data
       vis.store.fetch
     end
 
@@ -217,6 +262,39 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(watcher.list)
   end
 
+  def set_next_id
+    next_id = payload[:next_id] || payload['next_id']
+
+    prev_vis = Visualization::Member.new(id: @table_id).fetch
+    return(head 403) unless prev_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+    if next_id.nil?
+      last_children = prev_vis.parent.children.last
+      last_children.set_next_list_item!(prev_vis)
+
+      render_jsonp(last_children.to_vizjson)
+    else
+      next_vis = Visualization::Member.new(id: next_id).fetch
+      return(head 403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+
+      prev_vis.set_next_list_item!(next_vis)
+
+      render_jsonp(prev_vis.to_vizjson)
+    end
+  rescue KeyError
+    head(404)
+  rescue CartoDB::InvalidMember
+    render_jsonp({ errors: ['Error saving next slide position'] }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
+  rescue
+    render_jsonp({ errors: ['Unknown error'] }, 400)
+  end
+ 
   # Does not mandate a current_viewer except if vis is not public
   def likes_count
     vis = Visualization::Member.new(id: @table_id).fetch
@@ -353,8 +431,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
   end
 
-  def payload_with_default_privacy
-    { privacy: default_privacy }.merge(payload)
+  def add_default_privacy(data)
+    { privacy: default_privacy }.merge(data)
   end
 
   def default_privacy

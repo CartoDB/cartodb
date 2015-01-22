@@ -45,7 +45,7 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:related_tables).returns([])
       vis_entity_mock.stubs(:privacy=)
       vis_entity_mock.stubs(:store)
-      vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::DERIVED_TYPE)
+      vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
       vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
       vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
@@ -141,7 +141,7 @@ describe CartoDB::Permission do
       vis_mock.stubs(:fetch).returns(vis_mock)
       vis_mock.stubs(:id).returns(entity_id)
       vis_mock.stubs(:kind_of?).returns(true)
-      vis_mock.stubs(:type).returns(CartoDB::Visualization::Member::DERIVED_TYPE)
+      vis_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
       Visualization::Member.any_instance.stubs(:new).returns vis_mock
       permission2 = Permission.new
       permission2.owner = @user
@@ -659,7 +659,7 @@ describe CartoDB::Permission do
     vis_entity_mock.stubs(:related_tables).returns([])
     vis_entity_mock.stubs(:table?).returns(true)
     vis_entity_mock.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
-    vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::DERIVED_TYPE)
+    vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
     vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
     vis_entity_mock.stubs(:name).returns("foobar_visualization")
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)

@@ -59,7 +59,7 @@ describe Visualization::Tags do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, CartoDB::Visualization::Member::CANONICAL_TYPE),
+      type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
       user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
       locked:       attributes.fetch(:locked, false)
     }

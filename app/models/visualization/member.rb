@@ -28,8 +28,9 @@ module CartoDB
       PRIVACY_LINK         = 'link'          # published but not listen in public profile
       PRIVACY_PROTECTED    = 'password'      # published but password protected
 
-      CANONICAL_TYPE  = 'table'
-      DERIVED_TYPE    =  'derived'
+      TYPE_CANONICAL  = 'table'
+      TYPE_DERIVED    = 'derived'
+      TYPE_SLIDE      = 'slide'
 
       KIND_GEOM   = 'geom'
       KIND_RASTER = 'raster'
@@ -45,11 +46,12 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
+      DEFAULT_OPTIONS_VALUE = '{}'
+
       # Upon adding new attributes modify also:
       # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
-      # spec/models/visualization/collection_spec.rb -> random_attributes
-      # spec/models/visualization/member_spec.rb -> random_attributes
+      # spec/support/helpers.rb -> random_attributes_for_vis_member
       # app/models/visualization/presenter.rb
       attribute :id,                  String
       attribute :name,                String
@@ -70,7 +72,13 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :parent_id,           String, default: nil
       attribute :kind,                String, default: KIND_GEOM
+      attribute :prev_id,             String, default: nil
+      attribute :next_id,             String, default: nil
+      # Don't use directly, use instead getter/setter "transition_options"
+      attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
+      attribute :active_child,        String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -86,6 +94,18 @@ module CartoDB
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
+      end
+
+      def transition_options
+        ::JSON.parse(self.slide_transition_options).symbolize_keys
+      end
+
+      def transition_options=(value)
+        self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
+      end
+
+      def ==(other_vis)
+        self.id == other_vis.id
       end
 
       def default_privacy(owner)
@@ -105,7 +125,7 @@ module CartoDB
       end
 
       def store_using_table(fields)
-        if type == CANONICAL_TYPE
+        if type == TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = fields[:privacy_text]
           self.map_id = fields[:map_id]
@@ -118,7 +138,8 @@ module CartoDB
       def valid?
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
-        validator.validate_uniqueness_of(:name, available_name?)
+        # do not validate names for slides, it's never used
+        validator.validate_uniqueness_of(:name, available_name?) unless type_slide?
 
         if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
@@ -132,6 +153,12 @@ module CartoDB
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
+        if type_slide?
+          validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
+        else
+          validator.errors.store(:parent_id, "Type #{type} must not have parent") unless parent_id.nil?
+        end
+
         unless permission_id.nil?
           validator.errors.store(:permission_id, 'Cannot modify permission') unless permission_change_valid
         end
@@ -143,6 +170,11 @@ module CartoDB
         data = repository.fetch(id)
         raise KeyError if data.nil?
         self.attributes = data
+        self.name_changed = false
+        self.privacy_changed = false
+        self.description_changed = false
+        self.permission_change_valid = true
+        validator.reset
         self
       end
 
@@ -159,6 +191,8 @@ module CartoDB
           end
         end
 
+        unlink_self_from_list!
+
         support_tables.delete_all
 
         invalidate_varnish_cache
@@ -166,7 +200,12 @@ module CartoDB
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         safe_sequel_delete { map.destroy } if map
-        safe_sequel_delete { table.destroy } if (type == CANONICAL_TYPE && table && !from_table_deletion)
+        safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
+        safe_sequel_delete { children.map { |child|
+                                            # Refetch each item before removal so Relator reloads prev/next cursors
+                                            child.fetch.delete
+                                          }
+        }
         safe_sequel_delete { permission.destroy } if permission
         safe_sequel_delete { repository.delete(id) }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
@@ -276,7 +315,8 @@ module CartoDB
       end
 
       def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
+        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY, \
+                                CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
       end
 
       def varnish_key
@@ -289,17 +329,23 @@ module CartoDB
       end
 
       def derived?
-        type == DERIVED_TYPE
+        type == TYPE_DERIVED
       end
 
       def table?
-        type == CANONICAL_TYPE
+        type == TYPE_CANONICAL
       end
 
+      def type_slide?
+        type == TYPE_SLIDE
+      end
+
+      # TODO: Check if for type slide should return true also
       def dependent?
         derived? && single_data_layer?
       end
 
+      # TODO: Check if for type slide should return true also
       def non_dependent?
         derived? && !single_data_layer?
       end
@@ -310,11 +356,12 @@ module CartoDB
 
       def invalidate_varnish_cache
         CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+        parent.invalidate_varnish_cache unless parent_id.nil?
       end
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-        if type != CANONICAL_TYPE or organization?
+        if type != TYPE_CANONICAL or organization?
           save_named_map
         end
       end
@@ -387,6 +434,78 @@ module CartoDB
         !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
       end
 
+      # @param other_vis CartoDB::Visualization::Member|nil
+      # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
+      def set_next_list_item!(other_vis)
+        repository.transaction do
+          close_list_gap(other_vis)
+
+          # Now insert other_vis after self
+          unless other_vis.nil?
+            if self.next_id.nil?
+              other_vis.next_id = nil
+            else
+              other_vis.next_id = self.next_id
+              next_item = next_list_item
+              next_item.prev_id = other_vis.id
+              next_item.store
+            end
+            self.next_id = other_vis.id
+            other_vis.prev_id = self.id
+            other_vis.store
+                     .fetch
+          end
+
+          store
+        end
+
+        fetch
+      end
+
+      # @param other_vis CartoDB::Visualization::Member|nil
+      # Note: Changes state both of self, other_vis and other affected list items, but only reloads self & other_vis
+      def set_prev_list_item!(other_vis)
+        repository.transaction do
+          close_list_gap(other_vis)
+
+          # Now insert other_vis after self
+          unless other_vis.nil?
+            if self.prev_id.nil?
+              other_vis.prev_id = nil
+            else
+              other_vis.prev_id = self.prev_id
+              prev_item = prev_list_item
+              prev_item.next_id = other_vis.id
+              prev_item.store
+            end
+            self.prev_id = other_vis.id
+            other_vis.next_id = self.id
+            other_vis.store
+                     .fetch
+          end
+
+          store
+        end
+        fetch
+      end
+
+      def unlink_self_from_list!
+        repository.transaction do
+          unless self.prev_id.nil?
+            prev_item = prev_list_item
+            prev_item.next_id = self.next_id
+            prev_item.store
+          end
+          unless self.next_id.nil?
+            next_item = next_list_item
+            next_item.prev_id = self.prev_id
+            next_item.store
+          end
+          self.prev_id = nil
+          self.next_id = nil
+        end
+      end
+
       # @param user_id String UUID of the actor that likes the visualization
       # @throws AlreadyLikedError
       def add_like_from(user_id)
@@ -412,12 +531,48 @@ module CartoDB
         !(likes.select { |like| like.actor == user_id }.first.nil?)
       end
 
+      # @param viewer_user User
+      def qualified_name(viewer_user=nil)
+        if viewer_user.nil? || is_owner?(viewer_user)
+          name
+        else
+          "#{user.sql_safe_database_schema}.#{name}"
+        end
+      end
+
       attr_accessor :register_table_only
 
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
+
+      def close_list_gap(other_vis)
+        reload_self = false
+
+        if other_vis.nil?
+          self.next_id = nil
+          old_prev = nil
+          old_next = nil
+        else
+          old_prev = other_vis.prev_list_item
+          old_next = other_vis.next_list_item
+        end
+
+        # First close gap left by other_vis
+        unless old_prev.nil?
+          old_prev.next_id = old_next.nil? ? nil : old_next.id
+          old_prev.store
+          reload_self |= old_prev.id == self.id
+        end
+        unless old_next.nil?
+          old_next.prev_id = old_prev.nil? ? nil : old_prev.id
+          old_next.store
+          reload_self |= old_next.id == self.id
+        end
+
+        fetch if reload_self
+      end
 
       def do_store(propagate_changes=true)
         if password_protected?
@@ -427,7 +582,7 @@ module CartoDB
         end
 
         # Warning: imports create by default private canonical visualizations
-        if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
+        if type != TYPE_CANONICAL && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
         end
 
@@ -452,7 +607,7 @@ module CartoDB
           permission.clear
         end
 
-        if type == CANONICAL_TYPE
+        if type == TYPE_CANONICAL
           if organization?
             save_named_map
           end
@@ -520,7 +675,7 @@ module CartoDB
       end
 
       def propagate_privacy_to(table)
-        if type == CANONICAL_TYPE
+        if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
             .set_from(self)
             .propagate_to_redis_and_varnish

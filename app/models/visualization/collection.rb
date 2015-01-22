@@ -8,7 +8,6 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
-
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -28,7 +27,7 @@ module CartoDB
       # 'exclude_shared' and
       # 'only_shared' are other filtes applied
       # 'only_liked'
-      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id }
+      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id parent_id}
 
       # Keys in this list are the only filters that should be kept for calculating totals (if present)
       FILTERS_ALLOWED_AT_TOTALS = [ :type, :user_id, :unauthenticated ]
@@ -92,6 +91,10 @@ module CartoDB
         self
       end
 
+      def delete_if(&block)
+        collection.delete_if(&block)
+      end
+
       # This method is not used for anything but called from the DataRepository::Collection interface above
       def store
         self
@@ -137,6 +140,7 @@ module CartoDB
         map { |member| member.to_hash(related: false, table_data: true) }
       end
 
+      # Warning, this is a cached count, do not use if adding/removing collection items
       # @throws KeyError
       def total_shared_entries(raise_on_error = false)
         total = 0

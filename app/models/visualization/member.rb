@@ -154,7 +154,15 @@ module CartoDB
         end
 
         if type_slide?
-          validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
+          if parent_id.nil?
+            validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
+          else
+            begin
+              Member.new(id:parent_id).fetch
+            rescue KeyError
+              validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} has non-existing parent id")
+            end
+          end
         else
           validator.errors.store(:parent_id, "Type #{type} must not have parent") unless parent_id.nil?
         end

@@ -2,13 +2,7 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-.ChangePrivacyList {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(stretch);
-  @include align-content(space-between, justify);
-}
-.ChangePrivacyList-item {
+.OptionCard {
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(flex-start);
@@ -19,27 +13,38 @@
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
   background-color: $cStructure-mainBkg;
-  width: 25%; // Assumes that there are exatly 4 items
+  width: 220px;
 }
-.ChangePrivacyList-item.is-disabled {
+.OptionCard.is-disabled {
   background-color: $cStructure-grayBkg;
   @include opacity(0.4);
 }
-.ChangePrivacyList-item.is-selected {
+.OptionCard.is-selected {
   border-color: $cCard-selectedBorder;
+  background-color: $cCard-selectedFill;
   cursor: default;
 }
-.ChangePrivacyList-item:not(.is-disabled):not(.is-selected):hover {
-  border-color: $cCard-hoverBorder;
+.OptionCard:not(.is-disabled):not(.is-selected):hover {
+  border-color: $cCard-selectedBorder;
   background-color: $cCard-hoverFill;
   cursor: pointer;
 }
-.ChangePrivacyList-item:not(:last-child) {
+.OptionCard:not(:last-child) {
   margin-right: $sMargin-element;
 }
-.ChangePrivacyList-item > *:first-child {
+.OptionCard > *:first-child {
   margin-bottom: $sMargin-elementInline;
 }
-.ChangePrivacyList-item > *:not(:first-child) {
+.OptionCard > *:not(:first-child) {
   margin-bottom: $sMargin-min;
+}
+.OptionCard-title {
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+}
+.OptionCard-desc {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
 }

@@ -22,7 +22,7 @@ module CartoDB
         self.layer      = layer
         self.options    = options
         self.append_mode = false
-        self.csv_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
+        self.ogr2ogr2_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
       end
@@ -40,7 +40,7 @@ module CartoDB
       end
 
       def executable_path
-        is_csv? ? `#{csv_binary}`.strip : `#{DEFAULT_BINARY}`.strip
+        (is_csv? || is_geojson?) ? `#{ogr2ogr2_binary}`.strip : `#{DEFAULT_BINARY}`.strip
       end
 
       def command
@@ -61,10 +61,14 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :csv_binary, :csv_guessing, :quoted_fields_guessing
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :csv_guessing, :quoted_fields_guessing
 
       def is_csv?
         filepath =~ /\.csv$/i
+      end
+
+      def is_geojson?
+        filepath =~ /\.geojson$/i
       end
 
       def guessing_option

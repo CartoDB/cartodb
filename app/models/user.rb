@@ -520,7 +520,7 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::DERIVED_TYPE)
+  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::TYPE_DERIVED)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
@@ -534,7 +534,7 @@ class User < Sequel::Model
   def map_tags
     require_relative './visualization/tags'
     CartoDB::Visualization::Tags.new(self).names({
-       type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+       type: CartoDB::Visualization::Member::TYPE_CANONICAL,
        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
   end #map_tags
@@ -546,7 +546,7 @@ class User < Sequel::Model
   def tables_including_shared
     CartoDB::Visualization::Collection.new.fetch(
         user_id: self.id,
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        type: CartoDB::Visualization::Member::TYPE_CANONICAL
     ).map { |item|
       item.table
     }
@@ -1152,7 +1152,7 @@ class User < Sequel::Model
   # Only returns owned tables (not shared ones)
   def table_count(filters={})
     filters.merge!(
-      type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
       exclude_shared: true
     )
 
@@ -1174,7 +1174,7 @@ class User < Sequel::Model
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true

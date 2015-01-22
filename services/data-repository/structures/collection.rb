@@ -30,6 +30,11 @@ module DataRepository
       self
     end #delete
 
+    def delete_if(&block)
+      storage.delete_if(&block)
+      self
+    end
+
     def each(&block)
       return storage.each(&block)
       Enumerator.new(self, :each)

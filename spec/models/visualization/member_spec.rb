@@ -2,6 +2,7 @@
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
+require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../doubles/support_tables.rb'
@@ -10,9 +11,11 @@ include CartoDB
 
 describe Visualization::Member do
   before do
-    memory = DataRepository.new
-    Visualization.repository  = memory
-    Overlay.repository        = memory
+    @db = Rails::Sequel.connection
+    Sequel.extension(:pagination)
+
+    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Overlay.repository        = DataRepository.new # In-memory storage
   end
 
   before(:each) do
@@ -43,7 +46,7 @@ describe Visualization::Member do
   describe '#store' do
 
     it 'should fail if no user_id attribute present' do
-      attributes  = random_attributes
+      attributes  = random_attributes_for_vis_member(user_id: @user_mock.id)
       attributes.delete(:user_id)
       member      = Visualization::Member.new(attributes)
       expect {
@@ -52,7 +55,7 @@ describe Visualization::Member do
     end
 
     it 'persists attributes to the data repository' do
-      attributes  = random_attributes
+      attributes  = random_attributes_for_vis_member(user_id: @user_mock.id)
       member      = Visualization::Member.new(attributes)
       member.store
 
@@ -86,7 +89,7 @@ describe Visualization::Member do
       relation    = "visualizations_#{relation_id}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
       Visualization::Migrator.new(db).migrate(relation)
-      attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
+      attributes  = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes, repository)
       member.store
       
@@ -99,7 +102,7 @@ describe Visualization::Member do
     end
 
     it 'persists tags as JSON if the backend does not support arrays' do
-      attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
+      attributes  = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes)
       member.store
 
@@ -110,7 +113,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache in varnish if name changed' do
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
@@ -125,7 +128,7 @@ describe Visualization::Member do
       # Need to at least have this decorated in the user data or checks before becoming private will raise an error
       CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
       
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
@@ -135,7 +138,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache in varnish if description changed' do
-      member      = Visualization::Member.new(random_attributes)
+      member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
@@ -147,7 +150,7 @@ describe Visualization::Member do
 
   describe '#fetch' do
     it 'fetches attributes from the data repository' do
-      attributes  = random_attributes
+      attributes  = random_attributes_for_vis_member(user_id: @user_mock.id)
       member      = Visualization::Member.new(attributes).store
       member      = Visualization::Member.new(id: member.id)
       member.name = 'changed'
@@ -158,7 +161,9 @@ describe Visualization::Member do
 
   describe '#delete' do
     it 'deletes this member data from the data repository' do
-      member = Visualization::Member.new(random_attributes).store
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
+
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id)).store
       member.fetch
       member.name.should_not be_nil
 
@@ -169,7 +174,8 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache' do
-      member      = Visualization::Member.new(random_attributes)
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
+      member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
       member.expects(:invalidate_varnish_cache)
@@ -179,7 +185,7 @@ describe Visualization::Member do
 
   describe '#unlink_from' do
     it 'invalidates varnish cache' do
-      member = Visualization::Member.new(random_attributes).store
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id)).store
       member.expects(:invalidate_varnish_cache)
       member.expects(:remove_layers_from)
       member.unlink_from(Object.new)
@@ -233,7 +239,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE,
+          type: Visualization::Member::TYPE_CANONICAL,
           user_id: @user.id
       )
       visualization.store
@@ -335,34 +341,52 @@ describe Visualization::Member do
 
   describe '#derived?' do
     it 'returns true if type is derived' do
-      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.derived?.should be_true
       visualization.table?.should be_false
+      visualization.type_slide?.should be_false
 
       visualization.type = 'bogus'
       visualization.derived?.should be_false
       visualization.table?.should be_false
+      visualization.type_slide?.should be_false
     end
-  end #derived?
+  end
 
   describe '#table?' do
     it "returns true if type is 'table'" do
-      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_CANONICAL)
       visualization.derived?.should be_false
       visualization.table?.should be_true
+      visualization.type_slide?.should be_false
 
       visualization.type = 'bogus'
       visualization.derived?.should be_false
       visualization.table?.should be_false
+      visualization.type_slide?.should be_false
     end
-  end #table?
+  end
+
+  describe '#type_slide?' do
+    it "returns true if type is 'slide'" do
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_SLIDE)
+      visualization.derived?.should be_false
+      visualization.table?.should be_false
+      visualization.type_slide?.should be_true
+
+      visualization.type = 'bogus'
+      visualization.derived?.should be_false
+      visualization.table?.should be_false
+      visualization.type_slide?.should be_false
+    end
+  end
 
   describe '#password' do
     it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
       password_value = '123456'
       password_second_value = '456789'
 
-      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
 
       visualization.password = password_value
@@ -396,7 +420,7 @@ describe Visualization::Member do
     it 'checks different privacy options to make sure exceptions are raised when they should' do
       user_id = UUIDTools::UUID.timestamp_create.to_s
 
-      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.name = 'test'
       visualization.user_id = user_id
 
@@ -424,7 +448,7 @@ describe Visualization::Member do
 
       # -------------
 
-      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_CANONICAL)
       visualization.name = 'test'
       visualization.user_id = user_id
       # No private maps allowed
@@ -446,7 +470,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name:     'test',
-          type:     Visualization::Member::CANONICAL_TYPE,
+          type:     Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
       visualization.user_data = { actions: { private_maps: true } }
@@ -479,7 +503,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_LINK,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE,
+          type: Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
       visualization.user_data = { actions: { private_maps: false } }
@@ -503,7 +527,7 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
-          type: Visualization::Member::CANONICAL_TYPE,
+          type: Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
 
@@ -513,19 +537,17 @@ describe Visualization::Member do
       user_mock.stubs(:private_tables_enabled).returns(false)
       visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_PUBLIC
     end
-  end #default_privacy_values
+  end
 
-  describe '#permissions' do
-    it 'should not allow to change permission from the outside' do
-      @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
-      member = Visualization::Member.new(random_attributes({user_id: @user.id}))
-      member.store
-      member = Visualization::Member.new(id: member.id).fetch
-      member.permission.should_not be nil
-      member.permission_id = UUIDTools::UUID.timestamp_create.to_s
-      member.valid?.should eq false
-      @user.destroy
-    end
+  it 'should not allow to change permission from the outside' do
+    @user = create_user(:quota_in_bytes => 1234567890, :table_quota => 400)
+    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: @user.id}))
+    member.store
+    member = Visualization::Member.new(id: member.id).fetch
+    member.permission.should_not be nil
+    member.permission_id = UUIDTools::UUID.timestamp_create.to_s
+    member.valid?.should eq false
+    @user.destroy
   end
 
   describe '#likes' do
@@ -538,7 +560,7 @@ describe Visualization::Member do
       user_id_3 = UUIDTools::UUID.timestamp_create.to_s
       user_id_4 = UUIDTools::UUID.timestamp_create.to_s
 
-      member = Visualization::Member.new(random_attributes({user_id: user_id}))
+      member = Visualization::Member.new(random_attributes_for_vis_member({user_id: user_id}))
       member.store.fetch
 
       member.likes.count.should eq 0
@@ -584,21 +606,392 @@ describe Visualization::Member do
     end
   end
 
-  def random_attributes(attributes={})
-    random = UUIDTools::UUID.timestamp_create.to_s
-    {
-      name:         attributes.fetch(:name, "name #{random}"),
-      description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
-      tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
-      user_id:      attributes.fetch(:user_id, @user_mock.id),
-      active_layer_id: random,
-      title:        attributes.fetch(:title, ''),
-      source:       attributes.fetch(:source, ''),
-      license:      attributes.fetch(:license, ''),
-      kind:         attributes.fetch(:kind, Visualization::Member::KIND_GEOM)
-    }
-  end #random_attributes
-end # Visualization
+  it 'checks that slides can have a parent_id' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    expected_errors = { parent_id: 'Type slide must have a parent' }
+
+    member = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                          type: Visualization::Member::TYPE_DERIVED }))
+    member.store
+
+    member = Visualization::Member.new(id: member.id).fetch
+    member.parent_id.should be nil
+    member.parent.should be nil
+
+    child_member = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                                type: Visualization::Member::TYPE_SLIDE }))
+    # Can't save a children of type slide without parent_id
+    expect {
+      child_member.store
+    }.to raise_exception InvalidMember
+    child_member.valid?.should eq false
+    child_member.errors.should eq expected_errors
+
+    child_member = Visualization::Member.new(random_attributes_for_vis_member({
+      user_id: @user_mock.id,
+      type:       Visualization::Member::TYPE_SLIDE,
+      parent_id:  member.id
+    }))
+    child_member.store
+
+    child_member = Visualization::Member.new(id: child_member.id).fetch
+    child_member.type.should eq Visualization::Member::TYPE_SLIDE
+    child_member.parent_id.should eq member.id
+    child_member.parent.id.should eq member.id
+
+    expect {
+      table_member = Visualization::Member.new(
+        random_attributes_for_vis_member({
+                                           user_id: @user_mock.id,
+                                           type: Visualization::Member::TYPE_CANONICAL,
+                                           parent_id: member.id
+                                         }))
+      table_member.store
+    }.to raise_exception CartoDB::InvalidMember
+    expect {
+      table_member = Visualization::Member.new(
+        random_attributes_for_vis_member({
+                                           user_id: @user_mock.id,
+                                           type:       Visualization::Member::TYPE_DERIVED,
+                                           parent_id:  member.id
+                                         }))
+      table_member.store
+    }.to raise_exception CartoDB::InvalidMember
+  end
+
+  it 'tests transition_options field jsonification' do
+    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+    transition_options = { first: true, second: 6 }
+
+    member = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                          transition_options: transition_options }))
+
+    member.transition_options.should eq transition_options
+    member.slide_transition_options.should eq ::JSON.dump(transition_options)
+
+    transition_options[:third] = 'testing'
+
+    member.transition_options = transition_options
+
+    member.transition_options.should eq transition_options
+    member.slide_transition_options.should eq ::JSON.dump(transition_options)
+
+    member = member.store.fetch
+    member.transition_options.should eq transition_options
+    member.slide_transition_options.should eq ::JSON.dump(transition_options)
+  end
+
+  describe '#linked_list_tests' do
+    it 'checks set_next! and unlink_self_from_list! on visualizations when set' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'A',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_a = member_a.store.fetch
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'B',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_b = member_b.store.fetch
+      member_c = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'C',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_c = member_c.store.fetch
+      member_d = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'D',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_d = member_d.store.fetch
+
+      # A
+      member_a.prev_id.should eq nil
+      member_a.prev_list_item.should eq nil
+      member_a.next_id.should eq nil
+      member_a.next_list_item.should eq nil
+
+      # A -> B
+      member_a.set_next_list_item! member_b
+
+      member_a.next_list_item.should eq member_b
+      member_a.prev_list_item.should eq nil
+      member_b.prev_list_item.should eq member_a
+      member_b.next_list_item.should eq nil
+
+      # A -> B -> C
+      member_b.set_next_list_item! member_c
+
+      # set_next reloads "actor and subject", but other affected items need to be reloaded
+      member_a.fetch
+
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_b
+      member_b.prev_list_item.should eq member_a
+      member_b.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_b
+      member_c.next_list_item.should eq nil
+
+      # A -> D -> B -> C
+      member_a.set_next_list_item! member_d
+
+      member_b.fetch
+      member_c.fetch
+
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_b
+      member_b.prev_list_item.should eq member_d
+      member_b.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_b
+      member_c.next_list_item.should eq nil
+
+      member_a.next_list_item.next_list_item.should eq member_b
+      member_a.next_list_item.next_list_item.next_list_item.should eq member_c
+      member_a.next_list_item.next_list_item.next_list_item.next_list_item.should eq nil
+
+      # A -> D -> C
+      member_b.delete
+      # triggers unlink_self_from_list! inside, should reorder remaining items
+
+      member_c.fetch
+      member_d.fetch
+
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_d
+      member_c.next_list_item.should eq nil
+
+      # D -> C
+      member_a.delete
+
+      member_d.fetch
+
+      member_d.prev_list_item.should eq nil
+      member_d.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_d
+      member_c.next_list_item.should eq nil
+
+      # D
+      member_c.delete
+
+      member_d.fetch
+
+      member_d.prev_list_item.should eq nil
+      member_d.next_list_item.should eq nil
+
+      member_d.delete
+    end
+
+    it 'checks reordering visualizations items' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'A',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_a = member_a.store.fetch
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'B',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_b = member_b.store.fetch
+      member_c = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'C',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_c = member_c.store.fetch
+      member_d = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'D',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_d = member_d.store.fetch
+      member_e = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'E',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_e = member_e.store.fetch
+
+      # A -> B
+      member_a.set_next_list_item! member_b
+      # A -> B -> C
+      member_b.set_next_list_item! member_c
+      member_a.fetch
+      # A -> B -> C -> D
+      member_c.set_next_list_item! member_d
+      member_a.fetch
+      member_b.fetch
+      # A -> B -> C -> D -> E
+      member_d.set_next_list_item! member_e
+      member_a.fetch
+      member_b.fetch
+      member_c.fetch
+
+      member_a.prev_list_item.should eq nil
+      member_a.next_list_item.should eq member_b
+      member_b.prev_list_item.should eq member_a
+      member_b.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_b
+      member_c.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_c
+      member_d.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_d
+      member_e.next_list_item.should eq nil
+
+      # Actual reordering starts here
+      # -----------------------------
+
+      # B -> A -> C -> D -> E
+      member_b.set_next_list_item! member_a
+
+      member_c.fetch
+
+      member_b.prev_list_item.should eq nil
+      member_b.next_list_item.should eq member_a
+      member_a.prev_list_item.should eq member_b
+      member_a.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_a
+      member_c.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_c
+      member_d.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_d
+      member_e.next_list_item.should eq nil
+
+      # B -> A -> D -> E -> C
+      member_e.set_next_list_item! member_c
+
+      member_a.fetch
+      member_d.fetch
+
+      member_b.prev_list_item.should eq nil
+      member_b.next_list_item.should eq member_a
+      member_a.prev_list_item.should eq member_b
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_d
+      member_e.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_e
+      member_c.next_list_item.should eq nil
+
+      # B -> E -> A -> D -> C
+
+      member_b.set_next_list_item! member_e
+
+      member_a.fetch
+      member_c.fetch
+      member_d.fetch
+
+      member_b.prev_list_item.should eq nil
+      member_b.next_list_item.should eq member_e
+      member_e.prev_list_item.should eq member_b
+      member_e.next_list_item.should eq member_a
+      member_a.prev_list_item.should eq member_e
+      member_a.next_list_item.should eq member_d
+      member_d.prev_list_item.should eq member_a
+      member_d.next_list_item.should eq member_c
+      member_c.prev_list_item.should eq member_d
+      member_c.next_list_item.should eq nil
+
+      # Cleanup
+      member_a.delete
+      member_b.fetch
+      member_b.delete
+      member_c.fetch
+      member_c.delete
+      member_d.fetch
+      member_d.delete
+      member_e.fetch
+      member_e.delete
+    end
+
+    it 'checks that upon destruction children are destroyed too' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      support_tables_mock = Doubles::Visualization::SupportTables.new
+      Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+
+      starting_collection_count = Visualization::Collection.new.fetch.count
+
+      parent = Visualization::Member.new(random_attributes_for_vis_member({
+                                                             user_id: @user_mock.id,
+                                                             name: 'PARENT',
+                                                             type: Visualization::Member::TYPE_DERIVED
+                                                           })).store
+
+      child1 = Visualization::Member.new(random_attributes_for_vis_member({
+                                                             user_id: @user_mock.id,
+                                                             name: 'CHILD 1',
+                                                             type: Visualization::Member::TYPE_SLIDE,
+                                                             parent_id:  parent.id
+                                                           })).store.fetch
+      child2 = Visualization::Member.new(random_attributes_for_vis_member({
+                                                             user_id: @user_mock.id,
+                                                             name: 'CHILD 2',
+                                                             type: Visualization::Member::TYPE_SLIDE,
+                                                             parent_id:  parent.id
+                                                           })).store.fetch
+
+      child2.set_prev_list_item!(child1)
+      parent.fetch
+
+      parent.delete
+
+      Visualization::Collection.new.fetch.count.should eq starting_collection_count
+    end
+
+    it 'checks transactional wrappings for prev-next' do
+      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'A',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_a = member_a.store.fetch
+      member_b = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                                                              name:'B',
+                                                                              type: Visualization::Member::TYPE_DERIVED }))
+      member_b = member_b.store.fetch
+
+      # trick to not stub but also check that validator and other internal fields are reset upon fetch, etc.
+      member_b.privacy = 'invalid value'
+
+      expect {
+        member_a.set_next_list_item! member_b
+      }.to raise_error
+
+      member_a.fetch
+      member_b.fetch
+      member_a.next_id.should eq nil
+      member_b.prev_id.should eq nil
+      member_b.privacy.should eq Visualization::Member::PRIVACY_PUBLIC
+
+
+      member_b.privacy = 'invalid value'
+
+      expect {
+        member_b.set_prev_list_item! member_a
+      }.to raise_error
+
+      member_a.fetch
+      member_b.fetch
+      member_a.next_id.should eq nil
+      member_b.prev_id.should eq nil
+      member_b.privacy.should eq Visualization::Member::PRIVACY_PUBLIC
+
+
+      member_a.set_next_list_item! member_b
+      member_a.privacy = 'invalid value'
+
+      CartoDB::Visualization::Relator.any_instance.stubs(:next_list_item) do
+        raise "Forced error"
+      end
+
+      expect {
+        member_a.unlink_self_from_list!
+      }.to raise_error
+
+      member_a = member_a.fetch
+      member_b = member_b.fetch
+      member_a.next_id.should eq member_b.id
+      member_b.prev_id.should eq member_a.id
+    end
+  end
+
+end
 

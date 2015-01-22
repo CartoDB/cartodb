@@ -264,7 +264,7 @@ var Vis = cdb.core.View.extend({
         if (o.visible === false) {
           subLayer.model.set('visible', false);
           if (this.timeSlider) {
-            timeSlider.hide();
+            this.timeSlider.hide();
           }
         }
       } else {

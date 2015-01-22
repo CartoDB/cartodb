@@ -17,6 +17,7 @@
 * Added `total_user_entries` to viz endpoint, to know the total amount of own visualizations/tables/both (shared don't count). If unauthenticated counts only public items.
 * Added Mailchimp 'members count' info [#1701](https://github.com/CartoDB/cartodb/issues/1701)
 * Added slides support for visualization
+* Added guessing of types for geojson (boolean and dates) via ogr2ogr2 [#1036](https://github.com/CartoDB/cartodb/issues/1036). Update `ogr2ogr2-static-bin` package for this to work
 
 3.7.1 (2014-12-30)
 ------------------

@@ -7,13 +7,13 @@
 
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
-  root :to => 'admin/pages#public'
+  get   '/(u/:user_domain)'                 => 'admin/pages#public', as: :root
 
   get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login
   get   '(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
-  match '/status' => 'home#app_status'
+  match '(/u/:user_domain)/status'          => 'home#app_status'
 
   # OAuth
   match '(/u/:user_domain)/oauth/authorize'      => 'oauth#authorize',     as: :authorize
@@ -214,7 +214,7 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
     get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_datasets_tag
     get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_datasets_tag_page
-    get '/sitemap.xml'              => 'pages#sitemap',  as: :public_sitemap
+    get '/sitemap.xml'                               => 'pages#sitemap',  as: :public_sitemap
     # Public tables
     get '(/u/:user_domain)/tables/:id/'              => 'visualizations#show',            as: :public_tables_show,      constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     get '(/u/:user_domain)/tables/:id'               => 'visualizations#show',            as: :public_tables_show_bis,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }

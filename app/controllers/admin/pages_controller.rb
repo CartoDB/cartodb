@@ -288,6 +288,8 @@ class Admin::PagesController < ApplicationController
   end
 
   def belongs_to_organization
+    return unless CartoDB.subdomains_allowed?
+
     user_or_org_domain = CartoDB.extract_real_subdomain(request)
     user_domain = CartoDB.extract_subdomain(request)
     user = User.where(username: user_domain).first

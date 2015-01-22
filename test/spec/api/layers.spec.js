@@ -270,6 +270,31 @@ describe('api.layers', function() {
         }, wait);
       });
 
+      it("should not add a torque layer timeslider if steps are not greather than 1", function(done) {
+        var layer;
+        var s = sinon.spy();
+        
+        cartodb.createLayer(map, {
+          updated_at: 'jaja',
+          layers: [
+            null,
+            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
+            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 1;} #test { marker-width: 10; }'}, infowindow: null }
+          ]
+        }, { layerIndex: 2 }, s).done(function(lyr) {
+          layer = lyr;
+        }).addTo(map)
+
+        var wait = 500;
+        if (!map.getContainer) wait = 2500;
+
+        setTimeout(function() {
+          if (map.getContainer) expect($(map.getContainer()).find('.cartodb-timeslider').length).toBe(0)
+          if (map.getDiv)       expect($(map.getDiv()).find('.cartodb-timeslider').length).toBe(0)
+          done()
+        }, wait);
+      });
+
       it("should add cartodb logo with torque layer although it is not defined", function(done) {
         var layer;
         var s = sinon.spy();

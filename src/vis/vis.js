@@ -292,7 +292,7 @@ var Vis = cdb.core.View.extend({
 
   addTimeSlider: function(torqueLayer) {
     // if a timeslides already exists don't create it again
-    if (torqueLayer && !this.timeSlider) {
+    if (torqueLayer && (torqueLayer.options.steps > 1) && !this.timeSlider) {
       var self = this;
       // dont use add overlay since this overlay is managed by torque layer
       var timeSlider = Overlay.create('time_slider', this, { layer: torqueLayer });

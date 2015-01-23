@@ -75,7 +75,7 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
+    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local? or Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
     if @visualization.user.has_organization? && !request.params[:redirected].present?

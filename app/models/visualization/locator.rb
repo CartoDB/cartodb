@@ -9,7 +9,7 @@ module CartoDB
     class Locator
       def initialize(user_model=nil)
         @user_model   = user_model  || ::User
-      end #initialize
+      end
 
       def get(id_or_name, subdomain, filters={})
         user = user_from(subdomain)
@@ -61,7 +61,12 @@ module CartoDB
           name:   name,
           user_id: user.id
         }
-        Visualization::Collection.new.fetch(params.merge(filters)).first
+        # when looking for a visualization using name return the ones that user owns
+        Visualization::Collection.new.fetch(params.merge(filters))
+          .select { |u|
+            u.user_id == user.id
+          }
+          .first
       rescue KeyError
         nil
       end

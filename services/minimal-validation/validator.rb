@@ -3,12 +3,16 @@
 module MinimalValidator
   class Validator
     def initialize
+      reset
+    end
+
+    def reset
       self.errors = {}
-    end #initialize
+    end
 
     def valid?
       errors.empty?
-    end #valid?
+    end
 
     def validate_presence_of(attributes)
       attributes.each do |attribute, value|
@@ -16,7 +20,7 @@ module MinimalValidator
           errors.store(attribute.to_sym, "can't be blank")
         end
       end
-    end #validate_presence_of
+    end
 
     def validate_presence_of_with_custom_message(attributes, custom_message)
       has_errors = false
@@ -26,31 +30,31 @@ module MinimalValidator
         end
       end
       errors.store(custom_message) if has_errors
-    end #validate_presence_of_with_custom_message
+    end
 
     def validate_available_name
       return self unless name_changed && user
-    end #validate_available_name
+    end
 
     def validate_in(attribute, value, whitelist)
       unless whitelist.include?(value)
         errors.store(attribute, "must be one of #{whitelist.join(', ')}")
       end
-    end #validate_in
+    end
 
     def validate_uniqueness_of(attribute, available)
       self.errors.store(attribute.to_sym, 'is already taken') unless available
-    end #validate_uniqueness_of
+    end
 
     def validate_expected_value(attribute, expected_value, actual_value)
       self.errors.store(attribute.to_sym, 'has invalid value') unless actual_value == expected_value
-    end #validate_expected_value
+    end
 
     def full_errors
       errors.map { |attribute, message| "#{attribute} #{message}" }
-    end #full_errors
+    end
 
     attr_accessor :errors
-  end # Validator
-end # MinimalValidator
+  end
+end
 

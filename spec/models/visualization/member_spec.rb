@@ -667,7 +667,17 @@ describe Visualization::Member do
                                         }))
     expect {
       child_member.store
-    }.to raise_exception
+    }.to raise_exception CartoDB::InvalidMember
+
+    member_2 = Visualization::Member.new(
+                                         random_attributes_for_vis_member({ user_id: @user_mock.id,
+                                         type: Visualization::Member::TYPE_CANONICAL }))
+    member_2.store.fetch
+    child_member.parent_id = member_2.id
+    expect {
+      child_member.store
+    }.to raise_exception InvalidMember
+
   end
 
   it 'tests transition_options field jsonification' do

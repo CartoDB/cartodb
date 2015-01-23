@@ -66,6 +66,10 @@ body.is-inDialog {
   border-top: 1px solid $cSeparatorBorder;
   min-width: $sLayout-width;
 }
+.Filters.Dialog-bodyFilters {
+  position: relative;
+  background: none;
+}
 .Dialog-footer {
   border-top: 1px solid $cSeparatorBorder;
   padding: $sMargin-group 0;
@@ -79,6 +83,10 @@ body.is-inDialog {
   margin: 0 auto $sMargin-element auto; /* center icon */
   font-size: 22px;
   line-height: 48px;
+}
+.Dialog-headerIcon--main {
+  color: $cHighlight-main;
+  border-color: $cHighlight-main;
 }
 .Dialog-headerIcon--negative {
   color: $cHighlight-negative;
@@ -96,6 +104,7 @@ body.is-inDialog {
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-largest;
+  color: $cTypography-paragraphs;
 }
 .Dialog-headerText {
   font-size: $sFontSize-large;
@@ -105,6 +114,20 @@ body.is-inDialog {
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
+}
+// Expanded dialog
+.Dialog-content--expanded {
+  height: 100%;
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(space-around, stretch);
+  @include align-items(stretch, stretch);
+}
+.Dialog-content--expanded .Dialog-header { @include flex-grow(1) }
+.Dialog-content--expanded .Dialog-body { @include flex-grow(100) }
+.Dialog-content--expanded .Dialog-footer {
+  position: fixed;
+  bottom: 0;
 }
 
 @include keyframes(fade-and-scale-in) {
@@ -158,3 +181,4 @@ body.is-inDialog {
     @include transform(scale(2.0));
   }
 }
+

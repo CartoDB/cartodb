@@ -8,19 +8,26 @@
   @include align-items(stretch);
   @include align-content(space-between, justify);
 }
-.ChangePrivacy-banner {
-  @include align-items(center);
+.ChangePrivacy-upgradeBanner {
   background-color: rgba(#E8F0D6, 0.3);
 }
-.ChangePrivacy-bannerInner {
+.ChangePrivacy-upgradeBannerInner {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   margin: 0 $sMargin-group;
 }
-.ChangePrivacy-bannerIcon {
+.ChangePrivacy-upgradeBannerIcon {
   margin-right: $sMargin-group;
   color: rgba(#ADAFA8, 1);
+}
+.ChangePrivacy-shareBanner {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+}
+.ChangePrivacy-shareBannerIcon {
+  margin-right: $sMargin-elementInline;
 }
 .ChangePrivacy-footer {
   @include display-flex();

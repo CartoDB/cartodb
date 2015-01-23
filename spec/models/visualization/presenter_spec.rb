@@ -130,7 +130,7 @@ describe Visualization::Member do
       parent = Visualization::Member.new(random_attributes_for_vis_member({
                                                                             name:'PARENT',
                                                                             user_id: @user_mock.id,
-                                                                            type: Visualization::Member::TYPE_CANONICAL
+                                                                            type: Visualization::Member::TYPE_DERIVED
                                                                           }))
       parent = parent.store.fetch
 

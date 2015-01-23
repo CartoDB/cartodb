@@ -23,14 +23,10 @@ class SessionsController < ApplicationController
 
     destination_url = dashboard_path(user_domain: user_domain, trailing_slash: true)
 
-    if CartoDB.subdomains_allowed?
-      if user.organization.nil?
-        destination_url = CartoDB.base_url(user.username) << destination_url
-      else
-        destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
-      end
+    if user.organization.nil? || !CartoDB.subdomains_allowed?
+      destination_url = CartoDB.base_url(user.username) << destination_url
     else
-      destination_url = CartoDB.base_url << destination_url
+      destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
     end
 
     redirect_to destination_url

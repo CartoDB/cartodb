@@ -2112,8 +2112,8 @@ TRIGGER
 
   # return public user url -> string
   def public_url
-    subdomain = organization.nil? ? username : organization.name
-    user_name = organization.nil? ? nil : username
+    subdomain = organization.nil? || !CartoDB.subdomains_allowed? ? username : organization.name
+    user_name = organization.nil? || !CartoDB.subdomains_allowed? ? nil : username
 
     CartoDB.base_url(subdomain, user_name)
   end

@@ -6,7 +6,7 @@ class ImportMailer < ActionMailer::Base
     @imported_tables = imported_tables
     @total_tables = total_tables
     @first_table = first_imported_table.nil? ? first_table : first_imported_table
-    organization = user.organization
+    organization = CartoDB.subdomains_allowed? ? user.organization : nil
     subdomain = organization.nil? ? user.username : organization.name
     user_name = organization.nil? ? nil : user.username
     @link = first_imported_table.nil? ? "#{user.public_url}#{tables_index_path}" : "#{CartoDB.base_url(subdomain, user_name)}#{public_tables_show_path(id:@first_table['name'])}"

@@ -78,7 +78,7 @@ class Admin::VisualizationsController < ApplicationController
     return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local? or Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
-    if @visualization.user.has_organization? && !request.params[:redirected].present?
+    if @visualization.user.has_organization? && !request.params[:redirected].present? && CartoDB.subdomains_allowed?
       if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
         redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path( \
             user_domain: @visualization.user.username, \
@@ -167,7 +167,7 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     # Legacy redirect, now all public pages also with org. name
-    if @visualization.user.has_organization? && !request.params[:redirected].present?
+    if @visualization.user.has_organization? && !request.params[:redirected].present? && CartoDB.subdomains_allowed?
       if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
         redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_visualizations_public_map_path( \
             user_domain: @visualization.user.username, \
@@ -401,7 +401,7 @@ class Admin::VisualizationsController < ApplicationController
   def get_corrected_url_if_proceeds(for_table=true)
     url = nil
     org_name = CartoDB.extract_real_subdomain(request)
-    if CartoDB.extract_subdomain(request) != org_name
+    if CartoDB.extract_subdomain(request) != org_name && CartoDB.subdomains_allowed?
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?

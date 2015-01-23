@@ -132,7 +132,7 @@ module CartoDB
         importer = nil
         self.state    = STATE_SYNCING
 
-        @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+        @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id).save
         self.log_id = @log.id
         store
 

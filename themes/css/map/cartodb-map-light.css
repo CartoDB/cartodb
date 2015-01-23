@@ -1,12 +1,6 @@
 /**
  *  CartoDB map style components
  */
-* {
-  -webkit-margin-after:0;
-  -webkit-margin-before:0;
-  -webkit-padding-start:0;
-  -webkit-padding-end:0;
-}
 @-webkit-keyframes loading {
   to { opacity: 1; }
 }

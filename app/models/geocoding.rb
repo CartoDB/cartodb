@@ -19,7 +19,7 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
 
-  attr_accessor :run_timeout, :data_import_id
+  attr_accessor :run_timeout
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]

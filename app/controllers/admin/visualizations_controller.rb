@@ -78,13 +78,11 @@ class Admin::VisualizationsController < ApplicationController
     return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local? or Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
-    if @visualization.user.has_organization? && !request.params[:redirected].present? && CartoDB.subdomains_allowed?
-      if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
-        redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path( \
-            user_domain: @visualization.user.username, \
-            id: "#{params[:id]}", redirected:true) \
-          and return
-      end
+    if eligible_for_redirect?(@visualization.user)
+      redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path( \
+          user_domain: @visualization.user.username, \
+          id: "#{params[:id]}", redirected:true) \
+        and return
     end
 
     @vizjson = @visualization.to_vizjson
@@ -167,13 +165,11 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     # Legacy redirect, now all public pages also with org. name
-    if @visualization.user.has_organization? && !request.params[:redirected].present? && CartoDB.subdomains_allowed?
-      if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
-        redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_visualizations_public_map_path( \
-            user_domain: @visualization.user.username, \
-            id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true) \
-          and return
-      end
+    if eligible_for_redirect?(@visualization.user)
+      redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_visualizations_public_map_path( \
+          user_domain: @visualization.user.username, \
+          id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true) \
+        and return
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -386,6 +382,11 @@ class Admin::VisualizationsController < ApplicationController
 
   private
 
+  def eligible_for_redirect?(user)
+    CartoDB.subdomains_allowed? && user.has_organization? && !request.params[:redirected].present? &&
+      CartoDB.extract_real_subdomain(request) != user.organization.name
+  end
+
   def org_user_has_map_permissions?(user, visualization)
     user && visualization && visualization.organization? &&
       visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
@@ -400,8 +401,11 @@ class Admin::VisualizationsController < ApplicationController
   # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
   def get_corrected_url_if_proceeds(for_table=true)
     url = nil
+
+    return url unless CartoDB.subdomains_allowed?
+
     org_name = CartoDB.extract_real_subdomain(request)
-    if CartoDB.extract_subdomain(request) != org_name && CartoDB.subdomains_allowed?
+    if CartoDB.extract_subdomain(request) != org_name
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?

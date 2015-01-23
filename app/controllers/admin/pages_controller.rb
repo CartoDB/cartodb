@@ -32,11 +32,9 @@ class Admin::PagesController < ApplicationController
     return render_404 if viewed_user.nil?
 
     # Redirect to org url if has only user
-    if viewed_user.has_organization? && CartoDB.subdomains_allowed?
-      if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-        redirect_to CartoDB.base_url(viewed_user.organization.name) <<
-          public_datasets_home_path(user_domain: viewed_user.username) and return
-      end
+    if eligible_for_redirect?(viewed_user)
+      redirect_to CartoDB.base_url(viewed_user.organization.name) <<
+        public_datasets_home_path(user_domain: viewed_user.username) and return
     end
 
     @tags             = viewed_user.tags(true, Visualization::Member::TYPE_CANONICAL)
@@ -99,10 +97,8 @@ class Admin::PagesController < ApplicationController
       visualizations += (org.public_datasets.to_a || [])
     else
       # Redirect to org url if has only user
-      if viewed_user.has_organization? && CartoDB.subdomains_allowed?
-        if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_pathand and return
-        end
+      if eligible_for_redirect?(viewed_user)
+        redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_pathand and return
       end
 
       visualizations = Visualization::Collection.new.fetch({
@@ -146,10 +142,8 @@ class Admin::PagesController < ApplicationController
     return render_404 if viewed_user.nil?
 
     # Redirect to org url if has only user
-    if viewed_user.has_organization? && CartoDB.subdomains_allowed?
-      if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-        redirect_to CartoDB.base_url(viewed_user.organization.name) << "/u/#{viewed_user.username}/" and return
-      end
+    if eligible_for_redirect?(viewed_user)
+      redirect_to CartoDB.base_url(viewed_user.organization.name) << "/u/#{viewed_user.username}/" and return
     end
 
     @tags             = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
@@ -205,6 +199,11 @@ class Admin::PagesController < ApplicationController
   end #public
 
   private
+
+  def eligible_for_redirect?(user)
+    CartoDB.subdomains_allowed? &&user.has_organization? &&
+      CartoDB.extract_real_subdomain(request) != user.organization.name
+  end
 
   def public_organization(organization)
     @organization = organization

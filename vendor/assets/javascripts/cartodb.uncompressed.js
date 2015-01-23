@@ -1,6 +1,6 @@
-// cartodb.js version: 3.11.30
+// cartodb.js version: 3.12.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 766599675a29fb2ecf800860578f8e16acd7eac2
+// sha: de6698d40123c7a4f5268e2b01c4e5b9bd37d326
 (function() {
   var root = this;
 
@@ -3682,13 +3682,6 @@ L.Map = L.Class.extend({
 
 		// TODO looks ugly, refactor
 		if (this.options.zoomAnimation && L.TileLayer && (layer instanceof L.TileLayer)) {
-            if (this._tryAnimatedZoom && this._animatingZoom) {
-              // call _catchTransitionEnd 
-              console.log('_catchTransitionEnd');
-              if (this._nothingToAnimate()) {
-                this._onZoomTransitionEnd();
-              }
-            }
 			this._tileLayersNum--;
 			this._tileLayersToLoad--;
 			layer.off('load', this._onTileLayerLoad, this);
@@ -10591,7 +10584,6 @@ L.PosAnimation = L.Class.extend({
 	_onStep: function () {
 		var stepPos = this._getPos();
 		if (!stepPos) {
-            console.log("!stepPos YOOO");
 			this._onTransitionEnd();
 			return;
 		}
@@ -20728,7 +20720,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.11.30";
+    cdb.VERSION = "3.12.00";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25789,8 +25781,8 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
     if (this.options.slides) {
       this.slides_controller = new cdb.geo.ui.SlidesController({
-        slides: this.options.slides,
-        slides_data: this.options.slides_data
+        transitions: this.options.transitions,
+        slides: this.options.slides
       });
 
       this.$el.append(this.slides_controller.render().$el);
@@ -25965,7 +25957,8 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           m.set('order', i);
           m.set('type', 'layergroup');
 
-          m.set('visible', !layerGroupView.getSubLayer(i).get('hidden'));
+          if (m.get("visible") === undefined) m.set('visible', true);
+
           m.bind('change:visible', function(model) {
             this.trigger("change:visible", model.get('visible'), model.get('order'), model);
           }, self);
@@ -26134,7 +26127,7 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
     "click a": "_onClick",
   },
 
-  template: cdb.core.Template.compile("<a href='#'></a>"),
+  template: cdb.core.Template.compile('<a href="#" class="<%= transition_trigger %>"></a>'),
 
   initialize: function() {
 
@@ -26160,7 +26153,9 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template());
+    var options = _.extend({ transition_trigger: "click" }, this.options.transition_options);
+
+    this.$el.html(this.template(options));
 
     this._onChangeActive();
 
@@ -26171,6 +26166,10 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
 
 cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
+  defaults: {
+    show_counter: false
+  },
+
   events: {
     'click a.next': "_next",
     'click a.prev': "_prev"
@@ -26180,10 +26179,10 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   className: "cartodb-slides-controller",
 
-  template: cdb.core.Template.compile("<div class='slides-controller-content'><a href='#' class='prev'></a><ul></ul><a href='#' class='next'></a></div>"),
+  template: cdb.core.Template.compile("<div class='slides-controller-content'><a href='#' class='prev'></a><% if (show_counter) {%><div class='counter'></div><% } else { %><ul></ul><% } %><a href='#' class='next'></a></div>"),
 
   initialize: function() {
-    this.slidesCount = this.options.slides_data.length + 1;
+    this.slidesCount = this.options.transitions.length;
   },
 
   _prev: function(e) {
@@ -26195,7 +26194,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
     if (currentSlide > 0) {
       currentSlide--;
     } else {
-      currentSlide = this.options.slides_data.length;
+      currentSlide = this.options.transitions.length;
     }
 
     this.options.slides.go(currentSlide)
@@ -26207,7 +26206,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     var currentSlide = this.options.slides.state();
 
-    if (currentSlide <= this.options.slides_data.length - 1) {
+    if (currentSlide <= this.options.transitions.length - 1) {
       currentSlide++;
     } else {
       currentSlide = 0;
@@ -26221,14 +26220,28 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     var currentActiveSlide = this.options.slides.state();
 
-    for (var i = 0; i < this.options.slides_data.length + 1; i++) {
-
-      var item = new cdb.geo.ui.SlidesControllerItem({ num: i, active: i == currentActiveSlide });
+    for (var i = 0; i < this.options.transitions.length; i++) {
+      var item = new cdb.geo.ui.SlidesControllerItem({ num: i, transition_options: this.options.transitions[i], active: i == currentActiveSlide });
       item.bind("onClick", this._onSlideClick, this);
       this.$el.find("ul").append(item.render().$el);
-
     }
 
+  },
+
+  _renderCounter: function() {
+
+    var currentActiveSlide = this.options.slides.state();
+    var currentTransition = this.options.transitions[currentActiveSlide];
+
+    var $counter = this.$el.find(".counter");
+
+    if (currentTransition && currentTransition.transition_trigger === "time") {
+      $counter.addClass("loading");
+    } else {
+      $counter.removeClass("loading");
+    }
+
+    $counter.html((currentActiveSlide + 1) + "/" + this.options.transitions.length)
   },
 
   _onSlideClick: function(slide) {
@@ -26237,10 +26250,18 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template());
+    var options = _.extend(this.defaults, this.options);
 
-    if (this.options.slides) {
-      this._renderDots();
+    this.$el.html(this.template(options));
+
+    if (this.options.slides && this.options.transitions) {
+
+      if (options.show_counter) {
+        this._renderCounter(); // we render: 1/N
+      } else {
+        this._renderDots(); // we render a list of dots
+      }
+
     }
 
     return this;
@@ -26998,7 +27019,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       this.$el.addClass("with-slides");
 
       this.slidesController = new cdb.geo.ui.SlidesController({
-        slides_data: this.options.slides_data,
+        show_counter: true,
+        transitions: this.options.transitions,
         slides: this.options.slides
       });
 
@@ -27891,7 +27913,7 @@ Map.prototype = {
         callback && callback(self.urls);
       } else {
         if ((self.named_map !== null) && (err) ){
-          callback && callback(null, err);      
+          callback && callback(null, err);
         } else if (self.visibleLayers().length === 0) {
           callback && callback({
             tiles: [Map.EMPTY_GIF],
@@ -28321,15 +28343,26 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
       var layer = layers[i];
-      obj.layers.push({
+      var layer_def = {
         type: 'cartodb',
         options: {
           sql: layer.options.sql,
           cartocss: layer.options.cartocss,
           cartocss_version: layer.options.cartocss_version || '2.1.0',
-          interactivity: this._cleanInteractivity(layer.options.interactivity)
         }
-      });
+      };
+
+      if (layer.options.interactivity) {
+        layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
+      }
+
+      if (layer.options.raster) {
+        layer_def.options.geom_column = "the_raster_webmercator";
+        layer_def.options.geom_type = "raster";
+        // raster needs 2.3.0 to work
+        layer_def.options.cartocss_version = layer.options.cartocss_version || '2.3.0';
+      }
+      obj.layers.push(layer_def);
     }
     return obj;
   },
@@ -32678,9 +32711,8 @@ var Vis = cdb.core.View.extend({
       if(subLayer.model && subLayer.model.get('type') === 'torque') {
         if (o.visible === false) {
           subLayer.model.set('visible', false);
-          var timeSlider = this.getOverlay('time_slider');
-          if (timeSlider) {
-            timeSlider.hide();
+          if (this.timeSlider) {
+            this.timeSlider.hide();
           }
         }
       } else {
@@ -32819,7 +32851,8 @@ var Vis = cdb.core.View.extend({
     if (this.mobile) this.cartodb_logo = false;
     else if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true; // We set the logo by default
 
-    var scrollwheel   = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -32932,7 +32965,7 @@ var Vis = cdb.core.View.extend({
 
     this.mapView = mapView;
 
-    if (options.legends) {
+    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) {
       map.layers.bind('reset', this.addLegends, this);
     }
 
@@ -33167,7 +33200,7 @@ var Vis = cdb.core.View.extend({
   _createOverlays: function(overlays, vis_data, options) {
 
     // if there's no header overlay, we need to explicitly create the slide controller
-    if (!this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
       this._addSlideController(vis_data);
     }
 
@@ -33236,9 +33269,12 @@ var Vis = cdb.core.View.extend({
   _addSlideController: function(data) {
 
     if (data.slides && data.slides.length > 0) {
+
+      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
+
       return this.addOverlay({
         type: 'slides_controller',
-        slides: data.slides
+        transitions: transitions
       });
     }
 
@@ -33246,10 +33282,12 @@ var Vis = cdb.core.View.extend({
 
   _addHeader: function(data, vis_data) {
 
+    var transitions = [vis_data.transition_options].concat(_.pluck(vis_data.slides, "transition_options"))
+
     return this.addOverlay({
       type: 'header',
       options: data.options,
-      slides: vis_data.slides
+      transitions: transitions
     });
 
   },
@@ -33270,10 +33308,13 @@ var Vis = cdb.core.View.extend({
         layers = layer.options.named_map.layers;
       }
 
+      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
+
       this.addOverlay({
         type: 'mobile',
         layers: layers,
         slides: data.slides,
+        transitions:transitions,
         overlays: data.overlays,
         options: options,
         torqueLayer: this.torqueLayer
@@ -33977,8 +34018,8 @@ cdb.vis.Overlay.register('logo', function(data, vis) {
 cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 
   var slides_controller = new cdb.geo.ui.SlidesController({
-    slides: vis.slides,
-    slides_data: data.slides
+    transitions: data.transitions,
+    slides: vis.slides
   });
 
   return slides_controller.render();
@@ -34014,6 +34055,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     mapView: vis.mapView,
     overlays: data.overlays,
     slides: vis.slides,
+    transitions: data.transitions,
     slides_data: data.slides,
     layerView: data.layerView,
     visibility_options: data.options,
@@ -34118,8 +34160,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var widget = new cdb.geo.ui.Header({
     model: new cdb.core.Model(options),
+    transitions: data.transitions,
     slides: vis.slides,
-    slides_data: data.slides,
     template: template
   });
 
@@ -34290,19 +34332,18 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
+  var timeSlider = vis.timeSlider;
+  if (timeSlider) {
+    layerSelector.bind('change:visible', function(visible, order, layer) {
+      if (layer.get('type') === 'torque') {
+        timeSlider[visible ? 'show': 'hide']();
+      }
+    });
+  }
   if (vis.legends) {
 
     layerSelector.bind('change:visible', function(visible, order, layer) {
 
-      if (layer.get('type') === 'torque') {
-
-        var timeSlider = vis.getOverlay('time_slider');
-
-        if (timeSlider) {
-          timeSlider[visible ? 'show': 'hide']();
-        }
-
-      }
 
       if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
 

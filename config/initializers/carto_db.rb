@@ -18,7 +18,7 @@ module CartoDB
     request.host.to_s.gsub(self.session_domain, '')
   end
 
-  def self.base_url(subdomain, org_username=nil)
+  def self.base_url(subdomain='', org_username=nil)
     protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
     base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{self.http_port}"
     unless org_username.nil?

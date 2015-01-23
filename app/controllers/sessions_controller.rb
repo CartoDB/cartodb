@@ -17,15 +17,22 @@ class SessionsController < ApplicationController
   def create
     username = extract_username(request, params)
     user = authenticate!(:password, scope: username)
-    CartodbStats.increment_login_counter(params[:email])
+    CartodbStats.increment_login_counter(username)
 
-    destination_url = dashboard_path(user_domain: params[:user_domain], trailing_slash: true)
-    if user.organization.nil?
-      destination_url = CartoDB.base_url(user.username) << destination_url
+    user_domain =   CartoDB.subdomains_allowed? ? params[:user_domain] : user.username
+
+    destination_url = dashboard_path(user_domain: user_domain, trailing_slash: true)
+
+    if CartoDB.subdomains_allowed?
+      if user.organization.nil?
+        destination_url = CartoDB.base_url(user.username) << destination_url
+      else
+        destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
+      end
     else
-      destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
+      destination_url = CartoDB.base_url << destination_url
     end
-    # Removed ATM for multiuser: session[:return_to] || ...
+
     redirect_to destination_url
   end
 
@@ -39,10 +46,12 @@ class SessionsController < ApplicationController
   end
 
   def unauthenticated
-    CartodbStats.increment_failed_login_counter(params[:email])
+    username = extract_username(request, params)
+    CartodbStats.increment_failed_login_counter(username)
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one    
-    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @login_error = (params[:email].blank? && params[:password].blank?) ?
+                    'Can\'t be blank' : 'Your account or your password is not ok'
     respond_to do |format|
       format.html do
         render :action => 'new' and return

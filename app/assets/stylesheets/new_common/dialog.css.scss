@@ -2,6 +2,8 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
+$cSeparatorBorder: rgba(#ddd, 1);
+
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
@@ -61,7 +63,7 @@ body.is-inDialog {
 }
 .Dialog-body {
   padding: $sMargin-group 0;
-  border-top: 1px solid $cTypography-help;
+  border-top: 1px solid $cSeparatorBorder;
   min-width: $sLayout-width;
 }
 .Filters.Dialog-bodyFilters {
@@ -69,7 +71,7 @@ body.is-inDialog {
   background: none;
 }
 .Dialog-footer {
-  border-top: 1px solid $cTypography-help;
+  border-top: 1px solid $cSeparatorBorder;
   padding: $sMargin-group 0;
 }
 .Dialog-headerIcon {

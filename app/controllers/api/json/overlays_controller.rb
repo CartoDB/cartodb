@@ -77,7 +77,7 @@ class Api::Json::OverlaysController < Api::ApplicationController
     vis = Visualization::Member.new(id: params.fetch('visualization_id')).fetch
     head 401 and return if vis.nil?
 
-    head 403 and return if vis.user_id != current_user.id
+    head 403 and return if vis.user_id != current_user.id && !vis.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
   end
 end
 

@@ -118,7 +118,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       next_vis.set_prev_list_item!(vis)
     end
 
-    current_user.update_visualization_metrics
     render_jsonp(vis)
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors }, 400)
@@ -189,7 +188,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     vis = Visualization::Member.new(id: @table_id).fetch
     return(head 403) unless vis.is_owner?(current_user)
     vis.delete
-    current_user.update_visualization_metrics
     return head 204
   rescue KeyError
     head(404)
@@ -550,7 +548,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       total_likes:    collection.total_liked_entries,
       total_shared:   collection.total_shared_entries
     }
-    current_user.update_visualization_metrics
     render_jsonp(response)
   end
 

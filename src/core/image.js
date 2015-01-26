@@ -55,6 +55,8 @@
   ImageModel = cdb.core.Model.extend({
     defaults: {
       format: "png",
+      zoom: 10,
+      center: [0, 0],
       width:  320,
       height: 240
     }
@@ -105,7 +107,7 @@
     this.lastTimeUpdated = null;
     this._refreshTimer = -1;
 
-    this.endpoint = "http://santiago-st.cartodb-staging.com/api/v1/map"; // TODO: replace with the real one
+    this.endpoint = "http://arce.cartodb.com/api/v1/map"; // TODO: replace with the real one
 
   };
 
@@ -113,14 +115,35 @@
 
     load: function(vizjson) {
 
-      this.set("vizjson", vizjson);
+      this.queue = new Queue;
+
+      this.model.set("vizjson", vizjson);
+
+      var self = this;
 
       cdb.image.Loader.get(vizjson, function(data){
 
         if (data) {
+
+          var layer_definition = data.layers[1].options.layer_definition;
+
+          layerDefinition = new LayerDefinition(layer_definition, data.layers[1].options);
+          self.endpoint = "http://" + data.layers[1].options.user_name + ".cartodb.com/api/v1/map";
+
           self.model.set("zoom", data.zoom);
-          self.model.set("center", data.center);
+          self.model.set("center", JSON.parse(data.center));
           self.model.set("bounds", data.bounds);
+
+          //console.log(layerDefinition.toJSON())
+
+          self._requestPOST(layerDefinition.toJSON(), function(data) {
+
+            if (data) {
+              self.model.set("layergroupid", data.layergroupid)
+              self.queue.flush(this);
+            }
+
+          });
         }
 
       });
@@ -137,28 +160,36 @@
 
       this.queue = new Queue;
 
+      var self = this;
+
       layer_definition = {
-        "version": "1.3.0-alpha",
-        "layers": [
-          {
-          "type": "mapnik",
-          "options": {
-            "sql": "select null::geometry the_geom_webmercator",
-            "cartocss": "#layer {\n\tpolygon-fill: #FF3300;\n\tpolygon-opacity: 0;\n\tline-color: #333;\n\tline-width: 0;\n\tline-opacity: 0;\n}",
-            "cartocss_version": "2.2.0"
+        stat_tag: "2b13c956-e7c1-11e2-806b-5404a6a683d5",
+        version: "1.0.1",
+        layers: [{
+          type: "http",
+          options: {
+            urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+            subdomains: [ "a", "b", "c" ]
           }
-        }
-        ]
+        }, 
+        {
+          type: "cartodb",
+          options: {
+            sql: "select * from cities",
+            cartocss: "/** simple visualization */ #cities{ marker-file: url(http://com.cartodb.users-assets.production.s3.amazonaws.com/maki-icons/music-18.svg); marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
+            cartocss_version: "2.1.1"
+          }
+        }]
       };
 
-      var self = this;
+      console.log(layer_definition);
 
       this._requestPOST(layer_definition, function(data) {
 
         if (data) {
 
           self.model.set("layergroupid", data.layergroupid)
-          console.log(data.layergroupid);
+          //console.log(data.layergroupid);
 
           self.queue.flush(this);
         }
@@ -275,8 +306,16 @@
 
     getUrl: function(callback) {
 
+      var self = this;
+
       this.queue.add(function(response) {
-        console.log(response);
+        //console.log(response);
+        //console.log(self.model.attributes)
+
+        var o = [self.endpoint , "static/center" , self.model.get("layergroupid"), self.model.get("zoom"), self.model.get("center")[0], self.model.get("center")[1],self.model.get("width"), self.model.get("height") + "." + self.model.get("format")];
+
+        console.log(o.join("/"));
+
         // document.write goes here
       });
 
@@ -287,7 +326,7 @@
       var self = this;
 
       this.queue.add(function() {
-        console.log(1, self.attributes);
+        console.log(1, self.model.attributes);
         // document.write goes here
       });
 
@@ -304,6 +343,7 @@
     var image = new Image();
 
     //image.load(data);
+
 
     if (typeof data === 'string') {
       image.load(data);

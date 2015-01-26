@@ -10,11 +10,12 @@ class Geocoding < Sequel::Model
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type,
                        :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
-                       :used_credits, :remaining_quota, :country_column]
+                       :used_credits, :remaining_quota, :country_column, :data_import_id]
 
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
+  many_to_one :data_import
 
   attr_reader :table_geocoder
 
@@ -27,7 +28,8 @@ class Geocoding < Sequel::Model
   def validate
     super
     validates_presence :formatter
-    validates_presence :table_id
+    # INFO: since we want to register geocodings during importing we can't register the table
+    # validates_presence :table_id
     validates_includes ALLOWED_KINDS, :kind
   end # validate
 
@@ -69,6 +71,13 @@ class Geocoding < Sequel::Model
     @table_geocoder ||= geocoder_class.new(config)
   end # table_geocoder
 
+  # INFO: table_geocoder method is very coupled to table model, and we want to use this model during imports, without table yet.
+  # this method allows to inject the dependency to the geocoder
+  # TODO: refactor geocoder instantiation out of this class
+  def force_geocoder geocoder
+    @table_geocoder = geocoder
+  end
+
   def cancel
     table_geocoder.cancel
   rescue => e
@@ -78,21 +87,29 @@ class Geocoding < Sequel::Model
   end # cancel
 
   def run!
-    self.update state: 'started', processable_rows: self.class.processable_rows(table)
-    rows_geocoded_before = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
+    processable_rows = self.class.processable_rows(table)
     if processable_rows == 0
       self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
       self.report
       return
     end
+
+    rows_geocoded_before = table.owner.in_database.select.from(table.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
+
+    self.run_geocoding!(processable_rows, rows_geocoded_before)
+  end
+
+  def run_geocoding!(processable_rows, rows_geocoded_before = 0)
+    self.update state: 'started', processable_rows: processable_rows
     table_geocoder.run
     self.update remote_id: table_geocoder.remote_id
     started = Time.now
     begin
       self.update(table_geocoder.update_geocoding_status)
-      puts "Processed: #{processed_rows}"
       raise 'Geocoding timeout' if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
       raise 'Geocoding failed'  if state == 'failed'
+      # INFO: this loop polls database
+      # TODO: check whether this is always neccesary. Probably not (always) async.
       sleep(2)
     end until ['completed', 'cancelled'].include? state
     return false if state == 'cancelled'
@@ -202,7 +219,8 @@ class Geocoding < Sequel::Model
       price:            price,
       cost:             cost,
       used_credits:     used_credits,
-      remaining_quota:  remaining_quota
+      remaining_quota:  remaining_quota,
+      data_import_id:   data_import_id
     }
     if state == 'finished' && exception.nil?
       payload.merge!(

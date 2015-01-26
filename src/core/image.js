@@ -134,9 +134,22 @@
           self.model.set("center", JSON.parse(data.center));
           self.model.set("bounds", data.bounds);
 
-          //console.log(layerDefinition.toJSON())
+          var ld = layerDefinition.toJSON();
 
-          self._requestPOST(layerDefinition.toJSON(), function(data) {
+          // Removes interactivity to avoid the 'Tileset has no interactivity'
+          for (var i = 0; i < ld.layers.length; i++) {
+            delete (ld.layers[i].options["interactivity"]);
+          }
+
+          ld.layers.unshift({
+            type: "http",
+            options: {
+              urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+              subdomains: [ "a", "b", "c" ]
+            }
+          });
+
+          self._requestPOST(ld, function(data) {
 
             if (data) {
               self.model.set("layergroupid", data.layergroupid)
@@ -171,8 +184,7 @@
             urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
             subdomains: [ "a", "b", "c" ]
           }
-        }, 
-        {
+        }, {
           type: "cartodb",
           options: {
             sql: "select * from cities",
@@ -244,6 +256,12 @@
       }
     },
 
+    _getUrl: function() {
+
+      return [this.endpoint , "static/center" , this.model.get("layergroupid"), this.model.get("zoom"), this.model.get("center")[0], this.model.get("center")[1],this.model.get("width"), this.model.get("height") + "." + this.model.get("format")].join("/");
+
+    },
+
     zoom: function(zoom) {
 
       var self = this;
@@ -304,18 +322,32 @@
 
     },
 
+    into: function(img) {
+
+      var self = this;
+
+      if (img instanceof HTMLImageElement) {
+      } else{
+        cartodb.log.error("img should be an image");
+        return;
+      }
+
+      this.model.set("width", img.width);
+      this.model.set("height", img.height);
+
+      this.queue.add(function(response) {
+        img.src = self._getUrl();
+      });
+
+    },
+
+
     getUrl: function(callback) {
 
       var self = this;
 
       this.queue.add(function(response) {
-        //console.log(response);
-        //console.log(self.model.attributes)
-
-        var o = [self.endpoint , "static/center" , self.model.get("layergroupid"), self.model.get("zoom"), self.model.get("center")[0], self.model.get("center")[1],self.model.get("width"), self.model.get("height") + "." + self.model.get("format")];
-
-        console.log(o.join("/"));
-
+        console.log(self._getUrl());
         // document.write goes here
       });
 

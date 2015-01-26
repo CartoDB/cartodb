@@ -1,3 +1,12 @@
+3.12.0 ()
+- Added Odyssey support for visualizations
+
+3.11.31 (23//01//2014)
+- #291 - Removes padding and margin reset for webkit browsers
+
+3.11.30 (13//01//2014)
+- #264 - Fix addTo (when the second param specifies index)
+
 3.11.29 (30//12//2014)
 - #257 - Fixes rendering of several bold typefaces
 

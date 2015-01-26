@@ -175,7 +175,9 @@
           viz.addTooltip(layerView);
         }
         if(options.legends) {
-          viz.addLegends([layerData], ((mobileEnabled && options.mobile_layout) || options.force_mobile));
+          var layerModel = cdb.vis.Layers.create(layerData.type || layerData.kind, viz, layerData);
+
+          viz.addLegends(new cdb.geo.Layers([layerModel]), ((mobileEnabled && options.mobile_layout) || options.force_mobile));
         }
 
         if(options.time_slider && layerView.model.get('type') === 'torque') {

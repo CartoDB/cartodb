@@ -99,6 +99,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
       });
 
+      google.maps.event.addListener(this.map_googlemaps, 'dragend', function(e) {
+        var c = self.map_googlemaps.getCenter();
+        self.trigger('dragend', e, [c.lat(), c.lng()]);
+      });
+
       google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
         self.trigger('dblclick', e);
       });
@@ -118,6 +123,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.projector.draw = function() {};
       this.trigger('ready');
       this._isReady = true;
+    },
+
+    _setKeyboard: function(model, z) {
+      this.map_googlemaps.setOptions({ keyboardShortcuts: z });
     },
 
     _setScrollWheel: function(model, z) {

@@ -153,6 +153,19 @@ module.exports = {
         }  
       },
 
+      odyssey: {
+        options: {
+          banner: grunt.file.read('./grunt/templates/version_header.js'),
+          footer: grunt.file.read('./grunt/templates/odyssey_footer.js')
+        },
+        files: {
+          // Odyssey library
+          '<%= config.dist %>/cartodb.mod.odyssey.uncompressed.js': [
+            'vendor/mod/odyssey.js'
+          ]
+        }  
+      },
+
       themes: {
         options: {},
         files: {

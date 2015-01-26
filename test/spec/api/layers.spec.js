@@ -38,7 +38,7 @@ describe('api.layers', function() {
   // shared specs for each map
   //
   function loadLayerSpecs(mapFn) {
-
+    
     describe("(shared)", function() {
       var map;
       beforeEach(function() {
@@ -407,6 +407,48 @@ describe('api.layers', function() {
             expect(layer).toBe(map.overlayMapTypes.getAt(0));
           } else {
             expect(layer).toBe(map._layers[L.stamp(layer)]);
+          }
+          done();
+        }, 100);
+
+      });
+
+      it("should have several 'addTo' with zIndex set", function(done) {
+        var layer0, layer1;
+
+        cartodb.createLayer(map, {
+          type: 'cartodb',
+          sublayers: [{
+            sql: 'select * from table',
+            cartocss: 'test',
+            interactivity: 'testi'
+          }]
+        })
+        .addTo(map,0)
+        .done(function(lyr) {
+          layer0 = lyr;
+        });
+
+        cartodb.createLayer(map, {
+          type: 'cartodb',
+          sublayers: [{
+            sql: 'select * from table2',
+            cartocss: 'test2',
+            interactivity: 'testii'
+          }]
+        })
+        .addTo(map,1)
+        .done(function(lyr) {
+          layer1 = lyr;
+        });
+
+        setTimeout(function() {
+          //Test only for Leaflet 
+          if(map.overlayMapTypes === undefined) {
+            expect(layer0).not.toEqual(undefined);
+            expect(layer0.options.zIndex).toEqual(0);
+            expect(layer1).not.toEqual(undefined);
+            expect(layer1.options.zIndex).toEqual(1);
           }
           done();
         }, 100);

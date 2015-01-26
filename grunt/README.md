@@ -11,6 +11,7 @@ These are the tasks(*) we provide:
 - [x] ```grunt build```       => generate library and website in dist folder.
 - [x] ```grunt dist```        => same as build task.
 - [x] ```grunt pages```       => deploy static cartodb.js webpage to gh-pages.
+- [X] ```grunt js```          => create uncompressed javascript files in dist (useful for developing)
 - [ ] ```grunt watch```       => special watch for cartodb.js library (in progress).
 
 *Remember to install all the things you need, check main README.md, how to build section.

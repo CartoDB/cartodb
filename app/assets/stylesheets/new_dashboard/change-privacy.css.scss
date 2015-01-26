@@ -35,6 +35,15 @@
   @include align-items(stretch);
   @include align-content(space-between, justify);
 }
+.ChangePrivacy-shareHeader {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  margin-bottom: $cStructure-mainLine;
+}
+.ChangePrivacy-shareHeaderBackIcon {
+  margin-right: $sMargin-element;
+}
 .ChangePrivacy-shareFooter {
   @include display-flex();
   @include justify-content(space-between, justify);

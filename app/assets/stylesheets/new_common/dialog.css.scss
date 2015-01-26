@@ -36,19 +36,6 @@ body.is-inDialog {
   position: fixed;
   top: $sMargin-section;
   right: $sMargin-section;
-  width: $sMargin-section;
-  height: $sMargin-section;
-  border-radius: 30px;
-  border: 1px solid $cTypography-help;
-  color: $cTypography-help;
-  text-align: center;
-  line-height: 45px;
-  font-weight: $sFontWeight-lighter;
-  font-size: 18px;
-  &:hover {
-    border-color: $cTypography-secondary;
-    color: $cTypography-secondary;
-  }
 }
 .Dialog-content {
 }

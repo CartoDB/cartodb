@@ -54,6 +54,24 @@ body.is-inDialog {
 }
 .Dialog-content {
 }
+.Dialog-content--expanded {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(space-around, stretch);
+  @include align-items(stretch, stretch);
+  height: 100%;
+  width: 100%;
+}
+.Dialog-header--expanded { @include flex-grow(1) }
+.Dialog-body--expanded {
+  @include flex-grow(100);
+  background-color: rgba(#F9F9F9, 1);
+}
+.Dialog-footer--expanded {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+}
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
 }

@@ -39,7 +39,7 @@
   @include display-flex();
   @include justify-content(flex-start);
   @include align-items(center);
-  margin-bottom: $cStructure-mainLine;
+  margin-bottom: $sMargin-element;
 }
 .ChangePrivacy-shareHeaderBackIcon {
   margin-right: $sMargin-element;

@@ -37,8 +37,6 @@ body.is-inDialog {
   top: $sMargin-section;
   right: $sMargin-section;
 }
-.Dialog-content {
-}
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
 }
@@ -100,17 +98,21 @@ body.is-inDialog {
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
 }
-// Expanded dialog
 .Dialog-content--expanded {
-  height: 100%;
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(space-around, stretch);
   @include align-items(stretch, stretch);
+  height: 100%;
+  width: 100%;
 }
-.Dialog-content--expanded .Dialog-header { @include flex-grow(1) }
-.Dialog-content--expanded .Dialog-body { @include flex-grow(100) }
-.Dialog-content--expanded .Dialog-footer {
+.Dialog-header--expanded { @include flex-grow(1) }
+.Dialog-body--expanded {
+  @include flex-grow(100);
+  background-color: rgba(#F9F9F9, 1);
+}
+.Dialog-footer--expanded {
+  width: 100%;
   position: fixed;
   bottom: 0;
 }

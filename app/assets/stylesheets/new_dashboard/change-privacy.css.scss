@@ -2,7 +2,7 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-.ChangePrivacy-list {
+.ChangePrivacy-optionsList {
   @include display-flex();
   @include justify-content(center);
   @include align-items(stretch);
@@ -29,13 +29,35 @@
 .ChangePrivacy-shareBannerIcon {
   margin-right: $sMargin-elementInline;
 }
-.ChangePrivacy-footer {
+.ChangePrivacy-startFooter {
   @include display-flex();
   @include justify-content(center);
   @include align-items(stretch);
   @include align-content(space-between, justify);
 }
-.ChangePrivacy-footerInput {
+.ChangePrivacy-shareFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.ChangePrivacy-shareFooterGroup {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.ChangePrivacy-passwordInput {
   width: 200px;
   margin-right: 120px;
+}
+.ChangePrivacy-infoIcon {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 21px;
+  height: 21px;
+  color: white;
+  background-color: #F6D35C;
+  border: 1px solid #F2C000;
+  border-radius: 30px;
+  margin-right: $sMargin-elementInline;
 }

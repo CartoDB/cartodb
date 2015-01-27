@@ -7,8 +7,16 @@ module CartoDB
 
     class RemoteMember < Member
 
-      def initialize(name, user_id, privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC, description = '', tags = [])
-        super({name: name, user_id: user_id, privacy: privacy, description: description, tags: tags, type: 'remote'})
+      def initialize(name, user_id, privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC, description = '', tags = [], license, source)
+        super({
+          name: name,
+          user_id: user_id,
+          privacy: privacy,
+          description: description,
+          tags: tags,
+          license: license,
+          source: source,
+          type: 'remote'})
       end
 
     end

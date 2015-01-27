@@ -197,7 +197,7 @@ module CartoDB
             raise "Geocoding failed" if geocoding.state == 'failed'
           rescue => e
             Rollbar.report_message('Georeferencer could not register geocoding, fallback to geocoder.run',
-                                   'error', { user_id: user_id, backtrace: e.backtrace, config: config })
+                                   'error', error_info: "user_id: #{user_id}, config: #{config}, backtrace: #{e.backtrace.join('\n')}")
             geocoder.run
           end
 

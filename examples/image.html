@@ -6,7 +6,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
-      html, body, #map {
+      html, body {
         height: 100%;
         padding: 0;
         margin: 0;
@@ -14,15 +14,24 @@
     </style>
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <script src="http://development.localhost.lan:3000/assets/3.4.1/javascripts/cdb.js"></script>
   </head>
   <body>
-    <div id="map"></div>
 
-    <!-- include cartodb.js library -->
-    <script src="../dist/cartodb.js"></script>
+    <img id="img" alt="">
+
 
     <script>
-      cartodb.Image("http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json").write()
+
+      cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json").bbox([[ -31.05293398570514, -155.7421875 ], [ 82.58610635020881, 261.2109375 ]]).getUrl(function(a, b) { 
+        console.log(a, b);
+      });
+
+//      cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json").zoom(4).size(500, 500).format("jpg").into($("#img")[0]);
+//        cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json").zoom(4).size(500, 500).format("jpg").write();
+//        cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json").zoom(4).center([40, 0]).getUrl(function(a, b) { 
+//        console.log(a, b);
+//      });
     </script>
   </body>
 </html>

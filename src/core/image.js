@@ -245,6 +245,7 @@
     _getUrl: function() {
 
       var zoom         = this.model.get("zoom");
+      var bbox         = this.model.get("bbox");
       var lat          = this.model.get("center")[0];
       var lon          = this.model.get("center")[1];
       var width        = this.model.get("size")[0];
@@ -252,7 +253,14 @@
       var layergroupid = this.model.get("layergroupid");
       var format       = this.model.get("format");
 
-      return [this.endpoint , "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
+      if (bbox) {
+
+        console.log(bbox);
+
+        return [this.endpoint , "static/bbox" , layergroupid, bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1], width, height + "." + format].join("/");
+      } else {
+        return [this.endpoint , "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
+      }
 
     },
 

@@ -37,6 +37,9 @@ body.is-inDialog {
   top: $sMargin-section;
   right: $sMargin-section;
 }
+.Dialog-content {
+  width: 100%;
+}
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
 }

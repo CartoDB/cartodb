@@ -41,7 +41,7 @@ $cBkg: #F9F9F9;
   @include display-flex();
   @include justify-content(flex-start);
   @include align-items(center);
-  margin-bottom: $sMargin-element;
+  border-top: none; // override Dialog-body default
 }
 .ChangePrivacy-shareHeaderBackIcon {
   margin-right: $sMargin-element;
@@ -49,6 +49,10 @@ $cBkg: #F9F9F9;
 .ChangePrivacy-passwordInput {
   width: 200px;
   margin-right: 120px;
+}
+.ChangePrivacy-shareContent {
+  border: 1px solid $cStructure-mainLine;
+  background-color: rgba(#F9F9F9, 1);
 }
 .ChangePrivacy-shareList {
   margin-bottom: 55px; // compensate for footer, so user can content when scrolling to bottom

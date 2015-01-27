@@ -54,12 +54,12 @@ class Api::Json::ImportsController < Api::ApplicationController
     if url.present?
       file_uri = url
       enqueue_importer_task = true
-    elsif params[:external_source_id].present?
+    elsif params[:remote_visualization_id].present?
       enqueue_importer_task = true
       content_guessing = false
       type_guessing = false
       quoted_fields_guessing = false
-      external_source = external_source(params[:external_source_id])
+      external_source = external_source(params[:remote_visualization_id])
       url = external_source.import_url
       file_uri = url
       enqueue_importer_task = true
@@ -268,9 +268,9 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   private
 
-  def external_source(external_source_id)
-    external_source = ExternalSource.where(id: external_source_id).first
-    raise CartoDB::Datasources::AuthError.new('Illegal external load') unless external_source_id.present? && external_source.importable_by(current_user)
+  def external_source(remote_visualization_id)
+    external_source = ExternalSource.where(visualization_id: remote_visualization_id).first
+    raise CartoDB::Datasources::AuthError.new('Illegal external load') unless remote_visualization_id.present? && external_source.importable_by(current_user)
     external_source
   end
 

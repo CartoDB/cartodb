@@ -20,7 +20,7 @@ namespace :cartodb do
       CommonDataSingleton.instance.datasets[:datasets].each do |d|
 
         v = CartoDB::Visualization::RemoteMember.new(
-          d['name'], u.id, CartoDB::Visualization::Member::PRIVACY_PUBLIC, d['description'], [ d['category'] ])
+          d['name'], u.id, CartoDB::Visualization::Member::PRIVACY_PUBLIC, d['description'], [ 'common-data', d['category'] ])
         v.store
 
       end

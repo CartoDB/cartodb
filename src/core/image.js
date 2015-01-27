@@ -69,6 +69,8 @@
 
     this.layers = [];
 
+    this.supported_formats = ["png", "jpg"];
+
     this.options = _.defaults({
       ajax: window.$ ? window.$.ajax : reqwest.compat,
       pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
@@ -92,8 +94,6 @@
     this._waiting = false;
     this.lastTimeUpdated = null;
     this._refreshTimer = -1;
-
-    this.endpoint = "http://arce.cartodb.com/api/v1/map"; // TODO: replace with the real one
 
   };
 
@@ -244,7 +244,15 @@
 
     _getUrl: function() {
 
-      return [this.endpoint , "static/center" , this.model.get("layergroupid"), this.model.get("zoom"), this.model.get("center")[0], this.model.get("center")[1],this.model.get("size")[0], this.model.get("size")[1] + "." + this.model.get("format")].join("/");
+      var zoom         = this.model.get("zoom");
+      var lat          = this.model.get("center")[0];
+      var lon          = this.model.get("center")[1];
+      var width        = this.model.get("size")[0];
+      var height       = this.model.get("size")[1];
+      var layergroupid = this.model.get("layergroupid");
+      var format       = this.model.get("format");
+
+      return [this.endpoint , "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
 
     },
 
@@ -290,7 +298,13 @@
       var self = this;
 
       this.queue.add(function() {
+
+        if (!_.include(self.supported_formats, format)) {
+          format = self.model.defaults.format;
+        }
+
         self.model.set({ format: format });
+
       });
 
       return this;

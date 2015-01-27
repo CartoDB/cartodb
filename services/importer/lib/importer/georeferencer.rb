@@ -191,13 +191,14 @@ module CartoDB
             geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name)
             geocoding.force_geocoder(geocoder)
             geocoding.user = user
-            geocoding.data_import_id = data_import.id
+            geocoding.data_import_id = data_import.id unless data_import.nil?
             geocoding.raise_on_save_failure = true
             geocoding.run_geocoding!(row_count)
             raise "Geocoding failed" if geocoding.state == 'failed'
           rescue => e
+            config_info = config.select {|key, value| [:table_schema, :table_name, :qualified_table_name, :formatter, :geometry_type, :kind, :max_rows, :country_column, ].include?(key) }
             Rollbar.report_message('Georeferencer could not register geocoding, fallback to geocoder.run',
-                                   'error', error_info: "user_id: #{user_id}, config: #{config}, backtrace: #{e.backtrace.join('\n')}")
+                                   'error', error_info: "user_id: #{user_id}, config: #{config_info}, exception: #{e.inspect} backtrace: #{e.backtrace.join('\n')}")
             geocoder.run
           end
 

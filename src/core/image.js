@@ -70,20 +70,7 @@
 
     this.layers = [];
 
-    var one = {
-      "type": "mapnik",
-      "options": {
-        "sql": "select null::geometry the_geom_webmercator",
-        "cartocss": "#layer {\n\tpolygon-fill: #FF3300;\n\tpolygon-opacity: 0;\n\tline-color: #333;\n\tline-width: 0;\n\tline-opacity: 0;\n}",
-        "cartocss_version": "2.2.0"
-      }
-    };
-
-    this.layers.push(one);
-
-    options = {}
-
-    this.options = _.defaults(options, {
+    this.options = _.defaults({
       ajax: window.$ ? window.$.ajax : reqwest.compat,
       pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
       gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
@@ -115,11 +102,11 @@
 
     load: function(vizjson) {
 
+      var self = this;
+
       this.queue = new Queue;
 
       this.model.set("vizjson", vizjson);
-
-      var self = this;
 
       cdb.image.Loader.get(vizjson, function(data){
 
@@ -262,6 +249,7 @@
 
     },
 
+    /* Setters */
     zoom: function(zoom) {
 
       var self = this;
@@ -322,17 +310,20 @@
 
     },
 
+    /* Methods */
+
+    /* Image.into(HTMLImageElement)
+       inserts the image in the HTMLImageElement specified */
     into: function(img) {
 
       var self = this;
 
-      if (img instanceof HTMLImageElement) {
-      } else{
+      if (!img instanceof HTMLImageElement) {
         cartodb.log.error("img should be an image");
         return;
       }
 
-      this.model.set("width", img.width);
+      this.model.set("width",  img.width);
       this.model.set("height", img.height);
 
       this.queue.add(function(response) {
@@ -341,30 +332,34 @@
 
     },
 
+    /* Image.getUrl(callback(err, url))
+       gets the url for the image, err is null is there was no error */
 
     getUrl: function(callback) {
 
       var self = this;
 
-      this.queue.add(function(response) {
-        console.log(self._getUrl());
-        // document.write goes here
+      this.queue.add(function() {
+        if (callback) {
+          callback(null, self._getUrl()); // TODO: return the error
+        }
       });
 
     },
+
+    /* Image.write()
+       adds a img tag in the same place script is executed */
 
     write: function() {
 
       var self = this;
 
       this.queue.add(function() {
-        console.log(1, self.model.attributes);
-        // document.write goes here
+        document.write('<img src="' + self._getUrl() + '"/>');
       });
 
       return this;
     }
-
 
   })
 
@@ -375,7 +370,6 @@
     var image = new Image();
 
     //image.load(data);
-
 
     if (typeof data === 'string') {
       image.load(data);
@@ -413,7 +407,7 @@
     get: function(url, callback) {
       if (!ImageLoader._script) {
         ImageLoader.current = callback;
-        ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson2');
+        ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
       } else {
         ImageLoader.queue.push([url, callback]);
       }
@@ -445,7 +439,7 @@
     }
   };
 
-  window.vizjson2 = function(data) {
+  window.imgjson = function(data) {
     ImageLoader.current && ImageLoader.current(data);
     // remove script
     ImageLoader.head.removeChild(ImageLoader._script);

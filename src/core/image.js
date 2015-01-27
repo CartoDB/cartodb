@@ -57,8 +57,7 @@
       format: "png",
       zoom: 10,
       center: [0, 0],
-      width:  320,
-      height: 240
+      size:  [320, 240]
     }
   });
 
@@ -245,7 +244,7 @@
 
     _getUrl: function() {
 
-      return [this.endpoint , "static/center" , this.model.get("layergroupid"), this.model.get("zoom"), this.model.get("center")[0], this.model.get("center")[1],this.model.get("width"), this.model.get("height") + "." + this.model.get("format")].join("/");
+      return [this.endpoint , "static/center" , this.model.get("layergroupid"), this.model.get("zoom"), this.model.get("center")[0], this.model.get("center")[1],this.model.get("size")[0], this.model.get("size")[1] + "." + this.model.get("format")].join("/");
 
     },
 
@@ -303,7 +302,12 @@
       var self = this;
 
       this.queue.add(function() {
-        self.model.set({ width: width, height: height });
+
+        if (height === undefined) height = width;
+
+        var size = [width, height];
+        self.model.set({ size: size });
+
       });
 
       return this;
@@ -323,8 +327,7 @@
         return;
       }
 
-      this.model.set("width",  img.width);
-      this.model.set("height", img.height);
+      this.model.set("size",  [img.width, img.height]);
 
       this.queue.add(function(response) {
         img.src = self._getUrl();

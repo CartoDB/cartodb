@@ -62,42 +62,23 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   initialize: function() {
     this.slidesCount = this.options.transitions.length;
+    this.visualization = this.options.visualization;
+    this.slides = this.visualization.slides;
   },
 
   _prev: function(e) {
-
     if (e) this.killEvent(e);
-    
-    var currentSlide = this.options.slides.state();
-
-    if (currentSlide > 0) {
-      currentSlide--;
-    } else {
-      currentSlide = this.options.transitions.length;
-    }
-
-    this.options.slides.go(currentSlide)
-
+    this.visualization.sequence.prev();
   },
 
   _next: function(e) {
     if (e) this.killEvent(e);
-
-    var currentSlide = this.options.slides.state();
-
-    if (currentSlide <= this.options.transitions.length - 1) {
-      currentSlide++;
-    } else {
-      currentSlide = 0;
-    }
-
-    this.options.slides.go(currentSlide);
-
+    this.visualization.sequence.next();
   },
 
   _renderDots: function() {
 
-    var currentActiveSlide = this.options.slides.state();
+    var currentActiveSlide = this.slides.state();
 
     for (var i = 0; i < this.options.transitions.length; i++) {
       var item = new cdb.geo.ui.SlidesControllerItem({ num: i, transition_options: this.options.transitions[i], active: i == currentActiveSlide });
@@ -109,7 +90,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   _renderCounter: function() {
 
-    var currentActiveSlide = this.options.slides.state();
+    var currentActiveSlide = this.slides.state();
     var currentTransition = this.options.transitions[currentActiveSlide];
 
     var $counter = this.$el.find(".counter");
@@ -124,7 +105,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
   },
 
   _onSlideClick: function(slide) {
-    this.options.slides.go(slide.options.num);
+    this.visualization.sequence.current(slide.options.num);
   },
 
   render: function() {
@@ -133,7 +114,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     this.$el.html(this.template(options));
 
-    if (this.options.slides && this.options.transitions) {
+    if (this.slides && this.options.transitions) {
 
       if (options.show_counter) {
         this._renderCounter(); // we render: 1/N

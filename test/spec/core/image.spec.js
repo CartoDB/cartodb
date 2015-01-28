@@ -51,9 +51,9 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    cartodb.Image(vizjson).bbox([[ -31.05293398570514, -155.7421875 ], [ 82.58610635020881, 261.2109375 ]]).size(400,300).getUrl(function(error, url) {
+    cartodb.Image(vizjson).bbox([[-31.05, -155.74], [82.58, 261.21]]).size(400,300).getUrl(function(error, url) {
       expect(error).toEqual(null);
-      expect(url).toEqual("http://documentation.cartodb.com/api/v1/map/static/bbox/f70411bd51cf8c67892fafc7e0178cfc:0/-31.05293398570514/-155.7421875/82.58610635020881/261.2109375/400/300.png");
+      expect(url).toEqual("http://documentation.cartodb.com/api/v1/map/static/bbox/310c1086afb7e0586ad42f7a834d2f3d:0/-31.05,-155.74,82.58,261.21/400/300.png");
       done();
     });
 
@@ -89,9 +89,11 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
+    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/2/52\.5897007687178/52\.734375/320/240\.png");
+
     cartodb.Image(vizjson).getUrl(function(error, url) {
       expect(error).toEqual(null);
-      expect(url).toEqual("http://documentation.cartodb.com/api/v1/map/static/center/f70411bd51cf8c67892fafc7e0178cfc:0/2/52.5897007687178/52.734375/320/240.png");
+      expect(url).toMatch(regexp);
       done();
     });
 
@@ -101,9 +103,11 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
+    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
+
     cartodb.Image(vizjson).center([40, 10]).zoom(7).size(400, 300).getUrl(function(error, url) {
       expect(error).toEqual(null);
-      expect(url).toEqual("http://documentation.cartodb.com/api/v1/map/static/center/f70411bd51cf8c67892fafc7e0178cfc:0/7/40/10/400/300.png");
+      expect(url).toMatch(regexp);
       done();
     });
 
@@ -116,8 +120,10 @@ describe("Image", function() {
     var img = document.getElementById('image');
     cartodb.Image(vizjson).center([40, 10]).zoom(7).size(400, 300).into(img);
 
+    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
+
     setTimeout(function() {
-      expect($("#image").attr("src")).toEqual("http://documentation.cartodb.com/api/v1/map/static/center/f70411bd51cf8c67892fafc7e0178cfc:0/7/40/10/400/300.png");
+      expect($("#image").attr("src")).toMatch(regexp);
       done();
     }, 800);
 

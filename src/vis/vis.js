@@ -1013,6 +1013,10 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
+    if (opt.searchControl !== undefined) {
+      opt.search = opt.searchControl;
+    }
+
     if (!this.mobile_enabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
@@ -1067,8 +1071,12 @@ var Vis = cdb.core.View.extend({
       remove_overlay('share');
     }
 
-    if (this.mobile) {
+    if ( this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
       remove_overlay('zoom');
+    }
+
+    if ( this.mobile || ((opt.search !== undefined) && (!opt.search)) ){
+      remove_overlay('search');
     }
 
     // if bounds are present zoom and center will not taken into account

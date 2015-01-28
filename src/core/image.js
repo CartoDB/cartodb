@@ -111,37 +111,36 @@
 
         if (data) {
 
+          debugger;
           var username = data.layers[1].options.user_name;
 
-          var basemap_layer = data.layers[0].options;
+          //var basemap_layer = data.layers[0].options;
 
           var type    = data.layers[1].type;
           var options = data.layers[1].options;
 
-          var center = JSON.parse(data.center);
-
           self.model.set({
             username: username,
-            type: type,
             zoom: data.zoom,
-            center: center,
+            center: JSON.parse(data.center),
             bounds: data.bounds
           });
 
+          var basemapLayer = {
+            type: "http",
+            options: {
+              urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+              subdomains: [ "a", "b", "c" ]
+            }
+          };
 
           if (type === "namedmap") {
 
-            layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
+            data.layers[1].options.named_map.layers.unshift(basemapLayer);
 
+            var layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
             self.endpoint = "http://" + username + ".cartodb.com" + layerDefinition.endPoint;
 
-            layerDefinition.layers.unshift({
-              type: "http",
-              options: {
-                urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-                subdomains: [ "a", "b", "c" ]
-              }
-            });
 
             var ld = layerDefinition.toJSON();
 
@@ -149,17 +148,11 @@
 
             self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
 
-            layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
+            var layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
 
-            ld = layerDefinition.toJSON();
+            var ld = layerDefinition.toJSON();
 
-            ld.layers.unshift({
-              type: "http",
-              options: {
-                urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-                subdomains: [ "a", "b", "c" ]
-              }
-            });
+            ld.layers.unshift(basemapLayer);
 
           }
         }

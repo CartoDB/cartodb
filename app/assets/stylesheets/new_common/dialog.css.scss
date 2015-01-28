@@ -2,6 +2,8 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
+$cExpandedBkg: rgba(#F9F9F9, 1);
+
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
@@ -36,21 +38,9 @@ body.is-inDialog {
   position: fixed;
   top: $sMargin-section;
   right: $sMargin-section;
-  width: $sMargin-section;
-  height: $sMargin-section;
-  border-radius: 30px;
-  border: 1px solid $cTypography-help;
-  color: $cTypography-help;
-  text-align: center;
-  line-height: 45px;
-  font-weight: $sFontWeight-lighter;
-  font-size: 18px;
-  &:hover {
-    border-color: $cTypography-secondary;
-    color: $cTypography-secondary;
-  }
 }
 .Dialog-content {
+  width: 100%;
 }
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
@@ -61,23 +51,42 @@ body.is-inDialog {
 }
 .Dialog-body {
   padding: $sMargin-group 0;
-  border-top: 1px solid $cTypography-help;
-  min-width: $sLayout-width;
+  border-top: 1px solid $cStructure-mainLine;
+  width: $sLayout-width;
+  margin: 0 auto;
+}
+.Dialog-body--withoutBorder {
+  border-top: none;
+}
+.Filters.Dialog-bodyFilters {
+  position: relative;
+  background: none;
 }
 .Dialog-footer {
-  border-top: 1px solid $cTypography-help;
+  border-top: 1px solid $cStructure-mainLine;
   padding: $sMargin-group 0;
 }
 .Dialog-headerIcon {
   position: relative;
   width: $sIcon-layout;
   height: $sIcon-layout;
-  border: 1px solid $cHighlight-negative;
+  border: 1px solid $cStructure-softLine;
   border-radius: $sIcon-borderRadius;
   margin: 0 auto $sMargin-element auto; /* center icon */
-  color: $cHighlight-negative;
   font-size: 22px;
   line-height: 48px;
+}
+.Dialog-headerIcon--main {
+  color: $cHighlight-main;
+  border-color: $cHighlight-main;
+}
+.Dialog-headerIcon--negative {
+  color: $cHighlight-negative;
+  border-color: $cHighlight-negative;
+}
+.Dialog-headerIcon--positive {
+  color: $cHighlight-positive;
+  border-color: $cHighlight-positive;
 }
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */
@@ -87,14 +96,58 @@ body.is-inDialog {
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-largest;
+  color: $cTypography-paragraphs;
 }
 .Dialog-headerText {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
 }
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
+}
+
+// Styles related to expanded styles, where body--expanded is intended to be scrollable
+$sStickyHeight: 97px;
+
+.Dialog-content--expanded {
+  @include display-flex();
+  @include flex-direction(column);
+  @include justify-content(space-around, stretch);
+  @include align-items(stretch, stretch);
+  height: 100%;
+  width: 100%;
+}
+.Dialog-header--expanded {
+  @include flex-grow(1);
+  min-height: 117px; // required to have its content visible, actual height is more like 17Xpx
+}
+.Dialog-expandedSubContent {
+  @include flex-grow(100);
+  border: 1px solid $cStructure-mainLine;
+  background-color: $cExpandedBkg;
+  overflow: scroll;
+}
+.Dialog-expandedSubContentInner {
+  position: relative; // necessary to position subHeader properly
+}
+.Dialog-stickySubHeader {
+  position: fixed;
+  background-color: $cExpandedBkg;
+  padding: $sMargin-group 0;
+  border-bottom: 1px solid $cStructure-mainLine;
+  width: $sLayout-width;
+  z-index: 100; // for underlying content not to be visible
+}
+.Dialog-body--expanded {
+  padding: #{$sStickyHeight+$sMargin-group} 0 $sStickyHeight 0; // compensate so content is not covered by "sticky" subheader or footer
+}
+.Dialog-stickyFooter {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: $sStickyHeight;
 }
 
 @include keyframes(fade-and-scale-in) {
@@ -148,3 +201,4 @@ body.is-inDialog {
     @include transform(scale(2.0));
   }
 }
+

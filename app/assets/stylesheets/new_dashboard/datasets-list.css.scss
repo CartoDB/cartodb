@@ -85,7 +85,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  max-width: 500px; 
+  max-width: 440px; 
 }
 
 .DatasetsList-itemMeta,
@@ -117,4 +117,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-itemTitlePermission {
   margin-left: $sMargin-elementInline;
   background: white;
+}
+.DatasetsList-itemTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
 }

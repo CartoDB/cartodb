@@ -1,0 +1,101 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+$cBkg: #F9F9F9;
+
+.ChangePrivacy-optionsList {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
+.ChangePrivacy-upgradeBanner {
+  background-color: rgba(#E8F0D6, 0.3);
+}
+.ChangePrivacy-upgradeBannerInner {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  margin: 0 $sMargin-group;
+}
+.ChangePrivacy-upgradeBannerIcon {
+  margin-right: $sMargin-group;
+  color: rgba(#ADAFA8, 1);
+}
+.ChangePrivacy-shareBanner {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+}
+.ChangePrivacy-shareBannerIcon {
+  margin-right: $sMargin-elementInline;
+}
+.ChangePrivacy-startFooter {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(stretch);
+  @include align-content(space-between, justify);
+}
+.ChangePrivacy-shareHeader {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include align-items(center);
+  border-top: none; // override Dialog-body default
+}
+.ChangePrivacy-shareHeaderBackIcon {
+  margin-right: $sMargin-element;
+}
+.ChangePrivacy-passwordInput {
+  width: 200px;
+  margin-right: 120px;
+}
+.ChangePrivacy-shareListItem {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  padding-bottom: $sMargin-element;
+  width: 620px;
+  margin: 0 auto;
+}
+.ChangePrivacy-shareListItem:not(:first-child) {
+  border-top: 1px solid $cStructure-mainLine;
+  padding-top: $sMargin-element;
+}
+.ChangePrivacy-shareListItemInfo {
+  @include display-flex();
+  @include justify-content(flex-start);
+  max-width: 400px;
+}
+.ChangePrivacy-shareListItemToggler {
+  margin-right: 8px;
+}
+.ChangePrivacy-shareListItemTogglerText {
+  margin-right: 30px;
+}
+.ChangePrivacy-shareListItemIcon {
+  margin-right: $sMargin-elementInline;
+}
+.ChangePrivacy-infoIcon {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 21px;
+  height: 21px;
+  color: white;
+  background-color: #F6D35C;
+  border: 1px solid #F2C000;
+  border-radius: 30px;
+  margin-right: $sMargin-elementInline;
+}
+.ChangePrivacy-shareFooter {
+  background-color: $cBkg;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.ChangePrivacy-shareFooterGroup {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}

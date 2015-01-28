@@ -462,6 +462,30 @@ describe User do
     end
   end
 
+  describe '#private_maps_enabled' do
+    it 'should not have private maps enabled by default' do
+      user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
+      user_missing_private_maps.private_maps_enabled.should eq false
+    end
+
+    it 'should have private maps if enabled' do
+      user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
+      user_with_private_maps.private_maps_enabled.should eq true
+    end
+
+    it 'should not have private maps if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
+      user_without_private_maps.private_maps_enabled.should eq false
+    end
+
+    it 'should have private maps if he is AMBASSADOR even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
+      user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
+      user_without_private_maps.private_maps_enabled.should eq true
+    end
+
+  end
+
   describe '#get_geocoding_calls' do
     before do
       delete_user_data @user
@@ -937,6 +961,21 @@ describe User do
 
     it "should return cartodbfied tables" do
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.in_database.run('create table non_ghost_table (test integer)')
       tables = @user.search_for_cartodbfied_tables
       tables.should =~ ['ghost_table']
@@ -945,6 +984,21 @@ describe User do
     it "should link a table in the database" do
       tables = @user.tables.all.map(&:name)
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.link_ghost_tables
       new_tables = @user.tables.all.map(&:name)
       new_tables.should include('ghost_table')
@@ -953,6 +1007,21 @@ describe User do
     it "should link a renamed table in the database" do
       tables = @user.tables.all.map(&:name)
       @user.in_database.run('create table ghost_table_2 (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table_2 EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.link_ghost_tables
       @user.in_database.run('alter table ghost_table_2 rename to ghost_table_renamed')
       @user.link_ghost_tables

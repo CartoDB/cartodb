@@ -209,6 +209,7 @@ module CartoDB
         last_modified ||= headers.fetch('Last-modified', nil)
         last_modified ||= headers.fetch('last-modified', nil)
         last_modified = last_modified.delete('"').delete("'") if last_modified
+        last_modified = DateTime.httpdate(last_modified) if last_modified
         last_modified
       end
 

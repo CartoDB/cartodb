@@ -1,5 +1,7 @@
 # encoding: utf-8
 require_relative './stats'
+require_relative '../visualization/collection'
+require_relative '../overlay/collection'
 require_relative './support_tables'
 
 module CartoDB
@@ -13,16 +15,50 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
-                          permission support_tables likes reload_likes }
+                          permission parent children support_tables prev_list_item next_list_item likes reload_likes }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
         @map_id         = attributes.fetch(:map_id)
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
+        @parent_id      = attributes.fetch(:parent_id)
         @kind           = attributes.fetch(:kind)
         @support_tables = nil
         @likes          = nil
+        @prev_id        = attributes.fetch(:prev_id)
+        @next_id        = attributes.fetch(:next_id)
+      end
+
+      # @return []
+      def children
+        ordered = []
+        children = Visualization::Collection.new.fetch(parent_id: @id)
+        if children.count > 0
+          ordered << children.select { |vis| vis[:prev_id].nil? }.first
+          children.delete_if { |vis| vis[:prev_id].nil? }
+          while children.count > 0 && !ordered.last[:next_id].nil?
+            target = ordered.last[:next_id]
+            ordered << children.select { |vis| vis[:id] == target }.first
+            children.delete_if { |vis| vis[:id] == target }
+          end
+        end
+        ordered
+      end
+
+      # @return CartoDB::Visualization::Member
+      def parent
+        @parent ||= Visualization::Member.new(id: @parent_id).fetch unless @parent_id.nil?
+      end
+
+      # @return CartoDB::Visualization::Member
+      def prev_list_item
+        @prev_vis ||= Visualization::Member.new(id: @prev_id).fetch unless @prev_id.nil?
+      end
+
+      # @return CartoDB::Visualization::Member
+      def next_list_item
+         @next_vis ||= Visualization::Member.new(id: @next_id).fetch unless @next_id.nil?
       end
 
       def support_tables

@@ -520,7 +520,7 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::DERIVED_TYPE)
+  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::TYPE_DERIVED)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
@@ -534,7 +534,7 @@ class User < Sequel::Model
   def map_tags
     require_relative './visualization/tags'
     CartoDB::Visualization::Tags.new(self).names({
-       type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+       type: CartoDB::Visualization::Member::TYPE_CANONICAL,
        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
   end #map_tags
@@ -546,7 +546,7 @@ class User < Sequel::Model
   def tables_including_shared
     CartoDB::Visualization::Collection.new.fetch(
         user_id: self.id,
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        type: CartoDB::Visualization::Member::TYPE_CANONICAL
     ).map { |item|
       item.table
     }
@@ -687,6 +687,8 @@ class User < Sequel::Model
   end
 
   def private_maps_enabled
+    enabled = super
+    return enabled if enabled.present? && enabled == true
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
@@ -944,7 +946,6 @@ class User < Sequel::Model
       # Hack to support users without the new MU functiones loaded
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
       result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
-      update_gauge("db_size", result)
       result
     rescue
       attempts += 1
@@ -987,33 +988,42 @@ class User < Sequel::Model
   end
 
   # this method search for tables with all the columns needed in a cartodb table.
-  # it does not check column types or triggers attached
+  # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
   # returns the list of tables in the database with those columns but not in metadata database
   def search_for_cartodbfied_tables
     metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
+
     db = self.in_database(:as => :superuser)
     reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
     cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
     sql = %Q{
       WITH a as (
         SELECT table_name, count(column_name::text) cdb_columns_count
-        FROM information_schema.columns c, pg_tables t
+        FROM information_schema.columns c, pg_tables t, pg_trigger tg
         WHERE
-        t.tablename = c.table_name AND
-        t.schemaname = c.table_schema AND
-        t.tableowner = '#{database_username}' AND
+          t.tablename = c.table_name AND
+          t.schemaname = c.table_schema AND
+          c.table_schema = '#{database_schema}' AND
+          t.tableowner = '#{database_username}' AND
     }
 
     if metadata_table_names.length != 0
-      sql += "c.table_name not in (#{metadata_table_names}) AND"
+      sql += %Q{
+        c.table_name NOT IN (#{metadata_table_names}) AND
+      }
     end
 
     sql += %Q{
-          column_name in (#{cartodb_columns})
-          group by 1
+          column_name IN (#{cartodb_columns}) AND
+
+          tg.tgrelid = (t.schemaname || '.' || t.tablename)::regclass::oid AND
+          tg.tgname = 'test_quota_per_row'
+
+          GROUP BY 1
       )
-      select table_name from a where cdb_columns_count = #{reserved_columns.length}
+      SELECT table_name FROM a WHERE cdb_columns_count = #{reserved_columns.length}
     }
+
     db[sql].all.map { |t| t[:table_name] }
   end
 
@@ -1141,7 +1151,7 @@ class User < Sequel::Model
   # Only returns owned tables (not shared ones)
   def table_count(filters={})
     filters.merge!(
-      type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
       exclude_shared: true
     )
 
@@ -1163,7 +1173,7 @@ class User < Sequel::Model
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true
@@ -1194,22 +1204,6 @@ class User < Sequel::Model
       "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
       "LIMIT 1;", id)
       .to_a.fetch(0, {}).fetch(:created_at, nil)
-  end
-
-  def metric_key
-    "cartodb.#{Rails.env.production? ? "user" : Rails.env + "-user"}.#{self.username}"
-  end
-
-  def update_gauge(gauge, value)
-    Statsd.gauge("#{metric_key}.#{gauge}", value)
-  rescue
-  end
-
-  def update_visualization_metrics
-    update_gauge("visualizations.total", maps.count)
-    update_gauge("visualizations.table", table_count)
-
-    update_gauge("visualizations.derived", visualization_count({ exclude_shared: true, exclude_raster: true }))
   end
 
   def rebuild_quota_trigger

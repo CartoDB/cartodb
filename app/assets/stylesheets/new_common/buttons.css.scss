@@ -57,3 +57,15 @@ $buttonBorderSize: 1px;
 .Button--secondary span {
   color: #666666;
 }
+.Button.is-disabled {
+  @include opacity(0.4);
+}
+.Button--light {
+  border: $sButton-border solid white;
+  color: #384047;
+  background-color: rgba(white, 1);
+  &:hover {
+    background-color: rgba(#384047, 1);
+    color:white;
+  }
+}

@@ -50,13 +50,6 @@ $cBkg: #F9F9F9;
   width: 200px;
   margin-right: 120px;
 }
-.ChangePrivacy-shareContent {
-  border: 1px solid $cStructure-mainLine;
-  background-color: rgba(#F9F9F9, 1);
-}
-.ChangePrivacy-shareList {
-  margin-bottom: 55px; // compensate for footer, so user can content when scrolling to bottom
-}
 .ChangePrivacy-shareListItem {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -97,8 +90,6 @@ $cBkg: #F9F9F9;
 }
 .ChangePrivacy-shareFooter {
   background-color: $cBkg;
-}
-.ChangePrivacy-shareFooterInner {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);

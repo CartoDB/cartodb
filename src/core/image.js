@@ -283,215 +283,179 @@
     },
 
     /* Setters */
-    zoom: function(zoom) {
+    _set: function(name, value) {
 
       var self = this;
 
       this.queue.add(function() {
-        self.model.set({ zoom: zoom });
+        self.model.set(name,value);
       });
 
       return this;
 
     },
 
-    /* Image.bbox([sw_lat, sw_lon, ne_lat, ne_lon]) */
+    basemap: function(basemap) {
+      return this._set("basemap", basemap);
+    },
+
+    zoom: function(zoom) {
+      return this._set("zoom", zoom);
+    },
+
     bbox: function(bbox) {
-
-      var self = this;
-
-      this.queue.add(function() {
-        self.model.set({ bbox: bbox });
-      });
-
-      return this;
-
+      return this._set("bbox", bbox);
     },
 
     center: function(center) {
-
-      var self = this;
-
-      this.queue.add(function() {
-        self.model.set({ center: center });
-      });
-
-      return this;
-
+      return this._set("center", center);
     },
 
     format: function(format) {
-
-      var self = this;
-
-      this.queue.add(function() {
-
-        if (!_.include(self.supported_formats, format)) {
-          format = self.model.defaults.format;
-        }
-
-        self.model.set({ format: format });
-
-      });
-
-      return this;
-
+      return this._set("format", _.include(this.supported_formats, format) ? format : this.model.defaults.format);
     },
 
     size: function(width, height) {
-
-      var self = this;
-
-      this.queue.add(function() {
-
-        if (height === undefined) height = width;
-
-        var size = [width, height];
-        self.model.set({ size: size });
-
-      });
-
-      return this;
-
+      return this._set("size", [width, height === undefined ? width : height]);
     },
 
     /* Methods */
 
     /* Image.into(HTMLImageElement)
        inserts the image in the HTMLImageElement specified */
-into: function(img) {
+    into: function(img) {
 
-        var self = this;
+      var self = this;
 
-        if (!img instanceof HTMLImageElement) {
-          cartodb.log.error("img should be an image");
-          return;
-        }
-
-        this.model.set("size",  [img.width, img.height]);
-
-        this.queue.add(function(response) {
-            img.src = self._getUrl();
-            });
-
-  },
-
-      /* Image.getUrl(callback(err, url))
-         gets the url for the image, err is null is there was no error */
-
-        getUrl: function(callback) {
-
-          var self = this;
-
-          this.queue.add(function() {
-            if (callback) {
-              callback(null, self._getUrl()); // TODO: return the error
-            }
-          });
-
-        },
-
-        /* Image.write()
-           adds a img tag in the same place script is executed */
-
-        write: function() {
-
-          var self = this;
-
-          this.queue.add(function() {
-            document.write('<img src="' + self._getUrl() + '"/>');
-          });
-
-          return this;
-        }
-
-})
-
-cdb.Image = function(data) {
-
-  //var image = new cdb.image.Image();
-
-  var image = new Image();
-
-  //image.load(data);
-
-  if (typeof data === 'string') {
-    image.load(data);
-  } else {
-    image.loadLayerDefinition(data);
-  }
-
-  return image;
-
-};
-
-var ImageLoader = cdb.image.Loader = {
-
-  queue: [],
-  current: undefined,
-  _script: null,
-  head: null,
-
-  loadScript: function(src) {
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = src;
-    script.async = true;
-    if (!ImageLoader.head) {
-      ImageLoader.head = document.getElementsByTagName('head')[0];
-    }
-    // defer the loading because IE9 loads in the same frame the script
-    // so Loader._script is null
-    setTimeout(function() {
-      ImageLoader.head.appendChild(script);
-    }, 0);
-    return script;
-  },
-
-  get: function(url, callback) {
-    if (!ImageLoader._script) {
-      ImageLoader.current = callback;
-      ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
-    } else {
-      ImageLoader.queue.push([url, callback]);
-    }
-  },
-
-  getPath: function(file) {
-    var scripts = document.getElementsByTagName('script'),
-    cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
-    for (i = 0, len = scripts.length; i < len; i++) {
-      src = scripts[i].src;
-      matches = src.match(cartodbJsRe);
-
-      if (matches) {
-        var bits = src.split('/');
-        delete bits[bits.length - 1];
-        return bits.join('/') + file;
+      if (!img instanceof HTMLImageElement) {
+        cartodb.log.error("img should be an image");
+        return;
       }
-    }
-    return null;
-  },
 
-  loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
-    var src = this.getPath(file);
-    if (!src) {
-      cartodb.log.error("can't find cartodb.js file");
-    }
-    ImageLoader.loadScript(src);
-  }
-};
+      this.model.set("size",  [img.width, img.height]);
 
-window.imgjson = function(data) {
-  ImageLoader.current && ImageLoader.current(data);
-  // remove script
-  ImageLoader.head.removeChild(ImageLoader._script);
-  ImageLoader._script = null;
-  // next element
-  var a = ImageLoader.queue.shift();
-  if (a) {
-    ImageLoader.get(a[0], a[1]);
-  }
-};
+      this.queue.add(function(response) {
+        img.src = self._getUrl();
+      });
+
+    },
+
+    /* Image.getUrl(callback(err, url))
+       gets the url for the image, err is null is there was no error */
+
+    getUrl: function(callback) {
+
+      var self = this;
+
+      this.queue.add(function() {
+        if (callback) {
+          callback(null, self._getUrl()); // TODO: return the error
+        }
+      });
+
+    },
+
+    /* Image.write()
+       adds a img tag in the same place script is executed */
+
+    write: function() {
+
+      var self = this;
+
+      this.queue.add(function() {
+        document.write('<img src="' + self._getUrl() + '"/>');
+      });
+
+      return this;
+    }
+
+  })
+
+  cdb.Image = function(data) {
+
+    //var image = new cdb.image.Image();
+
+    var image = new Image();
+
+    //image.load(data);
+
+    if (typeof data === 'string') {
+      image.load(data);
+    } else {
+      image.loadLayerDefinition(data);
+    }
+
+    return image;
+
+  };
+
+  var ImageLoader = cdb.image.Loader = {
+
+    queue: [],
+    current: undefined,
+    _script: null,
+    head: null,
+
+    loadScript: function(src) {
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = src;
+      script.async = true;
+      if (!ImageLoader.head) {
+        ImageLoader.head = document.getElementsByTagName('head')[0];
+      }
+      // defer the loading because IE9 loads in the same frame the script
+      // so Loader._script is null
+      setTimeout(function() {
+        ImageLoader.head.appendChild(script);
+      }, 0);
+      return script;
+    },
+
+    get: function(url, callback) {
+      if (!ImageLoader._script) {
+        ImageLoader.current = callback;
+        ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
+      } else {
+        ImageLoader.queue.push([url, callback]);
+      }
+    },
+
+    getPath: function(file) {
+      var scripts = document.getElementsByTagName('script'),
+      cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
+      for (i = 0, len = scripts.length; i < len; i++) {
+        src = scripts[i].src;
+        matches = src.match(cartodbJsRe);
+
+        if (matches) {
+          var bits = src.split('/');
+          delete bits[bits.length - 1];
+          return bits.join('/') + file;
+        }
+      }
+      return null;
+    },
+
+    loadModule: function(modName) {
+      var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
+      var src = this.getPath(file);
+      if (!src) {
+        cartodb.log.error("can't find cartodb.js file");
+      }
+      ImageLoader.loadScript(src);
+    }
+  };
+
+  window.imgjson = function(data) {
+    ImageLoader.current && ImageLoader.current(data);
+    // remove script
+    ImageLoader.head.removeChild(ImageLoader._script);
+    ImageLoader._script = null;
+    // next element
+    var a = ImageLoader.queue.shift();
+    if (a) {
+      ImageLoader.get(a[0], a[1]);
+    }
+  };
 })();

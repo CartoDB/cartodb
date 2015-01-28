@@ -1,7 +1,8 @@
 describe("Image", function() {
 
   beforeEach(function() {
-    $("body").append("<img id='image' />")
+    var img = $('<img id="image" />');
+    $("body").append(img);
   });
 
   afterEach(function() {
@@ -118,6 +119,7 @@ describe("Image", function() {
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
     var img = document.getElementById('image');
+
     cartodb.Image(vizjson).center([40, 10]).zoom(7).size(400, 300).into(img);
 
     var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");

@@ -1,0 +1,67 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+
+// Error details dialog styles
+
+.ErrorDetails {
+
+}
+.ErrorDetails-header .Dialog-headerIcon {
+  line-height: 40px;
+  margin-bottom: 15px;
+}
+.ErrorDetails-header .Dialog-headerTitle {
+  font-size: $sFontSize-larger;
+  color: $cHighlight-negative;
+}
+.ErrorDetails-header .Dialog-headerText { font-size: 14px }
+.ErrorDetails-body {
+  min-width: initial;
+  width: 620px;
+}
+.ErrorDetails-list {}
+.ErrorDetails-item {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  border-bottom: 1px solid $cStructure-mainLine;
+  padding: 20px 0;
+}
+.ErrorDetails-item:first-child { padding-top: 0 }
+.ErrorDetails-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.ErrorDetails-itemStep {
+  width: 38px;
+  height: 38px;
+  margin-right: 20px;
+  border-radius: 38px;
+  border: 1px solid #CCC;
+  line-height: 38px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-normal;
+  text-align: center;
+}
+.ErrorDetails-itemText {
+  width: 500px;
+  font-weight: $sFontWeight-lighter;
+  font-size: 14px;
+  color: $cTypography-paragraphs;
+}
+.ErrorDetails-itemTextStrong { color: $cTypography-headers }
+.ErrorDetails-footer { text-align: center }
+.ErrorDetails-footerButton {
+  display: inline-block;
+  padding-left: 40px;
+  padding-right: 40px;
+  background: transparent;
+  border: 1px solid #CCC;
+  &:hover {
+    background: transparent;
+    border-color: #666;
+    color: #666;
+  }
+}

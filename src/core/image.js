@@ -116,13 +116,12 @@
           var basemap_layer = data.layers[0].options;
 
           var type = data.layers[1].type;
+          var options = data.layers[1].options;
 
           if (type === "namedmap") {
-            layerDefinition = new NamedMap(data.layers[1].options.named_map, data.layers[1].options);
-            layer_definition = layerDefinition.named_map;
+            layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
           } else {
-            layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, data.layers[1].options);
-            layer_definition = layerDefinition.toJSON();
+            layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
           }
 
           self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
@@ -135,24 +134,15 @@
             bounds: data.bounds
           });
 
-          // Removes interactivity to avoid the 'Tileset has no interactivity' error
-          for (var i = 0; i < layer_definition.layers.length; i++) {
-            delete (layer_definition.layers[i].options["interactivity"]);
-          }
-
-           //Basemap
-          //layer = new cdb.geo.CartoDBLayer({
+          //data.layers[1].options.layer_definition.layers.unshift({
             //type: "http",
             //options: {
               //urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
               //subdomains: [ "a", "b", "c" ]
             //}
           //});
-
-          //debugger;
-
-          //layerDefinition.addLayer(layer);
-
+          
+          // Basemap
           layerDefinition.getLayerToken(function(data) {
             self.model.set("layergroupid", data.layergroupid);
             self.queue.flush(this);

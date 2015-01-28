@@ -111,38 +111,53 @@
 
         if (data) {
 
-          var layer_definition = data.layers[1].options.layer_definition;
+          var username = data.layers[1].options.user_name;
 
-          layerDefinition = new LayerDefinition(layer_definition, data.layers[1].options);
-          self.endpoint = "http://" + data.layers[1].options.user_name + ".cartodb.com/api/v1/map";
+          var basemap_layer = data.layers[0].options;
 
-          self.model.set("zoom", data.zoom);
-          self.model.set("center", JSON.parse(data.center));
-          self.model.set("bounds", data.bounds);
+          var type = data.layers[1].type;
 
-          var ld = layerDefinition.toJSON();
-
-          // Removes interactivity to avoid the 'Tileset has no interactivity'
-          for (var i = 0; i < ld.layers.length; i++) {
-            delete (ld.layers[i].options["interactivity"]);
+          if (type === "namedmap") {
+            layerDefinition = new NamedMap(data.layers[1].options.named_map, data.layers[1].options);
+            layer_definition = layerDefinition.named_map;
+          } else {
+            layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, data.layers[1].options);
+            layer_definition = layerDefinition.toJSON();
           }
 
-          ld.layers.unshift({
-            type: "http",
-            options: {
-              urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-              subdomains: [ "a", "b", "c" ]
-            }
+          self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
+
+          var center = JSON.parse(data.center);
+
+          self.model.set({
+            zoom: data.zoom,
+            center: center,
+            bounds: data.bounds
           });
 
-          self._requestPOST(ld, function(data) {
+          // Removes interactivity to avoid the 'Tileset has no interactivity' error
+          for (var i = 0; i < layer_definition.layers.length; i++) {
+            delete (layer_definition.layers[i].options["interactivity"]);
+          }
 
-            if (data) {
-              self.model.set("layergroupid", data.layergroupid)
-              self.queue.flush(this);
-            }
+           //Basemap
+          //layer = new cdb.geo.CartoDBLayer({
+            //type: "http",
+            //options: {
+              //urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+              //subdomains: [ "a", "b", "c" ]
+            //}
+          //});
 
+          //debugger;
+
+          //layerDefinition.addLayer(layer);
+
+          layerDefinition.getLayerToken(function(data) {
+            self.model.set("layergroupid", data.layergroupid);
+            self.queue.flush(this);
           });
+
         }
 
       });
@@ -254,10 +269,7 @@
       var format       = this.model.get("format");
 
       if (bbox) {
-
-        console.log(bbox);
-
-        return [this.endpoint , "static/bbox" , layergroupid, bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1], width, height + "." + format].join("/");
+        return [this.endpoint , "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
       } else {
         return [this.endpoint , "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
       }
@@ -277,6 +289,7 @@
 
     },
 
+    /* Image.bbox([sw_lat, sw_lon, ne_lat, ne_lon]) */
     bbox: function(bbox) {
 
       var self = this;
@@ -340,139 +353,139 @@
 
     /* Image.into(HTMLImageElement)
        inserts the image in the HTMLImageElement specified */
-    into: function(img) {
+into: function(img) {
 
-      var self = this;
+        var self = this;
 
-      if (!img instanceof HTMLImageElement) {
-        cartodb.log.error("img should be an image");
-        return;
-      }
-
-      this.model.set("size",  [img.width, img.height]);
-
-      this.queue.add(function(response) {
-        img.src = self._getUrl();
-      });
-
-    },
-
-    /* Image.getUrl(callback(err, url))
-       gets the url for the image, err is null is there was no error */
-
-    getUrl: function(callback) {
-
-      var self = this;
-
-      this.queue.add(function() {
-        if (callback) {
-          callback(null, self._getUrl()); // TODO: return the error
+        if (!img instanceof HTMLImageElement) {
+          cartodb.log.error("img should be an image");
+          return;
         }
-      });
 
-    },
+        this.model.set("size",  [img.width, img.height]);
 
-    /* Image.write()
-       adds a img tag in the same place script is executed */
+        this.queue.add(function(response) {
+            img.src = self._getUrl();
+            });
 
-    write: function() {
+  },
 
-      var self = this;
+      /* Image.getUrl(callback(err, url))
+         gets the url for the image, err is null is there was no error */
 
-      this.queue.add(function() {
-        document.write('<img src="' + self._getUrl() + '"/>');
-      });
+        getUrl: function(callback) {
 
-      return this;
+          var self = this;
+
+          this.queue.add(function() {
+            if (callback) {
+              callback(null, self._getUrl()); // TODO: return the error
+            }
+          });
+
+        },
+
+        /* Image.write()
+           adds a img tag in the same place script is executed */
+
+        write: function() {
+
+          var self = this;
+
+          this.queue.add(function() {
+            document.write('<img src="' + self._getUrl() + '"/>');
+          });
+
+          return this;
+        }
+
+})
+
+cdb.Image = function(data) {
+
+  //var image = new cdb.image.Image();
+
+  var image = new Image();
+
+  //image.load(data);
+
+  if (typeof data === 'string') {
+    image.load(data);
+  } else {
+    image.loadLayerDefinition(data);
+  }
+
+  return image;
+
+};
+
+var ImageLoader = cdb.image.Loader = {
+
+  queue: [],
+  current: undefined,
+  _script: null,
+  head: null,
+
+  loadScript: function(src) {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = src;
+    script.async = true;
+    if (!ImageLoader.head) {
+      ImageLoader.head = document.getElementsByTagName('head')[0];
     }
+    // defer the loading because IE9 loads in the same frame the script
+    // so Loader._script is null
+    setTimeout(function() {
+      ImageLoader.head.appendChild(script);
+    }, 0);
+    return script;
+  },
 
-  })
-
-  cdb.Image = function(data) {
-
-    //var image = new cdb.image.Image();
-
-    var image = new Image();
-
-    //image.load(data);
-
-    if (typeof data === 'string') {
-      image.load(data);
+  get: function(url, callback) {
+    if (!ImageLoader._script) {
+      ImageLoader.current = callback;
+      ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
     } else {
-      image.loadLayerDefinition(data);
+      ImageLoader.queue.push([url, callback]);
     }
+  },
 
-    return image;
+  getPath: function(file) {
+    var scripts = document.getElementsByTagName('script'),
+    cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
+    for (i = 0, len = scripts.length; i < len; i++) {
+      src = scripts[i].src;
+      matches = src.match(cartodbJsRe);
 
-  };
-
-  var ImageLoader = cdb.image.Loader = {
-
-    queue: [],
-    current: undefined,
-    _script: null,
-    head: null,
-
-    loadScript: function(src) {
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = src;
-      script.async = true;
-      if (!ImageLoader.head) {
-        ImageLoader.head = document.getElementsByTagName('head')[0];
+      if (matches) {
+        var bits = src.split('/');
+        delete bits[bits.length - 1];
+        return bits.join('/') + file;
       }
-      // defer the loading because IE9 loads in the same frame the script
-      // so Loader._script is null
-      setTimeout(function() {
-        ImageLoader.head.appendChild(script);
-      }, 0);
-      return script;
-    },
-
-    get: function(url, callback) {
-      if (!ImageLoader._script) {
-        ImageLoader.current = callback;
-        ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
-      } else {
-        ImageLoader.queue.push([url, callback]);
-      }
-    },
-
-    getPath: function(file) {
-      var scripts = document.getElementsByTagName('script'),
-      cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        matches = src.match(cartodbJsRe);
-
-        if (matches) {
-          var bits = src.split('/');
-          delete bits[bits.length - 1];
-          return bits.join('/') + file;
-        }
-      }
-      return null;
-    },
-
-    loadModule: function(modName) {
-      var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
-      var src = this.getPath(file);
-      if (!src) {
-        cartodb.log.error("can't find cartodb.js file");
-      }
-      ImageLoader.loadScript(src);
     }
-  };
+    return null;
+  },
 
-  window.imgjson = function(data) {
-    ImageLoader.current && ImageLoader.current(data);
-    // remove script
-    ImageLoader.head.removeChild(ImageLoader._script);
-    ImageLoader._script = null;
-    // next element
-    var a = ImageLoader.queue.shift();
-    if (a) {
-      ImageLoader.get(a[0], a[1]);
+  loadModule: function(modName) {
+    var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
+    var src = this.getPath(file);
+    if (!src) {
+      cartodb.log.error("can't find cartodb.js file");
     }
-  };
+    ImageLoader.loadScript(src);
+  }
+};
+
+window.imgjson = function(data) {
+  ImageLoader.current && ImageLoader.current(data);
+  // remove script
+  ImageLoader.head.removeChild(ImageLoader._script);
+  ImageLoader._script = null;
+  // next element
+  var a = ImageLoader.queue.shift();
+  if (a) {
+    ImageLoader.get(a[0], a[1]);
+  }
+};
 })();

@@ -115,40 +115,63 @@
 
           var basemap_layer = data.layers[0].options;
 
-          var type = data.layers[1].type;
+          var type    = data.layers[1].type;
           var options = data.layers[1].options;
-
-          if (type === "namedmap") {
-            layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
-          } else {
-            layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
-          }
-
-          self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
 
           var center = JSON.parse(data.center);
 
           self.model.set({
+            username: username,
+            type: type,
             zoom: data.zoom,
             center: center,
             bounds: data.bounds
           });
 
-          //data.layers[1].options.layer_definition.layers.unshift({
-            //type: "http",
-            //options: {
-              //urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-              //subdomains: [ "a", "b", "c" ]
-            //}
-          //});
-          
-          // Basemap
-          layerDefinition.getLayerToken(function(data) {
-            self.model.set("layergroupid", data.layergroupid);
-            self.queue.flush(this);
-          });
 
+          if (type === "namedmap") {
+
+            layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
+
+            self.endpoint = "http://" + username + ".cartodb.com" + layerDefinition.endPoint;
+
+            layerDefinition.layers.unshift({
+              type: "http",
+              options: {
+                urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                subdomains: [ "a", "b", "c" ]
+              }
+            });
+
+            var ld = layerDefinition.toJSON();
+
+          } else {
+
+            self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
+
+            layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
+
+            ld = layerDefinition.toJSON();
+
+            ld.layers.unshift({
+              type: "http",
+              options: {
+                urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                subdomains: [ "a", "b", "c" ]
+              }
+            });
+
+          }
         }
+
+        self._requestPOST(ld, function(data) {
+
+          if (data) {
+            self.model.set("layergroupid", data.layergroupid)
+            self.queue.flush(this);
+          }
+
+        });
 
       });
 
@@ -185,14 +208,11 @@
         }]
       };
 
-      console.log(layer_definition);
-
       this._requestPOST(layer_definition, function(data) {
 
         if (data) {
 
           self.model.set("layergroupid", data.layergroupid)
-          //console.log(data.layergroupid);
 
           self.queue.flush(this);
         }
@@ -249,6 +269,7 @@
 
     _getUrl: function() {
 
+      var username     = this.model.get("username");
       var zoom         = this.model.get("zoom");
       var bbox         = this.model.get("bbox");
       var lat          = this.model.get("center")[0];
@@ -258,10 +279,12 @@
       var layergroupid = this.model.get("layergroupid");
       var format       = this.model.get("format");
 
+      var endpoint = "http://" + username + ".cartodb.com/api/v1/map";
+
       if (bbox) {
-        return [this.endpoint , "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
+        return [endpoint, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
       } else {
-        return [this.endpoint , "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
+        return [endpoint, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
       }
 
     },

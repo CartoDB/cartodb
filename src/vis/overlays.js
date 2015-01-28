@@ -8,7 +8,7 @@ cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 
   var slides_controller = new cdb.geo.ui.SlidesController({
     transitions: data.transitions,
-    slides: vis.slides
+    visualization: vis
   });
 
   return slides_controller.render();

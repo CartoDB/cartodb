@@ -54,6 +54,7 @@
 
   ImageModel = cdb.core.Model.extend({
     defaults: {
+      basemap: "light_nolabels",
       format: "png",
       zoom: 10,
       center: [0, 0],
@@ -99,19 +100,19 @@
 
   Image.prototype = _.extend({}, Map.prototype, {
 
-    load: function(vizjson) {
+    load: function(vizjson, options) {
 
       var self = this;
 
       this.queue = new Queue;
 
+      this.model.set(options);
       this.model.set("vizjson", vizjson);
 
       cdb.image.Loader.get(vizjson, function(data){
 
         if (data) {
 
-          debugger;
           var username = data.layers[1].options.user_name;
 
           //var basemap_layer = data.layers[0].options;
@@ -129,7 +130,7 @@
           var basemapLayer = {
             type: "http",
             options: {
-              urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+              urlTemplate: "http://{s}.basemaps.cartocdn.com/" + self.model.get("basemap") + "/{z}/{x}/{y}.png",
               subdomains: [ "a", "b", "c" ]
             }
           };
@@ -140,7 +141,6 @@
 
             var layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
             self.endpoint = "http://" + username + ".cartodb.com" + layerDefinition.endPoint;
-
 
             var ld = layerDefinition.toJSON();
 
@@ -188,7 +188,7 @@
         layers: [{
           type: "http",
           options: {
-            urlTemplate: "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+            urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
             subdomains: [ "a", "b", "c" ]
           }
         }, {
@@ -371,7 +371,7 @@
 
   })
 
-  cdb.Image = function(data) {
+  cdb.Image = function(data, options) {
 
     //var image = new cdb.image.Image();
 
@@ -380,7 +380,7 @@
     //image.load(data);
 
     if (typeof data === 'string') {
-      image.load(data);
+      image.load(data, options);
     } else {
       image.loadLayerDefinition(data);
     }

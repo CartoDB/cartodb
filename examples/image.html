@@ -32,6 +32,8 @@
 //      cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json").zoom(4).size(500, 500).format("jpg").into($("#img")[0]);
 //        cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json").zoom(4).size(500, 500).format("jpg").write();
 
+    cartodb.Image("http://arce.cartodb.com/api/v2/viz/52aa5404-9d9a-11e4-99c0-0e4fddd5de28/viz.json", { basemap: "dark_nolabels" }).zoom(4).size(500, 500).format("png").into($("#img")[0]);
+
       cartodb.Image("http://arce.cartodb.com/api/v2/viz/378a0910-a229-11e4-9569-0e018d66dc29/viz.json").getUrl(function(a, b) { 
         console.log("namedmap: ", b);
       });

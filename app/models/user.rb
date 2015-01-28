@@ -94,8 +94,7 @@ class User < Sequel::Model
 
   ## Callbacks
   def before_validation
-    # Convert both email and username to downcase
-    self.username = self.username.to_s.strip.downcase
+    # Convert email to downcase
     self.email = self.email.to_s.strip.downcase
   end
 

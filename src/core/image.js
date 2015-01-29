@@ -102,7 +102,7 @@
 
     load: function(vizjson, options) {
 
-      var self = this;
+      _.bindAll(this, "_onVisLoaded");
 
       this.queue = new Queue;
 
@@ -110,66 +110,78 @@
 
       this.model.set(options);
 
-      cdb.image.Loader.get(vizjson, function(data){
+      cdb.image.Loader.get(vizjson, this._onVisLoaded);
+
+      return this;
+
+    },
+
+    _onVisLoaded: function(data) {
+
+      if (data) {
+
+        var layerDefinition;
+        var baseLayer = data.layers[0];
+        var dataLayer = data.layers[1];
+
+        this._chooseBasemap(baseLayer.options);
+
+        this.model.set({
+          username: dataLayer.options.user_name,
+          zoom: data.zoom,
+          center: JSON.parse(data.center),
+          bounds: data.bounds
+        });
+
+        if (dataLayer.type === "namedmap") {
+          layerDefinition = this._getNamedmapLayerDefinition(dataLayer.options);
+        } else {
+          layerDefinition = this._getLayergroupLayerDefinition(dataLayer.options);
+        }
+      }
+
+      var self = this;
+
+      this._requestPOST(layerDefinition, function(data) {
 
         if (data) {
-
-          var username = data.layers[1].options.user_name;
-
-          //var basemap_layer = data.layers[0].options;
-
-          var type    = data.layers[1].type;
-          var options = data.layers[1].options;
-
-          self.model.set({
-            username: username,
-            zoom: data.zoom,
-            center: JSON.parse(data.center),
-            bounds: data.bounds
-          });
-
-          var basemapLayer = {
-            type: "http",
-            options: {
-              urlTemplate: "http://{s}.basemaps.cartocdn.com/" + self.model.get("basemap") + "/{z}/{x}/{y}.png",
-              subdomains: [ "a", "b", "c" ]
-            }
-          };
-
-          if (type === "namedmap") {
-
-            data.layers[1].options.named_map.layers.unshift(basemapLayer);
-
-            var layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
-            self.endpoint = "http://" + username + "." + options.tiler_domain + layerDefinition.endPoint;
-
-            var ld = layerDefinition.toJSON();
-
-          } else {
-
-            self.endpoint = "http://" + username + "." + options.tiler_domain + "/api/v1/map";
-
-            var layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
-
-            var ld = layerDefinition.toJSON();
-
-            ld.layers.unshift(basemapLayer);
-
-          }
+          self.model.set("layergroupid", data.layergroupid)
+          self.queue.flush(this);
         }
-
-        self._requestPOST(ld, function(data) {
-
-          if (data) {
-            self.model.set("layergroupid", data.layergroupid)
-            self.queue.flush(this);
-          }
-
-        });
 
       });
 
-      return this;
+    },
+
+    _getLayergroupLayerDefinition: function(options) {
+
+      var basemapLayer = {
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
+        }
+      };
+
+      var layerDefinition = new LayerDefinition(options.layer_definition, options);
+
+      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + "/api/v1/map";
+
+      var ld = layerDefinition.toJSON();
+
+      ld.layers.unshift(basemapLayer);
+
+      return ld;
+
+    },
+
+    _getNamedmapLayerDefinition: function(options) {
+
+      var layerDefinition = new NamedMap(options.named_map, options);
+
+      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + layerDefinition.endPoint;
+
+      return layerDefinition.toJSON();
 
     },
 
@@ -182,6 +194,11 @@
       var self = this;
 
       this.queue = new Queue;
+
+      if (!layer_definition.username) {
+        cartodb.log.error("please, specify the username");
+        return;
+      }
 
       this.model.set("username", layer_definition.username);
 
@@ -265,7 +282,11 @@
       }
 
     },
-    
+
+    _chooseBasemap: function(basemap_layer) {
+      //choose
+    },
+
     _getUUID: function() {
       var S4 = function() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -314,7 +335,7 @@
 
       var self = this;
 
-      if (!img instanceof HTMLImageElement) {
+      if (!(img instanceof HTMLImageElement)) {
         cartodb.log.error("img should be an image");
         return;
       }

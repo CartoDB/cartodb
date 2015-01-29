@@ -38,8 +38,8 @@
 
           layer.setInteraction(true);
 
-          layer.on('featureOver', function(e, pos, latlng, data) {
-            cartodb.log.log(e, pos, latlng, data);
+          layer.on('featureOver', function(e, latlng, pos, data) {
+            cartodb.log.log(e, latlng, pos, data);
           });
 
           layer.on('error', function(err) {

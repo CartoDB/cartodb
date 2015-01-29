@@ -11,9 +11,19 @@ namespace :cartodb do
 
       u = User.where(username: username).first
 
+      require_relative '../../app/models/visualization/external_source'
+
       CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: u.id}).map do |v|
-        ExternalSource.where(visualization_id: v.id).delete
-        v.delete
+        begin
+          CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
+          v.delete
+        rescue Sequel::DatabaseError => e
+          if (e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/) >= 0
+            puts "Couldn't delete #{v.id} visualization because it's been imported"
+          else
+            raise e
+          end
+        end
       end
     end
 
@@ -23,6 +33,7 @@ namespace :cartodb do
       raise 'username required' unless username.present?
 
       require_relative '../../app/models/visualization/remote_member'
+      require_relative '../../app/models/visualization/external_source'
 
       u = User.where(username: username).first
 
@@ -37,7 +48,7 @@ namespace :cartodb do
           d['source'])
         v.store
 
-        ExternalSource.new(v.id, d['url']).save
+        CartoDB::Visualization::ExternalSource.new(v.id, d['url']).save
 
       end
 

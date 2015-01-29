@@ -1,6 +1,7 @@
 #encoding: UTF-8
 
 require_relative '../../../../services/datasources/lib/datasources'
+require_relative '../../../models/visualization/external_source'
 
 class Api::Json::ImportsController < Api::ApplicationController
 
@@ -50,6 +51,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     content_guessing = ["true", true].include?(params[:content_guessing])
 
     url = params[:url]
+    external_source = nil
 
     if url.present?
       file_uri = url
@@ -91,6 +93,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     }
 
     data_import = DataImport.create(options)
+    if external_source.present?
+      ExternalDataImport.new(data_import.id, external_source.id).save
+    end
 
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if enqueue_importer_task
 
@@ -268,7 +273,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   private
 
   def external_source(remote_visualization_id)
-    external_source = ExternalSource.where(visualization_id: remote_visualization_id).first
+    external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
     raise CartoDB::Datasources::AuthError.new('Illegal external load') unless remote_visualization_id.present? && external_source.importable_by(current_user)
     external_source
   end

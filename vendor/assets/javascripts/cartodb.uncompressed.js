@@ -29100,7 +29100,6 @@ cdb.geo.common.CartoDBLogo = {
       options = _.extend(options, this.model.defaults);
 
       this.model.set(options);
-      console.log(options)
 
       this.model.set("vizjson", vizjson);
 

@@ -106,12 +106,9 @@
 
       this.queue = new Queue;
 
-      if (!options) options = {};
-      options = _.defaults(options, this.model.defaults);
+      options = _.defaults(options, { vizjson: vizjson, id: "s" + this._getUUID() }, this.model.defaults);
 
       this.model.set(options);
-
-      this.model.set("vizjson", vizjson);
 
       cdb.image.Loader.get(vizjson, function(data){
 
@@ -144,13 +141,13 @@
             data.layers[1].options.named_map.layers.unshift(basemapLayer);
 
             var layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
-            self.endpoint = "http://" + username + ".cartodb.com" + layerDefinition.endPoint;
+            self.endpoint = "http://" + username + "." + options.tiler_domain + layerDefinition.endPoint;
 
             var ld = layerDefinition.toJSON();
 
           } else {
 
-            self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
+            self.endpoint = "http://" + username + "." + options.tiler_domain + "/api/v1/map";
 
             var layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
 
@@ -182,35 +179,18 @@
 
     loadLayerDefinition: function(layer_definition) {
 
-      this.queue = new Queue;
-
       var self = this;
 
-      layer_definition = {
-        stat_tag: "2b13c956-e7c1-11e2-806b-5404a6a683d5",
-        version: "1.0.1",
-        layers: [{
-          type: "http",
-          options: {
-            urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
-            subdomains: [ "a", "b", "c" ]
-          }
-        }, {
-          type: "cartodb",
-          options: {
-            sql: "select * from cities",
-            cartocss: "/** simple visualization */ #cities{ marker-file: url(http://com.cartodb.users-assets.production.s3.amazonaws.com/maki-icons/music-18.svg); marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
-            cartocss_version: "2.1.1"
-          }
-        }]
-      };
+      this.queue = new Queue;
+
+      this.model.set("username", layer_definition.username);
+
+      this.endpoint = "http://" + this.model.get("username") + ".cartodb.com/api/v1/map";
 
       this._requestPOST(layer_definition, function(data) {
 
         if (data) {
-
           self.model.set("layergroupid", data.layergroupid)
-
           self.queue.flush(this);
         }
 
@@ -285,6 +265,13 @@
       }
 
     },
+    
+    _getUUID: function() {
+      var S4 = function() {
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+      };
+      return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    },
 
     /* Setters */
     _set: function(name, value) {
@@ -355,15 +342,36 @@
 
     },
 
-    /* Image.write()
+    /* Image.write(attributes)
        adds a img tag in the same place script is executed */
+      // TODO: document class, id and src attributes
 
-    write: function() {
+    write: function(attributes) {
 
       var self = this;
 
+      this.model.set("attributes", attributes);
+
+      if (attributes && attributes.src) {
+        document.write('<img id="' + this.model.get("id") + '" src="'  + attributes.src + '" />');
+      } else {
+        document.write('<img id="' + this.model.get("id") + '" />');
+      }
+
       this.queue.add(function() {
-        document.write('<img src="' + self._getUrl() + '"/>');
+
+        var element = document.getElementById(self.model.get("id"));
+
+        element.src = self._getUrl();
+        element.removeAttribute("id");
+
+        var attributes = self.model.get("attributes");
+
+        if (attributes) {
+          if (attributes.class) { element.setAttribute("class", attributes.class); }
+          if (attributes.id)    { element.setAttribute("id", attributes.id); }
+        }
+
       });
 
       return this;
@@ -373,11 +381,9 @@
 
   cdb.Image = function(data, options) {
 
-    //var image = new cdb.image.Image();
+    if (!options) options = {};
 
     var image = new Image();
-
-    //image.load(data);
 
     if (typeof data === 'string') {
       image.load(data, options);

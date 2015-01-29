@@ -55,10 +55,9 @@ class Api::Json::ImportsController < Api::ApplicationController
       file_uri = url
       enqueue_importer_task = true
     elsif params[:remote_visualization_id].present?
-      enqueue_importer_task = true
       content_guessing = false
-      type_guessing = false
-      quoted_fields_guessing = false
+      type_guessing = true
+      quoted_fields_guessing = true
       external_source = external_source(params[:remote_visualization_id])
       url = external_source.import_url
       file_uri = url

@@ -106,7 +106,10 @@
 
       this.queue = new Queue;
 
+      options = _.extend(options, this.model.defaults);
+
       this.model.set(options);
+
       this.model.set("vizjson", vizjson);
 
       cdb.image.Loader.get(vizjson, function(data){
@@ -295,10 +298,6 @@
 
     },
 
-    basemap: function(basemap) {
-      return this._set("basemap", basemap);
-    },
-
     zoom: function(zoom) {
       return this._set("zoom", zoom);
     },
@@ -332,7 +331,7 @@
         return;
       }
 
-      this.model.set("size",  [img.width, img.height]);
+      this.model.set("size", [img.width, img.height]);
 
       this.queue.add(function(response) {
         img.src = self._getUrl();

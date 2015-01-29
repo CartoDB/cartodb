@@ -86,7 +86,11 @@ module CartoDB
           puts "stdout: #{stdout}"
           puts "stderr: #{stderr}"
           puts "status: #{status}"
-          raise ExtractionError
+          if stderr =~ /incorrect password/
+            raise PasswordNeededForExtractionError
+          else
+            raise ExtractionError
+          end
         end
         FileUtils.rm(path)
         self
@@ -107,12 +111,17 @@ module CartoDB
         unp_path = stdout.chop
         puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}" if (stderr.size > 0)
 
-        if path.end_with?('.tar.gz') || path.end_with?('.tgz')
+        command = "#{unp_path} #{path} --"
+        if !(path.end_with?('.tar.gz') || path.end_with?('.tgz') || path.end_with?('.tar'))
           # tar doesn't allows -o, which doesn't makes too much sense as each import comes in a different folder
-          "#{unp_path} #{path} --"
-        else
-          "#{unp_path} #{path} -- -o"
+          command = "#{command} -o"
         end
+        if path.end_with?('.zip')
+          # There's no "fail if password needed" parameter, so we always send a password.
+          # If it's not needed it's ignored, and if it's needed it will fail
+          command = "#{command} -P 'fail-if-prompts-for-password'"
+        end
+        command
       end
 
      def supported?(filename)

@@ -73,7 +73,7 @@ module CartoDB
 
       def guessing_option
         if csv_guessing && is_csv?
-          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'NO' : 'YES' }"
+          "-oo AUTODETECT_TYPE=YES -oo QUOTED_FIELDS_AS_STRING=#{quoted_fields_guessing ? 'YES' : 'NO' }"
         else
           ''
         end

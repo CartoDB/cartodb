@@ -1101,7 +1101,7 @@ We are committed to making sure your website works as intended no matter what ch
 We recommend that you always develop against the most recent version of CartoDB.js, right now:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.31/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.32/cartodb.js"></script>
 ```
 
 Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:

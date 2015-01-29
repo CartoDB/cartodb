@@ -1,6 +1,6 @@
 // cartodb.js version: 3.12.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 810180d36ae3389b61287865f4275f9ad10da441
+// sha: ffa9fe866580b65a70c2707ffce74e0c51532b81
 (function() {
   var root = this;
 
@@ -29097,7 +29097,8 @@ cdb.geo.common.CartoDBLogo = {
 
       this.queue = new Queue;
 
-      options = _.extend(options, this.model.defaults);
+      if (!options) options = {};
+      options = _.defaults(options, this.model.defaults);
 
       this.model.set(options);
 

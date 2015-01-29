@@ -2394,6 +2394,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider = new this.providers[this.options.provider](options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
 
+    this.renderer.on("allIconsLoaded", this.render.bind(this));
+
 
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
@@ -4346,7 +4348,7 @@ var Profiler = require('../profiler');
       if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
         ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
       }
-      ctx.drawImage(img, -img.w/2, -img.h/2, img.w, img.h);
+      ctx.drawImage(img, -img.w, -img.h, img.w*2, img.h*2);
     }
   }
 
@@ -4480,7 +4482,7 @@ var filters = require('./torque_filters');
       var st = shader.getStyle({
         value: value
       }, shaderVars);
-      if(this._style === null){
+      if(this._style === null || this._style !== st){
         this._style = st;
       }
 
@@ -4713,7 +4715,15 @@ var filters = require('./torque_filters');
   applyFilters: function(){
     if(this._style){
       if(this._style['image-filters']){
-        var gradient = this._gradients[this._style['image-filters']];
+        function gradientKey(imf){
+          var hash = ""
+          for(var i = 0; i < imf.args.length; i++){
+            var rgb = imf.args[i].rgb;
+            hash += rgb[0] + ":" + rgb[1] + ":" + rgb[2];
+          }
+          return hash;
+        }
+        var gradient = this._gradients[gradientKey(this._style['image-filters'])];
         if(!gradient){
           function componentToHex(c) {
             var hex = c.toString(16);
@@ -4733,7 +4743,7 @@ var filters = require('./torque_filters');
             var formattedColor = rgbToHex(rgb[0], rgb[1], rgb[2]);
             gradient[key] = formattedColor;
           }
-          this._gradients[this._style['image-filters']] = gradient;
+          this._gradients[gradientKey(this._style['image-filters'])] = gradient;
         }
         this._filters.gradient(gradient);
         this._filters.draw();

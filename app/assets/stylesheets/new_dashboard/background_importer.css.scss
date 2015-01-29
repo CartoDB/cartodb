@@ -25,7 +25,7 @@ $radius: 4px;
 }
 .BackgroundImporter-header {
   @include display-flex();
-  @include justify-content(space-between, justify);
+  @include justify-content(flex-start, start);
   @include align-items(center, center);
   height: 65px;
   padding: 0 20px;
@@ -36,6 +36,7 @@ $radius: 4px;
 }
 .BackgroundImporter-headerTitle {
   width: 220px;
+  margin-left: 20px;
   font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
 }

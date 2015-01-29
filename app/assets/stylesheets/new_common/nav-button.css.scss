@@ -1,0 +1,21 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.NavButton {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border-radius: 30px;
+  border: 1px solid $cIcons-default;
+  color: $cIcons-default;
+  font-weight: $sFontWeight-lighter;
+  font-size: 18px;
+  &:hover {
+    border-color: $cIcons-active;
+    color: $cIcons-active;
+  }
+}

@@ -106,7 +106,8 @@
 
       this.queue = new Queue;
 
-      options = _.extend(options, this.model.defaults);
+      if (!options) options = {};
+      options = _.defaults(options, this.model.defaults);
 
       this.model.set(options);
 

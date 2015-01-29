@@ -1,6 +1,9 @@
 3.12.0 ()
 - Added Odyssey support for visualizations
 
+3.11.32 (29//01//2014)
+- Fixed touch events on mobile (Android)
+
 3.11.31 (23//01//2014)
 - #291 - Removes padding and margin reset for webkit browsers
 

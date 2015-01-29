@@ -4,13 +4,19 @@
 
 // Mamufas dialog styles
 
-.MamufasDialog {   
+.MamufasDialog {}
+.MamufasDialog .Dialog-headerIcon {
+  margin-bottom: 12px;
+  line-height: 41px;
 }
+.MamufasDialog .Dialog-headerIcon .iconFont-Step { font-size: 24px }
 .MamufasDialog .Dialog-headerTitle { font-size: $sFontSize-larger }
 .MamufasDialog .Dialog-headerText { font-size: 14px }
 .MamufasDialog-body {
   @include display-flex();
   @include flex-direction(column);
+  width: 100%;
+  padding: 40px 0;
 }
 .MamufasDialog .MamufasDialog-dropZone {
   position: relative; 

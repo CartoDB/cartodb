@@ -4,10 +4,8 @@
 
 
 // Error details dialog styles
-
-.ErrorDetails {
-
-}
+$width: 620px;
+.ErrorDetails {}
 .ErrorDetails-header .Dialog-headerIcon {
   line-height: 40px;
   margin-bottom: 15px;
@@ -19,7 +17,7 @@
 .ErrorDetails-header .Dialog-headerText { font-size: 14px }
 .ErrorDetails-body {
   min-width: initial;
-  width: 620px;
+  width: $width;
 }
 .ErrorDetails-list {}
 .ErrorDetails-item {
@@ -46,13 +44,17 @@
   text-align: center;
 }
 .ErrorDetails-itemText {
-  width: 500px;
+  width: $width - 120;
   font-weight: $sFontWeight-lighter;
   font-size: 14px;
   color: $cTypography-paragraphs;
 }
 .ErrorDetails-itemTextStrong { color: $cTypography-headers }
-.ErrorDetails-footer { text-align: center }
+.ErrorDetails-footer {
+  width: $width;
+  margin: 0 auto;
+  text-align: center;
+}
 .ErrorDetails-footerButton {
   display: inline-block;
   padding-left: 40px;

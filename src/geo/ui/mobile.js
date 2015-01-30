@@ -141,8 +141,50 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
+    this.mapView.bind('newLayerView', this._addLoading, this);
+
     this._addWheelEvent();
 
+  },
+
+  _addLoading: function (layerView) {
+    if (layerView) {
+      var self = this;
+
+      var loadingTiles = function() {
+        self.loadingTiles();
+      };
+
+      var loadTiles = function() {
+        self.loadTiles();
+      };
+
+      layerView.bind('loading', loadingTiles);
+      layerView.bind('load',    loadTiles);
+    }
+  },
+
+  loadingTiles: function() {
+    if (this.loader) {
+      this.loader.show()
+    }
+    if(this.layersLoading === 0) {
+        this.trigger('loading');
+    }
+    this.layersLoading++;
+  },
+
+  loadTiles: function() {
+    if (this.loader) {
+      this.loader.hide();
+    }
+    this.layersLoading--;
+    // check less than 0 because loading event sometimes is
+    // thrown before visualization creation
+    if(this.layersLoading <= 0) {
+      this.layersLoading = 0;
+      this.trigger('load');
+    }
   },
 
   _selectOverlays: function() {
@@ -556,11 +598,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var template = cdb.core.Template.compile('<div class="loader"></div>', 'mustache');
 
-    var loader = new cdb.geo.ui.TilesLoader({
+    this.loader = new cdb.geo.ui.TilesLoader({
       template: template
     });
 
-    this.$el.append(loader.render().$el);
+    this.$el.append(this.loader.render().$el);
     this.$el.addClass("with-loader");
 
   },

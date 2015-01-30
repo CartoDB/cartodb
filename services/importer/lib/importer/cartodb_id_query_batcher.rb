@@ -32,7 +32,7 @@ module CartoDB
         @logger.log("Finished batched query by cartodb_id in #{table_name}: query")
       rescue => e
         Rollbar.report_exception(e)
-        log.log "Error running batched query by cartodb_id: #{query} #{exception.to_s} #{exception.backtrace}"
+        @logger.log "Error running batched query by cartodb_id: #{query} #{exception.to_s} #{exception.backtrace}"
         raise e
       end
 

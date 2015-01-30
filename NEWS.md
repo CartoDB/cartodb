@@ -1,4 +1,7 @@
-3.8.0 (2015-01-xx)
+3.8.1 (2015-01-xx)
+------------------
+
+3.8.0 (2015-01-30)
 ------------------
 * Mailchimp user lists importer dataset.
   New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
@@ -13,6 +16,7 @@
 * Added slides support for visualization
 * Added guessing of types for geojson (boolean and dates) via ogr2ogr2 [#1036](https://github.com/CartoDB/cartodb/issues/1036). Update `ogr2ogr2-static-bin` package for this to work
 * Fixed param `quoted_fields_guessing` on imports and syncs [#1966](https://github.com/CartoDB/cartodb/issues/1966)
+* Background importer for new dashboard.
 
 3.7.1 (2014-12-30)
 ------------------

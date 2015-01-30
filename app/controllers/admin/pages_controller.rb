@@ -152,6 +152,8 @@ class Admin::PagesController < ApplicationController
       end
     end
 
+    has_new_public_dashboard = viewed_user.has_feature_flag?('new_public_dashboard')
+
     @tags             = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
     @username         = viewed_user.username
     @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
@@ -199,7 +201,11 @@ class Admin::PagesController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
+      if has_new_public_dashboard
+        format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
+      else
+        format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
+      end
     end
 
   end #public

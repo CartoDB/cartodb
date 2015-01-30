@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
+    <title><%= yield :title %></title>
+    <meta name="description" content="<%= yield :description %>">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, visualizations, CartoDB">
+    <meta name="author" content="<%= @name %>">
+    <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <meta property="og:title" content="Maps by <%= @name %> on CartoDB" />
+    <meta property="og:description" content="<%= @name %> is creating maps and visualizations using CartoDB" /> 
+    <meta property="og:type" content="Visualizations list"/>
+    <meta property="og:url" content="<%= request.fullpath %>" />
+    <meta property="og:image" content="<%= @avatar_url %>">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@cartodb">
+    <meta name="twitter:creator" content="@cartodb">
+    <meta name="twitter:title" content="Maps by <%= @name %> on CartoDB">
+    <meta name="twitter:description" content="<%= @name %> is creating maps and visualizations using CartoDB.">
+    <meta name="twitter:image" content="<%= @avatar_url %>">
+    <meta name="twitter:url" content="<%= request.fullpath %>" />
+
+    <%= render 'shared/lato_font' %>
+    <%= stylesheet_link_tag 'cartodb', 'new_common', 'new_public_dashboard' %>
+  </head>
+  <body class="PublicBody">
+    <%= render 'admin/shared/new_header', :public => true, :home_url => root_url %>
+    <div class="FavMap">
+    </div>
+    <div class="UserInfo">
+      <div class="UserAvatar UserInfo-avatar">
+        <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+      </div>
+      <h2 class="UserInfo-name">
+        <%= @name %> <span class="UserInfo-nameBreadcrumb">/ Maps</span>
+      </h2>
+      <p class="DefaultParagraph UserInfo-desc">
+        <%= @description %>
+      </p>
+      <ul class="UserInfo-links">
+        <% if @website %>
+          <li class="UserInfo-linksItem">
+            <i class="iconFont iconFont-Dribbble"></i>
+            <a href="<%= @website %>"><%= @website %></a>
+          </li>
+        <% end %>
+        <% if @twitter_username %>
+          <li class="UserInfo-linksItem">
+            <i class="iconFont iconFont-Twitter"></i>
+            <a href="https://twitter.com/<%= @twitter_username %>"><%= @twitter_username %></a>
+          </li>
+        <% end %>
+        <% if @available_for_hire %>
+          <li class="UserInfo-linksItem UserInfo-linksItem--positive">
+            <i class="iconFont iconFont-Check"></i>
+            <a href="mailto:<%= @email %>">Hire me</a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+    <div class="PublicBody-content">
+      <%= yield %>
+    </div>
+    <%= render 'admin/shared/new_footer' %>
+    <%= yield :js %>
+  </body>
+</html>

@@ -119,10 +119,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.hasLayerSelector = false;
 
+    this.slides_data   = this.options.slides_data;
     this.visualization = this.options.visualization;
 
     if (this.visualization) {
-      this.slides = this.visualization.slides;
+      this.slides      = this.visualization.slides;
     }
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -146,13 +147,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _selectOverlays: function() {
 
-    if (this.slides) { // if there are slides…
+    if (this.slides && this.slides_data) { // if there are slides…
 
       var state = this.slides.state();
 
       if (state == 0) this.overlays = this.options.overlays; // first slide == master vis
       else {
-        this.overlays = this.options.slides_data[state - 1].overlays;
+        this.overlays = this.slides_data[state - 1].overlays;
       }
     } else { // otherwise we load the regular overlays
       this.overlays = this.options.overlays;

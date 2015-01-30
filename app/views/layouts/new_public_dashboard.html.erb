@@ -37,26 +37,28 @@
       <h2 class="UserInfo-name">
         <%= @name %> <span class="UserInfo-nameBreadcrumb">/ Maps</span>
       </h2>
-      <p class="DefaultParagraph UserInfo-desc">
-        <%= @description %>
-      </p>
+      <% if @description.present? %>
+        <p class="DefaultParagraph UserInfo-desc">
+          <%= @description %>
+        </p>
+      <% end %>
       <ul class="UserInfo-links">
-        <% if @website %>
+        <% if @website.present? %>
           <li class="UserInfo-linksItem">
             <i class="iconFont iconFont-Dribbble"></i>
-            <a href="<%= @website %>"><%= @website %></a>
+            <%= link_to @website_clean, @website %>
           </li>
         <% end %>
-        <% if @twitter_username %>
+        <% if @twitter_username.present? %>
           <li class="UserInfo-linksItem">
             <i class="iconFont iconFont-Twitter"></i>
-            <a href="https://twitter.com/<%= @twitter_username %>"><%= @twitter_username %></a>
+            <%= link_to @twitter_username, "https://twitter.com/#{@twitter_username}" %>
           </li>
         <% end %>
         <% if @available_for_hire %>
           <li class="UserInfo-linksItem UserInfo-linksItem--positive">
             <i class="iconFont iconFont-Check"></i>
-            <a href="mailto:<%= @email %>">Hire me</a>
+            <%= mail_to @email, "Available for hire" %>
           </li>
         <% end %>
       </ul>

@@ -31,13 +31,14 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color: $cTypography-headers;
+  margin-bottom: $sMargin-min;
 }
 .UserInfo-nameBreadcrumb {
   color: $cTypography-secondary;
 }
 .UserInfo-desc {
   max-width: 620px;
-  margin: $sMargin-min 0;
+  margin-bottom: $sMargin-elementInline;
 }
 .UserInfo-links {
   @include display-flex();
@@ -49,6 +50,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 .UserInfo-linksItem {
   @include display-flex();
   @include flex-wrap(nowrap);
+  line-height: 1; // to vertical align with icons
 }
 .UserInfo-linksItem:not(:last-child) {
   margin-right: $sMargin-group;

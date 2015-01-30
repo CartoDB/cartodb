@@ -152,20 +152,33 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    has_new_public_dashboard = viewed_user.has_feature_flag?('new_public_dashboard')
-
-    @tags             = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
-    @username         = viewed_user.username
-    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
-    @twitter_username = viewed_user.twitter_username 
+    @username           = viewed_user.username
+    @name               = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @twitter_username   = viewed_user.twitter_username
     @available_for_hire = viewed_user.available_for_hire
     @email              = viewed_user.email
-    @description      = viewed_user.description
-    @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @description        = viewed_user.description
+    @website            = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
+    @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @avatar_url         = viewed_user.avatar
 
-    @avatar_url = viewed_user.avatar
+    if viewed_user.has_feature_flag?('new_public_dashboard')
+      new_public_dashboard(viewed_user)
+    else
+      public_dashboard(viewed_user)
+    end
+  end
+  
+  private
 
+  def new_public_dashboard(viewed_user)
+    respond_to do |format|
+      format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
+    end
+  end #new_public_dashboard
+
+  def public_dashboard(viewed_user)
+    @tags       = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
     @tables_num = viewed_user.public_table_count
     @vis_num    = viewed_user.public_visualization_count
 
@@ -201,16 +214,9 @@ class Admin::PagesController < ApplicationController
     end
 
     respond_to do |format|
-      if has_new_public_dashboard
-        format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
-      else
-        format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
-      end
+      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
     end
-
-  end #public
-
-  private
+  end #public_dashboard
 
   def public_organization(organization)
     @organization = organization

@@ -3,9 +3,7 @@
 @import "../../new_variables/sizes";
 
 
-.CreateDialog-header {
-
-}
+.CreateDialog-header { min-height: 100px!important }
 .CreateDialog-headerSteps {
   display: block;
   text-align: center;

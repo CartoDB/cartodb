@@ -22,8 +22,8 @@
   background: $cStructure-mainBkg;
   border-radius: 4px;
   /* x-offset, y-offset, blur, size, color */
-  box-shadow: 0 0 5px 1px $cStructure-mainLine;
-  border: 1px $cStructure-mainLine solid;
+  box-shadow: 0 0 5px 1px rgba(black, 0.2);
+  border: 1px solid rgba(black, 0.2);
   z-index: 50;
 
   &:before {
@@ -33,7 +33,7 @@
     width: 10px;
     height: 10px;
     background-color: $cStructure-mainBkg;
-    box-shadow: 0 0 5px 1px $cStructure-mainLine;
+    box-shadow: 0 0 5px 1px rgba(black, 0.2);
     @include transform(rotate(45deg));
   }
   &:after {

@@ -5,18 +5,21 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
+$idleColor: #99CAEF;
+$selectedColor: white;
+
 .UserNotifications {
   position:relative;
   @include display-flex();
   text-decoration: none!important;
-  color: $cIcons-default;
+  color: $idleColor;
 }
 .UserNotifications:hover {
-  color: $cIcons-active;
+  color: $selectedColor;
 }
 .UserNotifications-icon {
-  color: #999;
-  &:hover { color: #666 }
+  color: $idleColor;
+  &:hover { color: $selectedColor }
 }
 .UserNotifications-badge {
   @include opacity(0);
@@ -26,12 +29,12 @@
 }
 // States
 .UserNotifications.has--alerts {
-  color: #666;
+  color: $selectedColor;
   .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1));
     @include opacity(1);
-    color: white;
+    color: $selectedColor;
   }
 }
 .UserNotifications.has--alerts:hover {

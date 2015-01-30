@@ -2,7 +2,7 @@
 require_relative '../../lib/google_plus_api'
 
 class SessionsController < ApplicationController
-  layout 'front_layout'
+  layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
   before_filter :initialize_google_plus_config

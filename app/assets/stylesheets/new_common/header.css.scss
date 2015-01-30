@@ -36,7 +36,7 @@
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
-  color: #90C4ED;
+  color: rgba(white, 0.6);
 }
 .Header-navigationBreadcrumbLink {
   position:relative;
@@ -81,7 +81,7 @@
 }
 .Header-settingsLink {
   font-weight: $sFontWeight-lighter;
-  color: #99CAEF;
+  color: rgba(white, 0.6);
   
   &:hover {
     color: white;

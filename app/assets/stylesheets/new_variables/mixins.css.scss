@@ -80,6 +80,15 @@
   // Hello IE10
   -ms-flex-align: $ie-v;
 }
+@mixin align-content($v, $ie-v: "") {
+  $ie-v: $v !default;
+  -webkit-align-content: $v;
+  -moz-align-content: $v;
+  -ms-align-content: $v;
+  align-content: $v;
+  // Hello IE10
+  -ms-flex-align: $ie-v;
+}
 
 // CSS3 typical functions
 @mixin opacity($v) {

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.00.03",
+  "version": "3.4.1",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -50,7 +50,12 @@
     "source-map-support": "^0.2.8",
     "uglify-js": "1.3.3",
     "underscore": "~1.6.0",
-    "watchify": "^2.1.1"
+    "watchify": "^2.1.1",
+    "gulp": "~3.8.10",
+    "gulp-iconfont": "~1.0.0",
+    "gulp-iconfont-css": "~0.0.9",
+    "gulp-install": "~0.2.0",
+    "gulp-sketch": "~0.0.7"
   },
   "files": [
     "dist"

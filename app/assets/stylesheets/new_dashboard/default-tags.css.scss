@@ -8,3 +8,9 @@
   color:$cTypography-secondary;
   font-weight: $sFontWeight-lighter;
 }
+.DefaultTags-item {}
+.DefaultTags-item.is--empty {
+  color: $cTypography-help;
+  font-style: italic;
+  font-weight: $sFontWeight-lighter;
+}

@@ -1,29 +1,42 @@
-// Map card item
-// --------------------------------------------------
-
 @import "compass/css3/images";
 @import "../new_variables/colors";
 @import "../new_variables/mixins";
 @import "../new_variables/sizes";
 
+// Map card item
+//
+// Example usage:
+// <div class="MapCard">
+//   <div class="MapCard-header"></div>
+//   <div class="MapCard-content">
+//     <div class="MapCard-contentBody">
+//       <div class="MapCard-contentBodyRow">
+//         <h3 class="DefaultTitle">Foobar</h3>
+//         ...
+//
+//       <div class="MapCard-contentBodyRow">
+//         ...
+//
+//     </div>
+//     <div class="MapCard-contentFooter">
+//      ...
+//
 .MapCard {
-  position:relative;
+  position: relative;
   @include inline-block();
-  width: 298px;
-  height: 352px;
-  margin-top: $sMargin-element;
-  margin-right: $sMargin-element;
-  border: 1px solid rgba(#DBDBDB, 1);
-  border-radius: 4px;
+  width: $sCard-width;
+  margin-right: $sMargin-element - 3;
+  border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
 }
-
-.MapCard:hover {
-  background-color: #F5FAFE;
-  border-color: #BCD8F1;
+.MapCard--selectable:hover {
+  background-color: $cCard-hoverFill;
+  border-color: $cCard-hoverBorder;
 }
-.MapCard.is--selected {
-  background-color: #EFF8FF;
-  border-color: #BCD8F1;
+.MapCard--selectable.is-selected {
+  background-color: $cCard-selectedFill;
+  border-color: $cCard-selectedBorder;
 }
 .MapCard-header {
   position: relative;
@@ -32,12 +45,17 @@
   @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
   border-radius: 2px 2px 0 0;
 }
-.MapCard-headerShadow {
+.MapCard-header--compact {
+  height: 130px;
+}
+.MapCard-header:after {
+  content: ' ';
   position: absolute;
   left: 0;
   bottom: 0;
+  display: block;
   width: 100%;
-  height: 4px;
+  height: $sMargin-min;
   background: black;
   @include opacity(.1);
   z-index:2;
@@ -53,56 +71,36 @@
   background:rgba(black,.4);
   z-index:2;
 }
-.MapCard-headerLayers {
-  position:absolute;
-  top:10px;
-  left:12px;
-  width:29px;
-  height:29px;
-  border-radius: 2px;
-  z-index:2;
-}
-.MapCard-headerLayers {
-  position:absolute;
-  top:10px;
-  left:12px;
-  width:29px;
-  height:29px;
-  border-radius: 2px;
-  z-index:2;
-}
-.MapCard-content {
+.MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   @include flex-direction(column);
-  height:142px;
+  border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
 }
-.MapCard-contentDetail {
-  display:block;
-  width:100%;
+.MapCard-contentBody {
+  width: 100%;
 }
-.MapCard-contentInfo {
+.MapCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
+.MapCard-contentBodyTitle {
+  width: 205px;
+}
+.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+.MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-}
-.MapCard-contentDescription {
-  display:block;
-  margin-top:10px;
-}
-.MapCard-contentTags {
-  display:block;
-  margin-top:10px;
 }
 .MapCard-contentFooter {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width:100%;
-  padding-top:15px;
-  border-top:1px solid $cStructure-softLine;
+  width: 100%;
+  padding-top: $sMargin-elementInline;
+  border-top: 1px solid $cStructure-softLine;
 }
 .MapCard-contentFooterDetails--left {
   @include display-flex();
@@ -110,5 +108,10 @@
   @include justify-content(space-between, justify);
 }
 .MapCard-contentFooterTimeDiff {
-  padding-left:14px;
+  padding-left: 14px;
+}
+.MapCard-contentBodyTimeDiff .UserAvatar,
+.MapCard-contentFooterTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
 }

@@ -3,6 +3,9 @@ require_relative '../../models/map/presenter'
 require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
+
+  include CartoDB
+
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
@@ -24,10 +27,6 @@ class Admin::VisualizationsController < ApplicationController
 
   end #index
 
-  def resolve_visualization_and_table(request)
-    locator.get(@table_id, @schema || CartoDB.extract_subdomain(request))
-  end
-
   def show
     unless current_user.present?
       if request.original_fullpath =~ %r{/tables/}
@@ -39,8 +38,9 @@ class Admin::VisualizationsController < ApplicationController
 
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) unless @visualization
+    return(pretty_404) if disallowed_type?(@visualization)
 
-    unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+    unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
         return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
       else
@@ -55,10 +55,11 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_table
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) if @visualization.nil? || @visualization.private?
+    return(pretty_404) if disallowed_type?(@visualization)
 
-    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id])) \
+    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain],
+                                                            id: request.params[:id])) \
       if @visualization.derived?
 
     if current_user.nil? && !request.params[:redirected].present?
@@ -69,12 +70,12 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     if @visualization.organization?
-      unless current_user and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      unless current_user and @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
         return(embed_forbidden)
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local?)
+    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local? or Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
     if @visualization.user.has_organization? && !request.params[:redirected].present?
@@ -92,7 +93,7 @@ class Admin::VisualizationsController < ApplicationController
     @api_key = nil
     @can_copy = false
 
-    if current_user && @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       if @visualization.organization?
         @auth_tokens = current_user.get_auth_tokens
         @use_https = true
@@ -104,7 +105,8 @@ class Admin::VisualizationsController < ApplicationController
     owner = @visualization.user
     # set user to current user only if the user is in the same organization
     # this allows to enable "copy this table to your tables" button
-    if current_user && current_user.organization.present? && owner.organization.present? && current_user.organization_id == owner.organization_id
+    if current_user && current_user.organization.present? && owner.organization.present? &&
+        current_user.organization_id == owner.organization_id
       @user = current_user
       response.headers['Cache-Control'] = "no-cache,private"
     else
@@ -124,19 +126,19 @@ class Admin::VisualizationsController < ApplicationController
     @public_tables_count    = @visualization.user.public_table_count
 
     @non_dependent_visualizations = @table.non_dependent_visualizations.select{
-        |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
     }
 
     @dependent_visualizations = @table.dependent_visualizations.select{
-        |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
     }
 
     @total_visualizations  = @non_dependent_visualizations + @dependent_visualizations
     
     @total_nonpublic_total_vis_count = @table.non_dependent_visualizations.select{
-        |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count + @table.dependent_visualizations.select{
-        |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count
 
     respond_to do |format|
@@ -147,8 +149,8 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_map
     @visualization, @table = resolve_visualization_and_table(request)
-
     return(pretty_404) unless @visualization
+    return(pretty_404) if disallowed_type?(@visualization)
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
@@ -159,7 +161,8 @@ class Admin::VisualizationsController < ApplicationController
 
     return(embed_forbidden) if @visualization.private?
     return(public_map_protected) if @visualization.password_protected?
-    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.organization? &&
+        @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       return(show_organization_public_map)
     end
 
@@ -217,10 +220,11 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_public_map
     @visualization, @table = resolve_visualization_and_table(request)
 
-    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
+    return(pretty_404) if disallowed_type?(@visualization)
 
     @can_fork = @visualization.related_tables.map { |t|
-      t.table_visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+      t.table_visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
     }.all?
 
     response.headers['Cache-Control'] = "no-cache,private"
@@ -247,7 +251,8 @@ class Admin::VisualizationsController < ApplicationController
   def show_organization_embed_map
     @visualization, @table = resolve_visualization_and_table(request)
 
-    return(embed_forbidden) unless current_user and @visualization and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
+    return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
+    return(pretty_404) if disallowed_type?(@visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -264,6 +269,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+    return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
       flash[:placeholder] = '*' * submitted_password.size
@@ -302,6 +308,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
 
     return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+    return(pretty_404) if disallowed_type?(@visualization)
 
     unless @visualization.is_password_valid?(submitted_password)
       flash[:placeholder] = '*' * submitted_password.size
@@ -324,11 +331,11 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     
     return(pretty_404) unless @visualization
+    return(pretty_404) if disallowed_type?(@visualization)
+
     return(embed_forbidden) if @visualization.private?
     return(embed_protected) if @visualization.password_protected?
-    if current_user and @visualization.organization? and @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READONLY)
-      return(show_organization_embed_map)
-    end
+    return(show_organization_embed_map) if org_user_has_map_permissions?(current_user, @visualization)
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -363,6 +370,14 @@ class Admin::VisualizationsController < ApplicationController
     render 'track', layout: false
   end
 
+  protected
+
+  # @param visualization CartoDB::Visualization::Member
+  def disallowed_type?(visualization)
+    return false if visualization.nil?
+    visualization.type_slide?
+  end
+
   # Check if visualization logo should be hidden or not
   def is_logo_hidden(vis, parameters)
     has_logo  = vis.overlays.any? {|o| o.type == "logo" }
@@ -370,6 +385,11 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   private
+
+  def org_user_has_map_permissions?(user, visualization)
+    user && visualization && visualization.organization? &&
+      visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
+  end
 
   def resolve_visualization_and_table(request)
     filters = { exclude_raster: true }

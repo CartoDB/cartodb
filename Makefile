@@ -13,6 +13,7 @@ PENDING_SPECS = \
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
+	spec/models/table/relator_spec.rb \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
@@ -172,6 +173,7 @@ update_cdb:
 	cd $(CDB_PATH); make cartodb dist/cartodb.css
 	cp $(CDB_PATH)/dist/cartodb.full.uncompressed.js vendor/assets/javascripts/cartodb.uncompressed.js
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts
+	cp $(CDB_PATH)/dist/cartodb.mod.odyssey.uncompressed.js vendor/assets/javascripts
 	cp $(CDB_PATH)/dist/cartodb.css vendor/assets/stylesheets/cartodb.css
 
 

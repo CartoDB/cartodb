@@ -189,6 +189,10 @@ defaults: &defaults
   gdrive: 
     api_key: ""
     app_id: ""
+  # This enables a support chat within editor
+  # Use your Olark api id to enable it. If you remove this entry or don't define an app key, it won't be activated.
+  olark: 
+    app_id: ''
   enforce_non_empty_layer_css: true
   users_dumps:
     service:
@@ -210,6 +214,12 @@ defaults: &defaults
       app_secret:           ''
       callback_url:         ''
     instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    # Mailchimp datasource. Setup at https://admin.mailchimp.com/account/oauth2/ then fill here.
+    # If fields are present but empty, option won't appear at editor import window
+    mailchimp:
       app_key:              ''
       app_secret:           ''
       callback_url:         ''

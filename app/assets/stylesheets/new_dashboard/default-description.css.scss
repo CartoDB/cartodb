@@ -9,3 +9,10 @@
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
+.DefaultDescription.is--empty {
+  color: $cTypography-help;
+  font-style: italic;
+}
+.DefaultDescription--error {
+  color: $cHighlight-negative;
+}

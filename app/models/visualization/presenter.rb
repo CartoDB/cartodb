@@ -19,28 +19,34 @@ module CartoDB
         permission = visualization.permission
 
         poro = {
-          id:               visualization.id,
-          name:             visualization.name,
-          map_id:           visualization.map_id,
-          active_layer_id:  visualization.active_layer_id,
-          type:             visualization.type,
-          tags:             visualization.tags,
-          description:      visualization.description,
-          privacy:          privacy_for_vizjson.upcase,
-          stats:            visualization.stats,
-          created_at:       visualization.created_at,
-          updated_at:       visualization.updated_at,
-          permission:       permission.nil? ? nil : permission.to_poro,
-          locked:           visualization.locked,
-          source:           visualization.source,
-          title:            visualization.title,
-          license:          visualization.license,
-          kind:             visualization.kind,
-          likes:            visualization.likes.count
+          id: visualization.id,
+          name: visualization.name,
+          map_id: visualization.map_id,
+          active_layer_id: visualization.active_layer_id,
+          type: visualization.type,
+          tags: visualization.tags,
+          description: visualization.description,
+          privacy: privacy_for_vizjson.upcase,
+          stats: visualization.stats,
+          created_at: visualization.created_at,
+          updated_at: visualization.updated_at,
+          permission: permission.nil? ? nil : permission.to_poro,
+          locked: visualization.locked,
+          source: visualization.source,
+          title: visualization.title,
+          parent_id: visualization.parent_id,
+          license: visualization.license,
+          kind: visualization.kind,
+          likes: visualization.likes.count,
+          prev_id: visualization.prev_id,
+          next_id: visualization.next_id,
+          transition_options: visualization.transition_options,
+          active_child: visualization.active_child
         }
         poro.merge!(table: table_data_for(table, permission))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
+        poro.merge!(children: children)
         poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
         poro
       end
@@ -74,11 +80,13 @@ module CartoDB
             Member::PRIVACY_PRIVATE
           when Member::PRIVACY_PROTECTED
             Member::PRIVACY_PROTECTED
+          else
+            Member::PRIVACY_PRIVATE
         end
       end
 
       def related
-        { related_tables:   related_tables }
+        { related_tables: related_tables }
       end
 
       def table_data_for(table=nil, permission = nil)
@@ -107,9 +115,21 @@ module CartoDB
           updated_at:   table.updated_at
         )
 
-        table_data.merge!(table.rows_and_size)
+        table_data.merge!(table.row_count_and_size)
 
         table_data
+      end
+
+      def children
+        @visualization.children.map { |vis| {
+                                              id: vis.id,
+                                              prev_id: vis.prev_id,
+                                              type: Visualization::Member::TYPE_SLIDE,
+                                              next_id: vis.next_id,
+                                              transition_options: vis.transition_options,
+                                              map_id: vis.map_id
+                                            }
+        }
       end
 
       def synchronization_data_for(table=nil)

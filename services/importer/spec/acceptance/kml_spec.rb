@@ -21,9 +21,7 @@ describe 'KML regression tests' do
   end
 
   it 'imports KML files from url' do
-    filepath    = "https://maps.google.com/maps/ms?hl=en&ie=UTF8&t=m" +
-                  "&source=embed&authuser=0&msa=0&output=kml"         +
-                  "&msid=214357343079009794152.0004d0322cc2768ca065e"
+    filepath    = "https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/one_layer.kml"
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
     runner      = CartoDB::Importer2::Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
     runner.run

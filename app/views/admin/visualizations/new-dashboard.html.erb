@@ -23,10 +23,7 @@
   <div class="u-inner">
     <div class="Header-navigation">
       <ul class="Header-navigationList">
-        <li>
-          <a href="/dashboard/" class="Logo Logo--text">
-            <i class="iconFont iconFont-CartoDB"></i>
-          </a>
+        <li class="js-logo">
         </li>
         <li>
           <ul class="Header-navigationBreadcrumb">
@@ -57,7 +54,7 @@
         </li>
         <li class="Header-settingsItem">
           <a href="#/options" class="UserAvatar" id="header-settings-dropdown">
-            <%= image_tag current_user.avatar_url, class: "UserAvatar--medium" %>
+            <%= image_tag current_user.avatar_url, class: "UserAvatar-img UserAvatar-img--medium" %>
           </a>
         </li>
       </ul>
@@ -66,9 +63,7 @@
 </div>
 
 <div class="ContentController" id="content-controller">
-  <div class="Filters">
-    <div class="u-inner" id="filters"></div>
-  </div>
+  <div class="Filters"></div>
 
   <div class="ContentList" id="content-list"></div>
 

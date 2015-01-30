@@ -80,7 +80,8 @@ module CartoDB
         # @return string | nil
         def get_auth_url(use_callback_flow=true)
           if use_callback_flow
-            @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
+            @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
+                                                                         .sub('service', DATASOURCE_NAME)
           else
             @client.authorization.redirect_uri = REDIRECT_URI
           end
@@ -209,8 +210,10 @@ module CartoDB
         # @return Hash
         # @throws TokenExpiredOrInvalidError
         # @throws DataDownloadError
+        # @throws NotFoundDownloadError
         def get_resource_metadata(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
+          raise NotFoundDownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}, should stop syncing", DATASOURCE_NAME) if result.status == 404
           raise DataDownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
           item_data = format_item_data(result.data.to_hash)
           return item_data.to_hash

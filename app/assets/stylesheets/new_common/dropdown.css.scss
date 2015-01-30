@@ -21,10 +21,8 @@
   display: none;
   background: $cStructure-mainBkg;
   border-radius: 4px;
-
   /* x-offset, y-offset, blur, size, color */
   box-shadow: 0 0 5px 1px $cStructure-mainLine;
-
   border: 1px $cStructure-mainLine solid;
   z-index: 50;
 
@@ -36,7 +34,7 @@
     height: 10px;
     background-color: $cStructure-mainBkg;
     box-shadow: 0 0 5px 1px $cStructure-mainLine;
-    transform: rotate(45deg);
+    @include transform(rotate(45deg));
   }
   &:after {
     content: ' ';

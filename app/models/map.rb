@@ -184,8 +184,8 @@ class Map < Sequel::Model
 
   def table_visualization
     CartoDB::Visualization::Collection.new
-      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::CANONICAL_TYPE)
-      .first
+                                      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+                                      .first
   end
 
   def admits_more_data_layers?

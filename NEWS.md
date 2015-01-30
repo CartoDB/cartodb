@@ -1,3 +1,19 @@
+3.8.0 (2015-01-xx)
+------------------
+* Mailchimp user lists importer dataset.
+  New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
+  Requires also a feature_flag enabled either globally or to a specific users: 'mailchimp_import'
+* Added icon font source ([how to make changes](http://github.com/CartoDB/cartodb/blob/master/app/assets/fonts/icon_font/README.md))
+* Integrated Olark chat within CartoDB editor
+* IP guessing on import: try to georeference the imported table by IP if there's no other geocodifiable column [#1149](https://github.com/CartoDB/cartodb/issues/1149) [#1822](https://github.com/CartoDB/cartodb/pull/1822)
+* Disable georeference by feature flag (georef_disabled) [#1227](https://github.com/CartoDB/cartodb/issues/1227)
+* Faster excel imports [#913](https://github.com/CartoDB/cartodb/issues/913). You'll need to install `csvkit`. Either do `pip install --no-use-wheel -r python_requirements.txt` or `pip install csvkit`.
+* Added `total_user_entries` to viz endpoint, to know the total amount of own visualizations/tables/both (shared don't count). If unauthenticated counts only public items.
+* Added Mailchimp 'members count' info [#1701](https://github.com/CartoDB/cartodb/issues/1701)
+* Added slides support for visualization
+* Added guessing of types for geojson (boolean and dates) via ogr2ogr2 [#1036](https://github.com/CartoDB/cartodb/issues/1036). Update `ogr2ogr2-static-bin` package for this to work
+* Fixed param `quoted_fields_guessing` on imports and syncs [#1966](https://github.com/CartoDB/cartodb/issues/1966)
+
 3.7.1 (2014-12-30)
 ------------------
 * New features

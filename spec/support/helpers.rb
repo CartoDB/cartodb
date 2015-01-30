@@ -1,3 +1,5 @@
+require_relative '../../app/models/visualization/member'
+
 class Fixnum
   def success?; self == 200; end
 end
@@ -90,5 +92,28 @@ module HelperMethods
       ["created_at", "timestamp with time zone"],
       ["updated_at", "timestamp with time zone"]
     ]
+  end
+
+  def random_attributes_for_vis_member(attributes={})
+    random = UUIDTools::UUID.timestamp_create.to_s
+    {
+      name:               attributes.fetch(:name, "name #{random}"),
+      description:        attributes.fetch(:description, "description #{random}"),
+      privacy:            attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
+      tags:               attributes.fetch(:tags, ['tag 1']),
+      type:               attributes.fetch(:type, Visualization::Member::TYPE_CANONICAL),
+      user_id:            attributes.fetch(:user_id),   # Mandatory
+      active_layer_id:    random,
+      title:              attributes.fetch(:title, ''),
+      source:             attributes.fetch(:source, ''),
+      license:            attributes.fetch(:license, ''),
+      parent_id:          attributes.fetch(:parent_id, nil),
+      kind:               attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
+      prev_id:            attributes.fetch(:prev_id, nil),
+      next_id:            attributes.fetch(:next_id, nil),
+      transition_options: attributes.fetch(:transition_options, {}),
+      active_child:       attributes.fetch(:active_child, nil),
+      locked:             attributes.fetch(:locked, false)
+    }
   end
 end

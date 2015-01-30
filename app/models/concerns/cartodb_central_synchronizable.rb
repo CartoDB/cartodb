@@ -66,7 +66,7 @@ module Concerns
         :soft_twitter_datasource_limit,
         :arcgis_datasource_enabled,
         :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
-        :new_dashboard_enabled]
+        :new_dashboard_enabled, :private_maps_enabled]
       end
     end
 

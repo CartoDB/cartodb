@@ -172,6 +172,30 @@ class Admin::PagesController < ApplicationController
   private
 
   def new_public_dashboard(viewed_user)
+    visualizations = Visualization::Collection.new.fetch({
+      user_id:  viewed_user.id,
+      type:     Visualization::Member::TYPE_DERIVED,
+      privacy:  Visualization::Member::PRIVACY_PUBLIC,
+      page:     params[:page].nil? ? 1 : params[:page],
+      per_page: VISUALIZATIONS_PER_PAGE,
+      order:    'updated_at',
+      o:        {updated_at: :desc},
+      exclude_shared: true,
+      exclude_raster: true
+    })
+
+    visualizations.each do |vis|
+      @visualizations = []
+      @visualizations.push({
+        title:        vis.name,
+        description:  vis.description_clean,
+        id:           vis.id,
+        tags:         vis.tags,
+        url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
+        owner:        vis.user
+      })
+   end
+    
     respond_to do |format|
       format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
     end

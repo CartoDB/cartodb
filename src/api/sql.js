@@ -28,19 +28,25 @@
       protocol: loc,
       jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
     })
+
+    if (!this.options.sql_api_template) {
+      var opts = this.options;
+      var template = null;
+      if(opts && opts.completeDomain) {
+        template = opts.completeDomain + '/api/' +  opts.version + '/sql'
+      } else {
+        var host = opts.host || 'cartodb.com';
+        var protocol = opts.protocol || 'https';
+
+        template = protocol + '://{user}.' + host + '/api/' +  opts.version + '/sql';
+      }
+      this.options.sql_api_template = template;
+    }
   }
 
   SQL.prototype._host = function() {
-    var opts = this.options;
-    if(opts && opts.completeDomain) {
-      return opts.completeDomain + '/api/' +  opts.version + '/sql'
-    } else {
-      var host = opts.host || 'cartodb.com';
-      var protocol = opts.protocol || 'https';
-
-      return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
-    }
-  }
+    return this.options.sql_api_template.replace('{user}', this.options.user);
+  },
 
   /**
    * var sql = new SQL('cartodb_username');

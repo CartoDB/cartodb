@@ -20,6 +20,9 @@
         ERROR_TRACK_ENABLED: false,
 
         getSqlApiUrl: function() {
+          if (this.get('sql_api_template')) {
+            return this.get("sql_api_template").replace('{user}', this.get('user_name'));
+          }
           var url = this.get('sql_api_protocol') + '://' +
             this.get('user_name') + '.' +
             this.get('sql_api_domain') + ':' +

@@ -170,6 +170,7 @@
     expect(layerDefinition._host()).toEqual('http://api.cartocdn.com/rambo');
     expect(layerDefinition._host('0')).toEqual('http://0.api.cartocdn.com/rambo');
     layerDefinition.options.tiler_protocol = "https";
+    layerDefinition._buildMapsApiTemplate(layerDefinition.options);
     expect(layerDefinition._host()).toEqual('https://cartocdn.global.ssl.fastly.net/rambo');
     expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
   });
@@ -189,6 +190,7 @@
 
       setTimeout(function() {
         layerDefinition.options.tiler_protocol = 'https';
+        layerDefinition._buildMapsApiTemplate(layerDefinition.options);
         layerDefinition.getTiles();
 
         setTimeout(function() {
@@ -770,6 +772,7 @@ describe("NamedMap", function() {
       expect(params.jsonpCallback.indexOf('_cdbi_layer_attributes') !== -1).toEqual(true);
     });
     namedMap.options.tiler_protocol = 'https';
+    namedMap._buildMapsApiTemplate(namedMap.options)
     namedMap.setAuthToken('test');
     namedMap.layerToken = 'test';
     namedMap.fetchAttributes(1, 12345, null, function(data) {

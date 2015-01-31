@@ -34,7 +34,7 @@ module CartoDB
         if(table_has_cartodb_id(table_schema, table_name))
           CartoDB::Importer2::CartodbIdQueryBatcher.new(@db, @logger).execute(
               %Q{#{query_fragment_update} where #{query_fragment_where}},
-              table_name
+              table_schema, table_name
           )
         else
         CartoDB::Importer2::QueryBatcher::execute(

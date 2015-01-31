@@ -40,22 +40,22 @@ module CartoDB
         end
 
         it 'processes every row' do
-          @qb.execute(%Q[update #{@table_name} set value = value * 10], @table_name)
+          @qb.execute(%Q[update #{@table_name} set value = value * 10], 'public', @table_name)
           fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [10, 20, 30]
         end
 
         it 'processes every row for batch size bigger than table' do
-          @qb_big_batch.execute(%Q[update #{@table_name} set value = value * 10], @table_name)
+          @qb_big_batch.execute(%Q[update #{@table_name} set value = value * 10], 'public', @table_name)
           fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [10, 20, 30]
         end
 
         it 'processes every matching row for queries matching all rows' do
-          @qb.execute(%Q[update #{@table_name} set value = value * 10 where cartodb_id % 1 = 0], @table_name)
+          @qb.execute(%Q[update #{@table_name} set value = value * 10 where cartodb_id % 1 = 0], 'public', @table_name)
           fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [10, 20, 30]
         end
 
         it 'processes every matching row for queries not matching all rows' do
-          @qb.execute(%Q[update #{@table_name} set value = value * 10 where cartodb_id % 2 = 0], @table_name)
+          @qb.execute(%Q[update #{@table_name} set value = value * 10 where cartodb_id % 2 = 0], 'public', @table_name)
           fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [1,20, 3]
         end
 

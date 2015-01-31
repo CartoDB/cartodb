@@ -17,10 +17,11 @@ module CartoDB
         puts message
       end
 
-      def execute(query, table_name)
-        @logger.log("Running batched query by cartodb_id in #{table_name}: #{query}")
+      def execute(query, table_schema, table_name)
+        qualified_table_name = "\"#{table_schema}\".\"#{table_name}\""
+        @logger.log("Running batched query by cartodb_id in #{qualified_table_name}: #{query}")
 
-        min_max = @db.fetch(%Q{select min(cartodb_id), max(cartodb_id) from #{table_name}}).all[0]
+        min_max = @db.fetch(%Q{select min(cartodb_id), max(cartodb_id) from #{qualified_table_name}}).all[0]
         min = min_max[:min]
         max = min_max[:max] + 1
 
@@ -29,7 +30,7 @@ module CartoDB
           @db[batched_query].all
         end while min <= max
         
-        @logger.log("Finished batched query by cartodb_id in #{table_name}: query")
+        @logger.log("Finished batched query by cartodb_id in #{qualified_table_name}: query")
       rescue => e
         Rollbar.report_exception(e)
         @logger.log "Error running batched query by cartodb_id: #{query} #{e.to_s} #{e.backtrace}"

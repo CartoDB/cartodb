@@ -20,7 +20,7 @@ module CartoDB
           SET
             the_geom = ST_GeomFromText(
               'POINT(' || REPLACE(TRIM(CAST("#{longitude_column}" AS text)), ',', '.') || ' ' ||
-                REPLACE(TRIM(CAST("#{latitude_column}" AS text)), ',', '.') || ')', #{CartoDB::SRID}
+                REPLACE(TRIM(CAST("#{latitude_column}" AS text)), ',', '.') || ')', 4326
             )
         }
         # TODO: should we avoid overwriting the_geom?

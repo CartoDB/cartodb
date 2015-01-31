@@ -59,6 +59,16 @@ module CartoDB
           fetch(%Q[select * from #{@table_name} order by cartodb_id]).should eq [1,20, 3]
         end
 
+        it 'does not fail with empty tables' do
+          begin
+            @db.run(%Q[create table empty_test_table (cartodb_id integer, value integer)])
+            @qb.execute(%Q[update empty_test_table set value = value * 10 where cartodb_id % 2 = 0], 'public', 'empty_test_table')
+            fetch(%Q[select * from empty_test_table order by cartodb_id]).should eq []
+          ensure
+            @db.drop_table 'empty_test_table'
+          end
+        end
+
       end
 
     end

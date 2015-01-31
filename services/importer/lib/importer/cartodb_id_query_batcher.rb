@@ -22,6 +22,7 @@ module CartoDB
         @logger.log("Running batched query by cartodb_id in #{qualified_table_name}: #{query}")
 
         min_max = @db.fetch(%Q{select min(cartodb_id), max(cartodb_id) from #{qualified_table_name}}).all[0]
+        return if min_max.nil? || min_max[:min].nil?
         min = min_max[:min]
         max = min_max[:max] + 1
 

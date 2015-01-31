@@ -31,6 +31,7 @@ module CartoDB
             '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         }
 
+        # TODO: next time this decision is needed should be refactored out to a factory
         if(table_has_cartodb_id(table_schema, table_name))
           CartoDB::Importer2::CartodbIdQueryBatcher.new(@db, @logger).execute(
               %Q{#{query_fragment_update} where #{query_fragment_where}},
@@ -58,7 +59,8 @@ module CartoDB
           from information_schema.columns
           where table_schema = '#{table_schema}' 
             and table_name = '#{table_name}' 
-            and column_name = 'cartodb_id';
+            and column_name = 'cartodb_id'
+            and data_type = 'integer';
         }).all
         !result[0].nil?
       end

@@ -31,8 +31,7 @@ cartodb.createLayer(map, {
      sql: 'select * from pop',
      cartocss: '#pop { raster-opacity: 1.0; }',
      raster: true,
-  }],
-  no_cdn: true
+  }]
 })
 .addTo(map)
 ```

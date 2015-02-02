@@ -164,8 +164,11 @@ This is the spec for visjson:
                     other_var: 1
                 },
                 layers: [{
-                    infowindow:
-                    legend:
+                    infowindow: '',
+                    legend: '',
+                    layer_name: 'name_of_layer',
+                    interactivity: 'column1, column2, ...',
+                    visible: true/false
                     }, {...}
 
                 ],

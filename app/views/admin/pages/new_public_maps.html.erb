@@ -43,7 +43,7 @@
             <div class="MapCard-contentFooterDetails--left">
               <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
                 <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                X day ago <%#.. by owner? %>
+                <%= time_ago_in_words(vis[:updated_at]) %>
               </div>
             </div>
             <div class="MapCard-contentFooterDetails--right">

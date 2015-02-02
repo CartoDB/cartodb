@@ -195,8 +195,8 @@ class Admin::PagesController < ApplicationController
         updated_at:   vis.updated_at,
         owner:        vis.user
       })
-   end
-    
+    end
+
     respond_to do |format|
       format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
     end

@@ -24,8 +24,7 @@
 .MapCard {
   position: relative;
   @include inline-block();
-  width: $sCard-width;
-  margin-right: $sMargin-element - 3;
+  width: $sCard-width - 2; //compensate for border
   border: 1px solid #DBDBDB;
   background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
@@ -78,6 +77,10 @@
   @include flex-direction(column);
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
+  height: 140px;
+}
+.MapCard-content--compact {
+  height: auto;
 }
 .MapCard-contentBody {
   width: 100%;

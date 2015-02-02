@@ -1,23 +1,30 @@
-// Maps list
-// --------------------------------------------------
-
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-.Maps-list {
-  display:block;
-  width:100%;
+// A list of .MapCard items.
+// Depending on context (private/public dashboard, delete items (affected maps)) it might look slightly differently.
+//
+// --------------------------------------------------
+.MapsList {
+  @include display-flex();
+  @include justify-content(flex-start, justify);
+  @include flex-wrap(wrap);
+  width: $sLayout-width + 2*$sMargin-element;
+  position: relative;
+  margin: 0 auto;
+  right: -#{$sMargin-element};
 }
-.Maps-listItem {
-  @include inline-block();
+.MapsList--centerItems {
+  @include justify-content(center);
 }
-.Maps-listItem:nth-child(3n) .MapCard {
-  margin-right:0
+.MapsList-item {
+  margin: $sMargin-element $sMargin-element 0 0;
 }
-.Maps-listItemCard {
-  margin-top: $sMargin-element;
+.MapsList.is-singleRow {
+  width: $sLayout-width;
+  right: 0;
 }
-.Maps-listItemCardContent {
-  height: 142px;
+.MapsList.is-singleRow .MapsList-item:nth-child(3n) {
+  margin-right: 0;
 }

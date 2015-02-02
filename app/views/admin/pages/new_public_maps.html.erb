@@ -15,14 +15,14 @@
     <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to 'datasets', public_datasets_home_url(user_domain: params[:user_domain]) %></p>
   </div>
 <% else %>
-  <ul class="u-inner">
+  <ul class="MapsList MapsList--centerItems">
     <% @visualizations.each do |vis| %>
       <% user_domain = vis[:owner].organization ? vis[:owner].username : nil %>
-      <li class="Maps-listItem">
-        <div class="MapCard Maps-listItemCard">
+      <li class="MapsList-item">
+        <div class="MapCard">
           <div class="MapCard-header">
           </div>
-          <div class="MapCard-content Maps-listItemCardContent">
+          <div class="MapCard-content">
             <div class="MapCard-contentBody">
               <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                 <h3 class="DefaultTitle">

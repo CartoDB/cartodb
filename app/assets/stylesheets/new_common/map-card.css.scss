@@ -107,8 +107,8 @@
   @include align-items(center, center);
   @include justify-content(space-between, justify);
 }
-.MapCard-contentFooterTimeDiff {
-  padding-left: 14px;
+.MapCard-contentFooterDetails--left > *:not(:last-child) {
+  margin-right: 14px;
 }
 .MapCard-contentBodyTimeDiff .UserAvatar,
 .MapCard-contentFooterTimeDiff .UserAvatar {

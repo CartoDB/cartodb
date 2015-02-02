@@ -1,5 +1,7 @@
 3.8.1 (2015-01-xx)
 ------------------
+* Added config for basemaps [#1954], see
+  [documentation](https://github.com/CartoDB/cartodb/wiki/How-to-configure-basemaps-in-CartoDB)
 
 3.8.0 (2015-01-30)
 ------------------

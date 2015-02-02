@@ -28,18 +28,19 @@ class Api::Json::OembedController < Api::ApplicationController
       raise ActionController::RoutingError.new('URL origin not allowed')
     end
 
-    uuid = uri.path.split('/')[-1]
+    begin
+      uuid = /(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/.match(uri.path)[0]
+    rescue NoMethodError
+      raise ActionController::RoutingError.new('UUID not found in URL')
+    end
+
     begin
       viz = CartoDB::Visualization::Member.new(id: uuid).fetch
     rescue KeyError
       raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
     end
 
-    if (uri.path =~ /^#{public_visualizations_show_path(id: uuid)}[\/]?$/) == nil
-      raise ActionController::RoutingError.new('Wrong URL for visualization: ' + uuid)
-    end
-
-    url = File.join(url, 'embed_map')
+    url = File.join(public_visualizations_show_url(id: uuid), 'embed_map')
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"
 
     response_data = {

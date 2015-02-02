@@ -28,7 +28,7 @@ class Api::Json::OembedController < Api::ApplicationController
       raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
     end
 
-    if public_visualizations_show_path(id: uuid) != uri.path && public_visualizations_show_path(id: uuid) + '/' != uri.path
+    if uri.path =~ /^\/viz\/#{public_visualizations_show_path(id: uuid)}[\/]?$/
       raise ActionController::RoutingError.new('Wrong URL for visualization: ' + uuid)
     end
 

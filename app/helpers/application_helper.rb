@@ -218,4 +218,19 @@ module ApplicationHelper
   #     send(hook_name) if defined?(hook_name)
   #   end.join('').html_safe
   # end
+  
+  def formatted_tags(tags)
+    visibleCount = 3
+    
+    tags.first(visibleCount).each_with_index do |tag, i|
+      yield tag
+      if i < visibleCount-1
+        concat ','
+      end
+    end
+    
+    if tags.size > visibleCount
+      concat "and #{tags.size - visibleCount} more"
+    end
+  end
 end

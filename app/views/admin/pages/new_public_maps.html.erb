@@ -30,11 +30,8 @@
 
             <div class="DefaultTags MapCard-contentBodyRow">
               <% if vis[:tags].size > 0 %>
-                <% vis[:tags].first(3).join do |tag| %>
+                <% formatted_tags(vis[:tags]) do |tag| %>
                   <a class="DefaultTags-item js-tag-link" href="<%= public_tag_url(user_domain: params[:user_domain], tag: tag) %>"><%= tag %></a>
-                  <% if vis[:tags].size > 3 %>
-                    and <%= vis[:tags].size - 3 %> more
-                  <% end %>
                 <% end %>
               <% else %>
                 <span class="DefaultTags-item is--empty">No tags</span>

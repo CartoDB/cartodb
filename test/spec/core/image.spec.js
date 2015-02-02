@@ -78,9 +78,11 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
+    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/bbox/(.*?)/-31\.05,-155\.74,82\.58,261\.21/400/300\.png");
+
     cartodb.Image(vizjson).bbox([[-31.05, -155.74], [82.58, 261.21]]).size(400,300).getUrl(function(error, url) {
       expect(error).toEqual(null);
-      expect(url).toEqual("http://documentation.cartodb.com/api/v1/map/static/bbox/310c1086afb7e0586ad42f7a834d2f3d:0/-31.05,-155.74,82.58,261.21/400/300.png");
+      expect(url).toMatch(regexp);
       done();
     });
 

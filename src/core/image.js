@@ -128,6 +128,8 @@
 
         this.model.set({
           username: dataLayer.options.user_name,
+          tiler_port: dataLayer.options.tiler_port,
+          tiler_domain: dataLayer.options.tiler_domain,
           zoom: data.zoom,
           center: JSON.parse(data.center),
           bounds: data.bounds
@@ -165,9 +167,15 @@
 
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
-      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + "/api/v1/map";
+      var tiler_port = options.tiler_port !== "80" ? ":" + options.tiler_port : "";
+
+      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + tiler_port + "/api/v1/map";
 
       var ld = layerDefinition.toJSON();
+
+      for (var i=0; i<ld.layers.length; i++) {
+        delete ld.layers[i].options.interactivity
+      }
 
       ld.layers.unshift(basemapLayer);
 
@@ -179,7 +187,9 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + layerDefinition.endPoint;
+      var tiler_port = options.tiler_port !== "80" ? ":" + options.tiler_port : "";
+
+      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + tiler_port + layerDefinition.endPoint;
 
       return layerDefinition.toJSON();
 
@@ -272,8 +282,10 @@
       var height       = this.model.get("size")[1];
       var layergroupid = this.model.get("layergroupid");
       var format       = this.model.get("format");
+      var tiler_domain = this.model.get("tiler_domain");
 
-      var endpoint = "http://" + username + ".cartodb.com/api/v1/map";
+      var tiler_port = this.model.get("tiler_port") !== "80" ? ":" + this.model.get("tiler_port") : "";
+      var endpoint = "http://" + username + "." + tiler_domain + tiler_port + "/api/v1/map";
 
       if (bbox) {
         return [endpoint, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");

@@ -58,7 +58,9 @@
       format: "png",
       zoom: 10,
       center: [0, 0],
-      size:  [320, 240]
+      size:  [320, 240],
+      tiler_port: 80,
+      tiler_domain: "cartodb.com"
     }
   });
 
@@ -85,6 +87,10 @@
       }
     });
 
+    this.defaults = {
+      tiler_domain: "cartodb.com",
+      tiler_port: "80"
+    }
     this.layerToken = null;
     this.urls = null;
     this.silent = false;
@@ -128,19 +134,29 @@
 
         this.model.set({
           username: dataLayer.options.user_name,
-          tiler_port: dataLayer.options.tiler_port,
-          tiler_domain: dataLayer.options.tiler_domain,
           zoom: data.zoom,
           center: JSON.parse(data.center),
           bounds: data.bounds
         });
+
+        var tiler_port = dataLayer.options.tiler_port !== "80" ? ":" + dataLayer.options.tiler_port : "";
+        var endpoint = "http://" + this.model.get("username") + "." + dataLayer.options.tiler_domain + tiler_port + "/api/v1/map";
+
+        this.model.set("endpoint", endpoint);
 
         if (dataLayer.type === "namedmap") {
           layerDefinition = this._getNamedmapLayerDefinition(dataLayer.options);
         } else {
           layerDefinition = this._getLayergroupLayerDefinition(dataLayer.options);
         }
+
+        this._getLayerGroupID(layerDefinition);
+
       }
+
+    },
+
+    _getLayerGroupID: function(layerDefinition) {
 
       var self = this;
 
@@ -167,13 +183,10 @@
 
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
-      var tiler_port = options.tiler_port !== "80" ? ":" + options.tiler_port : "";
-
-      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + tiler_port + "/api/v1/map";
-
       var ld = layerDefinition.toJSON();
 
-      for (var i=0; i<ld.layers.length; i++) {
+      // TODO: remove this
+      for (var i = 0; i<ld.layers.length; i++) {
         delete ld.layers[i].options.interactivity
       }
 
@@ -187,11 +200,31 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      var tiler_port = options.tiler_port !== "80" ? ":" + options.tiler_port : "";
+      layerDefinition.options.type = "named";
 
-      this.endpoint = "http://" + this.model.get("username") + "." + options.tiler_domain + tiler_port + layerDefinition.endPoint;
+      var basemapLayer = {
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
+        }
+      };
 
-      return layerDefinition.toJSON();
+      var layers  =  [ 
+        basemapLayer, {
+        type: "named",
+        options: {
+          name: layerDefinition.named_map.name
+        }
+      }];
+
+      var ld = {
+        layers: layers
+      };
+
+      return ld;
+
+      //return layerDefinition.toJSON();
 
     },
 
@@ -199,41 +232,42 @@
       return this.layers[0];
     },
 
-    loadLayerDefinition: function(layer_definition) {
+    loadLayerDefinition: function(layerDefinition) {
 
       var self = this;
 
       this.queue = new Queue;
 
-      if (!layer_definition.username) {
+      if (!layerDefinition.user_name) {
         cartodb.log.error("please, specify the username");
         return;
       }
 
-      this.model.set("username", layer_definition.username);
-
-      this.endpoint = "http://" + this.model.get("username") + ".cartodb.com/api/v1/map";
-
-      this._requestPOST(layer_definition, function(data) {
-
-        if (data) {
-          self.model.set("layergroupid", data.layergroupid)
-          self.queue.flush(this);
-        }
-
+      this.model.set({
+        username: layerDefinition.user_name,
+        tiler_port: layerDefinition.tiler_port ? layerDefinition.tiler_port : this.model.defaults.tiler_port,
+        tiler_domain: layerDefinition.tiler_domain ? layerDefinition.tiler_domain : this.model.defaults.tiler_domain
       });
+
+      var tiler_port   = (layerDefinition.tiler_port !== undefined && layerDefinition.tiler_port !== 80) ? ":" + layerDefinition.tiler_port : "";
+
+      var endpoint = "http://" + this.model.get("username") + "." + this.model.get("tiler_domain") + tiler_port + "/api/v1/map";
+
+      this.model.set("endpoint", endpoint);
+
+      this._getLayerGroupID(layerDefinition);
 
     },
 
     _requestPOST: function(params, callback) {
 
       this.options.ajax({
-        crossOrigin: true,
+        crossorigin: true,
         type: 'POST',
         method: 'POST',
         dataType: 'json',
         contentType: 'application/json',
-        url: this.endpoint,
+        url: this.model.get("endpoint"),
         data: JSON.stringify(params),
         success: function(data) {
           callback(data);
@@ -282,10 +316,7 @@
       var height       = this.model.get("size")[1];
       var layergroupid = this.model.get("layergroupid");
       var format       = this.model.get("format");
-      var tiler_domain = this.model.get("tiler_domain");
-
-      var tiler_port = this.model.get("tiler_port") !== "80" ? ":" + this.model.get("tiler_port") : "";
-      var endpoint = "http://" + username + "." + tiler_domain + tiler_port + "/api/v1/map";
+      var endpoint     = this.model.get("endpoint");
 
       if (bbox) {
         return [endpoint, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
@@ -296,7 +327,7 @@
     },
 
     _chooseBasemap: function(basemap_layer) {
-      //choose
+      // TODO: choose
     },
 
     _getUUID: function() {

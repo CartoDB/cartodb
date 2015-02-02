@@ -12,6 +12,7 @@
   min-height: 100vh;
 }
 .PublicBody-content {
+  @include display-flex();
   @include flex-grow(1);
   margin: $sMargin-group 0 $sMargin-section 0;
 }

@@ -15,6 +15,13 @@ class Api::Json::OembedController < Api::ApplicationController
     height = params[:maxheight] || '100%'
     format = request.query_parameters[:format]
 
+    if (width =~ /^[0-9]+(%|px)?$/) == nil
+      raise ActionController::RoutingError.new('Incorrect width')
+    end
+    if (height =~ /^[0-9]+(%|px)?$/) == nil
+      raise ActionController::RoutingError.new('Incorrect height')
+    end
+
     uri = URI.parse(url)
 
     if uri.host != request.host
@@ -28,7 +35,7 @@ class Api::Json::OembedController < Api::ApplicationController
       raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
     end
 
-    if uri.path =~ /^\/viz\/#{public_visualizations_show_path(id: uuid)}[\/]?$/
+    if (uri.path =~ /^#{public_visualizations_show_path(id: uuid)}[\/]?$/) == nil
       raise ActionController::RoutingError.new('Wrong URL for visualization: ' + uuid)
     end
 

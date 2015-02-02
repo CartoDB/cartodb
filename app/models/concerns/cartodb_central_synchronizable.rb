@@ -42,7 +42,6 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
           :new_dashboard_enabled]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
@@ -50,7 +49,6 @@ module Concerns
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
-          :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
           :new_dashboard_enabled]
         end
       elsif self.is_a?(User)
@@ -65,7 +63,6 @@ module Concerns
         :twitter_datasource_block_price, :twitter_datasource_quota,
         :soft_twitter_datasource_limit,
         :arcgis_datasource_enabled,
-        :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
         :new_dashboard_enabled, :private_maps_enabled]
       end
     end

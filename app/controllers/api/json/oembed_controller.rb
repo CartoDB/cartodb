@@ -23,7 +23,7 @@ class Api::Json::OembedController < Api::ApplicationController
 
     uuid = uri.path.split('/')[-1]
     begin
-      CartoDB::Visualization::Member.new(id: uuid, type: 'derived').fetch
+      viz = CartoDB::Visualization::Member.new(id: uuid, type: 'derived').fetch
     rescue KeyError
       raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
     end
@@ -40,6 +40,7 @@ class Api::Json::OembedController < Api::ApplicationController
         :version => '1.0',
         :width => width,
         :height => height,
+        :title => viz.name,
         :html => html
     }
 

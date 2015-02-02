@@ -98,7 +98,7 @@ module CartoDB
           end
 
           if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
-               layer_vizjson[:tooltip].fetch('fields').size > 0
+               !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
             data[:tooltip] = layer_vizjson[:tooltip]
           end
 

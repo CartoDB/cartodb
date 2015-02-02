@@ -704,7 +704,7 @@ describe Api::Json::VisualizationsController do
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
            factory({
                      name: 'PARENT',
-                     type: CartoDB::Visualization::Member::TYPE_CANONICAL
+                     type: CartoDB::Visualization::Member::TYPE_DERIVED
                    }).to_json, @headers
       body = JSON.parse(last_response.body)
       parent_vis_id = body.fetch('id')
@@ -865,7 +865,7 @@ describe Api::Json::VisualizationsController do
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
        factory({
                  name: "PARENT #{UUIDTools::UUID.timestamp_create.to_s}",
-                 type: CartoDB::Visualization::Member::TYPE_CANONICAL
+                 type: CartoDB::Visualization::Member::TYPE_DERIVED
                }).to_json, @headers
       body = JSON.parse(last_response.body)
       parent_vis_id = body.fetch('id')

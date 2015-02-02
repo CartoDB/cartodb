@@ -946,7 +946,6 @@ class User < Sequel::Model
       # Hack to support users without the new MU functiones loaded
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
       result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
-      update_gauge("db_size", result)
       result
     rescue
       attempts += 1
@@ -1205,22 +1204,6 @@ class User < Sequel::Model
       "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
       "LIMIT 1;", id)
       .to_a.fetch(0, {}).fetch(:created_at, nil)
-  end
-
-  def metric_key
-    "cartodb.#{Rails.env.production? ? "user" : Rails.env + "-user"}.#{self.username}"
-  end
-
-  def update_gauge(gauge, value)
-    Statsd.gauge("#{metric_key}.#{gauge}", value)
-  rescue
-  end
-
-  def update_visualization_metrics
-    update_gauge("visualizations.total", maps.count)
-    update_gauge("visualizations.table", table_count)
-
-    update_gauge("visualizations.derived", visualization_count({ exclude_shared: true, exclude_raster: true }))
   end
 
   def rebuild_quota_trigger
@@ -1760,7 +1743,7 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.1'
+      cdb_extension_target_version = '0.5.2'
     end
 
     add_python

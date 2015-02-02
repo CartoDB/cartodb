@@ -12,6 +12,7 @@
 * Added Mailchimp 'members count' info [#1701](https://github.com/CartoDB/cartodb/issues/1701)
 * Added slides support for visualization
 * Added guessing of types for geojson (boolean and dates) via ogr2ogr2 [#1036](https://github.com/CartoDB/cartodb/issues/1036). Update `ogr2ogr2-static-bin` package for this to work
+* Fixed param `quoted_fields_guessing` on imports and syncs [#1966](https://github.com/CartoDB/cartodb/issues/1966)
 
 3.7.1 (2014-12-30)
 ------------------

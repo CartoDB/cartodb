@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
+      redirect_to dashboard_path(trailing_slash: true) and return
     end
   end
 
@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
     user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
     CartodbStats.increment_login_counter(user.email)
 
-    destination_url = dashboard_path(user_domain: user_domain, trailing_slash: true)
+    destination_url = dashboard_path(trailing_slash: true)
     if user.organization.nil?
       destination_url = CartoDB.base_url(user.username) << destination_url
     else

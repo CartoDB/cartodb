@@ -85,14 +85,12 @@
 .MapCard-contentBodyRow {
   margin-bottom: $sMargin-min;
 }
-.MapCard-contentBodyTitle {
-  width: 205px;
-}
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
 .MapCard-contentBodyRow--flex {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  @include flex-wrap(nowrap);
 }
 .MapCard-contentFooter {
   @include display-flex();

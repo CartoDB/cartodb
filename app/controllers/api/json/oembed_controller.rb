@@ -40,7 +40,7 @@ class Api::Json::OembedController < Api::ApplicationController
       raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
     end
 
-    url = File.join(public_visualizations_show_url(id: uuid), 'embed_map')
+    url = URI.join(public_visualizations_show_url(id: uuid) + "/", 'embed_map')
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"
 
     response_data = {

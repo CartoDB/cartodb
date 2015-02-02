@@ -8,6 +8,7 @@
 
 <ul class="u-inner">
   <% @visualizations.each do |vis| %>
+    <% domain = vis[:owner].organization ? vis[:owner].username : nil %>
     <li class="Maps-listItem">
       <div class="MapCard Maps-listItemCard">
         <div class="MapCard-header">
@@ -16,7 +17,7 @@
           <div class="MapCard-contentBody">
             <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
               <h3 class="MapCard-contentBodyTitle DefaultTitle u-ellipsLongText">
-                <a class="DefaultTitle-link" title="<%= vis[:title] %>"><%= vis[:title] %></a>
+                <a href="<%= public_visualizations_public_map_url(user_domain: domain, id: vis[:id]) %>" class="DefaultTitle-link" title="<%= vis[:title] %>"><%= vis[:title] %></a>
               </h3>
             </div>
 
@@ -31,7 +32,7 @@
             <div class="DefaultTags MapCard-contentBodyRow">
               <% if vis[:tags].size > 0 %>
                 <% formatted_tags(vis[:tags]) do |tag| %>
-                  <a class="DefaultTags-item js-tag-link" href="<%= public_tag_url(user_domain: params[:user_domain], tag: tag) %>"><%= tag %></a>
+                  <a class="DefaultTags-item js-tag-link" href="<%= public_tag_url(user_domain: domain, tag: tag) %>"><%= tag %></a>
                 <% end %>
               <% else %>
                 <span class="DefaultTags-item is--empty">No tags</span>

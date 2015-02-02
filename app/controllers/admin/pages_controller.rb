@@ -136,7 +136,7 @@ class Admin::PagesController < ApplicationController
 
   def public
     username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: username.strip.downcase).first
+    viewed_user = User.find(username: username.strip.downcase)
 
     if viewed_user.nil?
       org = get_organization_if_exists(username)
@@ -322,16 +322,16 @@ class Admin::PagesController < ApplicationController
   end
 
   def get_organization_if_exists(name)
-    Organization.where(name: name).first
+    Organization.find(name: name)
   end
 
   def belongs_to_organization
     user_or_org_domain = CartoDB.extract_real_subdomain(request)
     user_domain = CartoDB.extract_subdomain(request)
-    user = User.where(username: user_domain).first
-
+    user = User.find(username: user_domain)
+    
     unless user.nil?
-      if user.username != user_or_org_domain and not user.belongs_to_organization?(Organization.where(name: user_or_org_domain).first)
+      if user.username != user_or_org_domain and not user.belongs_to_organization?(Organization.find(name: user_or_org_domain))
         render_404
       end
     end

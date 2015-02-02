@@ -20,18 +20,6 @@
             </picture>
           </div>
         </div>
-
-        <div class="Navbar-collapse">
-          <ul class="Navbar-menu u-ilist">
-            <li class="Navbar-menuItem u-iblock">
-              <a href="<%= login_url %>" class="Navbar-link Btn Btn--m u-tupper"><span>Login</span></a>
-            </li>
-
-            <li class="Navbar-menuItem u-iblock">
-              <a href="<% if params[:after].present? %><%= signup_path(after: params[:after]) %><% else %><%= "https://cartodb.com/signup" %><% end %>" class="Navbar-link Btn Btn--m Btn--white has-border u-tupper"><span>Sign up</span></a>
-            </li>
-          </ul>
-        </div>
       </nav>
     </div>
   </header>

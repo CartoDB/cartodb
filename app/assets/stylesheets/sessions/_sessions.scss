@@ -86,19 +86,23 @@
   border-radius: 4px;
 
   &::-webkit-input-placeholder {
-    color: #ccc;
+    font-style: italic;
+    color: #999;
   }
 
   &:-moz-placeholder {
-    color: #ccc;
+    font-style: italic;
+    color: #999;
   }
 
   &::-moz-placeholder {
-    color: #ccc;
+    font-style: italic;
+    color: #999;
   }
 
   &:-ms-input-placeholder {
-    color: #ccc;
+    font-style: italic;
+    color: #999;
   }
 }
 

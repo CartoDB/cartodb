@@ -152,8 +152,7 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    @username           = viewed_user.username
-    @name               = viewed_user.name.present? ? viewed_user.name : viewed_user.username
+    @name               = view_context.name_or_username(viewed_user)
     @twitter_username   = viewed_user.twitter_username
     @available_for_hire = viewed_user.available_for_hire
     @email              = viewed_user.email
@@ -172,6 +171,7 @@ class Admin::PagesController < ApplicationController
   private
 
   def new_public_dashboard(viewed_user)
+    @viewed_user = viewed_user
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_DERIVED,
@@ -203,6 +203,7 @@ class Admin::PagesController < ApplicationController
   end #new_public_dashboard
 
   def public_dashboard(viewed_user)
+    @username   = viewed_user.username
     @tags       = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
     @tables_num = viewed_user.public_table_count
     @vis_num    = viewed_user.public_visualization_count

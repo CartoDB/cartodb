@@ -117,7 +117,7 @@
 
       this.options.layers = layerDefinition;
 
-      this._getLayerGroupID();
+      this._requestLayerGroupID();
 
     },
 
@@ -150,7 +150,7 @@
           this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
         }
 
-        this._getLayerGroupID();
+        this._requestLayerGroupID();
 
       }
 
@@ -160,7 +160,7 @@
       return this.options.layers;
     },
 
-    _getLayerGroupID: function() {
+    _requestLayerGroupID: function() {
 
       var self = this;
 
@@ -192,11 +192,6 @@
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
       var ld = layerDefinition.toJSON();
-
-      // TODO: remove this
-      //for (var i = 0; i<ld.layers.length; i++) {
-        //delete ld.layers[i].options.interactivity
-      //}
 
       ld.layers.unshift(this._getBasemapLayer());
 

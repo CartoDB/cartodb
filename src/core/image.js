@@ -69,8 +69,6 @@
 
     this.model = new ImageModel();
 
-    this.layers = [];
-
     this.supported_formats = ["png", "jpg"];
 
     this.options = _.defaults({
@@ -140,7 +138,6 @@
       });
 
       this._generateEndpoint(layerDefinition.user_name, layerDefinition.tiler_port, layerDefinition.tiler_domain);
-
       this._getLayerGroupID(layerDefinition);
 
     },
@@ -153,10 +150,10 @@
         port = ":" + port;
       }
 
-      domain ? domain : this.model.defaults.tiler_domain;
+      if (domain === undefined) domain = this.model.defaults.tiler_domain;
 
       this.model.set("endpoint", "http://" + username + "." + domain + port + "/api/v1/map");
- 
+
     },
 
     _onVisLoaded: function(data) {
@@ -239,7 +236,7 @@
 
       layerDefinition.options.type = "named";
 
-      var layers  =  [ 
+      var layers  =  [
         this._getBasemapLayer(), {
         type: "named",
         options: {
@@ -253,10 +250,6 @@
 
       return ld;
 
-    },
-
-    toJSON: function() {
-      return this.layers[0];
     },
 
     _requestPOST: function(params, callback) {
@@ -449,10 +442,8 @@
 
         var attributes = self.model.get("attributes");
 
-        if (attributes) {
-          if (attributes.class) { element.setAttribute("class", attributes.class); }
-          if (attributes.id)    { element.setAttribute("id", attributes.id); }
-        }
+        if (attributes && attributes.class) { element.setAttribute("class", attributes.class); }
+        if (attributes && attributes.id)    { element.setAttribute("id", attributes.id); }
 
       });
 

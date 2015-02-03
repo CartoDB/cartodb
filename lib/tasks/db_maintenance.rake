@@ -232,11 +232,12 @@ namespace :cartodb do
       end
       execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
         begin
+          log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
           user.load_cartodb_functions(statement_timeout, extension_version)
-          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
           sleep(sleep)
         rescue => e
-          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), :load_functions.to_s, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
       }, threads, thread_sleep, database_host)

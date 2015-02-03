@@ -191,7 +191,6 @@ class Admin::PagesController < ApplicationController
         description:  vis.description_clean,
         id:           vis.id,
         tags:         vis.tags,
-        url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
         updated_at:   vis.updated_at,
         owner:        vis.user
       })

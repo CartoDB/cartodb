@@ -1,0 +1,27 @@
+// Tipical link for opening a dropdown
+//
+// - with a triangle at the end.
+// --------------------------------------------------
+
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.DropdownLink {
+  position: relative;
+  padding-right: $sMargin-elementInline;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+
+  &:after {
+    content: '';
+    position:absolute;
+    right:0;
+    top:50%;
+    width:0;
+    height:0;
+    border-left:4px solid transparent;
+    border-right:4px solid transparent;
+    border-top:4px solid $cTypography-secondary;
+  }
+}

@@ -271,14 +271,6 @@
 
     },
 
-    _tilerHost: function() {
-      var opts = this.options;
-      return opts.tiler_protocol +
-        "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-      opts.tiler_domain +
-        ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
-    },
-
     _host: function(subhost) {
       var opts = this.options;
       if (opts.no_cdn) {

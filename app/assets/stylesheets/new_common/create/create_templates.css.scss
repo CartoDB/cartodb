@@ -18,6 +18,15 @@
   margin-right: 20px;
 }
 .CreateDialog-templatesItems { width: 700px }
+.CreateDialog-templatesList {
+  overflow: visible;
+  display: block;
+}
+.CreateDialog-templatesItem {
+  float: left;
+  margin-right: 20px;
+}
+.CreateDialog-templatesItem:nth-child(3n) { margin-right: 0 }
 .CreateDialog-templatesTitle {
   width: 100%;
   text-transform: uppercase;

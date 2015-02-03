@@ -64,6 +64,7 @@ module Concerns
         :twitter_datasource_enabled, :twitter_datasource_block_size,
         :twitter_datasource_block_price, :twitter_datasource_quota,
         :soft_twitter_datasource_limit,
+        :google_sign_in,
         :arcgis_datasource_enabled,
         :here_maps_enabled, :stamen_maps_enabled, :rainbow_maps_enabled,
         :new_dashboard_enabled, :private_maps_enabled]
@@ -88,7 +89,7 @@ module Concerns
           :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
           :user_timeout, :username, :website, :soft_geocoding_limit,
           :twitter_datasource_enabled, :soft_twitter_datasource_limit,
-          :arcgis_datasource_enabled
+          :arcgis_datasource_enabled, :google_sign_in
         )
         case action
         when :create

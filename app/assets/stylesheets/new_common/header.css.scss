@@ -11,8 +11,8 @@
   display:block;
   width:100%;
   height:81px;
-  background-color:$cStructure-grayBkg;
-  border-bottom:1px solid $cStructure-mainLine;
+  @include background-gradient(#61AEEC, #3A91D7);
+  @include css3-prefix(box-shadow, inset rgba(black, 0.2) 0 -1px 0 0);
 }
 .Header > .u-inner {
   position:relative;
@@ -36,7 +36,7 @@
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
-  color:$cTypography-secondary;
+  color: rgba(white, 0.6);
 }
 .Header-navigationBreadcrumbLink {
   position:relative;
@@ -44,7 +44,7 @@
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
-  color:#333;
+  color: white;
 
   &:after {
     content: '';
@@ -55,12 +55,12 @@
     height:0;
     border-left:4px solid transparent;
     border-right:4px solid transparent;
-    border-top:4px solid #999999;
+    border-top:4px solid white;
   }
 
   &:hover {
-    color:#222;
-    &:after { border-top-color:#222 }
+    color: white;
+    &:after { border-top-color: white }
   }
 }
 
@@ -81,10 +81,10 @@
 }
 .Header-settingsLink {
   font-weight: $sFontWeight-lighter;
-  color:#666;
+  color: rgba(white, 0.6);
   
   &:hover {
-    color:#333;
+    color: white;
     text-decoration: underline;
   }
 }

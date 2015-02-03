@@ -108,9 +108,6 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.here_maps_enabled          = self.organization.here_maps_enabled
-        self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
-        self.rainbow_maps_enabled       = self.organization.rainbow_maps_enabled
         self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
@@ -1743,7 +1740,7 @@ TRIGGER
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.1'
+      cdb_extension_target_version = '0.5.2'
     end
 
     add_python

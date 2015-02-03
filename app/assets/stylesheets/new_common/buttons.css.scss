@@ -30,6 +30,10 @@ $buttonBorderSize: 1px;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
+.Button.is-disabled {
+  @include opacity(0.5);
+  &:hover { cursor: default }
+}
 .Button--main {
   background-color: $cHighlight-main;
   border-color: $cHighlight-main;
@@ -39,6 +43,10 @@ $buttonBorderSize: 1px;
   background-color: $cHighlight-positive;
   border-color: $cHighlight-positive;
   &:hover { background-color: rgba(#7FA538, 1) }
+  &.is-disabled:hover {
+    background-color: $cHighlight-positive;
+    border-color: $cHighlight-positive;
+  }
 }
 .Button--negative {
   background-color: $cHighlight-negative;

@@ -271,24 +271,6 @@
 
     },
 
-    _host: function(subhost) {
-      var opts = this.options;
-      if (opts.no_cdn) {
-        return this._tilerHost();
-      } else {
-        var h = opts.tiler_protocol + "://";
-        if (subhost) {
-          h += subhost + ".";
-        }
-        var cdn_host = opts.cdn_url || cdb.CDB_HOST;
-        if(!cdn_host.http && !cdn_host.https) {
-          throw new Error("cdn_host should contain http and/or https entries");
-        }
-        h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
-        return h;
-      }
-    },
-
     _getUrl: function() {
 
       var username     = this.model.get("username");

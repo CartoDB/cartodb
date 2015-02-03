@@ -245,7 +245,7 @@ namespace :cartodb do
 
     desc 'Upgrade cartodb postgresql extension'
     task :upgrade_postgres_extension, [:database_host, :version, :num_threads, :thread_sleep, :sleep, :statement_timeout] => :environment do |t, args|
-      raise "Sample usage: rake cartodb:db:upgrade_postgres_extension['127.0.0.1','0.5.2']" if args[:database_host].blank or args[:version].blank?
+      raise "Sample usage: rake cartodb:db:upgrade_postgres_extension['127.0.0.1','0.5.2']" if args[:database_host].blank? or args[:version].blank?
 
       # Send this as string, not as number
       extension_version = args[:version]

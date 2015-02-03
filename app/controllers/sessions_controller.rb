@@ -67,7 +67,7 @@ class SessionsController < ApplicationController
     CartodbStats.increment_failed_login_counter(params[:email])
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one    
-    @password_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
 
     respond_to do |format|
       format.html do

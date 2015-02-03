@@ -104,6 +104,7 @@ module CartoDB
       public.css
       password_protected.css
       public_dashboard.css
+      new_public_dashboard.css
       public_table.css
       public_map.css
       public_ie.css

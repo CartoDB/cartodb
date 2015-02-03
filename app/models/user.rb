@@ -1281,7 +1281,7 @@ class User < Sequel::Model
   end
 
   def belongs_to_organization?(organization)
-    organization_user? and self.organization.eql? organization
+    organization_user? and self.organization_id == organization.id
   end
 
   def feature_flags
@@ -2096,6 +2096,10 @@ TRIGGER
     user_name = organization.nil? ? nil : username
 
     CartoDB.base_url(subdomain, user_name)
+  end
+
+  def name_or_username
+    name.present? ? name : username
   end
 
   private

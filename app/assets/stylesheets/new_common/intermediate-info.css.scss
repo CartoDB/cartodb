@@ -3,7 +3,10 @@
 @import "../new_variables/sizes";
 
 // Intermediate info for a view with minimal information on intermediate states.
-// E.g. loading view, error screen, no results etc.
+// E.g. loading view, error screen, empty results etc.
+//
+// --------------------------------------------------------------------------------------------------------------------
+
 .IntermediateInfo {
   width: $sLayout-width;
   @include display-flex();
@@ -14,6 +17,10 @@
   min-height: 360px;
   text-align: center;
 }
+// Let a flex layout position it rather than enforcing a min-height
+.IntermediateInfo--flex {
+  min-height: 0;
+}
 .IntermediateInfo-title {
   display: block;
   margin: $sMargin-elementInline 0 $sMargin-min 0;
@@ -21,27 +28,4 @@
   font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
-}
-.IntermediateInfo-icon {
-  @include inline-block();
-  width: 38px;
-  height: 38px;
-  border: 1px solid $cStructure-mainLine;
-  border-radius: $sIcon-borderRadius;
-  line-height:36px;
-  font-size: 22px;
-  color: $cTypography-help;
-}
-// Icon types
-.IntermediateInfo-iconNegative {
-  border-color: $cHighlight-negative;
-  color: $cHighlight-negative;
-}
-.IntermediateInfo-iconPositive {
-  border-color: $cHighlight-positive;
-  color: $cHighlight-positive;
-}
-.IntermediateInfo-iconAlert {
-  border-color: $cHighlight-alert;
-  color: $cHighlight-alert;
 }

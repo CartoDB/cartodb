@@ -6,29 +6,32 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-/* Header */
+$height: 81px;
+
 .Header {
-  display:block;
-  width:100%;
-  height:81px;
+  display: block;
+  width: 100%;
+  height: $height;
   @include background-gradient(#61AEEC, #3A91D7);
   @include css3-prefix(box-shadow, inset rgba(black, 0.2) 0 -1px 0 0);
 }
-.Header > .u-inner {
+.Header-inner {
   position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
 }
-
+.Header-logoText {
+  margin-left: $sMargin-elementInline;
+}
 .Header-navigationList {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
 }
 .Header-navigationBreadcrumb {
   @include display-flex();
-  @include align-items(center, center);
+  @include align-items(center);
   margin-left: $sMargin-element;
 }
 .Header-navigationBreadcrumbItem {
@@ -65,10 +68,10 @@
 }
 
 .Header-settings {
-  height:81px;
+  height: $height;
 }
 .Header-settingsList {
-  height:100%;
+  height: 100%;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);

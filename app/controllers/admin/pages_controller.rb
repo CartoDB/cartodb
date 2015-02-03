@@ -152,18 +152,58 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    @tags             = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
-    @username         = viewed_user.username
-    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
-    @twitter_username = viewed_user.twitter_username 
+    @name               = viewed_user.name_or_username
+    @twitter_username   = viewed_user.twitter_username
     @available_for_hire = viewed_user.available_for_hire
     @email              = viewed_user.email
-    @description      = viewed_user.description
-    @website          = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @description        = viewed_user.description
+    @website            = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
+    @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @avatar_url         = viewed_user.avatar
 
-    @avatar_url = viewed_user.avatar
+    if viewed_user.has_feature_flag?('new_public_dashboard')
+      new_public_dashboard(viewed_user)
+    else
+      public_dashboard(viewed_user)
+    end
+  end
+  
+  private
 
+  def new_public_dashboard(viewed_user)
+    @viewed_user = viewed_user
+    visualizations = Visualization::Collection.new.fetch({
+      user_id:  viewed_user.id,
+      type:     Visualization::Member::TYPE_DERIVED,
+      privacy:  Visualization::Member::PRIVACY_PUBLIC,
+      page:     params[:page].nil? ? 1 : params[:page],
+      per_page: VISUALIZATIONS_PER_PAGE,
+      order:    'updated_at',
+      o:        {updated_at: :desc},
+      exclude_shared: true,
+      exclude_raster: true
+    })
+
+    @visualizations = []
+    visualizations.each do |vis|
+      @visualizations.push({
+        title:        vis.name,
+        description:  vis.description_clean,
+        id:           vis.id,
+        tags:         vis.tags,
+        updated_at:   vis.updated_at,
+        owner:        vis.user
+      })
+    end
+
+    respond_to do |format|
+      format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
+    end
+  end #new_public_dashboard
+
+  def public_dashboard(viewed_user)
+    @username   = viewed_user.username
+    @tags       = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
     @tables_num = viewed_user.public_table_count
     @vis_num    = viewed_user.public_visualization_count
 
@@ -201,10 +241,7 @@ class Admin::PagesController < ApplicationController
     respond_to do |format|
       format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
     end
-
-  end #public
-
-  private
+  end #public_dashboard
 
   def public_organization(organization)
     @organization = organization
@@ -291,9 +328,9 @@ class Admin::PagesController < ApplicationController
     user_or_org_domain = CartoDB.extract_real_subdomain(request)
     user_domain = CartoDB.extract_subdomain(request)
     user = User.where(username: user_domain).first
-
+    
     unless user.nil?
-      if user.username != user_or_org_domain and not user.belongs_to_organization?(Organization.where(name: user_or_org_domain).first)
+      if user.username != user_or_org_domain and not user.belongs_to_organization?(get_organization_if_exists(user_or_org_domain))
         render_404
       end
     end

@@ -76,9 +76,9 @@
       // Let's load all those URLs and add them to the page
       for (var i = 0; i < vizjsons.length; i++) {
 
-        var vizjson = vizjsons[i];
+        var v = vizjsons[i];
 
-        cartodb.Image(vizjson.url, { basemap: vizjson.basemap }).size(250, 250).zoom(vizjson.zoom).getUrl(function(error, url) {
+        cartodb.Image(v.url, { basemap: v.basemap }).size(250, 250).zoom(v.zoom).getUrl(function(error, url) {
           var $map = $('<div class="map"></div>');
           var $img = $("<img />");
           $img.attr("src", url);

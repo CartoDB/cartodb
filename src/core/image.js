@@ -92,7 +92,7 @@
 
       this.model.set(options);
 
-      cdb.image.Loader.get(vizjson, this._onVisLoaded);
+      cdb.vis.Loader.get(vizjson, this._onVisLoaded);
 
       return this;
 
@@ -397,57 +397,4 @@
 
   };
 
-  var ImageLoader = cdb.image.Loader = {
-
-    queue: [],
-    current: undefined,
-    _script: null,
-    head: null,
-
-    loadScript: function(src) {
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = src;
-      script.async = true;
-      if (!ImageLoader.head) {
-        ImageLoader.head = document.getElementsByTagName('head')[0];
-      }
-      // defer the loading because IE9 loads in the same frame the script
-      // so Loader._script is null
-      setTimeout(function() {
-        ImageLoader.head.appendChild(script);
-      }, 0);
-      return script;
-    },
-
-    get: function(url, callback) {
-      if (!ImageLoader._script) {
-        ImageLoader.current = callback;
-        ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
-      } else {
-        ImageLoader.queue.push([url, callback]);
-      }
-    },
-
-    loadModule: function(modName) {
-      var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
-      var src = this.getPath(file);
-      if (!src) {
-        cartodb.log.error("can't find cartodb.js file");
-      }
-      ImageLoader.loadScript(src);
-    }
-  };
-
-  window.imgjson = function(data) {
-    ImageLoader.current && ImageLoader.current(data);
-    // remove script
-    ImageLoader.head.removeChild(ImageLoader._script);
-    ImageLoader._script = null;
-    // next element
-    var a = ImageLoader.queue.shift();
-    if (a) {
-      ImageLoader.get(a[0], a[1]);
-    }
-  };
 })();

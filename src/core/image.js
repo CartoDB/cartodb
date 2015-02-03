@@ -132,26 +132,15 @@
         return;
       }
 
-      this.model.set({
-        username: layerDefinition.user_name
-      });
+      this.options.user_name      = layerDefinition.user_name;
+      this.options.tiler_protocol = layerDefinition.tiler_protocol;
+      this.options.tiler_domain   = layerDefinition.tiler_domain;
+      this.options.tiler_port     = layerDefinition.tiler_port;
+      this.endPoint = "/api/v1/map";
 
-      this._generateEndpoint(layerDefinition.user_name, layerDefinition.tiler_port, layerDefinition.tiler_domain);
-      this._getLayerGroupID(layerDefinition);
+      this.options.layers = layerDefinition;
 
-    },
-
-    _generateEndpoint: function(username, port, domain) {
-
-      if (parseInt(port, 10) === 80 || port === undefined) {
-        port = "";
-      } else {
-        port = ":" + port;
-      }
-
-      if (domain === undefined) domain = this.model.defaults.tiler_domain;
-
-      this.model.set("endpoint", "http://" + username + "." + domain + port + "/api/v1/map");
+      this._getLayerGroupID();
 
     },
 
@@ -165,31 +154,40 @@
 
         this._chooseBasemap(baseLayer.options);
 
+        this.options.user_name      = dataLayer.options.user_name;
+        this.options.tiler_protocol = dataLayer.options.tiler_protocol;
+        this.options.tiler_domain   = dataLayer.options.tiler_domain;
+        this.options.tiler_port     = dataLayer.options.tiler_port;
+
+        this.endPoint = "/api/v1/map";
+
         this.model.set({
-          username: dataLayer.options.user_name,
           zoom: data.zoom,
           center: JSON.parse(data.center),
           bounds: data.bounds
         });
 
         if (dataLayer.type === "namedmap") {
-          layerDefinition = this._getNamedmapLayerDefinition(dataLayer.options);
+          this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
         } else {
-          layerDefinition = this._getLayergroupLayerDefinition(dataLayer.options);
+          this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
         }
 
-        this._generateEndpoint(dataLayer.options.user_name, dataLayer.options.tiler_port, dataLayer.options.tiler_domain);
-        this._getLayerGroupID(layerDefinition);
+        this._getLayerGroupID();
 
       }
 
     },
 
-    _getLayerGroupID: function(layerDefinition) {
+    toJSON: function(){
+      return this.options.layers;
+    },
+
+    _getLayerGroupID: function() {
 
       var self = this;
 
-      this._requestPOST(layerDefinition, function(data) {
+      this._requestPOST({}, function(data) {
 
         if (data) {
           self.model.set("layergroupid", data.layergroupid);
@@ -219,9 +217,9 @@
       var ld = layerDefinition.toJSON();
 
       // TODO: remove this
-      for (var i = 0; i<ld.layers.length; i++) {
-        delete ld.layers[i].options.interactivity
-      }
+      //for (var i = 0; i<ld.layers.length; i++) {
+        //delete ld.layers[i].options.interactivity
+      //}
 
       ld.layers.unshift(this._getBasemapLayer());
 
@@ -251,29 +249,9 @@
 
     },
 
-    _requestPOST: function(params, callback) {
-
-      this.options.ajax({
-        crossorigin: true,
-        type: 'POST',
-        method: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        url: this.model.get("endpoint"),
-        data: JSON.stringify(params),
-        success: function(data) {
-          callback(data);
-        },
-        error: function(xhr) {
-          callback(null);
-        }
-      });
-
-    },
-
     _getUrl: function() {
 
-      var username     = this.model.get("username");
+      var username     = this.options.user_name;
       var zoom         = this.model.get("zoom");
       var bbox         = this.model.get("bbox");
       var lat          = this.model.get("center")[0];
@@ -282,12 +260,13 @@
       var height       = this.model.get("size")[1];
       var layergroupid = this.model.get("layergroupid");
       var format       = this.model.get("format");
-      var endpoint     = this.model.get("endpoint");
+
+      var url = this._tilerHost() + this.endPoint;
 
       if (bbox) {
-        return [endpoint, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
+        return [url, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
       } else {
-        return [endpoint, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
+        return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
       }
 
     },

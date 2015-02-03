@@ -28,12 +28,15 @@
     </style>
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
-    <script src="http://development.localhost.lan:3000/assets/3.4.1/javascripts/cdb.js"></script>
+    <script src="http://development.localhost.lan:3000/assets/3.4.3/javascripts/cdb.js"></script>
     <script>
 
       /* 1: We can create an image using a custom build layer definition: */
       var layer_definition = {
         user_name: "documentation",
+        tiler_domain: "cartodb.com",
+        tiler_port: "80",
+        tiler_protocol: "http",
         layers: [{
           type: "http",
           options: {

@@ -78,7 +78,7 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/bbox/(.*?)/-31\.05,-155\.74,82\.58,261\.21/400/300\.png");
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-31\.05,-155\.74,82\.58,261\.21/400/300\.png");
 
     cartodb.Image(vizjson).bbox([[-31.05, -155.74], [82.58, 261.21]]).size(400,300).getUrl(function(error, url) {
       expect(error).toEqual(null);
@@ -118,7 +118,7 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/2/52\.5897007687178/52\.734375/320/240\.png");
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/52\.5897007687178/52\.734375/320/240\.png");
 
     cartodb.Image(vizjson).getUrl(function(error, url) {
       expect(error).toEqual(null);
@@ -132,7 +132,7 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
 
     cartodb.Image(vizjson).center([40, 10]).zoom(7).size(400, 300).getUrl(function(error, url) {
       expect(error).toEqual(null);
@@ -150,7 +150,7 @@ describe("Image", function() {
 
     cartodb.Image(vizjson).center([40, 10]).zoom(7).size(400, 300).into(img);
 
-    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/7/40/10/400/300\.png");
 
     setTimeout(function() {
       expect($("#image").attr("src")).toMatch(regexp);
@@ -163,6 +163,9 @@ describe("Image", function() {
 
     var layer_definition = {
       user_name: "documentation",
+      tiler_domain: "cartodb.com",
+      tiler_port: "80",
+      tiler_protocol: "http",
       layers: [{
         type: "http",
         options: {
@@ -179,7 +182,7 @@ describe("Image", function() {
       }]
     };
 
-    var regexp = new RegExp("http://documentation\.cartodb\.com/api/v1/map/static/center/(.*?)/2/0/0/250/250\.png");
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/0/0/250/250\.png");
 
     cartodb.Image(layer_definition).size(250, 250).zoom(2).getUrl(function(error, url) {
       expect(url).toMatch(regexp);

@@ -2,12 +2,25 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-// Favourite map displayed as primary map on user's profile page
+// Favourite map displayed in subheader on user's profile page
 //
 // --------------------------------------------------------------------------------------------------------------------
 
+$height: 280px;
+
 .FavMap {
-  height: 280px;
-  background: #F77A92;
-  box-shadow: inset 0 -4px 4px 0 rgba(black, 0.1);
+  position: relative;
+  height: $height;
+  background: white;
 }
+.FavMap-spinner {
+  visibility: hidden;
+  position: absolute;
+  top: ($height / 2) - $sSpinner-size;
+  left: 50%;
+  margin-left: -#{$sSpinner-size / 2};
+}
+.FavMap.is-loading .FavMap-spinner {
+  visibility: visible;
+}
+

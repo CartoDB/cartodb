@@ -28,7 +28,7 @@
   </head>
   <body class="PublicBody">
     <%= render 'admin/shared/new_header', :public => true, :home_url => root_url %>
-    <div class="FavMap" id="<%= fav_map_target_id = 'fav-map-container' %>">
+    <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner"></div>
     </div>
     <div class="UserInfo">
@@ -69,11 +69,13 @@
     </div>
     <%= render 'admin/shared/new_footer' %>
     <script type="text/javascript">
-      var favMapCreateVis = {
-        targetId: '<%= fav_map_target_id %>',
-        url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
-        opts: {
-          no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+      var favMapViewAttrs = {
+        el: '#<%= fav_map_target_id %>',
+        createVis: {
+          url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
+          opts: {
+            no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+          }
         }
       };
     </script>

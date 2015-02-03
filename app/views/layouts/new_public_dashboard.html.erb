@@ -69,10 +69,9 @@
     </div>
     <%= render 'admin/shared/new_footer' %>
     <script type="text/javascript">
-      // TODO: replace with actual map
       var favMapCreateVis = {
         targetId: '<%= fav_map_target_id %>',
-        url: '//team.cartodb.com/u/viddo/api/v2/viz/15bf0fd4-6fd8-11e4-b27c-0e853d047bba/viz.json',
+        url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
         opts: {
           no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
         }

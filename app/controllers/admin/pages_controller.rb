@@ -172,7 +172,8 @@ class Admin::PagesController < ApplicationController
 
   def new_public_dashboard(viewed_user)
     @viewed_user = viewed_user
-    visualizations = Visualization::Collection.new.fetch({
+    vis_collection = Visualization::Collection.new
+    visualizations = vis_collection.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_DERIVED,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
@@ -195,6 +196,15 @@ class Admin::PagesController < ApplicationController
         owner:        vis.user
       })
     end
+
+    @most_viewed_vis_map = vis_collection.fetch({
+      user_id:  viewed_user.id,
+      type:     Visualization::Member::TYPE_DERIVED,
+      privacy:  Visualization::Member::PRIVACY_PUBLIC,
+      order:    'mapviews',
+      page:     1,
+      per_page: 1,
+    }).first
 
     respond_to do |format|
       format.html { render 'new_public_maps', layout: 'new_public_dashboard' }

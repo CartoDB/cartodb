@@ -60,7 +60,6 @@
         'core/model.js',
         'core/view.js',
 
-
         'geo/geocoder.js',
         'geo/geometry.js',
         'geo/map.js',

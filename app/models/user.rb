@@ -2092,10 +2092,13 @@ TRIGGER
 
   # return public user url -> string
   def public_url
-    subdomain = organization.nil? ? username : organization.name
     user_name = organization.nil? ? nil : username
 
-    CartoDB.base_url(subdomain, user_name)
+    CartoDB.base_url(self.subdomain, user_name)
+  end
+
+  def subdomain
+    organization.nil? ? username : organization.name
   end
 
   def name_or_username

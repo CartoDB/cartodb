@@ -1,0 +1,34 @@
+<div>
+  <span id="signinButton">
+    <iframe src="<%= config.iframe_src %>" width="300" height="50"></iframe>
+  </span>
+</div>
+
+<script>
+  document.domain = '<%= config.domain %>'
+
+  function signinCallback(authResult) {
+    if(typeof authResult.access_token != 'undefined') {
+      var access_token_field = document.getElementById('<%= config.access_token_field_id %>');
+      var google_signup_access_token = document.getElementById('google_signup_access_token');
+      // INFO: user exists, let's sign in
+      if (authResult['status']['signed_in'] && access_token_field.value === '' && google_signup_access_token.value === '') {
+        access_token_field.value = authResult.access_token;
+        access_token_field.form.submit();
+      }
+    }
+  }
+</script>
+
+<form action="<%= config.signup_action %>" method="POST">
+  <input type="hidden" value="<%= config.unauthenticated_valid_access_token %>" id="google_signup_access_token" name="google_signup_access_token" />
+</form>
+
+<script>
+  var access_token_field = document.getElementById('google_signup_access_token');
+  // INFO: we have a valid access token but no user yet, let's sign up
+  if(access_token_field.value != '') {
+    access_token_field.form.submit();
+  }
+</script>
+

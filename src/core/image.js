@@ -54,7 +54,6 @@
 
   ImageModel = cdb.core.Model.extend({
     defaults: {
-      basemap: "light_nolabels",
       format: "png",
       zoom: 10,
       center: [0, 0],
@@ -90,7 +89,10 @@
     this.defaults = {
       tiler_domain: "cartodb.com",
       tiler_port: "80"
-    }
+    };
+
+    this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
+
     this.layerToken = null;
     this.urls = null;
     this.silent = false;
@@ -122,6 +124,41 @@
 
     },
 
+    loadLayerDefinition: function(layerDefinition) {
+
+      var self = this;
+
+      this.queue = new Queue;
+
+      if (!layerDefinition.user_name) {
+        cartodb.log.error("Please, specify the username");
+        return;
+      }
+
+      this.model.set({
+        username: layerDefinition.user_name
+      });
+
+      this._generateEndpoint(layerDefinition.user_name, layerDefinition.tiler_port, layerDefinition.tiler_domain);
+
+      this._getLayerGroupID(layerDefinition);
+
+    },
+
+    _generateEndpoint: function(username, port, domain) {
+
+      if (parseInt(port, 10) === 80 || port === undefined) {
+        port = "";
+      } else {
+        port = ":" + port;
+      }
+
+      domain ? domain : this.model.defaults.tiler_domain;
+
+      this.model.set("endpoint", "http://" + username + "." + domain + port + "/api/v1/map");
+ 
+    },
+
     _onVisLoaded: function(data) {
 
       if (data) {
@@ -139,17 +176,13 @@
           bounds: data.bounds
         });
 
-        var tiler_port = dataLayer.options.tiler_port !== "80" ? ":" + dataLayer.options.tiler_port : "";
-        var endpoint = "http://" + this.model.get("username") + "." + dataLayer.options.tiler_domain + tiler_port + "/api/v1/map";
-
-        this.model.set("endpoint", endpoint);
-
         if (dataLayer.type === "namedmap") {
           layerDefinition = this._getNamedmapLayerDefinition(dataLayer.options);
         } else {
           layerDefinition = this._getLayergroupLayerDefinition(dataLayer.options);
         }
 
+        this._generateEndpoint(dataLayer.options.user_name, dataLayer.options.tiler_port, dataLayer.options.tiler_domain);
         this._getLayerGroupID(layerDefinition);
 
       }
@@ -163,7 +196,7 @@
       this._requestPOST(layerDefinition, function(data) {
 
         if (data) {
-          self.model.set("layergroupid", data.layergroupid)
+          self.model.set("layergroupid", data.layergroupid);
           self.queue.flush(this);
         }
 
@@ -171,15 +204,19 @@
 
     },
 
-    _getLayergroupLayerDefinition: function(options) {
+    _getBasemapLayer: function() {
 
-      var basemapLayer = {
+      return {
         type: "http",
         options: {
           urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
           subdomains: [ "a", "b", "c" ]
         }
       };
+
+    },
+
+    _getLayergroupLayerDefinition: function(options) {
 
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
@@ -190,7 +227,7 @@
         delete ld.layers[i].options.interactivity
       }
 
-      ld.layers.unshift(basemapLayer);
+      ld.layers.unshift(this._getBasemapLayer());
 
       return ld;
 
@@ -202,16 +239,8 @@
 
       layerDefinition.options.type = "named";
 
-      var basemapLayer = {
-        type: "http",
-        options: {
-          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
-          subdomains: [ "a", "b", "c" ]
-        }
-      };
-
       var layers  =  [ 
-        basemapLayer, {
+        this._getBasemapLayer(), {
         type: "named",
         options: {
           name: layerDefinition.named_map.name
@@ -224,39 +253,10 @@
 
       return ld;
 
-      //return layerDefinition.toJSON();
-
     },
 
     toJSON: function() {
       return this.layers[0];
-    },
-
-    loadLayerDefinition: function(layerDefinition) {
-
-      var self = this;
-
-      this.queue = new Queue;
-
-      if (!layerDefinition.user_name) {
-        cartodb.log.error("please, specify the username");
-        return;
-      }
-
-      this.model.set({
-        username: layerDefinition.user_name,
-        tiler_port: layerDefinition.tiler_port ? layerDefinition.tiler_port : this.model.defaults.tiler_port,
-        tiler_domain: layerDefinition.tiler_domain ? layerDefinition.tiler_domain : this.model.defaults.tiler_domain
-      });
-
-      var tiler_port   = (layerDefinition.tiler_port !== undefined && layerDefinition.tiler_port !== 80) ? ":" + layerDefinition.tiler_port : "";
-
-      var endpoint = "http://" + this.model.get("username") + "." + this.model.get("tiler_domain") + tiler_port + "/api/v1/map";
-
-      this.model.set("endpoint", endpoint);
-
-      this._getLayerGroupID(layerDefinition);
-
     },
 
     _requestPOST: function(params, callback) {
@@ -326,10 +326,28 @@
 
     },
 
-    _chooseBasemap: function(basemap_layer) {
-      // TODO: choose
+    _chooseBasemap: function(basemap_layer) { 
+
+      if (this.model.get("basemap")) return;
+
+      var type = basemap_layer.base_type;
+
+      if (!_.include(this.available_basemaps, type)) {
+
+        if (type && type.indexOf("toner") !== -1)      basemap = "dark_all";
+        else if (type && type.indexOf("dark")  !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("night") !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("night") !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("light") !== -1) basemap = "light_all";
+        else basemap = "light_all";
+
+        this.model.set("basemap", basemap);
+
+      }
+
     },
 
+    // Generates a random string
     _getUUID: function() {
       var S4 = function() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1);

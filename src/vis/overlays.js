@@ -8,7 +8,7 @@ cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 
   var slides_controller = new cdb.geo.ui.SlidesController({
     transitions: data.transitions,
-    slides: vis.slides
+    visualization: vis
   });
 
   return slides_controller.render();
@@ -43,9 +43,9 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
-    slides: vis.slides,
     transitions: data.transitions,
     slides_data: data.slides,
+    visualization: vis,
     layerView: data.layerView,
     visibility_options: data.options,
     torqueLayer: data.torqueLayer,

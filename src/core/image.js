@@ -71,6 +71,12 @@
 
     this.supported_formats = ["png", "jpg"];
 
+    this.defaults = {
+      tiler_domain: "cartodb.com",
+      tiler_port: "80"
+    };
+
+    this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
     this.options = _.defaults({
       ajax: window.$ ? window.$.ajax : reqwest.compat,
       pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
@@ -83,13 +89,6 @@
         return '_cdbc_' + self._callbackName();
       }
     });
-
-    this.defaults = {
-      tiler_domain: "cartodb.com",
-      tiler_port: "80"
-    };
-
-    this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
 
     this.layerToken = null;
     this.urls = null;
@@ -112,7 +111,7 @@
 
       this.queue = new Queue;
 
-      options = _.defaults(options, { vizjson: vizjson, id: "s" + this._getUUID() }, this.model.defaults);
+      options = _.defaults(options, { vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.model.defaults);
 
       this.model.set(options);
 
@@ -428,17 +427,17 @@
       this.model.set("attributes", attributes);
 
       if (attributes && attributes.src) {
-        document.write('<img id="' + this.model.get("id") + '" src="'  + attributes.src + '" />');
+        document.write('<img id="' + this.model.get("temp_id") + '" src="'  + attributes.src + '" />');
       } else {
-        document.write('<img id="' + this.model.get("id") + '" />');
+        document.write('<img id="' + this.model.get("temp_id") + '" />');
       }
 
       this.queue.add(function() {
 
-        var element = document.getElementById(self.model.get("id"));
+        var element = document.getElementById(self.model.get("temp_id"));
 
         element.src = self._getUrl();
-        element.removeAttribute("id");
+        element.removeAttribute("temp_id");
 
         var attributes = self.model.get("attributes");
 

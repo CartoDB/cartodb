@@ -29,7 +29,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).size(640, 480);
 
     image.getUrl(function() {
-      expect(image.model.get("basemap")).toEqual("light_nolabels");
+      expect(image.model.get("basemap")).toEqual("light_all");
       done();
     });
 
@@ -39,7 +39,7 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    var image = cartodb.Image(vizjson, { basemap: "my_fantastic_basemap"}).size(640, 480);
+    var image = cartodb.Image(vizjson, { basemap: "my_fantastic_basemap" }).size(640, 480);
 
     image.getUrl(function() {
       expect(image.model.get("basemap")).toEqual("my_fantastic_basemap");

@@ -152,7 +152,7 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    @name               = view_context.name_or_username(viewed_user)
+    @name               = viewed_user.name_or_username
     @twitter_username   = viewed_user.twitter_username
     @available_for_hire = viewed_user.available_for_hire
     @email              = viewed_user.email

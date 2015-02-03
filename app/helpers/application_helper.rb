@@ -227,8 +227,4 @@ module ApplicationHelper
       concat "and #{tags.size - visibleCount} more"
     end
   end
-  
-  def name_or_username(user)
-    user.name.present? ? user.name : user.username
-  end
 end

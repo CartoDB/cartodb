@@ -2098,6 +2098,10 @@ TRIGGER
     CartoDB.base_url(subdomain, user_name)
   end
 
+  def name_or_username
+    name.present? ? name : username
+  end
+
   private
 
   def name_exists_in_organizations?

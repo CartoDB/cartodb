@@ -118,7 +118,7 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/52\.5897007687178/52\.734375/320/240\.png");
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-155\.7421875,-31\.05293398570514,261\.2109375,82\.58610635020881/320/240\.png");
 
     cartodb.Image(vizjson).getUrl(function(error, url) {
       expect(error).toEqual(null);

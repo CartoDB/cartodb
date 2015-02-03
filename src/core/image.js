@@ -65,7 +65,9 @@
 
   var Image = function() {
 
-    var self = this;
+    this.options = {};
+
+    Map.call(this, this.options, this); 
 
     this.model = new ImageModel();
 
@@ -77,29 +79,6 @@
     };
 
     this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
-    this.options = _.defaults({
-      ajax: window.$ ? window.$.ajax : reqwest.compat,
-      pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-      gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-      cors: this.isCORSSupported(),
-      btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
-      MAX_GET_SIZE: 2033,
-      force_cors: false,
-      instanciateCallback: function() {
-        return '_cdbc_' + self._callbackName();
-      }
-    });
-
-    this.layerToken = null;
-    this.urls = null;
-    this.silent = false;
-    this.interactionEnabled = []; //TODO: refactor, include inside layer
-    this._layerTokenQueue = [];
-    this._timeout = -1;
-    this._queue = [];
-    this._waiting = false;
-    this.lastTimeUpdated = null;
-    this._refreshTimer = -1;
 
   };
 

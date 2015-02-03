@@ -305,6 +305,7 @@
     },
 
     center: function(center) {
+      this._set("bbox", null);
       return this._set("center", center);
     },
 

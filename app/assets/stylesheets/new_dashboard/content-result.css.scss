@@ -24,7 +24,7 @@
 }
 .ContentResult-smallLoader {
   position: absolute;
-  top: 0;
+  top: -2px;
   left: 0;
   right: 0;
   width: 100%;
@@ -40,7 +40,7 @@
     width: 600px;
     right: 0;
     height: 2px;
-    background: #82ABDA;
+    background: rgba(black, 0.55);
     @include animation(pulsate 1.5s linear infinite);      
   }
 }

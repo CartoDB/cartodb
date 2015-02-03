@@ -32,7 +32,7 @@
                 <%= current_user.organization.name %> /
               <% end %>
             </li>
-            <li class="Header-navigationBreadcrumbItem"><%= current_user.name || current_user.username %> /</li>
+            <li class="Header-navigationBreadcrumbItem"><%= current_user.name.present? ? current_user.name : current_user.username %> /</li>
             <li class="Header-navigationBreadcrumbItem" id="header-breadcrumbs-dropdown">
             </li>
           </ul>
@@ -54,7 +54,7 @@
         </li>
         <li class="Header-settingsItem">
           <a href="#/options" class="UserAvatar" id="header-settings-dropdown">
-            <%= image_tag current_user.avatar_url, class: "UserAvatar--medium" %>
+            <%= image_tag current_user.avatar_url, class: "UserAvatar-img UserAvatar-img--medium" %>
           </a>
         </li>
       </ul>

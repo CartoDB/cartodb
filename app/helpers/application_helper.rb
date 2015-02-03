@@ -154,12 +154,6 @@ module ApplicationHelper
     end
   end
 
-  def insert_rollbar
-    if not Cartodb.config[:rollbar].blank? and not Cartodb.config[:rollbar]['token'].blank?
-      render(:partial => 'shared/rollbar', :locals => { token: Cartodb.config[:rollbar]['token'] })
-    end
-  end
-
   def insert_trackjs
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
       render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })

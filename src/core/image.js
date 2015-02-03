@@ -65,9 +65,7 @@
 
   var Image = function() {
 
-    this.options = {};
-
-    Map.call(this, this.options, this); 
+    Map.call(this, this); 
 
     this.model = new ImageModel();
 

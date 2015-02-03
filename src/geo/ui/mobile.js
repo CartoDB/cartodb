@@ -119,7 +119,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.hasLayerSelector = false;
 
-    this.hasSlides = this.options.slides_data ? true : false;
+    this.slides_data   = this.options.slides_data;
+    this.visualization = this.options.visualization;
+
+    if (this.visualization) {
+      this.slides      = this.visualization.slides;
+    }
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -136,19 +141,61 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
+    this.mapView.bind('newLayerView', this._addLoading, this);
+
     this._addWheelEvent();
 
   },
 
+  _addLoading: function (layerView) {
+    if (layerView) {
+      var self = this;
+
+      var loadingTiles = function() {
+        self.loadingTiles();
+      };
+
+      var loadTiles = function() {
+        self.loadTiles();
+      };
+
+      layerView.bind('loading', loadingTiles);
+      layerView.bind('load',    loadTiles);
+    }
+  },
+
+  loadingTiles: function() {
+    if (this.loader) {
+      this.loader.show()
+    }
+    if(this.layersLoading === 0) {
+        this.trigger('loading');
+    }
+    this.layersLoading++;
+  },
+
+  loadTiles: function() {
+    if (this.loader) {
+      this.loader.hide();
+    }
+    this.layersLoading--;
+    // check less than 0 because loading event sometimes is
+    // thrown before visualization creation
+    if(this.layersLoading <= 0) {
+      this.layersLoading = 0;
+      this.trigger('load');
+    }
+  },
+
   _selectOverlays: function() {
 
-    if (this.hasSlides && this.options.slides) { // if there are slides…
+    if (this.slides && this.slides_data) { // if there are slides…
 
-      var state = this.options.slides.state();
+      var state = this.slides.state();
 
       if (state == 0) this.overlays = this.options.overlays; // first slide == master vis
       else {
-        this.overlays = this.options.slides_data[state - 1].overlays;
+        this.overlays = this.slides_data[state - 1].overlays;
       }
     } else { // otherwise we load the regular overlays
       this.overlays = this.options.overlays;
@@ -551,11 +598,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var template = cdb.core.Template.compile('<div class="loader"></div>', 'mustache');
 
-    var loader = new cdb.geo.ui.TilesLoader({
+    this.loader = new cdb.geo.ui.TilesLoader({
       template: template
     });
 
-    this.$el.append(loader.render().$el);
+    this.$el.append(this.loader.render().$el);
     this.$el.addClass("with-loader");
 
   },
@@ -617,7 +664,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         show_description = true;
       }
 
-      if (this.hasSlides) {
+      if (this.slides) {
         has_header = true;
       }
 
@@ -744,14 +791,15 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderSlidesController: function() {
 
-    if (this.hasSlides) {
+    if (this.slides) {
 
       this.$el.addClass("with-slides");
 
       this.slidesController = new cdb.geo.ui.SlidesController({
         show_counter: true,
         transitions: this.options.transitions,
-        slides: this.options.slides
+        visualization: this.options.visualization,
+        slides: this.slides
       });
 
       this.$el.append(this.slidesController.render().$el);

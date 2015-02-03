@@ -159,4 +159,35 @@ describe("Image", function() {
 
   });
 
+  it("should generate an image using a layer definition", function(done) {
+
+    // TODO: use data from documentation.cartodb.com
+   
+    var layer_definition = {
+      user_name: "arce",
+      layers: [{
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
+        }
+      }, {
+        type: "cartodb",
+        options: {
+          sql: "SELECT * FROM cities",
+          cartocss: "/** simple visualization */ #cities{ marker-file: url(http://com.cartodb.users-assets.production.s3.amazonaws.com/maki-icons/music-18.svg); marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
+          cartocss_version: "2.1.1"
+        }
+      }]
+    };
+
+    var regexp = new RegExp("http://arce\.cartodb\.com/api/v1/map/static/center/(.*?)/2/0/0/250/250\.png");
+
+    cartodb.Image(layer_definition).size(250, 250).zoom(2).getUrl(function(error, url) {
+      expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
 });

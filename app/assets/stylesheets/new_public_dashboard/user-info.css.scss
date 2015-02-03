@@ -25,7 +25,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   top: -$sAvatar-publicHalf;
   left: 50%;
   margin-left: -$sAvatar-publicHalf;
-  z-index: 10000; // to be placed on top of attribution text on smaller devises
+  z-index: 10000; // to be placed on top of attribution text on smaller devices
 }
 .UserInfo-name {
   font-size: $sFontSize-largest;

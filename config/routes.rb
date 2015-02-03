@@ -380,6 +380,9 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
     get '(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
 
+    # Oembed
+    get '(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
+
     # V2
     # --
 

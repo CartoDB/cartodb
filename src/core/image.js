@@ -452,22 +452,6 @@
       }
     },
 
-    getPath: function(file) {
-      var scripts = document.getElementsByTagName('script'),
-      cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        matches = src.match(cartodbJsRe);
-
-        if (matches) {
-          var bits = src.split('/');
-          delete bits[bits.length - 1];
-          return bits.join('/') + file;
-        }
-      }
-      return null;
-    },
-
     loadModule: function(modName) {
       var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
       var src = this.getPath(file);

@@ -8,11 +8,11 @@
   margin: 0 auto;
   background: white;
 }
-
 .MapTemplate {
   @include display-flex();
   @include css3-prefix(box-sizing, border-box);
   width: 940px;
+  margin-top: 60px;
   border: 1px solid rgba(black, 0.1);
   border-radius: 4px;
 }

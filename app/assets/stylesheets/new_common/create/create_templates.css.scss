@@ -1,0 +1,77 @@
+@import "../../new_variables/mixins";
+@import "../../new_variables/colors";
+@import "../../new_variables/sizes";
+
+// Map templates styles
+
+.CreateDialog-templates {
+  width: 940px;
+  margin: 0 auto;
+}
+.CreateDialog-templatesNew,
+.CreateDialog-templatesItems {
+  display: inline-block;
+  vertical-align: top;
+}
+.CreateDialog-templatesNew {
+  width: 220px;
+  margin-right: 20px;
+}
+.CreateDialog-templatesItems { width: 700px }
+.CreateDialog-templatesTitle {
+  width: 100%;
+  text-transform: uppercase;
+  font-size: $sFontSize-small;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.CreateDialog-templatesButton {
+  @include css3-prefix(box-sizing,content-box);
+  width: 218px;
+  height: 118px;
+  margin-top: 20px;
+  padding: 20px 0;
+  background: transparent;
+  text-align: center;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 4px;
+  outline: none;
+}
+.CreateDialog-templatesButton:hover {
+  background: white;
+  cursor: pointer;
+  border-color: $cCard-selectedBorder;
+}
+.CreateDialog-templatesButtonIcon {
+  display: block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  line-height: 50px!important; // Overwritten by icon font style
+  font-size: 20px;
+  color: white;
+  background: #6F9FD0;
+}
+// Templates icons
+.iconFont-People.CreateDialog-templatesButtonIcon {
+  line-height: 35px!important;
+  font-size: 30px;
+}
+.CreateDialog-templatesNewButton {
+  font-size: 18px;
+  background: #A9BE3F;
+  @include transform(rotate(-45deg));
+}
+.CreateDialog-templatesButtonTitle {
+  margin: 10px 10px 0 10px;
+  font-size: $sFontSize-large;
+  color: #6E6666;
+  font-weight: $sFontWeight-normal;
+}
+.CreateDialog-templatesButtonText {
+  margin: 3px 25px 0 25px;
+  font-size: $sFontSize-normal;
+  color: $cTypography-secondary;
+  font-weight: $sFontWeight-lighter; 
+}

@@ -3,4 +3,7 @@
 @import "../../new_variables/sizes";
 
 
-.Dialog-body.CreateDialog-body { width: 100% }
+.Dialog-body.CreateDialog-body {
+  width: 100%;
+  padding: 35px 0 55px;
+}

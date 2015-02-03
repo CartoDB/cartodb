@@ -71,12 +71,16 @@
     <script type="text/javascript">
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
-        createVis: {
-          url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
-          opts: {
-            no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+        <% if @most_viewed_vis_map %>
+          createVis: {
+            url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
+            opts: {
+              no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+            }
           }
-        }
+        <% else %>
+          basemapTemplateUrl: '<%= Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['cartodb']['positron_rainbow']['url'] : '' %>'
+        <% end %>
       };
     </script>
     <%= javascript_include_tag 'cdb.js', 'templates', 'new_public_dashboard' %>

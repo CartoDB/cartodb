@@ -138,9 +138,15 @@
 
         this.endPoint = "/api/v1/map";
 
+        var bbox = [];
+
+        bbox.push([data.bounds[0][1], data.bounds[0][0]]);
+        bbox.push([data.bounds[1][1], data.bounds[1][0]]);
+
         this.model.set({
           zoom: data.zoom,
           center: JSON.parse(data.center),
+          bbox: bbox,
           bounds: data.bounds
         });
 
@@ -192,6 +198,11 @@
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
       var ld = layerDefinition.toJSON();
+
+      // TODO: remove this
+      for (var i = 0; i<ld.layers.length; i++) {
+        delete ld.layers[i].options.interactivity
+      }
 
       ld.layers.unshift(this._getBasemapLayer());
 

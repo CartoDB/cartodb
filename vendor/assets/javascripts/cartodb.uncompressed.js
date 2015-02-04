@@ -1,11 +1,6 @@
 // cartodb.js version: 3.12.0
 // uncompressed version: cartodb.uncompressed.js
-<<<<<<< HEAD
-// sha: ffa9fe866580b65a70c2707ffce74e0c51532b81
-=======
-// sha: de6698d40123c7a4f5268e2b01c4e5b9bd37d326
-
->>>>>>> master
+// sha: 4c481d981f947d500a4b480dd881622f2d4d7ceb
 (function() {
   var root = this;
 
@@ -20780,7 +20775,6 @@ this.LZMA = LZMA;
         'core/model.js',
         'core/view.js',
 
-
         'geo/geocoder.js',
         'geo/geometry.js',
         'geo/map.js',
@@ -26191,42 +26185,23 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   initialize: function() {
     this.slidesCount = this.options.transitions.length;
+    this.visualization = this.options.visualization;
+    this.slides = this.visualization.slides;
   },
 
   _prev: function(e) {
-
     if (e) this.killEvent(e);
-    
-    var currentSlide = this.options.slides.state();
-
-    if (currentSlide > 0) {
-      currentSlide--;
-    } else {
-      currentSlide = this.options.transitions.length;
-    }
-
-    this.options.slides.go(currentSlide)
-
+    this.visualization.sequence.prev();
   },
 
   _next: function(e) {
     if (e) this.killEvent(e);
-
-    var currentSlide = this.options.slides.state();
-
-    if (currentSlide <= this.options.transitions.length - 1) {
-      currentSlide++;
-    } else {
-      currentSlide = 0;
-    }
-
-    this.options.slides.go(currentSlide);
-
+    this.visualization.sequence.next();
   },
 
   _renderDots: function() {
 
-    var currentActiveSlide = this.options.slides.state();
+    var currentActiveSlide = this.slides.state();
 
     for (var i = 0; i < this.options.transitions.length; i++) {
       var item = new cdb.geo.ui.SlidesControllerItem({ num: i, transition_options: this.options.transitions[i], active: i == currentActiveSlide });
@@ -26238,7 +26213,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
   _renderCounter: function() {
 
-    var currentActiveSlide = this.options.slides.state();
+    var currentActiveSlide = this.slides.state();
     var currentTransition = this.options.transitions[currentActiveSlide];
 
     var $counter = this.$el.find(".counter");
@@ -26253,7 +26228,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
   },
 
   _onSlideClick: function(slide) {
-    this.options.slides.go(slide.options.num);
+    this.visualization.sequence.current(slide.options.num);
   },
 
   render: function() {
@@ -26262,7 +26237,7 @@ cdb.geo.ui.SlidesController = cdb.core.View.extend({
 
     this.$el.html(this.template(options));
 
-    if (this.options.slides && this.options.transitions) {
+    if (this.slides && this.options.transitions) {
 
       if (options.show_counter) {
         this._renderCounter(); // we render: 1/N
@@ -26397,7 +26372,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.hasLayerSelector = false;
 
-    this.hasSlides = this.options.slides_data ? true : false;
+    this.slides_data   = this.options.slides_data;
+    this.visualization = this.options.visualization;
+
+    if (this.visualization) {
+      this.slides      = this.visualization.slides;
+    }
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -26414,19 +26394,61 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
+    this.mapView.bind('newLayerView', this._addLoading, this);
+
     this._addWheelEvent();
 
   },
 
+  _addLoading: function (layerView) {
+    if (layerView) {
+      var self = this;
+
+      var loadingTiles = function() {
+        self.loadingTiles();
+      };
+
+      var loadTiles = function() {
+        self.loadTiles();
+      };
+
+      layerView.bind('loading', loadingTiles);
+      layerView.bind('load',    loadTiles);
+    }
+  },
+
+  loadingTiles: function() {
+    if (this.loader) {
+      this.loader.show()
+    }
+    if(this.layersLoading === 0) {
+        this.trigger('loading');
+    }
+    this.layersLoading++;
+  },
+
+  loadTiles: function() {
+    if (this.loader) {
+      this.loader.hide();
+    }
+    this.layersLoading--;
+    // check less than 0 because loading event sometimes is
+    // thrown before visualization creation
+    if(this.layersLoading <= 0) {
+      this.layersLoading = 0;
+      this.trigger('load');
+    }
+  },
+
   _selectOverlays: function() {
 
-    if (this.hasSlides && this.options.slides) { // if there are slides…
+    if (this.slides && this.slides_data) { // if there are slides…
 
-      var state = this.options.slides.state();
+      var state = this.slides.state();
 
       if (state == 0) this.overlays = this.options.overlays; // first slide == master vis
       else {
-        this.overlays = this.options.slides_data[state - 1].overlays;
+        this.overlays = this.slides_data[state - 1].overlays;
       }
     } else { // otherwise we load the regular overlays
       this.overlays = this.options.overlays;
@@ -26829,11 +26851,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var template = cdb.core.Template.compile('<div class="loader"></div>', 'mustache');
 
-    var loader = new cdb.geo.ui.TilesLoader({
+    this.loader = new cdb.geo.ui.TilesLoader({
       template: template
     });
 
-    this.$el.append(loader.render().$el);
+    this.$el.append(this.loader.render().$el);
     this.$el.addClass("with-loader");
 
   },
@@ -26895,7 +26917,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         show_description = true;
       }
 
-      if (this.hasSlides) {
+      if (this.slides) {
         has_header = true;
       }
 
@@ -27022,14 +27044,15 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   _renderSlidesController: function() {
 
-    if (this.hasSlides) {
+    if (this.slides) {
 
       this.$el.addClass("with-slides");
 
       this.slidesController = new cdb.geo.ui.SlidesController({
         show_counter: true,
         transitions: this.options.transitions,
-        slides: this.options.slides
+        visualization: this.options.visualization,
+        slides: this.slides
       });
 
       this.$el.append(this.slidesController.render().$el);
@@ -29050,47 +29073,30 @@ cdb.geo.common.CartoDBLogo = {
 
   ImageModel = cdb.core.Model.extend({
     defaults: {
-      basemap: "light_nolabels",
       format: "png",
       zoom: 10,
       center: [0, 0],
-      size:  [320, 240]
+      size:  [320, 240],
+      tiler_port: 80,
+      tiler_domain: "cartodb.com"
     }
   });
 
   var Image = function() {
 
-    var self = this;
+    Map.call(this, this); 
 
     this.model = new ImageModel();
-
-    this.layers = [];
+    this.error = null;
 
     this.supported_formats = ["png", "jpg"];
 
-    this.options = _.defaults({
-      ajax: window.$ ? window.$.ajax : reqwest.compat,
-      pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-      gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-      cors: this.isCORSSupported(),
-      btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
-      MAX_GET_SIZE: 2033,
-      force_cors: false,
-      instanciateCallback: function() {
-        return '_cdbc_' + self._callbackName();
-      }
-    });
+    this.defaults = {
+      tiler_domain: "cartodb.com",
+      tiler_port: "80"
+    };
 
-    this.layerToken = null;
-    this.urls = null;
-    this.silent = false;
-    this.interactionEnabled = []; //TODO: refactor, include inside layer
-    this._layerTokenQueue = [];
-    this._timeout = -1;
-    this._queue = [];
-    this._waiting = false;
-    this.lastTimeUpdated = null;
-    this._refreshTimer = -1;
+    this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
 
   };
 
@@ -29098,171 +29104,162 @@ cdb.geo.common.CartoDBLogo = {
 
     load: function(vizjson, options) {
 
-      var self = this;
+      _.bindAll(this, "_onVisLoaded");
 
       this.queue = new Queue;
 
-      if (!options) options = {};
-      options = _.defaults(options, this.model.defaults);
+      options = _.defaults(options, { vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.model.defaults);
 
       this.model.set(options);
 
-      this.model.set("vizjson", vizjson);
-
-      cdb.image.Loader.get(vizjson, function(data){
-
-        if (data) {
-
-          var username = data.layers[1].options.user_name;
-
-          //var basemap_layer = data.layers[0].options;
-
-          var type    = data.layers[1].type;
-          var options = data.layers[1].options;
-
-          self.model.set({
-            username: username,
-            zoom: data.zoom,
-            center: JSON.parse(data.center),
-            bounds: data.bounds
-          });
-
-          var basemapLayer = {
-            type: "http",
-            options: {
-              urlTemplate: "http://{s}.basemaps.cartocdn.com/" + self.model.get("basemap") + "/{z}/{x}/{y}.png",
-              subdomains: [ "a", "b", "c" ]
-            }
-          };
-
-          if (type === "namedmap") {
-
-            data.layers[1].options.named_map.layers.unshift(basemapLayer);
-
-            var layerDefinition = new NamedMap(data.layers[1].options.named_map, options);
-            self.endpoint = "http://" + username + ".cartodb.com" + layerDefinition.endPoint;
-
-            var ld = layerDefinition.toJSON();
-
-          } else {
-
-            self.endpoint = "http://" + username + ".cartodb.com/api/v1/map";
-
-            var layerDefinition = new LayerDefinition(data.layers[1].options.layer_definition, options);
-
-            var ld = layerDefinition.toJSON();
-
-            ld.layers.unshift(basemapLayer);
-
-          }
-        }
-
-        self._requestPOST(ld, function(data) {
-
-          if (data) {
-            self.model.set("layergroupid", data.layergroupid)
-            self.queue.flush(this);
-          }
-
-        });
-
-      });
+      cdb.vis.Loader.get(vizjson, this._onVisLoaded);
 
       return this;
 
     },
 
-    toJSON: function() {
-      return this.layers[0];
-    },
-
-    loadLayerDefinition: function(layer_definition) {
-
-      this.queue = new Queue;
+    loadLayerDefinition: function(layerDefinition) {
 
       var self = this;
 
-      layer_definition = {
-        stat_tag: "2b13c956-e7c1-11e2-806b-5404a6a683d5",
-        version: "1.0.1",
-        layers: [{
-          type: "http",
-          options: {
-            urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
-            subdomains: [ "a", "b", "c" ]
-          }
-        }, {
-          type: "cartodb",
-          options: {
-            sql: "select * from cities",
-            cartocss: "/** simple visualization */ #cities{ marker-file: url(http://com.cartodb.users-assets.production.s3.amazonaws.com/maki-icons/music-18.svg); marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
-            cartocss_version: "2.1.1"
-          }
-        }]
-      };
+      this.queue = new Queue;
 
-      this._requestPOST(layer_definition, function(data) {
+      if (!layerDefinition.user_name) {
+        cartodb.log.error("Please, specify the username");
+        return;
+      }
+
+      this.options.user_name      = layerDefinition.user_name;
+      this.options.tiler_protocol = "https"; // layerDefinition.tiler_protocol;
+      this.options.tiler_domain   = layerDefinition.tiler_domain;
+      this.options.tiler_port     = layerDefinition.tiler_port;
+      this.endPoint = "/api/v1/map";
+
+      this.options.layers = layerDefinition;
+
+      this._requestLayerGroupID();
+
+    },
+
+    _onVisLoaded: function(data) {
+
+      if (data) {
+
+        var layerDefinition;
+        var baseLayer = data.layers[0];
+        var dataLayer = data.layers[1];
+
+        this._chooseBasemap(baseLayer.options);
+
+        this.options.user_name      = dataLayer.options.user_name;
+        this.options.tiler_protocol = "https"; //dataLayer.options.tiler_protocol;
+        this.options.tiler_domain   = dataLayer.options.tiler_domain;
+        this.options.tiler_port     = dataLayer.options.tiler_port;
+
+        this.endPoint = "/api/v1/map";
+
+        var bbox = [];
+
+        bbox.push([data.bounds[0][1], data.bounds[0][0]]);
+        bbox.push([data.bounds[1][1], data.bounds[1][0]]);
+
+        this.model.set({
+          zoom: data.zoom,
+          center: JSON.parse(data.center),
+          bbox: bbox,
+          bounds: data.bounds
+        });
+
+        if (dataLayer.type === "namedmap") {
+          this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
+        } else {
+          this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
+        }
+
+        this._requestLayerGroupID();
+
+      }
+
+    },
+
+    toJSON: function(){
+      return this.options.layers;
+    },
+
+    _requestLayerGroupID: function() {
+
+      var self = this;
+
+      this._requestPOST({}, function(data, error) {
+
+        if (error) {
+          self.error = error;
+        }
 
         if (data) {
-
-          self.model.set("layergroupid", data.layergroupid)
-
-          self.queue.flush(this);
+          self.model.set("layergroupid", data.layergroupid);
         }
+
+        self.queue.flush(this);
 
       });
 
     },
 
-    _requestPOST: function(params, callback) {
+    _getBasemapLayer: function() {
 
-      this.options.ajax({
-        crossOrigin: true,
-        type: 'POST',
-        method: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        url: this.endpoint,
-        data: JSON.stringify(params),
-        success: function(data) {
-          callback(data);
-        },
-        error: function(xhr) {
-          callback(null);
+      return {
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
         }
-      });
+      };
 
     },
 
-    _tilerHost: function() {
-      var opts = this.options;
-      return opts.tiler_protocol +
-        "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-      opts.tiler_domain +
-        ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
-    },
+    _getLayergroupLayerDefinition: function(options) {
 
-    _host: function(subhost) {
-      var opts = this.options;
-      if (opts.no_cdn) {
-        return this._tilerHost();
-      } else {
-        var h = opts.tiler_protocol + "://";
-        if (subhost) {
-          h += subhost + ".";
-        }
-        var cdn_host = opts.cdn_url || cdb.CDB_HOST;
-        if(!cdn_host.http && !cdn_host.https) {
-          throw new Error("cdn_host should contain http and/or https entries");
-        }
-        h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
-        return h;
+      var layerDefinition = new LayerDefinition(options.layer_definition, options);
+
+      var ld = layerDefinition.toJSON();
+
+      // TODO: remove this
+      for (var i = 0; i<ld.layers.length; i++) {
+        delete ld.layers[i].options.interactivity
       }
+
+      ld.layers.unshift(this._getBasemapLayer());
+
+      return ld;
+
+    },
+
+    _getNamedmapLayerDefinition: function(options) {
+
+      var layerDefinition = new NamedMap(options.named_map, options);
+
+      layerDefinition.options.type = "named";
+
+      var layers  =  [
+        this._getBasemapLayer(), {
+        type: "named",
+        options: {
+          name: layerDefinition.named_map.name
+        }
+      }];
+
+      var ld = {
+        layers: layers
+      };
+
+      return ld;
+
     },
 
     _getUrl: function() {
 
-      var username     = this.model.get("username");
+      var username     = this.options.user_name;
       var zoom         = this.model.get("zoom");
       var bbox         = this.model.get("bbox");
       var lat          = this.model.get("center")[0];
@@ -29272,14 +29269,43 @@ cdb.geo.common.CartoDBLogo = {
       var layergroupid = this.model.get("layergroupid");
       var format       = this.model.get("format");
 
-      var endpoint = "http://" + username + ".cartodb.com/api/v1/map";
+      var url = this._tilerHost() + this.endPoint;
 
       if (bbox) {
-        return [endpoint, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
+        return [url, "static/bbox" , layergroupid, bbox[0].join(",") + "," + bbox[1].join(","), width, height + "." + format].join("/");
       } else {
-        return [endpoint, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
+        return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
       }
 
+    },
+
+    _chooseBasemap: function(basemap_layer) { 
+
+      if (this.model.get("basemap")) return;
+
+      var type = basemap_layer.base_type;
+
+      if (!_.include(this.available_basemaps, type)) {
+
+        if (type && type.indexOf("toner") !== -1)      basemap = "dark_all";
+        else if (type && type.indexOf("dark")  !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("night") !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("blue") !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("light") !== -1) basemap = "light_all";
+        else basemap = "light_all";
+
+        this.model.set("basemap", basemap);
+
+      }
+
+    },
+
+    // Generates a random string
+    _getUUID: function() {
+      var S4 = function() {
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+      };
+      return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
     },
 
     /* Setters */
@@ -29304,6 +29330,7 @@ cdb.geo.common.CartoDBLogo = {
     },
 
     center: function(center) {
+      this._set("bbox", null);
       return this._set("center", center);
     },
 
@@ -29323,7 +29350,7 @@ cdb.geo.common.CartoDBLogo = {
 
       var self = this;
 
-      if (!img instanceof HTMLImageElement) {
+      if (!(img instanceof HTMLImageElement)) {
         cartodb.log.error("img should be an image");
         return;
       }
@@ -29345,21 +29372,40 @@ cdb.geo.common.CartoDBLogo = {
 
       this.queue.add(function() {
         if (callback) {
-          callback(null, self._getUrl()); // TODO: return the error
+          callback(self.error, self._getUrl()); // TODO: return the error
         }
       });
 
     },
 
-    /* Image.write()
+    /* Image.write(attributes)
        adds a img tag in the same place script is executed */
+      // TODO: document class, id and src attributes
 
-    write: function() {
+    write: function(attributes) {
 
       var self = this;
 
+      this.model.set("attributes", attributes);
+
+      if (attributes && attributes.src) {
+        document.write('<img id="' + this.model.get("temp_id") + '" src="'  + attributes.src + '" />');
+      } else {
+        document.write('<img id="' + this.model.get("temp_id") + '" />');
+      }
+
       this.queue.add(function() {
-        document.write('<img src="' + self._getUrl() + '"/>');
+
+        var element = document.getElementById(self.model.get("temp_id"));
+
+        element.src = self._getUrl();
+        element.removeAttribute("temp_id");
+
+        var attributes = self.model.get("attributes");
+
+        if (attributes && attributes.class) { element.setAttribute("class", attributes.class); }
+        if (attributes && attributes.id)    { element.setAttribute("id", attributes.id); }
+
       });
 
       return this;
@@ -29369,11 +29415,9 @@ cdb.geo.common.CartoDBLogo = {
 
   cdb.Image = function(data, options) {
 
-    //var image = new cdb.image.Image();
+    if (!options) options = {};
 
     var image = new Image();
-
-    //image.load(data);
 
     if (typeof data === 'string') {
       image.load(data, options);
@@ -29385,75 +29429,6 @@ cdb.geo.common.CartoDBLogo = {
 
   };
 
-  var ImageLoader = cdb.image.Loader = {
-
-    queue: [],
-    current: undefined,
-    _script: null,
-    head: null,
-
-    loadScript: function(src) {
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = src;
-      script.async = true;
-      if (!ImageLoader.head) {
-        ImageLoader.head = document.getElementsByTagName('head')[0];
-      }
-      // defer the loading because IE9 loads in the same frame the script
-      // so Loader._script is null
-      setTimeout(function() {
-        ImageLoader.head.appendChild(script);
-      }, 0);
-      return script;
-    },
-
-    get: function(url, callback) {
-      if (!ImageLoader._script) {
-        ImageLoader.current = callback;
-        ImageLoader._script = ImageLoader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=imgjson');
-      } else {
-        ImageLoader.queue.push([url, callback]);
-      }
-    },
-
-    getPath: function(file) {
-      var scripts = document.getElementsByTagName('script'),
-      cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        matches = src.match(cartodbJsRe);
-
-        if (matches) {
-          var bits = src.split('/');
-          delete bits[bits.length - 1];
-          return bits.join('/') + file;
-        }
-      }
-      return null;
-    },
-
-    loadModule: function(modName) {
-      var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
-      var src = this.getPath(file);
-      if (!src) {
-        cartodb.log.error("can't find cartodb.js file");
-      }
-      ImageLoader.loadScript(src);
-    }
-  };
-
-  window.imgjson = function(data) {
-    ImageLoader.current && ImageLoader.current(data);
-    // remove script
-    ImageLoader.head.removeChild(ImageLoader._script);
-    ImageLoader._script = null;
-    // next element
-    var a = ImageLoader.queue.shift();
-    if (a) {
-      ImageLoader.get(a[0], a[1]);
-    }
-  };
 })();
 
 (function() {
@@ -29945,6 +29920,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
       case 'click':
       case 'touchend':
+      case 'touchmove': // for some reason android browser does not send touchend
       case 'mspointerup':
       case 'pointerup':
       case 'pointermove':
@@ -31208,6 +31184,7 @@ CartoDBLayerGroupBase.prototype._manageOnEvents = function(map,o) {
 
     case 'click':
     case 'touchend':
+    case 'touchmove': // for some reason android browser does not send touchend
     case 'mspointerup':
       if (this.options.featureClick) {
         this.options.featureClick(o.e,latlng, point, o.data, o.layer);
@@ -31725,12 +31702,17 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       if (!layer_view) {
         return;
       }
+      return this._addLayerToMap(layer_view, opts);
+    },
+
+    _addLayerToMap: function(layer_view, opts) {
+      var layer = layer_view.model;
 
       this.layers[layer.cid] = layer_view;
 
       if (layer_view) {
         var idx = _(this.layers).filter(function(lyr) { return !!lyr.getTile; }).length - 1;
-        var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0);
+        var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layer.get('order') === 0;
         // set base layer
         if(isBaseLayer && !opts.no_base_layer) {
           var m = layer_view.model;
@@ -31747,9 +31729,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
             if (!layer_view.gmapsLayer) {
               cdb.log.error("gmaps layer can't be null");
             }
-            self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+            this.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
           } else {
-            layer_view.gmapsLayer.setMap(self.map_googlemaps);
+            layer_view.gmapsLayer.setMap(this.map_googlemaps);
           }
         }
         if(opts === undefined || !opts.silent) {
@@ -33208,7 +33190,7 @@ var Vis = cdb.core.View.extend({
 
   addTimeSlider: function(torqueLayer) {
     // if a timeslides already exists don't create it again
-    if (torqueLayer && !this.timeSlider) {
+    if (torqueLayer && (torqueLayer.options.steps > 1) && !this.timeSlider) {
       var self = this;
       // dont use add overlay since this overlay is managed by torque layer
       var timeSlider = Overlay.create('time_slider', this, { layer: torqueLayer });
@@ -33930,6 +33912,10 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
+    if (opt.searchControl !== undefined) {
+      opt.search = opt.searchControl;
+    }
+
     if (!this.mobile_enabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
@@ -33984,8 +33970,12 @@ var Vis = cdb.core.View.extend({
       remove_overlay('share');
     }
 
-    if (this.mobile) {
+    if ( this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
       remove_overlay('zoom');
+    }
+
+    if ( this.mobile || ((opt.search !== undefined) && (!opt.search)) ){
+      remove_overlay('search');
     }
 
     // if bounds are present zoom and center will not taken into account
@@ -34488,7 +34478,7 @@ cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 
   var slides_controller = new cdb.geo.ui.SlidesController({
     transitions: data.transitions,
-    slides: vis.slides
+    visualization: vis
   });
 
   return slides_controller.render();
@@ -34523,9 +34513,9 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
-    slides: vis.slides,
     transitions: data.transitions,
     slides_data: data.slides,
+    visualization: vis,
     layerView: data.layerView,
     visibility_options: data.options,
     torqueLayer: data.torqueLayer,

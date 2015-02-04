@@ -18,7 +18,8 @@ namespace :cartodb do
           CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
           v.delete
         rescue Sequel::DatabaseError => e
-          if (e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/) >= 0
+          match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
+          if match.present? && match >= 0
             puts "Couldn't delete #{v.id} visualization because it's been imported"
           else
             raise e

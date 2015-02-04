@@ -81,6 +81,8 @@ module CartoDB
       common.js
       jquery.tipsy.js
       specs.js
+      sessions.js
+      modernizr.js
 
       cdb.css
       cdb/themes/css/cartodb.css
@@ -104,12 +106,14 @@ module CartoDB
       public.css
       password_protected.css
       public_dashboard.css
+      new_public_dashboard.css
       public_table.css
       public_map.css
       public_ie.css
       specs.css
       table.css
       tables.css
+      frontend
 
       *.jpg
       *.ico

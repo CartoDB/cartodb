@@ -4,27 +4,42 @@
 
 @import "../new_variables/mixins";
 
+$size: 40px;
 
 .Logo {
   @include inline-block();
 }
 .Logo--text {
-  width:90px;
-  height:16px;
+  width: 90px;
+  height: 16px;
   i {
-    font-size:17px;
-    color: #333333;
+    line-height: $size;
+    font-size: 17px;
+    color: white;
+  }
+}
+.Logo--avatar {
+  width: $size+1;
+  height: $size+1;
+  line-height: 54px;
+  background: white;
+  border-radius: 2px;
+  text-align: center;
+  i {
+    font-size: 25px;
+    color: #3C93D8;
   }
 }
 .Logo--round {
-  width:40px;
-  height:40px;
+  min-width: $size;
+  width: $size;
+  height: $size;
   background-color:#CCCCCC;
-  border-radius: 40px;
-  line-height:50px;
-  text-align:center;
+  border-radius: $size;
+  line-height: 50px;
+  text-align: center;
   i {
-    font-size:24px;
+    font-size: 24px;
     color: white;
   }
 }

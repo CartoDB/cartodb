@@ -5,6 +5,7 @@
 // loading, ...) 
 // --------------------------------------------------
 
+@import "compass/css3/images";
 @import "../new_variables/colors";
 @import "../new_variables/mixins";
 @import "../new_variables/sizes";
@@ -21,6 +22,16 @@
   margin: 0 auto;
   padding-top: 0;
   min-height: 0;
+}
+.ContentResult.no-datasets {
+  position: relative;
+  width: auto;
+  margin: 0 auto;
+  padding: 100px 0;
+  min-height: 0;
+  @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat #F1F7FC);
+  box-shadow: 1px 0 0 1px $cStructure-softLine;
+  z-index: 9;
 }
 .ContentResult-smallLoader {
   position: absolute;

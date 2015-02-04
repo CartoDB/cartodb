@@ -7,7 +7,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 .DatasetsList {
   position: relative;
-  display: block !important;
+  display: block;
   width: $sLayout-width;
   margin: 0 auto;
   padding: 10px 0 $sMargin-group;

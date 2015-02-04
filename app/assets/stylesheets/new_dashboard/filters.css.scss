@@ -12,12 +12,13 @@
   top: 0;
   left: 0;
   width:100%;
-  background: white;
+  background: transparent;
   z-index: 10;
 }
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
+  background: white;
   
   &:before {
     content: '';

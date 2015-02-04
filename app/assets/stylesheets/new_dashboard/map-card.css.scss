@@ -46,6 +46,9 @@
   border-radius: 2px 2px 0 0;
   overflow:hidden;
 }
+.MapCard-header.has-error {
+  @include background(image-url("layout/error-map-bkg.png") no-repeat center 0);
+}
 .MapCard-header--compact {
   height: 130px;
 }

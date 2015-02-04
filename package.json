@@ -72,7 +72,6 @@
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js": "global:cdb",
     "backbone": "global:Backbone",
-    "moment": "global:moment",
-    "leaflet": "global:L"
+    "moment": "global:moment"
   }
 }

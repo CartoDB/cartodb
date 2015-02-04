@@ -79,7 +79,7 @@
             }
           }
         <% else %>
-          basemapTemplateUrl: '<%= Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['cartodb']['positron_rainbow']['url'] : '' %>'
+          fallbackBaselayer: <%= raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['cartodb']['positron_rainbow'].to_json : '{}' %>
         <% end %>
       };
     </script>

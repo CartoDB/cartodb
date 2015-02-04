@@ -4,6 +4,7 @@ class Admin::UsersController < ApplicationController
 
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy]
+  before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   def new
     @user = User.new

@@ -208,7 +208,7 @@ namespace :cartodb do
     # e.g. bundle exec rake cartodb:db:load_functions['127.0.0.1','0.5.0']
     #      bundle exec rake cartodb:db:load_functions[,'0.5.0']
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:database_host, :version, :num_threads, :thread_sleep, :sleep, :statement_timeout] => :environment do |t, args|
+    task :load_functions, [:database_host, :version, :num_threads, :thread_sleep, :sleep, :statement_timeout] => :environment do |task_name, args|
       # Send this as string, not as number
       extension_version = args[:version].blank? ? nil : args[:version]
       database_host = args[:database_host].blank? ? nil : args[:database_host]
@@ -230,14 +230,14 @@ namespace :cartodb do
       else
         count = User.where(database_host: database_host).count
       end
-      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+      execute_on_users_with_index(task_name, Proc.new { |user, i|
         begin
-          log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
           user.load_cartodb_functions(statement_timeout, extension_version)
-          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           sleep(sleep)
         rescue => e
-          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), task_name, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
       }, threads, thread_sleep, database_host)
@@ -265,7 +265,7 @@ namespace :cartodb do
 
       count = User.where(database_host: database_host).count
 
-      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+      execute_on_users_with_index(task_name, Proc.new { |user, i|
         begin
           log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
           user.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)

@@ -1,0 +1,11 @@
+@import "../../../new_variables/mixins";
+@import "../../../new_variables/colors";
+@import "../../../new_variables/sizes";
+
+// Navigation styles
+
+.Filters.ListingNavigation {
+  top: 162px;
+  background: transparent;
+}
+.Filters.ListingNavigation .Filters-separator { background-color: $cStructure-mainLine }

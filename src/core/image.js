@@ -111,7 +111,7 @@
       }
 
       this.options.user_name      = layerDefinition.user_name;
-      this.options.tiler_protocol = layerDefinition.tiler_protocol;
+      this.options.tiler_protocol = "https"; // layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
       this.endPoint = "/api/v1/map";
@@ -133,7 +133,7 @@
         this._chooseBasemap(baseLayer.options);
 
         this.options.user_name      = dataLayer.options.user_name;
-        this.options.tiler_protocol = dataLayer.options.tiler_protocol;
+        this.options.tiler_protocol = "https"; //dataLayer.options.tiler_protocol;
         this.options.tiler_domain   = dataLayer.options.tiler_domain;
         this.options.tiler_port     = dataLayer.options.tiler_port;
 

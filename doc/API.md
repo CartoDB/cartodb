@@ -303,7 +303,77 @@ cartodb.createLayer(map, 'http://myserver.com/layerdata.json')
 cartodb.createLayer(map, { layermetadata })
 ```
 
-Layer metadata is always in the form: `{ type: 'LAYER_TYPE_NAME', options: {...} }`
+Layer metadata must take one of the following forms.
+
+#### Standard Layer Source Object (`type: 'cartodb'`)
+
+Used for most maps with tables that are set to public or public with link.
+
+```javascript
+{
+  user_name: 'your_user_name', // Required
+  type: 'cartodb', // Required
+  sublayers: [{
+      sql: "SELECT * FROM table_name", // Required
+      cartocss: '#table_name {marker-fill: #F0F0F0;}', // Required
+      interactivity: "column1, column2, ...", // Optional
+  },
+  {
+      sql: "SELECT * FROM table_name", // Required
+      cartocss: '#table_name {marker-fill: #F0F0F0;}', // Required
+      interactivity: "column1, column2, ...", // Optional
+   },
+   ...
+  ]
+}
+```
+
+#### Torque Layer Source Object
+
+Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not allow sublayers.
+
+```javascript
+{
+  type: 'torque', // Required
+  order: 1, // Optional
+  options: {
+    query: "SQL statement", 	// Required if table_name is not given
+    table_name: "table_name", 	// Required if query is not given
+    user_name: "your_user_name", // Required
+    cartocss: "CartoCSS styles", // Required
+  }
+}
+```
+
+#### Named Maps Layer Source Object
+
+Used for making public maps with private data. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
+
+```javascript
+{
+  user_name: 'your_user_name', // Required
+  type: 'namedmap', // Required
+  named_map: {
+      name: 'name_of_map', // Required
+      // Optional
+      layers: [{
+            layer_name: "sublayer0", // Optional
+            interactivity: "column1, column2, ..." // Optional
+        },
+        {
+            layer_name: "sublayer1",
+            interactivity: "column1, column2, ..."
+        },
+        ...
+    ],
+    // Optional
+    params: {
+        color: "hex_value",
+        num: 2
+    }
+  }
+}
+```
 
 See [cartodb.CartoDBLayer](#cartodbcartodblayer) to see an example.
 
@@ -486,11 +556,11 @@ the layer itself
 
 Using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) this function changes the layer confuguration. This could be called in different ways:
 
-<div class="code-title">layer.createSubLayer</div>
+<div class="code-title">layer.setParams</div>
 ```javascript
 layer.setParams('test', 10); // sets test = 10
 layer.setParams('test', null); // unset test
-layer.setParams({'test': 1, 'color': '#F00'}); // unset test
+layer.setParams({'test': 1, 'color': '#F00'}); // set more than one parameter at once
 ```
 
 ##### Arguments
@@ -894,7 +964,7 @@ sql.getBounds('select * from table').done(function(bounds) {
 });
 ```
 
-## Core API functionallity
+## Core API functionality
 
 In case you are not using Leaflet, or you want to implement your own layer object, cartodb provide a way to get the tiles url for a layer definition.
 
@@ -905,15 +975,15 @@ If you want to use this functionallity you only need to load cartodb.core.js fro
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.core.js"></script>
 ```
 
-An example using this funcionallity can be found in modestmaps example: [view live](http://cartodb.github.com/cartodb.js/examples/modestmaps.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/modestmaps.html).
+An example using this funcionality can be found in a ModestMaps example: [view live](http://cartodb.github.com/cartodb.js/examples/modestmaps.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/modestmaps.html).
 
-Notice that cartodb.SQL is also included in that javascript file
+Notice that cartodb.SQL is also included in that JavaScript file
 
 ### cartodb.Tiles
 
 #### cartodb.Tiles.getTiles(_layerOptions, callback_)
 
-Fetch the tile template for the layerdefinition.
+Fetch the tile template for the layer definition.
 
 ##### Arguments
 

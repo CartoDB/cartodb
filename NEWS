@@ -1,5 +1,6 @@
 3.12.0 ()
 - Added Odyssey support for visualizations
+- Fixes the hiding of the tile loader in mobile
 
 3.11.32 (29//01//2014)
 - Fixed touch events on mobile (Android)

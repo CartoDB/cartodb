@@ -131,7 +131,7 @@ module CartoDB
 
         {
           size: external_source.size,
-          rows_counted: external_source.rows_counted,
+          row_count: external_source.rows_counted,
           geometry_types: external_source.geometry_types
         }
 

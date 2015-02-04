@@ -10,10 +10,14 @@ module CartoDB
       def validate
         validates_presence :visualization_id
         validates_presence :import_url
+        # TODO: retrieve geometry_types
+        #validates_presence :geometry_types
+        validates_presence :rows_counted
+        validates_presence :size
       end
 
-      def initialize(visualization_id, import_url)
-        super({ visualization_id: visualization_id, import_url: import_url })
+      def initialize(visualization_id, import_url, geometry_types, rows_counted, size)
+        super({ visualization_id: visualization_id, import_url: import_url, geometry_types: geometry_types, rows_counted: rows_counted, size: size })
       end
 
       def importable_by(user)

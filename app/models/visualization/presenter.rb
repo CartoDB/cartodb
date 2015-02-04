@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative './member'
+require_relative './external_source'
 
 module CartoDB
   module Visualization
@@ -44,6 +45,7 @@ module CartoDB
           active_child: visualization.active_child
         }
         poro.merge!(table: table_data_for(table, permission))
+        poro.merge!(external_source: external_source_data_for(visualization))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro.merge!(children: children)
@@ -118,6 +120,21 @@ module CartoDB
         table_data.merge!(table.row_count_and_size)
 
         table_data
+      end
+
+      def external_source_data_for(visualization)
+        # TODO: remove literal
+        return {} unless visualization.type == 'remote'
+
+        external_source = ExternalSource.where(visualization_id: visualization.id).first
+        return {} unless external_source.present?
+
+        {
+          size: external_source.size,
+          rows_counted: external_source.rows_counted,
+          geometry_types: external_source.geometry_types
+        }
+
       end
 
       def children

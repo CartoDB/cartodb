@@ -49,7 +49,9 @@ namespace :cartodb do
           d['source'])
         v.store
 
-        CartoDB::Visualization::ExternalSource.new(v.id, d['url']).save
+        # TODO: retrieve geometry_types
+        external_source = CartoDB::Visualization::ExternalSource.new(v.id, d['url'], '{}', d['rows'], d['size'])
+        external_source.save
 
       end
 

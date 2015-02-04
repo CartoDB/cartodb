@@ -44,6 +44,7 @@
   height: 170px;
   @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
   border-radius: 2px 2px 0 0;
+  overflow:hidden;
 }
 .MapCard-header--compact {
   height: 130px;
@@ -55,7 +56,7 @@
   bottom: 0;
   display: block;
   width: 100%;
-  height: $sMargin-min;
+  height: 2px;
   background: black;
   @include opacity(.1);
   z-index:2;
@@ -70,6 +71,36 @@
   border-radius: 2px;
   background:rgba(black,.4);
   z-index:2;
+}
+.MapCard-loader {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+  z-index: 100;
+
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 600px;
+    right: 0;
+    height: 2px;
+    background: rgba(black, 0.25);
+    @include animation(pulsate 1.5s linear infinite);
+  }
+}
+.MapCard-preview {
+  display: none;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   @include display-flex();

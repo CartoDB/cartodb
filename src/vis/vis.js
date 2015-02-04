@@ -850,6 +850,7 @@ var Vis = cdb.core.View.extend({
     var layer = data.layers[1];
 
     if (this.mobile_enabled) {
+
       if (options && options.legends === undefined) {
         options.legends = this.legends ? true : false;
       }
@@ -862,7 +863,7 @@ var Vis = cdb.core.View.extend({
 
       var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
 
-      this.addOverlay({
+      this.mobileOverlay = this.addOverlay({
         type: 'mobile',
         layers: layers,
         slides: data.slides,
@@ -871,6 +872,7 @@ var Vis = cdb.core.View.extend({
         options: options,
         torqueLayer: this.torqueLayer
       });
+
     }
 
   },
@@ -992,7 +994,7 @@ var Vis = cdb.core.View.extend({
       this.gmaps_style = opt.gmaps_style;
     }
 
-    this.mobile         = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
     if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
@@ -1071,11 +1073,11 @@ var Vis = cdb.core.View.extend({
       remove_overlay('share');
     }
 
-    if ( this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
+    if (this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
       remove_overlay('zoom');
     }
 
-    if ( this.mobile || ((opt.search !== undefined) && (!opt.search)) ){
+    if (this.mobile || ((opt.search !== undefined) && (!opt.search)) ){
       remove_overlay('search');
     }
 
@@ -1331,6 +1333,11 @@ var Vis = cdb.core.View.extend({
 
 
   loadingTiles: function() {
+
+    if (this.mobileOverlay) {
+      this.mobileOverlay.loadingTiles();
+    }
+
     if (this.loader) {
       this.loader.show()
     }
@@ -1341,6 +1348,11 @@ var Vis = cdb.core.View.extend({
   },
 
   loadTiles: function() {
+
+    if (this.mobileOverlay) {
+      this.mobileOverlay.loadTiles();
+    }
+
     if (this.loader) {
       this.loader.hide();
     }

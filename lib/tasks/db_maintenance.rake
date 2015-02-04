@@ -1,4 +1,5 @@
 require_relative 'thread_pool'
+require 'timeout'
 
 namespace :cartodb do
   namespace :db do
@@ -251,7 +252,7 @@ namespace :cartodb do
       extension_version = args[:version]
       database_host = args[:database_host]
       sleep = args[:sleep].blank? ? 0.5 : args[:sleep].to_i
-      statement_timeout = args[:statement_timeout].blank? ? 180000 : args[:statement_timeout]
+      statement_timeout = args[:statement_timeout].blank? ? 180000 : args[:statement_timeout] # 3 min by default
 
       puts "Upgrading cartodb extension with following config:"
       puts "extension_version: #{extension_version}"
@@ -263,9 +264,12 @@ namespace :cartodb do
 
       User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
         begin
-          log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
-          user.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
-          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
+          # We grant 2 x statement_timeout, by default 6 min
+          Timeout::timeout(statement_timeout/1000 * 2) do
+            log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
+            user.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
+          end
         rescue => e
           log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), task_name, database_host)
           puts "FAIL:#{i} #{e.message}"

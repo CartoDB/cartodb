@@ -79,6 +79,9 @@
   font-size: 14px;
   line-height: 80px;
   color: $cTypography-help;
+  background: transparent;
+  border: none;
+  outline: none;
 
   &:after {
     content: '|';
@@ -95,6 +98,7 @@
   @include inline-block();
   vertical-align: middle;
   margin-right:5px;
+  margin-left: 1px;
   
 }
 .Filters-searchLink:hover { color: #333 }
@@ -130,7 +134,9 @@
   border:1px solid #CCC;
   color:#CCC;
   text-align: center;
-  line-height:32px;
+  line-height:30px;
+  background: transparent;
+  outline: none;
   
   &:hover {
     border:1px solid #999;
@@ -153,6 +159,10 @@
 .Filters-typeLink {
   line-height: 80px;
   font-size: 14px;
+  color: $cTypography-link;
+  background: transparent;
+  border: none;
+  outline: none;
 
   &:hover {
     color:$cTypography-linkSelected;

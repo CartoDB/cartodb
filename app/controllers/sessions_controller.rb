@@ -1,25 +1,50 @@
-# coding: UTF-8
+# encoding: UTF-8
+require_relative '../../lib/google_plus_api'
 
 class SessionsController < ApplicationController
-  layout 'front_layout'
+  layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
+  before_filter :initialize_google_plus_config
   before_filter :api_authorization_required, :only => :show
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user
 
+  def initialize_google_plus_config
+    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+    @google_plus_config = GooglePlusConfig.instance(Cartodb.config, signup_action)
+  end
+
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to dashboard_path(user_domain: params[:user_domain], trailing_slash: true) and return
+      redirect_to dashboard_path(trailing_slash: true) and return
     end
   end
 
   def create
-    user_id = extract_user_id(request, params)
-    user = authenticate!(:password, scope: user_id)
-    CartodbStats.increment_login_counter(params[:email])
+    user = if params[:google_access_token].present? && @google_plus_config.present?
+      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      if user
+        user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+        authenticate!(:google_access_token, scope: user_domain)
+      elsif user == false
+        # token not valid
+        nil
+      else
+        # token valid, unknown user
+        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+        nil
+      end
+    else
+      authenticate!(:password, scope: extract_user_id(request, params))
+    end
 
-    destination_url = dashboard_path(user_domain: params[:user_domain], trailing_slash: true)
+    render :action => 'new' and return unless params[:user_domain].present? || user.present?
+
+    user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+    CartodbStats.increment_login_counter(user.email)
+
+    destination_url = dashboard_path(trailing_slash: true)
     if user.organization.nil?
       destination_url = CartoDB.base_url(user.username) << destination_url
     else

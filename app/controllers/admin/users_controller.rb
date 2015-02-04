@@ -35,7 +35,7 @@ class Admin::UsersController < ApplicationController
 
   def update
     attributes = params[:user]
-    @user.set_fields(attributes, [:email]) if attributes[:email].present?
+    @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
     @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner?
 
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?

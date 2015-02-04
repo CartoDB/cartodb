@@ -120,6 +120,19 @@ describe "Imports API" do
     import['state'].should be == 'complete'
   end
 
+  it 'fails with password protected files' do
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/alldata-pass.zip', 'application/octet-stream'))
+
+    item_queue_id = JSON.parse(response.body)['item_queue_id']
+
+    get api_v1_imports_show_url(:id => item_queue_id), params
+
+    response.code.should be == '200'
+    import = JSON.parse(response.body)
+    import['state'].should be == 'failure'
+  end
+
 
   it 'imports files with weird filenames' do
     post api_v1_imports_create_url,

@@ -10,9 +10,9 @@ Sequel.migration do
   end
 
   down do
-    drop column :external_sources, :size
-    drop column :external_sources, :rows_counted
-    drop column :external_sources, :geometry_types
+    drop_column :external_sources, :size
+    drop_column :external_sources, :rows_counted
+    drop_column :external_sources, :geometry_types
   end
 
 end

@@ -68,6 +68,7 @@
     Map.call(this, this); 
 
     this.model = new ImageModel();
+    this.error = null;
 
     this.supported_formats = ["png", "jpg"];
 
@@ -170,12 +171,17 @@
 
       var self = this;
 
-      this._requestPOST({}, function(data) {
+      this._requestPOST({}, function(data, error) {
+
+        if (error) {
+          self.error = error;
+        }
 
         if (data) {
           self.model.set("layergroupid", data.layergroupid);
-          self.queue.flush(this);
         }
+
+        self.queue.flush(this);
 
       });
 
@@ -265,7 +271,7 @@
         if (type && type.indexOf("toner") !== -1)      basemap = "dark_all";
         else if (type && type.indexOf("dark")  !== -1) basemap = "dark_all";
         else if (type && type.indexOf("night") !== -1) basemap = "dark_all";
-        else if (type && type.indexOf("night") !== -1) basemap = "dark_all";
+        else if (type && type.indexOf("blue") !== -1) basemap = "dark_all";
         else if (type && type.indexOf("light") !== -1) basemap = "light_all";
         else basemap = "light_all";
 
@@ -347,7 +353,7 @@
 
       this.queue.add(function() {
         if (callback) {
-          callback(null, self._getUrl()); // TODO: return the error
+          callback(self.error, self._getUrl()); // TODO: return the error
         }
       });
 

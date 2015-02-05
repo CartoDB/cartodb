@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Image example | CartoDB.js</title>
+    <title>Image loading methods example | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
@@ -25,6 +25,7 @@
         border: 1px solid #ccc;
         background-color: #f8f8f8;
       }
+      .map.fade img { display: none; }
     </style>
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
@@ -55,13 +56,23 @@
 
       // and now we just ask for the URL and append it to the page
       cartodb.Image(layer_definition).size(250, 250).zoom(9).center([40.708517, -73.993414]).getUrl(function(error, url) {
-        var $map = $('<div class="map"></div>');
-        var $img = $("<img />");
-        $img.attr("src", url);
-        $map.append($img);
-        $("#content").append($map);
-      });
+        var img = new Image();
 
+        img.onerror = function() {
+          console.log(error);
+        };
+
+        img.onload  = function() {
+          var $map = $('<div class="map fade"></div>');
+          var $img = $('<img src="' + url + '" />');
+          $map.append($img);
+          $("#content").append($map);
+          $img.fadeIn(250);
+        };
+
+        img.src = url;
+
+      });
 
       /* 2: Another option: with a vizjson defined in the CartoDB editor */
       var vizjsons = [
@@ -79,11 +90,21 @@
         var v = vizjsons[i];
 
         cartodb.Image(v.url, { basemap: v.basemap }).size(250, 250).zoom(v.zoom).getUrl(function(error, url) {
-          var $map = $('<div class="map"></div>');
-          var $img = $("<img />");
-          $img.attr("src", url);
+        var img = new Image();
+
+        img.onerror = function() {
+          console.log(error);
+        };
+
+        img.onload  = function() {
+          var $map = $('<div class="map fade"></div>');
+          var $img = $('<img src="' + url + '" />');
           $map.append($img);
           $("#content").append($map);
+          $img.fadeIn(250);
+        };
+
+        img.src = url;
         });
 
       }

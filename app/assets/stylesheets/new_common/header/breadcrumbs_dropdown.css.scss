@@ -3,7 +3,6 @@
 @import "../../new_variables/sizes";
 
 .BreadcrumbsDropdown { width: 260px }
-.BreadcrumbsDropdown--compact { width: auto; } 
 .BreadcrumbsDropdown:before { right: 126px!important }
 .BreadcrumbsDropdown:after { right: 120px!important }
 .BreadcrumbsDropdown-list {

@@ -44,14 +44,16 @@
             <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
           <% end %>
           <% content_for(:abs_positioned) do %>
-            <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">
-              <ul class="BreadrumbsDropdown-list">
-                <li class="BreadcrumbsDropdown-optionsItem">
-                  <% if @content_type == 'maps' %>
-                    <%= link_to 'Datasets', @datasets_url %>
-                  <% else %>
-                    <%= link_to 'Maps', @maps_url %>
-                  <% end %>
+            <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown" style="display: none;">
+              <ul class="BreadcrumbsDropdown-list">
+                <li class="BreadcrumbsDropdown-listItem">
+                  <span class="BreadcrumbsDropdown-icon UserAvatar">
+                    <img class="UserAvatar-img UserAvatar-img--small" src="<%= @avatar_url %>" title="<%= @name %>" alt="<%= @username %>" />
+                  </span>
+                  <nav class="BreadcrumbsDropdown-options">
+                    <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
+                    <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
+                  </nav>
                 </li>
               </ul>
             </div>

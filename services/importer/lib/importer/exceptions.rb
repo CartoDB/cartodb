@@ -12,6 +12,7 @@ module CartoDB
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
+    class PasswordNeededForExtractionError      < ExtractionError; end
     class GeometryCollectionNotSupportedError   < StandardError; end
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
@@ -50,6 +51,7 @@ module CartoDB
       TooManyNodesError                     => 1007,
       GDriveNotPublicError                  => 1010,
       InvalidNameError                      => 1014,
+      PasswordNeededForExtractionError      => 1018,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,

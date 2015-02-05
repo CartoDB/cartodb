@@ -108,9 +108,6 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.here_maps_enabled          = self.organization.here_maps_enabled
-        self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
-        self.rainbow_maps_enabled       = self.organization.rainbow_maps_enabled
         self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
@@ -1284,7 +1281,7 @@ class User < Sequel::Model
   end
 
   def belongs_to_organization?(organization)
-    organization_user? and self.organization.eql? organization
+    organization_user? and self.organization_id == organization.id
   end
 
   def feature_flags
@@ -1742,12 +1739,9 @@ TRIGGER
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
-    if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.2'
-    end
-
     add_python
 
+    # Install dependencies of cartodb extension
     in_database({
                     as: :superuser,
                     no_cartodb_in_schema: true
@@ -1768,6 +1762,37 @@ TRIGGER
         db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%Q{
             SELECT count(*) FROM pg_extension WHERE extname='postgis'
           }).first[:count] > 0
+
+        unless statement_timeout.nil?
+          db.run("SET statement_timeout TO '#{old_timeout}';")
+        end
+      end
+    end
+
+    upgrade_cartodb_postgres_extension(statement_timeout, cdb_extension_target_version)
+
+    # We reset the connections to this database to be sure the change in default search_path is effective
+    self.reset_pooled_connections
+
+    self.rebuild_quota_trigger
+  end
+
+  # Upgrade the cartodb postgresql extension
+  def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
+    if cdb_extension_target_version.nil?
+      cdb_extension_target_version = '0.5.2'
+    end
+
+    in_database({
+                  as: :superuser,
+                  no_cartodb_in_schema: true
+                }) do |db|
+      db.transaction do
+
+        unless statement_timeout.nil?
+          old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
+          db.run("SET statement_timeout TO '#{statement_timeout}';")
+        end
 
         db.run(%Q{
           DO LANGUAGE 'plpgsql' $$
@@ -1807,15 +1832,8 @@ TRIGGER
         unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
           raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
         end
-
-#       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end
     end
-
-    # We reset the connections to this database to be sure the change in default search_path is effective
-    self.reset_pooled_connections
-
-    self.rebuild_quota_trigger
   end
 
   def set_statement_timeouts
@@ -2095,10 +2113,17 @@ TRIGGER
 
   # return public user url -> string
   def public_url
-    subdomain = organization.nil? ? username : organization.name
     user_name = organization.nil? ? nil : username
 
-    CartoDB.base_url(subdomain, user_name)
+    CartoDB.base_url(self.subdomain, user_name)
+  end
+
+  def subdomain
+    organization.nil? ? username : organization.name
+  end
+
+  def name_or_username
+    name.present? ? name : username
   end
 
   private

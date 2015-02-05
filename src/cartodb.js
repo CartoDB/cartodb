@@ -22,6 +22,7 @@
 
     root.cdb.config = {};
     root.cdb.core = {};
+    root.cdb.image = {};
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
     root.cdb.geo.geocoder = {};
@@ -108,6 +109,7 @@
         'ui/common/dropdown.js',
 
         'vis/vis.js',
+        'vis/image.js',
         'vis/overlays.js',
         'vis/layers.js',
 

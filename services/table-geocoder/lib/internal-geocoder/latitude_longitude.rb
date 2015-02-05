@@ -23,7 +23,6 @@ module CartoDB
                 REPLACE(TRIM(CAST("#{latitude_column}" AS text)), ',', '.') || ')', 4326
             )
         }
-        # TODO: should we avoid overwriting the_geom?
         query_fragment_where = %Q{
           REPLACE(TRIM(CAST("#{longitude_column}" AS text)), ',', '.') ~
             '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'

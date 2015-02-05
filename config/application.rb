@@ -67,11 +67,14 @@ module CartoDB
       new_dashboard_deps.js
       new_dashboard.js
       new_dashboard_templates.js
+      new_public_dashboard_deps.js
+      new_public_dashboard.js
       dashboard.js keys.js login.js
       models.js
       organization.js
       modernizr.js statsc.js
-      table.js public_dashboard.js
+      table.js
+      public_dashboard.js
       public_table.js
       map_public.js
       public_like.js

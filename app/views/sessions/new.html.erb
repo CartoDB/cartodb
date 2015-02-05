@@ -42,22 +42,21 @@
               <div class="Sessions-sep"></div>
 
               <%= form_tag create_session_path, class: "js-Loading-form" do %>
-                <% @error = @login_error %>
-
                 <input type="hidden" value="" id="google_access_token" name="google_access_token" />
 
                 <div class="Sessions-field">
                   <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "Email or username", class: "Sessions-input" %>
 
-                  <% if @error %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="Email <%= @error[0, 1].downcase + @error.humanize[1..-1] %>.">!</div>
+                  <% if @login_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
                   <% end %>
                 </div>
 
                 <div class="Sessions-field">
                   <%= password_field_tag :password, "", placeholder: "Password", class: "Sessions-input" %>
-                  <% if @error %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="Password <%= @error[0, 1].downcase + @error.humanize[1..-1] %>.">!</div>
+
+                  <% if @login_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
                   <% end %>
                 </div>
 

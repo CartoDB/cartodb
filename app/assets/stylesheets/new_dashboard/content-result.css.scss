@@ -32,6 +32,30 @@
   @include background(image-url('layout/no_datasets_bkg.png') center center no-repeat #F1F7FC);
   box-shadow: 1px 0 0 1px $cStructure-softLine;
   z-index: 9;
+
+  &:after,
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 0;
+  }  
+
+  &:after {
+    left: 50%;
+    right: 0;
+    margin-left: 470px;
+    @include background-horizontal(rgba(#F1F7FC,0), rgba(#F1F7FC,1));
+  }
+
+  &:before {
+    left: 0;
+    right: 50%;
+    margin-right: 470px;
+    background-color: transparent!important;
+    @include background-horizontal(rgba(#F1F7FC,1), rgba(#F1F7FC,0));
+  }
 }
 .ContentResult-smallLoader {
   position: absolute;

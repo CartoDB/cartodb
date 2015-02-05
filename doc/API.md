@@ -921,14 +921,16 @@ Fetch the tile template for the layerdefinition.
 
 <div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
-user_name: 'mycartodbuser',
-sublayers: [{
-  sql: "SELECT * FROM table_name";
-  cartocss: '#layer { marker-fill: #F0F0F0; }'
-}],
-tiler_protocol: 'https', // not required
-tiler_host: 'cartodb.com', // not required
-tiler_port: 80 // not required
+{
+  user_name: 'mycartodbuser',
+  sublayers: [{
+    sql: "SELECT * FROM table_name";
+    cartocss: '#layer { marker-fill: #F0F0F0; }'
+  }],
+  tiler_protocol: 'https', // Optional
+  tiler_host: 'cartodb.com', // Optional
+  tiler_port: 80 // Optional
+}
 ```
 
 + **callback(tilesUrl, error)**: a function that recieves the tiles templates. In case of an error the first param is null and second one is an object with errors attribute witch is a list of errors. The tilesUrl object contains url template for tiles and for interactivity grids:

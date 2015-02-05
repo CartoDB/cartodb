@@ -54,7 +54,7 @@
           <div class="DatasetsList-itemTags">
             <% if ds[:tags].size > 0 %>
               <% formatted_tags(ds[:tags]) do |tag| %>
-                <a class="DefaultTags-item js-tag-link" href="<%= public_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a>
+                <a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a>
               <% end %>
             <% end %>
           </div>

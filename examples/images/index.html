@@ -25,7 +25,6 @@
         border: 1px solid #ccc;
         background-color: #f8f8f8;
       }
-      .map.fade img { display: none; }
     </style>
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
@@ -63,11 +62,10 @@
         };
 
         img.onload  = function() {
-          var $map = $('<div class="map fade"></div>');
+          var $map = $('<div class="map"></div>');
           var $img = $('<img src="' + url + '" />');
           $map.append($img);
           $("#content").append($map);
-          $img.fadeIn(250);
         };
 
         img.src = url;
@@ -97,11 +95,10 @@
         };
 
         img.onload  = function() {
-          var $map = $('<div class="map fade"></div>');
+          var $map = $('<div class="map"></div>');
           var $img = $('<img src="' + url + '" />');
           $map.append($img);
           $("#content").append($map);
-          $img.fadeIn(250);
         };
 
         img.src = url;

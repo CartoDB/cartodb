@@ -84,7 +84,6 @@
 
         'geo/layer_definition.js',
         'geo/common.js',
-        'core/image.js',
 
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
@@ -110,6 +109,7 @@
         'ui/common/dropdown.js',
 
         'vis/vis.js',
+        'vis/image.js',
         'vis/overlays.js',
         'vis/layers.js',
 

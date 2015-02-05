@@ -62,7 +62,7 @@
       };
 
       // and now we just ask for the URL and append it to the page
-      cartodb.Image(layer_definition).size(500, 500).bbox([-8,50,3,55]).getUrl(function(error, url) {
+      cartodb.Image("http://arce.cartodb.com/api/v2/viz/c8cdb78e-ad3f-11e4-a472-0e018d66dc29/viz.json").size(500, 500).getUrl(function(error, url) {
 
         var img = new Image();
 

@@ -313,7 +313,7 @@ defaults: &defaults
         name: 'CartoDB World Midnight Commander'
         className: 'midnight_cartodb'
         attribution: ''
-    stamen:
+    Stamen:
       toner_stamen:
         url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
         subdomains: 'abcd'

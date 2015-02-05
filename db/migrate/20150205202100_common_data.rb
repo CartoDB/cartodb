@@ -9,7 +9,15 @@ Sequel.migration do
       String    :import_url,        null: false
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP
       DateTime  :updated_at,        default: Sequel::CURRENT_TIMESTAMP
+      Integer   :rows_counted,      null: false
+      Integer   :size, null: false
+      String    :username
     end
+
+    Rails::Sequel.connection.run(%q{
+        ALTER TABLE "external_sources"
+        ADD COLUMN geometry_types text[]
+    })
 
     create_table :external_data_imports do
       Uuid      :id,                primary_key: true, null: false, unique: false, default: 'uuid_generate_v4()'.lit

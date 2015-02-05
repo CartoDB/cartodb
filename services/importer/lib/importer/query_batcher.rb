@@ -19,10 +19,10 @@ module CartoDB
         @batch_size = batch_size
       end
 
-      # Executes update query with batching.
+      # Executes update query of the form UPDATE table_name SET set_clause WHERE where_condition, by batches
       # first_fragment: sql part before 'where' keyword. Example: 'update mytable set mycolumn = 1'
       # condition_fragment: sql part after 'where' keyword (you must not include where keyword). Example: 'mycolumn = 555 and mycolumn2 != 3'
-      def execute(first_fragment, table_name,  condition_fragment = nil, message = nil)
+      def execute_update(first_fragment, table_name,  condition_fragment = nil, message = nil)
         message ||= "Batching #{first_fragment}, #{condition_fragment}"
         temp_column = "cartodb_processed_#{table_name.hash.abs}"
         batched_query = batched_query(first_fragment, table_name, temp_column, message, condition_fragment)

@@ -33,7 +33,7 @@ module CartoDB
 
         # TODO: next time this decision is needed should be refactored out to a factory
         if(table_has_cartodb_id(table_schema, table_name))
-          CartoDB::Importer2::CartodbIdQueryBatcher.new(@db, @logger).execute(
+          CartoDB::Importer2::CartodbIdQueryBatcher.new(@db, @logger).execute_update(
               %Q{#{query_fragment_update} where #{query_fragment_where}},
               table_schema, table_name
           )

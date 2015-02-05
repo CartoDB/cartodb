@@ -17,7 +17,7 @@ module CartoDB
         puts message
       end
 
-      def execute(query, table_schema, table_name)
+      def execute_update(query, table_schema, table_name)
         qualified_table_name = "\"#{table_schema}\".\"#{table_name}\""
         @logger.log("Running batched query by cartodb_id in #{qualified_table_name}: #{query}")
 

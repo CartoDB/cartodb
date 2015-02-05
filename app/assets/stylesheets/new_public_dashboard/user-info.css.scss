@@ -34,7 +34,8 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   color: $cTypography-headers;
   margin-bottom: $sMargin-min;
 }
-.UserInfo-nameBreadcrumb {
+.UserInfo-nameBreadcrumb,
+.UserInfo-nameBreadcrumb a {
   color: $cTypography-secondary;
 }
 .UserInfo-desc {

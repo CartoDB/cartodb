@@ -1,3 +1,6 @@
+3.11.33 (05//02//2014)
+- Fixes tooltip style.
+
 3.11.32 (29//01//2014)
 - Fixed touch events on mobile (Android)
 

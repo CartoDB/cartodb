@@ -36,7 +36,7 @@
         <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
       </div>
       <h2 class="UserInfo-name">
-        <%= @name %> <span class="UserInfo-nameBreadcrumb">/ Maps</span>
+        <%= @name %><span class="UserInfo-nameBreadcrumb"> / <%= link_to @content_type.capitalize, @content_type_url, class: 'DropdownLink' %></span>
       </h2>
       <% if @description.present? %>
         <p class="DefaultParagraph UserInfo-desc">

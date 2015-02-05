@@ -10,7 +10,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   display: block !important;
   width: $sLayout-width;
   margin: 0 auto;
-  padding: $sMargin-group 0;
 }
 .DatasetsList-item {
   @include display-flex();
@@ -18,17 +17,17 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
-.DatasetsList-item:hover,
-.DatasetsList-item.is--selected {
+.DatasetsList-item.DatasetsList-item--selectable:hover,
+.DatasetsList-item.DatasetsList-item--selectable.is--selected {
   padding: $sMargin-group $selectedItemPaddingOnSides;
   margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
   border-radius: 4px;
 }
-.DatasetsList-item:hover {
+.DatasetsList-item.DatasetsList-item--selectable:hover {
   background-color: $cCard-hoverFill;
   border: 1px $cCard-hoverBorder solid;
 }
-.DatasetsList-item.is--selected {
+.DatasetsList-item.DatasetsList-item--selectable.is--selected {
   background-color: $cCard-selectedFill;
   border: 1px $cCard-selectedBorder solid;
 }
@@ -86,7 +85,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  max-width: 440px; 
+  max-width: 440px;
 }
 
 .DatasetsList-itemMeta,

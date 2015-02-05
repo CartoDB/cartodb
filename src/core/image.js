@@ -133,9 +133,8 @@
         this._chooseBasemap(baseLayer.options);
 
         this.options.user_name      = dataLayer.options.user_name;
-        this.options.tiler_protocol = dataLayer.options.tiler_protocol;
-        this.options.tiler_domain   = dataLayer.options.tiler_domain;
-        this.options.tiler_port     = dataLayer.options.tiler_port;
+
+        this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
         this.endPoint = "/api/v1/map";
 
@@ -159,6 +158,24 @@
 
         this._requestLayerGroupID();
 
+      }
+
+    },
+
+    _setupTilerConfiguration: function(protocol, domain, port) {
+
+      var vizjson = this.model.get("vizjson");
+
+      var isHTTPS = vizjson.indexOf("https") !== -1 ? true : false;
+
+      this.options.tiler_domain   = domain;
+
+      if (isHTTPS) {
+        this.options.tiler_protocol = "https";
+        this.options.tiler_port     = 443;
+      } else {
+        this.options.tiler_protocol = protocol;
+        this.options.tiler_port     = port;
       }
 
     },

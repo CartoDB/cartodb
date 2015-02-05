@@ -227,4 +227,8 @@ module ApplicationHelper
       concat "and #{tags.size - visibleCount} more"
     end
   end
+  
+  def vis_json_url(vis_id)
+    "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: vis_id).sub(/(http:|https:)/i, '') }.json"
+  end
 end

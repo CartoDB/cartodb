@@ -191,23 +191,25 @@
             <div class="row">
               <div class="field field-2">
                 <%= form.label :email %>
-                <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
+                <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil, readonly: @user.google_sign_in %>
                 <%= form_error_for :email, @user.errors %>
               </div>
             </div>
 
-            <div class="row">
-              <div class="field field-2">
-                <%= label_tag 'user[password]', 'New password' %>
-                <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
-                <%= form_error_for :password, @user.errors %>
+            <% if !@user.google_sign_in %>
+              <div class="row">
+                <div class="field field-2">
+                  <%= label_tag 'user[password]', 'New password' %>
+                  <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+                  <%= form_error_for :password, @user.errors %>
+                </div>
+                <div class="field field-2">
+                  <%= label_tag 'user[password_confirmation]', 'Confirm password' %>
+                  <%= password_field_tag 'user[password_confirmation]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+                  <%= form_error_for :password_confirmation, @user.errors %>
+                </div>
               </div>
-              <div class="field field-2">
-                <%= label_tag 'user[password_confirmation]', 'Confirm password' %>
-                <%= password_field_tag 'user[password_confirmation]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
-                <%= form_error_for :password_confirmation, @user.errors %>
-              </div>
-            </div>
+            <% end %>
 
             <% if current_user.organization_owner? -%>
               <div class="row">

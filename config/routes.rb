@@ -22,6 +22,9 @@ CartoDB::Application.routes.draw do
   match '(/u/:user_domain)/oauth/access_token'   => 'oauth#access_token',  as: :access_token
   get   '(/u/:user_domain)/oauth/identity'       => 'sessions#show',       as: :oauth_show_sessions
 
+  get '/google_plus' => 'google_plus#google_plus'
+  post '/google/signup' => 'google_plus#google_signup'
+
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do
 
@@ -379,6 +382,9 @@ CartoDB::Application.routes.draw do
     # Organizations
     get '(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
     get '(/u/:user_domain)/api/v1/org/users' => 'organizations#users', as: :api_v1_organization_users
+
+    # Oembed
+    get '(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
 
     # V2
     # --

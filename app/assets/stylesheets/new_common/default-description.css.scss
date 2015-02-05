@@ -1,0 +1,18 @@
+// Default description for datasets and maps
+// --------------------------------------------------
+
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.DefaultDescription {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+}
+.DefaultDescription.is--empty {
+  color: $cTypography-help;
+  font-style: italic;
+}
+.DefaultDescription--error {
+  color: $cHighlight-negative;
+}

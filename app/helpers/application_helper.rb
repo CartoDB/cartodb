@@ -154,12 +154,6 @@ module ApplicationHelper
     end
   end
 
-  def insert_rollbar
-    if not Cartodb.config[:rollbar].blank? and not Cartodb.config[:rollbar]['token'].blank?
-      render(:partial => 'shared/rollbar', :locals => { token: Cartodb.config[:rollbar]['token'] })
-    end
-  end
-
   def insert_trackjs
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
       render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
@@ -218,4 +212,23 @@ module ApplicationHelper
   #     send(hook_name) if defined?(hook_name)
   #   end.join('').html_safe
   # end
+  
+  def formatted_tags(tags)
+    visibleCount = 3
+    
+    tags.first(visibleCount).each_with_index do |tag, i|
+      yield tag
+      if i < visibleCount-1
+        concat ','
+      end
+    end
+    
+    if tags.size > visibleCount
+      concat "and #{tags.size - visibleCount} more"
+    end
+  end
+  
+  def vis_json_url(vis_id)
+    "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: vis_id).sub(/(http:|https:)/i, '') }.json"
+  end
 end

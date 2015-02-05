@@ -6,13 +6,13 @@
 @import "../new_variables/sizes";
 
 .Footer {
-  display:block;
-  width:100%;
-  padding:50px 0;
-  background:$cStructure-grayBkg;
+  display: block;
+  width: 100%;
+  padding: $sMargin-section 0;
+  background: $cStructure-grayBkg;
 }
-.Footer .u-inner {
-  position:relative;
+.Footer-inner {
+  position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
@@ -20,13 +20,13 @@
 .Footer-list {
   @include display-flex();
   @include align-items(center, center);
-  width:450px;
+  width: 450px;
 }
 .Footer-list--right { @include justify-content(flex-end, end) }
 .Footer-list--left { @include justify-content(flex-start, start) }
 .Footer-listItem {
   @include inline-block();
-  padding:0 11px;
+  padding: 0 $sMargin-elementInline;
 }
-.Footer-listItem:first-child { padding-left:0 }
-.Footer-listItem:last-child { padding-right:0 }
+.Footer-listItem:first-child { padding-left: 0 }
+.Footer-listItem:last-child { padding-right: 0 }

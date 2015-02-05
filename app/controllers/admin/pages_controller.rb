@@ -84,7 +84,7 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    set_vars_for_layout(viewed_user, 'datasets', view_context.public_datasets_home_url(user_domain: params[:user_domain]))
+    set_vars_for_layout(viewed_user, 'datasets')
 
     if viewed_user.has_feature_flag?('new_public_dashboard')
       new_public_datasets(viewed_user)
@@ -111,7 +111,7 @@ class Admin::PagesController < ApplicationController
       end
     end
 
-    set_vars_for_layout(viewed_user, 'maps', view_context.public_visualizations_home_url(user_domain: params[:user_domain]))
+    set_vars_for_layout(viewed_user, 'maps')
 
     if viewed_user.has_feature_flag?('new_public_dashboard')
       new_public_dashboard(viewed_user)
@@ -122,7 +122,7 @@ class Admin::PagesController < ApplicationController
 
   private
 
-  def set_vars_for_layout(viewed_user, content_type, content_type_url)
+  def set_vars_for_layout(viewed_user, content_type)
     @most_viewed_vis_map = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_DERIVED,
@@ -132,7 +132,8 @@ class Admin::PagesController < ApplicationController
       per_page: 1,
     }).first
     @content_type = content_type
-    @content_type_url = content_type_url
+    @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
+    @datasets_url = view_context.public_datasets_home_url(user_domain: params[:user_domain])
 
     # Note that these are shared for both new and current layouts, so dont change lightly
     @name               = viewed_user.name_or_username

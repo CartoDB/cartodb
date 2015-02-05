@@ -44,8 +44,8 @@ module CartoDB
 
         create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
-        create_the_geom_from_country_guessing ||
         create_the_geom_from_ip_guessing      ||
+        create_the_geom_from_country_guessing ||
         create_the_geom_in(table_name)
 
         enable_autovacuum

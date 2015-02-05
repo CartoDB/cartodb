@@ -121,10 +121,10 @@ defaults: &defaults
     host: ""
     port:
   layer_opts:
-    public_opts: ["type", "active", "query", "opacity", "auto_bound", 
-                  "interactivity", "debug", "visible", "tiler_domain", 
-                  "tiler_port", "tiler_protocol", "sql_domain", "sql_port", 
-                  "sql_protocol", "extra_params", "cdn_url", "table_name", 
+    public_opts: ["type", "active", "query", "opacity", "auto_bound",
+                  "interactivity", "debug", "visible", "tiler_domain",
+                  "tiler_port", "tiler_protocol", "sql_domain", "sql_port",
+                  "sql_protocol", "extra_params", "cdn_url", "table_name",
                   "user_name", "style_version", "tile_style", "query_wrapper"]
     default_tile_styles:
       point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
@@ -178,7 +178,7 @@ defaults: &defaults
       secret_access_key: "test"
   assets:
     s3_bucket_name: "tests"
-    max_file_size: 5242880 # 5.megabytes 
+    max_file_size: 5242880 # 5.megabytes
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
@@ -186,12 +186,12 @@ defaults: &defaults
     kinds: ['stars', 'mountains']
     colors: ['red', 'blue']
   dropbox_api_key: ""
-  gdrive: 
+  gdrive:
     api_key: ""
     app_id: ""
   # This enables a support chat within editor
   # Use your Olark api id to enable it. If you remove this entry or don't define an app key, it won't be activated.
-  olark: 
+  olark:
     app_id: ''
   enforce_non_empty_layer_css: true
   users_dumps:
@@ -250,118 +250,118 @@ defaults: &defaults
             ratelimit_wait_secs:    0.1
   feature_flags:
     ghost_tables:
-      restricted: true 
+      restricted: true
     rainbow_maps:
       restricted: false
   user_feature_flags:
     rambo:    ['ghost_tables']
   basemaps:
-    cartodb:
+    CartoDB:
       positron_rainbow:
-        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Positron' 
-        className: 'positron_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>' 
+        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron'
+        className: 'positron_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
       dark_matter_rainbow:
-        url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Dark matter' 
-        className: 'dark_matter_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>' 
+        url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Dark matter'
+        className: 'dark_matter_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
       positron_lite_rainbow:
-        url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Positron (lite)' 
-        className: 'positron_lite_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>' 
+        url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron (lite)'
+        className: 'positron_lite_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
       dark_matter_lite_rainbow:
-        url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Dark matter (lite)' 
-        className: 'dark_matter_lite_rainbow' 
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>' 
+        url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Dark matter (lite)'
+        className: 'dark_matter_lite_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
       eco_cartodb:
-        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '10' 
-        name: 'CartoDB World Eco' 
-        className: 'eco_cartodb' 
-        attribution: '' 
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '10'
+        name: 'CartoDB World Eco'
+        className: 'eco_cartodb'
+        attribution: ''
       flat_blue:
-        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-flatblue/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '10' 
-        name: 'CartoDB World Flat Blue' 
-        className: 'flat_blue' 
-        attribution: '' 
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-flatblue/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '10'
+        name: 'CartoDB World Flat Blue'
+        className: 'flat_blue'
+        attribution: ''
       midnight_cartodb:
-        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-midnight/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '10' 
-        name: 'CartoDB World Midnight Commander' 
-        className: 'midnight_cartodb' 
-        attribution: '' 
-    stamen:
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-midnight/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '10'
+        name: 'CartoDB World Midnight Commander'
+        className: 'midnight_cartodb'
+        attribution: ''
+    Stamen:
       toner_stamen:
-        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Toner' 
-        className: 'toner_stamen' 
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.' 
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner'
+        className: 'toner_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_background_stamen:
-        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Toner Background' 
-        className: 'toner_background_stamen' 
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.' 
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Background'
+        className: 'toner_background_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_lite_stamen:
-        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Toner Lite' 
-        className: 'toner_lite_stamen' 
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.' 
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Lite'
+        className: 'toner_lite_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_lines_stamen:
-        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lines/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Toner Lines' 
-        className: 'toner_lines_stamen' 
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.' 
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lines/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Lines'
+        className: 'toner_lines_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_hybrid_stamen:
-        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Toner Hybrid' 
-        className: 'toner_hybrid_stamen' 
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.' 
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Hybrid'
+        className: 'toner_hybrid_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       watercolor_stamen:
-        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png' 
-        subdomains: 'abcd' 
-        minZoom: '0' 
-        maxZoom: '18' 
-        name: 'Watercolor' 
-        className: 'watercolor_stamen' 
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.' 
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Watercolor'
+        className: 'watercolor_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
 
 development:
   <<: *defaults

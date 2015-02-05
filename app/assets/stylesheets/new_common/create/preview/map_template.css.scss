@@ -1,0 +1,35 @@
+@import "../../../new_variables/mixins";
+@import "../../../new_variables/colors";
+@import "../../../new_variables/sizes";
+
+// Map template video styles
+
+.MapTemplate {
+  @include display-flex();
+  @include css3-prefix(box-sizing, border-box);
+  width: $sLayout-width;
+  margin-top: 60px;
+  border: 1px solid rgba(black, 0.1);
+  border-radius: 4px;
+}
+.MapTemplate-info {
+  width: 258px;
+  padding: 30px;
+}
+.MapTemplate-infoTitle {
+  font-size: $sFontSize-largest;
+  color: $cTypography-paragraphs;
+  line-height: $sLineHeight-larger;
+}
+.MapTemplate-infoText {
+  margin-top: 16px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-larger;
+}
+.MapTemplate-video {
+  width: 620px;
+  height: 350px;
+}
+.MapTemplate-videoIframe { border: none }

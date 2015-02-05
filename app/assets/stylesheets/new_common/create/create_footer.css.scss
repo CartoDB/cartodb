@@ -13,9 +13,9 @@
   z-index: 1;
 }
 .CreateDialog-footerInner {
-  width: 940px;
+  width: $sLayout-width;
   margin: 0 auto;
-  padding: 28px 0;
+  padding: $sMargin-group 0;
   border-top: 1px solid $cStructure-mainLine;
 }
 .CreateDialog-footerInner.is-expanded {
@@ -35,7 +35,7 @@
   height: 20px;
   margin-right: 10px;
   text-align: center;
-  line-height: 20px!important;
+  line-height: $sLineHeight-normal!important;
   font-size: $sFontSize-normal;
   color: white;
   background: #F6D35C;

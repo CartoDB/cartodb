@@ -23,7 +23,7 @@
 .CreateDialog-header .Dialog-headerIcon .iconFont { color: #CCC }
 .CreateDialog-header .iconFont-Add { font-size: 20px }
 .CreateDialog-header .Dialog-headerTitle {
-  line-height: 22px;
+  line-height: $sLineHeight-large;
   font-size: $sFontSize-larger;
   color: $cTypography-help;
 }
@@ -38,7 +38,7 @@
   right: -8px;
   width: 15px;
   height: 15px;
-  line-height: 15px;
+  line-height: $sLineHeight-smaller;
   text-align: center;
   border: 1px solid #CCC;
   border-radius: 15px;

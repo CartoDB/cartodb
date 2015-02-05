@@ -5,7 +5,7 @@
 // Map templates styles
 
 .CreateDialog-templates {
-  width: 940px;
+  width: $sLayout-width;
   margin: 0 auto;
 }
 .CreateDialog-templatesNew,
@@ -15,7 +15,7 @@
 }
 .CreateDialog-templatesNew {
   width: 220px;
-  margin-right: 20px;
+  margin-right: $sMargin-element;
 }
 .CreateDialog-templatesItems { width: 700px }
 .CreateDialog-templatesList {
@@ -24,7 +24,7 @@
 }
 .CreateDialog-templatesItem {
   float: left;
-  margin-right: 20px;
+  margin-right: $sMargin-element;
 }
 .CreateDialog-templatesItem:nth-child(3n) { margin-right: 0 }
 .CreateDialog-templatesTitle {

@@ -29,7 +29,7 @@ $blueColor: #3190DB;
   margin-top: -7px;
   width: 16px;
   height: 16px;
-  line-height: 16px;
+  line-height: $sLineHeight-small;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-lighter;
   border-radius: 16px;

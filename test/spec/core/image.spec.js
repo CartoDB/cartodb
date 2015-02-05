@@ -80,7 +80,7 @@ describe("Image", function() {
 
     var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-31\.05,-155\.74,82\.58,261\.21/400/300\.png");
 
-    cartodb.Image(vizjson).bbox([[-31.05, -155.74], [82.58, 261.21]]).size(400,300).getUrl(function(error, url) {
+    cartodb.Image(vizjson).bbox([-31.05, -155.74, 82.58, 261.21]).size(400,300).getUrl(function(error, url) {
       expect(error).toEqual(null);
       expect(url).toMatch(regexp);
       done();

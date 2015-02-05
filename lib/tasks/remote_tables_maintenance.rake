@@ -44,13 +44,13 @@ namespace :cartodb do
           u.id,
           CartoDB::Visualization::Member::PRIVACY_PUBLIC,
           d['description'],
-          [ 'common-data', d['category'] ],
+          [ d['category'] ],
           d['license'],
           d['source'])
         v.store
 
         # TODO: retrieve geometry_types
-        external_source = CartoDB::Visualization::ExternalSource.new(v.id, d['url'], '{}', d['rows'], d['size'])
+        external_source = CartoDB::Visualization::ExternalSource.new(v.id, d['url'], '{}', d['rows'], d['size'], 'common-data')
         external_source.save
 
       end

@@ -16,8 +16,8 @@ module CartoDB
         validates_presence :size
       end
 
-      def initialize(visualization_id, import_url, geometry_types, rows_counted, size)
-        super({ visualization_id: visualization_id, import_url: import_url, geometry_types: geometry_types, rows_counted: rows_counted, size: size })
+      def initialize(visualization_id, import_url, geometry_types, rows_counted, size, username = nil)
+        super({ visualization_id: visualization_id, import_url: import_url, geometry_types: geometry_types, rows_counted: rows_counted, size: size, username: username })
       end
 
       def importable_by(user)

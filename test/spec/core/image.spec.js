@@ -88,6 +88,22 @@ describe("Image", function() {
 
   });
 
+  it("should use the zoom defined in the vizjson", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
+
+    var image = cartodb.Image(vizjson);
+
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/40/10/320/240\.png");
+
+    image.center([40,10]).getUrl(function(err, url) {
+      expect(image.model.get("zoom")).toEqual(2);
+      expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
   it("should allow to set the format", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"

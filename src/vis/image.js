@@ -63,7 +63,8 @@
     this.supported_formats = ["png", "jpg"];
 
     this.defaults = {
-      basemap: "light_all",
+      basemap_url_template: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+      basemap_subdomains: ["a", "b", "c"],
       format: "png",
       zoom: 10,
       center: [0, 0],
@@ -206,8 +207,8 @@
       return {
         type: "http",
         options: {
-          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.defaults.basemap + "/{z}/{x}/{y}.png",
-          subdomains: [ "a", "b", "c" ]
+          urlTemplate: this.defaults.basemap_url_template,
+          subdomains:  this.defaults.basemap_subdomains
         }
       };
 
@@ -219,7 +220,7 @@
         type: "http",
         options: {
           urlTemplate: urlTemplate,
-          subdomains: subdomains || ["a", "b", "c"]
+          subdomains: subdomains || this.defaults.basemap_subdomains
         }
       };
 
@@ -233,39 +234,32 @@
           color: color
         }
       };
-    
+
     },
 
     _getBasemapLayer: function() {
 
-      var basemap = this.imageOptions.basemap;
+      var basemap     = this.imageOptions.basemap;
+      var basemap_url = this.imageOptions.basemap_url;
 
-      if (this.imageOptions.basemap_url) {
+      if (basemap_url) return this._getHTTPBasemapLayer(basemap_url);
 
-        return this._getHTTPBasemapLayer(this.imageOptions.basemap_url);
+      if (basemap) {
 
-      } else if (basemap) {
+        var type = basemap.type.toLowerCase();
 
-        if (basemap.type.toLowerCase() === "plain")  {
-
-          return this._getPlainBasemapLayer(basemap.color);
-
-        } else {
-
-          return this._getHTTPBasemapLayer(basemap.urlTemplate, basemap.subdomains);
-        }
-      } else {
-
-        return this._getDefaultBasemapLayer();
+        if (type === "plain") return this._getPlainBasemapLayer(basemap.color);
+        else                  return this._getHTTPBasemapLayer(basemap.urlTemplate, basemap.subdomains);
 
       }
+
+      return this._getDefaultBasemapLayer();
 
     },
 
     _getLayergroupLayerDefinition: function(options) {
 
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
-
       var ld = layerDefinition.toJSON();
 
       ld.layers.unshift(this._getBasemapLayer());
@@ -299,22 +293,18 @@
     _getUrl: function() {
 
       var username     = this.options.user_name;
-
-      var zoom         = this.imageOptions.zoom || this.defaults.zoom;
       var bbox         = this.imageOptions.bbox;
-
+      var layergroupid = this.imageOptions.layergroupid;
+      var zoom         = this.imageOptions.zoom   || this.defaults.zoom;
       var center       = this.imageOptions.center || this.defaults.center;
+      var size         = this.imageOptions.size   || this.defaults.size;
+      var format       = this.imageOptions.format || this.defaults.format;
 
-      var lat = center[0];
-      var lon = center[1];
-
-      var size = this.imageOptions.size || this.defualts.size;
+      var lat    = center[0];
+      var lon    = center[1];
 
       var width  = size[0];
       var height = size[1];
-
-      var layergroupid = this.imageOptions.layergroupid;
-      var format       = this.imageOptions.format || this.defaults.format;
 
       var url = this._tilerHost() + this.endPoint;
 

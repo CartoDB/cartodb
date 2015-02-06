@@ -1,4 +1,4 @@
-var Loader = cdb.core.Loader = {
+var Loader = cdb.vis.Loader = cdb.core.Loader = {
 
   queue: [],
   current: undefined,

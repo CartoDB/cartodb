@@ -94,7 +94,7 @@ Map.prototype = {
   },
 
   getLayerCount: function() {
-    return this.layers.length;
+    return this.layers ? this.layers.length: 0;
   },
 
   _encodeBase64Native: function (input) {
@@ -675,6 +675,19 @@ Map.prototype = {
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
 
+  getSubLayer: function(index) {
+    var layer = this.layers[index];
+    // for named maps we don't know how many layers are defined so 
+    // we create the layer on the fly
+    if (!layer) {
+      layer = this.layers[index] = {
+        options: {}
+      };
+    }
+    layer.sub = layer.sub || new SubLayer(this, index);
+    return layer.sub;
+  },
+
   setLayerDefinition: function(named_map, options) {
     options = options || {}
     this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
@@ -1073,7 +1086,7 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  if (Backbone.Model) {
+  if (Backbone.Model && this._parent.getLayer(this._position)) {
     this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
     this.infowindow.bind('change', function() {
       var def = this._parent.getLayer(this._position);

@@ -782,6 +782,17 @@ describe("NamedMap", function() {
 
   })
 
+  it("should get sublayer", function() {
+    named_map = {
+      name: 'testing',
+      params: {
+        color: 'red'
+      }
+    };
+    namedMap = new NamedMap(named_map, {})
+    expect(namedMap.getSubLayer(0)).not.toEqual(undefined);
+  });
+
   it("should enable/disable layers", function(done) {
     var params;
     namedMap.layers.push({

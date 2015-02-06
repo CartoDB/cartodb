@@ -219,20 +219,22 @@ var Vis = cdb.core.View.extend({
     _.defer(loaded);
   },
 
-  addLegends: function(layers) {
-
+  _addLegends: function(legends) {
     if (this.legends) {
       this.legends.remove();
     }
 
     this.legends = new cdb.geo.ui.StackedLegend({
-      legends: this.createLegendView(layers)
+      legends: legends
     });
 
     if (!this.mobile_enabled) {
       this.mapView.addOverlay(this.legends);
     }
+  },
 
+  addLegends: function(layers) {
+    this._addLegends(this.createLegendView(layers));
   },
 
   _setLayerOptions: function(options) {
@@ -901,21 +903,28 @@ var Vis = cdb.core.View.extend({
       var cid = layers.at(i).cid;
       var layer = layers.at(i).attributes
       var layerView = this.mapView.getLayerByCid(cid);
-      if (layer.options && layer.options.layer_definition) {
-        var sublayers = layer.options.layer_definition.layers;
-        _(sublayers).each(function(sub, i) {
-          legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
-        });
-      } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
-        var sublayers = layer.options.named_map.layers;
-        _(sublayers).each(function(sub, i) {
-          legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
-        });
-      } else {
-        legends.push(this._createLegendView(layer, layerView))
-      }
+      legends.push(this._createLayerLegendView(layer, layerView));
     }
-    return _.compact(legends);
+    return _.flatten(legends);
+  },
+
+  _createLayerLegendView: function(layer, layerView) {
+    var self = this;
+    var legends = [];
+    if (layer.options && layer.options.layer_definition) {
+      var sublayers = layer.options.layer_definition.layers;
+      _(sublayers).each(function(sub, i) {
+        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+      });
+    } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+      var sublayers = layer.options.named_map.layers;
+      _(sublayers).each(function(sub, i) {
+        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+      });
+    } else {
+      legends.push(this._createLegendView(layer, layerView))
+    }
+    return _.compact(legends).reverse();
   },
 
   addOverlay: function(overlay) {

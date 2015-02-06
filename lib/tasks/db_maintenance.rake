@@ -1,4 +1,5 @@
 require_relative 'thread_pool'
+require 'timeout'
 
 namespace :cartodb do
   namespace :db do
@@ -208,7 +209,7 @@ namespace :cartodb do
     # e.g. bundle exec rake cartodb:db:load_functions['127.0.0.1','0.5.0']
     #      bundle exec rake cartodb:db:load_functions[,'0.5.0']
     desc 'Install/upgrade CARTODB SQL functions'
-    task :load_functions, [:database_host, :version, :num_threads, :thread_sleep, :sleep, :statement_timeout] => :environment do |t, args|
+    task :load_functions, [:database_host, :version, :num_threads, :thread_sleep, :sleep, :statement_timeout] => :environment do |task_name, args|
       # Send this as string, not as number
       extension_version = args[:version].blank? ? nil : args[:version]
       database_host = args[:database_host].blank? ? nil : args[:database_host]
@@ -230,16 +231,51 @@ namespace :cartodb do
       else
         count = User.where(database_host: database_host).count
       end
-      execute_on_users_with_index(:load_functions.to_s, Proc.new { |user, i|
+      execute_on_users_with_index(task_name, Proc.new { |user, i|
         begin
+          log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
           user.load_cartodb_functions(statement_timeout, extension_version)
-          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           sleep(sleep)
         rescue => e
-          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_functions.to_s, database_host)
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), task_name, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
       }, threads, thread_sleep, database_host)
+    end
+
+    desc 'Upgrade cartodb postgresql extension'
+    task :upgrade_postgres_extension, [:database_host, :version, :sleep, :statement_timeout] => :environment do |task_name, args|
+      raise "Sample usage: rake cartodb:db:upgrade_postgres_extension['127.0.0.1','0.5.2']" if args[:database_host].blank? or args[:version].blank?
+
+      # Send this as string, not as number
+      extension_version = args[:version]
+      database_host = args[:database_host]
+      sleep = args[:sleep].blank? ? 0.5 : args[:sleep].to_i
+      statement_timeout = args[:statement_timeout].blank? ? 180000 : args[:statement_timeout] # 3 min by default
+
+      puts "Upgrading cartodb extension with following config:"
+      puts "extension_version: #{extension_version}"
+      puts "database_host: #{database_host}"
+      puts "sleep: #{sleep}"
+      puts "statement_timeout: #{statement_timeout}"
+
+      count = User.where(database_host: database_host).count
+
+      User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
+        begin
+          # We grant 2 x statement_timeout, by default 6 min
+          Timeout::timeout(statement_timeout/1000 * 2) do
+            log(sprintf("Trying on %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)...", user.username, user.database_name, i+1, count), task_name, database_host)
+            user.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
+            log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
+          end
+        rescue => e
+          log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), task_name, database_host)
+          puts "FAIL:#{i} #{e.message}"
+        end
+        sleep(sleep)
+      end
     end
 
     desc 'Install/upgrade Varnish invalidation trigger'

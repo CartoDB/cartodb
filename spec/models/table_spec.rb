@@ -1377,7 +1377,7 @@ describe Table do
       fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
       data_import   = create_import(@user, fixture)
       table         = data_import.table
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
       table_schema  = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
@@ -1415,7 +1415,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       table.geometry_types.should == ['ST_Point']
 
@@ -1447,7 +1447,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       schema = table.schema(:cartodb_types => true)
       schema.include?([:updated_at, "date"]).should == true

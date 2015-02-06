@@ -468,7 +468,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def prepare_params_for_total_count(params)
-      params[:type] == 'remote' ? params.merge({type: 'table'}) : params
+      params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge({type: 'table'}) : params
   end
 
   def index_not_logged_in

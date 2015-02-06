@@ -31,6 +31,7 @@ module CartoDB
       TYPE_CANONICAL  = 'table'
       TYPE_DERIVED    = 'derived'
       TYPE_SLIDE      = 'slide'
+      TYPE_REMOTE = 'remote'
 
       KIND_GEOM   = 'geom'
       KIND_RASTER = 'raster'

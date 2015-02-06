@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative 'member'
+require_relative './member'
 
 module CartoDB
   module Visualization
@@ -16,7 +16,7 @@ module CartoDB
           tags: tags,
           license: license,
           source: source,
-          type: 'remote'})
+          type: Member::TYPE_REMOTE})
       end
 
     end

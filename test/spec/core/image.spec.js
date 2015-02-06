@@ -16,7 +16,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).size(640, 480);
 
     image.getUrl(function() {
-      expect(image.model.get("size")).toEqual([640, 480]);
+      expect(image.imageOptions["size"]).toEqual([640, 480]);
       done();
     });
 
@@ -29,7 +29,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).size(640, 480);
 
     image.getUrl(function() {
-      expect(image.model.get("basemap")).toEqual("light_all");
+      expect(image.imageOptions["basemap"]).toEqual("light_all");
       done();
     });
 
@@ -42,7 +42,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson, { basemap: "my_fantastic_basemap" }).size(640, 480);
 
     image.getUrl(function() {
-      expect(image.model.get("basemap")).toEqual("my_fantastic_basemap");
+      expect(image.imageOptions["basemap"]).toEqual("my_fantastic_basemap");
       done();
     });
 
@@ -55,7 +55,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).zoom(4);
 
     image.getUrl(function() {
-      expect(image.model.get("zoom")).toEqual(4);
+      expect(image.imageOptions["zoom"]).toEqual(4);
       done();
     });
 
@@ -68,7 +68,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).center([40, 30]);
 
     image.getUrl(function() {
-      expect(image.model.get("center")).toEqual([40, 30]);
+      expect(image.imageOptions["center"]).toEqual([40, 30]);
       done();
     });
 
@@ -97,7 +97,7 @@ describe("Image", function() {
     var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/40/10/320/240\.png");
 
     image.center([40,10]).getUrl(function(err, url) {
-      expect(image.model.get("zoom")).toEqual(2);
+      expect(image.imageOptions["zoom"]).toEqual(2);
       expect(url).toMatch(regexp);
       done();
     });
@@ -111,7 +111,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).format("jpg");
 
     image.getUrl(function() {
-      expect(image.model.get("format")).toEqual("jpg");
+      expect(image.imageOptions["format"]).toEqual("jpg");
       done();
     });
 
@@ -124,7 +124,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).format("pin");
 
     image.getUrl(function() {
-      expect(image.model.get("format")).toEqual("png");
+      expect(image.imageOptions["format"]).toEqual("png");
       done();
     });
 

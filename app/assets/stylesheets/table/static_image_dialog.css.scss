@@ -32,11 +32,14 @@
   .row .input_field {
     margin: 0 20px 0 0;
   }
+  .row .input_field:last-child {
+    margin: 0;
+  }
 
   input[type="text"] {
     @include box-sizing(border-box);
     @include inline-block();
-    width: 70px;
+    width: 106px;
     padding:14px 11px;
     margin: 0;
   }

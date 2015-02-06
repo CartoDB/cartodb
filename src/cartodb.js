@@ -59,6 +59,7 @@
         'core/template.js',
         'core/model.js',
         'core/view.js',
+        'core/loader.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',

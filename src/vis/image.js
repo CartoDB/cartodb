@@ -87,7 +87,7 @@
 
       this.imageOptions = options;
 
-      cdb.vis.Loader.get(vizjson, this._onVisLoaded);
+      cdb.core.Loader.get(vizjson, this._onVisLoaded);
 
       return this;
 

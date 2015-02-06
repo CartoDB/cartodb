@@ -11,6 +11,7 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
@@ -1191,27 +1192,7 @@ class Table < Sequel::Model(:user_tables)
       set_the_geom_column!('point')
 
       owner.in_database do |user_database|
-        CartoDB::Importer2::QueryBatcher::execute(
-            user_database,
-            %Q{
-            UPDATE #{qualified_table_name}
-            SET
-              the_geom = ST_GeomFromText(
-                'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')', #{CartoDB::SRID}
-              )
-            #{CartoDB::Importer2::QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE REPLACE(TRIM(CAST("#{options[:longitude_column]}" AS text)), ',', '.') ~
-              '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-            AND REPLACE(TRIM(CAST("#{options[:latitude_column]}" AS text)), ',', '.')  ~
-              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-            #{CartoDB::Importer2::QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-            },
-            self.name,
-            nil,  # QueryBatcher will use a simple internal to console logger
-            'georeferencing table rows',
-            false,
-            (CartoDB::Importer2::QueryBatcher::DEFAULT_BATCH_SIZE/2).round
-        )
+        CartoDB::InternalGeocoder::LatitudeLongitude.new(user_database).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
       end
       schema(reload: true)
     else

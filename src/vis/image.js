@@ -83,7 +83,9 @@
 
       this.queue = new Queue;
 
-      options = _.defaults(options, { vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.defaults);
+      this.userOptions = options;
+
+      options = _.defaults({ vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.defaults);
 
       this.imageOptions = options;
 
@@ -145,7 +147,7 @@
         this.imageOptions.bounds = data.bounds;
 
         if (baseLayer && baseLayer.options) {
-          this.imageOptions.basemap = baseLayer.options;
+          this.imageOptions.basemap = baseLayer;
         }
 
         if (dataLayer.type === "namedmap") {
@@ -214,13 +216,13 @@
 
     },
 
-    _getHTTPBasemapLayer: function(urlTemplate, subdomains) {
+    _getHTTPBasemapLayer: function(basemap) {
 
       return {
         type: "http",
         options: {
-          urlTemplate: urlTemplate,
-          subdomains: subdomains || this.defaults.basemap_subdomains
+          urlTemplate: basemap.options.urlTemplate,
+          subdomains: basemap.options.subdomains || this.defaults.basemap_subdomains
         }
       };
 
@@ -239,17 +241,14 @@
 
     _getBasemapLayer: function() {
 
-      var basemap     = this.imageOptions.basemap;
-      var basemap_url = this.imageOptions.basemap_url;
-
-      if (basemap_url) return this._getHTTPBasemapLayer(basemap_url);
+      var basemap = this.userOptions.basemap || this.imageOptions.basemap;
 
       if (basemap) {
 
         var type = basemap.type.toLowerCase();
 
         if (type === "plain") return this._getPlainBasemapLayer(basemap.color);
-        else                  return this._getHTTPBasemapLayer(basemap.urlTemplate, basemap.subdomains);
+        else                  return this._getHTTPBasemapLayer(basemap);
 
       }
 

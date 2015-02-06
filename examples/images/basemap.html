@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Single image example | CartoDB.js</title>
+    <title>Basemap | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
@@ -29,12 +29,21 @@
 
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
     <script src="../../dist/cartodb.uncompressed.js"></script>
+    <script>
+      var basemap = {
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+          subdomains: ["a", "b", "c"]
+        }
+      };
+    </script>
   </head>
   <body>
     <div id="content">
       <div class="map">
         <script>
-          cartodb.Image("https://arcerui.cartodb-staging.com/api/v2/viz/3e778558-6b57-11e4-927b-040111176f01/viz.json", { basemap_url: "http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png"}).bbox([-87.82814025878906,41.88719899247721,  -87.5936508178711,41.942765696654604]).size(500, 500).write();
+          cartodb.Image("https://arcerui.cartodb-staging.com/api/v2/viz/3e778558-6b57-11e4-927b-040111176f01/viz.json").bbox([-87.82814025878906,41.88719899247721,  -87.5936508178711,41.942765696654604]).size(500, 500).write();
         </script>
       </div>
     </div>

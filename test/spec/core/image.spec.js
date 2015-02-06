@@ -28,23 +28,10 @@ describe("Image", function() {
 
     var image = cartodb.Image(vizjson).size(640, 480);
 
-    var basemap = { id: '0a3d9104-99c6-482b-9f8c-7c6134bddcdc', order: 0, visible: true, type: 'Tiled', name: 'CartoDB Light', className: 'default light_cartodb', base_type: 'light_cartodb', urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-light/{z}/{x}/{y}.png', read_only: true, minZoom: 0, maxZoom: 10, attribution: '', subdomains: 'abcd' };
+    var basemap =  { options: { id: '0a3d9104-99c6-482b-9f8c-7c6134bddcdc', order: 0, visible: true, type: 'Tiled', name: 'CartoDB Light', className: 'default light_cartodb', base_type: 'light_cartodb', urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-light/{z}/{x}/{y}.png', read_only: true, minZoom: 0, maxZoom: 10, attribution: '', subdomains: 'abcd' }, infowindow: null, tooltip: null, id: '0a3d9104-99c6-482b-9f8c-7c6134bddcdc', order: 0, parent_id: null, children: [  ], type: 'tiled' };
 
     image.getUrl(function() {
       expect(image.imageOptions.basemap).toEqual(basemap);
-      done();
-    });
-
-  });
-
-  it("should allow to set the basemap", function(done) {
-
-    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
-
-    var image = cartodb.Image(vizjson, { basemap_url: "http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png" }).size(640, 480);
-
-    image.getUrl(function() {
-      expect(image.imageOptions["basemap_url"]).toEqual("http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png");
       done();
     });
 
@@ -99,7 +86,7 @@ describe("Image", function() {
     var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/40/10/320/240\.png");
 
     image.center([40,10]).getUrl(function(err, url) {
-      expect(image.imageOptions["zoom"]).toEqual(2);
+      expect(image.imageOptions.zoom).toEqual(2);
       expect(url).toMatch(regexp);
       done();
     });

@@ -131,13 +131,21 @@
 
         var bbox = [];
 
-        bbox.push([data.bounds[0][1], data.bounds[0][0]]);
-        bbox.push([data.bounds[1][1], data.bounds[1][0]]);
+        var bounds = data.bounds;
+
+        if (bounds) {
+          bbox.push([bounds[0][1], bounds[0][0]]);
+          bbox.push([bounds[1][1], bounds[1][0]]);
+        }
 
         this.imageOptions.zoom   = data.zoom;
         this.imageOptions.center = JSON.parse(data.center);
         this.imageOptions.bbox   = bbox;
         this.imageOptions.bounds = data.bounds;
+
+        if (baseLayer && baseLayer.options) {
+          this.imageOptions.basemap = baseLayer.options;
+        }
 
         if (dataLayer.type === "namedmap") {
           this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
@@ -205,21 +213,51 @@
 
     },
 
+    _getHTTPBasemapLayer: function(urlTemplate, subdomains) {
+
+      return {
+        type: "http",
+        options: {
+          urlTemplate: urlTemplate,
+          subdomains: subdomains || ["a", "b", "c"]
+        }
+      };
+
+    },
+
+    _getPlainBasemapLayer: function(color) {
+
+      return {
+        type: "plain",
+        options: {
+          color: color
+        }
+      };
+    
+    },
+
     _getBasemapLayer: function() {
+
+      var basemap = this.imageOptions.basemap;
 
       if (this.imageOptions.basemap_url) {
 
-        var urlTemplate = this.imageOptions.basemap_url;
+        return this._getHTTPBasemapLayer(this.imageOptions.basemap_url);
 
-        return {
-          type: "http",
-          options: {
-            urlTemplate: urlTemplate,
-            subdomains: ["a", "b", "c"]
-          }
-        };
+      } else if (basemap) {
+
+        if (basemap.type.toLowerCase() === "plain")  {
+
+          return this._getPlainBasemapLayer(basemap.color);
+
+        } else {
+
+          return this._getHTTPBasemapLayer(basemap.urlTemplate, basemap.subdomains);
+        }
       } else {
+
         return this._getDefaultBasemapLayer();
+
       }
 
     },

@@ -22,14 +22,16 @@ describe("Image", function() {
 
   });
 
-  it("should have a default basemap", function(done) {
+  it("should use the basemap defined in the vizjson", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
     var image = cartodb.Image(vizjson).size(640, 480);
 
+    var basemap = { id: '0a3d9104-99c6-482b-9f8c-7c6134bddcdc', order: 0, visible: true, type: 'Tiled', name: 'CartoDB Light', className: 'default light_cartodb', base_type: 'light_cartodb', urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-light/{z}/{x}/{y}.png', read_only: true, minZoom: 0, maxZoom: 10, attribution: '', subdomains: 'abcd' };
+
     image.getUrl(function() {
-      expect(image.imageOptions["basemap"]).toEqual("light_all");
+      expect(image.imageOptions.basemap).toEqual(basemap);
       done();
     });
 

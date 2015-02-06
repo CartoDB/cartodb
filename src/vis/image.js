@@ -52,29 +52,23 @@
 
   };
 
-  ImageModel = cdb.core.Model.extend({
-    defaults: {
+  var Image = function() {
+
+    Map.call(this, this); 
+
+    this.imageOptions = {};
+
+    this.error = null;
+
+    this.supported_formats = ["png", "jpg"];
+
+    this.defaults = {
       format: "png",
       zoom: 10,
       center: [0, 0],
       size:  [320, 240],
       tiler_port: 80,
       tiler_domain: "cartodb.com"
-    }
-  });
-
-  var Image = function() {
-
-    Map.call(this, this); 
-
-    this.model = new ImageModel();
-    this.error = null;
-
-    this.supported_formats = ["png", "jpg"];
-
-    this.defaults = {
-      tiler_domain: "cartodb.com",
-      tiler_port: "80"
     };
 
     this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
@@ -89,9 +83,9 @@
 
       this.queue = new Queue;
 
-      options = _.defaults(options, { vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.model.defaults);
+      options = _.defaults(options, { vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.defaults);
 
-      this.model.set(options);
+      this.imageOptions = options;
 
       cdb.vis.Loader.get(vizjson, this._onVisLoaded);
 
@@ -143,12 +137,10 @@
         bbox.push([data.bounds[0][1], data.bounds[0][0]]);
         bbox.push([data.bounds[1][1], data.bounds[1][0]]);
 
-        this.model.set({
-          zoom: data.zoom,
-          center: JSON.parse(data.center),
-          bbox: bbox,
-          bounds: data.bounds
-        });
+        this.imageOptions["zoom"]   = data.zoom;
+        this.imageOptions["center"] = JSON.parse(data.center);
+        this.imageOptions["bbox"]   = bbox;
+        this.imageOptions["bounds"] = data.bounds;
 
         if (dataLayer.type === "namedmap") {
           this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
@@ -164,7 +156,7 @@
 
     _setupTilerConfiguration: function(protocol, domain, port) {
 
-      var vizjson = this.model.get("vizjson");
+      var vizjson = this.imageOptions["vizjson"];
 
       var isHTTPS = vizjson.indexOf("https") !== -1 ? true : false;
 
@@ -195,7 +187,7 @@
         }
 
         if (data) {
-          self.model.set("layergroupid", data.layergroupid);
+          self.imageOptions["layergroupid"] = data.layergroupid;
         }
 
         self.queue.flush(this);
@@ -209,7 +201,7 @@
       return {
         type: "http",
         options: {
-          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.model.get("basemap") + "/{z}/{x}/{y}.png",
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.imageOptions["basemap"] + "/{z}/{x}/{y}.png",
           subdomains: [ "a", "b", "c" ]
         }
       };
@@ -258,14 +250,22 @@
     _getUrl: function() {
 
       var username     = this.options.user_name;
-      var zoom         = this.model.get("zoom");
-      var bbox         = this.model.get("bbox");
-      var lat          = this.model.get("center")[0];
-      var lon          = this.model.get("center")[1];
-      var width        = this.model.get("size")[0];
-      var height       = this.model.get("size")[1];
-      var layergroupid = this.model.get("layergroupid");
-      var format       = this.model.get("format");
+
+      var zoom         = this.imageOptions.zoom || this.defaults.zoom;
+      var bbox         = this.imageOptions.bbox;
+
+      var center       = this.imageOptions.center || this.defaults.center;
+
+      var lat = center[0];
+      var lon = center[1];
+
+      var size = this.imageOptions.size || this.defualts.size;
+
+      var width  = size[0];
+      var height = size[1];
+
+      var layergroupid = this.imageOptions.layergroupid;
+      var format       = this.imageOptions.format || this.defaults.format;
 
       var url = this._tilerHost() + this.endPoint;
 
@@ -279,7 +279,7 @@
 
     _chooseBasemap: function(basemap_layer) { 
 
-      if (this.model.get("basemap")) return;
+      if (this.imageOptions["basemap"]) return;
 
       var type = basemap_layer.base_type;
 
@@ -292,7 +292,7 @@
         else if (type && type.indexOf("light") !== -1) basemap = "light_all";
         else basemap = "light_all";
 
-        this.model.set("basemap", basemap);
+        this.imageOptions["basemap"] = basemap;
 
       }
 
@@ -312,7 +312,7 @@
       var self = this;
 
       this.queue.add(function() {
-        self.model.set(name,value);
+        self.imageOptions[name] = value;
       });
 
       return this;
@@ -333,7 +333,7 @@
     },
 
     format: function(format) {
-      return this._set("format", _.include(this.supported_formats, format) ? format : this.model.defaults.format);
+      return this._set("format", _.include(this.supported_formats, format) ? format : this.defaults.format);
     },
 
     size: function(width, height) {
@@ -353,7 +353,7 @@
         return;
       }
 
-      this.model.set("size", [img.width, img.height]);
+      this.imageOptions["size"] = [img.width, img.height];
 
       this.queue.add(function(response) {
         img.src = self._getUrl();
@@ -384,22 +384,22 @@
 
       var self = this;
 
-      this.model.set("attributes", attributes);
+      this.imageOptions["attributes"] = attributes;
 
       if (attributes && attributes.src) {
-        document.write('<img id="' + this.model.get("temp_id") + '" src="'  + attributes.src + '" />');
+        document.write('<img id="' + this.imageOptions["temp_id"] + '" src="'  + attributes.src + '" />');
       } else {
-        document.write('<img id="' + this.model.get("temp_id") + '" />');
+        document.write('<img id="' + this.imageOptions["temp_id"] + '" />');
       }
 
       this.queue.add(function() {
 
-        var element = document.getElementById(self.model.get("temp_id"));
+        var element = document.getElementById(self.imageOptions["temp_id"]);
 
         element.src = self._getUrl();
         element.removeAttribute("temp_id");
 
-        var attributes = self.model.get("attributes");
+        var attributes = self.imageOptions["attributes"];
 
         if (attributes && attributes.class) { element.setAttribute("class", attributes.class); }
         if (attributes && attributes.id)    { element.setAttribute("id", attributes.id); }

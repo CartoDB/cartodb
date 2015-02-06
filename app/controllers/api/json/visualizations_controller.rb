@@ -467,7 +467,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
   end
 
-  def count_total_params(params)
+  def prepare_params_for_total_count(params)
       params[:type] == 'remote' ? params.merge({type: 'table'}) : params
   end
 
@@ -482,7 +482,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       filtered_params = params.dup.merge(scope_for(user))
       filtered_params[:unauthenticated] = true
 
-      total_user_entries = Visualization::Collection.new.count_total(count_total_params(filtered_params))
+      total_user_entries = Visualization::Collection.new.count_total(prepare_params_for_total_count(filtered_params))
 
       collection = Visualization::Collection.new.fetch(filtered_params)
       public_visualizations  = collection.map { |vis|
@@ -517,7 +517,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     collection = Visualization::Collection.new.fetch(filters)
 
-    total_user_entries = Visualization::Collection.new.count_total(count_total_params(filters))
+    total_user_entries = Visualization::Collection.new.count_total(prepare_params_for_total_count(filters))
 
     table_data = collection.map { |vis|
       if vis.table.nil?

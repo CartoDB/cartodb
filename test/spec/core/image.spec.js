@@ -39,10 +39,10 @@ describe("Image", function() {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
-    var image = cartodb.Image(vizjson, { basemap: "my_fantastic_basemap" }).size(640, 480);
+    var image = cartodb.Image(vizjson, { basemap_url: "http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png" }).size(640, 480);
 
     image.getUrl(function() {
-      expect(image.imageOptions["basemap"]).toEqual("my_fantastic_basemap");
+      expect(image.imageOptions["basemap_url"]).toEqual("http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png");
       done();
     });
 

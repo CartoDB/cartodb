@@ -63,6 +63,7 @@
     this.supported_formats = ["png", "jpg"];
 
     this.defaults = {
+      basemap: "light_all",
       format: "png",
       zoom: 10,
       center: [0, 0],
@@ -70,8 +71,6 @@
       tiler_port: 80,
       tiler_domain: "cartodb.com"
     };
-
-    this.available_basemaps = ["light_all", "light_nolabels", "dark_all", "dark_nolabels"];
 
   };
 
@@ -124,9 +123,7 @@
         var baseLayer = data.layers[0];
         var dataLayer = data.layers[1];
 
-        this._chooseBasemap(baseLayer.options);
-
-        this.options.user_name      = dataLayer.options.user_name;
+        this.options.user_name = dataLayer.options.user_name;
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
@@ -196,15 +193,34 @@
 
     },
 
-    _getBasemapLayer: function() {
+    _getDefaultBasemapLayer: function() {
 
       return {
         type: "http",
         options: {
-          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.imageOptions.basemap + "/{z}/{x}/{y}.png",
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.defaults.basemap + "/{z}/{x}/{y}.png",
           subdomains: [ "a", "b", "c" ]
         }
       };
+
+    },
+
+    _getBasemapLayer: function() {
+
+      if (this.imageOptions.basemap_url) {
+
+        var urlTemplate = this.imageOptions.basemap_url;
+
+        return {
+          type: "http",
+          options: {
+            urlTemplate: urlTemplate,
+            subdomains: ["a", "b", "c"]
+          }
+        };
+      } else {
+        return this._getDefaultBasemapLayer();
+      }
 
     },
 
@@ -213,11 +229,6 @@
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
       var ld = layerDefinition.toJSON();
-
-      // TODO: remove this
-      for (var i = 0; i<ld.layers.length; i++) {
-        delete ld.layers[i].options.interactivity
-      }
 
       ld.layers.unshift(this._getBasemapLayer());
 
@@ -273,27 +284,6 @@
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");
-      }
-
-    },
-
-    _chooseBasemap: function(basemap_layer) { 
-
-      if (this.imageOptions.basemap) return;
-
-      var type = basemap_layer.base_type;
-
-      if (!_.include(this.available_basemaps, type)) {
-
-        if (type && type.indexOf("toner") !== -1)      basemap = "dark_all";
-        else if (type && type.indexOf("dark")  !== -1) basemap = "dark_all";
-        else if (type && type.indexOf("night") !== -1) basemap = "dark_all";
-        else if (type && type.indexOf("blue") !== -1) basemap = "dark_all";
-        else if (type && type.indexOf("light") !== -1) basemap = "light_all";
-        else basemap = "light_all";
-
-        this.imageOptions.basemap = basemap;
-
       }
 
     },
@@ -370,7 +360,7 @@
 
       this.queue.add(function() {
         if (callback) {
-          callback(self.error, self._getUrl()); // TODO: return the error
+          callback(self.error, self._getUrl()); 
         }
       });
 

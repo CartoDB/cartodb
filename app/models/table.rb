@@ -1425,10 +1425,10 @@ class Table < Sequel::Model(:user_tables)
         # update metadata records
         $tables_metadata.rename(old_key, new_key)
       rescue StandardError => exception
-        exception_to_raise = CartoDB::BaseCartoDBError.new(
-            "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
-        CartoDB::notify_exception(exception_to_raise, user: owner)
-        errored = true
+        # we don't want to fail because of not existing keys
+        exception_to_notify = CartoDB::BaseCartoDBError.new(
+            "Continuing after exception: Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
+        CartoDB::notify_exception(exception_to_notify, user: owner)
       end
 
       unless register_table_only

@@ -1,0 +1,59 @@
+@import "../../../new_variables/mixins";
+@import "../../../new_variables/colors";
+@import "../../../new_variables/sizes";
+
+// Imports styles
+
+.ImportOptions {
+  width: 780px;
+  margin: 50px auto 0; 
+}
+.ImportOptions-tabs {
+  display: block;
+  padding: 8px 0 $sMargin-group;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.ImportOptions-tabsList {
+  
+}
+.ImportOptions-tab {
+  display: inline-block;
+  margin: 20px $sMargin-formRow 0 0;
+}
+.ImportOptions-tab:nth-child(5n) { margin-right: 0 }
+.ImportOptions-tabLink {
+  display: block;
+  width: 118px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid $cStructure-mainLine;
+  line-height: 38px;
+  border-radius: 4px;
+  color: $cTypography-secondary;
+  font-size: 14px;
+
+  &:hover {
+    background: white;
+    border-color: rgba(#BBD7F2, 1);
+    color: $cTypography-paragraphs;
+    text-decoration: none;
+  }
+}
+.ImportOptions-tabLink.selected,
+.ImportOptions-tabLink.selected:hover {
+  background: white;
+  border-color: rgba(#BBD7F2, 1);
+  color: $cTypography-paragraphs;
+  cursor: default;
+}
+.ImportOptions-tabLink.disabled {
+  @include opacity(0.5);
+
+  &:hover {
+    cursor: default;
+    background: transparent;
+    text-decoration: none;
+    color: $cTypography-secondary;
+    border-color: $cStructure-mainLine;
+  }
+}

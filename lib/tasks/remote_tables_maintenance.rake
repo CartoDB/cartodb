@@ -33,27 +33,8 @@ namespace :cartodb do
       username = args[:arg1]
       raise 'username required' unless username.present?
 
-      require_relative '../../app/models/visualization/remote_member'
-      require_relative '../../app/models/visualization/external_source'
-
       u = User.where(username: username).first
-
-      CommonDataSingleton.instance.datasets[:datasets].each do |d|
-        v = CartoDB::Visualization::RemoteMember.new(
-          d['name'],
-          u.id,
-          CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-          d['description'],
-          [ d['category'] ],
-          d['license'],
-          d['source'])
-        v.store
-
-        # TODO: retrieve geometry_types
-        external_source = CartoDB::Visualization::ExternalSource.new(v.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data')
-        external_source.save
-
-      end
+      u.load_common_data
 
     end
 

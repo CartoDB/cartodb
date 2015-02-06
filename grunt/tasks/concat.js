@@ -70,6 +70,8 @@ module.exports = {
             'src/core/profiler.js',
             'src/api/sql.js',
             'src/geo/layer_definition.js',
+            'src/core/loader.js',
+            'src/vis/image.js',
             'src/api/tiles.js'
           ]
         }

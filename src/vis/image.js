@@ -137,10 +137,10 @@
         bbox.push([data.bounds[0][1], data.bounds[0][0]]);
         bbox.push([data.bounds[1][1], data.bounds[1][0]]);
 
-        this.imageOptions["zoom"]   = data.zoom;
-        this.imageOptions["center"] = JSON.parse(data.center);
-        this.imageOptions["bbox"]   = bbox;
-        this.imageOptions["bounds"] = data.bounds;
+        this.imageOptions.zoom   = data.zoom;
+        this.imageOptions.center = JSON.parse(data.center);
+        this.imageOptions.bbox   = bbox;
+        this.imageOptions.bounds = data.bounds;
 
         if (dataLayer.type === "namedmap") {
           this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
@@ -156,7 +156,7 @@
 
     _setupTilerConfiguration: function(protocol, domain, port) {
 
-      var vizjson = this.imageOptions["vizjson"];
+      var vizjson = this.imageOptions.vizjson;
 
       var isHTTPS = vizjson.indexOf("https") !== -1 ? true : false;
 
@@ -187,7 +187,7 @@
         }
 
         if (data) {
-          self.imageOptions["layergroupid"] = data.layergroupid;
+          self.imageOptions.layergroupid = data.layergroupid;
         }
 
         self.queue.flush(this);
@@ -201,7 +201,7 @@
       return {
         type: "http",
         options: {
-          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.imageOptions["basemap"] + "/{z}/{x}/{y}.png",
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/" + this.imageOptions.basemap + "/{z}/{x}/{y}.png",
           subdomains: [ "a", "b", "c" ]
         }
       };
@@ -279,7 +279,7 @@
 
     _chooseBasemap: function(basemap_layer) { 
 
-      if (this.imageOptions["basemap"]) return;
+      if (this.imageOptions.basemap) return;
 
       var type = basemap_layer.base_type;
 
@@ -292,7 +292,7 @@
         else if (type && type.indexOf("light") !== -1) basemap = "light_all";
         else basemap = "light_all";
 
-        this.imageOptions["basemap"] = basemap;
+        this.imageOptions.basemap = basemap;
 
       }
 
@@ -353,7 +353,7 @@
         return;
       }
 
-      this.imageOptions["size"] = [img.width, img.height];
+      this.imageOptions.size = [img.width, img.height];
 
       this.queue.add(function(response) {
         img.src = self._getUrl();
@@ -378,28 +378,27 @@
 
     /* Image.write(attributes)
        adds a img tag in the same place script is executed */
-      // TODO: document class, id and src attributes
 
     write: function(attributes) {
 
       var self = this;
 
-      this.imageOptions["attributes"] = attributes;
+      this.imageOptions.attributes = attributes;
 
       if (attributes && attributes.src) {
-        document.write('<img id="' + this.imageOptions["temp_id"] + '" src="'  + attributes.src + '" />');
+        document.write('<img id="' + this.imageOptions.temp_id + '" src="'  + attributes.src + '" />');
       } else {
-        document.write('<img id="' + this.imageOptions["temp_id"] + '" />');
+        document.write('<img id="' + this.imageOptions.temp_id + '" />');
       }
 
       this.queue.add(function() {
 
-        var element = document.getElementById(self.imageOptions["temp_id"]);
+        var element = document.getElementById(self.imageOptions.temp_id);
 
         element.src = self._getUrl();
         element.removeAttribute("temp_id");
 
-        var attributes = self.imageOptions["attributes"];
+        var attributes = self.imageOptions.attributes;
 
         if (attributes && attributes.class) { element.setAttribute("class", attributes.class); }
         if (attributes && attributes.id)    { element.setAttribute("id", attributes.id); }

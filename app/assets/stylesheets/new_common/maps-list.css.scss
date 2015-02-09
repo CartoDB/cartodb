@@ -8,23 +8,21 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
-  @include justify-content(flex-start, justify);
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
   @include flex-wrap(wrap);
-  width: $sLayout-width + 2*$sMargin-element;
   position: relative;
+  width: $sLayout-width;
   margin: 0 auto;
-  right: -#{$sMargin-element};
 }
-.MapsList--centerItems {
-  @include justify-content(center);
-}
+.MapsList--centerItems { @include justify-content(center) }
 .MapsList-item {
+  width: 300px;
   margin: $sMargin-element $sMargin-element 0 0;
 }
+.MapsList-item:nth-child(3n) { margin-right: 0 }
 .MapsList.is-singleRow {
   width: $sLayout-width;
   right: 0;
 }
-.MapsList.is-singleRow .MapsList-item:nth-child(3n) {
-  margin-right: 0;
-}
+.MapsList.is-singleRow .MapsList-item:nth-child(3n) { margin-right: 0 }

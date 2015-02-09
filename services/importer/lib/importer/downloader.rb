@@ -38,7 +38,8 @@ module CartoDB
         @http_options = http_options
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
-        @datasource
+        @datasource = nil
+        @source_file = nil
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -60,14 +61,48 @@ module CartoDB
         self
       end
 
+      def clean_up
+        if defined?(@temporary_directory) &&
+           @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ &&
+           !(@temporary_directory =~ /\.\./)
+          FileUtils.rm_rf @temporary_directory
+        end
+      end
+
+      def modified?
+        previous_etag           = http_options.fetch(:etag, false)
+        previous_last_modified  = http_options.fetch(:last_modified, false)
+        etag                    = etag_from(headers)
+        last_modified           = last_modified_from(headers)
+
+        return true unless (previous_etag || previous_last_modified) 
+        return true if previous_etag && etag && previous_etag != etag
+        return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
+        false
+      rescue
+        false
+      end
+
+      def checksum
+        etag_from(headers)
+      end
+
+      def multi_resource_import_supported?
+        false
+      end
+
+      attr_reader   :source_file, :datasource, :etag, :last_modified
+      attr_accessor :url
+
+      private
+      
+      attr_reader :http_options, :repository, :seed
+      attr_writer :source_file
+
       def set_local_source_file
         return false if valid_url?
         self.source_file = SourceFile.new(url)
         self
-      end
-
-      def valid_url?
-        url =~ URL_RE
       end
 
       def set_downloaded_source_file(available_quota_in_bytes=nil)
@@ -82,11 +117,14 @@ module CartoDB
         self
       end
 
-
       def raise_if_over_storage_quota(headers, available_quota_in_bytes=nil)
         return self unless available_quota_in_bytes
-        raise StorageQuotaExceededError if 
+        raise StorageQuotaExceededError if
           content_length_from(headers) > available_quota_in_bytes.to_i
+      end
+
+      def headers
+        @headers ||= Typhoeus.head(@translated_url, typhoeus_options).headers
       end
 
       def typhoeus_options
@@ -98,10 +136,6 @@ module CartoDB
           ssl_verifypeer: verify_ssl,
           ssl_verifyhost: (verify_ssl ? 2 : 0)
         }
-      end 
-
-      def headers
-        @headers ||= Typhoeus.head(@translated_url, typhoeus_options).headers
       end
 
       def cookiejar
@@ -143,7 +177,7 @@ module CartoDB
         if download_error && !error_response.nil?
           if error_response.headers['Error'] && error_response.headers['Error'] =~ /too many nodes/
             raise TooManyNodesError.new(error_response.headers['Error'])
-          else 
+          else
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
           end
         end
@@ -152,14 +186,6 @@ module CartoDB
 
         # Just return the source file structure
         self.source_file  = SourceFile.new(filepath(name), name)
-      end #download_and_store
-
-      def clean_up
-        if defined?(@temporary_directory) \
-           && @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ \
-           && !(@temporary_directory =~ /\.\./)
-          FileUtils.rm_rf @temporary_directory
-        end
       end
 
       def name_from(headers, url, custom=nil)
@@ -178,30 +204,12 @@ module CartoDB
         content_length.to_i
       end
 
-      def modified?
-        previous_etag           = http_options.fetch(:etag, false)
-        previous_last_modified  = http_options.fetch(:last_modified, false)
-        etag                    = etag_from(headers)
-        last_modified           = last_modified_from(headers)
-
-        return true unless (previous_etag || previous_last_modified) 
-        return true if previous_etag && etag && previous_etag != etag
-        return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
-        false
-      rescue
-        false
-      end
-
       def etag_from(headers)
         etag  =   headers.fetch('ETag', nil)
         etag  ||= headers.fetch('Etag', nil)
         etag  ||= headers.fetch('etag', nil)
         etag  = etag.delete('"').delete("'") if etag
         etag
-      end
-
-      def checksum
-        etag_from(headers)
       end
 
       def last_modified_from(headers)
@@ -213,17 +221,9 @@ module CartoDB
         last_modified
       end
 
-      def multi_resource_import_supported?
-        false
+      def valid_url?
+        url =~ URL_RE
       end
-
-      attr_reader   :source_file, :datasource, :etag, :last_modified
-      attr_accessor :url
-
-      private
-      
-      attr_reader :http_options, :repository, :seed
-      attr_writer :source_file
 
       def translators
         URL_TRANSLATORS.map(&:new)

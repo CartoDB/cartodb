@@ -24,8 +24,9 @@ module CartoDB
       # @param available_quota int|nil
       # @param unpacker Unp|nil
       # @param post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil, \
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil,
                      importer_stats_options = nil)
+        @loader = nil
         @pg_options          = pg_options
         @downloader          = downloader
         @log                 = log             || new_logger
@@ -36,7 +37,7 @@ module CartoDB
         @post_import_handler = post_import_handler || nil
         @loader_options      = {}
         importer_stats_options ||= { host: nil, port: nil}
-        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port], \
+        @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port],
                                                      importer_stats_options[:queue_id])
       end
 
@@ -49,7 +50,6 @@ module CartoDB
       end
 
       def new_logger
-        # TODO: Inject logging class
         CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
       end
 
@@ -68,132 +68,32 @@ module CartoDB
       end
 
       def run_import(&tracker_block)
-
         @tracker = tracker_block
         tracker.call('uploading')
-
-        if @downloader.multi_resource_import_supported?
-          log.append "Starting multi-resources import"
-          # [ {:id, :title} ]
-          @downloader.item_metadata[:subresources].each { |subresource|
-            @importer_stats.timing('subresource') do
-
-              datasource = nil
-              item_metadata = nil
-              subres_downloader = nil
-
-              @importer_stats.timing('datasource_metadata') do
-                # TODO: Support sending user and options to the datasource factory
-                datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(@downloader.datasource.class::DATASOURCE_NAME, nil, nil)
-                item_metadata = datasource.get_resource_metadata(subresource[:id])
-              end
-
-              @importer_stats.timing('download') do
-                subres_downloader = @downloader.class.new(
-                datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
-
-                subres_downloader.run(available_quota)
-                next unless remote_data_updated?
-              end
-
-              @importer_stats.timing('quota_check') do
-                log.append "Starting import for #{subres_downloader.source_file.fullpath}"
-                raise_if_over_storage_quota(subres_downloader.source_file)
-              end
-
-              @importer_stats.timing('import') do
-                tracker.call('unpacking')
-                source_file = subres_downloader.source_file
-                log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-                @stats << {
-                  type: source_file.extension,
-                  size: source_file.size
-                }
-
-                import(source_file, subres_downloader)
-              end
-
-              @importer_stats.timing('cleanup') do
-                subres_downloader.clean_up
-              end
-            end
-          }
-        else
-          @importer_stats.timing('resource') do
-
-            @importer_stats.timing('download') do
-              @downloader.run(available_quota)
-              return self unless remote_data_updated?
-            end
-
-            @importer_stats.timing('quota_check') do
-              log.append "Starting import for #{@downloader.source_file.fullpath}"
-              raise_if_over_storage_quota(@downloader.source_file)
-            end
-
-
-            @importer_stats.timing('unpack') do
-              log.append "Unpacking #{@downloader.source_file.fullpath}"
-              tracker.call('unpacking')
-              unpacker.run(@downloader.source_file.fullpath)
-            end
-
-            @importer_stats.timing('import') do
-              unpacker.source_files.each { |source_file|
-                # TODO: Move this stats inside import, for streaming scenarios, or differentiate
-                log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-                @stats << {
-                  type: source_file.extension,
-                  size: source_file.size
-                }
-                import(source_file, @downloader)
-              }
-            end
-
-            @importer_stats.timing('cleanup') do
-              unpacker.clean_up
-              @downloader.clean_up
-            end
-
-          end
-        end
-
+        @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
       rescue => exception
         log.append exception.to_s
         log.append exception.backtrace
-        @results.push(Result.new(
-          error_code: error_for(exception.class),
-          log_trace:  report
-        ))
+        @results.push(Result.new(error_code: error_for(exception.class), log_trace: report))
       end
 
       def import(source_file, downloader, job=nil, loader_object=nil)
         job     ||= Job.new({ logger: log, pg_options: pg_options })
         loader = loader_object || loader_for(source_file).new(job, source_file)
-        if loader.respond_to?(:set_importer_stats)
-          loader.set_importer_stats(@importer_stats)
-        end
-        loader.options = @loader_options.merge(tracker: tracker)
 
         raise EmptyFileError if source_file.empty?
+
+        loader.set_importer_stats(@importer_stats) if loader.respond_to?(:set_importer_stats)
+        loader.options = @loader_options.merge(tracker: tracker)
 
         tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
 
         if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
-          job.log "Streaming import load"
-          loader.streamed_run_init
-
-          begin
-            got_data = downloader.continue_run(available_quota)
-            loader.streamed_run_continue(downloader.source_file) if got_data
-          end while got_data
-
-          loader.streamed_run_finish(@post_import_handler)
+          streamed_loader_run(job, loader, downloader)
         else
-          job.log "File-based import load"
-          loader.run(@post_import_handler)
+          file_based_loader_run(job, loader)
         end
 
         job.log "Finished importing data from #{source_file.fullpath}"
@@ -215,8 +115,7 @@ module CartoDB
         job.log exception.backtrace
         job.log '----------------------------------------------------'
         job.success_status = false
-        @results.push(
-          result_for(job, source_file, valid_table_names, additional_support_tables, exception.class))
+        @results.push(result_for(job, source_file, valid_table_names, additional_support_tables, exception.class))
       end
 
       def report
@@ -269,6 +168,110 @@ module CartoDB
 
       attr_reader :pg_options, :unpacker, :available_quota
       attr_writer :results, :tracker
+
+      def streamed_loader_run(job, loader, downloader)
+        job.log "Streaming import load"
+        loader.streamed_run_init
+
+        begin
+          got_data = downloader.continue_run(available_quota)
+          loader.streamed_run_continue(downloader.source_file) if got_data
+        end while got_data
+
+        loader.streamed_run_finish(@post_import_handler)
+      end
+
+      def file_based_loader_run(job, loader)
+        job.log "File-based import load"
+        loader.run(@post_import_handler)
+      end
+
+      def single_resource_import
+        @importer_stats.timing('resource') do
+
+          @importer_stats.timing('download') do
+            @downloader.run(available_quota)
+            return self unless remote_data_updated?
+          end
+
+          @importer_stats.timing('quota_check') do
+            log.append "Starting import for #{@downloader.source_file.fullpath}"
+            raise_if_over_storage_quota(@downloader.source_file)
+          end
+
+          @importer_stats.timing('unpack') do
+            log.append "Unpacking #{@downloader.source_file.fullpath}"
+            tracker.call('unpacking')
+            unpacker.run(@downloader.source_file.fullpath)
+          end
+
+          @importer_stats.timing('import') do
+            unpacker.source_files.each { |source_file|
+              # TODO: Move this stats inside import, for streaming scenarios, or differentiate
+              log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+              @stats << {
+                type: source_file.extension,
+                size: source_file.size
+              }
+              import(source_file, @downloader)
+            }
+          end
+
+          @importer_stats.timing('cleanup') do
+            unpacker.clean_up
+            @downloader.clean_up
+          end
+
+        end
+      end
+
+      def multi_resource_import
+        log.append "Starting multi-resources import"
+        # [ {:id, :title} ]
+        @downloader.item_metadata[:subresources].each { |subresource|
+          @importer_stats.timing('subresource') do
+            datasource = nil
+            item_metadata = nil
+            subres_downloader = nil
+
+            @importer_stats.timing('datasource_metadata') do
+              # TODO: Support sending user and options to the datasource factory
+              datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
+                @downloader.datasource.class::DATASOURCE_NAME, nil, nil)
+              item_metadata = datasource.get_resource_metadata(subresource[:id])
+            end
+
+            @importer_stats.timing('download') do
+              subres_downloader = @downloader.class.new(
+                datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
+
+              subres_downloader.run(available_quota)
+              next unless remote_data_updated?
+            end
+
+            @importer_stats.timing('quota_check') do
+              log.append "Starting import for #{subres_downloader.source_file.fullpath}"
+              raise_if_over_storage_quota(subres_downloader.source_file)
+            end
+
+            @importer_stats.timing('import') do
+              tracker.call('unpacking')
+              source_file = subres_downloader.source_file
+              log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
+              @stats << {
+                type: source_file.extension,
+                size: source_file.size
+              }
+
+              import(source_file, subres_downloader)
+            end
+
+            @importer_stats.timing('cleanup') do
+              subres_downloader.clean_up
+            end
+          end
+        }
+      end
 
       def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
         Result.new(

@@ -169,14 +169,14 @@ module CartoDB
         else
           name
         end
-      end #filename_from
+      end
 
       def content_length_from(headers)
         content_length = headers.fetch('Content-Length', nil)
         content_length ||= headers.fetch('Content-length', nil)
         content_length ||= headers.fetch('content-length', -1)
         content_length.to_i
-      end #content_length_from
+      end
 
       def modified?
         previous_etag           = http_options.fetch(:etag, false)
@@ -227,21 +227,21 @@ module CartoDB
 
       def translators
         URL_TRANSLATORS.map(&:new)
-      end #translators
+      end
 
       def translate(url)
         translator = translators.find { |translator| translator.supported?(url) }
         return url unless translator
         translator.translate(url)
-      end #translated_url
+      end
 
       def filename
         [DEFAULT_FILENAME, seed].compact.join('_')
-      end #filename
+      end
 
       def filepath(name=nil)
         repository.fullpath_for(name || filename)
-      end #filepath
+      end
 
       def name_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
@@ -251,11 +251,11 @@ module CartoDB
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename
         filename.delete("'").delete('"').split(';').first
-      end #name_from_http
+      end
 
       def name_in(url)
         url.split('/').last.split('?').first
-      end #name_in
+      end
 
       def random_name
         random_generator = Random.new
@@ -264,12 +264,12 @@ module CartoDB
           name << (random_generator.rand*10).to_i.to_s
         }
         name
-      end #random_name
+      end
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
         @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
-      end #temporary_directory
+      end
 
       def gdrive_deny_in?(headers)
         headers.fetch('X-Frame-Options', nil) == 'DENY'
@@ -278,7 +278,7 @@ module CartoDB
       def md5_command_for(name)
         %Q(md5sum #{name} | cut -d' ' -f1)
       end
-    end # Downloader
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

@@ -31,7 +31,7 @@
           <div class="DatasetsList-itemCategory is--<%= ds[:geometry_type] %>Dataset"></div>
           <div class="DatasetsList-itemInfo">
             <h3 class="DatasetsList-itemTitle DefaultTitle">
-              <a href="<%= public_table_url(user_domain: user_domain, id: ds[:title]) %>" title="<%= ds[:title] %>" class="u-ellipsLongText"><%= ds[:title] %></a>
+              <a href="<%= public_table_url(user_domain: user_domain, id: ds[:title]) %>" title="<%= ds[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= ds[:title] %></a>
             </h3>
             <p class="DefaultDescription u-ellipsLongText"><%= raw ds[:desc] %></p>
           </div>

@@ -169,3 +169,19 @@ div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-min {
 div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-max {
   top: 0;
 }
+
+/* Starting new media queries */
+
+@media only screen and (min-width: 360px) and (max-width: 500px) {
+  div.cartodb-timeslider .slider-wrapper { width: 130px }
+  div.cartodb-timeslider .slider { width: 130px }
+}
+
+@media only screen and (min-width: 180px) and (max-width: 360px) {
+  div.cartodb-timeslider .slider-wrapper { width: 90px }
+  div.cartodb-timeslider .slider { width: 90px }
+  div.cartodb-timeslider p.value {
+    width: 90px;
+    font-size: 12px;
+  }
+}

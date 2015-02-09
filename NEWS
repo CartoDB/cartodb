@@ -1,16 +1,28 @@
-3.12.0 ()
+3.12.0 (09//02/2015)
 - Added Odyssey support for visualizations
 - Adds new API to generate static images (https://github.com/CartoDB/cartodb.js/wiki/CartoDB-Map-API)
 - Fixes the hiding of the tile loader in mobile
 - Adds heatmap support for torque
 
-3.11.32 (29//01//2014)
+3.11.36 (09//02//2014)
+- Fixes slider style problem in narrower devices.
+
+3.11.35 (06//02//2014)
+- re-fixes google maps mobile events
+
+3.11.34 (06//02//2014)
+- Fixes google maps mobile events
+
+3.11.33 (05//02//2014)
+- Fixes tooltip style.
+
+3.11.32 (29//01//2015)
 - Fixed touch events on mobile (Android)
 
-3.11.31 (23//01//2014)
+3.11.31 (23//01//2015)
 - #291 - Removes padding and margin reset for webkit browsers
 
-3.11.30 (13//01//2014)
+3.11.30 (13//01//2015)
 - #264 - Fix addTo (when the second param specifies index)
 
 3.11.29 (30//12//2014)

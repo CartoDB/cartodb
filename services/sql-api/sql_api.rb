@@ -49,7 +49,8 @@ module CartoDB
     end
 
     def base_url
-      "http://#{username}.cartodb.com/api/v2/sql"
+       #"http://#{username}.cartodb.com/api/v2/sql"
+      "http://#{username}.localhost.lan:8080/api/v2/sql"
     end # base_url
 
   end # SQLApi

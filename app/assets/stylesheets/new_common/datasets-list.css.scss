@@ -10,6 +10,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   display: block !important;
   width: $sLayout-width;
   margin: 0 auto;
+  padding: 10px 0 $sMargin-group;
 }
 .DatasetsList-item {
   @include display-flex();
@@ -122,3 +123,20 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin-left: 5px;
   line-height: $sAvatar-meta;
 }
+.DatasetsList-itemSource {
+  @include display-flex();
+  margin-left: 4px;
+}
+.DatasetsList-item:hover,
+.DatasetsList-item.is--selected {
+  padding: $sMargin-group $selectedItemPaddingOnSides;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  border-radius: 4px;
+  cursor: pointer;
+}
+.DatasetsList-item:hover {
+  background-color: $cCard-hoverFill;
+  border: 1px $cCard-hoverBorder solid;
+}
+// .DatasetsList-item:hover .DatasetsList-itemCategory,
+// .DatasetsList-item.is--selected .DatasetsList-itemCategory { border-color: #199BDB }

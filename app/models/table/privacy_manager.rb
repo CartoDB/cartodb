@@ -56,10 +56,9 @@ module CartoDB
       end
     end
 
-    def propagate_to_redis_and_varnish
+    def propagate_to_varnish
       raise 'table privacy cannot be nil' unless privacy
       # TODO: Improve this, hack because tiler checks it
-      $tables_metadata.hset redis_key, 'privacy', privacy_for_redis
       invalidate_varnish_cache
       self
     end
@@ -108,9 +107,6 @@ module CartoDB
       end
     end
 
-    def redis_key
-      "rails:#{table.owner.database_name}:#{owner.database_schema}.#{table.name}"
-    end
   end
 end
 

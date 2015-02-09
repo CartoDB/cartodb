@@ -51,9 +51,13 @@ module CartoDB
       ::Table.db['delete from layers_user_tables']
       # Remove redis keys
       @tables_to_migrate.all.each do |table|
-        $tables_metadata.hdel(table.key, "migrated_to_#{@version}")
+        $tables_metadata.hdel(key(table), "migrated_to_#{@version}")
       end
     end
 
+    private
+    def key(table)
+      "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}")
+    end
   end
 end # CartoDB

@@ -123,10 +123,9 @@ module CartoDB
       end
 
       def external_source_data_for(visualization)
-        # TODO: remove literal
-        return {} unless visualization.type == 'remote'
+        return {} unless visualization.type == Member::TYPE_REMOTE
 
-        external_source = ExternalSource.where(visualization_id: visualization.id).first
+        external_source = Visualization::ExternalSource.where(visualization_id: visualization.id).first
         return {} unless external_source.present?
 
         {

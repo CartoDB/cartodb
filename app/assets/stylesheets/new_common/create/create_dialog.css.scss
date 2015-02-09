@@ -3,11 +3,8 @@
 @import "../../new_variables/sizes";
 
 
-.CreateDialog .Dialog-content {
-  width: 100%;
-}
 .Dialog-body.CreateDialog-body {
-  padding: 0;
-  min-height: 700px;
-  background: $cStructure-grayBkg;
+  width: 100%;
+  padding: 35px 0 55px;
+  overflow: auto;
 }

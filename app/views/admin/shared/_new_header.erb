@@ -22,7 +22,7 @@
                   <%= current_user.organization.name %> /
                 <% end %>
               </li>
-              <li class="Header-navigationBreadcrumbItem"><%= current_user.name.present? ? current_user.name : current_user.username %> /</li>
+              <li class="Header-navigationBreadcrumbItem"><%= current_user.name_or_username %> /</li>
               <li class="Header-navigationBreadcrumbItem" id="header-breadcrumbs-dropdown"></li>
             </ul>
           </li>

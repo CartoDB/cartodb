@@ -31,12 +31,34 @@
     <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner"></div>
     </div>
-    <div class="UserInfo">
+    <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
         <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
       </div>
       <h2 class="UserInfo-name">
-        <%= @name %> <span class="UserInfo-nameBreadcrumb">/ Maps</span>
+        <%= @name %>
+        <span class="UserInfo-nameBreadcrumb"> /
+          <% if @content_type == 'maps' %>
+            <%= link_to 'Maps', @maps_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+          <% else %>
+            <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+          <% end %>
+          <% content_for(:abs_positioned) do %>
+            <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown" style="display: none;">
+              <ul class="BreadcrumbsDropdown-list">
+                <li class="BreadcrumbsDropdown-listItem">
+                  <span class="BreadcrumbsDropdown-icon UserAvatar">
+                    <img class="UserAvatar-img UserAvatar-img--small" src="<%= @avatar_url %>" title="<%= @name %>" alt="<%= @username %>" />
+                  </span>
+                  <nav class="BreadcrumbsDropdown-options">
+                    <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
+                    <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
+                  </nav>
+                </li>
+              </ul>
+            </div>
+          <% end %>
+        </span>
       </h2>
       <% if @description.present? %>
         <p class="DefaultParagraph UserInfo-desc">
@@ -83,7 +105,8 @@
         <% end %>
       };
     </script>
-    <%= javascript_include_tag 'cdb.js', 'templates', 'new_public_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'new_public_dashboard_deps', 'new_public_dashboard' %>
     <%= yield :js %>
+    <%= yield :abs_positioned %>
   </body>
 </html>

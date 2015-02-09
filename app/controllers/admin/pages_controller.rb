@@ -176,8 +176,8 @@ class Admin::PagesController < ApplicationController
     visualizations.each do |vis|
       geometry_type = vis.kind
       if geometry_type != 'raster'
-        geometry_types = vis.table.geometry_types
-        type = geometry_types.first.present? ? geometry_types.first.downcase : ''
+        table_geometry_types = vis.table.geometry_types
+        geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
       @datasets.push(

@@ -107,6 +107,7 @@ select
     meta_dataset.description,
     meta_dataset.source,
     meta_dataset.license,
+    meta_dataset.geometry_types,
     (
         SELECT reltuples
         FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)

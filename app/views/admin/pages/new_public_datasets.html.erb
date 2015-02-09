@@ -15,7 +15,7 @@
 <% end %>
 
 <% if @datasets.size == 0 %>
-  <div class="IntermediateInfo IntermediateInfo--flex">
+  <div class="IntermediateInfo">
     <div class="LayoutIcon">
       <i class="iconFont iconFont-Map"></i>
     </div>
@@ -52,11 +52,11 @@
             </div>
           </div>
           <div class="DatasetsList-itemTags">
-            <% if ds[:tags].size > 0 %>
-              <% formatted_tags(ds[:tags]) do |tag| %>
-                <a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a>
+            <div class="DefaultTags">
+              <% if ds[:tags].size > 0 %>
+                <% formatted_tags(ds[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
               <% end %>
-            <% end %>
+            </div>
           </div>
         </div>
       </li>

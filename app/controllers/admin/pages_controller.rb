@@ -130,6 +130,8 @@ class Admin::PagesController < ApplicationController
       order:    'mapviews',
       page:     1,
       per_page: 1,
+      exclude_shared: true,
+      exclude_raster: true
     }).first
     @content_type = content_type
     @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])

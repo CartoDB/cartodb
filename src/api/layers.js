@@ -47,7 +47,7 @@
       url = layer;
     }
     if(url) {
-      cdb.vis.Loader.get(url, callback);
+      cdb.core.Loader.get(url, callback);
     } else {
       _.defer(function() { callback(null); });
     }

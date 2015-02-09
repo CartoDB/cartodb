@@ -16,33 +16,22 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).size(640, 480);
 
     image.getUrl(function() {
-      expect(image.model.get("size")).toEqual([640, 480]);
+      expect(image.imageOptions["size"]).toEqual([640, 480]);
       done();
     });
 
   });
 
-  it("should have a default basemap", function(done) {
+  it("should use the basemap defined in the vizjson", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
     var image = cartodb.Image(vizjson).size(640, 480);
 
-    image.getUrl(function() {
-      expect(image.model.get("basemap")).toEqual("light_all");
-      done();
-    });
-
-  });
-
-  it("should allow to set the basemap", function(done) {
-
-    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
-
-    var image = cartodb.Image(vizjson, { basemap: "my_fantastic_basemap" }).size(640, 480);
+    var basemap =  { options: { id: '0a3d9104-99c6-482b-9f8c-7c6134bddcdc', order: 0, visible: true, type: 'Tiled', name: 'CartoDB Light', className: 'default light_cartodb', base_type: 'light_cartodb', urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-light/{z}/{x}/{y}.png', read_only: true, minZoom: 0, maxZoom: 10, attribution: '', subdomains: 'abcd' }, infowindow: null, tooltip: null, id: '0a3d9104-99c6-482b-9f8c-7c6134bddcdc', order: 0, parent_id: null, children: [  ], type: 'tiled' };
 
     image.getUrl(function() {
-      expect(image.model.get("basemap")).toEqual("my_fantastic_basemap");
+      expect(image.imageOptions.basemap).toEqual(basemap);
       done();
     });
 
@@ -55,7 +44,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).zoom(4);
 
     image.getUrl(function() {
-      expect(image.model.get("zoom")).toEqual(4);
+      expect(image.imageOptions["zoom"]).toEqual(4);
       done();
     });
 
@@ -68,7 +57,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).center([40, 30]);
 
     image.getUrl(function() {
-      expect(image.model.get("center")).toEqual([40, 30]);
+      expect(image.imageOptions["center"]).toEqual([40, 30]);
       done();
     });
 
@@ -97,7 +86,7 @@ describe("Image", function() {
     var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/2/40/10/320/240\.png");
 
     image.center([40,10]).getUrl(function(err, url) {
-      expect(image.model.get("zoom")).toEqual(2);
+      expect(image.imageOptions.zoom).toEqual(2);
       expect(url).toMatch(regexp);
       done();
     });
@@ -111,7 +100,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).format("jpg");
 
     image.getUrl(function() {
-      expect(image.model.get("format")).toEqual("jpg");
+      expect(image.imageOptions["format"]).toEqual("jpg");
       done();
     });
 
@@ -124,7 +113,7 @@ describe("Image", function() {
     var image = cartodb.Image(vizjson).format("pin");
 
     image.getUrl(function() {
-      expect(image.model.get("format")).toEqual("png");
+      expect(image.imageOptions["format"]).toEqual("png");
       done();
     });
 

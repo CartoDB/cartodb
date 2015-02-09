@@ -2,6 +2,7 @@
 - Added Odyssey support for visualizations
 - Adds new API to generate static images (https://github.com/CartoDB/cartodb.js/wiki/CartoDB-Map-API)
 - Fixes the hiding of the tile loader in mobile
+- Adds heatmap support for torque
 
 3.11.32 (29//01//2014)
 - Fixed touch events on mobile (Android)

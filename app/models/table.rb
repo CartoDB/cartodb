@@ -117,7 +117,7 @@ class Table < Sequel::Model(:user_tables)
     return self.the_geom_type if self.the_geom_type.present?
 
     calculated = query_geometry_types.first
-    calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
+    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
     self.the_geom_type = calculated
   end
 

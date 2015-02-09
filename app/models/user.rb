@@ -123,7 +123,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
-    load_common_data
+    #load_common_data
     monitor_user_notification
     sleep 1
     set_statement_timeouts

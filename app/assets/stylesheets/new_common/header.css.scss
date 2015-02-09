@@ -42,24 +42,10 @@ $height: 81px;
   color: rgba(white, 0.6);
 }
 .Header-navigationBreadcrumbLink {
-  position:relative;
-  padding-right: $sMargin-elementInline;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color: white;
-
-  &:after {
-    content: '';
-    position:absolute;
-    right:0;
-    top:50%;
-    width:0;
-    height:0;
-    border-left:4px solid transparent;
-    border-right:4px solid transparent;
-    border-top:4px solid white;
-  }
 
   &:hover {
     color: white;
@@ -85,7 +71,7 @@ $height: 81px;
 .Header-settingsLink {
   font-weight: $sFontWeight-lighter;
   color: rgba(white, 0.6);
-  
+
   &:hover {
     color: white;
     text-decoration: underline;

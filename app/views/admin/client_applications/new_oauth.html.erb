@@ -1,0 +1,37 @@
+<% content_for(:page_title) do %>
+  Your OAuth credentials |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>"
+      , config = <%=raw frontend_config.html_safe %>
+      , user_data = <%= raw current_user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'keys.js', 'templates.js' %>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'common.css', 'keys.css', :media => 'all' %>
+<% end %>
+
+
+<%= render 'admin/shared/new_header', :public => false, :home_url => '' %>
+
+<div class="PagesBody">
+  <div class="Filters NavigationList">
+    <div class="Filters-row">
+      <div class="Filters-type">
+        <ul class="Filters-list">
+          <li class="Filters-typeItem">
+            <a href="" class="Filters-typeLink js-link is-selected">Test</a>
+          </li>
+        </ul>
+      </div>      
+    </div>
+  </div>
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/new_footer' %>

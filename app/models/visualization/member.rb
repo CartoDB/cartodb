@@ -2,7 +2,7 @@
 require 'forwardable'
 require 'virtus'
 require 'json'
-require 'markdown_render'
+require_relative '../markdown_render'
 require_relative './collection'
 require_relative './presenter'
 require_relative './name_checker'

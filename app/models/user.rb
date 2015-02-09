@@ -132,13 +132,13 @@ class User < Sequel::Model
     end
   end
 
-  def load_common_data
+  def load_common_data(datasets = CommonDataSingleton.instance.datasets[:datasets])
     Rollbar.report_message('common data', 'debug', {
       :action => 'load',
       :user_id => self.id,
       :username => self.username
     })
-    CommonDataSingleton.instance.datasets[:datasets].each do |d|
+    datasets.each do |d|
       v = CartoDB::Visualization::Member.remote_member(
         d['name'],
         self.id,
@@ -153,6 +153,22 @@ class User < Sequel::Model
     end
   rescue => e
     Rollbar.report_exception(e)
+  end
+
+  def delete_common_data
+    CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: self.id}).map do |v|
+      begin
+        CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
+        v.delete
+      rescue Sequel::DatabaseError => e
+        match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
+        if match.present? && match >= 0
+          puts "Couldn't delete #{v.id} visualization because it's been imported"
+        else
+          raise e
+        end
+      end
+    end
   end
 
   def after_save

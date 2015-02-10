@@ -1,0 +1,122 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+// Styles for the new default forms
+// --------------------------------------------------
+
+.Form {
+
+}
+.Form-title {
+  display: block;
+  margin: $sMargin-section 0;
+  width: 460px;
+}
+.Form-titleText {
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
+  line-height: $sLineHeight-large;
+}
+.Form-row {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  padding: 10px 0;
+}
+.Form-row.Form-row--spaced { padding: $sMargin-element 0 }
+.Form-rowLabel {
+  width: 140px;
+  margin-right: $sMargin-element;
+  text-align: right;
+}
+.Form-label {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  color: $cTypography-paragraphs;
+}
+.Form-rowPreview {
+  width: 735px;
+}
+.Form-separator {
+  position: relative;
+  display: block;
+  height: 1px;
+  width: 100%;
+  padding: $sMargin-element 0;
+  background: transparent;
+  &:before {
+    content: '';
+    position: absolute;
+    top: $sMargin-element;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 1px;
+    background: $cStructure-mainLine;
+  }
+}
+.Form-rowData {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  width: 380px;
+  margin-right: $sMargin-element;
+}
+.Form-input {
+  height: 38px;
+  padding: 0 12px;
+  outline: none;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+
+  &:focus { border-color: #999 }
+}
+// Sizes
+.Form-input--long { width: 354px }
+.Form-input--med {}
+.Form-input--short {}
+// Types
+.Form-input--copy {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-headers;
+}
+.Form-text--preview {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+  line-height: $sLineHeight-large;
+}
+.Form-rowInfo {
+  width: 380px;
+}
+.Form-rowInfoText {
+  font-size: $sFontSize-normal;
+  color: $cTypography-help;
+}
+.Form-footer {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  margin: $sMargin-formRow 0;
+  padding: $sMargin-formRow 0;
+  border-top: 1px solid $cStructure-mainLine;
+}
+.Form-footerText {
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+}
+.Form-footerIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+  background: #F6D35C;
+  line-height: $sLineHeight-normal!important;
+  font-size: $sFontSize-normal;
+  color: white;
+  text-align: center;
+}

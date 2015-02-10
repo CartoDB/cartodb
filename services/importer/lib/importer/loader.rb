@@ -231,6 +231,9 @@ module CartoDB
         raise DuplicatedColumnError.new(job.logger) if ogr2ogr.command_output[0..200] =~ /specified more than once/
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
         raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
+        if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
+          raise StatementTimeoutError.new(exception.message, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
+        end
 
         if ogr2ogr.exit_code != 0
           # OOM

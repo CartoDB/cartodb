@@ -1,0 +1,28 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+// A list of .MapCard items.
+// Depending on context (private/public dashboard, delete items (affected maps)) it might look slightly differently.
+//
+// --------------------------------------------------
+.MapsList {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center, center);
+  @include flex-wrap(wrap);
+  position: relative;
+  width: $sLayout-width;
+  margin: 0 auto;
+}
+.MapsList--centerItems { @include justify-content(center) }
+.MapsList-item {
+  width: 300px;
+  margin: $sMargin-element $sMargin-element 0 0;
+}
+.MapsList-item:nth-child(3n) { margin-right: 0 }
+.MapsList.is-singleRow {
+  width: $sLayout-width;
+  right: 0;
+}
+.MapsList.is-singleRow .MapsList-item:nth-child(3n) { margin-right: 0 }

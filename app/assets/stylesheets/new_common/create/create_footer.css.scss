@@ -1,0 +1,49 @@
+@import "../../new_variables/mixins";
+@import "../../new_variables/colors";
+@import "../../new_variables/sizes";
+
+// Create dialog footer styles
+
+.CreateDialog-footer {
+  position: fixed;
+  bottom: 0;
+  padding: 0!important;
+  border: 0!important;
+  text-align: center;
+  z-index: 1;
+}
+.CreateDialog-footerInner {
+  width: $sLayout-width;
+  margin: 0 auto;
+  padding: $sMargin-group 0;
+  border-top: 1px solid $cStructure-mainLine;
+}
+.CreateDialog-footerInner.is-expanded {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.CreateDialog-footerInfo {
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+}
+.CreateDialog-footerInfoIcon {
+  display: inline-block;
+  vertical-align: top;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  text-align: center;
+  line-height: $sLineHeight-normal!important;
+  font-size: $sFontSize-normal;
+  color: white;
+  background: #F6D35C;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+}
+.CreateDialog-footerActions {
+  @include display-flex();
+  @include align-items(center, center);   
+}
+.CreateDialog-footerActionsButton.is-separated { margin-right: 10px }

@@ -1,0 +1,65 @@
+<%= content_for(:title) do %>
+  Maps by <%= @name %> on CartoDB
+<% end %>
+
+<%= content_for(:description) do %>
+  <%= @name %> is creating maps and visualizations using CartoDB
+<% end %>
+
+<% if @visualizations.size == 0 %>
+  <div class="IntermediateInfo">
+    <div class="LayoutIcon">
+      <i class="iconFont iconFont-Map"></i>
+    </div>
+    <h3 class="IntermediateInfo-title"><%= @name %> doesn't have any public maps yet</h3>
+    <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to 'datasets', public_datasets_home_url(user_domain: params[:user_domain]) %></p>
+  </div>
+<% else %>
+  <ul class="MapsList">
+    <% @visualizations.each do |vis| %>
+      <% user_domain = vis[:owner].organization ? vis[:owner].username : nil %>
+      <li class="MapsList-item">
+        <div class="MapCard">
+          <div class="MapCard-header">
+          </div>
+          <div class="MapCard-content">
+            <div class="MapCard-contentBody">
+              <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                <h3 class="DefaultTitle">
+                  <a href="<%= public_visualizations_public_map_url(user_domain: user_domain, id: vis[:id]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
+                </h3>
+              </div>
+
+              <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
+                <% if vis[:description] %>
+                  <p class="DefaultDescription" title="<%= vis[:description] %>"><%= raw truncate(vis[:description], :length => 85) %></p>
+                <% else %>
+                  <span class="DefaultDescription is--empty"></span>
+                <% end %>
+              </div>
+
+              <div class="DefaultTags MapCard-contentBodyRow">
+                <% if vis[:tags].size > 0 %>
+                  <% formatted_tags(vis[:tags]) do |tag| %>
+                    <a class="DefaultTags-item js-tag-link" href="<%= public_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+            <div class="MapCard-contentFooter">
+              <div class="MapCard-contentFooterDetails--left">
+                <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                  <%= time_ago_in_words(vis[:updated_at]) %>
+                </div>
+              </div>
+              <div class="MapCard-contentFooterDetails--right">
+                <%# likes %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

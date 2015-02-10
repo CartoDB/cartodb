@@ -1,0 +1,144 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+/* compensate for the negative margins and border */
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+
+.DatasetsList {
+  position: relative;
+  @include display-flex();
+  @include flex-wrap(wrap);
+  width: $sLayout-width;
+  margin: 0 auto;
+  padding: 10px 0 $sMargin-group;
+}
+.DatasetsList-item {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  width: 100%;
+  padding: $sMargin-group 0;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+.DatasetsList-item.DatasetsList-item--selectable:hover,
+.DatasetsList-item.DatasetsList-item--selectable.is--selected {
+  padding: $sMargin-group $selectedItemPaddingOnSides;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  border-radius: 4px;
+}
+.DatasetsList-item.DatasetsList-item--selectable:hover {
+  background-color: $cCard-hoverFill;
+  border: 1px $cCard-hoverBorder solid;
+}
+.DatasetsList-item.DatasetsList-item--selectable.is--selected {
+  background-color: $cCard-selectedFill;
+  border: 1px $cCard-selectedBorder solid;
+}
+.DatasetsList-itemCategory {
+  position: relative;
+  width: $sIcon-layout - 2;
+  height: $sIcon-layout - 2;
+  margin-right: $sMargin-element;
+  margin-top: 3px;
+  border: 1px rgba($cStructure-mainLine, 0.5) solid;
+  @include background(image-url('layout/no-geometry-dataset.png') no-repeat center center white);
+  border-radius: $sIcon-borderRadius;
+}
+.DatasetsList-itemCategory.is--lineDataset {
+  @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
+}
+.DatasetsList-itemCategory.is--polygonDataset {
+  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white);
+}
+.DatasetsList-itemCategory.is--pointDataset {
+  @include background(image-url('layout/points-dataset.png') no-repeat center center white);
+}
+.DatasetsList-itemCategory.is--rasterDataset {
+  @include background(image-url('layout/raster-dataset.png') no-repeat center center white);
+}
+.DatasetsList-itemStatus {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 17px;
+  height: 17px;
+  line-height: 17px;
+  border: 1px solid #CCC;
+  border-radius: 17px;
+  background: white;
+  font-size: 9px;
+  color: $cHighlight-alert;
+  text-align: center;
+  z-index: 2;
+}
+.DatasetsList-itemStatus.is-failure { color: $cHighlight-negative }
+.DatasetsList-itemStatus.is-success { color: $cHighlight-positive }
+
+.DatasetsList-itemPrimaryInfo {
+  @include display-flex();
+}
+.DatasetsList-itemSecondaryInfo {
+  @include display-flex();
+  @include flex-direction(column);
+  flex-grow: 1;
+  min-width: 400px;
+}
+
+.DatasetsList-itemInfo {
+  @include display-flex();
+  @include flex-direction(column);
+  flex-grow: 1;
+  max-width: 440px;
+}
+
+.DatasetsList-itemMeta,
+.DatasetsList-itemMeta:not(*){
+  @include display-flex();
+  @include justify-content(flex-end, flex-end);
+  @include align-items(center, center);
+//  line-height: $sLineHeight-larger;
+}
+.DatasetsList-itemMeta > * {
+  margin-right: $sMargin-element;
+}
+.DatasetsList-itemMeta > *:last-child {
+  margin-right: 0;
+}
+.DatasetsList-itemTags {
+  @include display-flex();
+  @include justify-content(flex-end, flex-end);
+  @include align-items(flex-end, flex-end);
+}
+.DatasetsList-itemTags .DefaultEditInline-input { width: 56px }
+.DatasetsList-itemTitle {
+  @include display-flex();
+  @include align-items(center, center);
+}
+.DatasetsList-itemTitle.is--disabled {
+  color: $cTypography-help;
+}
+.DatasetsList-itemTitlePermission {
+  margin-left: $sMargin-elementInline;
+  background: white;
+}
+.DatasetsList-itemTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
+}
+.DatasetsList-itemSource {
+  @include display-flex();
+  margin-left: 4px;
+}
+.DatasetsList-item:hover,
+.DatasetsList-item.is--selected {
+  padding: $sMargin-group $selectedItemPaddingOnSides;
+  margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
+  border-radius: 4px;
+  cursor: pointer;
+}
+.DatasetsList-item:hover {
+  background-color: $cCard-hoverFill;
+  border: 1px $cCard-hoverBorder solid;
+}
+// .DatasetsList-item:hover .DatasetsList-itemCategory,
+// .DatasetsList-item.is--selected .DatasetsList-itemCategory { border-color: #199BDB }

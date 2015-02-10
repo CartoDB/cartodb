@@ -1,0 +1,118 @@
+@import "compass/css3/images";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
+
+// Map card item
+//
+// Example usage:
+// <div class="MapCard">
+//   <div class="MapCard-header"></div>
+//   <div class="MapCard-content">
+//     <div class="MapCard-contentBody">
+//       <div class="MapCard-contentBodyRow">
+//         <h3 class="DefaultTitle">Foobar</h3>
+//         ...
+//
+//       <div class="MapCard-contentBodyRow">
+//         ...
+//
+//     </div>
+//     <div class="MapCard-contentFooter">
+//      ...
+//
+.MapCard {
+  position: relative;
+  @include inline-block();
+  width: $sCard-width - 2; //compensate for border
+  border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
+}
+.MapCard--selectable:hover {
+  background-color: $cCard-hoverFill;
+  border-color: $cCard-hoverBorder;
+}
+.MapCard--selectable.is-selected {
+  background-color: $cCard-selectedFill;
+  border-color: $cCard-selectedBorder;
+}
+.MapCard-header {
+  position: relative;
+  width: 100%;
+  height: 170px;
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
+  border-radius: 2px 2px 0 0;
+}
+.MapCard-header--compact {
+  height: 130px;
+}
+.MapCard-header:after {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  width: 100%;
+  height: $sMargin-min;
+  background: black;
+  @include opacity(.1);
+  z-index:2;
+}
+.MapCard-headerGraph {
+  position:absolute;
+  width: 70px;
+  height: 18px;
+  bottom:10px;
+  right:12px;
+  padding: 5px;
+  border-radius: 2px;
+  background:rgba(black,.4);
+  z-index:2;
+}
+.MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  @include flex-direction(column);
+  border-radius: $sCard-borderRadius;
+  padding: $sMargin-element;
+  height: 140px;
+}
+.MapCard-content--compact {
+  height: auto;
+}
+.MapCard-contentBody {
+  width: 100%;
+}
+.MapCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
+.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+.MapCard-contentBodyRow--flex {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  @include flex-wrap(nowrap);
+}
+.MapCard-contentFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 100%;
+  padding-top: $sMargin-elementInline;
+  border-top: 1px solid $cStructure-softLine;
+}
+.MapCard-contentFooterDetails--left {
+  @include display-flex();
+  @include align-items(center, center);
+  @include justify-content(space-between, justify);
+}
+.MapCard-contentFooterDetails--left > *:not(:last-child) {
+  margin-right: 14px;
+}
+.MapCard-contentBodyTimeDiff .UserAvatar,
+.MapCard-contentFooterTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
+}

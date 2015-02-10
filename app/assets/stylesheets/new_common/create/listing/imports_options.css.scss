@@ -1,6 +1,7 @@
 @import "../../../new_variables/mixins";
 @import "../../../new_variables/colors";
 @import "../../../new_variables/sizes";
+@import "compass/css3/images";
 
 // Imports styles
 
@@ -57,3 +58,19 @@
     border-color: $cStructure-mainLine;
   }
 }
+// Tab icons
+.ImportOptions-tabIcon {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 6px 3px 0;
+  @include background(image-url("layout/new_import_icons.png") no-repeat 0 0);
+}
+.ImportOptions-tabIcon.is-scratch {
+  width: 18px;
+  height: 20px;
+  background-position: 0 0;
+}
+.ImportOptions-tabLink.selected .ImportOptions-tabIcon.is-scratch,
+.ImportOptions-tabLink:hover .ImportOptions-tabIcon.is-scratch { background-position: 0 -20px }
+.ImportOptions-tabLink.disabled .ImportOptions-tabIcon.is-scratch,
+.ImportOptions-tabLink.disabled:hover .ImportOptions-tabIcon.is-scratch { background-position: 0 0 }

@@ -1,0 +1,44 @@
+@import "../../../new_variables/mixins";
+@import "../../../new_variables/colors";
+@import "../../../new_variables/sizes";
+
+// Default import panel styles
+
+$w: 780px;
+
+.ImportPanel {
+  width: $w;
+  margin: 0 auto;
+}
+.ImportPanel-header {
+  display: block;
+  width: 100%;
+  padding: $sMargin-section 0;
+  text-align: center;
+}
+.ImportPanel-headerTitle {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-normal;
+}
+.ImportPanel-headerDescription {
+  margin-top: 5px;
+  color: $cTypography-paragraphs;
+  font-size: 14px;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-normal;
+}
+.ImportPanel-headerDescription--negative { color: $cHighlight-negative }
+.ImportPanel-headerDescription--negative 
+.ImportPanel-headerDescriptionLink {
+  color: $cHighlight-negative;
+  text-decoration: underline;
+  &:hover { color: $cHighlight-negative }
+}
+.ImportPanel-body {
+  width: $w;
+  margin: 0 auto;
+}
+.ImportPanel-actions { text-align: center }
+.ImportPanel-actionsButton { display: inline-block }

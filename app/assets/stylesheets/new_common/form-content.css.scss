@@ -74,15 +74,16 @@
   &:focus { border-color: #999 }
 }
 // Sizes
+.Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
 .Form-input--med {}
 .Form-input--short {}
 // Types
 .Form-input.has-icon {
-  &.Form-input--long {
-    padding: 0 42px 0 12px;
-    width: 324px;
-  }
+  padding: 0 42px 0 12px;
+
+  &.Form-input--longer { width: 414px }
+  &.Form-input--long { width: 324px }
   &.Form-input--med {}
   &.Form-input--short {}
 }

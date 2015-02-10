@@ -61,6 +61,15 @@ module CartoDB
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(result, name, data_import_id)
         runner.log.append("Table '#{name}' registered")
+      rescue => exception
+        if exception.message =~ /canceling statement due to statement timeout/i
+          raise CartoDB::Importer2::StatementTimeoutError.new(
+            exception.message,
+            CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
+          )
+        else
+          raise exception
+        end
       end
 
       def success?

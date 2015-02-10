@@ -222,7 +222,7 @@ module ApplicationHelper
     end
 
     if tags.size > visibleCount
-      concat "and #{tags.size - visibleCount} more"
+      concat " and #{tags.size - visibleCount} more"
     end
   end
 

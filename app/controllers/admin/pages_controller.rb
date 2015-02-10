@@ -130,6 +130,8 @@ class Admin::PagesController < ApplicationController
       order:    'mapviews',
       page:     1,
       per_page: 1,
+      exclude_shared: true,
+      exclude_raster: true
     }).first
     @content_type = content_type
     @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
@@ -168,13 +170,14 @@ class Admin::PagesController < ApplicationController
       'st_multilinestring' => 'line',
       'st_linestring'      => 'line',
       'st_multipoint'      => 'point',
-      'st_point'           => 'point',
+      'st_point'           => 'point'
     }
 
     visualizations.each do |vis|
       geometry_type = vis.kind
       if geometry_type != 'raster'
-        geometry_type = geometry_mapping.fetch(vis.table.geometry_types.first.downcase, '')
+        table_geometry_types = vis.table.geometry_types
+        geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
       @datasets.push(

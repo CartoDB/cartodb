@@ -252,6 +252,7 @@ describe Visualization::Collection do
       # Restore Vis backend to normal table so Relator works
       Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
       begin
+        @db.run(%Q{alter table external_sources drop constraint external_sources_visualization_id_fkey})
         Visualization::Migrator.new(@db).drop(:visualizations)
       rescue
         # Do nothing, visualizations table not existed before

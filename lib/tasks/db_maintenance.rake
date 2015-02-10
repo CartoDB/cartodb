@@ -375,7 +375,8 @@ namespace :cartodb do
 
       organization  = Organization.filter(:name=> args[:organization_name]).first
       quota = args[:quota_in_gb].to_i * 1024 * 1024 * 1024
-      organization.update(:quota_in_bytes => quota)
+      organization.quota_in_bytes = quota
+      organization.save
 
       puts "Organization: #{organization.name} quota updated to: #{args[:quota_in_gb]}GB."
     end
@@ -387,7 +388,8 @@ namespace :cartodb do
 
       organization  = Organization.filter(:name=> args[:organization_name]).first
       seats = args[:seats].to_i
-      organization.update(:seats => seats)
+      organization.seats = seats
+      organization.save
 
       puts "Organization: #{organization.name} seats updated to: #{args[:seats]}."
     end

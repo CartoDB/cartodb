@@ -8,13 +8,7 @@
 
 <div class="PublicBody-content">
   <% if @datasets.size == 0 %>
-    <div class="IntermediateInfo">
-      <div class="LayoutIcon">
-        <i class="iconFont iconFont-Map"></i>
-      </div>
-      <h3 class="IntermediateInfo-title"><%= @name %> doesn't have any public datasets yet</h3>
-      <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to 'maps', public_visualizations_home_url(user_domain: params[:user_domain]) %></p>
-    </div>
+    <%= render 'admin/shared/new_no_results', is_maps: false, alt_url: public_visualizations_home_url(user_domain: params[:user_domain]) %>
   <% else %>
     <ul class="DatasetsList">
       <% @datasets.each do |ds| %>

@@ -3,9 +3,11 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
+require_relative './visualization/external_source'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
+require_relative '../../app/models/common_data'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -121,12 +123,36 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+    #load_common_data
     monitor_user_notification
-    sleep 3
+    sleep 1
     set_statement_timeouts
     if self.has_organization_enabled?
       ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
     end
+  end
+
+  def load_common_data
+    Rollbar.report_message('common data', 'debug', {
+      :action => 'load',
+      :user_id => self.id,
+      :username => self.username
+    })
+    CommonDataSingleton.instance.datasets[:datasets].each do |d|
+      v = CartoDB::Visualization::Member.remote_member(
+        d['name'],
+        self.id,
+        CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        d['description'],
+        [ d['category'] ],
+        d['license'],
+        d['source'])
+      v.store
+
+      CartoDB::Visualization::ExternalSource.new(v.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+    end
+  rescue => e
+    Rollbar.report_exception(e)
   end
 
   def after_save
@@ -319,7 +345,15 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
-  attr_accessor :password_confirmation
+
+  def password_confirmation
+    @password_confirmation
+  end
+
+  def password_confirmation=(password_confirmation)
+    self.last_password_change_date = Time.zone.now unless new?
+    @password_confirmation = password_confirmation
+  end
 
   ##
   # SLOW! Checks map views for every user
@@ -930,6 +964,10 @@ class User < Sequel::Model
     return false if database_name.blank?
     conn = self.in_database(as: :cluster_admin)
     conn[:pg_database].filter(:datname => database_name).all.any?
+  end
+
+  def can_change_email
+    return !self.google_sign_in || self.last_password_change_date.present?
   end
 
   private :database_exists?

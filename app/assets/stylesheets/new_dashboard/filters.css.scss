@@ -12,12 +12,13 @@
   top: 0;
   left: 0;
   width:100%;
-  background: white;
+  background: transparent;
   z-index: 10;
 }
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
+  background: white;
   
   &:before {
     content: '';
@@ -113,7 +114,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
-  width:827px;
+  width:843px;
 }
 .Filters-searchInput {
   width:790px;

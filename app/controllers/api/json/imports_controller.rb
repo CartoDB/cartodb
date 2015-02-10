@@ -1,6 +1,7 @@
 #encoding: UTF-8
 
 require_relative '../../../../services/datasources/lib/datasources'
+require_relative '../../../models/visualization/external_source'
 
 class Api::Json::ImportsController < Api::ApplicationController
 
@@ -45,8 +46,23 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    if params[:url].present?
-      file_uri = params[:url]
+    type_guessing = params.fetch(:type_guessing, true)
+    quoted_fields_guessing = params.fetch(:quoted_fields_guessing, true)
+    content_guessing = ["true", true].include?(params[:content_guessing])
+
+    url = params[:url]
+    external_source = nil
+
+    if url.present?
+      file_uri = url
+      enqueue_importer_task = true
+    elsif params[:remote_visualization_id].present?
+      content_guessing = false
+      type_guessing = true
+      quoted_fields_guessing = true
+      external_source = external_source(params[:remote_visualization_id])
+      url = external_source.import_url
+      file_uri = url
       enqueue_importer_task = true
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
@@ -56,7 +72,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     service_name =
       params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
-    service_item_id = params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence
+    service_item_id = params[:service_item_id].present? ? params[:service_item_id] : url.presence
 
     options = {
         user_id:                current_user.id,
@@ -69,14 +85,17 @@ class Api::Json::ImportsController < Api::ApplicationController
         from_query:             params[:sql].presence,
         service_name:           service_name.presence,
         service_item_id:        service_item_id.presence,
-        type_guessing:          params.fetch(:type_guessing, true),
-        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, true),
-        content_guessing:       ["true", true].include?(params[:content_guessing]),
+        type_guessing:          type_guessing,
+        quoted_fields_guessing: quoted_fields_guessing,
+        content_guessing:       content_guessing,
         state:                  enqueue_importer_task ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED,
         upload_host:            Socket.gethostname
     }
 
     data_import = DataImport.create(options)
+    if external_source.present?
+      ExternalDataImport.new(data_import.id, external_source.id).save
+    end
 
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if enqueue_importer_task
 
@@ -249,6 +268,14 @@ class Api::Json::ImportsController < Api::ApplicationController
   rescue => ex
     CartoDB::Logger.info('Error: service_oauth_callback', "#{ex.message} #{ex.backtrace.inspect}")
     render_jsonp({ errors: { imports: ex.message } }, 400)
+  end
+
+  private
+
+  def external_source(remote_visualization_id)
+    external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
+    raise CartoDB::Datasources::AuthError.new('Illegal external load') unless remote_visualization_id.present? && external_source.importable_by(current_user)
+    external_source
   end
 
 end

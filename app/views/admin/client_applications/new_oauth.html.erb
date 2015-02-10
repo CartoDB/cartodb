@@ -74,7 +74,7 @@
             <label class="Form-label">Request token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long" value="https://<%= current_user.username %>.<%= Cartodb.config[:account_host] %>/oauth/request_token" readonly />
+            <input type="text" class="Form-input Form-input--long" value="<%= request_token_url(user_domain: params[:user_domain]) %>" readonly />
           </div>
         </div>
 
@@ -83,7 +83,7 @@
             <label class="Form-label">Access token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long" value="https://<%= current_user.username %>.<%= Cartodb.config[:account_host] %>/oauth/access_token" readonly />
+            <input type="text" class="Form-input Form-input--long" value="<%= access_token_url(user_domain: params[:user_domain]) %>" readonly />
           </div>
         </div>
 

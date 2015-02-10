@@ -97,16 +97,17 @@ class Table < Sequel::Model(:user_tables)
 
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
-      owner.in_database[ %Q{
-      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-        SELECT the_geom
-        FROM "#{self.name}"
-        WHERE (the_geom is not null) LIMIT 10
-      ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
+      geometry_types_key = "#{key}:geometry_types"
+      types = $tables_metadata.get geometry_types_key
+      if types.nil?
+        types = query_geometry_types
+        $tables_metadata.set geometry_types_key, types
+        $tables_metadata.expire geometry_types_key, 1800 # 30 min
+      end
     else
-      []
+      types = []
     end
+    types
   end
 
   def is_raster?
@@ -1505,6 +1506,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   private
+
+  def query_geometry_types
+    owner.in_database[ %Q{
+      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+        SELECT the_geom
+        FROM "#{self.name}"
+        WHERE (the_geom is not null) LIMIT 10
+      ) as foo
+    }].all.map {|r| r[:st_geometrytype] }
+  end
 
   def update_cdb_tablemetadata
     # TODO: use upsert

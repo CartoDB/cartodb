@@ -4670,7 +4670,6 @@ var filters = require('./torque_filters');
             }
           };
           new_img.onerror = function(){
-            console.log("wililo");
             self._forcePoints = true;
             self.clearSpriteCache();
             if(filtered){

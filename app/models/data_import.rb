@@ -117,14 +117,14 @@ class DataImport < Sequel::Model
     self
   rescue CartoDB::QuotaExceeded => quota_exception
     CartoDB::notify_warning_exception(quota_exception)
-    handle_failure
+    handle_failure(quota_exception)
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
-    handle_failure
+    handle_failure(exception)
     self
   end
 
@@ -194,9 +194,12 @@ class DataImport < Sequel::Model
     self
   end
 
-  def handle_failure
+  def handle_failure(supplied_exception = nil)
     self.success    = false
     self.state      = STATE_FAILURE
+    if !supplied_exception.nil? && supplied_exception.respond_to?(:error_code)
+      self.error_code = supplied_exception.error_code
+    end
     log.append "ERROR!\n"
     self.save
     notify(results)

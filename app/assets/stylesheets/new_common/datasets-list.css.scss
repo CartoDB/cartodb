@@ -7,14 +7,17 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 .DatasetsList {
   position: relative;
-  display: block !important;
+  @include display-flex();
+  @include flex-wrap(wrap);
   width: $sLayout-width;
   margin: 0 auto;
   padding: 10px 0 $sMargin-group;
 }
+.DatasetsList.is-hidden { display: none }
 .DatasetsList-item {
   @include display-flex();
   @include justify-content(space-between, justify);
+  width: 100%;
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }

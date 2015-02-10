@@ -15,7 +15,7 @@
     <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to 'datasets', public_datasets_home_url(user_domain: params[:user_domain]) %></p>
   </div>
 <% else %>
-  <ul class="MapsList MapsList--centerItems">
+  <ul class="MapsList">
     <% @visualizations.each do |vis| %>
       <% user_domain = vis[:owner].organization ? vis[:owner].username : nil %>
       <li class="MapsList-item">

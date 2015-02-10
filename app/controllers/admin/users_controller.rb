@@ -1,10 +1,18 @@
 # coding: utf-8
+require_relative '../../../lib/google_plus_api'
+require_relative '../../../lib/google_plus_config'
+
 class Admin::UsersController < ApplicationController
   ssl_required :oauth, :api_key, :regenerate_api_key
 
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
+
+  def initialize_google_plus_config
+    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+    @google_plus_config = GooglePlusConfig.instance(Cartodb.config, signup_action)
+  end
 
   def new
     @user = User.new

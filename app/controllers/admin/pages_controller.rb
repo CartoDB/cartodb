@@ -136,6 +136,7 @@ class Admin::PagesController < ApplicationController
     @content_type = content_type
     @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
     @datasets_url = view_context.public_datasets_home_url(user_domain: params[:user_domain])
+    @current_page = params[:page].present? ? params[:page] : 1
 
     # Note that these are shared for both new and current layouts, so dont change lightly
     @name               = viewed_user.name_or_username
@@ -149,18 +150,20 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_public_datasets(viewed_user)
+    @datasets_per_page = DATASETS_PER_PAGE
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_CANONICAL,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: DATASETS_PER_PAGE,
+      page:     @current_page,
+      per_page: @datasets_per_page,
       order:    'updated_at',
       o:        {updated_at: :desc},
       tags:     params[:tag],
       exclude_shared: true,
       exclude_raster: true,
     })
+    @total_count = visualizations.total_entries
 
     @datasets = []
     # TODO logic as done client-side, how and where to encapsulate this better?
@@ -200,17 +203,19 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_public_dashboard(viewed_user)
+    @vis_per_page = VISUALIZATIONS_PER_PAGE
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_DERIVED,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: VISUALIZATIONS_PER_PAGE,
+      page:     @current_page,
+      per_page: @vis_per_page,
       order:    'updated_at',
       o:        {updated_at: :desc},
       exclude_shared: true,
       exclude_raster: true
     })
+    @total_count = visualizations.total_entries
 
     @visualizations = []
     visualizations.each do |vis|

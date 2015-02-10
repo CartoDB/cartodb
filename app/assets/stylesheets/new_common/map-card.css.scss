@@ -45,9 +45,6 @@
   border-radius: 2px 2px 0 0;
   overflow:hidden;
 }
-.MapCard-header.has-error {
-  @include background(image-url("layout/error-map-bkg.png") no-repeat center 0);
-}
 .MapCard-header.is-loading .MapCard-loader {
   display: block;
 }
@@ -106,6 +103,31 @@
   width: 100%;
   height: 100%;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
+}
+.MapCard.has-error .MapCard-error {
+  display: block;
+}
+.MapCard-error {
+  display: none;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
+  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
+}
+.MapCard-error .error-00 {
+  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
+}
+.MapCard-error .error-01 {
+  @include background(image-url("layout/map_placeholder_1.png") no-repeat center 0);
+}
+.MapCard-error .error-02 {
+  @include background(image-url("layout/map_placeholder_2.png") no-repeat center 0);
+}
+.MapCard-error .error-03 {
+  @include background(image-url("layout/map_placeholder_3.png") no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   @include display-flex();

@@ -2,6 +2,9 @@ source 'http://rubygems.org'
 
 gem 'rails',                   '3.2.2'
 
+gem 'ruby-prof'
+gem 'memcache-client'
+
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.13.2'
 gem 'sequel',                  '3.42.0'

@@ -48,7 +48,14 @@ class Admin::ClientApplicationsController < ApplicationController
     @client_application = current_user.client_application
     return if request.get?
     current_user.reset_client_application!
-    redirect_to api_key_credentials_path(user_domain: params[:user_domain], type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successfully"}
+    
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    if new_dashboard
+      redirect_to oauth_credentials_path(user_domain: params[:user_domain], type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successfully"}
+    else
+      redirect_to api_key_credentials_path(user_domain: params[:user_domain], type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successfully"}
+    end 
+    
   end
 
 end

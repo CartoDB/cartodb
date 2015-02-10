@@ -58,6 +58,7 @@
   }
 }
 .Form-rowData {
+  position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   width: 380px;
@@ -77,11 +78,26 @@
 .Form-input--med {}
 .Form-input--short {}
 // Types
-.Form-input--copy {
-  font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-headers;
+.Form-input.has-icon {
+  &.Form-input--long {
+    padding: 0 42px 0 12px;
+    width: 324px;
+  }
+  &.Form-input--med {}
+  &.Form-input--short {}
 }
+.Form-copy {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  z-index: 2;
+}
+.Form-copyIcon {
+  font-size: $sFontSize-largest;
+  color: $cTypography-help;
+}
+.Form-copy:hover .Form-copyIcon,
+.Form-copy.hover .Form-copyIcon { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;

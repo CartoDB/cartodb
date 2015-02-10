@@ -15,6 +15,7 @@
   width: $sLayout-width;
   margin: 0 auto;
 }
+.MapsList.is-hidden { display: none }
 .MapsList--centerItems { @include justify-content(center) }
 .MapsList-item {
   width: 300px;

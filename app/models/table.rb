@@ -98,11 +98,13 @@ class Table < Sequel::Model(:user_tables)
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
       geometry_types_key = "#{key}:geometry_types"
-      types = $tables_metadata.get geometry_types_key
-      if types.nil?
+      types_str = $tables_metadata.get geometry_types_key
+      if types_str.nil?
         types = query_geometry_types
         $tables_metadata.set geometry_types_key, types
         $tables_metadata.expire geometry_types_key, 1800 # 30 min
+      else
+        types = JSON.parse(types_str)
       end
     else
       types = []

@@ -136,7 +136,7 @@ class Admin::PagesController < ApplicationController
     @content_type = content_type
     @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
     @datasets_url = view_context.public_datasets_home_url(user_domain: params[:user_domain])
-    @current_page = params[:page].present? ? params[:page] : 1
+    @current_page = params[:page].to_i > 0 ? params[:page] : 1
 
     # Note that these are shared for both new and current layouts, so dont change lightly
     @name               = viewed_user.name_or_username

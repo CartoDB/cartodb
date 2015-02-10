@@ -18,15 +18,14 @@ module CartoDB
 
 
     def fetch(query, format = '')
-      params   = { q: query, api_key: api_key, format: format }
       response = Typhoeus::Request.new(
         base_url,
-        method: :post,
-        body: URI.encode_www_form(params),
+        method: :get,
+        params: { api_key: api_key, format: format, q: query },
         headers: { 'Accept-Encoding' => 'gzip,deflate' }
       ).run
       handle_response(response)
-    end # fetch
+    end
 
     def handle_response(response)
       @response_code    = response.response_code
@@ -49,8 +48,10 @@ module CartoDB
     end
 
     def base_url
-      "http://#{username}.cartodb.com/api/v2/sql"
-    end # base_url
+      return @base_url if @base_url.present?
+      config = Cartodb.config[:sql_api].fetch('private')
+      @base_url = "#{config['protocol']}://#{username}.#{config['domain']}:#{config['port']}#{config['endpoint']}"
+    end
 
   end # SQLApi
 end # CartoDB

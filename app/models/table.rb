@@ -12,6 +12,7 @@ require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+require_relative '../../services/sql-api/sql_api'
 
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
@@ -96,17 +97,16 @@ class Table < Sequel::Model(:user_tables)
   end #default_privacy_values
 
   def geometry_types
-    if schema.select { |key, value| key == :the_geom }.length > 0
-      owner.in_database[ %Q{
+    return [] unless schema.select { |key, value| key == :the_geom }.length > 0
+    @sql_api ||= CartoDB::SQLApi.new({username: owner.username, api_key: owner.api_key })
+    sql = %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
         FROM "#{self.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
-    else
-      []
-    end
+    }
+    @sql_api.fetch(sql).map { |row| row['st_geometrytype'] }
   end
 
   def is_raster?

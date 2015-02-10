@@ -22,13 +22,23 @@ module CartoDB
       end
 
       # Class constructor
-      # @param options Hash { :user, :ip, :initial_value, :max_value, :ttl }
+      # @param options Hash
+      # {
+      #   :user           => User|nil
+      #   :ip             => Integer|nil
+      #   :initial_value  => mixed|nil
+      #   :max_value      => mixed|nil
+      #   :ttl            => Integer|nil
+      # }
       # @throws ArgumentError
       def initialize(options={})
         @user = options.fetch(:user, nil)
         @ip = options.fetch(:ip, nil)
         raise ArgumentError.new('options must be a Hash') unless options.is_a?(Hash)
-        raise ArgumentError.new('Must supply at least user id or IP address') if @user.nil? && @ip.nil?
+        raise ArgumentError.new('Must supply at least a user or an IP address') if @user.nil? && @ip.nil?
+        unless @user.nil?
+          raise ArgumentError.new('Supplied user object must have :username') unless @user.respond_to?(:username)
+        end
 
         @initial_value = options.fetch(:initial_value, nil)
         @max_value = options.fetch(:max_value, nil)
@@ -181,7 +191,7 @@ module CartoDB
         value_fragment = ''
         unless @user.nil?
           type_fragment << TYPE_USER
-          value_fragment << @user
+          value_fragment << @user.username
         end
         unless @ip.nil?
           type_fragment << TYPE_IP

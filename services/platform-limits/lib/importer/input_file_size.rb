@@ -6,10 +6,17 @@ module CartoDB
 
       class InputFileSize < AbstractLimit
         def initialize(options={})
-          options = options.dup.merge(
-            LimitsConfig::IMPORTER_LIMITS[Importer::InputFileSize.classname]
-          )
           super(options)
+
+          raise ArgumentError.new('Must supply a user object') if user.nil?
+          unless user.respond_to?(:max_import_file_size)
+            raise ArgumentError.new('Supplied user object must have :max_import_file_size')
+          end
+          unless user.max_import_file_size.is_a?(Integer) && user.max_import_file_size > 0
+            raise ArgumentError.new('invalid user max_import_file_size (must be positive integer)')
+          end
+
+          self.max_value = user.max_import_file_size
         end
 
         def subkey

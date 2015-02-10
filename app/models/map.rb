@@ -139,12 +139,14 @@ class Map < Sequel::Model
                     ).first
     if related_table.map_id != id
       # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
-      CartoDB::Visualization::Collection.new.fetch(
-          user_id:  user_id,
-          map_id:   related_table.map_id
-      ).each { |entry|
-        entry.store_from_map(map_id: id)
-      }
+      if related_table.map_id.present?
+        CartoDB::Visualization::Collection.new.fetch(
+            user_id:  user_id,
+            map_id:   related_table.map_id
+        ).each { |entry|
+          entry.store_from_map(map_id: id)
+        }
+      end
       # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
       related_table.this.update(map_id: id)
     end

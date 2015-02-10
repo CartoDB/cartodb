@@ -15,7 +15,7 @@
 <% end %>
 
 <% if @datasets.size == 0 %>
-  <div class="IntermediateInfo IntermediateInfo--flex">
+  <div class="IntermediateInfo">
     <div class="LayoutIcon">
       <i class="iconFont iconFont-Map"></i>
     </div>
@@ -31,7 +31,7 @@
           <div class="DatasetsList-itemCategory is--<%= ds[:geometry_type] %>Dataset"></div>
           <div class="DatasetsList-itemInfo">
             <h3 class="DatasetsList-itemTitle DefaultTitle">
-              <a href="<%= public_table_url(user_domain: user_domain, id: ds[:title]) %>" title="<%= ds[:title] %>" class="u-ellipsLongText"><%= ds[:title] %></a>
+              <a href="<%= public_table_url(user_domain: user_domain, id: ds[:title]) %>" title="<%= ds[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= ds[:title] %></a>
             </h3>
             <p class="DefaultDescription u-ellipsLongText"><%= raw ds[:desc] %></p>
           </div>
@@ -52,11 +52,11 @@
             </div>
           </div>
           <div class="DatasetsList-itemTags">
-            <% if ds[:tags].size > 0 %>
-              <% formatted_tags(ds[:tags]) do |tag| %>
-                <a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a>
+            <div class="DefaultTags">
+              <% if ds[:tags].size > 0 %>
+                <% formatted_tags(ds[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
               <% end %>
-            <% end %>
+            </div>
           </div>
         </div>
       </li>

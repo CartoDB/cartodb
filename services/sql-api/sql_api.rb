@@ -50,7 +50,7 @@ module CartoDB
     def base_url
       return @base_url if @base_url.present?
       config = Cartodb.config[:sql_api].fetch('private')
-      @base_url = "http://#{username}.#{config['domain']}:#{config['port']}#{config['endpoint']}"
+      @base_url = "#{config['protocol']}://#{username}.#{config['domain']}:#{config['port']}#{config['endpoint']}"
     end
 
   end # SQLApi

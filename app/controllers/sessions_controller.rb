@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
     user = if params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
-        user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+        user_domain = user.username
         authenticate!(:google_access_token, scope: user_domain)
       elsif user == false
         # token not valid

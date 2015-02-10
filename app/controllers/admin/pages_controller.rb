@@ -150,7 +150,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_public_datasets(viewed_user)
-    @datasets_per_page = DATASETS_PER_PAGE
+    @datasets_per_page = 20
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_CANONICAL,
@@ -203,7 +203,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_public_dashboard(viewed_user)
-    @vis_per_page = VISUALIZATIONS_PER_PAGE
+    @vis_per_page = 9
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_DERIVED,

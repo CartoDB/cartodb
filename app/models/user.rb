@@ -345,7 +345,15 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
-  attr_accessor :password_confirmation
+
+  def password_confirmation
+    @password_confirmation
+  end
+
+  def password_confirmation=(password_confirmation)
+    self.last_password_change_date = Time.zone.now unless new?
+    @password_confirmation = password_confirmation
+  end
 
   ##
   # SLOW! Checks map views for every user
@@ -956,6 +964,10 @@ class User < Sequel::Model
     return false if database_name.blank?
     conn = self.in_database(as: :cluster_admin)
     conn[:pg_database].filter(:datname => database_name).all.any?
+  end
+
+  def can_change_email
+    return !self.google_sign_in || self.last_password_change_date.present?
   end
 
   private :database_exists?

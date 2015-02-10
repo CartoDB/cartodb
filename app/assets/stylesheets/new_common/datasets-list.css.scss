@@ -13,6 +13,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin: 0 auto;
   padding: 10px 0 $sMargin-group;
 }
+.DatasetsList.is-hidden { display: none }
 .DatasetsList-item {
   @include display-flex();
   @include justify-content(space-between, justify);

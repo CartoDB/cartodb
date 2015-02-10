@@ -16,3 +16,10 @@
   @include flex-grow(1);
   margin: $sMargin-group 0 $sMargin-section 0;
 }
+
+// Animation function
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}

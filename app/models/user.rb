@@ -841,7 +841,7 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
     end

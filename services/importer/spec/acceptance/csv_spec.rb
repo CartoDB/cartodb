@@ -4,10 +4,10 @@ require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
+require_relative '../doubles/user'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative '../../spec/doubles/importer_stats'
-require_relative '../../spec/doubles/user'
 
 include CartoDB::Importer2
 
@@ -21,8 +21,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -37,8 +37,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -52,8 +52,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -68,8 +68,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -84,8 +84,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -102,8 +102,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -131,8 +131,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -171,8 +171,8 @@ describe 'csv regression tests' do
     Runner.new({
                  pg: @pg_options,
                  downloader: downloader,
-                 log: Doubles::Log.new,
-                 user:Doubles::User.new
+                 log: CartoDB::Importer2::Doubles::Log.new,
+                 user: CartoDB::Importer2::Doubles::User.new
                })
   end
 

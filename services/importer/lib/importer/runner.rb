@@ -87,6 +87,7 @@ module CartoDB
 
       def import(source_file, downloader, job=nil, loader_object=nil)
         job     ||= Job.new({ logger: log, pg_options: pg_options })
+        # noinspection RubyArgCount
         loader = loader_object || loader_for(source_file).new(job, source_file)
 
         raise EmptyFileError if source_file.empty?
@@ -96,6 +97,10 @@ module CartoDB
 
         tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
+
+        raise_if_over_storage_quota(source_file)
+
+        raise_if_hit_platform_limit(source_file, @user)
 
         if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           streamed_loader_run(job, loader, downloader)
@@ -201,11 +206,9 @@ module CartoDB
             return self unless remote_data_updated?
           end
 
-          @importer_stats.timing('quota_check') do
-            log.append "Starting import for #{@downloader.source_file.fullpath}"
-            raise_if_over_storage_quota(@downloader.source_file)
-          end
+          log.append "Starting import for #{@downloader.source_file.fullpath}"
 
+          # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
             raise_if_hit_platform_limit(@downloader.source_file, @user)
           end

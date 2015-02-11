@@ -154,9 +154,14 @@ module CartoDB
           end
         end
 
-        runner        = CartoDB::Importer2::Runner.new(
-          pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
-        )
+        runner = CartoDB::Importer2::Runner.new({
+                                                  pg: pg_options,
+                                                  downloader: downloader,
+                                                  log: log,
+                                                  user: user,
+                                                  unpacker: CartoDB::Importer2::Unp.new,
+                                                  post_import_handler: post_import_handler
+                                                })
         runner.loader_options = ogr2ogr_options.merge content_guessing_options
 
 
@@ -235,10 +240,7 @@ module CartoDB
         log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
-        if datasource_provider.has_resource_size?(metadata)
-          limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
-          raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
-        end
+        raise_if_hit_platform_limit(datasource_provider, metadata, user)
 
         if datasource_provider.providers_download_url?
           resource_url = (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url
@@ -257,11 +259,19 @@ module CartoDB
           log.append "File will be downloaded from #{downloader.url}"
         else
           log.append 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, \
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
             {checksum: checksum}, log)
         end
 
         downloader
+      end
+
+      # @throws CartoDB::Importer2::FileTooBigError
+      def raise_if_hit_platform_limit(datasource, metadata, user)
+        if datasource.has_resource_size?(metadata)
+          limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+          raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
+        end
       end
 
       def set_success_state_from(importer)
@@ -287,6 +297,11 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
+        # Try to fill empty messages with the list
+        if self.error_message == '' && !self.error_code.nil?
+          default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
+          self.error_message = default_message.fetch(:title, '')
+        end
         self.retried_times  = self.retried_times + 1
         if self.retried_times < MAX_RETRIES
           self.run_at         = Time.now + interval

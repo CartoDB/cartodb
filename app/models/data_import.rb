@@ -466,9 +466,14 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
-      runner        = CartoDB::Importer2::Runner.new(
-        database_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
-      )
+      runner = CartoDB::Importer2::Runner.new({
+                                                pg: database_options,
+                                                downloader: downloader,
+                                                log: log,
+                                                user: current_user,
+                                                unpacker: CartoDB::Importer2::Unp.new,
+                                                post_import_handler: post_import_handler
+                                              })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]
       unless graphite_conf.nil?
@@ -550,6 +555,8 @@ class DataImport < Sequel::Model
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
+    raise_if_hit_platform_limit(datasource_provider, metadata, current_user)
+
     if datasource_provider.has_resource_size?(metadata)
       limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: current_user })
       raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
@@ -566,6 +573,14 @@ class DataImport < Sequel::Model
     end
 
     downloader
+  end
+
+  # @throws CartoDB::Importer2::FileTooBigError
+  def raise_if_hit_platform_limit(datasource, metadata, user)
+    if datasource.has_resource_size?(metadata)
+      limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+      raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
+    end
   end
 
   def current_user

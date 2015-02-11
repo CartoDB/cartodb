@@ -8,6 +8,7 @@ require_relative './exceptions'
 require_relative './result'
 require_relative './importer_stats'
 require_relative '../../../datasources/lib/datasources/datasources_factory'
+require_relative '../../../platform-limits/platform_limits'
 
 module CartoDB
   module Importer2
@@ -18,27 +19,32 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
-      # @param pg_options Hash
-      # @param downloader CartoDB::Importer2::DatasourceDownloader|CartoDB::Importer2::Downloader
-      # @param log CartoDB::Log|nil
-      # @param available_quota int|nil
-      # @param unpacker Unp|nil
-      # @param post_import_handler CartoDB::Importer2::PostImportHandler|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, post_import_handler=nil,
-                     importer_stats_options = nil)
+      # @param options Hash
+      # {
+      #   :pg Hash { ... }
+      #   :downloader CartoDB::Importer2::DatasourceDownloader|CartoDB::Importer2::Downloader
+      #   :log CartoDB::Log|nil
+      #   :user User|nil
+      #   :unpacker Unp|nil
+      #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
+      #   :importer_stats Hash|nil
+      # }
+      def initialize(options={})
         @loader = nil
-        @pg_options          = pg_options
-        @downloader          = downloader
-        @log                 = log             || new_logger
-        @available_quota     = available_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker            = unpacker        || Unp.new
-        @results             = []
-        @stats               = []
-        @post_import_handler = post_import_handler || nil
-        @loader_options      = {}
-        importer_stats_options ||= { host: nil, port: nil}
+        @pg_options          = options[:pg]
+        @downloader          = options[:downloader]
+        @log                 = options.fetch(:log, nil) || new_logger
+        @user = options.fetch(:user, nil)
+        @available_quota =
+          !@user.nil? && @user.respond_to?(:available_quota) ? @user.available_quota : DEFAULT_AVAILABLE_QUOTA
+        @unpacker            = options.fetch(:unpacker, nil) || Unp.new
+        @post_import_handler = options.fetch(:post_import_handler, nil)
+        importer_stats_options = options.fetch(:importer_stats, { host: nil, port: nil, queue_id: nil})
         @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port],
                                                      importer_stats_options[:queue_id])
+        @loader_options      = {}
+        @results             = []
+        @stats               = []
       end
 
       def loader_options=(value)
@@ -199,6 +205,10 @@ module CartoDB
             raise_if_over_storage_quota(@downloader.source_file)
           end
 
+          @importer_stats.timing('file_size_limit_check') do
+            raise_if_hit_platform_limit(@downloader.source_file, @user)
+          end
+
           @importer_stats.timing('unpack') do
             log.append "Unpacking #{@downloader.source_file.fullpath}"
             tracker.call('unpacking')
@@ -292,6 +302,13 @@ module CartoDB
       def error_for(exception_klass=nil)
         return nil unless exception_klass
         errors_to_code_mapping.fetch(exception_klass, UNKNOWN_ERROR_CODE)
+      end
+
+      # @throws CartoDB::Importer2::FileTooBigError
+      def raise_if_hit_platform_limit(source_file, user)
+        file_size = File.size(source_file.fullpath)
+        limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+        raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(file_size)
       end
 
       def raise_if_over_storage_quota(source_file)

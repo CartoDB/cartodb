@@ -123,8 +123,8 @@ class Geocoding < Sequel::Model
     self.report
   rescue => e
     self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
-    self.report(e)
     CartoDB::notify_exception(e, user: user)
+    self.report(e)
   end # run!
 
   def report(error = nil)
@@ -143,7 +143,7 @@ class Geocoding < Sequel::Model
   def calculate_used_credits
     return 0 unless kind == 'high-resolution'
     total_rows       = processed_rows.to_i + cache_hits.to_i
-    geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota : user.geocoding_quota
+    geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota.to_i : user.geocoding_quota
     # User#get_geocoding_calls includes this geocoding run, so we discount it
     remaining_quota  = geocoding_quota + total_rows - user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)

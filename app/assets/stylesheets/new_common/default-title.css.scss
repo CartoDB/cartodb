@@ -11,6 +11,9 @@
   color: $cTypography-paragraphs;
 }
 .DefaultTitle-link {
+  font-weight: $sFontWeight-normal;
+  font-size: $sFontSize-larger;
+  color: $cTypography-paragraphs;   
   &:hover {
     color: $cTypography-headers;
     text-decoration: underline;

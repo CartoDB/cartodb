@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
     user = if params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
-        user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
+        user_domain = user.username
         authenticate!(:google_access_token, scope: user_domain)
       elsif user == false
         # token not valid
@@ -68,7 +68,7 @@ class SessionsController < ApplicationController
     CartodbStats.increment_failed_login_counter(params[:email])
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one    
-    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @password_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
 
     respond_to do |format|
       format.html do

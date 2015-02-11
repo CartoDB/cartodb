@@ -31,6 +31,7 @@ module CartoDB
       TYPE_CANONICAL  = 'table'
       TYPE_DERIVED    = 'derived'
       TYPE_SLIDE      = 'slide'
+      TYPE_REMOTE = 'remote'
 
       KIND_GEOM   = 'geom'
       KIND_RASTER = 'raster'
@@ -95,6 +96,19 @@ module CartoDB
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
       end
+
+      def self.remote_member(name, user_id, privacy, description, tags, license, source)
+        Member.new({
+          name: name,
+          user_id: user_id,
+          privacy: privacy,
+          description: description,
+          tags: tags,
+          license: license,
+          source: source,
+          type: TYPE_REMOTE})
+      end
+
 
       def transition_options
         ::JSON.parse(self.slide_transition_options).symbolize_keys

@@ -37,6 +37,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 .UserInfo-nameBreadcrumb,
 .UserInfo-nameBreadcrumb a {
   color: $cTypography-secondary;
+  &:hover { color: $cTypography-paragraphs }
 }
 .UserInfo-desc {
   max-width: 620px;

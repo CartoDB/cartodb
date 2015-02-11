@@ -130,10 +130,13 @@ class Admin::PagesController < ApplicationController
       order:    'mapviews',
       page:     1,
       per_page: 1,
+      exclude_shared: true,
+      exclude_raster: true
     }).first
     @content_type = content_type
     @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
     @datasets_url = view_context.public_datasets_home_url(user_domain: params[:user_domain])
+    @current_page = params[:page].to_i > 0 ? params[:page] : 1
 
     # Note that these are shared for both new and current layouts, so dont change lightly
     @name               = viewed_user.name_or_username
@@ -147,18 +150,20 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_public_datasets(viewed_user)
+    @datasets_per_page = 20
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_CANONICAL,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: DATASETS_PER_PAGE,
+      page:     @current_page,
+      per_page: @datasets_per_page,
       order:    'updated_at',
       o:        {updated_at: :desc},
       tags:     params[:tag],
       exclude_shared: true,
       exclude_raster: true,
     })
+    @total_count = visualizations.total_entries
 
     @datasets = []
     # TODO logic as done client-side, how and where to encapsulate this better?
@@ -168,13 +173,14 @@ class Admin::PagesController < ApplicationController
       'st_multilinestring' => 'line',
       'st_linestring'      => 'line',
       'st_multipoint'      => 'point',
-      'st_point'           => 'point',
+      'st_point'           => 'point'
     }
 
     visualizations.each do |vis|
       geometry_type = vis.kind
       if geometry_type != 'raster'
-        geometry_type = geometry_mapping.fetch(vis.table.geometry_types.first.downcase, '')
+        table_geometry_types = vis.table.geometry_types
+        geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
       @datasets.push(
@@ -197,17 +203,19 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_public_dashboard(viewed_user)
+    @vis_per_page = 9
     visualizations = Visualization::Collection.new.fetch({
       user_id:  viewed_user.id,
       type:     Visualization::Member::TYPE_DERIVED,
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: VISUALIZATIONS_PER_PAGE,
+      page:     @current_page,
+      per_page: @vis_per_page,
       order:    'updated_at',
       o:        {updated_at: :desc},
       exclude_shared: true,
       exclude_raster: true
     })
+    @total_count = visualizations.total_entries
 
     @visualizations = []
     visualizations.each do |vis|

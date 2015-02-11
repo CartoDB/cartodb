@@ -270,7 +270,7 @@ module CartoDB
       def raise_if_hit_platform_limit(datasource, metadata, user)
         if datasource.has_resource_size?(metadata)
           limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
-          raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
+          raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit!(metadata[:size])
         end
       end
 

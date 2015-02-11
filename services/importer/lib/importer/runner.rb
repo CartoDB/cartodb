@@ -28,6 +28,7 @@ module CartoDB
       #   :unpacker Unp|nil
       #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
       #   :importer_stats Hash|nil
+      #   :import_file_limit_instance CartoDB::PlatformLimits::Importer::InputFileSize|nil
       # }
       # @throws KeyError
       def initialize(options={})
@@ -43,6 +44,7 @@ module CartoDB
         importer_stats_options = options.fetch(:importer_stats, { host: nil, port: nil, queue_id: nil})
         @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port],
                                                      importer_stats_options[:queue_id])
+        @import_file_limit = options.fetch(:import_file_limit_instance, input_file_size_limit_instance(@user))
         @loader_options      = {}
         @results             = []
         @stats               = []
@@ -311,8 +313,11 @@ module CartoDB
       # @throws CartoDB::Importer2::FileTooBigError
       def raise_if_hit_platform_limit(source_file, user)
         file_size = File.size(source_file.fullpath)
-        limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
-        raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(file_size)
+        raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if @import_file_limit.is_over_limit!(file_size)
+      end
+
+      def input_file_size_limit_instance(user)
+        CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
       end
 
       def raise_if_over_storage_quota(source_file)

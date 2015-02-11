@@ -21,6 +21,8 @@ module CartoDB
           self.max_value = user.max_import_file_size
         end
 
+        protected
+
         def subkey
           'Importer:InputFileSize'
         end

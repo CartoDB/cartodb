@@ -29,10 +29,11 @@ module CartoDB
       #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
       #   :importer_stats Hash|nil
       # }
+      # @throws KeyError
       def initialize(options={})
         @loader = nil
-        @pg_options          = options[:pg]
-        @downloader          = options[:downloader]
+        @pg_options          = options.fetch(:pg)
+        @downloader          = options.fetch(:downloader)
         @log                 = options.fetch(:log, nil) || new_logger
         @user = options.fetch(:user, nil)
         @available_quota =

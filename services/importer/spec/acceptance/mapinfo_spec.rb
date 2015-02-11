@@ -16,7 +16,12 @@ describe 'Mapinfo regression tests' do
   it 'imports Mapinfo files' do
     filepath    = "http://dl.dropboxusercontent.com/u/931536/Ivanovo.zip"
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new(@pg_options, downloader, CartoDB::Importer2::Doubles::Log.new)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: Doubles::Log.new,
+                               user:Doubles::User.new
+                             })
     runner.run
 
     geometry_type_for(runner).should be

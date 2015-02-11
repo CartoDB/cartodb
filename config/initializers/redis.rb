@@ -17,7 +17,8 @@ default_databases = {
   tables_metadata:     0,
   api_credentials:     3,
   users_metadata:      5,
-  redis_migrator_logs: 6
+  redis_migrator_logs: 6,
+  visualizations:      7,
 }
 
 databases = if conf[:databases].blank?
@@ -30,6 +31,7 @@ $tables_metadata     = Redis.new(redis_conf.merge(db: databases[:tables_metadata
 $api_credentials     = Redis.new(redis_conf.merge(db: databases[:api_credentials]))
 $users_metadata      = Redis.new(redis_conf.merge(db: databases[:users_metadata]))
 $redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_logs]))
+$visualizations      = Redis.new(redis_conf.merge(db: databases[:visualizations]))
 
 # When in the "test" environment we don't expect a Redis
 # server to be up and running at this point. Later code
@@ -40,6 +42,7 @@ unless Rails.env.test?
     $api_credentials.ping
     $users_metadata.ping
     $redis_migrator_logs.ping
+    $visualizations.ping
   rescue => e
     raise "Error connecting to Redis databases: #{e}" 
   end

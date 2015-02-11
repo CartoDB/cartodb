@@ -228,9 +228,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
-    cached("visualizations:#{visualization.id}:#{visualization.updated_at}") do
-      render_jsonp(visualization.to_vizjson)
-    end
+    render_jsonp(
+                 cached("#{visualization.id}:#{visualization.updated_at}") do
+                   visualization.to_vizjson
+                 end
+                 )
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
@@ -248,12 +250,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def cached(key)
-    result = Rails.cache.read(key)
-    if result.nil?
+    value = $visualizations.get(key)
+    if value.present?
+      return JSON.parse(value)
+    else
       result = yield
-      Rails.cache.write(key, result)
+      $visualizations.set(key, result.to_json)
+      return result
     end
-    result
   end
 
   def notify_watching

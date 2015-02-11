@@ -2,17 +2,16 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-.ContentFooter > .u-inner {
+.ContentFooterInner {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
-  position:relative;
+  @include align-items(center);
+  position: relative;
   height: 81px;
-  padding: 0 0 50px 0;
-  overflow:hidden;
+  padding: 0 0 $sMargin-section 0;
+  overflow: hidden;
 }
 .ContentFooter-lockedIcon {
   font-size: $sFontSize-small;
   color: $cTypography-help;
 }
-

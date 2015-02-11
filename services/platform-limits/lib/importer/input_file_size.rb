@@ -4,6 +4,8 @@ module CartoDB
   module PlatformLimits
     module Importer
 
+      # This limit uses User.max_import_file_size attribute to limit file sizes upon imports.
+      # Has no storage as there's no need of it, and serves as a really simple Limit example.
       class InputFileSize < AbstractLimit
         def initialize(options={})
           super(options)
@@ -36,6 +38,7 @@ module CartoDB
         # Gets current value of the limit
         # @param context mixed
         # @return mixed
+        # @throws ArgumentError
         def get(context)
           raise ArgumentError.new('context must be an integer') unless context.is_a?(Integer)
           context

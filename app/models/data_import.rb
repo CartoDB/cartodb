@@ -20,6 +20,8 @@ require_relative '../../services/datasources/lib/datasources'
 require_relative '../../services/importer/lib/importer/unp'
 require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
+require_relative '../../services/platform-limits/platform_limits'
+
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
@@ -431,6 +433,12 @@ class DataImport < Sequel::Model
         error_code: 1013,
         log_info: ex.to_s
       }
+    rescue CartoDB::Importer2::FileTooBigError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: ex.error_code,
+        log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
+      }
     rescue => ex
       had_errors = true
       manual_fields = {
@@ -541,6 +549,11 @@ class DataImport < Sequel::Model
     log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
+
+    if datasource_provider.has_resource_size?(metadata)
+      limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: current_user })
+      raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
+    end
 
     if datasource_provider.providers_download_url?
       downloader = CartoDB::Importer2::Downloader.new(

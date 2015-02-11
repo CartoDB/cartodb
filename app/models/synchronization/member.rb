@@ -9,6 +9,7 @@ require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
 require_relative '../../../lib/cartodb/errors'
+require_relative '../../../services/platform-limits/platform_limits'
 
 include CartoDB::Datasources
 
@@ -128,6 +129,7 @@ module CartoDB
         self.state == STATE_SUCCESS && (self.run_at < Time.now)
       end
 
+      # This should be joined with data_import to stop the madness of duplicated code
       def run
         importer = nil
         self.state    = STATE_SYNCING
@@ -190,8 +192,11 @@ module CartoDB
         log.append exception.backtrace.join('\n')
 
         if importer.nil?
-          if(exception.kind_of?(NotFoundDownloadError))
+          if exception.kind_of?(NotFoundDownloadError)
             set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
+          elsif exception.kind_of?(CartoDB::Importer2::FileTooBigError)
+            set_general_failure_state_from(exception, exception.error_code,
+                                           CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
           else
             set_general_failure_state_from(exception)
           end
@@ -229,6 +234,11 @@ module CartoDB
 
         log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
+
+        if datasource_provider.has_resource_size?(metadata)
+          limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+          raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit(metadata[:size])
+        end
 
         if datasource_provider.providers_download_url?
           resource_url = (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url

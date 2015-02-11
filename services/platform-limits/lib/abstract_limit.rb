@@ -3,15 +3,7 @@
 module CartoDB
   module PlatformLimits
 
-    # Abstract limit class, providing scaffolding.
-    # TODO: Scenarios:
-    # - user id
-    # - user ip
-    # - user id AND ip
-    # Context options:
-    # - file/int/Datasource
-    # - table/table-rows-count/table-feature-size
-    # - action
+    # Abstract limit class, providing scaffolding and common logic.
     class AbstractLimit
 
       TYPE_USER = 'u'

@@ -47,15 +47,6 @@ module CartoDB
       self
     end
 
-    def privacy_for_redis
-      case @table.privacy
-        when ::Table::PRIVACY_PUBLIC, ::Table::PRIVACY_LINK
-          ::Table::PRIVACY_PUBLIC
-        else
-          ::Table::PRIVACY_PRIVATE
-      end
-    end
-
     def propagate_to_varnish
       raise 'table privacy cannot be nil' unless privacy
       # TODO: Improve this, hack because tiler checks it

@@ -6,60 +6,50 @@
   <%= @name %> is creating and sharing public datasets using CartoDB
 <% end %>
 
-<%= content_for(:js) do %>
-  <script>
-    var user_name = '<%= @username %>';
-  </script>
+<div class="PublicBody-content">
+  <% if @datasets.size == 0 %>
+    <%= render 'admin/shared/new_no_results', is_maps: false, alt_url: public_visualizations_home_url(user_domain: params[:user_domain]) %>
+  <% else %>
+    <ul class="DatasetsList">
+      <% @datasets.each do |ds| %>
+        <% user_domain = ds[:owner].organization ? ds[:owner].username : nil %>
+        <li class="DatasetsList-item">
+          <div class="DatasetsList-itemPrimaryInfo">
+            <div class="DatasetsList-itemCategory is--<%= ds[:geometry_type] %>Dataset"></div>
+            <div class="DatasetsList-itemInfo">
+              <h3 class="DatasetsList-itemTitle DefaultTitle">
+                <a href="<%= public_table_url(user_domain: user_domain, id: ds[:title]) %>" title="<%= ds[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= ds[:title] %></a>
+              </h3>
+              <p class="DefaultDescription u-ellipsLongText"><%= raw ds[:desc] %></p>
+            </div>
+          </div>
+          <div class="DatasetsList-itemSecondaryInfo">
+            <div class="DatasetsList-itemMeta">
+              <div class="RowsIndicator">
+                <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
+                <%= pluralize(ds[:rows_count], 'row') %>
+              </div>
+              <div class="SizeIndicator">
+                <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
+                <%= number_to_human_size(ds[:size_in_bytes]) %>
+              </div>
+              <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
+                <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                <%= time_ago_in_words(ds[:updated_at]) %>
+              </div>
+            </div>
+            <div class="DatasetsList-itemTags">
+              <div class="DefaultTags">
+                <% if ds[:tags].size > 0 %>
+                  <% formatted_tags(ds[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
 
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
-<% end %>
-
-<% if @datasets.size == 0 %>
-  <div class="IntermediateInfo">
-    <div class="LayoutIcon">
-      <i class="iconFont iconFont-Map"></i>
-    </div>
-    <h3 class="IntermediateInfo-title"><%= @name %> doesn't have any public datasets yet</h3>
-    <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to 'maps', public_visualizations_home_url(user_domain: params[:user_domain]) %></p>
-  </div>
-<% else %>
-  <ul class="DatasetsList">
-    <% @datasets.each do |ds| %>
-      <% user_domain = ds[:owner].organization ? ds[:owner].username : nil %>
-      <li class="DatasetsList-item">
-        <div class="DatasetsList-itemPrimaryInfo">
-          <div class="DatasetsList-itemCategory is--<%= ds[:geometry_type] %>Dataset"></div>
-          <div class="DatasetsList-itemInfo">
-            <h3 class="DatasetsList-itemTitle DefaultTitle">
-              <a href="<%= public_table_url(user_domain: user_domain, id: ds[:title]) %>" title="<%= ds[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= ds[:title] %></a>
-            </h3>
-            <p class="DefaultDescription u-ellipsLongText"><%= raw ds[:desc] %></p>
-          </div>
-        </div>
-        <div class="DatasetsList-itemSecondaryInfo">
-          <div class="DatasetsList-itemMeta">
-            <div class="RowsIndicator">
-              <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
-              <%= pluralize(ds[:rows_count], 'row') %>
-            </div>
-            <div class="SizeIndicator">
-              <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
-              <%= number_to_human_size(ds[:size_in_bytes]) %>
-            </div>
-            <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
-              <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-              <%= time_ago_in_words(ds[:updated_at]) %>
-            </div>
-          </div>
-          <div class="DatasetsList-itemTags">
-            <div class="DefaultTags">
-              <% if ds[:tags].size > 0 %>
-                <% formatted_tags(ds[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </li>
-    <% end %>
-  </ul>
-<% end %>
+<%= render 'admin/shared/new_pagination', total_count: @total_count, per_page: @datasets_per_page, current_page: @current_page %>

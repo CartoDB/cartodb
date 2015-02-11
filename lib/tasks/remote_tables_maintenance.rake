@@ -4,38 +4,44 @@ namespace :cartodb do
 
   namespace :remotes do
 
-    desc 'Remove common data remotes. Pass username as first argument'
-    task :remove do |t, args|
-      username = args[:arg1]
+    task :clear, [:username] => [:environment] do |t, args|
+      username = args[:username]
       raise 'username required' unless username.present?
 
       u = User.where(username: username).first
 
-      require_relative '../../app/models/visualization/external_source'
+      u.delete_common_data
+    end
 
-      CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: u.id}).map do |v|
-        begin
-          CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
-          v.delete
-        rescue Sequel::DatabaseError => e
-          match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
-          if match.present? && match >= 0
-            puts "Couldn't delete #{v.id} visualization because it's been imported"
-          else
-            raise e
-          end
-        end
-      end
+    task :clear_org, [:org_name] => [:environment] do |t, args|
+      org_name = args[:org_name]
+      raise 'organization name required' unless org_name.present?
+
+      o = Organization.where(name: org_name).first
+      o.users.each { |u|
+        u.delete_common_data
+      }
     end
 
     desc 'Load common data account remotes. Pass username as first argument. Example: `rake cartodb:remotes:reload[development]`'
-    task :reload, [:arg1] => [:environment, :remove] do |t, args|
-      username = args[:arg1]
+    task :reload, [:username] => [:environment, :clear] do |t, args|
+      username = args[:username]
       raise 'username required' unless username.present?
 
       u = User.where(username: username).first
       u.load_common_data
+    end
 
+    desc 'Load common data account remotes for a whole organization. Pass organization name as first argument. Example: `rake cartodb:remotes:reload[my_team]`'
+    task :reload_org, [:org_name] => [:environment, :clear_org] do |t, args|
+      org_name = args[:org_name]
+      raise 'organization name required' unless org_name.present?
+
+      datasets = CommonDataSingleton.instance.datasets[:datasets]
+      o = Organization.where(name: org_name).first
+      o.users.each {|u|
+        u.load_common_data(datasets)
+      }
     end
 
   end

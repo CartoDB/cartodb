@@ -142,8 +142,8 @@ describe Runner do
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run(arg=nil); end
 
-      # File is 3 bytes long, should allow
-      limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:3})
+      # File is 5 bytes long, should allow
+      limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:5})
       runner      = CartoDB::Importer2::Runner.new({
                                                      pg: @pg_options,
                                                      downloader: Object.new,
@@ -225,7 +225,8 @@ describe Runner do
       runner.run
       @importer_stats_spy.timed_block_suffix_count('run.resource').should eq 1
       @importer_stats_spy.timed_block_suffix_count('run.resource.download').should eq 1
-      @importer_stats_spy.timed_block_suffix_count('run.resource.quota_check').should eq 1
+      # Checked upon actual import, not "run", so not called
+      @importer_stats_spy.timed_block_suffix_count('run.resource.quota_check').should eq 0
       @importer_stats_spy.timed_block_suffix_count('run.resource.unpack').should eq 1
       @importer_stats_spy.timed_block_suffix_count('run.resource.import').should eq 1
       @importer_stats_spy.timed_block_suffix_count('run.resource.cleanup').should eq 1

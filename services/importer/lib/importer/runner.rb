@@ -100,7 +100,11 @@ module CartoDB
         tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
 
-        raise_if_over_storage_quota(source_file)
+        @importer_stats.timing('resource') do
+          @importer_stats.timing('quota_check') do
+            raise_if_over_storage_quota(source_file)
+          end
+        end
 
         raise_if_hit_platform_limit(source_file, @user)
 

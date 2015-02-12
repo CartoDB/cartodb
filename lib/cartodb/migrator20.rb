@@ -55,7 +55,7 @@ module CartoDB
     end
 
     def migrate_table_map(table)
-      map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
+      map_metadata = JSON.parse($tables_metadata.hget(key(table), 'map_metadata')) rescue {}
       map = table.map
 
       # All previous maps were based on google maps
@@ -73,8 +73,8 @@ module CartoDB
     end
 
     def migrate_table_layers(table)
-      map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
-      infowindow_metadata = JSON.parse($tables_metadata.hget(table.key, 'infowindow')) rescue {}
+      map_metadata = JSON.parse($tables_metadata.hget(key(table), 'map_metadata')) rescue {}
+      infowindow_metadata = JSON.parse($tables_metadata.hget(key(table), 'infowindow')) rescue {}
 
       
       # Data layer setup
@@ -145,4 +145,10 @@ module CartoDB
       base_layer.save
     end
   end
+
+  private
+  def key(table)
+    "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}")
+  end
+
 end

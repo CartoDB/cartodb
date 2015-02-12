@@ -703,7 +703,7 @@ module CartoDB
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
             .set_from(self)
-            .propagate_to_redis_and_varnish
+            .propagate_to_varnish
         end
         self
       end

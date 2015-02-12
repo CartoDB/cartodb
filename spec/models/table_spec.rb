@@ -183,7 +183,6 @@ describe Table do
     it "should have a privacy associated and it should be private by default" do
       table = create_table :user_id => @user.id
       table.should be_private
-      $tables_metadata.hget(table.key,'privacy').to_i.should == Table::PRIVACY_PRIVATE
     end
 
     it 'changes to and from public-with-link privacy' do
@@ -441,7 +440,6 @@ describe Table do
       table = create_table(:user_id => @user.id)
 
       table.should be_private
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PRIVATE
 
       table.privacy = Table::PRIVACY_PUBLIC
       table.save
@@ -449,8 +447,6 @@ describe Table do
       expect {
         @user.in_database(:as => :public_user).run("select * from #{table.name}")
       }.to_not raise_error
-
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PUBLIC
     end
 
     it "should be associated to a database table" do
@@ -532,11 +528,6 @@ describe Table do
       table.save
     end
 
-    it "should store the identifier of its owner when created" do
-      table = create_table(:user_id => @user.id)
-      $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
-    end
-
     it "should rename the pk sequence when renaming the table" do
       table1 = new_table :name => 'table 1', :user_id => @user.id
       table1.save.reload
@@ -591,56 +582,22 @@ describe Table do
     end
   end
 
-  context "redis syncs" do
-    it "should have a unique key to be identified in Redis" do
-      table = create_table(:user_id => @user.id)
-      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
-    end
+  it "should remove varnish cache when updating the table privacy" do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    @user.private_tables_enabled = true
+    @user.save
+    table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
 
-    it "should rename the entries in Redis when the table has been renamed" do
-      table = create_table(:user_id => @user.id)
-      original_name = table.name
-      original_the_geom_type = table.the_geom_type
+    id = table.table_visualization.id
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .times(2)
+      .with(".*#{id}:vizjson")
+      .returns(true)
 
-      table.name = "brand_new_name"
-      table.save_changes
-      table.reload
-
-      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
-      $tables_metadata.exists(table.key).should be_true
-      $tables_metadata.exists(original_name).should be_false
-      $tables_metadata.hget(table.key, "privacy").should be_present
-      $tables_metadata.hget(table.key, "user_id").should be_present
-      $tables_metadata.hget(table.key,"the_geom_type").should == original_the_geom_type
-    end
-
-    it "should store the_geom_type in Redis" do
-      table = create_table(:user_id => @user.id)
-
-      table.the_geom_type.should == "geometry"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "geometry"
-
-      table.the_geom_type = "multipolygon"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
-    end
-
-    it "should remove varnish cache when updating the table privacy" do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      @user.private_tables_enabled = true
-      @user.save
-      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
-      
-      id = table.table_visualization.id
-      CartoDB::Varnish.any_instance.expects(:purge)
-        .times(2)
-        .with(".*#{id}:vizjson")
-        .returns(true)
-
-      CartoDB::TablePrivacyManager.any_instance
-        .expects(:propagate_to_redis_and_varnish)
-      table.privacy = Table::PRIVACY_PUBLIC
-      table.save
-    end
+    CartoDB::TablePrivacyManager.any_instance
+      .expects(:propagate_to_varnish)
+    table.privacy = Table::PRIVACY_PUBLIC
+    table.save
   end
 
   context "when removing the table" do
@@ -671,10 +628,6 @@ describe Table do
       table.keep_user_database_table = true
       table.destroy
       @user.in_database["select * from #{table.name}"].all.should == []
-    end
-
-    it "should remove the table metadata from Redis" do
-      $tables_metadata.exists(@doomed_table.key).should be_false
     end
 
     it "should update denormalized counters" do

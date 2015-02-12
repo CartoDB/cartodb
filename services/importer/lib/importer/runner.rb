@@ -38,7 +38,7 @@ module CartoDB
         @log                 = options.fetch(:log, nil) || new_logger
         @user = options.fetch(:user, nil)
         @available_quota =
-          !@user.nil? && @user.respond_to?(:available_quota) ? @user.available_quota : DEFAULT_AVAILABLE_QUOTA
+          !@user.nil? && @user.respond_to?(:remaining_quota) ? @user.remaining_quota : DEFAULT_AVAILABLE_QUOTA
         @unpacker            = options.fetch(:unpacker, nil) || Unp.new
         @post_import_handler = options.fetch(:post_import_handler, nil)
         importer_stats_options = options.fetch(:importer_stats, { host: nil, port: nil, queue_id: nil})
@@ -206,7 +206,6 @@ module CartoDB
 
       def single_resource_import
         @importer_stats.timing('resource') do
-
           @importer_stats.timing('download') do
             @downloader.run(available_quota)
             return self unless remote_data_updated?

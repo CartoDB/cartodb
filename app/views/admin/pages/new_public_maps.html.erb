@@ -14,8 +14,9 @@
       <% @visualizations.each do |vis| %>
         <% user_domain = vis[:owner].organization ? vis[:owner].username : nil %>
         <li class="MapsList-item">
-          <div class="MapCard">
-            <div class="MapCard-header">
+          <div class="MapCard" vizjson-url="<%= api_v2_visualizations_vizjson_url(user_domain: user_domain, id: vis[:id]) %>.json">
+            <div class="MapCard-header js-header">
+              <div class="MapCard-loader js-header-loader"></div>
             </div>
             <div class="MapCard-content">
               <div class="MapCard-contentBody">

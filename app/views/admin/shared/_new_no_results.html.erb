@@ -6,7 +6,7 @@
     <h3 class="IntermediateInfo-title"><%= @name %> doesn't have any items on this page</h3>
     <p class="DefaultParagraph">Try the <%= link_to 'first page', url_for(page: nil) %> instead</p>
   <% else  %>
-    <h3 class="IntermediateInfo-title"><%= @name %> doesn't have any public <%= maps_or_datasets_str(is_maps) %> yet</h3>
-    <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to maps_or_datasets_str(!is_maps), alt_url %></p>
+    <h3 class="IntermediateInfo-title"><%= @name %> doesn't have any public <%= @content_type === 'maps' ? 'maps' : 'datasets' %> yet</h3>
+    <p class="DefaultParagraph">But maybe he/she has some very interesting <%= link_to @content_type === 'maps' ? 'datasets' : 'maps', alt_url %></p>
   <% end %>
 </div>

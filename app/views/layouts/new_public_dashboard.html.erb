@@ -33,7 +33,11 @@
     </div>
     <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
-        <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% if @avatar_url %>
+          <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% else %>
+          <div class="UserAvatar-img UserAvatar-img--large UserAvatar-img--no-src"></div>
+        <% end %>
       </div>
       <h2 class="UserInfo-name">
         <%= @name %>

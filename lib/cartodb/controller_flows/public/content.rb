@@ -4,7 +4,8 @@ module CartoDB
 
       class Content
 
-        def initialize(request, renderer)
+        def initialize(ctrl, request, renderer)
+          @ctrl     = ctrl
           @request  = request
           @renderer = renderer
         end

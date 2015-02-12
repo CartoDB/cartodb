@@ -69,13 +69,13 @@ class Admin::PagesController < ApplicationController
 
   def datasets
     datasets = CartoDB::ControllerFlows::Public::Datasets.new(self)
-    content = CartoDB::ControllerFlows::Public::Content.new(request, datasets)
+    content = CartoDB::ControllerFlows::Public::Content.new(self, request, datasets)
     content.render()
   end
 
   def public
     maps = CartoDB::ControllerFlows::Public::Maps.new(self)
-    content = CartoDB::ControllerFlows::Public::Content.new(request, maps)
+    content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
     content.render()
   end
 

@@ -2097,22 +2097,4 @@ describe Table do
     end
   end
 
-  describe '#duplicated?' do
-    it 'returns false if no other table for the same user with the same table name and oid exists' do
-      table = new_table :name => 'duplicate_01', :user_id => @user.id, :oid => 666
-      table.save.reload
-      table.duplicated?.should eq false
-    end
-
-    it 'returns true if other table for the same user with the same table name and oid exists' do
-      table = new_table :name => 'duplicate', :user_id => @user.id, :oid => 666
-      table2 = new_table :name => 'duplicate', :user_id => @user.id, :oid => 666
-      table2.register_table_only = true
-      table.save.reload
-      table2.save({:validate => false}).reload
-      table.duplicated?.should eq true
-    end
-
-  end
-
 end

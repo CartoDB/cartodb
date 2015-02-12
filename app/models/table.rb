@@ -1469,10 +1469,6 @@ class Table < Sequel::Model(:user_tables)
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
   end
 
-  def duplicated?
-    Table.where('id != ? and name = ?', self.id, self.name).first.present?
-  end
-
   private
 
   def update_cdb_tablemetadata

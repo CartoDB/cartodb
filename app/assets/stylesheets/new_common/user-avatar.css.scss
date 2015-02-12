@@ -34,6 +34,9 @@
 .UserAvatar-img {
   border: 1px solid transparent;
 }
+.UserAvatar-img--no-src {
+  background-image: image-url("avatars/avatar_ghost_red.png");
+}
 .UserAvatar-img.is-error {
   border-color: $cHighlight-negative;
   border-radius: $sAvatar-borderRadius;
@@ -41,21 +44,25 @@
 .UserAvatar-img--large {
   width: $sAvatar-public;
   height: $sAvatar-public;
+  background-size: $sAvatar-public;
   border-radius: $sAvatar-borderRadius;
 }
 .UserAvatar-img--medium {
   width: $sAvatar-default;
   height: $sAvatar-default;
+  background-size: $sAvatar-default;
   border-radius: $sAvatar-borderRadius;
 }
 .UserAvatar-img--small {
   width: $sAvatar-small;
   height: $sAvatar-small;
+  background-size: $sAvatar-small;
   border-radius: $sAvatar-borderRadiusSmall;
 }
 .UserAvatar-img--smaller {
   width: $sAvatar-meta;
   height: $sAvatar-meta;
+  background-size: $sAvatar-meta;
   border-radius: $sAvatar-borderRadiusSmall;
 }
 

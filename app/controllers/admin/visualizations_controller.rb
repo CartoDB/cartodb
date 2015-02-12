@@ -25,6 +25,7 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
   end
+
   def index
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?

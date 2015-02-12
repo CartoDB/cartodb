@@ -91,7 +91,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def new_datasets_for_organization(org)
-    set_new_layout_vars_for_organization(organization, 'datasets')
+    set_new_layout_vars_for_organization(org, 'datasets')
     render_new_datasets(org.public_datasets(current_page, NEW_DATASETS_PER_PAGE, tag_or_nil))
   end
 
@@ -231,8 +231,6 @@ class Admin::PagesController < ApplicationController
             exclude_raster: true
           }).first,
         content_type: content_type,
-        maps_url:     view_context.public_visualizations_home_url(user_domain: params[:user_domain]),
-        datasets_url: view_context.public_datasets_home_url(user_domain: params[:user_domain]),
       })
     set_shared_layout_vars(user, {
         name:       user.name_or_username,
@@ -245,10 +243,8 @@ class Admin::PagesController < ApplicationController
 
   def set_new_layout_vars_for_organization(org, content_type)
     set_new_layout_vars({
-        most_viewed_vis_map: nil, # TODO: how to get?
+        most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
         content_type:        content_type,
-        maps_url:            nil, # TODO: how to get?
-        datasets_url:        nil, # TODO: how to get?
       })
     set_shared_layout_vars(org, {
         name:       org.display_name.blank? ? org.name : org.display_name,
@@ -259,8 +255,8 @@ class Admin::PagesController < ApplicationController
   def set_new_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = required.fetch(:maps_url)
-    @datasets_url        = required.fetch(:datasets_url)
+    @maps_url            = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
+    @datasets_url        = view_context.public_datasets_home_url(user_domain: params[:user_domain])
   end
 
   def set_new_pagination_vars(required)

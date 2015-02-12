@@ -9,7 +9,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, except: [:create]
   before_filter :set_start_time
-  before_filter :link_ghost_tables, only: [:show]
 
   # Very basic controller method to simply make blank tables
   # All other table creation things are controlled via the imports_controller#create

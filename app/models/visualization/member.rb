@@ -639,7 +639,7 @@ module CartoDB
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map
-          propagate_name_to(table) if table and propagate_changes
+          propagate_name_to(table) if !table.nil? and propagate_changes
         end
       end
 

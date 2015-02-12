@@ -555,11 +555,8 @@ class DataImport < Sequel::Model
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
-    raise_if_hit_platform_limit(datasource_provider, metadata, current_user)
-
-    if datasource_provider.has_resource_size?(metadata)
-      limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: current_user })
-      raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit!(metadata[:size])
+    if hit_platform_limit?(datasource_provider, metadata, current_user)
+      raise CartoDB::Importer2::FileTooBigError.new(metadata.inspect)
     end
 
     if datasource_provider.providers_download_url?
@@ -575,11 +572,12 @@ class DataImport < Sequel::Model
     downloader
   end
 
-  # @throws CartoDB::Importer2::FileTooBigError
-  def raise_if_hit_platform_limit(datasource, metadata, user)
+  def hit_platform_limit?(datasource, metadata, user)
     if datasource.has_resource_size?(metadata)
-      limit_checker = CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
-      raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if limit_checker.is_over_limit!(metadata[:size])
+      CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+                                                      .is_over_limit!(metadata[:size])
+    else
+      false
     end
   end
 

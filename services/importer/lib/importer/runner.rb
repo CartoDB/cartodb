@@ -104,9 +104,13 @@ module CartoDB
           @importer_stats.timing('quota_check') do
             raise_if_over_storage_quota(source_file)
           end
-        end
 
-        raise_if_hit_platform_limit(source_file, @user)
+          @importer_stats.timing('file_size_limit_check') do
+            if hit_platform_limit?(source_file)
+              raise CartoDB::Importer2::FileTooBigError.new("#{source_file.fullpath}")
+            end
+          end
+        end
 
         if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           streamed_loader_run(job, loader, downloader)
@@ -215,7 +219,9 @@ module CartoDB
 
           # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
-            raise_if_hit_platform_limit(@downloader.source_file, @user)
+            if hit_platform_limit?(@downloader.source_file)
+              raise CartoDB::Importer2::FileTooBigError.new("#{@downloader.source_file.fullpath}")
+            end
           end
 
           @importer_stats.timing('unpack') do
@@ -313,10 +319,9 @@ module CartoDB
         errors_to_code_mapping.fetch(exception_klass, UNKNOWN_ERROR_CODE)
       end
 
-      # @throws CartoDB::Importer2::FileTooBigError
-      def raise_if_hit_platform_limit(source_file, user)
+      def hit_platform_limit?(source_file)
         file_size = File.size(source_file.fullpath)
-        raise CartoDB::Importer2::FileTooBigError.new("File over limit!") if @import_file_limit.is_over_limit!(file_size)
+        @import_file_limit.is_over_limit!(file_size)
       end
 
       def input_file_size_limit_instance(user)

@@ -19,7 +19,7 @@ module CartoDB
     # Mapped errors
 
     class FileTooBigError < BaseImportError
-      def initialize(message=nil)
+      def initialize(message="The file supplied exceeds the maximum allowed for the user")
         super(message, 6666)
       end
     end

@@ -70,6 +70,10 @@
     letter-spacing: normal;
   }
 
+  &.is-loading .loader {
+    display: block;
+  }
+
   .loader {
     display:none;
     float:right;

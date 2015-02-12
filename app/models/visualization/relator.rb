@@ -80,6 +80,7 @@ module CartoDB
 
       def table
         return nil unless defined?(::Table)
+        return nil if map_id.nil?
         @table ||= ::Table.where(map_id: map_id).first 
       end
 

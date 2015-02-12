@@ -10,6 +10,8 @@ class Admin::PagesController < ApplicationController
 
   DATASETS_PER_PAGE = 10
   VISUALIZATIONS_PER_PAGE = 5
+  NEW_DATASETS_PER_PAGE = 20
+  MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
 
   ssl_required :common_data, :public, :datasets
@@ -66,101 +68,95 @@ class Admin::PagesController < ApplicationController
   end #sitemap
 
   def datasets
-    username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: username.strip.downcase).first
-
-    if viewed_user.nil?
-      org = get_organization_if_exists(user)
-      return datasets_organization(org) unless org.nil?
-    end
-
-    return render_404 if viewed_user.nil?
-
-    # Redirect to org url if has only user
-    if viewed_user.has_organization?
-      if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-        redirect_to CartoDB.base_url(viewed_user.organization.name) <<  \
-          public_datasets_home_path(user_domain: viewed_user.username) and return
-      end
-    end
-
-    set_vars_for_layout(viewed_user, 'datasets')
-
-    if viewed_user.has_feature_flag?('new_public_dashboard')
-      new_public_datasets(viewed_user)
-    else
-      public_datasets(viewed_user)
-    end
+    datasets = CartoDB::ControllerFlows::Public::Datasets.new(self)
+    content = CartoDB::ControllerFlows::Public::Content.new(self, request, datasets)
+    content.render()
   end
 
-  def public #dashboard, i.e. maps
-    username = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: username.strip.downcase).first
+  def public
+    maps = CartoDB::ControllerFlows::Public::Maps.new(self)
+    content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
+    content.render()
+  end
 
-    if viewed_user.nil?
-      org = get_organization_if_exists(username)
-      return public_organization(org) unless org.nil?
-    end
+  def new_datasets_for_user(user)
+    set_new_layout_vars_for_user(user, 'datasets')
+    render_new_datasets(
+      user_public_vis_list({
+        user:  user,
+        vis_type: Visualization::Member::TYPE_CANONICAL,
+        per_page: NEW_DATASETS_PER_PAGE,
+      })
+    )
+  end
 
-    return render_404 if viewed_user.nil?
+  def new_datasets_for_organization(org)
+    set_new_layout_vars_for_organization(org, 'datasets')
+    render_new_datasets(org.public_datasets(current_page, NEW_DATASETS_PER_PAGE, tag_or_nil))
+  end
 
-    # Redirect to org url if has only user
-    if viewed_user.has_organization?
-      if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-        redirect_to CartoDB.base_url(viewed_user.organization.name) << "/u/#{viewed_user.username}/" and return
-      end
-    end
+  def new_maps_for_user(user)
+    set_new_layout_vars_for_user(user, 'maps')
+    render_new_maps(
+      user_public_vis_list({
+        user:     user,
+        vis_type: Visualization::Member::TYPE_DERIVED,
+        per_page: MAPS_PER_PAGE,
+      })
+    )
+  end
 
-    set_vars_for_layout(viewed_user, 'maps')
+  def new_maps_for_organization(org)
+    set_new_layout_vars_for_organization(org, 'maps')
+    render_new_maps(org.public_visualizations(current_page, MAPS_PER_PAGE, tag_or_nil))
+  end
 
-    if viewed_user.has_feature_flag?('new_public_dashboard')
-      new_public_dashboard(viewed_user)
-    else
-      public_dashboard(viewed_user)
-    end
+  def old_datasets_for_user(user)
+    vis_type = Visualization::Member::TYPE_CANONICAL
+    set_old_layout_vars_for_user(user, vis_type)
+    render_old_datasets(
+      user_public_vis_list({
+        user:     user,
+        vis_type: vis_type,
+        per_page: DATASETS_PER_PAGE,
+      })
+    )
+  end
+
+  def old_datasets_for_organization(org)
+    set_old_layout_vars_for_organization(org, Visualization::Member::TYPE_CANONICAL)
+    render_old_datasets(org.public_datasets(current_page, DATASETS_PER_PAGE, tag_or_nil))
+  end
+
+  def old_maps_for_user(user)
+    vis_type = Visualization::Member::TYPE_DERIVED
+    set_old_layout_vars_for_user(user, vis_type)
+    render_old_maps(
+      user_public_vis_list({
+        user:     user,
+        vis_type: vis_type,
+        per_page: VISUALIZATIONS_PER_PAGE,
+      })
+    )
+  end
+
+  def old_maps_for_organization(org)
+    set_old_layout_vars_for_organization(org, Visualization::Member::TYPE_DERIVED)
+
+    render_old_maps(org.public_visualizations(current_page, VISUALIZATIONS_PER_PAGE, tag_or_nil))
+  end
+
+  def render_not_found
+    render_404
   end
 
   private
 
-  def set_vars_for_layout(viewed_user, content_type)
-    @most_viewed_vis_map = Visualization::Collection.new.fetch({
-      user_id:  viewed_user.id,
-      type:     Visualization::Member::TYPE_DERIVED,
-      privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      order:    'mapviews',
-      page:     1,
-      per_page: 1,
-      exclude_shared: true,
-      exclude_raster: true
-    }).first
-    @content_type = content_type
-    @maps_url = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
-    @datasets_url = view_context.public_datasets_home_url(user_domain: params[:user_domain])
-
-    # Note that these are shared for both new and current layouts, so dont change lightly
-    @name               = viewed_user.name_or_username
-    @twitter_username   = viewed_user.twitter_username
-    @available_for_hire = viewed_user.available_for_hire
-    @email              = viewed_user.email
-    @description        = viewed_user.description
-    @website            = !viewed_user.website.blank? && viewed_user.website[/^https?:\/\//].nil? ? "http://#{viewed_user.website}" : viewed_user.website
-    @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
-    @avatar_url         = viewed_user.avatar
-  end
-
-  def new_public_datasets(viewed_user)
-    visualizations = Visualization::Collection.new.fetch({
-      user_id:  viewed_user.id,
-      type:     Visualization::Member::TYPE_CANONICAL,
-      privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: DATASETS_PER_PAGE,
-      order:    'updated_at',
-      o:        {updated_at: :desc},
-      tags:     params[:tag],
-      exclude_shared: true,
-      exclude_raster: true,
-    })
+  def render_new_datasets(vis_list)
+    set_new_pagination_vars({
+        total_count: vis_list.total_entries,
+        per_page:    NEW_DATASETS_PER_PAGE,
+      })
 
     @datasets = []
     # TODO logic as done client-side, how and where to encapsulate this better?
@@ -173,7 +169,7 @@ class Admin::PagesController < ApplicationController
       'st_point'           => 'point'
     }
 
-    visualizations.each do |vis|
+    vis_list.each do |vis|
       geometry_type = vis.kind
       if geometry_type != 'raster'
         table_geometry_types = vis.table.geometry_types
@@ -199,21 +195,14 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def new_public_dashboard(viewed_user)
-    visualizations = Visualization::Collection.new.fetch({
-      user_id:  viewed_user.id,
-      type:     Visualization::Member::TYPE_DERIVED,
-      privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: VISUALIZATIONS_PER_PAGE,
-      order:    'updated_at',
-      o:        {updated_at: :desc},
-      exclude_shared: true,
-      exclude_raster: true
-    })
+  def render_new_maps(vis_list)
+    set_new_pagination_vars({
+        total_count: vis_list.total_entries,
+        per_page:    MAPS_PER_PAGE,
+      })
 
     @visualizations = []
-    visualizations.each do |vis|
+    vis_list.each do |vis|
       @visualizations.push({
         title:        vis.name,
         description:  vis.description_clean,
@@ -227,178 +216,164 @@ class Admin::PagesController < ApplicationController
     respond_to do |format|
       format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
     end
-  end #new_public_dashboard
-
-  def public_dashboard(viewed_user)
-    @username   = viewed_user.username
-    @tags       = viewed_user.tags(true, Visualization::Member::TYPE_DERIVED)
-    @tables_num = viewed_user.public_table_count
-    @vis_num    = viewed_user.public_visualization_count
-
-    visualizations = Visualization::Collection.new.fetch({
-      user_id:  viewed_user.id,
-      type:     Visualization::Member::TYPE_DERIVED,
-      privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: VISUALIZATIONS_PER_PAGE,
-      order:    'updated_at',
-      o:        {updated_at: :desc},
-      tags:     params[:tag],
-      exclude_shared: true,
-      exclude_raster: true
-    })
-
-    @visualizations = []
-    @pages = (visualizations.total_entries.to_f / VISUALIZATIONS_PER_PAGE).ceil
-
-    visualizations.each do |vis|
-      @visualizations.push(
-        {
-          title:        vis.name,
-          description:  vis.description_clean,
-          id:           vis.id,
-          tags:         vis.tags,
-          layers:       vis.layers(:carto_and_torque),
-          mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
-          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
-          owner:        vis.user
-        }
-      )
-    end
-
-    respond_to do |format|
-      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
-    end
-  end #public_dashboard
-
-  def public_datasets(viewed_user)
-    @tags             = viewed_user.tags(true, Visualization::Member::TYPE_CANONICAL)
-    @username         = viewed_user.username
-    @name             = viewed_user.name.present? ? viewed_user.name : viewed_user.username
-    @available_for_hire = viewed_user.available_for_hire
-    @email              = viewed_user.email
-    @twitter_username = viewed_user.twitter_username
-    @description      = viewed_user.description
-    @website          = viewed_user.website
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, '') : ''
-
-    @avatar_url = viewed_user.avatar
-
-    @tables_num = viewed_user.public_table_count
-    @vis_num    = viewed_user.public_visualization_count
-
-    datasets = Visualization::Collection.new.fetch({
-      user_id:  viewed_user.id,
-      type:     Visualization::Member::TYPE_CANONICAL,
-      privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: DATASETS_PER_PAGE,
-      order:    'updated_at',
-      o:        {updated_at: :desc},
-      tags:     params[:tag],
-      exclude_shared: true,
-      exclude_raster: true
-    })
-
-    @datasets = []
-    @pages = (datasets.total_entries.to_f / DATASETS_PER_PAGE).ceil
-
-    datasets.each do |dataset|
-      @datasets.push(
-        {
-          title:        dataset.name,
-          description:  dataset.description_clean,
-          updated_at:   dataset.updated_at,
-          owner:        dataset.user,
-          tags:         dataset.tags
-        }
-      )
-    end
-
-    respond_to do |format|
-      format.html { render 'public_datasets', layout: 'application_public_dashboard' }
-    end
   end
 
-  def public_organization(organization)
-    @organization = organization
-
-    @name = ( !@organization.display_name.blank? ? @organization.display_name : @organization.name )
-    @avatar_url = @organization.avatar_url
-
-    @twitter_username = @organization.twitter_username
-    @description      = @organization.description
-    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{@organization.website}" : @organization.website
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
-
-    @tables_num = @organization.public_datasets_count
-    @vis_num = @organization.public_visualizations_count
-
-    page = params[:page].nil? ? 1 : params[:page]
-    vis_list = @organization.public_visualizations(page, VISUALIZATIONS_PER_PAGE, params[:tag])
-
-    @pages = (vis_list.total_entries / VISUALIZATIONS_PER_PAGE).ceil
-
-    @visualizations = []
-    vis_list.each do |vis|
-      @visualizations.push(
-        {
-          title:        vis.name,
-          description:  vis.description_clean,
-          id:           vis.id,
-          tags:         vis.tags,
-          layers:       vis.layers(:carto_and_torque),
-          url_options:  (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
-          owner:        vis.user
-        }
-      )
-    end
-
-    @tags = @organization.tags(Visualization::Member::TYPE_DERIVED)
-
-    respond_to do |format|
-      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
-    end
+  def set_new_layout_vars_for_user(user, content_type)
+    set_new_layout_vars({
+        most_viewed_vis_map: Visualization::Collection.new.fetch({
+            user_id:        user.id,
+            type:           Visualization::Member::TYPE_DERIVED,
+            privacy:        Visualization::Member::PRIVACY_PUBLIC,
+            order:          'mapviews',
+            page:           1,
+            per_page:       1,
+            exclude_shared: true,
+            exclude_raster: true
+          }).first,
+        content_type: content_type,
+      })
+    set_shared_layout_vars(user, {
+        name:       user.name_or_username,
+        avatar_url: user.avatar,
+      }, {
+        available_for_hire: user.available_for_hire,
+        email:              user.email,
+      })
   end
 
-  def datasets_organization(organization)
-    @organization = organization
+  def set_new_layout_vars_for_organization(org, content_type)
+    set_new_layout_vars({
+        most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
+        content_type:        content_type,
+      })
+    set_shared_layout_vars(org, {
+        name:       org.display_name.blank? ? org.name : org.display_name,
+        avatar_url: org.avatar_url,
+      })
+  end
 
-    @twitter_username = @organization.twitter_username
-    @description      = @organization.description
-    @website          = !@organization.website.blank? && @organization.website[/^https?:\/\//].nil? ? "http://#{@organization.website}" : @organization.website
-    @website_clean    = @website ? @website.gsub(/https?:\/\//, "") : ""
+  def set_new_layout_vars(required)
+    @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
+    @content_type        = required.fetch(:content_type)
+    @maps_url            = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
+    @datasets_url        = view_context.public_datasets_home_url(user_domain: params[:user_domain])
+  end
 
-    @tables_num = @organization.public_datasets_count
-    @vis_num = @organization.public_visualizations_count
+  def set_new_pagination_vars(required)
+    @total_count  = required.fetch(:total_count)
+    @per_page     = required.fetch(:per_page)
+    @current_page = current_page
+  end
 
-    page = params[:page].nil? ? 1 : params[:page]
-    vis_list = @organization.public_datasets(page, DATASETS_PER_PAGE, params[:tag])
+  # Shared as in shared for both new and old layout
+  def set_shared_layout_vars(model, required, optional = {})
+    @twitter_username   = model.twitter_username
+    @description        = model.description
+    @website            = !model.website.blank? && model.website[/^https?:\/\//].nil? ? "http://#{model.website}" : model.website
+    @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @name               = required.fetch(:name)
+    @avatar_url         = required.fetch(:avatar_url)
+    @email              = optional.fetch(:email, nil)
+    @available_for_hire = optional.fetch(:available_for_hire, false)
+  end
 
-    @pages = (vis_list.total_entries.to_f / DATASETS_PER_PAGE).ceil
+  def set_old_layout_vars_for_user(user, vis_type)
+    @username   = user.username
+    @tables_num = user.public_table_count
+    @vis_num    = user.public_visualization_count
+    @tags       = user.tags(true, vis_type)
+
+    set_shared_layout_vars(user, {
+      name:       user.name_or_username,
+      avatar_url: user.avatar,
+    }, {
+      # Optional
+      available_for_hire: user.available_for_hire,
+      email:              user.email,
+    })
+  end
+
+  def set_old_layout_vars_for_organization(org, vis_type)
+    @organization = org
+    @tables_num   = org.public_datasets_count
+    @vis_num      = org.public_visualizations_count
+    @tags         = org.tags(vis_type)
+
+    set_shared_layout_vars(org, {
+      name:       org.display_name.blank? ? org.name : org.display_name,
+      avatar_url: org.avatar_url,
+    })
+  end
+
+  def render_old_datasets(vis_list)
+    set_old_pagination_vars(vis_list, DATASETS_PER_PAGE)
 
     @datasets = []
     vis_list.each do |dataset|
-      @datasets.push(
-        {
-          title:        dataset.name,
-          description:  dataset.description_clean,
-          updated_at:   dataset.updated_at,
-          tags:         dataset.tags,
-          owner:        dataset.user
-        }
-      )
+      @datasets.push({
+        title:       dataset.name,
+        description: dataset.description_clean,
+        updated_at:  dataset.updated_at,
+        owner:       dataset.user,
+        tags:        dataset.tags
+      })
     end
-
-    @tags = @organization.tags(Visualization::Member::TYPE_CANONICAL)
 
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'application_public_dashboard' }
     end
+  end
+
+  def render_old_maps(vis_list)
+    set_old_pagination_vars(vis_list, VISUALIZATIONS_PER_PAGE)
+
+    @visualizations = []
+    vis_list.each do |vis|
+      @visualizations.push({
+        title:       vis.name,
+        description: vis.description_clean,
+        id:          vis.id,
+        tags:        vis.tags,
+        layers:      vis.layers(:carto_and_torque),
+        url_options: (vis.url_options.present? ? vis.url_options : Visualization::Member::DEFAULT_URL_OPTIONS),
+        owner:       vis.user
+      })
+    end
+
+    respond_to do |format|
+      format.html { render 'public_dashboard', layout: 'application_public_dashboard' }
+    end
+  end
+
+  def set_old_pagination_vars(vis_list, per_page)
+    @pages = (vis_list.total_entries.to_f / per_page).ceil
+  end
+
+  def user_public_vis_list(required)
+    Visualization::Collection.new.fetch({
+      user_id:  required.fetch(:user).id,
+      type:     required.fetch(:vis_type),
+      per_page: required.fetch(:per_page),
+      privacy:  Visualization::Member::PRIVACY_PUBLIC,
+      page:     current_page,
+      order:    'updated_at',
+      o:        {updated_at: :desc},
+      tags:     tag_or_nil,
+      exclude_shared: true,
+      exclude_raster: true,
+    })
   end
 
   def get_organization_if_exists(name)
     Organization.where(name: name).first
+  end
+
+  def current_page
+    params[:page].to_i > 0 ? params[:page] : 1
+  end
+
+  def tag_or_nil
+    params[:tag]
   end
 
   def belongs_to_organization

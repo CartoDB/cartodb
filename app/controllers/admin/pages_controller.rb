@@ -131,7 +131,7 @@ class Admin::PagesController < ApplicationController
   def old_maps_for_user(user)
     vis_type = Visualization::Member::TYPE_DERIVED
     set_old_layout_vars_for_user(user, vis_type)
-    render_old_datasets(
+    render_old_maps(
       user_public_vis_list({
         user:     user,
         vis_type: vis_type,

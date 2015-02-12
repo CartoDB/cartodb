@@ -52,7 +52,7 @@
           </div>
           <div class="Form-rowData">
             <input type="text" class="Form-input Form-input--long has-icon" value="<%= current_user.client_application.key %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/documentation/sql-api.html#authentication" %> in CartoDB.</p>
@@ -65,7 +65,7 @@
           </div>
           <div class="Form-rowData">
             <input type="text" class="Form-input Form-input--long has-icon" value="<%= current_user.client_application.secret %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
           </div>
         </div>
 
@@ -77,7 +77,7 @@
           </div>
           <div class="Form-rowData">
             <input type="text" class="Form-input Form-input--long has-icon" value="<%= request_token_url(user_domain: params[:user_domain]) %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
           </div>
         </div>
 
@@ -87,7 +87,7 @@
           </div>
           <div class="Form-rowData">
             <input type="text" class="Form-input Form-input--long has-icon" value="<%= access_token_url(user_domain: params[:user_domain]) %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
           </div>
         </div>
 

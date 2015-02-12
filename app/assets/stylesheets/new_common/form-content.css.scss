@@ -64,6 +64,12 @@
   width: 380px;
   margin-right: $sMargin-element;
 }
+// RowData sizes
+.Form-rowData--longer { width: 460px }
+.Form-rowData--long { width: 380px }
+.Form-rowData--med {}
+.Form-rowData--short {}
+
 .Form-input {
   height: 38px;
   padding: 0 12px;
@@ -87,16 +93,20 @@
   &.Form-input--med {}
   &.Form-input--short {}
 }
-.Form-copy {
+.Form-inputIcon {
   position: absolute;
-  right: 12px;
-  top: 10px;
+  right: 14px;
+  top: 12px;
   z-index: 2;
-}
-.Form-copyIcon {
-  font-size: $sFontSize-largest;
+  font-size: $sFontSize-larger;
   color: $cTypography-help;
 }
+
+.Form-copy {
+  top: 10px;
+  right: 12px;
+}
+.Form-copyIcon { font-size: $sFontSize-largest }
 .Form-copy:hover .Form-copyIcon,
 .Form-copy.hover .Form-copyIcon { color: $cTypography-paragraphs }
 .Form-text--preview {

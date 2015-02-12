@@ -16,7 +16,7 @@ module CartoDB
           if viewed_user.nil?
             org = Organization.where(name: username).first
             unless org.nil?
-              if FeatureFlag.allowed?('new_public_dashboard')
+              if FeatureFlag.allowed?('new_public_dashboard_global')
                 return @renderer.new_organization_content(org)
               else
                 return @renderer.old_organization_content(org)

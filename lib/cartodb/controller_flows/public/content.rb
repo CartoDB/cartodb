@@ -29,7 +29,7 @@ module CartoDB
           if viewed_user.has_organization?
             if CartoDB.extract_real_subdomain(@request) != viewed_user.organization.name
               # redirect username.host.ext => org-name.host.ext/u/username
-              @ctrl.redirect_to CartoDB.base_url(viewed_user.organization.name) << @renderer.organization_path and return
+              @ctrl.redirect_to CartoDB.base_url(viewed_user.organization.name) << @renderer.organization_path(viewed_user) and return
             end
           end
 

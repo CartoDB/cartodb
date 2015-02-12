@@ -1113,18 +1113,28 @@ class User < Sequel::Model
     created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
     created_tables.each do |t|
       begin
-        Rollbar.report_message('ghost tables', 'debug', {
-          :action => 'registering table',
-          :new_table => t[:relname]
-        })
+        # INFO: avoid registering a table twice (see #2068) by checking its existance before saving.
+        # You could've move check to previous select, but since this is a timing issue, the closer the better.
         table = Table.new
         table.user_id  = self.id
         table.name     = t[:relname]
         table.table_id = t[:oid]
         table.register_table_only = true
         table.keep_user_database_table = true
-        table.save
+        if table.duplicated?
+          Rollbar.report_message('ghost tables', 'debug', {
+            :action => "not registering already registered table",
+            :new_table => t[:relname]
+          })
+        else
+          Rollbar.report_message('ghost tables', 'debug', {
+            :action => 'registering table',
+            :new_table => t[:relname]
+          })
+          table.save
+        end
       rescue => e
+        Rollbar.report_exception(e)
         puts e
       end
     end

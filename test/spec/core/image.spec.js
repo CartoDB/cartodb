@@ -196,7 +196,7 @@ describe("Image", function() {
 
   });
 
-  it("should set the protocol and port depending on the URL", function(done) {
+  it("should set the protocol and port depending on the URL (https)", function(done) {
 
     var vizjson = "https://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
 
@@ -209,11 +209,15 @@ describe("Image", function() {
       done();
     });
 
-    vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
+  });
 
-    image = cartodb.Image(vizjson).size(400, 300);
+  it("should set the protocol and port depending on the URL (http)", function(done) {
 
-    regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-155\.7421875,-31\.05293398570514,261\.2109375,82\.58610635020881/400/300\.png");
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
+
+    var image = cartodb.Image(vizjson).size(400, 300);
+
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-155\.7421875,-31\.05293398570514,261\.2109375,82\.58610635020881/400/300\.png");
 
     image.getUrl(function(err, url) {
       expect(url).toMatch(regexp);

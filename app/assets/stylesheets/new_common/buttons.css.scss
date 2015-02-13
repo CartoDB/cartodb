@@ -54,16 +54,17 @@ $buttonBorderSize: 1px;
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border: $sButton-border solid #CCCCCC;
-  color: #666666;
+  border: 1px solid $cIcons-default;
   background-color: rgba(white, 1);
-  &:hover {
-    background-color: rgba(#CCCCCC, 1);
-    color:white;
+  span {
+    color: $cIcons-default;
   }
-}
-.Button--secondary span {
-  color: #666666;
+  &:hover {
+    border-color: $cIcons-active;
+    span {
+      color: $cIcons-active;
+    }
+  }
 }
 .Button.is-disabled {
   @include opacity(0.4);

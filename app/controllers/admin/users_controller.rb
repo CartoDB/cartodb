@@ -36,8 +36,15 @@ class Admin::UsersController < ApplicationController
     @user.create_in_central
     redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    # @user.destroy # destroy is throwing right now
-    redirect_to organization_path(@organization), flash:{ error: "There was a problem while creating the user. Please, try again and contact us if the problem persists." }
+    Rollbar.report_exception(e)
+    begin
+      @user.destroy
+    rescue => ee
+      Rollbar.report_exception(ee)
+    end
+    flash[:error] = e.user_message
+    @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+    render action: :new
   rescue Sequel::ValidationFailed => e
     render action: :new
   end

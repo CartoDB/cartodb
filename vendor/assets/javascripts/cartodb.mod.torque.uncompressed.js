@@ -2652,7 +2652,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     if (options.animationDuration) {
       this.animator.duration(options.animationDuration);
     }
-
+    this._clearCaches();
     this.redraw();
     return this;
   },
@@ -4658,7 +4658,10 @@ var filters = require('./torque_filters');
           if (typeof self._icons.itemsToLoad === 'undefined'){
             this._icons.itemsToLoad = img_names.length;
           }
-          new_img.crossOrigin = "Anonymous";
+          var filtered = self._shader.getLayers().some(function(layer){return typeof layer.shader["image-filters"] !== "undefined"});
+          if (filtered){
+            new_img.crossOrigin = 'Anonymous';
+          }
           new_img.onload = function(e){
             self._icons[this.src] = this;
             if (Object.keys(self._icons).length === img_names.length + 1){
@@ -4672,6 +4675,9 @@ var filters = require('./torque_filters');
           new_img.onerror = function(){
             self._forcePoints = true;
             self.clearSpriteCache();
+            if(filtered){
+              console.info("Only CORS-enabled, or same domain image-files can be used in combination with image-filters");
+            }
             console.error("Couldn't get marker-file " + this.src);
           };
           this.itemsToLoad++;
@@ -5076,6 +5082,7 @@ module.exports = {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./core":4}]},{},[10])(10)
 });
+
 (function() {
 
 if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")

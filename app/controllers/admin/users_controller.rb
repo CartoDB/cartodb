@@ -75,7 +75,7 @@ class Admin::UsersController < ApplicationController
 
     redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists."
+    flash[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :edit
   rescue Sequel::ValidationFailed => e
     render action: :edit

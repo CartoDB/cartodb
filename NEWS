@@ -1,3 +1,6 @@
+3.12.1 (13//02/2015)
+- Allows to force the https protocol when requesting a vizjson to generate a static image
+
 3.12.0 (09//02/2015)
 - Added Odyssey support for visualizations
 - Adds new API to generate static images (https://github.com/CartoDB/cartodb.js/wiki/CartoDB-Map-API)

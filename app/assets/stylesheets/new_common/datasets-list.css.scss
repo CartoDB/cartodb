@@ -7,28 +7,31 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 .DatasetsList {
   position: relative;
-  display: block !important;
+  @include display-flex();
+  @include flex-wrap(wrap);
   width: $sLayout-width;
   margin: 0 auto;
-  padding: $sMargin-group 0;
+  padding: 10px 0 $sMargin-group;
 }
+.DatasetsList.is-hidden { display: none }
 .DatasetsList-item {
   @include display-flex();
   @include justify-content(space-between, justify);
+  width: 100%;
   padding: $sMargin-group 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
-.DatasetsList-item:hover,
-.DatasetsList-item.is--selected {
+.DatasetsList-item.DatasetsList-item--selectable:hover,
+.DatasetsList-item.DatasetsList-item--selectable.is--selected {
   padding: $sMargin-group $selectedItemPaddingOnSides;
   margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
   border-radius: 4px;
 }
-.DatasetsList-item:hover {
+.DatasetsList-item.DatasetsList-item--selectable:hover {
   background-color: $cCard-hoverFill;
   border: 1px $cCard-hoverBorder solid;
 }
-.DatasetsList-item.is--selected {
+.DatasetsList-item.DatasetsList-item--selectable.is--selected {
   background-color: $cCard-selectedFill;
   border: 1px $cCard-selectedBorder solid;
 }
@@ -86,7 +89,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include flex-direction(column);
   flex-grow: 1;
-  max-width: 440px; 
+  max-width: 440px;
 }
 
 .DatasetsList-itemMeta,
@@ -122,4 +125,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-itemTimeDiff .UserAvatar {
   margin-left: 5px;
   line-height: $sAvatar-meta;
+}
+.DatasetsList-itemSource {
+  @include display-flex();
+  margin-left: 4px;
 }

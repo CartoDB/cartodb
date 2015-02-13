@@ -212,19 +212,21 @@ module ApplicationHelper
   #     send(hook_name) if defined?(hook_name)
   #   end.join('').html_safe
   # end
-  
+
   def formatted_tags(tags)
     visibleCount = 3
-    
+
     tags.first(visibleCount).each_with_index do |tag, i|
       yield tag
-      if i < visibleCount-1
-        concat ','
-      end
+      concat ', ' if i < visibleCount-1 && i < tags.size-1
     end
-    
+
     if tags.size > visibleCount
-      concat "and #{tags.size - visibleCount} more"
+      concat " and #{tags.size - visibleCount} more"
     end
+  end
+
+  def vis_json_url(vis_id)
+    "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: vis_id).sub(/(http:|https:)/i, '') }.json"
   end
 end

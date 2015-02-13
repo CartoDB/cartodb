@@ -3,7 +3,7 @@ class GooglePlusConfig
   attr_accessor :unauthenticated_valid_access_token
 
   def self.instance(config, signup_action, access_token_field_id = 'google_access_token')
-    config[:oauth]['google_plus'].present? ? GooglePlusConfig.new(config, signup_action, access_token_field_id) : nil
+    config[:oauth].present? && config[:oauth]['google_plus'].present? ? GooglePlusConfig.new(config, signup_action, access_token_field_id) : nil
   end
 
   def initialize(config, signup_action, access_token_field_id = 'google_access_token')

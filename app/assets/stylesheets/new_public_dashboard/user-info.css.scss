@@ -25,6 +25,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   top: -$sAvatar-publicHalf;
   left: 50%;
   margin-left: -$sAvatar-publicHalf;
+  z-index: 10000; // to be placed on top of attribution text on smaller devices
 }
 .UserInfo-name {
   font-size: $sFontSize-largest;
@@ -33,8 +34,10 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   color: $cTypography-headers;
   margin-bottom: $sMargin-min;
 }
-.UserInfo-nameBreadcrumb {
+.UserInfo-nameBreadcrumb,
+.UserInfo-nameBreadcrumb a {
   color: $cTypography-secondary;
+  &:hover { color: $cTypography-paragraphs }
 }
 .UserInfo-desc {
   max-width: 620px;

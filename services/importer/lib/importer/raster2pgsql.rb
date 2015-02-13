@@ -120,6 +120,10 @@ module CartoDB
         self.command_output << "\n#{output_message}"
         self.exit_code = status.to_i
 
+        if output =~ /canceling statement due to statement timeout/i
+          raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+        end
+
         raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
         raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
         raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i

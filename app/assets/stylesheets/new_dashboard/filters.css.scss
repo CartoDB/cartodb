@@ -12,12 +12,13 @@
   top: 0;
   left: 0;
   width:100%;
-  background: white;
+  background: transparent;
   z-index: 10;
 }
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
+  background: white;
   
   &:before {
     content: '';
@@ -79,6 +80,9 @@
   font-size: 14px;
   line-height: 80px;
   color: $cTypography-help;
+  background: transparent;
+  border: none;
+  outline: none;
 
   &:after {
     content: '|';
@@ -95,6 +99,7 @@
   @include inline-block();
   vertical-align: middle;
   margin-right:5px;
+  margin-left: 1px;
   
 }
 .Filters-searchLink:hover { color: #333 }
@@ -109,7 +114,7 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height:80px;
-  width:827px;
+  width:843px;
 }
 .Filters-searchInput {
   width:790px;
@@ -130,7 +135,9 @@
   border:1px solid #CCC;
   color:#CCC;
   text-align: center;
-  line-height:32px;
+  line-height:30px;
+  background: transparent;
+  outline: none;
   
   &:hover {
     border:1px solid #999;
@@ -153,6 +160,10 @@
 .Filters-typeLink {
   line-height: 80px;
   font-size: 14px;
+  color: $cTypography-link;
+  background: transparent;
+  border: none;
+  outline: none;
 
   &:hover {
     color:$cTypography-linkSelected;

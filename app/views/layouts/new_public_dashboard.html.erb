@@ -10,7 +10,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
     <meta property="og:title" content="Maps by <%= @name %> on CartoDB" />
-    <meta property="og:description" content="<%= @name %> is creating maps and visualizations using CartoDB" /> 
+    <meta property="og:description" content="<%= @name %> is creating maps and visualizations using CartoDB" />
     <meta property="og:type" content="Visualizations list"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
     <meta property="og:image" content="<%= @avatar_url %>">
@@ -28,14 +28,41 @@
   </head>
   <body class="PublicBody">
     <%= render 'admin/shared/new_header', :public => true, :home_url => root_url %>
-    <div class="FavMap">
+    <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
+      <div class="Spinner FavMap-spinner"></div>
     </div>
-    <div class="UserInfo">
+    <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
-        <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% if @avatar_url %>
+          <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% else %>
+          <div class="UserAvatar-img UserAvatar-img--large UserAvatar-img--no-src"></div>
+        <% end %>
       </div>
       <h2 class="UserInfo-name">
-        <%= @name %> <span class="UserInfo-nameBreadcrumb">/ Maps</span>
+        <%= @name %>
+        <span class="UserInfo-nameBreadcrumb"> /
+          <% if @content_type == 'maps' %>
+            <%= link_to 'Maps', @maps_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+          <% else %>
+            <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+          <% end %>
+          <% content_for(:js) do %>
+            <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown" style="display: none;">
+              <ul class="BreadcrumbsDropdown-list">
+                <li class="BreadcrumbsDropdown-listItem">
+                  <span class="BreadcrumbsDropdown-icon UserAvatar">
+                    <img class="UserAvatar-img UserAvatar-img--small" src="<%= @avatar_url %>" title="<%= @name %>" alt="<%= @username %>" />
+                  </span>
+                  <nav class="BreadcrumbsDropdown-options">
+                    <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
+                    <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
+                  </nav>
+                </li>
+              </ul>
+            </div>
+          <% end %>
+        </span>
       </h2>
       <% if @description.present? %>
         <p class="DefaultParagraph UserInfo-desc">
@@ -63,10 +90,26 @@
         <% end %>
       </ul>
     </div>
-    <div class="PublicBody-content">
-      <%= yield %>
-    </div>
+
+    <%= yield %>
+
     <%= render 'admin/shared/new_footer' %>
+    <script type="text/javascript">
+      var favMapViewAttrs = {
+        el: '#<%= fav_map_target_id %>',
+        <% if @most_viewed_vis_map %>
+          createVis: {
+            url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
+            opts: {
+              no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
+            }
+          }
+        <% else %>
+          fallbackBaselayer: <%= raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'].to_json : '{}' %>
+        <% end %>
+      };
+    </script>
+    <%= javascript_include_tag 'cdb.js', 'templates', 'new_public_dashboard_deps', 'new_public_dashboard' %>
     <%= yield :js %>
   </body>
 </html>

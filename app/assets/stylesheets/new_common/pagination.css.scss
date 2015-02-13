@@ -16,11 +16,12 @@
   @include align-items(center, center);
 }
 .Pagination-listItem {
-  display: inline-block;
   border: 1px $cStructure-mainLine solid;
   border-right-width: 0;
+}
+.Pagination-listItemLink {
+  display: inline-block;
   padding: 10px 15px;
-  margin: 0;
 }
 .Pagination-listItem:first-child {
   border-radius: 5px 0 0 5px;
@@ -29,8 +30,8 @@
   border-right-width: 1px;
   border-radius: 0 5px 5px 0;
 }
-.Pagination-listItem.is--current,
-.Pagination-listItem.is--current a,
-.Pagination-listItem.is--current a:hover {
+.Pagination-listItem.is-current,
+.Pagination-listItem.is-current a,
+.Pagination-listItem.is-current a:hover {
   color: $cTypography-headers;
 }

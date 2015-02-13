@@ -10,6 +10,7 @@
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;
     var isJustLoggedIn = <%= (!!@just_logged_in).to_s %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
+    var defaultFallbackMapBaselayer = <%= raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'].to_json : '{}' %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_dashboard_templates.js', 'new_dashboard_deps.js', 'new_dashboard.js' -%>
 <% end %>
@@ -23,11 +24,10 @@
 
 <div class="ContentController" id="content-controller">
   <div class="Filters"></div>
-
+  <div class="NoDatasets"></div>
   <div class="ContentList" id="content-list"></div>
-
   <div class="ContentFooter" id="content-footer">
-    <div class="u-inner" id="content-footer-inner"></div>
+    <div class="u-inner ContentFooterInner" id="content-footer-inner"></div>
   </div>
 </div>
 

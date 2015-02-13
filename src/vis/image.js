@@ -166,16 +166,18 @@
 
       var vizjson = this.imageOptions.vizjson;
 
-      var isHTTPS = vizjson.indexOf("https") !== -1 ? true : false;
-
       this.options.tiler_domain   = domain;
+      this.options.tiler_protocol = protocol;
+      this.options.tiler_port     = port;
 
-      if (isHTTPS) {
-        this.options.tiler_protocol = "https";
-        this.options.tiler_port     = 443;
-      } else {
-        this.options.tiler_protocol = protocol;
-        this.options.tiler_port     = port;
+      if (vizjson.indexOf("http") === 0) {
+        var isHTTPS = vizjson.indexOf("https") !== -1 ? true : false;
+
+        if (isHTTPS) {
+          this.options.tiler_protocol = "https";
+          this.options.tiler_port     = 443;
+        }
+
       }
 
     },

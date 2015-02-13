@@ -99,37 +99,40 @@ describe Runner do
     it 'creates a sucessful result if all import steps completed' do
       source_file = SourceFile.new(@filepath)
 
+      job = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+      def job.success_status; true; end
+
       runner = CartoDB::Importer2::Runner.new({
                             pg: @pg_options,
                             downloader: Object.new,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new
+                            user: CartoDB::Importer2::Doubles::User.new,
+                            job: job
                           })
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
-
-      def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; end
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq true
     end
 
     it 'creates a failed result if an exception raised during import' do
       source_file = SourceFile.new(@filepath)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+
       runner      = CartoDB::Importer2::Runner.new({
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new
+                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 job: job
                                })
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq false
     end
@@ -149,10 +152,13 @@ describe Runner do
                                                      downloader: Object.new,
                                                      log: @fake_log,
                                                      user: CartoDB::Importer2::Doubles::User.new,
-                                                     import_file_limit_instance: limit_checker
+                                                     limits: {
+                                                       import_file_size_instance: limit_checker
+                                                     },
+                                                     job: job
                                                    })
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq true
 
@@ -163,10 +169,13 @@ describe Runner do
                                                      downloader: Object.new,
                                                      log: @fake_log,
                                                      user: CartoDB::Importer2::Doubles::User.new,
-                                                     import_file_limit_instance: limit_checker
+                                                     limits: {
+                                                       import_file_size_instance: limit_checker
+                                                     },
+                                                     job: job
                                                    })
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq false
       result.error_code.should eq 6666 # @see services/importer/lib/importer/exceptions.rb -> FileTooBigError
@@ -198,17 +207,19 @@ describe Runner do
 
     it 'does not fail if loader does not support logging' do
       source_file = SourceFile.new(@filepath)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+
       runner      = CartoDB::Importer2::Runner.new({
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new
+                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 job: job
                                })
       spy_runner_importer_stats(runner, @importer_stats_spy)
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       fake_loader = CartoDB::Importer2::Doubles::Loader.new
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       runner.results.first.success?.should == true
     end
 

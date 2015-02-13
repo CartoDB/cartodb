@@ -37,3 +37,6 @@ button {
   border: 0;
   background: transparent;
 }
+button:focus {
+  outline: none;
+}

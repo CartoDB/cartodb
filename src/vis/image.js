@@ -240,9 +240,9 @@
 
       if (basemap) {
 
-        var type = basemap.type.toLowerCase();
+        var type = basemap.options.type.toLowerCase();
 
-        if (type === "plain") return this._getPlainBasemapLayer(basemap.color);
+        if (type === "plain") return this._getPlainBasemapLayer(basemap.options.color);
         else                  return this._getHTTPBasemapLayer(basemap);
 
       }

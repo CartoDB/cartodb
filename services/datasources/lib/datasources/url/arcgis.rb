@@ -280,7 +280,7 @@ module CartoDB
             url:      nil,
             service:  DATASOURCE_NAME,
             checksum: nil,
-            size:     0,
+            size:     NO_CONTENT_SIZE_PROVIDED,
             filename: filename_from(@metadata[:name])
           }
         end

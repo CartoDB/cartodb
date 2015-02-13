@@ -144,7 +144,7 @@ module CartoDB
     end
 
     def user_message
-      "There was a problem with authentication server. #{@errors.join('\n')}"
+      "There was a problem with authentication server. #{@errors.join(' ; ')}"
     end
 
   end

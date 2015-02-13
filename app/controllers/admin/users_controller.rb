@@ -42,7 +42,7 @@ class Admin::UsersController < ApplicationController
     rescue => ee
       Rollbar.report_exception(ee)
     end
-    flash[:error] = e.user_message
+    flash.now[:error] = e.user_message
     @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
     render action: :new
   rescue Sequel::ValidationFailed => e
@@ -75,7 +75,7 @@ class Admin::UsersController < ApplicationController
 
     redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists."
+    flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :edit
   rescue Sequel::ValidationFailed => e
     render action: :edit
@@ -85,7 +85,7 @@ class Admin::UsersController < ApplicationController
     @user.destroy
     head :no_content
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while deleting this user. Please, try again and contact us if the problem persists."
+    flash.now[:error] = "There was a problem while deleting this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :show
   end
 

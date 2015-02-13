@@ -95,6 +95,7 @@
 
     <%= render 'admin/shared/new_footer' %>
     <script type="text/javascript">
+      var account_host = '<%= Cartodb.config[:account_host] %>';
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>

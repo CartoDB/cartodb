@@ -1,4 +1,4 @@
-describe("LayerDefinition", function() {
+  describe("LayerDefinition", function() {
   var layerDefinition;
   beforeEach(function(){
     var layer_definition = {
@@ -513,6 +513,17 @@ describe("LayerDefinition", function() {
 
     });
 
+    it("should trigger change:visible when show/hide", function() {
+      var sub = layerDefinition.getSubLayer(0);
+      var s = sinon.spy();
+      sub.bind('change:visibility', s);
+      sub.hide();
+      expect(s.called).toEqual(true);
+      sub.hide();
+      expect(s.callCount).toEqual(1);
+      sub.show();
+      expect(s.callCount).toEqual(2);
+    });
 
     it("should set sql by GET", function(done) {
       var q;
@@ -575,6 +586,51 @@ describe("LayerDefinition", function() {
           }]
       });
 
+    });
+  });
+
+  describe("raster", function() {
+    var layerDefinitionRaster;
+    beforeEach(function() {
+      var layer_definition = {
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [{
+           type: 'cartodb', 
+           options: {
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: red; }',
+             raster: true,
+           }
+         }
+        ]
+      };
+      layerDefinitionRaster = new LayerDefinition(layer_definition, {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "http",
+        user_name: 'rambo',
+        no_cdn: true,
+        subdomains: [null]
+      });
+    });
+
+    it ("should include raster information when raster is true", function() {
+      expect(layerDefinitionRaster.toJSON()).toEqual({
+        version: '1.0.0',
+        stat_tag: 'vis_id',
+        layers: [{
+           type: 'cartodb', 
+           options: {
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: red; }',
+             cartocss_version: '2.3.0',
+             geom_column: 'the_raster_webmercator',
+             geom_type: 'raster'
+           }
+         }
+        ]
+      });
     });
   });
 
@@ -725,6 +781,17 @@ describe("NamedMap", function() {
     });
 
   })
+
+  it("should get sublayer", function() {
+    named_map = {
+      name: 'testing',
+      params: {
+        color: 'red'
+      }
+    };
+    namedMap = new NamedMap(named_map, {})
+    expect(namedMap.getSubLayer(0)).not.toEqual(undefined);
+  });
 
   it("should enable/disable layers", function(done) {
     var params;

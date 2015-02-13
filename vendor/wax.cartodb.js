@@ -1,4 +1,4 @@
-/* wax - 7.0.1 - v6.0.4-163-g2c1797b */
+/* wax - 7.0.1 - v6.0.4-168-g416a567 */
 
 
 !function (name, context, definition) {
@@ -2958,7 +2958,11 @@ wax.interaction = function() {
         detach,
         parent,
         map,
-        tileGrid;
+        tileGrid,
+        // google maps sends touchmove and click at the same time 
+        // most of the time when an user taps the screen, see onUp 
+        // for more information
+        _discardTouchMove = false;
 
     var defaultEvents = {
         mousemove: onMove,
@@ -3120,6 +3124,11 @@ wax.interaction = function() {
             interaction.click(evt, pos);
           } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
+            // if mousemove and click are sent at the same time this code
+            // will not trigger click event because less than 150ms pass between
+            // those events.
+            // Because of that this flag discards touchMove
+            if (_discardTouchMove && evt.type === 'touchmove') return onUp;
             // Contain the event data in a closure.
             // Ignore double-clicks by ignoring clicks within 300ms of
             // each other.
@@ -3136,6 +3145,12 @@ wax.interaction = function() {
         }
 
         return onUp;
+    }
+
+    interaction.discardTouchMove = function(_) {
+      if (!arguments.length) return _discardTouchMove;
+      _discardTouchMove = _;
+      return interaction;
     }
 
     // Handle a click event. Takes a second
@@ -3778,6 +3793,7 @@ wax.g.interaction = function() {
     return wax.interaction()
         .attach(attach)
         .detach(detach)
+        .discardTouchMove(true)
         .parent(function() {
           return map.getDiv();
         })

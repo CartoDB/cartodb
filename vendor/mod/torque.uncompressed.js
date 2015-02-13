@@ -29,6 +29,7 @@ var cancelAnimationFrame = global.cancelAnimationFrame
     this._t0 = +new Date();
     this.callback = callback;
     this._time = 0.0;
+    this.itemsReady = false;
 
     this.options = torque.extend({
         animationDelay: 0,
@@ -44,9 +45,9 @@ var cancelAnimationFrame = global.cancelAnimationFrame
   Animator.prototype = {
 
     start: function() {
-      this.running = true;
-      requestAnimationFrame(this._tick);
-      this.options.onStart && this.options.onStart();
+        this.running = true;
+        requestAnimationFrame(this._tick);
+        this.options.onStart && this.options.onStart();
     },
 
     isRunning: function() {
@@ -1907,7 +1908,7 @@ module.exports.GMapsTileLoader = gmaps.GMapsTileLoader;
 module.exports.GMapsTorqueLayer = gmaps.GMapsTorqueLayer;
 module.exports.GMapsTiledTorqueLayer = gmaps.GMapsTiledTorqueLayer;
 
-},{"./animator":1,"./cartocss_reference":2,"./common":3,"./core":4,"./gmaps":8,"./leaflet":12,"./math":15,"./mercator":16,"./provider":18,"./renderer":23,"./request":26}],11:[function(require,module,exports){
+},{"./animator":1,"./cartocss_reference":2,"./common":3,"./core":4,"./gmaps":8,"./leaflet":12,"./math":15,"./mercator":16,"./provider":18,"./renderer":23,"./request":27}],11:[function(require,module,exports){
 require('./leaflet_tileloader_mixin');
 
 /**
@@ -2305,6 +2306,7 @@ L.Mixin.TileLoader = {
       this.fire("tilesLoading");
 
   }
+
 }
 
 },{}],14:[function(require,module,exports){
@@ -2392,6 +2394,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider = new this.providers[this.options.provider](options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
 
+    this.renderer.on("allIconsLoaded", this.render.bind(this));
+
 
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
@@ -2405,7 +2409,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
         }
       });
     }, this);
-
 
   },
 
@@ -2541,6 +2544,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
         }
       }
     }
+    this.renderer.applyFilters();
 
     // prepare caches if the animation is not running
     // don't cache if the key has just changed, this avoids to cache
@@ -2645,7 +2649,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     if (options.animationDuration) {
       this.animator.duration(options.animationDuration);
     }
-
+    this._clearCaches();
     this.redraw();
     return this;
   },
@@ -4061,9 +4065,11 @@ var Profiler = require('../profiler');
       var self = this;
       var prof_fetch_time = Profiler.metric('torque.provider.windshaft.tile.fetch').start();
       var subdomains = this.options.subdomains || '0123';
-      var index = Math.abs(coord.x + coord.y) % subdomains.length;
+      var limit_x = Math.pow(2, zoom);
+      var corrected_x = ((coord.x % limit_x) + limit_x) % limit_x;
+      var index = Math.abs(corrected_x + coord.y) % subdomains.length;
       var url = this.templateUrl
-                .replace('{x}', coord.x)
+                .replace('{x}', corrected_x)
                 .replace('{y}', coord.y)
                 .replace('{z}', zoom)
                 .replace('{s}', subdomains[index])
@@ -4300,12 +4306,14 @@ var Profiler = require('../profiler');
     }
   }
 
-  function renderSprite(ctx, st) {
-    var img = st['point-file'] || st['marker-file'];
-    var ratio = img.height/img.width;
-    var w = st['marker-width'] || img.width;
-    var h = st['marker-width'] || st['marker-height'] || w*ratio;
-    ctx.drawImage(img, 0, 0, w, h);
+  function renderSprite(ctx, img, st) {
+
+    if(img.complete){
+      if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
+        ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
+      }
+      ctx.drawImage(img, -img.w, -img.h, img.w*2, img.h*2);
+    }
   }
 
 module.exports = {
@@ -4326,6 +4334,7 @@ var torque = require('../');
 var cartocss = require('./cartocss_render');
 var Profiler = require('../profiler');
 var carto = global.carto || require('carto');
+var filters = require('./torque_filters');
 
   var TAU = Math.PI * 2;
   var DEFAULT_CARTOCSS = [
@@ -4373,11 +4382,17 @@ var carto = global.carto || require('carto');
     this._ctx = canvas.getContext('2d');
     this._sprites = []; // sprites per layer
     this._shader = null;
+    this._icons = {};
+    this._filters = filters(this._canvas);
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
     this.TILE_SIZE = 256;
+    this._style = null;
+    this._gradients = {};
+    
+    this._forcePoints = false;
   }
 
-  PointRenderer.prototype = {
+  torque.extend(PointRenderer.prototype, torque.Event, {
 
     clearCanvas: function() {
       var canvas = this._canvas;
@@ -4413,6 +4428,8 @@ var carto = global.carto || require('carto');
       this._sprites = [];
       this._shader = shader;
       this._Map = this._shader.getDefault().getStyle({}, { zoom: 0 });
+      var img_names = this._shader.getImageURLs();
+      this._preloadIcons(img_names);
     },
 
     clearSpriteCache: function() {
@@ -4424,10 +4441,14 @@ var carto = global.carto || require('carto');
     // generate sprite based on cartocss style
     //
     generateSprite: function(shader, value, shaderVars) {
+      var self = this;
       var prof = Profiler.metric('torque.renderer.point.generateSprite').start();
       var st = shader.getStyle({
         value: value
       }, shaderVars);
+      if(this._style === null || this._style !== st){
+        this._style = st;
+      }
 
       var pointSize = st['marker-width'];
       if (!pointSize) {
@@ -4445,9 +4466,19 @@ var carto = global.carto || require('carto');
       var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
       ctx.translate(w/2, w/2);
 
-      if(st['point-file'] || st['marker-file']) {
-        cartocss.renderSprite(ctx, st);
-      } else {
+      function qualifyURL(url) {
+            var a = document.createElement('a');
+              a.href = url;
+              return a.href;
+          };
+      var img_name = qualifyURL(st["marker-file"] || st["point-file"]);
+      if (img_name && this._icons.itemsToLoad <= 0) {
+          var img = this._icons[img_name];
+          img.w = st['marker-width'] || img.width;
+          img.h = st['marker-width'] || st['marker-height'];
+          cartocss.renderSprite(ctx, img, st);
+      } 
+      else {
         var mt = st['marker-type'];
         if (mt && mt === 'rectangle') {
           cartocss.renderRectangle(ctx, st);
@@ -4461,6 +4492,7 @@ var carto = global.carto || require('carto');
         i.src = canvas.toDataURL();
         return i;
       }
+      
       return canvas;
     },
 
@@ -4482,6 +4514,7 @@ var carto = global.carto || require('carto');
           }
         }
       }
+      
       prof.end(true);
     },
 
@@ -4502,12 +4535,12 @@ var carto = global.carto || require('carto');
     // the torque tile
     //
     _renderTile: function(tile, key, frame_offset, sprites, shader, shaderVars) {
-      if(!this._canvas) return;
+      if (!this._canvas) return;
 
       var prof = Profiler.metric('torque.renderer.point.renderTile').start();
       var ctx = this._ctx;
       var blendMode = compop2canvas(shader.eval('comp-op')) || this.options.blendmode;
-      if(blendMode) {
+      if (blendMode) {
         ctx.globalCompositeOperation = blendMode;
       }
       if (this.options.cumulative && key > tile.maxDate) {
@@ -4516,14 +4549,14 @@ var carto = global.carto || require('carto');
       }
       var tileMax = this.options.resolution * (this.TILE_SIZE/this.options.resolution - 1)
       var activePixels = tile.timeCount[key];
-      if(activePixels) {
+      if (activePixels) {
         var pixelIndex = tile.timeIndex[key];
         for(var p = 0; p < activePixels; ++p) {
           var posIdx = tile.renderDataPos[pixelIndex + p];
           var c = tile.renderData[pixelIndex + p];
-          if(c) {
+          if (c) {
            var sp = sprites[c];
-           if(sp === undefined) {
+           if (sp === undefined) {
              sp = sprites[c] = this.generateSprite(shader, c, torque.extend({ zoom: tile.z, 'frame-offset': frame_offset }, shaderVars));
            }
            if (sp) {
@@ -4534,6 +4567,8 @@ var carto = global.carto || require('carto');
           }
         }
       }
+      
+
       prof.end(true);
     },
 
@@ -4604,16 +4639,96 @@ var carto = global.carto || require('carto');
         }
       }
       return null;
-    }
+    },
+    _preloadIcons: function(img_names){
+      var self = this;
+      this._icons = {};
+      if (img_names.length > 0 && !this._forcePoints){
+        for (var i = 0; i<img_names.length; i++){
+          var new_img = this._createImage();
+          function qualifyURL(url) {
+            var a = document.createElement('a');
+              a.href = url;
+              return a.href;
+          }
+          this._icons[qualifyURL(img_names[i])] = null;
+          if (typeof self._icons.itemsToLoad === 'undefined'){
+            this._icons.itemsToLoad = img_names.length;
+          }
+          var filtered = self._shader.getLayers().some(function(layer){return typeof layer.shader["image-filters"] !== "undefined"});
+          if (filtered){
+            new_img.crossOrigin = 'Anonymous';
+          }
+          new_img.onload = function(e){
+            self._icons[this.src] = this;
+            if (Object.keys(self._icons).length === img_names.length + 1){
+              self._icons.itemsToLoad--;
+              if (self._icons.itemsToLoad <= 0){
+                self.clearSpriteCache();
+                self.fire("allIconsLoaded");
+              }
+            }
+          };
+          new_img.onerror = function(){
+            self._forcePoints = true;
+            self.clearSpriteCache();
+            if(filtered){
+              console.info("Only CORS-enabled, or same domain image-files can be used in combination with image-filters");
+            }
+            console.error("Couldn't get marker-file " + this.src);
+          };
+          this.itemsToLoad++;
+          new_img.src = img_names[i];
+        }
+      }
 
-  };
+  },
+  applyFilters: function(){
+    if(this._style){
+      if(this._style['image-filters']){
+        function gradientKey(imf){
+          var hash = ""
+          for(var i = 0; i < imf.args.length; i++){
+            var rgb = imf.args[i].rgb;
+            hash += rgb[0] + ":" + rgb[1] + ":" + rgb[2];
+          }
+          return hash;
+        }
+        var gradient = this._gradients[gradientKey(this._style['image-filters'])];
+        if(!gradient){
+          function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+          }
+
+          function rgbToHex(r, g, b) {
+            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+          }
+          gradient = {};
+          var colorize = this._style['image-filters'].args;
+          
+          var increment = 1/colorize.length;
+          for (var i = 0; i < colorize.length; i++){
+            var key = increment * i + increment;
+            var rgb = colorize[i].rgb;
+            var formattedColor = rgbToHex(rgb[0], rgb[1], rgb[2]);
+            gradient[key] = formattedColor;
+          }
+          this._gradients[gradientKey(this._style['image-filters'])] = gradient;
+        }
+        this._filters.gradient(gradient);
+        this._filters.draw();
+      }
+    }
+  }
+});
 
 
   // exports public api
 module.exports = PointRenderer;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../":10,"../profiler":17,"./cartocss_render":22,"carto":undefined}],25:[function(require,module,exports){
+},{"../":10,"../profiler":17,"./cartocss_render":22,"./torque_filters":26,"carto":undefined}],25:[function(require,module,exports){
 (function (global){
 var carto = global.carto || require('carto');
 
@@ -4777,6 +4892,88 @@ module.exports = RectanbleRenderer;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"carto":undefined}],26:[function(require,module,exports){
+/*
+ Based on simpleheat, a tiny JavaScript library for drawing heatmaps with Canvas, 
+ by Vladimir Agafonkin
+ https://github.com/mourner/simpleheat
+*/
+
+'use strict';
+
+function torque_filters(canvas) {
+    // jshint newcap: false, validthis: true
+    if (!(this instanceof torque_filters)) { return new torque_filters(canvas); }
+
+    this._canvas = canvas = typeof canvas === 'string' ? document.getElementById(canvas) : canvas;
+
+    this._ctx = canvas.getContext('2d');
+    this._width = canvas.width;
+    this._height = canvas.height;
+
+    this._max = 1;
+    this._data = [];
+}
+
+torque_filters.prototype = {
+
+    defaultGradient: {
+        0.4: 'blue',
+        0.6: 'cyan',
+        0.7: 'lime',
+        0.8: 'yellow',
+        1.0: 'red'
+    },
+
+    gradient: function (grad) {
+        // create a 256x1 gradient that we'll use to turn a grayscale heatmap into a colored one
+        var canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d'),
+            gradient = ctx.createLinearGradient(0, 0, 0, 256);
+
+        canvas.width = 1;
+        canvas.height = 256;
+
+        for (var i in grad) {
+            gradient.addColorStop(i, grad[i]);
+        }
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1, 256);
+
+        this._grad = ctx.getImageData(0, 0, 1, 256).data;
+
+        return this;
+    },
+
+    draw: function () {
+        if (!this._grad) {
+            this.gradient(this.defaultGradient);
+        }
+
+        var ctx = this._ctx;
+        var colored = ctx.getImageData(0, 0, this._canvas.width, this._canvas.height);
+        this._colorize(colored.data, this._grad);
+        ctx.putImageData(colored, 0, 0);
+
+        return this;
+    },
+
+    _colorize: function (pixels, gradient) {
+        for (var i = 3, len = pixels.length, j; i < len; i += 4) {
+            j = pixels[i] * 4; // get gradient color from opacity value
+
+            if (j) {
+                pixels[i - 3] = gradient[j];
+                pixels[i - 2] = gradient[j + 1];
+                pixels[i - 1] = gradient[j + 2];
+            }
+        }
+    }
+};
+
+module.exports = torque_filters;
+
+},{}],27:[function(require,module,exports){
 (function (global){
 var torque = require('./core');
 

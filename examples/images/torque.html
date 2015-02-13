@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      #content {
+        padding: 20px;
+        text-align: center;
+      }
+
+      .map {
+        float:left;
+        margin: 10px;
+        width: 500px;
+        height: 500px;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+      }
+      .map img { display: none; }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js"></script>
+    <script>
+      var layer_definition = {
+        user_name: "rochoa-st",
+        tiler_domain: "cartodb-staging.com",
+        tiler_port: "80",
+        tiler_protocol: "http",
+        version: "1.3.0-alpha",
+        layers: [
+          {
+          "type": "http",
+          "options": {
+            "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+            "subdomains": [
+              "a",
+              "b",
+              "c"
+            ]
+          }
+        },
+        {
+          "type": "torque",
+          "options": {
+            "sql": "select *, (CASE WHEN \"road_type\" = '6' THEN 1 WHEN \"road_type\" = '3' THEN 2 WHEN \"road_type\" = '1' THEN 3 WHEN \"road_type\" = '2' THEN 4 WHEN \"road_type\" = '7' THEN 5 WHEN \"road_type\" = '9' THEN 6 ELSE 7 END) as torque_category FROM (SELECT to_timestamp(date || ' ' || time, 'DD/MM/YYYY HH24:MI') date_time, * FROM dftroadsafety_accidents_3) _cdb_wrap",
+            "cartocss": "Map { -torque-frame-count:512; -torque-animation-duration:30; -torque-time-attribute:\"date_time\"; -torque-aggregation-function:\"CDB_Math_Mode(torque_category)\"; -torque-resolution:1; -torque-data-aggregation:linear; }  #dftroadsafety_accidents_3{   comp-op: multiply;   marker-fill-opacity: 0.9;   marker-line-color: #FFF;   marker-line-width: 0;   marker-line-opacity: 1;   marker-type: ellipse;   marker-width: 3;   marker-fill: #FF9900; } #dftroadsafety_accidents_3[frame-offset=1] {  marker-width:5;  marker-fill-opacity:0.45;  } #dftroadsafety_accidents_3[frame-offset=2] {  marker-width:7;  marker-fill-opacity:0.225;  } #dftroadsafety_accidents_3[value=1] {    marker-fill: #A6CEE3; } #dftroadsafety_accidents_3[value=2] {    marker-fill: #1F78B4; } #dftroadsafety_accidents_3[value=3] {    marker-fill: #B2DF8A; } #dftroadsafety_accidents_3[value=4] {    marker-fill: #33A02C; } #dftroadsafety_accidents_3[value=5] {    marker-fill: #FB9A99; } #dftroadsafety_accidents_3[value=6] {    marker-fill: #E31A1C; }",
+            "cartocss_version": "1.0.0",
+            "step": 128
+          }
+        }
+        ]
+      };
+
+      // and now we just ask for the URL and append it to the page
+      cartodb.Image("http://arce.cartodb.com/api/v2/viz/c8cdb78e-ad3f-11e4-a472-0e018d66dc29/viz.json").size(500, 500).getUrl(function(error, url) {
+
+        var img = new Image();
+
+        img.onerror = function() {
+          console.log(error);
+        };
+
+        img.onload  = function() {
+          var $map = $('<div class="map"></div>');
+          var $img = $('<img src="' + url + '" />');
+          $map.append($img);
+          $("#content").append($map);
+          $img.fadeIn(250);
+        };
+
+        img.src = url;
+
+      });
+    </script>
+  </head>
+  <body>
+    <div id="content"></div>
+  </body>
+</html>

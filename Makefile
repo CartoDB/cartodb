@@ -48,6 +48,9 @@ dist/cartodb.noleaflet.js: dist/_cartodb_noleaflet.js
 	$(UGLIFYJS) dist/_cartodb_noleaflet.js > dist/cartodb.noleaflet.js
 	rm dist/_cartodb_noleaflet.js
 
+dist/cartodb.mod.odyssey.uncompressed.js:
+	grunt dist_js
+
 dist/cartodb.css: css
 	cp themes/css/cartodb.css dist
 
@@ -80,7 +83,7 @@ publish_develop: release
 	#./scripts/publish.sh
 	node scripts/publish.js --current_version
 
-cartodb: dist/cartodb.full.uncompressed.js dist/cartodb.mod.torque.uncompressed.js
+cartodb: dist/cartodb.mod.torque.uncompressed.js dist/cartodb.mod.odyssey.uncompressed.js dist/cartodb.full.uncompressed.js
 
 
 

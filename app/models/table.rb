@@ -112,6 +112,14 @@ class Table < Sequel::Model(:user_tables)
     types
   end
 
+  def calculate_the_geom_type
+    return self.the_geom_type if self.the_geom_type.present?
+
+    calculated = query_geometry_types.first
+    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
+    self.the_geom_type = calculated
+  end
+
   def is_raster?
     schema.select { |key, value| value == 'raster' }.length > 0
   end
@@ -147,7 +155,7 @@ class Table < Sequel::Model(:user_tables)
                 :import_from_query,
                 :import_from_table_copy,
                 :importing_encoding,
-                :temporal_the_geom_type,
+                :the_geom_type_value,
                 :migrate_existing_table,
                 # this flag is used to register table changes only without doing operations on in the database
                 # for example when the table is renamed or created. For remove see keep_user_database_table
@@ -530,10 +538,6 @@ class Table < Sequel::Model(:user_tables)
       else
         create_table_in_database!
         set_table_id
-        unless self.temporal_the_geom_type.blank?
-          self.the_geom_type = self.temporal_the_geom_type
-          self.temporal_the_geom_type = nil
-        end
         set_the_geom_column!(self.the_geom_type)
       end
     end
@@ -880,6 +884,9 @@ class Table < Sequel::Model(:user_tables)
     last_columns      = []
     owner.in_database.schema(name, options.slice(:reload).merge(schema: owner.database_schema)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
+
+      calculate_the_geom_type if column[0] == :the_geom
+
       col_db_type = column[1][:db_type].starts_with?('geometry') ? 'geometry' : column[1][:db_type]
       col = [
         column[0],

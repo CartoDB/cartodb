@@ -28,13 +28,12 @@
       .map img { display: none; }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js"></script>
     <script>
 
       var layer_definition = {
-        user_name: "arcerui",
-        tiler_domain: "cartodb-staging.com",
+        user_name: "documentation",
+        tiler_domain: "cartodb.com",
         tiler_port: "80",
         tiler_protocol: "http",
         layers: [{
@@ -45,8 +44,8 @@
         }, {
           type: "cartodb",
           options: {
-            sql: "SELECT * FROM spotimap_cities",
-            cartocss: "#spotimap_cities{ marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1.5; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF6600; marker-allow-overlap: true; } ",
+            sql: "SELECT * FROM spreading_network",
+            cartocss: "#spreading_network{ marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1.5; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF6600; marker-allow-overlap: true; } ",
             cartocss_version: "2.1.1"
           }
         }

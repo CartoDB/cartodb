@@ -550,7 +550,6 @@ class Table < Sequel::Model(:user_tables)
     set_default_table_privacy
 
     @force_schema = nil
-    $tables_metadata.hset key, 'user_id', user_id
     self.new_table = true
 
     # finally, close off the data import
@@ -583,7 +582,7 @@ class Table < Sequel::Model(:user_tables)
     manager.set_from_table_privacy(privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
-      manager.propagate_to_redis_and_varnish
+      manager.propagate_to_varnish
       update_cdb_tablemetadata
     end
 
@@ -613,7 +612,6 @@ class Table < Sequel::Model(:user_tables)
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
       @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
-      $tables_metadata.del key
 
       self.remove_table_from_user_database unless keep_user_database_table
     end
@@ -671,7 +669,6 @@ class Table < Sequel::Model(:user_tables)
     super
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
-    $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
     invalidate_varnish_cache
@@ -842,12 +839,6 @@ class Table < Sequel::Model(:user_tables)
     Table.key(owner.database_name, "#{owner.database_schema}.#{name}")
   rescue
     nil
-  end
-
-  # @param db_name String
-  # @param table_name String Must come fully qualified
-  def self.key(db_name, table_name)
-    "rails:#{db_name}:#{table_name}"
   end
 
   def sequel
@@ -1203,41 +1194,24 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-
   def the_geom_type
-    $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
-  rescue => e
-    # FIXME: patch for Redis timeout errors, should be removed when the problem is solved
-    CartoDB::notify_error("Redis timeout error patched", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Will retry.\n #{e.message} #{e.backtrace.join}")
-    begin
-      $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
-    rescue => e
-      CartoDB::notify_error("Redis timeout error patched retry", error_info: "Table: #{self.name}. Connection: #{self.redis_connection_info}. Second error, won't retry.\n #{e.message} #{e.backtrace.join}")
-      raise e
-    end
-  end
-
-  def redis_connection_info
-    "#{$tables_metadata.client.host}:#{$tables_metadata.client.port}, db: #{$tables_metadata.client.db}, timeout: #{$tables_metadata.client.timeout}"
+    self.the_geom_type_value
   end
 
   def the_geom_type=(value)
-    the_geom_type_value = case value.downcase
+    self.the_geom_type_value = case value.downcase
       when 'geometry'
         'geometry'
       when 'point'
         'point'
       when 'line'
         'multilinestring'
+      when 'multipoint'
+        'point'
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end
-    raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
-    if owner.in_database.table_exists?(name)
-      $tables_metadata.hset(key, 'the_geom_type', the_geom_type_value)
-    else
-      self.temporal_the_geom_type = the_geom_type_value
-    end
+    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless CartoDB::VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
   end
 
   # if the table is already renamed, we just need to update the name attribute
@@ -1421,19 +1395,6 @@ class Table < Sequel::Model(:user_tables)
     if @name_changed_from.present? && @name_changed_from != name
       reload
 
-      old_key = Table.key(owner.database_name,"#{owner.database_schema}.#{@name_changed_from}")
-      new_key = key
-
-      begin
-        # update metadata records
-        $tables_metadata.rename(old_key, new_key)
-      rescue StandardError => exception
-        exception_to_raise = CartoDB::BaseCartoDBError.new(
-            "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
-        CartoDB::notify_exception(exception_to_raise, user: owner)
-        errored = true
-      end
-
       unless register_table_only
         begin
           owner.in_database.rename_table(@name_changed_from, name) unless errored
@@ -1458,7 +1419,6 @@ class Table < Sequel::Model(:user_tables)
       end
 
       if errored
-        $tables_metadata.rename(new_key, old_key)
         raise exception_to_raise
       end
     end

@@ -4,7 +4,6 @@ module CartoDB
   class Varnish
     def purge(what)
       ActiveSupport::Notifications.instrument('purge.varnish', what: what) do |payload|
-
         conf = Cartodb::config[:varnish_management]
         if conf['http_port']
           request = Typhoeus::Request.new(

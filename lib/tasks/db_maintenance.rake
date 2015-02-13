@@ -370,7 +370,7 @@ namespace :cartodb do
     ###############
     desc "set organization quota to amount in GB"
     task :set_organization_quota, [:organization_name, :quota_in_gb] => :environment do |t, args|
-      usage = 'usage: rake cartodb:db:set_org_quota[organization_name,quota_in_gb]'
+      usage = 'usage: rake cartodb:db:set_organization_quota[organization_name,quota_in_gb]'
       raise usage if args[:organization_name].blank? || args[:quota_in_gb].blank?
 
       organization  = Organization.filter(:name=> args[:organization_name]).first
@@ -383,7 +383,7 @@ namespace :cartodb do
 
     desc "set organization seats"
     task :set_organization_seats, [:organization_name, :seats] => :environment do |t, args|
-      usage = 'usage: rake cartodb:db:set_org_quota[organization_name,seats]'
+      usage = 'usage: rake cartodb:db:set_organization_seats[organization_name,seats]'
       raise usage if args[:organization_name].blank? || args[:seats].blank?
 
       organization  = Organization.filter(:name=> args[:organization_name]).first

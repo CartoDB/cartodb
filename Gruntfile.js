@@ -10,8 +10,14 @@ module.exports = function(grunt) {
   
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
+  var semver = require('semver');
 
   var pkg = grunt.file.readJSON('package.json');
+
+  if (!pkg.version || !semver.valid(pkg.version)) {
+    grunt.fail.fatal('package.json version is not valid' , 1);
+  }
+
   var version = pkg.version.split('.');
 
   var config = {

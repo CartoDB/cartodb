@@ -5,8 +5,6 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$buttonBorderSize: 1px;
-
 .Button {
   @include display-flex();
   @include align-items(center, center);
@@ -27,7 +25,7 @@ $buttonBorderSize: 1px;
   white-space: nowrap;
 }
 .Button {
-  border: $buttonBorderSize solid $cStructure-mainBkg;
+  border: $sButton-border solid $cStructure-mainBkg;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
@@ -70,11 +68,12 @@ $buttonBorderSize: 1px;
   @include opacity(0.4);
 }
 .Button--light {
-  border: $sButton-border solid white;
-  color: #384047;
-  background-color: rgba(white, 1);
+  border: $sButton-border + 1 solid white;
+  color: white;
   &:hover {
-    background-color: rgba(#384047, 1);
-    color:white;
+    background-color: white;
+    span {
+      color: rgba(black, 0.9);
+    }
   }
 }

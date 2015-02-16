@@ -95,9 +95,12 @@ class Table < Sequel::Model(:user_tables)
     self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
   end #default_privacy_values
 
+  def geometry_types_key
+    @geometry_types_key ||= "#{key}:geometry_types"
+  end
+
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
-      geometry_types_key = "#{key}:geometry_types"
       types_str = $tables_metadata.get geometry_types_key
       if types_str.nil?
         types = query_geometry_types

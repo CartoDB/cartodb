@@ -2112,8 +2112,9 @@ describe Table do
   end
 
   describe '#geometry_types_key' do
-    it 'computes a reasonable key' do
-      pending "Implement"
+    it 'computes a suitable key' do
+      table = create_table(name: 'any_name', user_id: @user.id)
+      table.geometry_types_key.should == "rails:#{@user.database_name}:public.any_name:geometry_types"
     end
   end
 

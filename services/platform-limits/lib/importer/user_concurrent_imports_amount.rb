@@ -46,7 +46,6 @@ module CartoDB
 
           @expire_ttl = ( user.database_timeout / 1000 *
             (1.0 + redis_options.fetch(:expire_ttl_threshold_percent, DEFAULT_EXPIRE_TTL_THRESHOLD_PERCENT)) ).to_i
-
         end
 
         protected
@@ -82,8 +81,8 @@ module CartoDB
         # @param context mixed
         # @return integer|nil Timestamp
         def get_time_period(context)
-          # TODO: Implement
-          nil
+          remaining_secs = redis.ttl(key)
+          remaining_secs.seconds.from_now
         end
 
         # Increases the limit
@@ -124,15 +123,9 @@ module CartoDB
           end
         end
 
-        # Sets the limit to a specific value
-        # @param value mixed
-        def set(value)
-          # Not useful here, relies on get()
-        end
-
         # Resets the limit
         def expire
-          # TODO: Implement
+          redis.del(key)
         end
 
         private

@@ -95,12 +95,6 @@ module CartoDB
           # Not useful here
         end
 
-        # Sets the limit to a specific value
-        # @param value mixed
-        def set(value)
-          # Not useful here, relies on get()
-        end
-
         # Resets the limit
         def expire
           # Does nothing

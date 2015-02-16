@@ -167,12 +167,6 @@ module CartoDB
         raise "Implement at child classes"
       end
 
-      # Sets the limit to a specific value
-      # @param value mixed
-      def set(value)
-        raise "Implement at child classes"
-      end
-
       # Resets the limit
       def expire
         raise "Implement at child classes"

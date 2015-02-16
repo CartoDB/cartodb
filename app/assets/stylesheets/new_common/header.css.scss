@@ -49,9 +49,7 @@ $height: 81px;
     &:after { border-top-color: white }
   }
 }
-.Header-settings {
-  height: $height;
-}
+.Header-settings { height: $height }
 .Header-settingsList {
   height: 100%;
   @include display-flex();
@@ -60,7 +58,7 @@ $height: 81px;
 }
 .Header-settingsItem {
   position: relative;
-  margin-left: 30px;
+  margin-left: $sMargin-element;
   font-size: $sFontSize-larger;
   line-height: $sLineHeight-larger;
 }
@@ -75,7 +73,9 @@ $height: 81px;
 }
 
 @media (min-width: $sMedia-mobile) {
-  .Header-logoText {
-    margin-left: $sMargin-elementInline;
-  }
+  .Header-logoText { margin-left: $sMargin-elementInline }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .Header-settingsItem { margin-left: $sMargin-group }
 }

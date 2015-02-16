@@ -1,3 +1,6 @@
+3.12.2 ()
+- Fixes a case were having an empty bbox would end up generatign an erroneous bounding box URL.
+
 3.12.1 (13//02/2015)
 - Allows to force the https protocol when requesting a vizjson to generate a static image
 

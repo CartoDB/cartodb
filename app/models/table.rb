@@ -97,20 +97,19 @@ class Table < Sequel::Model(:user_tables)
 
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
-      query_geometry_types
+      geometry_types_key = "#{key}:geometry_types"
+      types_str = $tables_metadata.get geometry_types_key
+      if types_str.nil?
+        types = query_geometry_types
+        $tables_metadata.set geometry_types_key, types
+        $tables_metadata.expire geometry_types_key, 1800 # 30 min
+      else
+        types = JSON.parse(types_str)
+      end
     else
-      []
+      types = []
     end
-  end
-
-  def query_geometry_types
-    owner.in_database[ %Q{
-      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-        SELECT the_geom
-        FROM "#{self.name}"
-        WHERE (the_geom is not null) LIMIT 10
-      ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
+    types
   end
 
   def calculate_the_geom_type
@@ -840,6 +839,12 @@ class Table < Sequel::Model(:user_tables)
     previous_changes.keys.include?(:privacy)
   end #privacy_changed?
 
+  def key
+    Table.key(owner.database_name, "#{owner.database_schema}.#{name}")
+  rescue
+    nil
+  end
+
   def sequel
     owner.in_database.from(sequel_qualified_table_name)
   end
@@ -1470,6 +1475,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   private
+
+  def query_geometry_types
+    owner.in_database[ %Q{
+      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+        SELECT the_geom
+        FROM "#{self.name}"
+        WHERE (the_geom is not null) LIMIT 10
+      ) as foo
+    }].all.map {|r| r[:st_geometrytype] }
+  end
 
   def update_cdb_tablemetadata
     # TODO: use upsert

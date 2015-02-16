@@ -2097,4 +2097,50 @@ describe Table do
     end
   end
 
+  describe '#key' do
+    it 'computes a suitable key for a table' do
+      table = Table.new
+      table.user_id = @user.id
+      table.name = 'any_name'
+      table.save.reload
+      table.key.should == "rails:#{@user.database_name}:public.any_name"
+    end
+
+    it 'computes different keys for different tables' do
+      table1 = Table.new
+      table1.user_id = @user.id
+      table1.save.reload
+
+      table2 = Table.new
+      table2.user_id = @user.id
+      table2.save.reload
+
+      table1.key.should_not == table2.key
+    end
+  end
+
+  describe '#geometry_types_key' do
+    it 'computes a reasonable key' do
+      pending "Implement"
+    end
+  end
+
+  describe '#geometry_types' do
+    it "does not cache if there's no column the_geom" do
+      pendign "Implement"
+    end
+
+    it "does not cache if there are no geometries in the query" do
+      pending "Implement"
+    end
+
+    it "caches if there are geometries" do
+      pending "Implement"
+    end
+
+    it "returns the value from the cache if it is there" do
+      pending "Implement"
+    end
+  end
+
 end

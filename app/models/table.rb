@@ -840,9 +840,7 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_changed?
 
   def key
-    Table.key(owner.database_name, "#{owner.database_schema}.#{name}")
-  rescue
-    nil
+    key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
   end
 
   def sequel

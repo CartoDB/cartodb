@@ -11,14 +11,16 @@
 @import "../../new_variables/sizes";
 
 $sBorderCompensation: 2px;
+$size: $sIcon-layout - $sBorderCompensation;
 
 .LayoutIcon {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
   position: relative;
-  width: $sIcon-layout - $sBorderCompensation;
-  height: $sIcon-layout - $sBorderCompensation;
+  min-width: $size; // to no be deformed due to flex layout
+  width: $size;
+  height: $size;
   border: 1px solid $cIcons-default;
   border-radius: $sIcon-borderRadius;
   font-size: 22px;

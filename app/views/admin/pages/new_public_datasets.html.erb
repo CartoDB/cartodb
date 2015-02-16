@@ -14,36 +14,36 @@
       <% @datasets.each do |vis| %>
         <% user_domain = vis[:owner].organization ? vis[:owner].username : nil %>
         <li class="DatasetsList-item">
-          <div class="DatasetsList-itemPrimaryInfo">
-            <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
-            <div class="DatasetsList-itemInfo">
+          <div class="LayoutIcon DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
+          <div class="DatasetsList-itemInfo">
+            <div class="DatasetsList-itemPrimaryInfo">
               <h3 class="DatasetsList-itemTitle DefaultTitle">
                 <a href="<%= public_table_url(user_domain: user_domain, id: vis[:title]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
               </h3>
               <p class="DefaultDescription u-ellipsLongText"><%= raw vis[:desc] %></p>
             </div>
-          </div>
-          <div class="DatasetsList-itemSecondaryInfo">
-            <div class="DatasetsList-itemMeta">
-              <%= render 'admin/pages/shared/new_like_button', vis: vis %>
-              <div class="RowsIndicator">
-                <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
-                <%= pluralize(vis[:rows_count], 'row') %>
+            <div class="DatasetsList-itemSecondaryInfo">
+              <div class="DatasetsList-itemMeta">
+                <%= render 'admin/pages/shared/new_like_button', vis: vis %>
+                <div class="RowsIndicator">
+                  <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
+                  <%= pluralize(vis[:rows_count], 'row') %>
+                </div>
+                <div class="SizeIndicator">
+                  <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
+                  <%= number_to_human_size(vis[:size_in_bytes]) %>
+                </div>
+                <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
+                  <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                  <%= time_ago_in_words(vis[:updated_at]) %>
+                </div>
               </div>
-              <div class="SizeIndicator">
-                <i class="iconFont iconFont-Floppy SizeIndicator-icon"></i>
-                <%= number_to_human_size(vis[:size_in_bytes]) %>
-              </div>
-              <div class="DatasetsList-itemTimeDiff DefaultTimeDiff">
-                <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
-                <%= time_ago_in_words(vis[:updated_at]) %>
-              </div>
-            </div>
-            <div class="DatasetsList-itemTags">
-              <div class="DefaultTags">
-                <% if vis[:tags].size > 0 %>
-                  <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
-                <% end %>
+              <div class="DatasetsList-itemMeta">
+                <div class="DefaultTags">
+                  <% if vis[:tags].size > 0 %>
+                    <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= public_datasets_tag_url(user_domain: user_domain, tag: tag) %>"><%= tag %></a><% end %>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
@@ -53,4 +53,4 @@
   <% end %>
 </div>
 
-<%= render 'admin/shared/new_pagination' %>
+<%= render 'admin/pages/shared/pagination' %>

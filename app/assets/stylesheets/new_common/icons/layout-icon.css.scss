@@ -10,13 +10,15 @@
 @import "../../new_variables/colors";
 @import "../../new_variables/sizes";
 
+$sBorderCompensation: 2px;
+
 .LayoutIcon {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
   position: relative;
-  width: $sIcon-layout;
-  height: $sIcon-layout;
+  width: $sIcon-layout - $sBorderCompensation;
+  height: $sIcon-layout - $sBorderCompensation;
   border: 1px solid $cIcons-default;
   border-radius: $sIcon-borderRadius;
   font-size: 22px;

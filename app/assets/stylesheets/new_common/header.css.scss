@@ -21,9 +21,6 @@ $height: 81px;
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
-.Header-logoText {
-  margin-left: $sMargin-elementInline;
-}
 .Header-navigationList {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -52,7 +49,6 @@ $height: 81px;
     &:after { border-top-color: white }
   }
 }
-
 .Header-settings {
   height: $height;
 }
@@ -75,5 +71,11 @@ $height: 81px;
   &:hover {
     color: white;
     text-decoration: underline;
+  }
+}
+
+@media (min-width: $sMedia-mobile) {
+  .Header-logoText {
+    margin-left: $sMargin-elementInline;
   }
 }

@@ -20,7 +20,7 @@
           #{$property}: #{$value};
 }
 
-// Display inline 
+// Display inline
 @mixin inline-block() {
   display:inline-block;
   vertical-align: top;
@@ -60,7 +60,15 @@
   -moz-flex-wrap: $v;
   -ms-flex-wrap: $v;
   flex-wrap: $v;
-  // IE10 doesn't support this property  
+  // IE10 doesn't support this property
+}
+@mixin flex-order($v) {
+  -webkit-flex-order: $v;
+  -moz-flex-order: $v;
+  -ms-flex-order: $v;
+  -ms-order: $v;
+  flex-order: $v;
+  order: $v;
 }
 @mixin justify-content($v, $ie-v: "") {
   $ie-v: $v !default;
@@ -132,7 +140,7 @@
 
 /* TRANSITION */
 @mixin transition($properties...) {
-  
+
   @if length($properties) >= 1 {
     @include css3-prefix('transition', $properties);
   }
@@ -149,13 +157,13 @@
   }
   @-moz-keyframes #{$animation-name} {
     @content;
-  }  
+  }
   @-ms-keyframes #{$animation-name} {
     @content;
   }
   @-o-keyframes #{$animation-name} {
     @content;
-  }  
+  }
   @keyframes #{$animation-name} {
     @content;
   }

@@ -21,13 +21,15 @@
 //     <div class="MapCard-contentFooter">
 //      ...
 //
+$sBorderCompensation: 2px;
+
 .MapCard {
   position: relative;
-  @include inline-block();
-  width: $sCard-width - 2; //compensate for border
+  width: $sCard-width - 10px - $sBorderCompensation;
   border: 1px solid #DBDBDB;
   background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
+  margin: 0 auto;
 }
 .MapCard--selectable:hover {
   background-color: $cCard-hoverFill;
@@ -56,13 +58,20 @@
   content: ' ';
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
   display: block;
-  width: 100%;
   height: 2px;
   background: black;
   @include opacity(.1);
   z-index:2;
+}
+.MapCard-header--fake {
+  background: $cStructure-mainBkg;
+}
+.MapCard-header--fake:after {
+  left: $sMargin-element;
+  right: $sMargin-element;
 }
 .MapCard-headerGraph {
   position:absolute;
@@ -182,4 +191,10 @@
   0% {right:100%;}
   50% {right:0%}
   100% {right:-100%}
+}
+
+@media (min-width: $sMedia-tablet) {
+  .MapCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
 }

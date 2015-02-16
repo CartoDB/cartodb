@@ -45,6 +45,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 }
 .UserInfo-links {
   @include display-flex();
+  @include flex-direction(column);
   @include justify-content(center);
   @include align-items(center);
   @include flex-wrap(wrap);
@@ -54,9 +55,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   @include display-flex();
   @include flex-wrap(nowrap);
   line-height: 1; // to vertical align with icons
-}
-.UserInfo-linksItem:not(:last-child) {
-  margin-right: $sMargin-group;
+  margin: $sMargin-elementInline 0;
 }
 .UserInfo-linksItem .iconFont {
   margin-right: $sMargin-min;
@@ -64,4 +63,8 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 .UserInfo-linksItem--positive,
 .UserInfo-linksItem--positive a {
   color: $cHighlight-positive;
+}
+@media (min-width: $sMedia-desktop) {
+  .UserInfo-links { @include flex-direction(row); }
+  .UserInfo-linksItem:not(:last-child) { margin-right: $sMargin-group; }
 }

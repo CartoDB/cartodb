@@ -24,6 +24,7 @@ $buttonBorderSize: 1px;
   font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .Button {
   border: $buttonBorderSize solid $cStructure-mainBkg;

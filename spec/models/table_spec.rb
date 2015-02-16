@@ -2099,23 +2099,15 @@ describe Table do
 
   describe '#key' do
     it 'computes a suitable key for a table' do
-      table = Table.new
-      table.user_id = @user.id
-      table.name = 'any_name'
-      table.save.reload
+      table = create_table(name: "any_name", user_id: @user.id)
       table.key.should == "rails:#{@user.database_name}:public.any_name"
     end
 
     it 'computes different keys for different tables' do
-      table1 = Table.new
-      table1.user_id = @user.id
-      table1.save.reload
+      table_1 = create_table(user_id: @user.id)
+      table_2 = create_table(user_id: @user.id)
 
-      table2 = Table.new
-      table2.user_id = @user.id
-      table2.save.reload
-
-      table1.key.should_not == table2.key
+      table_1.key.should_not == table_2.key
     end
   end
 

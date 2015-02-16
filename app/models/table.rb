@@ -101,11 +101,11 @@ class Table < Sequel::Model(:user_tables)
 
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
-      types_str = $tables_metadata.get geometry_types_key
+      types_str = cache.get geometry_types_key
       if types_str.nil?
         types = query_geometry_types
-        $tables_metadata.set geometry_types_key, types
-        $tables_metadata.expire geometry_types_key, 1800 # 30 min
+        cache.set geometry_types_key, types
+        cache.expire geometry_types_key, 1800 # 30 min
       else
         types = JSON.parse(types_str)
       end
@@ -1485,6 +1485,10 @@ class Table < Sequel::Model(:user_tables)
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
+  end
+
+  def cache
+    @cache ||= $tables_metadata
   end
 
   def update_cdb_tablemetadata

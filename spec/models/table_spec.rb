@@ -2119,11 +2119,19 @@ describe Table do
   end
 
   describe '#geometry_types' do
-    it "does not cache if there's no column the_geom" do
-      pendign "Implement"
+    it "returns an empty array and does not cache if there's no column the_geom" do
+      table = create_table(user_id: @user.id)
+      table.stubs(:cache).expects(:get).never
+      table.stubs(:cache).expects(:set).never
+
+      # A bit extreme way of getting a table without the_geom
+      table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
+      table.schema(reload: true)
+
+      table.geometry_types.should == []
     end
 
-    it "does not cache if there are no geometries in the query" do
+    it "returns an empty array does not cache if there are no geometries in the query" do
       pending "Implement"
     end
 

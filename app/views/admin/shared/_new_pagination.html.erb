@@ -8,9 +8,9 @@
 <% content_for(:js) do %>
   <script type="text/javascript">
     var paginationModelAttrs = {
-      current_page: <%= current_page %>,
-      total_count: <%= total_count %>,
-      per_page: <%= per_page %>,
+      current_page: <%= @current_page %>,
+      total_count: <%= @total_count %>,
+      per_page: <%= @per_page %>,
       url_to: function(page) {
         if (page === 1) {
           return '<%= url_for(page: nil) %>';

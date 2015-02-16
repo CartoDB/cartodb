@@ -21,8 +21,18 @@ module CartoDB
       # .zip
       FORMAT_COMPRESSED = 'zip'
 
+      # If data size cannot be determined, this will be returned as its size in the item metadata
+      NO_CONTENT_SIZE_PROVIDED = 0
+
       def initialize(*args)
         @logger = nil
+      end
+
+      # Small helper method to know if metadata includes a valid resource size value or not
+      # @param resource_metadata Hash { :size, ... }
+      # @return bool
+      def has_resource_size?(resource_metadata)
+        resource_metadata[:size] > NO_CONTENT_SIZE_PROVIDED
       end
 
       # Factory method

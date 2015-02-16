@@ -330,7 +330,7 @@ module CartoDB
             service:  DATASOURCE_NAME,
             checksum: '',
             member_count: member_count,
-            size:     0
+            size:     NO_CONTENT_SIZE_PROVIDED
           }
         end
 

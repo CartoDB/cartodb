@@ -310,7 +310,7 @@ module CartoDB
             data[:url] = item_data.fetch('exportLinks').first.last
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
             data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
-            data[:size] = 0
+            data[:size] = NO_CONTENT_SIZE_PROVIDED
           else
             data[:url] = item_data.fetch('downloadUrl')
             # For Drive files, title == filename + extension

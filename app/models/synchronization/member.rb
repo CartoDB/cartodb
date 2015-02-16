@@ -9,6 +9,7 @@ require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
 require_relative '../../../lib/cartodb/errors'
+require_relative '../../../services/platform-limits/platform_limits'
 
 include CartoDB::Datasources
 
@@ -128,6 +129,7 @@ module CartoDB
         self.state == STATE_SUCCESS && (self.run_at < Time.now)
       end
 
+      # This should be joined with data_import to stop the madness of duplicated code
       def run
         importer = nil
         self.state    = STATE_SYNCING
@@ -152,9 +154,14 @@ module CartoDB
           end
         end
 
-        runner        = CartoDB::Importer2::Runner.new(
-          pg_options, downloader, log, user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
-        )
+        runner = CartoDB::Importer2::Runner.new({
+                                                  pg: pg_options,
+                                                  downloader: downloader,
+                                                  log: log,
+                                                  user: user,
+                                                  unpacker: CartoDB::Importer2::Unp.new,
+                                                  post_import_handler: post_import_handler
+                                                })
         runner.loader_options = ogr2ogr_options.merge content_guessing_options
 
 
@@ -190,8 +197,11 @@ module CartoDB
         log.append exception.backtrace.join('\n')
 
         if importer.nil?
-          if(exception.kind_of?(NotFoundDownloadError))
+          if exception.kind_of?(NotFoundDownloadError)
             set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
+          elsif exception.kind_of?(CartoDB::Importer2::FileTooBigError)
+            set_general_failure_state_from(exception, exception.error_code,
+                                           CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
           else
             set_general_failure_state_from(exception)
           end
@@ -230,6 +240,10 @@ module CartoDB
         log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id} from user #{user.id}"
         metadata = datasource_provider.get_resource_metadata(service_item_id)
 
+        if hit_platform_limit?(datasource_provider, metadata, user)
+          raise CartoDB::Importer2::FileTooBigError.new(metadata.inspect)
+        end
+
         if datasource_provider.providers_download_url?
           resource_url = (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url
 
@@ -247,11 +261,20 @@ module CartoDB
           log.append "File will be downloaded from #{downloader.url}"
         else
           log.append 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, \
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
             {checksum: checksum}, log)
         end
 
         downloader
+      end
+
+      def hit_platform_limit?(datasource, metadata, user)
+        if datasource.has_resource_size?(metadata)
+          CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+                                                          .is_over_limit!(metadata[:size])
+        else
+          false
+        end
       end
 
       def set_success_state_from(importer)
@@ -277,6 +300,11 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
+        # Try to fill empty messages with the list
+        if self.error_message == '' && !self.error_code.nil?
+          default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
+          self.error_message = default_message.fetch(:title, '')
+        end
         self.retried_times  = self.retried_times + 1
         if self.retried_times < MAX_RETRIES
           self.run_at         = Time.now + interval

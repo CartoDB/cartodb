@@ -8,6 +8,7 @@ require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../../app/models/common_data'
+require_relative './feature_flag'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -19,6 +20,7 @@ class User < Sequel::Model
   # @param name             String
   # @param avatar_url       String
   # @param database_schema  String
+  # @param max_import_file_size Integer
 
   one_to_one  :client_application
   one_to_many :synchronization_oauths
@@ -123,7 +125,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
-    #load_common_data
+    load_common_data if FeatureFlag.allowed?('load_common_data')
     monitor_user_notification
     sleep 1
     set_statement_timeouts
@@ -132,13 +134,13 @@ class User < Sequel::Model
     end
   end
 
-  def load_common_data
+  def load_common_data(datasets = CommonDataSingleton.instance.datasets[:datasets])
     Rollbar.report_message('common data', 'debug', {
       :action => 'load',
       :user_id => self.id,
       :username => self.username
     })
-    CommonDataSingleton.instance.datasets[:datasets].each do |d|
+    datasets.each do |d|
       v = CartoDB::Visualization::Member.remote_member(
         d['name'],
         self.id,
@@ -153,6 +155,22 @@ class User < Sequel::Model
     end
   rescue => e
     Rollbar.report_exception(e)
+  end
+
+  def delete_common_data
+    CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: self.id}).map do |v|
+      begin
+        CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
+        v.delete
+      rescue Sequel::DatabaseError => e
+        match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
+        if match.present? && match >= 0
+          puts "Couldn't delete #{v.id} visualization because it's been imported"
+        else
+          raise e
+        end
+      end
+    end
   end
 
   def after_save
@@ -841,7 +859,7 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
     end

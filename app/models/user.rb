@@ -8,6 +8,7 @@ require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../../app/models/common_data'
+require_relative './feature_flag'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -124,7 +125,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
-    #load_common_data
+    load_common_data if FeatureFlag.allowed?('load_common_data')
     monitor_user_notification
     sleep 1
     set_statement_timeouts

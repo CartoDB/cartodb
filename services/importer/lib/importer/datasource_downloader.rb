@@ -12,8 +12,9 @@ module CartoDB
       def initialize(datasource, item_metadata, options={}, logger = nil, repository=nil)
         @checksum = nil
 
-        @datasource     = datasource
-        @item_metadata  = item_metadata
+        @source_file = nil
+        @datasource = datasource
+        @item_metadata = item_metadata
         @options = options
         raise UploadError if datasource.nil?
 
@@ -50,6 +51,27 @@ module CartoDB
           FileUtils.rm_rf @temporary_directory
         end
       end
+
+      def modified?
+        previous_checksum = @options.fetch(:checksum, false)
+        previous_checksum = false if previous_checksum == ''  # If comes empty from DB, make pure false
+        checksum          = (@checksum.nil? || @checksum.size == 0) ? false : @checksum
+
+        return true unless (previous_checksum)
+        return true if previous_checksum && checksum && previous_checksum != checksum
+        false
+      end
+
+      # @return Bool
+      def multi_resource_import_supported?
+        @datasource.multi_resource_import_supported?(@item_metadata[:id])
+      end
+
+      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
+
+      private
+      
+      attr_writer :source_file
 
       # In the case of DirectStream datasources, this will store a sample to trigger DB creation.
       # In other cases full contents will be stored.
@@ -92,27 +114,6 @@ module CartoDB
         return self unless available_quota_in_bytes
         raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
       end
-
-      def modified?
-        previous_checksum = @options.fetch(:checksum, false)
-        previous_checksum = false if previous_checksum == ''  # If comes empty from DB, make pure false
-        checksum          = (@checksum.nil? || @checksum.size == 0) ? false : @checksum
-
-        return true unless (previous_checksum)
-        return true if previous_checksum && checksum && previous_checksum != checksum
-        false
-      end
-
-      # @return Bool
-      def multi_resource_import_supported?
-        @datasource.multi_resource_import_supported?(@item_metadata[:id])
-      end
-
-      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
-
-      private
-      
-      attr_writer :source_file
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
         # Skip storing if no data came in

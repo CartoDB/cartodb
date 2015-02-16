@@ -2172,4 +2172,18 @@ describe Table do
     end
   end
 
+  describe '#destroy' do
+    it "invalidates geometry_types cache entry" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+      table.geometry_types.should eq(any_types)
+
+      key = table.geometry_types_key
+      table.destroy
+
+      $tables_metadata.get(key).should eq(nil), "the geometry types cache should be invalidated upon table removal"
+    end
+  end
+
 end

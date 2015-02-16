@@ -23,9 +23,9 @@ class Admin::UsersController < ApplicationController
     set_flash_flags
   end
 
-  def set_flash_flags
-    @show_dashboard_details_flash = session[:show_dashboard_details_flash]
-    @show_account_settings_flash = session[:show_account_settings_flash]
+  def set_flash_flags(show_dashboard_details_flash = nil, show_account_settings_flash = nil)
+    @show_dashboard_details_flash = session[:show_dashboard_details_flash] || show_dashboard_details_flash
+    @show_account_settings_flash = session[:show_account_settings_flash] || show_account_settings_flash
     session[:show_dashboard_details_flash] = nil
     session[:show_account_settings_flash] = nil
   end
@@ -88,12 +88,20 @@ class Admin::UsersController < ApplicationController
   end
 
   def destroy
+    @user.delete_in_central
     @user.destroy
+    flash[:success] = "User was successfully deleted."
     head :no_content
   rescue CartoDB::CentralCommunicationFailure => e
-    set_flash_flags
-    flash.now[:error] = "There was a problem while deleting this user. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: :show
+    if e.user_message =~ /No user found with username/
+      @user.destroy
+      flash[:success] = "User was deleted from the organization server. #{e.user_message}"
+      head :no_content
+    elsif
+      set_flash_flags(nil, true)
+      flash[:error] = "User was not deleted. #{e.user_message}"
+      head :no_content
+    end
   end
 
   private

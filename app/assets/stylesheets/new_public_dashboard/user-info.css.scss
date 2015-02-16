@@ -18,6 +18,8 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   text-align: center;
   background: $cStructure-grayBkg;
   border: 1px solid $cStructure-mainLine;
+  border-left: none;
+  border-right: none;
   padding: #{$sAvatar-publicHalf + $sMargin-group} 0 $sMargin-group 0;
 }
 .UserInfo-avatar {

@@ -2133,7 +2133,7 @@ describe Table do
       table.geometry_types.should == []
     end
 
-    it "returns an empty array does not cache if there are no geometries in the query" do
+    it "returns an empty array and does not cache if there are no geometries in the query" do
       table = create_table(user_id: @user.id)
 
       cache = mock()
@@ -2146,11 +2146,29 @@ describe Table do
     end
 
     it "caches if there are geometries" do
-      pending "Implement"
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once
+      cache.expects(:setex).once
+
+      table.stubs(:cache).returns(cache)
+      table.owner.in_database.run(%Q{
+        INSERT INTO #{table.name}(the_geom)
+        VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
+      })
+
+      table.geometry_types.should == ['ST_Point']
     end
 
     it "returns the value from the cache if it is there" do
-      pending "Implement"
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+
+      table.geometry_types.should eq(any_types), "cache miss failure"
+      table.geometry_types.should eq(any_types), "cache hit failure"
+      $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
     end
   end
 

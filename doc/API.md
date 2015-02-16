@@ -46,9 +46,9 @@ With a similar source code you can create a visualization like this one:
 
 CartoDB.js can be used when you want to embed and use a visualization you have designed using CartoDB user interface, or to create visualizations from scratch dynamically using your data. If you want to create new maps on your webpage, jump to “using CartoDB visualizations in your webpage”. If you already have maps on your webpage and want to add CartoDB visualizations to them, read “Add CartoDB layer to an existing map”.
 
-You can also use CartoDB API to create visualization without having to define them using the UI. This can be useful when the visualizations react to user interactions. To read more about it jump to, create [create visualizations at runtime](#creating-visualizations-at-runtime).
+You can also use the CartoDB API to create visualizations programmatically. This can be useful when the visualizations react to user interactions. To read more about it jump to [create visualizations at runtime](#creating-visualizations-at-runtime).
 
-We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or something else, our CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online.
+We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or something else, our CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and be consistent if you develop or maintain multiple maps online.
 
 To start using CartoDB.js just paste this piece of code within the HEAD tags of your HTML:
 
@@ -218,8 +218,8 @@ cartodb.createVis('map', url)
 
 Promise object. You can listen for the following events:
 
- **done**: triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
- **error**: triggered when the layer couldn't be created. The error string is the first argument.
++ **done**: triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
++ **error**: triggered when the layer couldn't be created. The error string is the first argument.
 
 ### cartodb.Vis
 
@@ -386,7 +386,7 @@ Change the opacity of the layer.
 
 #### layer.getSubLayer(_layerIndex_)
 
-Get a previously created sublayer. And exception is raised if not exists
+Get a previously created sublayer. And exception is raised if no sublayer exists.
 
 ##### Arguments
 
@@ -394,7 +394,7 @@ Get a previously created sublayer. And exception is raised if not exists
 
 ##### Returns
 
-SubLayer object
+SubLayer object.
 
 ##### Example
 
@@ -506,7 +506,7 @@ the layer itself
 
 #### sublayer.set(_layerDefinition_)
 
-Sets sublayer parameters. Useful when more than one parameter need to be changed. See setSQL and setCartoCSS
+Sets sublayer parameters. Useful when more than one parameter needs to be changed. See setSQL and setCartoCSS
 
 ##### Arguments
 
@@ -813,7 +813,7 @@ vis.addOverlay({ type: 'zoom' });
 
 ## Getting data with SQL
 
-CartoDB offers a powerful SQL API for you to query and retreive data from your CartoDB tables. The CartoDB.js offers a simple to use wrapper for sending those requests and using the results. 
+CartoDB offers a powerful SQL API for you to query and retreive data from your CartoDB tables. CartoDB.js offers a simple to use wrapper for sending those requests and using the results. 
 
 ### cartodb.SQL
 
@@ -989,7 +989,7 @@ Contains the library version, should be something like `3.0.1`.
 
 ## Other important stuff
 
-The CartoDB.js has many great features for you to use in your applications. Let’s take a look at the most important for your application development.
+CartoDB.js has many great features for you to use in your applications. Let’s take a look at some of the most important ones:
 
 ### Viz JSON support
 
@@ -1004,7 +1004,7 @@ cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populate
 
 ### Bounds wrapper
 
-We have added easy method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
+We have added an easy method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
 
 <div class="code-title">Bounds wrapper</div>
 ```javascript
@@ -1054,7 +1054,7 @@ layer.on('featureOver', function(e, latlng, pos, data, layer) {
 });
 ```
 
-Similarly, there is the **featureOut** event. This is best used if you do things like highlighting polygons on mouseover and need a way to know when to remove the highlighting after the mouse has left.
+Finally, there is the **featureOut** event. This is best used if you do things like highlighting polygons on mouseover and need a way to know when to remove the highlighting after the mouse has left.
 
 <div class="code-title">featureOut</div>
 ```javascript

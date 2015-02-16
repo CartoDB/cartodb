@@ -182,7 +182,7 @@ class DataImport < Sequel::Model
 
     path = Rails.root.join('public', 'uploads', uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
-  end #remove_uploaded_resources
+  end
 
   def handle_success
     self.success  = true
@@ -192,6 +192,18 @@ class DataImport < Sequel::Model
     self.tables_created_count = table_names.size
     log.append "Import finished\n"
     save
+    begin
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                             user: current_user,
+                                                                             redis: {
+                                                                               db: $users_metadata
+                                                                             }
+                                                                         })
+                                                                    .decrement
+    rescue => exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{exception.message} #{exception.backtrace.inspect}")
+    end
     notify(results)
     self
   end
@@ -204,6 +216,18 @@ class DataImport < Sequel::Model
     end
     log.append "ERROR!\n"
     self.save
+    begin
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                           user: current_user,
+                                                                           redis: {
+                                                                             db: $users_metadata
+                                                                           }
+                                                                         })
+      .decrement
+    rescue => exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{exception.message} #{exception.backtrace.inspect}")
+    end
     notify(results)
     self
   rescue => exception

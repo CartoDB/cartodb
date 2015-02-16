@@ -37,16 +37,11 @@ module CartoDB
         @time_frame = options.fetch(:ttl, nil)
       end
 
-      # Loads current value from the backend (ttl will be fetched on-demand)
-      def load
-        raise "Implement at child classes"
-      end
-
       # Checks if user is over limit, increasing the internal counter (where proceeds)
       # @param context mixed|nil
       # @return bool
       def is_over_limit!(context=nil)
-        increase
+        increase(context)
         is_over_limit(context)
       end
 
@@ -76,6 +71,13 @@ module CartoDB
       # @return mixed
       def peek(context=nil)
         get(context)
+      end
+
+      # Decrements the limit
+      # @param context mixed|nil
+      # @param amount integer
+      def decrement(context=nil, amount=1)
+        decrease(context, amount)
       end
 
       # Gets (where proceeds) the remaining count for the limit
@@ -152,14 +154,16 @@ module CartoDB
       end
 
       # Increases the limit
+      # @param context mixed
       # @param amount integer
-      def increase(amount=1)
+      def increase(context, amount=1)
         raise "Implement at child classes"
       end
 
       # Decreases the limit
+      # @param context mixed
       # @param amount integer
-      def decrease(amount=1)
+      def decrease(context, amount=1)
         raise "Implement at child classes"
       end
 

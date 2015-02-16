@@ -42,6 +42,7 @@ $w: 780px;
 .ServiceList-item:last-child { border-bottom: 0 }
 .ServiceList-itemExt {
   width: 38px;
+  min-width: 38px;
   height: 38px;
   border: 1px solid #CCC;
   border-radius: 4px;

@@ -13,7 +13,7 @@ $w: 780px;
 .ImportOptions-tabs {
   display: block;
   width: $w;
-  padding: 8px 0 $sMargin-group;
+  padding: 8px 0 24px;
   border-bottom: 1px solid $cStructure-mainLine;
   overflow-x: hidden;
 }
@@ -22,7 +22,6 @@ $w: 780px;
   @include flex-wrap(nowrap);
 }
 .ImportOptions-tab {
-  // display: inline-block;
   min-width: 140px;
   margin: 20px $sMargin-formRow 0 0;
 }

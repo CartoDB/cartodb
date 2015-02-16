@@ -68,12 +68,22 @@
   @include opacity(0.4);
 }
 .Button--light {
-  border: $sButton-border + 1 solid white;
+  border: $sButton-border solid white;
+  color: #384047;
+  background-color: rgba(white, 1);
+  &:hover {
+    background-color: rgba(#384047, 1);
+    color:white;
+  }
+}
+// Use this instead of .Button--positive on header background
+.Button--headerPositive {
+  border: $sButton-border+1 solid white;
   color: white;
   &:hover {
     background-color: white;
     span {
-      color: rgba(black, 0.9);
+      color: $cTypography-linkHover;
     }
   }
 }

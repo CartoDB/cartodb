@@ -20,6 +20,10 @@ class Admin::UsersController < ApplicationController
   end
 
   def edit
+    set_flash_flags
+  end
+
+  def set_flash_flags
     @show_dashboard_details_flash = session[:show_dashboard_details_flash]
     @show_account_settings_flash = session[:show_account_settings_flash]
     session[:show_dashboard_details_flash] = nil
@@ -36,13 +40,24 @@ class Admin::UsersController < ApplicationController
     @user.create_in_central
     redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    # @user.destroy # destroy is throwing right now
-    redirect_to organization_path(@organization), flash:{ error: "There was a problem while creating the user. Please, try again and contact us if the problem persists." }
+    Rollbar.report_exception(e)
+    begin
+      @user.destroy
+    rescue => ee
+      Rollbar.report_exception(ee)
+    end
+    set_flash_flags
+    flash.now[:error] = e.user_message
+    @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+    render action: :new
   rescue Sequel::ValidationFailed => e
     render action: :new
   end
 
   def update
+    session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
+    session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
+
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
     @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner?
@@ -61,14 +76,12 @@ class Admin::UsersController < ApplicationController
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
     @user.update_in_central
 
-    session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
-    session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
-
     @user.save(raise_on_failure: true)
 
     redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists."
+    set_flash_flags
+    flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :edit
   rescue Sequel::ValidationFailed => e
     render action: :edit
@@ -78,7 +91,8 @@ class Admin::UsersController < ApplicationController
     @user.destroy
     head :no_content
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while deleting this user. Please, try again and contact us if the problem persists."
+    set_flash_flags
+    flash.now[:error] = "There was a problem while deleting this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :show
   end
 

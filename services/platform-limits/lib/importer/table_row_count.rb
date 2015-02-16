@@ -51,6 +51,10 @@ module CartoDB
 
         # Gets current value of the limit
         # @param context mixed
+        # Hash {
+        #   :table_name String
+        #   :tables_schema String|nil (Optional, defaults to import schema)
+        # }
         # @return mixed
         # @throws ArgumentError
         def get(context)

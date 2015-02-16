@@ -50,9 +50,11 @@ module CartoDB
         importer_stats_options = options.fetch(:importer_stats, { host: nil, port: nil, queue_id: nil})
         @importer_stats = set_importer_stats_options(importer_stats_options[:host], importer_stats_options[:port],
                                                      importer_stats_options[:queue_id])
-        @import_file_limit = options.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
+        limit_instances = options.fetch(:limits, {})
+
+        @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
         @table_row_count_limit =
-          options.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, db))
+          limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, db))
         @loader_options      = {}
         @results             = []
         @stats               = []
@@ -342,7 +344,7 @@ module CartoDB
       end
 
       def hit_platform_table_row_count_limit?(job)
-        @table_row_count_limit.is_over_limit!({ table_name: job.table_name})
+        @table_row_count_limit.is_over_limit!({ table_name: job.table_name, tables_schema: job.schema})
       end
 
       def input_file_size_limit_instance(user)

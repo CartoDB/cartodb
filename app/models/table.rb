@@ -102,12 +102,12 @@ class Table < Sequel::Model(:user_tables)
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
       types_str = cache.get geometry_types_key
-      if types_str.nil?
-        types = query_geometry_types
-        cache.set geometry_types_key, types
-        cache.expire geometry_types_key, 1800 # 30 min
-      else
+      if types_str.present?
         types = JSON.parse(types_str)
+      else
+        types = query_geometry_types
+        #30 min ttl if types list is non-empty
+        cache.setex(geometry_types_key, 1800, types) if types.length > 0
       end
     else
       types = []

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.0
+// cartodb.js version: 3.12.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: e24a8668d778730348fd2b8d23b34ceaa594a777
+// sha: 1b0b627c93b4b8861d118f3d65255cdf2cac3c92
 (function() {
   var root = this;
 
@@ -34255,18 +34255,13 @@ cdb.vis.Vis = Vis;
 
     _setupTilerConfiguration: function(protocol, domain, port) {
 
-      var vizjson = this.imageOptions.vizjson;
-
-      var isHTTPS = vizjson.indexOf("https") !== -1 ? true : false;
-
       this.options.tiler_domain   = domain;
+      this.options.tiler_protocol = protocol;
+      this.options.tiler_port     = port;
 
-      if (isHTTPS) {
+      if (this.userOptions.https || this.imageOptions.vizjson.indexOf("https") === 0) {
         this.options.tiler_protocol = "https";
         this.options.tiler_port     = 443;
-      } else {
-        this.options.tiler_protocol = protocol;
-        this.options.tiler_port     = port;
       }
 
     },
@@ -34334,12 +34329,12 @@ cdb.vis.Vis = Vis;
 
       var basemap = this.userOptions.basemap || this.imageOptions.basemap;
 
-      if (basemap && basemap.type) {
+      if (basemap) {
 
         var type = basemap.type.toLowerCase();
 
-        if (type === "background") return this._getPlainBasemapLayer(basemap.color);
-        else                       return this._getHTTPBasemapLayer(basemap);
+        if (type === "plain") return this._getPlainBasemapLayer(basemap.color);
+        else                  return this._getHTTPBasemapLayer(basemap);
 
       }
 
@@ -34351,11 +34346,6 @@ cdb.vis.Vis = Vis;
 
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
       var ld = layerDefinition.toJSON();
-
-      // TODO: remove this
-      for (var i = 0; i<ld.layers.length; i++) {
-        delete ld.layers[i].options.interactivity
-      }
 
       ld.layers.unshift(this._getBasemapLayer());
 

@@ -150,12 +150,25 @@
           this.imageOptions.basemap = baseLayer;
         }
 
-        if (dataLayer.type === "namedmap") {
-          this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
-        } else {
-          this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
+        var layers = [ this._getBasemapLayer() ];
+
+        for (var i = 1; i < data.layers.length; i++) {
+
+          var layer = data.layers[i];
+
+          if (layer.type === "torque") {
+            layers.push(this._getTorqueLayerDefinition(layer));
+          } else if (layer.type === "namedmap") {
+            layers.push(this._getNamedmapLayerDefinition(layer));
+          } else {
+            var ll = this._getLayergroupLayerDefinition(layer);
+            for (var j = 0; j < ll.length; j++) {
+              layers.push(ll[j]);
+            }
+          }
         }
 
+        this.options.layers = { layers: layers };
         this._requestLayerGroupID();
 
       }
@@ -240,10 +253,18 @@
 
       if (basemap) {
 
-        var type = basemap.options.type.toLowerCase();
+        // TODO: refactor this
+        var type = basemap.type.toLowerCase();
 
-        if (type === "plain") return this._getPlainBasemapLayer(basemap.options.color);
-        else                  return this._getHTTPBasemapLayer(basemap);
+        if (basemap.options && basemap.options.type) {
+          type = basemap.options.type.toLowerCase();
+        }
+
+        if (type === "plain") {
+          return this._getPlainBasemapLayer(basemap.options.color);
+        } else {
+          return this._getHTTPBasemapLayer(basemap);
+        }
 
       }
 
@@ -251,36 +272,42 @@
 
     },
 
-    _getLayergroupLayerDefinition: function(options) {
+    _getTorqueLayerDefinition: function(layer_definition) {
 
-      var layerDefinition = new LayerDefinition(options.layer_definition, options);
-      var ld = layerDefinition.toJSON();
+      var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 
-      ld.layers.unshift(this._getBasemapLayer());
-
-      return ld;
+      return {
+        type: "torque",
+        options: {
+          sql: layerDefinition.options.query,
+          cartocss: layer_definition.options.tile_style
+        }
+      };
 
     },
 
-    _getNamedmapLayerDefinition: function(options) {
+    _getLayergroupLayerDefinition: function(layer) {
+
+      var options = layer.options;
+      var layerDefinition = new LayerDefinition(options.layer_definition, options);
+
+      return layerDefinition.toJSON().layers;
+
+    },
+
+    _getNamedmapLayerDefinition: function(layer) {
+
+      var options = layer.options;
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      layerDefinition.options.type = "named";
+      //layerDefinition.options.type = "named";
 
-      var layers  =  [
-        this._getBasemapLayer(), {
-        type: "named",
+      return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
-      }];
-
-      var ld = {
-        layers: layers
-      };
-
-      return ld;
+      }
 
     },
 
@@ -302,7 +329,7 @@
 
       var url = this._tilerHost() + this.endPoint;
 
-      if (bbox) {
+      if (bbox && bbox.length) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

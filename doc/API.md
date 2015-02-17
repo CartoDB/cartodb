@@ -555,7 +555,7 @@ Shortcut for `set({'sql': 'SELECT * FROM table_name'})`
 
 Shortcut for `set({'cartocss': '#layer {...}' })`
 
-#### sublayer.remove
+#### sublayer.remove()
 
 Removes the sublayer. An exception will be thrown if a method is called and the layer has been removed.
 
@@ -573,11 +573,11 @@ Sets the columns which data will be available via the interaction with the subla
 
 + **enable**: true if the interaction needs to be enabled.
 
-#### sublayer.show
+#### sublayer.show()
 
 Shows a previously hidden sublayer. The layer is refreshed after calling this function.
 
-#### sublayer.hide
+#### sublayer.hide()
 
 Removes the sublayer from the layer temporarily. The layer is refreshed after calling this function.
 
@@ -762,11 +762,11 @@ var tooltip = vis.addOverlay({
 });
 ```
 
-#### cartodb.geo.ui.Tooltip.enable
+#### cartodb.geo.ui.Tooltip.enable()
 
 The tooltip is shown when hover on feature when is called.
 
-#### cartodb.geo.ui.Tooltip.disable
+#### cartodb.geo.ui.Tooltip.disable()
 
 The tooltip is not shown when hover on feature.
 
@@ -784,11 +784,11 @@ var box = vis.addOverlay({
 });
 ```
 
-#### cartodb.geo.ui.InfoBox.enable
+#### cartodb.geo.ui.InfoBox.enable()
 
 The tooltip is shown when hover on feature.
 
-#### cartodb.geo.ui.InfoBox.disable
+#### cartodb.geo.ui.InfoBox.disable()
 
 The tooltip is not shown when hover on feature.
 

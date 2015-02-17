@@ -62,9 +62,7 @@
         </span>
       </h2>
       <% if @description.present? %>
-        <p class="DefaultParagraph UserInfo-desc">
-          <%= @description %>
-        </p>
+        <p class="UserInfo-desc"><%= @description %></p>
       <% end %>
       <ul class="UserInfo-links">
         <% if @website.present? %>

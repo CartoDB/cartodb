@@ -30,7 +30,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   z-index: 10000001; // to be placed on top of attribution text on smaller devices
 }
 .UserInfo-name {
-  font-size: $sFontSize-largest;
+  font-size: 24px;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color: $cTypography-headers;
@@ -42,8 +42,10 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
   &:hover { color: $cTypography-paragraphs }
 }
 .UserInfo-desc {
+  font-size: 18px;
+  font-weight: $sFontWeight-lighter;
   max-width: 620px;
-  margin-bottom: $sMargin-elementInline;
+  margin: $sMargin-elementInline 0;
 }
 .UserInfo-links {
   @include display-flex();

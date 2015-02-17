@@ -209,8 +209,9 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/dashboard/common_data/:tag'  => 'pages#common_data',    as: :dashboard_common_data_tag
 
     # Public dashboard
-    # root goes to 'pages#public'
+    # root also goes to 'pages#public', as: public_visualizations_home
     get '(/u/:user_domain)/page/:page'               => 'pages#public', as: :public_page
+    get '(/u/:user_domain(/page/:page))'             => 'pages#public', as: :public_page_alt
     get '(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag
     get '(/u/:user_domain)/tag/:tag/:page'           => 'pages#public', as: :public_tag_page
     # Public dataset

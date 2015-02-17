@@ -143,6 +143,9 @@ end
 
 require 'csv'
 require 'state_machine'
+require 'cartodb/controller_flows/public/content'
+require 'cartodb/controller_flows/public/datasets'
+require 'cartodb/controller_flows/public/maps'
 require 'cartodb/errors'
 require 'cartodb/logger'
 require 'cartodb/sql_parser'

@@ -34,10 +34,11 @@ class Admin::OrganizationsController < ApplicationController
 
     redirect_to organization_settings_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists."
+    @organization.reload
+    flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :settings
   rescue Sequel::ValidationFailed => e
-    flash[:error] = e.message
+    flash.now[:error] = e.message
     render action: :settings
   end
 

@@ -20,14 +20,14 @@
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_dashboard.css', :media => 'all' %>
 <% end %>
 
-<%= render 'admin/shared/new_header', :public => false, :home_url => '' %>
+<%= render 'admin/shared/new_private_header' %>
 
 <div class="ContentController" id="content-controller">
   <div class="Filters"></div>
   <div class="NoDatasets"></div>
   <div class="ContentList" id="content-list"></div>
   <div class="ContentFooter" id="content-footer">
-    <div class="u-inner ContentFooterInner" id="content-footer-inner"></div>
+    <div class="u-inner ContentFooter-inner" id="content-footer-inner"></div>
   </div>
 </div>
 

@@ -104,12 +104,13 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include justify-content(flex-start, start);
   @include flex-wrap(wrap);
-  margin-bottom: $sMargin-elementInline;
+  margin-bottom: 2 * $sMargin-min;
 }
 .DatasetsList-itemMeta > * {
   width: 50%;
   text-align: left;
   white-space: nowrap;
+  margin-bottom: 2 * $sMargin-min;
 }
 .DatasetsList-itemMeta > *:nth-child(1) { @include flex-order(1) }
 .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(3) }

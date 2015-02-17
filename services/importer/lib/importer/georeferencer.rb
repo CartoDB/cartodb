@@ -43,6 +43,15 @@ module CartoDB
 
         drop_the_geom_webmercator
 
+        if column_exists_in?(table_name, :the_geom)
+          existing_the_geom = Column.new(db, table_name, 'the_geom', schema, job)
+          if existing_the_geom.valid_the_geom_type?
+            return self
+          else
+            existing_the_geom.rename_to(:the_geom_original)
+          end
+        end
+
         create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
         create_the_geom_from_ip_guessing      ||
@@ -91,11 +100,9 @@ module CartoDB
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
-        if column_exists_in?(table_name, :the_geom)
-          old_the_geom_column = Column.new(db, table_name, 'the_geom', schema, job)
-          old_the_geom_column.rename_to(:old_the_geom)
-        end
+
         column.rename_to(:the_geom)
+
         handle_multipoint(qualified_table_name) if multipoint?
         self
       rescue => exception

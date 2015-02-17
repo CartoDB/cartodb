@@ -13,6 +13,7 @@ module CartoDB
       WKT_RE          = /POINT|LINESTRING|POLYGON/
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
+      VALID_THE_GEOM_TYPES = CartoDB::VALID_GEOMETRY_TYPES
       DEFAULT_SCHEMA  = 'cdb_importer'
       # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
       # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
@@ -52,6 +53,15 @@ module CartoDB
           .select { |column_details|
             column_details.first == column_name
           }.last.last.fetch(:db_type)
+      end
+
+      def valid_the_geom_type?
+        begin
+          geometry_type_or_nil = geometry_type.downcase
+        rescue
+          geometry_type_or_nil = nil
+        end
+        VALID_THE_GEOM_TYPES.include?(geometry_type_or_nil)
       end
 
       def geometrify

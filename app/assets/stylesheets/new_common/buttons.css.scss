@@ -5,8 +5,6 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-$buttonBorderSize: 1px;
-
 .Button {
   @include display-flex();
   @include align-items(center, center);
@@ -24,9 +22,10 @@ $buttonBorderSize: 1px;
   font-weight: $sFontWeight-bold;
   color: white;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .Button {
-  border: $buttonBorderSize solid $cStructure-mainBkg;
+  border: $sButton-border solid $cStructure-mainBkg;
 }
 .Button:hover,
 .Button span:hover { text-decoration:none }
@@ -75,5 +74,16 @@ $buttonBorderSize: 1px;
   &:hover {
     background-color: rgba(#384047, 1);
     color:white;
+  }
+}
+// Use this instead of .Button--positive on header background
+.Button--headerPositive {
+  border: $sButton-border+1 solid white;
+  color: white;
+  &:hover {
+    background-color: white;
+    span {
+      color: $cTypography-linkHover;
+    }
   }
 }

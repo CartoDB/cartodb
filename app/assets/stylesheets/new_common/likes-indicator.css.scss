@@ -5,10 +5,12 @@
 @import "../new_variables/mixins";
 @import "../new_variables/sizes";
 
+$cLiked: #D93F56;
+
 .LikesIndicator {
   font-weight: $sFontWeight-lighter;
   color:$cTypography-secondary;
-  cursor: pointer;
+  cursor: default;
 }
 .LikesIndicator-icon {
   @include transform(1);
@@ -16,19 +18,22 @@
   font-size: $sFontSize-small;
   color: $cTypography-help;
 }
-.LikesIndicator:hover {
+.LikesIndicator.is-likeable {
+  cursor: pointer;
+}
+.LikesIndicator.is-likeable:hover {
   color:$cTypography-paragraphs;
   text-decoration:none;
   .LikesIndicator-icon {
-    color:#D93F56;
+    color:$cLiked;
   }
 }
-.LikesIndicator--liked {
-  color: #D93F56;
-  .LikesIndicator-icon { color: #D93F56 }
-  &:hover { color: #D93F56 }
+.LikesIndicator.is-liked {
+  color: $cLiked;
+  .LikesIndicator-icon { color: $cLiked }
+  &:hover { color: $cLiked }
 }
-.LikesIndicator--animated {
+.LikesIndicator.is-animated {
   .LikesIndicator-icon {
     @include animation(pulse 400ms both ease-in);
   }

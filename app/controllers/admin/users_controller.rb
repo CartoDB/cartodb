@@ -93,6 +93,7 @@ class Admin::UsersController < ApplicationController
     flash[:success] = "User was successfully deleted."
     head :no_content
   rescue CartoDB::CentralCommunicationFailure => e
+    Rollbar.report_exception(e)
     if e.user_message =~ /No user found with username/
       @user.destroy
       flash[:success] = "User was deleted from the organization server. #{e.user_message}"

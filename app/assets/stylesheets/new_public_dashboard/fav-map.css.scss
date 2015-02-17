@@ -12,7 +12,7 @@ $height: 280px;
 
 .FavMap {
   position: relative;
-  height: $height;
+  height: $height / 2;
   background: white;
 }
 .FavMap:before {
@@ -31,7 +31,7 @@ $height: 280px;
 }
 .FavMap-spinner {
   position: absolute;
-  top: ($height / 2) - $sSpinner-size;
+  top: ($height / 4) - $sSpinner-size;
   left: 50%;
   margin-left: -#{$sSpinner-size / 2};
   display: none;
@@ -41,3 +41,9 @@ $height: 280px;
   display: block;
 }
 
+@media (min-width: $sMedia-tablet) {
+  .FavMap { height: $height; }
+  .FavMap-spinner {
+    top: ($height / 2) - $sSpinner-size;
+  }
+}

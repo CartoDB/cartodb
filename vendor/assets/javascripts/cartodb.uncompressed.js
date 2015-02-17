@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.2
+// cartodb.js version: 3.12.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: 851159435b83291a70f2791ee60f32a0bacdf2bd
+// sha: f3da4170f24c3b18cd8530b505eba7f8cf18d166
 (function() {
   var root = this;
 
@@ -34420,7 +34420,7 @@ cdb.vis.Vis = Vis;
 
       var url = this._tilerHost() + this.endPoint;
 
-      if (bbox) {
+      if (bbox && bbox.length) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

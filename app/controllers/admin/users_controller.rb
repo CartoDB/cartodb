@@ -97,7 +97,7 @@ class Admin::UsersController < ApplicationController
       @user.destroy
       flash[:success] = "User was deleted from the organization server. #{e.user_message}"
       head :no_content
-    elsif
+    else
       set_flash_flags(nil, true)
       flash[:error] = "User was not deleted. #{e.user_message}"
       head :no_content

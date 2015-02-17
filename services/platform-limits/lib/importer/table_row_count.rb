@@ -6,6 +6,12 @@ module CartoDB
 
       # This limit uses User.max_import_table_row_count attribute to limit table size regarding row count.
       # Has no storage.
+      #
+      # 'context' is expected to be:
+      # Hash {
+      #   :table_name String
+      #   :tables_schema String|nil (Optional, defaults to import schema 'cdb_importer')
+      # }
       class TableRowCount < AbstractLimit
 
         # Where to search for the table if no schema specified at context

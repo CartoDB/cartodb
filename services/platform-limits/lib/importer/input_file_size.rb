@@ -6,6 +6,8 @@ module CartoDB
 
       # This limit uses User.max_import_file_size attribute to limit file sizes upon imports.
       # Has no storage as there's no need of it, and serves as a really simple Limit example.
+      #
+      # 'context' is expected to be an integer containing the file size in bytes
       class InputFileSize < AbstractLimit
 
         # This limit needs additional fields present at options Hash:

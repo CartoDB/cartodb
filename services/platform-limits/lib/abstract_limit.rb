@@ -4,6 +4,8 @@ module CartoDB
   module PlatformLimits
 
     # Abstract limit class, providing scaffolding and common logic.
+    #
+    # Each limit should specify here the usage and expected contents of 'context' parameter used in most methods.
     class AbstractLimit
 
       TYPE_USER = 'u'

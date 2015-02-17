@@ -11,6 +11,8 @@ module CartoDB
       # It is not perfect as a safety measure the import will be considered imported after a given time
       # (user statement timeout *2) to avoid stale keys in case of errors
       # Uses Redis storage.
+      #
+      # 'context' is unused in this limit
       class UserConcurrentImportsAmount < AbstractLimit
 
         # This limit needs additional fields present at options Hash:

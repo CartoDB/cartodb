@@ -115,6 +115,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(3) }
 .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(4) }
 .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(2) }
+.DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
 
 @media (min-width: $sMedia-tablet) {
   .DatasetsList-itemMeta {

@@ -34,11 +34,6 @@ window.onload = function() {
 </script>
 ```
 
-With a similar source code you can create a visualization like this one:
-
-<div class="map_wrapper">
-</div>
-
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
 
 

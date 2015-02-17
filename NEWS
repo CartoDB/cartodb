@@ -1,3 +1,6 @@
+3.12.2 ()
+- Fixes error generating a map preview of a visualization with a torque layer.
+
 3.12.1 (13//02/2015)
 - Allows to force the https protocol when requesting a vizjson to generate a static image
 

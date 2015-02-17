@@ -2402,11 +2402,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
-      var fixedPoint = new L.Point(t.x, t.y);
-      this._adjustTilePoint(fixedPoint);
-      t.corrected = {};
-      t.corrected.x = fixedPoint.x;
-      t.corrected.y = fixedPoint.y;
       var tileData = this.provider.getTileData(t, t.zoom, function(tileData) {
         // don't load tiles that are not being shown
         if (t.zoom !== self._map.getZoom()) return;
@@ -2418,39 +2413,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
       });
     }, this);
 
-  },
-
-  _adjustTilePoint: function (tilePoint) {
-
-    var limit = this._getWrapTileNum();
-
-    // wrap tile coordinates
-    if (!this.options.continuousWorld && !this.options.noWrap) {
-      tilePoint.x = ((tilePoint.x % limit.x) + limit.x) % limit.x;
-    }
-
-    if (this.options.tms) {
-      tilePoint.y = limit.y - tilePoint.y - 1;
-    }
-  },
-
-  _getWrapTileNum: function () {
-    var crs = this._map.options.crs,
-        size = crs.getSize(this._map.getZoom());
-    return size.divideBy(this._getTileSize())._floor();
-  },
-  
-  _getTileSize: function () {
-    var map = this._map,
-        zoom = map.getZoom() + this.options.zoomOffset,
-        zoomN = this.options.maxNativeZoom,
-        tileSize = this.options.tileSize;
-
-    if (zoomN && zoom > zoomN) {
-      tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
-    }
-
-    return tileSize;
   },
 
   _clearTileCaches: function() {
@@ -2690,7 +2652,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     if (options.animationDuration) {
       this.animator.duration(options.animationDuration);
     }
-
+    this._clearCaches();
     this.redraw();
     return this;
   },
@@ -4106,10 +4068,12 @@ var Profiler = require('../profiler');
       var self = this;
       var prof_fetch_time = Profiler.metric('torque.provider.windshaft.tile.fetch').start();
       var subdomains = this.options.subdomains || '0123';
-      var index = Math.abs(coord.corrected.x + coord.corrected.y) % subdomains.length;
+      var limit_x = Math.pow(2, zoom);
+      var corrected_x = ((coord.x % limit_x) + limit_x) % limit_x;
+      var index = Math.abs(corrected_x + coord.y) % subdomains.length;
       var url = this.templateUrl
-                .replace('{x}', coord.corrected.x)
-                .replace('{y}', coord.corrected.y)
+                .replace('{x}', corrected_x)
+                .replace('{y}', coord.y)
                 .replace('{z}', zoom)
                 .replace('{s}', subdomains[index])
 
@@ -4511,7 +4475,7 @@ var filters = require('./torque_filters');
               return a.href;
           };
       var img_name = qualifyURL(st["marker-file"] || st["point-file"]);
-      if (img_name && this._icons.itemsToLoad === 0) {
+      if (img_name && this._icons.itemsToLoad <= 0) {
           var img = this._icons[img_name];
           img.w = st['marker-width'] || img.width;
           img.h = st['marker-width'] || st['marker-height'];
@@ -4694,12 +4658,15 @@ var filters = require('./torque_filters');
           if (typeof self._icons.itemsToLoad === 'undefined'){
             this._icons.itemsToLoad = img_names.length;
           }
-          new_img.crossOrigin = "Anonymous";
+          var filtered = self._shader.getLayers().some(function(layer){return typeof layer.shader["image-filters"] !== "undefined"});
+          if (filtered){
+            new_img.crossOrigin = 'Anonymous';
+          }
           new_img.onload = function(e){
             self._icons[this.src] = this;
             if (Object.keys(self._icons).length === img_names.length + 1){
               self._icons.itemsToLoad--;
-              if (self._icons.itemsToLoad === 0){
+              if (self._icons.itemsToLoad <= 0){
                 self.clearSpriteCache();
                 self.fire("allIconsLoaded");
               }
@@ -4708,8 +4675,12 @@ var filters = require('./torque_filters');
           new_img.onerror = function(){
             self._forcePoints = true;
             self.clearSpriteCache();
+            if(filtered){
+              console.info("Only CORS-enabled, or same domain image-files can be used in combination with image-filters");
+            }
             console.error("Couldn't get marker-file " + this.src);
           };
+          this.itemsToLoad++;
           new_img.src = img_names[i];
         }
       }
@@ -5111,6 +5082,7 @@ module.exports = {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./core":4}]},{},[10])(10)
 });
+
 (function() {
 
 if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")

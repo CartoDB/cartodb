@@ -29,7 +29,7 @@ describe Visualization::Member do
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
     CartoDB::TablePrivacyManager.any_instance.stubs(
         :set_from_table_privacy => nil,
-        :propagate_to_redis_and_varnish => nil
+        :propagate_to_varnish => nil
     )
 
     User.any_instance.stubs(

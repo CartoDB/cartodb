@@ -33,7 +33,11 @@
     </div>
     <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
-        <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% if @avatar_url %>
+          <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% else %>
+          <div class="UserAvatar-img UserAvatar-img--large UserAvatar-img--no-src"></div>
+        <% end %>
       </div>
       <h2 class="UserInfo-name">
         <%= @name %>
@@ -43,7 +47,7 @@
           <% else %>
             <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
           <% end %>
-          <% content_for(:abs_positioned) do %>
+          <% content_for(:js) do %>
             <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown" style="display: none;">
               <ul class="BreadcrumbsDropdown-list">
                 <li class="BreadcrumbsDropdown-listItem">
@@ -86,9 +90,9 @@
         <% end %>
       </ul>
     </div>
-    <div class="PublicBody-content">
-      <%= yield %>
-    </div>
+
+    <%= yield %>
+
     <%= render 'admin/shared/new_footer' %>
     <script type="text/javascript">
       var favMapViewAttrs = {
@@ -107,6 +111,5 @@
     </script>
     <%= javascript_include_tag 'cdb.js', 'templates', 'new_public_dashboard_deps', 'new_public_dashboard' %>
     <%= yield :js %>
-    <%= yield :abs_positioned %>
   </body>
 </html>

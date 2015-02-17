@@ -5,6 +5,11 @@
 * Added oEmbed support for visualizations [#1965](https://github.com/CartoDB/cartodb/issues/1965)
 * [content guessing] Prioritize ip over country guessing [#2089](https://github.com/CartoDB/cartodb/issues/2089)
 * Added new import error code (6667) for detecting and reporting statement timeouts.
+* Fixes creation of a visualization from a table [#2145](https://github.com/CartoDB/cartodb/issues/2145)
+* Changes the way geometry types are loaded client side (performance), see PR [#2189](https://github.com/CartoDB/cartodb/pull/218)
+* Cache the geometry types in table model server side (performance), see PR [#2165](https://github.com/CartoDB/cartodb/pull/2165)
+* Added PlatformLimits service. For now, only includes an importer maximum file size limit.
+* Added map previews in the delete table dialog
 
 3.8.0 (2015-01-30)
 ------------------

@@ -9,6 +9,7 @@
 * Changes the way geometry types are loaded client side (performance), see PR [#2189](https://github.com/CartoDB/cartodb/pull/218)
 * Cache the geometry types in table model server side (performance), see PR [#2165](https://github.com/CartoDB/cartodb/pull/2165)
 * Added PlatformLimits service. For now, only includes an importer maximum file size limit.
+* Fixed incompatible data for wizards [#1942](https://github.com/CartoDB/cartodb/issues/1942)
 
 3.8.0 (2015-01-30)
 ------------------

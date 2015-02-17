@@ -91,9 +91,11 @@ module CartoDB
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
-        unless column_exists_in?(table_name, :the_geom)
-          column.rename_to(:the_geom)
+        if column_exists_in?(table_name, :the_geom)
+          old_the_geom_column = Column.new(db, table_name, 'the_geom', schema, job)
+          old_the_geom_column.rename_to(:old_the_geom)
         end
+        column.rename_to(:the_geom)
         handle_multipoint(qualified_table_name) if multipoint?
         self
       rescue => exception

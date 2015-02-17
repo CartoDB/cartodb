@@ -150,7 +150,9 @@
           this.imageOptions.basemap = baseLayer;
         }
 
-        if (dataLayer.type === "namedmap") {
+        if (dataLayer.type === "torque") {
+          this.options.layers = this._getTorqueLayerDefinition(dataLayer);
+        } else if (dataLayer.type === "namedmap") {
           this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
         } else {
           this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
@@ -248,6 +250,29 @@
       }
 
       return this._getDefaultBasemapLayer();
+
+    },
+
+    _getTorqueLayerDefinition: function(layer_definition) {
+
+      var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
+
+      var torqueLayer = {
+        type: "torque",
+        options: {
+          sql: layerDefinition.options.query,
+          cartocss: layer_definition.options.tile_style
+        }
+      };
+
+      var layers  =  [ this._getBasemapLayer(), torqueLayer ];
+
+      var ld = {
+        stat_tag: layer_definition.options.stat_tag,
+        layers: layers
+      };
+
+      return ld;
 
     },
 

@@ -1,13 +1,13 @@
 ## CartoDB.js
 
-CartoDB offers a simple unified JavaScript library called CartoDB.js that let you interact with the CartoDB service. This library allows you to connect to your stored visualizations, create new visualizations, add custom interaction, or access and query your raw data from a web browser; meaning, your applications just got a whole lot more powerful with a lot less code.
+CartoDB offers a simple unified JavaScript library called CartoDB.js that lets you interact with the CartoDB service. This library allows you to connect to your stored visualizations, create new visualizations, add custom interaction, and access or query your raw data from a web browser; meaning, your applications just got a whole lot more powerful with a lot less code.
 
 When you add CartoDB.js to your websites you get some great new tools to make maps or power your content with data. Let’s take a look.
 
 
 ## Getting started
 
-The simplest way to use a visualization created in CartoDB on an external site is at follows...
+The simplest way to use a visualization created in CartoDB on an external site is as follows:
 
 <div class="code-title">Create a simple visualization</div>
 ```html
@@ -260,13 +260,13 @@ Returns the native map object being used (e.g. a L.Map object for Leaflet).
 
 An overlay is a control shown on top of the map.
 
-Overlay objects are always created using method **addOverlay** of cartodb.Vis object.
+Overlay objects are always created using the **addOverlay** method of a cartodb.Vis object.
 
 An overlay is internally a **Backbone.View** so if you know how backbone works you can use it. If you want to use plain DOM objects you can access to **overlay.el** (**overlay.$el** for jQuery object).
 
 #### vis.addInfoWindow(_map, layer, fields [, options]_)
 
-Adds an infowindow to the map controlled by layer events. It enables interaction and overrides the layer interacivity.
+Adds an infowindow to the map controlled by layer events. It enables interaction and overrides the layer interactivity.
 
 ##### Arguments
  
@@ -309,7 +309,7 @@ See [cartodb.CartoDBLayer](#cartodbcartodblayer) to see an example.
   - **tooltip**: set to false if you want to disable the tooltip (enabled by default).
   - **legends**: if it's true legends are shown in the map.
   - **time_slider**: show time slider with torque layers (enabled by default)
-  - **layerIndex**: when the visualization contains more than one layer this index allow to select
+  - **layerIndex**: when the visualization contains more than one layer this index allows you to select
     what layer is created. Take into account that `layerIndex == 0` is the base layer and that
     all the tiled layers (non animated ones) are merged into a single one. The default value for
     this option is 1 (usually tiled layers).
@@ -833,7 +833,7 @@ It accepts the following options:
 + **dp**: float precision.
 + **jsonp**: if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS.
 
-These arguments will be applied for all the queries performed by this object, if you want to override them for one query see **execute** options.
+These arguments will be applied to all the queries performed by this object. If you want to override them for one query see **execute** options.
 
 #### sql.execute(_sql [,vars][, options][, callback]_)
 
@@ -891,9 +891,9 @@ sql.getBounds('select * from table').done(function(bounds) {
 
 ## Core API functionallity
 
-In case you are not using Leaflet, or you want to implement your own layer object, cartodb provide a way to get the tiles url for a layer definition.
+In case you are not using Leaflet, or you want to implement your own layer object, cartodb provides a way to get the tiles url for a layer definition.
 
-If you want to use this functionallity you only need to load cartodb.core.js from our cdn, no css is needed:
+If you want to use this functionality, you only need to load cartodb.core.js from our cdn. No css is needed:
 
 <div class="code-title">Core API functionallity</div>
 ```html

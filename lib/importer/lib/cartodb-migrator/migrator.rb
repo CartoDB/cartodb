@@ -107,7 +107,7 @@ module CartoDB
             UPDATE \"#{@suggested_name}\"
             SET the_geom =
               ST_GeomFromText(
-                'POINT(' || trim(\"#{matching_longitude}\") || ' ' || trim(\"#{matching_latitude}\") || ')', 4326
+                'POINT(' || trim(CAST(\"#{matching_longitude}\" AS text)) || ' ' || trim(CAST(\"#{matching_latitude}\" AS text)) || ')', 4326
             )
             WHERE
             trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'

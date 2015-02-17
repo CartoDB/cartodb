@@ -3,7 +3,7 @@
 @import "../../new_variables/sizes";
 
 .BreadcrumbsDropdown { width: 260px }
-.BreadcrumbsDropdown--compact { width: 140px }
+.BreadcrumbsDropdown--compact { width: 120px }
 .BreadcrumbsDropdown-list {
   display: block;
   width: 100%;
@@ -47,7 +47,7 @@
   padding: 5px 0;
   line-height: 20px;
   border-radius: 2px;
-  background: #CCC;
+  background: $cIcons-default;
   text-align: center;
   font-weight: $sFontWeight-lighter;
   font-size: $sFontSize-smaller;

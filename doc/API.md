@@ -39,9 +39,9 @@ window.onload = function() {
 
 ## Using the library
 
-CartoDB.js can be used when you want to embed and use a visualization you have designed using CartoDB user interface, or to create visualizations from scratch dynamically using your data. If you want to create new maps on your webpage, jump to “using CartoDB visualizations in your webpage”. If you already have maps on your webpage and want to add CartoDB visualizations to them, read “Add CartoDB layer to an existing map”.
+CartoDB.js can be used when you want to embed and use a visualization you have designed using CartoDB's user interface, or to dynamically create visualizations from scratch using your data. If you want to create new maps on your webpage, jump to [Creating a visualization from scratch](#creating-a-visualization-from-scratch). If you already have maps on your webpage and want to add CartoDB visualizations to them, read [Adding CartoDB layers to an existing map](#adding-cartodb-layers-to-an-existing-map).
 
-You can also use the CartoDB API to create visualizations programmatically. This can be useful when the visualizations react to user interactions. To read more about it jump to [create visualizations at runtime](#creating-visualizations-at-runtime).
+You can also use the CartoDB API to create visualizations programmatically. This can be useful when the visualizations react to user interactions. To read more about it jump to [Creating visualizations at runtime](#creating-visualizations-at-runtime).
 
 We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or something else, our CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and be consistent if you develop or maintain multiple maps online.
 
@@ -53,7 +53,7 @@ To start using CartoDB.js just paste this piece of code within the HEAD tags of 
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 ```
 
-### Create a visualization from scratch 
+### Creating a visualization from scratch
 
 The easiest way to quickly get a CartoDB map onto your webpage. Use this when there is no map in your application and you want to add the visualization to hack over it. With this method, CartoDB.js handles all the details of loading a map interface, basemap, and your CartoDB visualization.
 
@@ -64,7 +64,7 @@ You can start by giving cartodb.js the DIV ID from your HTML where you want to p
 cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json');
 ```
 
-That’s it! No need to create the map instance, insert controls, or load layers, it handles it all for you. If you want to modify the result after instantiating your map with this method, take a look at the CartoDB.js API [available methods](#api-methods). For example, you can also use the returned layer to build more functionality (show/hide, click, hover, custom infowindows):
+That’s it! No need to create the map instance, insert controls, or load layers. CartoDB.js takes care of this for you. If you want to modify the result after instantiating your map with this method, take a look at the CartoDB.js API [available methods](#api-methods). For example, you can also use the returned layer to build more functionality (show/hide, click, hover, custom infowindows):
 
 <div class="code-title">Simplest way to add your map to a webpage ever!</div>
 ```javascript
@@ -115,11 +115,11 @@ Below, you have an example using a previously instatiated Leaflet map.
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
 
-### Creating visualizations at runtime 
+### Creating visualizations at runtime
 
 All CartoDB services are available through the API, which basically means that you can create a new visualization without doing it before through the CartoDB UI. This is particularly useful when you are modifying the visualization depending on user interactions that change the SQL to get the data or CartoCSS to style it. Although this method requires more programming skills, it provides all the flexibility you might need to create more dynamic visualizations.
 
-When you create a visualization using the CartoDB website, you automatically get a viz.json URL defining it. When you want to create the visualization via JavaScript you don't always have a viz.json, so you will need to pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
+When you create a visualization using the CartoDB website, you automatically get a viz.json URL that defines it. When you want to create the visualization via JavaScript, you don't always have a viz.json. You will need to pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
 
 <div class="code-title">Creating visualizations at runtime</div>
 ```javascript
@@ -146,12 +146,12 @@ cartodb.createLayer(map, {
 });
 ```
 
-Want further information? [Check out the complete API method list](#api-methods).
+Want further information? [Check out the complete list of API methods](#api-methods).
 
 
 ## Usage examples
 
-If you want to start playing with the library, the best way to do it might be to take a look to some of the examples below:
+The best way to start learning about the library is by taking a look to some of the examples below:
 
 + An easy example using the library - ([view live](http://cartodb.github.com/cartodb.js/examples/easy.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)).
 + Leaflet integration - ([view live](http://cartodb.github.com/cartodb.js/examples/leaflet.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/leaflet.html)).
@@ -162,7 +162,7 @@ If you want to start playing with the library, the best way to do it might be to
 
 ## API methods
 
-The documentation below reflects CartoDB.js for the v3 library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library.
+The documentation below refers to CartoDB.js v3. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods from the CartoDB.js library.
 
 ### Visualization
 
@@ -211,7 +211,7 @@ cartodb.createVis('map', url)
 
 ##### Returns
 
-Promise object. You can listen for the following events:
+A promise object. You can listen for the following events:
 
 + **done**: triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
 + **error**: triggered when the layer couldn't be created. The error string is the first argument.
@@ -229,18 +229,18 @@ Adds an overlay to the map that can be either a zoom control, a tooltip or an in
 ##### Arguments
 
 - **options**  
-  - **layer** layer from the visualization where apply the overlay (optional)
+  - **layer** layer from the visualization where the overlay should be applied (optional)
   - **type** zoom / tooltip / infobox
 
-Extra options are available depending on the UI component selected before
+Extra options are available based on the UI component selected before.
 
 ##### Returns
 
-An overlay object, see [vis.Overlays](#visoverlays)
+An overlay object, see [vis.Overlays](#visoverlays).
 
 #### vis.getOverlay(_type_)
 
-Return the first overlay with the specified **type**.
+Returns the first overlay with the specified **type**.
 
 <div class="code-title">vis.getOverlay</div>
 ```javascript
@@ -250,7 +250,7 @@ zoom.clean() // remove it from the screen
 
 #### vis.getOverlays()
 
-Returns a list of overlays currently on the screen (see overlays description).
+Returns a list of the overlays that are currently on the screen (see overlays description).
 
 #### vis.getNativeMap()
 
@@ -262,7 +262,7 @@ An overlay is a control shown on top of the map.
 
 Overlay objects are always created using the **addOverlay** method of a cartodb.Vis object.
 
-An overlay is internally a **Backbone.View** so if you know how backbone works you can use it. If you want to use plain DOM objects you can access to **overlay.el** (**overlay.$el** for jQuery object).
+An overlay is internally a **Backbone.View** so if you know how Backbone works you can use it. If you want to use plain DOM objects you can access **overlay.el** (**overlay.$el** for jQuery object).
 
 #### vis.addInfoWindow(_map, layer, fields [, options]_)
 
@@ -314,11 +314,11 @@ See [cartodb.CartoDBLayer](#cartodbcartodblayer) to see an example.
     all the tiled layers (non animated ones) are merged into a single one. The default value for
     this option is 1 (usually tiled layers).
 
-- **callback(_layer_)**: if a function is specified is called when the layer is created passing it as argument.
+- **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
 ##### Returns
 
-Promise object. You can listen for the following events:
+A promise object. You can listen for the following events:
 
 + **done**: triggered when the layer is created, the layer is passed as first argument. Each layer type has different options, see layers section.
 + **error**: triggered when the layer couldn't be created. The error string is the first argument.
@@ -357,15 +357,15 @@ CartoDBLayer allows you to manage tiled layers from CartoDB. It manages the subl
 
 #### layer.clear()
 
-Should be called after removing the layer from the map.
+Clears the layer. It should be invoked after removing the layer from the map.
 
 #### layer.hide()
 
-Hides the cartodb layer from the map.
+Hides the layer from the map.
 
 #### layer.show()
 
-Show the cartodb layer in the map if it was previously added. 
+Shows the layer in the map if it was previously added.
 
 #### layer.toggle()
 
@@ -373,7 +373,7 @@ Toggles the visibility of the layer and returns a boolean that indicates the new
 
 #### layer.setOpacity(_opacity_)
 
-Change the opacity of the layer.
+Changes the opacity of the layer.
 
 ##### Arguments
 
@@ -381,7 +381,7 @@ Change the opacity of the layer.
 
 #### layer.getSubLayer(_layerIndex_)
 
-Get a previously created sublayer. And exception is raised if no sublayer exists.
+Gets a previously created sublayer. And exception is raised if no sublayer exists.
 
 ##### Arguments
 
@@ -389,7 +389,7 @@ Get a previously created sublayer. And exception is raised if no sublayer exists
 
 ##### Returns
 
-SubLayer object.
+A SubLayer object.
 
 ##### Example
 
@@ -404,11 +404,11 @@ sublayer.setSQL('SELECT * FROM table_name limit 10');
 
 #### layer.getSubLayerCount()
 
-Get the number of sublayers in layer.
+Gets the number of sublayers in layer.
 
 ##### Returns
 
-Number of sublayers.
+The number of sublayers.
 
 ##### Example
 
@@ -423,7 +423,7 @@ for (var i = 0; i < num_sublayers; i++) {
 
 #### layer.createSubLayer(_layerDefinition_)
 
-Adds a new data to the current layer. With this method data from multiple tables can be easily visualized. New in V3.
+Adds a new data to the current layer. With this method, data from multiple tables can be easily visualized. New in V3.
 
 ##### Arguments
 
@@ -445,7 +445,7 @@ Adds a new data to the current layer. With this method data from multiple tables
 
 ##### Returns
 
-SubLayer object
+A SubLayer object.
 
 ##### Example
 
@@ -462,16 +462,16 @@ cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countr
 
 #### layer.invalidate()
 
-Refresh the data. If the data has been changed in CartoDB server it is displayed. If not nothing happens. Every time a parameter is changed in a sublayer the layer is refreshed so this method don't need to be called manually. New in V3.
+Refreshes the data. If the data has been changed in the CartoDB server those changes will be displayed. Nothing happens otherwise. Every time a parameter is changed in a sublayer, the layer is refreshed automacillay, so there's no need to call this method manually. New in V3.
 
 #### layer.setAuthToken(_auth_token_)
 
-Sets the auth token to create the layer. Only available for private visualizations. An exception is
+Sets the auth token that will be used to create the layer. Only available for private visualizations. An exception is
 raised if the layer is not being loaded with HTTPS. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
 
 ##### Returns
 
-the layer itself
+The layer itself.
 
 ##### Arguments
 
@@ -479,7 +479,7 @@ the layer itself
 
 #### layer.setParams(_key, value_)
 
-Using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) this function changes the layer confuguration. This could be called in different ways:
+Sets the configuration of a layer when using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1). It can be invoked in different ways:
 
 <div class="code-title">layer.createSubLayer</div>
 ```javascript
@@ -495,7 +495,7 @@ layer.setParams({'test': 1, 'color': '#F00'}); // unset test
 
 ##### Returns
 
-the layer itself
+The layer itself.
 
 ### cartodb.CartoDBLayer.SubLayer
 
@@ -505,7 +505,7 @@ Sets sublayer parameters. Useful when more than one parameter needs to be change
 
 ##### Arguments
 
-- **layerDefinition**: an object with the sql and cartocss that defines the data, should be like
+- **layerDefinition**: an object with the sql and cartocss that defines the data, like:
 
 <div class="code-title">layerDefinition</div>
 ```javascript
@@ -516,9 +516,9 @@ Sets sublayer parameters. Useful when more than one parameter needs to be change
 }
 ```
 
-##### Return
+##### Returns
 
-self object
+The layer itself.
 
 ##### Example
 
@@ -537,7 +537,7 @@ Gets the attribute for the sublayer, for example 'sql', 'cartocss'.
 
 ##### Returns
 
-The requested attribute of undefined if it's not present.
+The requested attribute or undefined if it's not present.
 
 #### sublayer.getSQL()
 
@@ -557,11 +557,11 @@ Shortcut for `set({'cartocss': '#layer {...}' })`
 
 #### sublayer.remove
 
-Remove the sublayer. If a method is called after removing it an exception is thrown.
+Removes the sublayer. An exception will be thrown if a method is called and the layer has been removed.
 
 #### sublayer.setInteraction(_true_)
 
-Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
+Enables (true) or disables (false) the interaction of the layer. When disabled, **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
 
 #### sublayer.setInteractivity('cartodb_id, name, ...')
 
@@ -575,25 +575,25 @@ Sets the columns which data will be available via the interaction with the subla
 
 #### sublayer.show
 
-Show a previously hidden sublayer. The layer is refreshed after calling this function.
+Shows a previously hidden sublayer. The layer is refreshed after calling this function.
 
 #### sublayer.hide
 
-Remove temporally the sublayer from the layer. The layer is refreshed after calling this function.
+Removes the sublayer from the layer temporarily. The layer is refreshed after calling this function.
 
 #### sublayer.toggle()
 
-Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is shown, false if it is hidden)
+Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is visible, false if it is hidden)
 
 #### sublayer.infowindow
 
-**sublayer.infowindow** is a Backbone model where we modify the parameters of the infowindow
+**sublayer.infowindow** is a Backbone model where we modify the parameters of the infowindow.
 
 ##### Arguments
 
-- **template**: Set the custom infowindow template defined on the html. You can write simple html or use [Mustache templates](http://mustache.github.com/).
-- **width**: Set the width of the infowindow (value must be a number).
-- **maxHeight**: Set the max height of the scrolled content (value must be a number).
+- **template**: Custom html template for the infowindow. You can write simple html or use [Mustache templates](http://mustache.github.com/).
+- **width**: Width of the infowindow (value must be a number).
+- **maxHeight**: Max height of the scrolled content (value must be a number).
 
 <div class="code-title">sublayer.infowindow.set</div>
 ```html
@@ -629,21 +629,21 @@ Toggles the visibility of the sublayer and returns a boolean that indicates the 
 
 ## Events
 
-You can add custom functions to layer events. This is useful for integrating your website with your maps, adding events for mouseovers and click events.
+You can bind custom functions to layer events. This is useful for integrating your website with your maps, adding events for mouseovers and click events.
 
 ### layer
 
 #### layer.featureOver(_event, latlng, pos, data, layerIndex_)
 
-A callback when hovers in any feature.
+Triggered when the user hovers on any feature.
 
 ##### Callback arguments
 
 - **event**: Browser mouse event object.
-- **latlng**: The LatLng in an array [lat,lng] where was clicked.
+- **latlng**: Array with the LatLng ([lat,lng]) where the layer was clicked.
 - **pos**: Object with x and y position in the DOM map element.
 - **data**: The CartoDB data of the clicked feature with the **interactivity** param.
-- **layerIndex**: the layerIndex where the event happened
+- **layerIndex**: the layerIndex where the event happened.
 
 ##### Example
 
@@ -656,11 +656,11 @@ layer.on('featureOver', function(e, latlng, pos, data, subLayerIndex) {
 
 #### layer.featureOut(_layerIndex_)
 
-A callback when hovers out any feature.
+Triggered when the user hovers out any feature.
 
 #### layer.featureClick(_event, latlng, pos, data, layerIndex_)
 
-A callback when clicks in a feature of a layer.
+Triggered when when the user clicks on a feature of a layer.
 
 ##### callback arguments
 
@@ -668,11 +668,11 @@ Same as `featureOver`.
 
 #### layer.mouseover()
 
-Called when the mouse enters in **any** feature, useful to change cursor for hover
+Triggered when the mouse enters in **any** feature. Useful to change the cursor while hovering.
 
 #### layer.mouseout()
 
-Called when the mouse leaves all the features, useful to change cursor for hover
+Triggered when the mouse leaves all the features. Useful to revert the cursor after hovering.
 
 ##### Example
 
@@ -689,7 +689,7 @@ layer.on('mouseout', function() {
 
 #### layer.loading()
 
-Called when the layer or its sublayers are about to be loaded. This is also called when any properties are changed but not yet visible.
+Triggered when the layer or any of its sublayers are about to be loaded. This is also triggered when any properties are changed but not yet visible.
 
 ##### Example
 
@@ -705,7 +705,7 @@ layer.getSubLayer(0).set({
 
 #### layer.load()
 
-Called when the layer or its sublayers have been loaded. This is also called when any properties are changed and visible.
+Triggered when the layer or its sublayers have been loaded. This is also triggered when any properties are changed and visible.
 
 ##### Example
 
@@ -748,7 +748,7 @@ Same as `layer.mouseover()` but sublayer specific.
 
 ## Specific UI functions
 
-There are a few functions in CartoDB.js for creating, enabling, and disabling pieces of the user-interface.
+There are a few functions in CartoDB.js for creating, enabling, and disabling pieces of the user interface.
 
 ### cartodb.geo.ui.Tooltip
 
@@ -772,7 +772,7 @@ The tooltip is not shown when hover on feature.
 
 ### cartodb.geo.ui.InfoBox
 
-Show an small box when the user hovers on a map feature. The position is fixed:
+Shows a small box when the user hovers on a map feature. The position is fixed:
 
 <div class="code-title">cartodb.geo.ui.InfoBox</div>
 ```javascript
@@ -786,7 +786,7 @@ var box = vis.addOverlay({
 
 #### cartodb.geo.ui.InfoBox.enable
 
-The tooltip is shown when hover on feature when is called.
+The tooltip is shown when hover on feature.
 
 #### cartodb.geo.ui.InfoBox.disable
 
@@ -847,7 +847,7 @@ It executes a sql query.
 
 ##### Returns
 
-Promise object. You can listen for the following events:
+A promise object. You can listen for the following events:
 
 + **done**: triggered when the data arrives.
 + **error**: triggered when something failed.
@@ -863,7 +863,7 @@ sql.execute('SELECT * FROM table_name')
  
 #### sql.getBounds(_sql [,vars][, options][, callback]_)
 
-Return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resulting of specified query.
+Returns the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resulting of specified query.
 
 <div class="code-title">sql.getBounds</div>
 ```javascript
@@ -878,7 +878,7 @@ sql.getBounds('select * from table').done(function(bounds) {
 
 ##### Application of getBounds in Leaflet
 
-You can use the `getBounds` results to center data on your maps using Leaflet.
+You can use the results from `getBounds` to center data on your maps using Leaflet.
 
 - **getBounds and Leaflet**
 
@@ -888,6 +888,7 @@ sql.getBounds('select * from table').done(function(bounds) {
   map.fitBounds(bounds);
 });
 ```
+
 
 ## Core API functionallity
 
@@ -908,11 +909,11 @@ Notice that cartodb.SQL is also included in that javascript file
 
 #### cartodb.Tiles.getTiles(_layerOptions, callback_)
 
-Fetch the tile template for the layerdefinition.
+Fetches the tile template for the layerdefinition.
 
 ##### Arguments
 
-+ **layerOptions**: the data that defines the layer, it should contain at least user_name and sublayer list. There are the available options:
++ **layerOptions**: the data that defines the layer. It should contain at least user_name and sublayer list. These are the available options:
 
 <div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
@@ -928,7 +929,7 @@ Fetch the tile template for the layerdefinition.
 }
 ```
 
-+ **callback(tilesUrl, error)**: a function that recieves the tiles templates. In case of an error the first param is null and second one is an object with errors attribute witch is a list of errors. The tilesUrl object contains url template for tiles and for interactivity grids:
++ **callback(tilesUrl, error)**: a function that recieves the tiles templates. In case of an error, the first param is null and the second one will be an object with an errors attribute that contains the list of errors. The tilesUrl object contains url template for tiles and interactivity grids:
 
 <div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
@@ -952,7 +953,7 @@ Fetch the tile template for the layerdefinition.
 
 ##### Example 
 
-In this example a layer is created with one sublayer with renders all the content from table.
+In this example, a layer with one sublayer is created. The sublayer renders all the content from a table.
 
 <div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
@@ -975,11 +976,11 @@ cartodb.Tiles.getTiles(layerData, function(tiles, err) {
 
 ## Versions
 
-Keep in mind the version of CartoDB.js you are using for development. For any live code, we recommend you link directly to the tested CartoDB.js version from your development. You can find the version at anytime as follows:
+Keep in mind the version of CartoDB.js you are using for development. For any live code, we recommend you to link directly to the tested CartoDB.js version from your development environment. You can check the version of CartoDB.js as follows:
 
 ### cartodb.VERSION
 
-Contains the library version, should be something like `3.0.1`.
+Returns the version of the library. It should be something like `3.0.1`.
 
 
 ## Other important stuff
@@ -990,7 +991,7 @@ CartoDB.js has many great features for you to use in your applications. Let’s 
 
 The Viz.JSON document tells CartoDB.js all the information about your map, including the style you want to use for your data and the filters you want to apply with SQL. The Viz JSON file is served with each map you create in your CartoDB account.
 
-Although the Viz JSON file stores all your map settings, all the values are also easy to customize with CartoDB.js if you want to do something completely different than what you designed in your console. Loading the Viz JSON is as simple as:
+Although the Viz JSON file stores all your map settings, all these settings can be easily customized with CartoDB.js. For example, if you want to do something completely different than what you initially designed it for. Loading the Viz JSON is as simple as:
 
 <div class="code-title">Viz JSON support</div>
 ```javascript
@@ -1012,11 +1013,11 @@ sql.getBounds('SELECT * FROM table_name').done(function(bounds) {
 
 ### Event listener support
 
-The CartoDB.js is highly asynchronous, meaning your application can get on with what it needs to do while the library efficiently does what you request in the background. This is useful for loading maps or getting query results. At the same time, we have made it very simple to add listeners and callbacks to the async portions of the library.
+CartoDB.js is highly asynchronous. Your application can get on with what it needs to do while the library efficiently does what you request in the background. This is useful for loading maps or getting query results. At the same time, we have made it very simple to add listeners and callbacks to the async portions of the library.
 
 #### Loading events
 
-The **createLayer** and **createVis** functions returns two important events for you to take advantage of: the first is **done**, which will let your code know that the library has successfully read the information from the Viz JSON and loaded the layer you requested. The second is ‘error’, which lets you know something did not go as expected when loading a requested layer:
+The **createLayer** and **createVis** functions trigger two important events for you to take advantage of. The first one is **done**, which will let your code know that the library has successfully read the information from the Viz JSON and loaded the layer you requested. The second is **error**, which lets you know that something did not go as expected when trying to load the requested layer:
 
 <div class="code-title">Loading events</div>
 ```javascript
@@ -1040,7 +1041,7 @@ layer.on('featureClick', function(e, latlng, pos, data, layer) {
 });
 ```
 
-The second event is the **featureOver** event, which lets you listen for when the user’s mouse is over a feature. Be careful, as these functions can get costly if you have a lot of features on a map.
+The second event is the **featureOver** event, which lets you listen for mouse hovers on any feature. Be careful, as these functions can get costly if you have a lot of features on a map.
 
 <div class="code-title">featureOver</div>
 ```javascript
@@ -1060,7 +1061,7 @@ layer.on('featureOut', function(e, latlng, pos, data, layer) {
 
 #### Leaflet integration
 
-If you want to use [Leaflet](http://leafletjs.com) it gets even easier, CartoDB.js handles loading all the necessary libraries for you! just include CartoDB.js and CartoDB.css in the HEAD of your website and you are ready to go! The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can greatly help to jumpstart the process. Adding it is as simple as adding the main JavaScript library:
+If you want to use [Leaflet](http://leafletjs.com) it gets even easier. CartoDB.js handles loading all the necessary libraries for you! Just include CartoDB.js and CartoDB.css in the HEAD of your website and you are ready to go! The CartoDB.css document isn’t mandatory. However, if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can help you jumpstart the process. Using Leaflet is as simple as adding the main JavaScript library:
 
 <div class="code-title">Leaflet integration</div>
 ```html
@@ -1070,7 +1071,7 @@ If you want to use [Leaflet](http://leafletjs.com) it gets even easier, CartoDB.
 
 #### HTTPS support
 
-You can use all the functionality of cartodb.js with HTTPs support. Be sure to add use https when importing both the JS library and the CSS file. Next, you will specify HTTPs for your Viz.JSON URL and as a parameter when you initialize your visualizaiton.
+You can use all the functionality of cartodb.js with HTTPs support. Be sure to use https when importing both the JS library and the CSS file. You will also need to use HTTPs in the Viz.JSON URL you pass to **createVis**.
 
 <div class="code-title">HTTPS support</div>
 ```html
@@ -1094,12 +1095,12 @@ You can use all the functionality of cartodb.js with HTTPs support. Be sure to a
 
 #### Persistent version hosting
 
-We are committed to making sure your website works as intended no matter what changes in the future. While we may find more efficient or more useful features to add to the library as time progresses. We never want to break things you have already developed, for this reason, we make versioned CartoDB.js libraries available to you, meaning that the way they function will never unexpectedly change on you.
+We are committed to making sure your website works as intended no matter what changes in the future. We may find more efficient or more useful features to add to the library as time progresses. But we never want to break things you have already developed. For this reason, we make versioned CartoDB.js libraries available to you. The way they function will never unexpectedly change on you.
 
-We recommend that you always develop against the most recent version of CartoDB.js, right now:
+We recommend that you always develop against the most recent version of CartoDB.js:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.32/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.36/cartodb.js"></script>
 ```
 
 Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:
@@ -1114,7 +1115,7 @@ Or, by running the following in your code:
 alert(cartodb.VERSION)
 ```
 
-Now, that you have your CartoDB.js version, you can point your site at that release. If the current version of CartoDB.js is `3.9.06, the URL would be:
+Once you know which version of CartoDB.js you're using, you can point your site to that release. If the current version of CartoDB.js is 3.9.06, the URL would be:
 
 ```html
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.9.06/cartodb.js"></script>

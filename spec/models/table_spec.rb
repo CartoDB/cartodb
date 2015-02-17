@@ -2097,4 +2097,93 @@ describe Table do
     end
   end
 
+  describe '#key' do
+    it 'computes a suitable key for a table' do
+      table = create_table(name: "any_name", user_id: @user.id)
+      table.key.should == "rails:#{@user.database_name}:public.any_name"
+    end
+
+    it 'computes different keys for different tables' do
+      table_1 = create_table(user_id: @user.id)
+      table_2 = create_table(user_id: @user.id)
+
+      table_1.key.should_not == table_2.key
+    end
+  end
+
+  describe '#geometry_types_key' do
+    it 'computes a suitable key' do
+      table = create_table(name: 'any_other_name', user_id: @user.id)
+      table.geometry_types_key.should == "rails:#{@user.database_name}:public.any_other_name:geometry_types"
+    end
+  end
+
+  describe '#geometry_types' do
+    it "returns an empty array and does not cache if there's no column the_geom" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).never
+      cache.expects(:setex).never
+
+      # A bit extreme way of getting a table without the_geom
+      table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
+      table.schema(reload: true)
+
+      table.geometry_types.should == []
+    end
+
+    it "returns an empty array and does not cache if there are no geometries in the query" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once.returns(nil)
+      cache.expects(:setex).never
+
+      table.stubs(:cache).returns(cache)
+
+      table.geometry_types.should == []
+    end
+
+    it "caches if there are geometries" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once
+      cache.expects(:setex).once
+
+      table.stubs(:cache).returns(cache)
+      table.owner.in_database.run(%Q{
+        INSERT INTO #{table.name}(the_geom)
+        VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
+      })
+
+      table.geometry_types.should == ['ST_Point']
+    end
+
+    it "returns the value from the cache if it is there" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+
+      table.geometry_types.should eq(any_types), "cache miss failure"
+      table.geometry_types.should eq(any_types), "cache hit failure"
+      $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
+    end
+  end
+
+  describe '#destroy' do
+    it "invalidates geometry_types cache entry" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+      table.geometry_types.should eq(any_types)
+
+      key = table.geometry_types_key
+      table.destroy
+
+      $tables_metadata.get(key).should eq(nil), "the geometry types cache should be invalidated upon table removal"
+    end
+  end
+
 end

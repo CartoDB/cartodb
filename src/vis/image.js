@@ -150,7 +150,7 @@
           this.imageOptions.basemap = baseLayer;
         }
 
-        var layers = [ this._getDefaultBasemapLayer() ];
+        var layers = [ this._getBasemapLayer() ];
 
         for (var i = 1; i < data.layers.length; i++) {
 
@@ -162,11 +162,9 @@
             layers.push(this._getNamedmapLayerDefinition(layer));
           } else {
             var ll = this._getLayergroupLayerDefinition(layer);
-
             for (var j = 0; j < ll.length; j++) {
               layers.push(ll[j]);
             }
-
           }
         }
 

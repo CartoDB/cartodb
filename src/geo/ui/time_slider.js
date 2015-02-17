@@ -25,7 +25,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, '_stop', '_start', '_slide', '_bindLayer', '_unbindLayer', 'updateSliderRange', 'updateSlider', 'updateTime');
+    _.bindAll(this, '_stop', '_start', '_slide', '_bindLayer', '_unbindLayer', 'updateSliderRange', 'updateSlider', 'updateTime', 'toggleTime', 'toggleButton');
     var self = this;
     this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'bottom|left';
@@ -52,6 +52,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.torqueLayer.on('change:time', this.updateSlider);
     this.torqueLayer.on('change:time', this.updateTime);
     this.torqueLayer.on('change:steps', this.updateSliderRange);
+    this.torqueLayer.on('play', this.toggleButton);
+    this.torqueLayer.on('pause', this.toggleButton);
     return this;
   },
 
@@ -171,7 +173,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   toggleTime: function(e) {
     this.killEvent(e);
-    this.torqueLayer.toggle();
+    this.torqueLayer.toggle();  
+    this.toggleButton();
+  },
+  toggleButton: function() {
     this.$('.button')
       [(this.torqueLayer.isRunning() ? 'addClass': 'removeClass')]('stop')
       .attr('href','#/' + (this.torqueLayer.isRunning() ? 'pause': 'play'))

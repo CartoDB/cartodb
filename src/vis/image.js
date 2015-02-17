@@ -329,7 +329,7 @@
 
       var url = this._tilerHost() + this.endPoint;
 
-      if (bbox) {
+      if (bbox && bbox.length) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

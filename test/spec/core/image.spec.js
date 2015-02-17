@@ -92,6 +92,20 @@ describe("Image", function() {
 
   });
 
+  it("shouldn't generate a bbox URL without a bouding box", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
+
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/center/(.*?)/52\.5897007687178/52\.734375/400/300\.png");
+
+    cartodb.Image(vizjson).bbox([]).size(400,300).getUrl(function(error, url) {
+      expect(error).toEqual(null);
+      expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
   it("should use the zoom defined in the vizjson", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"

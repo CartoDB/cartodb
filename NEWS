@@ -1,3 +1,6 @@
+3.12.3 ()
+- Fixes a case were having an empty bbox would end up generatign an erroneous bounding box URL.
+
 3.12.2 (17//02/2015)
 - Fixes error generating a map preview of a visualization with a torque layer.
 - Fixed use of https parameter in torque layer

@@ -150,14 +150,27 @@
           this.imageOptions.basemap = baseLayer;
         }
 
-        if (dataLayer.type === "torque") {
-          this.options.layers = this._getTorqueLayerDefinition(dataLayer);
-        } else if (dataLayer.type === "namedmap") {
-          this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
-        } else {
-          this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
+        var layers = [ this._getDefaultBasemapLayer() ];
+
+        for (var i = 1; i < data.layers.length; i++) {
+
+          var layer = data.layers[i];
+
+          if (layer.type === "torque") {
+            layers.push(this._getTorqueLayerDefinition(layer));
+          } else if (layer.type === "namedmap") {
+            layers.push(this._getNamedmapLayerDefinition(layer));
+          } else {
+            var ll = this._getLayergroupLayerDefinition(layer);
+
+            for (var j = 0; j < ll.length; j++) {
+              layers.push(ll[j]);
+            }
+
+          }
         }
 
+        this.options.layers = { layers: layers };
         this._requestLayerGroupID();
 
       }
@@ -257,7 +270,7 @@
 
       var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 
-      var torqueLayer = {
+      return {
         type: "torque",
         options: {
           sql: layerDefinition.options.query,
@@ -265,47 +278,30 @@
         }
       };
 
-      var layers  =  [ this._getBasemapLayer(), torqueLayer ];
-
-      var ld = {
-        stat_tag: layer_definition.options.stat_tag,
-        layers: layers
-      };
-
-      return ld;
-
     },
 
-    _getLayergroupLayerDefinition: function(options) {
+    _getLayergroupLayerDefinition: function(layer) {
 
+      var options = layer.options;
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
-      var ld = layerDefinition.toJSON();
 
-      ld.layers.unshift(this._getBasemapLayer());
-
-      return ld;
+      return layerDefinition.toJSON().layers;
 
     },
 
-    _getNamedmapLayerDefinition: function(options) {
+    _getNamedmapLayerDefinition: function(layer) {
+
+      var options = layer.options;
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      layerDefinition.options.type = "named";
+      //layerDefinition.options.type = "named";
 
-      var layers  =  [
-        this._getBasemapLayer(), {
-        type: "named",
+      return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
-      }];
-
-      var ld = {
-        layers: layers
-      };
-
-      return ld;
+      }
 
     },
 

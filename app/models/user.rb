@@ -21,6 +21,7 @@ class User < Sequel::Model
   # @param avatar_url       String
   # @param database_schema  String
   # @param max_import_file_size Integer
+  # @param max_concurrent_import_count Integer
 
   one_to_one  :client_application
   one_to_many :synchronization_oauths

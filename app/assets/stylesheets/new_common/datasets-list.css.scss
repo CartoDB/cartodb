@@ -30,10 +30,12 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .DatasetsList-item.DatasetsList-item--selectable:hover {
   background-color: $cCard-hoverFill;
   border: 1px $cCard-hoverBorder solid;
+  cursor: pointer;
 }
 .DatasetsList-item.DatasetsList-item--selectable.is--selected {
   background-color: $cCard-selectedFill;
   border: 1px $cCard-selectedBorder solid;
+  &:hover { cursor: default }
 }
 .DatasetsList-itemCategory {
   position: relative;

@@ -38,6 +38,7 @@
   border-color: $cCard-selectedBorder;
 }
 .MapCard-header {
+  @include inline-block();
   position: relative;
   width: 100%;
   height: 170px;
@@ -110,24 +111,14 @@
 .MapCard-error {
   display: none;
   position:absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  margin-top: -30px;
+  width: 60px;
+  height: 59px;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
-  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
-}
-.MapCard-error .error-00 {
-  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
-}
-.MapCard-error .error-01 {
-  @include background(image-url("layout/map_placeholder_1.png") no-repeat center 0);
-}
-.MapCard-error .error-02 {
-  @include background(image-url("layout/map_placeholder_2.png") no-repeat center 0);
-}
-.MapCard-error .error-03 {
-  @include background(image-url("layout/map_placeholder_3.png") no-repeat center 0);
+  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   @include display-flex();

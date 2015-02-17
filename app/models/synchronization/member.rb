@@ -406,14 +406,14 @@ module CartoDB
       def log
         return @log unless @log.nil?
 
-        if user
-          log_attributes = {
-            type: CartoDB::Log::TYPE_SYNCHRONIZATION
-          }
-          log_attributes.merge(user_id: user.id) if user
+        log_attributes = {
+          type: CartoDB::Log::TYPE_SYNCHRONIZATION,
+          id: self.log_id
+        }
 
-          @log = CartoDB::Log.where(log_attributes).first
-        end
+        log_attributes.merge(user_id: user.id) if user
+
+        @log = CartoDB::Log.where(log_attributes).first
       end
 
       def valid_uuid?(text)

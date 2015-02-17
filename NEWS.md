@@ -10,6 +10,7 @@
 * Cache the geometry types in table model server side (performance), see PR [#2165](https://github.com/CartoDB/cartodb/pull/2165)
 * Added PlatformLimits service. For now, only includes an importer maximum file size limit.
 * Fixed incompatible data for wizards [#1942](https://github.com/CartoDB/cartodb/issues/1942)
+* Added map previews in the delete table dialog
 
 3.8.0 (2015-01-30)
 ------------------

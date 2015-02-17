@@ -134,10 +134,14 @@ module CartoDB
         importer = nil
         self.state    = STATE_SYNCING
 
-        @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
-        @log.save
-        self.log_id = @log.id
-        store
+        # First import is a "normal import" so still has no id, then run gets called and will get log first time
+        # but we need this to fix old logs
+        if log.nil?
+          @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+          @log.save
+          self.log_id = @log.id
+          store
+        end
 
         if user.nil?
           raise "Couldn't instantiate synchronization user. Data: #{to_s}"

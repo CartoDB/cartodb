@@ -4175,10 +4175,14 @@ var Profiler = require('../profiler');
       var host = this.options.dynamic_cdn ? this.url().replace('{s}', '0'): this._tilerHost();
       var url = host + "/api/v1/map";
       var named = this.options.named_map;
+      var allParams = {};
 
       if(named) {
         //tiles/template
         url = host + "/api/v1/map/named/" + named.name + "/jsonp";
+        if(typeof named.params !== "undefined"){
+          layergroup = named.params;
+        }
       } else {
         layergroup = {
           "version": "1.0.1",
@@ -4193,7 +4197,12 @@ var Profiler = require('../profiler');
           }]
         };
       }
-      var extra = this._extraParams(this.options.stat_tag ? { stat_tag: this.options.stat_tag }: {} );
+      
+      if(this.options.stat_tag){
+        allParams["stat_tag"] = this.options.stat_tag;
+      }
+
+      extra = this._extraParams(allParams);
 
       // tiler needs map_key instead of api_key
       // so replace it

@@ -135,6 +135,7 @@ module CartoDB
         self.state    = STATE_SYNCING
 
         @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+        @log.save
         self.log_id = @log.id
         store
 
@@ -405,12 +406,14 @@ module CartoDB
       def log
         return @log unless @log.nil?
 
-        log_attributes = {
-          type: CartoDB::Log::TYPE_SYNCHRONIZATION,
-        }
-        log_attributes.merge(user_id: user.id) if user
+        if user
+          log_attributes = {
+            type: CartoDB::Log::TYPE_SYNCHRONIZATION
+          }
+          log_attributes.merge(user_id: user.id) if user
 
-        @log = CartoDB::Log.where(log_attributes).first
+          @log = CartoDB::Log.where(log_attributes).first
+        end
       end
 
       def valid_uuid?(text)

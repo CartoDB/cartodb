@@ -95,22 +95,24 @@ class Table < Sequel::Model(:user_tables)
     self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
   end #default_privacy_values
 
-  def geometry_types
-    if schema.select { |key, value| key == :the_geom }.length > 0
-      query_geometry_types
-    else
-      []
-    end
+  def geometry_types_key
+    @geometry_types_key ||= "#{key}:geometry_types"
   end
 
-  def query_geometry_types
-    owner.in_database[ %Q{
-      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-        SELECT the_geom
-        FROM "#{self.name}"
-        WHERE (the_geom is not null) LIMIT 10
-      ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
+  def geometry_types
+    if schema.select { |key, value| key == :the_geom }.length > 0
+      types_str = cache.get geometry_types_key
+      if types_str.present?
+        types = JSON.parse(types_str)
+      else
+        types = query_geometry_types
+        #30 min ttl if types list is non-empty
+        cache.setex(geometry_types_key, 1800, types) if types.length > 0
+      end
+    else
+      types = []
+    end
+    types
   end
 
   def calculate_the_geom_type
@@ -677,6 +679,7 @@ class Table < Sequel::Model(:user_tables)
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
     invalidate_varnish_cache
+    cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
@@ -839,6 +842,10 @@ class Table < Sequel::Model(:user_tables)
   def privacy_changed?
     previous_changes.keys.include?(:privacy)
   end #privacy_changed?
+
+  def key
+    key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
+  end
 
   def sequel
     owner.in_database.from(sequel_qualified_table_name)
@@ -1470,6 +1477,20 @@ class Table < Sequel::Model(:user_tables)
   end
 
   private
+
+  def query_geometry_types
+    owner.in_database[ %Q{
+      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+        SELECT the_geom
+        FROM "#{self.name}"
+        WHERE (the_geom is not null) LIMIT 10
+      ) as foo
+    }].all.map {|r| r[:st_geometrytype] }
+  end
+
+  def cache
+    @cache ||= $tables_metadata
+  end
 
   def update_cdb_tablemetadata
     # TODO: use upsert

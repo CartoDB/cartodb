@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.1
+// cartodb.js version: 3.12.2
 // uncompressed version: cartodb.uncompressed.js
-// sha: 1b0b627c93b4b8861d118f3d65255cdf2cac3c92
+// sha: 851159435b83291a70f2791ee60f32a0bacdf2bd
 (function() {
   var root = this;
 
@@ -23521,7 +23521,7 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
   render: function() {
 
     var value;
-
+    this.model.attributes.name = ""+this.model.attributes.name;
     if (this.model.get("type") == 'image' && this.model.get("value")) {
       value = "url( " + this.model.get("value") + ")";
     } else {
@@ -34241,12 +34241,25 @@ cdb.vis.Vis = Vis;
           this.imageOptions.basemap = baseLayer;
         }
 
-        if (dataLayer.type === "namedmap") {
-          this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
-        } else {
-          this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
+        var layers = [ this._getBasemapLayer() ];
+
+        for (var i = 1; i < data.layers.length; i++) {
+
+          var layer = data.layers[i];
+
+          if (layer.type === "torque") {
+            layers.push(this._getTorqueLayerDefinition(layer));
+          } else if (layer.type === "namedmap") {
+            layers.push(this._getNamedmapLayerDefinition(layer));
+          } else {
+            var ll = this._getLayergroupLayerDefinition(layer);
+            for (var j = 0; j < ll.length; j++) {
+              layers.push(ll[j]);
+            }
+          }
         }
 
+        this.options.layers = { layers: layers };
         this._requestLayerGroupID();
 
       }
@@ -34331,10 +34344,18 @@ cdb.vis.Vis = Vis;
 
       if (basemap) {
 
+        // TODO: refactor this
         var type = basemap.type.toLowerCase();
 
-        if (type === "plain") return this._getPlainBasemapLayer(basemap.color);
-        else                  return this._getHTTPBasemapLayer(basemap);
+        if (basemap.options && basemap.options.type) {
+          type = basemap.options.type.toLowerCase();
+        }
+
+        if (type === "plain") {
+          return this._getPlainBasemapLayer(basemap.options.color);
+        } else {
+          return this._getHTTPBasemapLayer(basemap);
+        }
 
       }
 
@@ -34342,36 +34363,42 @@ cdb.vis.Vis = Vis;
 
     },
 
-    _getLayergroupLayerDefinition: function(options) {
+    _getTorqueLayerDefinition: function(layer_definition) {
 
-      var layerDefinition = new LayerDefinition(options.layer_definition, options);
-      var ld = layerDefinition.toJSON();
+      var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 
-      ld.layers.unshift(this._getBasemapLayer());
-
-      return ld;
+      return {
+        type: "torque",
+        options: {
+          sql: layerDefinition.options.query,
+          cartocss: layer_definition.options.tile_style
+        }
+      };
 
     },
 
-    _getNamedmapLayerDefinition: function(options) {
+    _getLayergroupLayerDefinition: function(layer) {
+
+      var options = layer.options;
+      var layerDefinition = new LayerDefinition(options.layer_definition, options);
+
+      return layerDefinition.toJSON().layers;
+
+    },
+
+    _getNamedmapLayerDefinition: function(layer) {
+
+      var options = layer.options;
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      layerDefinition.options.type = "named";
+      //layerDefinition.options.type = "named";
 
-      var layers  =  [
-        this._getBasemapLayer(), {
-        type: "named",
+      return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
-      }];
-
-      var ld = {
-        layers: layers
-      };
-
-      return ld;
+      }
 
     },
 
@@ -35100,6 +35127,7 @@ Layers.register('namedmap', function(vis, data) {
 });
 
 Layers.register('torque', function(vis, data) {
+  normalizeOptions(vis, data);
   // default is https
   if(vis.https) {
     if(data.sql_api_domain && data.sql_api_domain.indexOf('cartodb.com') !== -1) {

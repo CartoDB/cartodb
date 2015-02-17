@@ -17,7 +17,7 @@
               <% end %>
             </li>
             <li class="Header-navigationBreadcrumbItem"><%= current_user.name_or_username %> /</li>
-            <li class="Header-navigationBreadcrumbItem" id="header-breadcrumbs-dropdown"></li>
+            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown"></li>
           </ul>
         </li>
       </ul>
@@ -36,7 +36,7 @@
           </a>
         </li>
         <li class="Header-settingsItem Header-settingsItemAvatar">
-          <a href="#/options" class="UserAvatar" id="header-settings-dropdown">
+          <a href="#/options" class="UserAvatar js-settings-dropdown">
             <%= image_tag current_user.avatar_url, :class => 'UserAvatar-img UserAvatar-img--medium' %>
           </a>
         </li>

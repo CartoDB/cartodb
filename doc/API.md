@@ -193,7 +193,6 @@ cartodb.createVis('map', url)
   - **title**: adds a header with the title of the visualization.
   - **description**: adds description to the header (as you set in the UI).
   - **search**: adds a search control (default: true).
-  - **searchControl**: adds a search control, searchControl over search (default: true).
   - **zoomControl**: adds zoom control (default: true).
   - **loaderControl**: adds loading control (default: true).
   - **center_lat**: latitude where the map is initializated.

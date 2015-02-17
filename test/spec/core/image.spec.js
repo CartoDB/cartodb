@@ -37,6 +37,21 @@ describe("Image", function() {
 
   });
 
+  it("should generate the URL for a torque layer", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/3ec995a8-b6ae-11e4-849e-0e4fddd5de28/viz.json"
+
+    var image = cartodb.Image(vizjson);
+
+    var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-138\.6474609375,27\.761329874505233,-83\.408203125,51\.26191485308451/320/240\.pn");
+
+    image.getUrl(function(err, url) {
+      expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
   it("should allow to set the zoom", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"

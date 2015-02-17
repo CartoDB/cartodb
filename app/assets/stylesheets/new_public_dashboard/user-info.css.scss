@@ -68,7 +68,7 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 .UserInfo-linksItem--positive a {
   color: $cHighlight-positive;
 }
-@media (min-width: $sMedia-desktop) {
+@media (min-width: $sMedia-tablet) {
   .UserInfo-links { @include flex-direction(row); }
   .UserInfo-linksItem:not(:last-child) { margin-right: $sMargin-group; }
 }

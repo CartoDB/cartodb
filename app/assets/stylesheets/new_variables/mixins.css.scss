@@ -64,9 +64,12 @@
 }
 @mixin flex-order($v) {
   -webkit-flex-order: $v;
+  -webkit-box-ordinal-group: $v;
+  -moz-box-ordinal-group: $v;
   -moz-flex-order: $v;
   -ms-flex-order: $v;
   -ms-order: $v;
+  box-ordinal-group: $v;
   flex-order: $v;
   order: $v;
 }

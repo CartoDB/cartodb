@@ -82,14 +82,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   width: 100%;
   margin-top: $sMargin-elementInline;
 }
-.DatasetsList-itemMeta {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-  margin-bottom: $sMargin-elementInline;
-}
-.DatasetsList-itemMeta > * { margin-right: $sMargin-element }
-.DatasetsList-itemMeta > *:last-child { margin-right: 0 }
 .DatasetsList-itemTitle {
   @include display-flex();
   @include align-items(center);
@@ -108,6 +100,36 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   margin-left: $sMargin-min;
 }
+.DatasetsList-itemMeta {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include flex-wrap(wrap);
+  margin-bottom: $sMargin-elementInline;
+}
+.DatasetsList-itemMeta > * {
+  width: 50%;
+  text-align: left;
+  white-space: nowrap;
+}
+.DatasetsList-itemMeta > *:nth-child(1) { @include flex-order(1) }
+.DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(3) }
+.DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(4) }
+.DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(2) }
+
+@media (min-width: $sMedia-tablet) {
+  .DatasetsList-itemMeta {
+    @include align-items(center);
+  }
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: $sMargin-element;
+    text-align: center;
+  }
+  .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
+  .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
+  .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
+  .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
+}
 
 @media (min-width: $sMedia-desktop) {
   .DatasetsList {
@@ -116,9 +138,9 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     padding-right: 0;
   }
   .DatasetsList-itemInfo {
-    @include display-flex();
     @include flex-direction(row);
     @include justify-content(space-between, justify);
+    @include align-items(flex-start, start);
   }
   .DatasetsList-itemPrimaryInfo { max-width: 440px }
   .DatasetsList-itemSecondaryInfo {
@@ -126,9 +148,10 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     @include flex-direction(column);
     flex-grow: 1;
     min-width: 400px;
+    margin-top: $sMargin-min;
   }
   .DatasetsList-itemMeta {
     @include justify-content(flex-end, end);
-    margin: 0;
+    margin-bottom: 0;
   }
 }

@@ -19,7 +19,10 @@
 }
 .MapsList.is-hidden { display: none }
 .MapsList-item { width: 300px }
-.MapsList-item--fake { display: none }
+.MapsList-item--fake {
+  display: none;
+  @include opacity(0.6);
+}
 
 @media (min-width: $sMedia-tablet) {
   .MapsList {

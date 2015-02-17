@@ -23,7 +23,7 @@
   border-radius: 4px;
   /* x-offset, y-offset, blur, size, color */
   box-shadow: 0 0 5px 1px rgba(black, 0.2), 0 0 1px 0 rgba(black, 0.3);
-  z-index: 50;
+  z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
 
   &:before {
     content: ' ';

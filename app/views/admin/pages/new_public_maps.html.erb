@@ -14,9 +14,10 @@
       <% @visualizations.each do |vis| %>
         <% user_domain = vis[:owner].organization ? vis[:owner].username : nil %>
         <li class="MapsList-item">
-          <div class="MapCard">
-            <div class="MapCard-header">
-            </div>
+          <div class="MapCard" data-vizjson-url="<%= api_v2_visualizations_vizjson_url(user_domain: user_domain, id: vis[:id]) %>.json">
+            <a href="<%= public_visualizations_public_map_url(user_domain: user_domain, id: vis[:id]) %>" class="MapCard-header js-header">
+              <div class="MapCard-loader"></div>
+            </a>
             <div class="MapCard-content">
               <div class="MapCard-contentBody">
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
@@ -26,8 +27,8 @@
                 </div>
 
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-                  <% if vis[:description] %>
-                    <p class="DefaultDescription" title="<%= vis[:description] %>"><%= raw truncate(vis[:description], :length => 85) %></p>
+                  <% if vis[:desc] %>
+                    <p class="DefaultDescription" title="<%= vis[:desc] %>"><%= raw truncate(vis[:desc], :length => 85) %></p>
                   <% else %>
                     <span class="DefaultDescription is--empty"></span>
                   <% end %>
@@ -49,10 +50,19 @@
                   </div>
                 </div>
                 <div class="MapCard-contentFooterDetails--right">
-                  <%# likes %>
+                  <%= render 'admin/pages/shared/new_like_button', vis: vis %>
                 </div>
               </div>
             </div>
+          </div>
+        </li>
+      <% end %>
+      <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
+      <% ((3 - @visualizations.size + 3) % 3).times.each do %>
+        <li class="MapsList-item MapsList-item--fake">
+          <div class="MapCard">
+            <div class="MapCard-header MapCard-header--fake"></div>
+            <div class="MapCard-content"></div>
           </div>
         </li>
       <% end %>
@@ -60,4 +70,4 @@
   <% end %>
 </div>
 
-<%= render 'admin/shared/new_pagination', total_count: @total_count, per_page: @vis_per_page, current_page: @current_page %>
+<%= render 'admin/pages/shared/pagination' %>

@@ -4,10 +4,9 @@
 
 // Center the content within the defined layout width
 .u-inner {
-  width: $sLayout-width;
   margin: 0 auto;
+  padding: 0 $sMargin-elementInline;
 }
-
 .u-ellipsLongText {
   white-space: nowrap;
   overflow: hidden;
@@ -17,4 +16,16 @@
 
 .u-disabled {
   @include opacity(0.4);
+}
+
+@media (min-width: $sMedia-desktop) {
+  .u-inner {
+    width: $sLayout-width;
+    padding: 0;
+  }
+}
+@media (max-width: $sMedia-tablet) {
+  .u-hideOnMobile {
+    display: none !important;
+  }
 }

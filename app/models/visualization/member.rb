@@ -390,11 +390,6 @@ module CartoDB
         invalidate_redis_cache
       end
 
-      def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
-        parent.invalidate_cache unless parent_id.nil?
-      end
-
       def invalidate_cache_and_refresh_named_map
         invalidate_cache
         if type != TYPE_CANONICAL or organization?
@@ -600,6 +595,11 @@ module CartoDB
 
       def invalidate_redis_cache
         redis_cache.expire(redis_vizjson_key)
+      end
+
+      def invalidate_varnish_cache
+        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+        parent.invalidate_cache unless parent_id.nil?
       end
 
       def close_list_gap(other_vis)

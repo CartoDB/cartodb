@@ -133,7 +133,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     margin-right: $sMargin-element;
     text-align: center;
   }
-  .DatasetsList-itemTags .DefaultEditInline-input { text-align: left }
+  // .DatasetsList-itemTags .DefaultEditInline-input { text-align: left }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
   .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }

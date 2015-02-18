@@ -15,8 +15,8 @@ describe Importer::InputFileSize do
     it "new(), maximum_limit?(),  key()" do
       max_value = 50*1024*1024
 
-      fake_user_1 = Doubles::User.new({username: 'test_1', max_import_file_size: max_value })
-      fake_user_2 = Doubles::User.new({username: 'test_1', max_import_file_size: max_value })
+      fake_user_1 = CartoDB::PlatformLimits::Doubles::User.new({username: 'test_1', max_import_file_size: max_value })
+      fake_user_2 = CartoDB::PlatformLimits::Doubles::User.new({username: 'test_1', max_import_file_size: max_value })
 
       options_1 = {
         user: fake_user_1

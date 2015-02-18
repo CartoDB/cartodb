@@ -15,6 +15,10 @@
   height: $sButton-height;
   outline: none;
 }
+.Button--inline {
+  display: inline-block;
+  margin: 0 $sMargin-elementInline;
+}
 .Button,
 .Button span {
   font-size: $sFontSize-smallUpperCase;

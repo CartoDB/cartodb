@@ -96,7 +96,7 @@
             <i class="iconFont iconFont-Info Form-footerIcon"></i>
             Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
           </p>
-          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <%= button_tag(type: 'submit', class: 'Button Button--main js-submit', value: 'oauth') do %>
             <% content_tag(:span, 'Request new oauth keys') %>
           <% end %>
         </div>

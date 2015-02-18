@@ -119,7 +119,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      member.expects(:invalidate_varnish_cache)
+      member.expects(:invalidate_cache)
       member.name = 'changed'
       member.store
     end
@@ -132,7 +132,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      member.expects(:invalidate_varnish_cache)
+      member.expects(:invalidate_cache)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -142,7 +142,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      member.expects(:invalidate_varnish_cache)
+      member.expects(:invalidate_cache)
       member.description = 'changed description'
       member.store
     end
@@ -178,7 +178,7 @@ describe Visualization::Member do
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
-      member.expects(:invalidate_varnish_cache)
+      member.expects(:invalidate_cache)
       member.delete
     end
   end #delete
@@ -186,7 +186,7 @@ describe Visualization::Member do
   describe '#unlink_from' do
     it 'invalidates varnish cache' do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id)).store
-      member.expects(:invalidate_varnish_cache)
+      member.expects(:invalidate_cache)
       member.expects(:remove_layers_from)
       member.unlink_from(Object.new)
     end

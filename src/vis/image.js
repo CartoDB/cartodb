@@ -276,11 +276,14 @@
 
       var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 
+      var query    = layerDefinition.options.query || "SELECT * FROM " + layerDefinition.options.table_name;
+      var cartocss = layer_definition.options.tile_style;
+
       return {
         type: "torque",
         options: {
-          sql: layerDefinition.options.query,
-          cartocss: layer_definition.options.tile_style
+          sql: query,
+          cartocss: cartocss
         }
       };
 

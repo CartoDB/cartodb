@@ -258,6 +258,18 @@ describe User do
     user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
   end
 
+  it 'should delete feature flags assignations to a deleted user' do
+    ff = FactoryGirl.create(:feature_flag)
+
+    user = create_user :email => 'ff2@example.com', :username => 'ff2-user-01', :password => 'ff2-user-01'
+    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
+    user.save
+    user_id = user.id
+    user.destroy
+    Rails::Sequel.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
+    Rails::Sequel.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
+  end
+
   it "should have a default dashboard_viewed? false" do
     user = User.new
     user.dashboard_viewed?.should be_false

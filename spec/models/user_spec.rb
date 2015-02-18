@@ -250,7 +250,7 @@ describe User do
   end
 
   it 'should store feature flags' do
-    ff = FactoryGirl.create(:feature_flag)
+    ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
 
     user = create_user :email => 'ff@example.com', :username => 'ff-user-01', :password => 'ff-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
@@ -259,7 +259,7 @@ describe User do
   end
 
   it 'should delete feature flags assignations to a deleted user' do
-    ff = FactoryGirl.create(:feature_flag)
+    ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
 
     user = create_user :email => 'ff2@example.com', :username => 'ff2-user-01', :password => 'ff2-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})

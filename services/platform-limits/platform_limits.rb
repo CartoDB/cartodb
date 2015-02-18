@@ -2,3 +2,4 @@
 
 require_relative './lib/abstract_limit'
 require_relative './lib/importer/input_file_size'
+require_relative './lib/importer/table_row_count'

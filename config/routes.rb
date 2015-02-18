@@ -249,7 +249,8 @@ CartoDB::Application.routes.draw do
 
     match  '(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
     post   '(/u/:user_domain)/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', as: :regenerate_api_key
-    delete '(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
+    match  '(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
+    delete '(/u/:user_domain)/your_apps/oauth/regenerate'   => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
 
   end
 

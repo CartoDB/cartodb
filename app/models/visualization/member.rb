@@ -220,7 +220,7 @@ module CartoDB
 
         support_tables.delete_all
 
-        invalidate_varnish_cache
+        invalidate_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
@@ -240,7 +240,7 @@ module CartoDB
 
       # A visualization is linked to a table when it uses that table in a layergroup (but is not the canonical table)
       def unlink_from(table)
-        invalidate_varnish_cache
+        invalidate_cache
         remove_layers_from(table)
       end
 
@@ -385,13 +385,18 @@ module CartoDB
         ".*#{id}:vizjson"
       end
 
+      def invalidate_cache
+        invalidate_varnish_cache
+        invalidate_redis_cache
+      end
+
       def invalidate_varnish_cache
         CartoDB::Varnish.new.purge(varnish_vizzjson_key)
-        parent.invalidate_varnish_cache unless parent_id.nil?
+        parent.invalidate_cache unless parent_id.nil?
       end
 
       def invalidate_cache_and_refresh_named_map
-        invalidate_varnish_cache
+        invalidate_cache
         if type != TYPE_CANONICAL or organization?
           save_named_map
         end
@@ -593,6 +598,10 @@ module CartoDB
         @redis_cache ||= $visualizations
       end
 
+      def invalidate_redis_cache
+        redis_cache.expire(redis_vizjson_key)
+      end
+
       def close_list_gap(other_vis)
         reload_self = false
 
@@ -632,7 +641,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
+        invalidate_cache if name_changed || privacy_changed || description_changed
         set_timestamps
 
         repository.store(id, attributes.to_hash)

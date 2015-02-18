@@ -12,6 +12,7 @@
 .DropdownLink {
   position: relative;
   padding-right: $sMargin-elementInline;
+  cursor: pointer;
 
   &:after {
     content: '';

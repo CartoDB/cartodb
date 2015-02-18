@@ -25,10 +25,10 @@ describe Search::Twitter do
 
   describe '#filters' do
     it 'tests max and total results filters' do
-      twitter_datasource = Search::Twitter.get_new(get_config,Doubles::User.new)
+      twitter_datasource = Search::Twitter.get_new(get_config, CartoDB::Datasources::Doubles::User.new)
 
       big_quota = 123456
-      user = Doubles::User.new({
+      user = CartoDB::Datasources::Doubles::User.new({
         twitter_datasource_quota: big_quota
       })
       maxresults_filter = twitter_datasource.send :build_maxresults_field, user
@@ -37,7 +37,7 @@ describe Search::Twitter do
       totalresults_filter.should eq big_quota
 
       small_quota = 13
-      user = Doubles::User.new({
+      user = CartoDB::Datasources::Doubles::User.new({
         twitter_datasource_quota: small_quota,
         soft_twitter_datasource_limit: false
       })
@@ -46,7 +46,7 @@ describe Search::Twitter do
       totalresults_filter = twitter_datasource.send :build_total_results_field, user
       totalresults_filter.should eq small_quota
 
-      user = Doubles::User.new({
+      user = CartoDB::Datasources::Doubles::User.new({
         twitter_datasource_quota: small_quota,
         soft_twitter_datasource_limit: true
       })
@@ -57,7 +57,7 @@ describe Search::Twitter do
     end
 
     it 'tests category filters' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -80,7 +80,7 @@ describe Search::Twitter do
     end
 
     it 'tests search term cut if too many' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -105,7 +105,7 @@ describe Search::Twitter do
     end
 
     it 'tests search term cut if too big (even if amount is ok)' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -126,7 +126,7 @@ describe Search::Twitter do
 
 
     it 'tests date filters' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -157,7 +157,7 @@ describe Search::Twitter do
 
     it 'tests twitter search integration (without conversion to CSV)' do
       # This test bridges lots of internal calls to simulate only up until twitter search call and results
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -217,7 +217,7 @@ describe Search::Twitter do
       # Should equal to sample_tweets_3.json number of results, and always >= 10 (because is Gnip's minimum)
       remaining_tweets_quota = 11
 
-      user_mock = Doubles::User.new(
+      user_mock = CartoDB::Datasources::Doubles::User.new(
         twitter_datasource_quota: remaining_tweets_quota
       )
 
@@ -276,47 +276,47 @@ describe Search::Twitter do
     end
 
     it 'tests user limits on datasource usage' do
-      twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new)
+      twitter_datasource = Search::Twitter.get_new(get_config, CartoDB::Datasources::Doubles::User.new)
 
       # Service enabled tests
-      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+      result = twitter_datasource.send :is_service_enabled?, CartoDB::Datasources::Doubles::User.new({
         has_org: true,
         twitter_datasource_enabled: true,
         org_twitter_datasource_enabled: true
       })
       result.should eq true
 
-      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+      result = twitter_datasource.send :is_service_enabled?, CartoDB::Datasources::Doubles::User.new({
         has_org: true,
         twitter_datasource_enabled: false,
         org_twitter_datasource_enabled: true
       })
       result.should eq false
 
-      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+      result = twitter_datasource.send :is_service_enabled?, CartoDB::Datasources::Doubles::User.new({
         twitter_datasource_enabled: true,
       })
       result.should eq true
 
-      result = twitter_datasource.send :is_service_enabled?, Doubles::User.new({
+      result = twitter_datasource.send :is_service_enabled?, CartoDB::Datasources::Doubles::User.new({
       twitter_datasource_enabled: false,
       })
       result.should eq false
 
       # Quota & soft limit tests
-      result = twitter_datasource.send :has_enough_quota?, Doubles::User.new({
+      result = twitter_datasource.send :has_enough_quota?, CartoDB::Datasources::Doubles::User.new({
         soft_twitter_datasource_limit: false,
         twitter_datasource_quota: 10,
       })
       result.should eq true
 
-      result = twitter_datasource.send :has_enough_quota?, Doubles::User.new({
+      result = twitter_datasource.send :has_enough_quota?, CartoDB::Datasources::Doubles::User.new({
         soft_twitter_datasource_limit: true,
         twitter_datasource_quota: 0,
       })
       result.should eq true
 
-      result = twitter_datasource.send :has_enough_quota?, Doubles::User.new({
+      result = twitter_datasource.send :has_enough_quota?, CartoDB::Datasources::Doubles::User.new({
         soft_twitter_datasource_limit: false,
         twitter_datasource_quota: 0,
       })
@@ -324,7 +324,7 @@ describe Search::Twitter do
     end
 
     it 'checks terms sanitize method' do
-      twitter_datasource = Search::Twitter.get_new(get_config, Doubles::User.new)
+      twitter_datasource = Search::Twitter.get_new(get_config, CartoDB::Datasources::Doubles::User.new)
 
       terms = [ 'a', ' b', 'c ', ' d ', ' e f', 'g h ', ' i j ', ' 1 2 3 4 ', ' ' ]
       terms_expected = [ 'a', 'b', 'c', 'd', '"e f"', '"g h"', '"i j"', '"1 2 3 4"' ]

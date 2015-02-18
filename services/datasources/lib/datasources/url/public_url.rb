@@ -65,7 +65,7 @@ module CartoDB
               url:      id,
               service:  DATASOURCE_NAME,
               checksum: checksum_of(id, etag_header, last_modified_header),
-              size:     0
+              size:     content_length_header
               # No need to use :filename nor file
           }
         end
@@ -131,6 +131,17 @@ module CartoDB
         end
 
         private
+
+        # Get the file size if present
+        # @return Integer
+        # @throws UninitializedError
+        def content_length_header
+          raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
+          content_length = @headers.fetch('Content-Length', nil)
+          content_length ||= @headers.fetch('Content-length', nil)
+          content_length ||= @headers.fetch('content-length', NO_CONTENT_SIZE_PROVIDED)
+          content_length.to_i
+        end
 
         # Calculates a checksum of given url
         # @return string

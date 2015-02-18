@@ -20,6 +20,8 @@ require_relative '../../services/datasources/lib/datasources'
 require_relative '../../services/importer/lib/importer/unp'
 require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
+require_relative '../../services/platform-limits/platform_limits'
+
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
@@ -180,7 +182,7 @@ class DataImport < Sequel::Model
 
     path = Rails.root.join('public', 'uploads', uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
-  end #remove_uploaded_resources
+  end
 
   def handle_success
     self.success  = true
@@ -190,6 +192,18 @@ class DataImport < Sequel::Model
     self.tables_created_count = table_names.size
     log.append "Import finished\n"
     save
+    begin
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                             user: current_user,
+                                                                             redis: {
+                                                                               db: $users_metadata
+                                                                             }
+                                                                         })
+                                                                    .decrement
+    rescue => exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{exception.message} #{exception.backtrace.inspect}")
+    end
     notify(results)
     self
   end
@@ -202,6 +216,18 @@ class DataImport < Sequel::Model
     end
     log.append "ERROR!\n"
     self.save
+    begin
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                           user: current_user,
+                                                                           redis: {
+                                                                             db: $users_metadata
+                                                                           }
+                                                                         })
+      .decrement
+    rescue => exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{exception.message} #{exception.backtrace.inspect}")
+    end
     notify(results)
     self
   rescue => exception
@@ -431,6 +457,12 @@ class DataImport < Sequel::Model
         error_code: 1013,
         log_info: ex.to_s
       }
+    rescue CartoDB::Importer2::FileTooBigError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: ex.error_code,
+        log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
+      }
     rescue => ex
       had_errors = true
       manual_fields = {
@@ -458,9 +490,14 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
-      runner        = CartoDB::Importer2::Runner.new(
-        database_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
-      )
+      runner = CartoDB::Importer2::Runner.new({
+                                                pg: database_options,
+                                                downloader: downloader,
+                                                log: log,
+                                                user: current_user,
+                                                unpacker: CartoDB::Importer2::Unp.new,
+                                                post_import_handler: post_import_handler
+                                              })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]
       unless graphite_conf.nil?
@@ -542,6 +579,10 @@ class DataImport < Sequel::Model
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
+    if hit_platform_limit?(datasource_provider, metadata, current_user)
+      raise CartoDB::Importer2::FileTooBigError.new(metadata.inspect)
+    end
+
     if datasource_provider.providers_download_url?
       downloader = CartoDB::Importer2::Downloader.new(
           (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source
@@ -553,6 +594,15 @@ class DataImport < Sequel::Model
     end
 
     downloader
+  end
+
+  def hit_platform_limit?(datasource, metadata, user)
+    if datasource.has_resource_size?(metadata)
+      CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+                                                      .is_over_limit!(metadata[:size])
+    else
+      false
+    end
   end
 
   def current_user

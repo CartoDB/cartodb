@@ -365,6 +365,36 @@ namespace :cartodb do
     end
 
 
+    ###############
+    # SET ORG QUOTA
+    ###############
+    desc "set organization quota to amount in GB"
+    task :set_organization_quota, [:organization_name, :quota_in_gb] => :environment do |t, args|
+      usage = 'usage: rake cartodb:db:set_organization_quota[organization_name,quota_in_gb]'
+      raise usage if args[:organization_name].blank? || args[:quota_in_gb].blank?
+
+      organization  = Organization.filter(:name=> args[:organization_name]).first
+      quota = args[:quota_in_gb].to_i * 1024 * 1024 * 1024
+      organization.quota_in_bytes = quota
+      organization.save
+
+      puts "Organization: #{organization.name} quota updated to: #{args[:quota_in_gb]}GB."
+    end
+
+    desc "set organization seats"
+    task :set_organization_seats, [:organization_name, :seats] => :environment do |t, args|
+      usage = 'usage: rake cartodb:db:set_organization_seats[organization_name,seats]'
+      raise usage if args[:organization_name].blank? || args[:seats].blank?
+
+      organization  = Organization.filter(:name=> args[:organization_name]).first
+      seats = args[:seats].to_i
+      organization.seats = seats
+      organization.save
+
+      puts "Organization: #{organization.name} seats updated to: #{args[:seats]}."
+    end
+
+
     #################
     # SET TABLE QUOTA
     #################

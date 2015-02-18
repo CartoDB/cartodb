@@ -51,7 +51,7 @@ module CartoDB
 
         enable_autovacuum
 
-        raise GeometryCollectionNotSupportedError if geometry_collection?(the_geom_column_name)
+        raise GeometryCollectionNotSupportedError if geometry_collection?(the_geom_column_name || 'the_geom')
         self
       end
 

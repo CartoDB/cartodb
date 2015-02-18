@@ -48,6 +48,7 @@
 
   div.cartodb-tooltip-content p:last-child {
     padding:0;
+    margin: 0;
   }
 
   div.cartodb-tooltip-content a {

@@ -10,8 +10,14 @@ module.exports = function(grunt) {
   
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
+  var semver = require('semver');
 
   var pkg = grunt.file.readJSON('package.json');
+
+  if (!pkg.version || !semver.valid(pkg.version)) {
+    grunt.fail.fatal('package.json version is not valid' , 1);
+  }
+
   var version = pkg.version.split('.');
 
   var config = {
@@ -114,6 +120,15 @@ module.exports = function(grunt) {
     ]);
   });
 
+  grunt.registerTask('set_current_version', function() {
+    var version = pkg.version;
+    var minor = version.split('.')
+    minor.pop()
+    minor = minor.join('.');
+
+    grunt.config.set('bump', { increment: 'build', version: version, minor: minor });
+  });
+
   grunt.registerTask('invalidate', function(){
     if (!grunt.file.exists('secrets.json')) {
       grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
@@ -138,13 +153,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
       'prompt:bump',
-      'replace',
-      'gitinfo',
-      'clean:dist',
-      'concurrent:dist',
+      'js',
       'useminPrepare',
-      'concat',
-      'autoprefixer:dist',
       'cssmin',
       'copy:distStatic',
       'imagemin',
@@ -154,6 +164,20 @@ module.exports = function(grunt) {
       'htmlmin',
       'uglify'
   ]);
+
+  grunt.registerTask('js', [
+      'replace',
+      'gitinfo',
+      'clean:dist',
+      'concurrent:dist',
+      'concat',
+      'autoprefixer:dist'
+  ]);
+
+  grunt.registerTask('dist_js', [
+    'set_current_version',
+    'js'
+  ])
 
   grunt.registerTask('dist', [
     'build'

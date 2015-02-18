@@ -192,7 +192,7 @@ cartodb.createVis('map', url)
   - **shareable**: add facebook and twitter share buttons.
   - **title**: adds a header with the title of the visualization.
   - **description**: adds description to the header (as you set in the UI).
-  - **searchControl**: adds a search control (default: false).
+  - **search**: adds a search control (default: true).
   - **zoomControl**: adds zoom control (default: true).
   - **loaderControl**: adds loading control (default: true).
   - **center_lat**: latitude where the map is initializated.
@@ -210,6 +210,7 @@ cartodb.createVis('map', url)
   - **force_mobile**: forces enabling/disabling the mobile layout (it has priority over mobile_layout argument)
   - **gmaps_base_type**: Use Google Maps as map provider whatever is the one specified in the viz.json". Available types: 'roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'. 
   - **gmaps_style**: Google Maps styled maps. See [documentation](https://developers.google.com/maps/documentation/javascript/styling).
+  - **no_cdn**: true to disable CDN when fetching tiles
 - **callback(vis,layers)**: if a function is specified, it is called once the visualization is created, passing vis and layers as arguments
 
 ##### Returns
@@ -303,7 +304,7 @@ cartodb.createLayer(map, { layermetadata })
 
 Layer metadata is always in the form: `{ type: 'LAYER_TYPE_NAME', options: {...} }`
 
-See [cartodb.CartoDBLayer](#cartodbcartodblayer) too see an example.
+See [cartodb.CartoDBLayer](#cartodbcartodblayer) to see an example.
 
 - **options**:  
   - **https**: force https
@@ -441,10 +442,10 @@ Adds a new data to the current layer. With this method data from multiple tables
 }
 ```
 
-sql and cartocss are mandatory, an exception is raised if any of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct, see Postgres and CartoCSS reference. There are some restrictions in the SQL queries:
+`sql` and `cartocss` are mandatory. An exception is raised if either of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct. Look at the documentation for  [PostgreSQL](http://www.postgresql.org/docs/9.3/interactive/sql-syntax.html) and [CartoCSS](https://github.com/mapbox/carto/blob/master/docs/latest.md) for more information. There are some restrictions in the SQL queries:
 
-- must not write. INSERT, DELETE, UPDATE, ALTER and so on are not allowed (the query will fail)
-- must not contain trialing semicolon
+- Must not write. INSERT, DELETE, UPDATE, ALTER and so on are not allowed (the query will fail)
+- Must not contain trialing semicolon
 
 ##### Returns
 
@@ -470,7 +471,7 @@ Refresh the data. If the data has been changed in CartoDB server it is displayed
 #### layer.setAuthToken(_auth_token_)
 
 Sets the auth token to create the layer. Only available for private visualizations. An exception is
-raised if the layer is not being loaded with HTTPS.
+raised if the layer is not being loaded with HTTPS. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
 
 ##### Returns
 
@@ -478,12 +479,11 @@ the layer itself
 
 ##### Arguments
 
-- auth_token: string
+- **auth_token:** string
 
 #### layer.setParams(_key, value_)
 
-Using named maps this function changes the layer confuguration. This could be called in different
-ways:
+Using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) this function changes the layer confuguration. This could be called in different ways:
 
 <div class="code-title">layer.createSubLayer</div>
 ```javascript
@@ -920,14 +920,16 @@ Fetch the tile template for the layerdefinition.
 
 <div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
-user_name: 'mycartodbuser',
-sublayers: [{
-  sql: "SELECT * FROM table_name";
-  cartocss: '#layer { marker-fill: #F0F0F0; }'
-}],
-tiler_protocol: 'https', // not required
-tiler_host: 'cartodb.com', // not required
-tiler_port: 80 // not required
+{
+  user_name: 'mycartodbuser',
+  sublayers: [{
+    sql: "SELECT * FROM table_name";
+    cartocss: '#layer { marker-fill: #F0F0F0; }'
+  }],
+  tiler_protocol: 'https', // Optional
+  tiler_host: 'cartodb.com', // Optional
+  tiler_port: 80 // Optional
+}
 ```
 
 + **callback(tilesUrl, error)**: a function that recieves the tiles templates. In case of an error the first param is null and second one is an object with errors attribute witch is a list of errors. The tilesUrl object contains url template for tiles and for interactivity grids:

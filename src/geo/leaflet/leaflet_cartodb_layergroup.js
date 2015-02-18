@@ -287,8 +287,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     } else {
       var rect = obj.getBoundingClientRect();
       var p = new L.Point(
-            o.e.clientX - rect.left - obj.clientLeft - window.scrollX,
-            o.e.clientY - rect.top - obj.clientTop - window.scrollY);
+            (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
+            (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
       return map.containerPointToLayerPoint(p);
     }
   }
@@ -298,7 +298,11 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
   includes: [
     LayerDefinition.prototype,
-  ]
+  ],
+
+  _modelUpdated: function() {
+    this.setLayerDefinition(this.model.get('layer_definition'));
+  }
 });
 
 function layerView(base) {
@@ -366,6 +370,7 @@ function layerView(base) {
         self.featureClick  && self.featureClick.apply(self, arguments);
       }, 10);
 
+
       base.prototype.initialize.call(this, opts);
       cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 
@@ -420,10 +425,6 @@ L.NamedMap = L.CartoDBGroupLayerBase.extend({
         throw new Error('cartodb-leaflet needs at least the named_map');
     }
 
-    /*if(!options.layer_definition) {
-      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
-    }*/
-
     NamedMap.call(this, this.options.named_map, this.options);
 
     this.fire = this.trigger;
@@ -432,6 +433,10 @@ L.NamedMap = L.CartoDBGroupLayerBase.extend({
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
     this.addProfiling();
+  },
+
+  _modelUpdated: function() {
+    this.setLayerDefinition(this.model.get('named_map'));
   }
 });
 

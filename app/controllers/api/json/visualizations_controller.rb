@@ -411,7 +411,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #allow_vizjson_v1_for?
 
   def allow_vizjson_v2_for?(visualization)
-    visualization && (visualization.public? || visualization.public_with_link?)
+    (current_user && visualization) || (visualization && (visualization.public? || visualization.public_with_link?))
   end
 
   def current_user_is_owner?(table)

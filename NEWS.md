@@ -14,6 +14,7 @@
 * Added map previews in the delete table dialog
 * Captures 4XX exceptions when loading faulty map preview
 * Adds static maps export dialog 
+* Replace 404 error page
 
 3.8.0 (2015-01-30)
 ------------------

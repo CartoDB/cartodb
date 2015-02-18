@@ -15,10 +15,10 @@
 <% end %>
 
 
-<%= render 'admin/shared/new_header', :public => false, :home_url => '' %>
+<%= render 'admin/shared/new_private_header' %>
 
 <div>
-  
+
   <div class="Filters is-relative">
     <div class="u-inner">
       <div class="Filters-inner">
@@ -51,8 +51,8 @@
             <label class="Form-label">Consumer key</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon" value="<%= current_user.client_application.key %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
+            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/documentation/sql-api.html#authentication" %> in CartoDB.</p>
@@ -64,8 +64,8 @@
             <label class="Form-label">Consumer secret</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon" value="<%= current_user.client_application.secret %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
+            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
 
@@ -76,8 +76,8 @@
             <label class="Form-label">Request token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon" value="<%= request_token_url(user_domain: params[:user_domain]) %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= request_token_url(user_domain: params[:user_domain]) %>" readonly />
+            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
 
@@ -86,8 +86,8 @@
             <label class="Form-label">Access token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon" value="<%= access_token_url(user_domain: params[:user_domain]) %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= access_token_url(user_domain: params[:user_domain]) %>" readonly />
+            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
 
@@ -96,7 +96,7 @@
             <i class="iconFont iconFont-Info Form-footerIcon"></i>
             Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
           </p>
-          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <%= button_tag(type: 'submit', class: 'Button Button--main js-submit', value: 'oauth') do %>
             <% content_tag(:span, 'Request new oauth keys') %>
           <% end %>
         </div>

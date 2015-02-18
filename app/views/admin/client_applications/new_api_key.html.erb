@@ -15,10 +15,10 @@
 <% end %>
 
 
-<%= render 'admin/shared/new_header', :public => false, :home_url => '' %>
+<%= render 'admin/shared/new_private_header' %>
 
 <div>
-  
+
   <div class="Filters is-relative">
     <div class="u-inner">
       <div class="Filters-inner">
@@ -51,8 +51,8 @@
             <label class="Form-label">Your API Key</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy Form-inputIcon"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <input type="text" class="Form-input Form-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
+            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
 
@@ -81,7 +81,7 @@
             <i class="iconFont iconFont-Info Form-footerIcon"></i>
             Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
           </p>
-          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+          <%= button_tag(type: 'submit', class: 'Button Button--main js-submit', value: 'api') do %>
             <% content_tag(:span, 'Request a new api key') %>
           <% end %>
         </div>

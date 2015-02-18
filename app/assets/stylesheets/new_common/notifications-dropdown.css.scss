@@ -102,7 +102,7 @@
 }
 .NotificationsList-item .iconFont-close_limits {
   line-height: 17px;
-  &:before { content: "\E01A" } 
+  &:before { content: "\E01A" }
 }
 .NotificationsList-item.is--new .iconFont-close_limits {
   color: $cHighlight-alert;

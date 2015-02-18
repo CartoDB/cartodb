@@ -16,8 +16,8 @@
       <%= render 'shared/olark' -%>
     <% end %>
 
-    <%= yield :js -%>
     <%= insert_trackjs() -%>
+    <%= yield :js -%>
     <%= insert_google_analytics('primary') -%>
     <%= render 'shared/mixpanel' -%>
   </body>

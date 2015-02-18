@@ -82,14 +82,13 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 .DatasetsList-itemSecondaryInfo {
   width: 100%;
-  margin-top: $sMargin-elementInline;
+  margin-top: 0;
 }
 .DatasetsList-itemTitle {
   @include display-flex();
   @include align-items(center);
 }
 .DatasetsList-itemTitle.is--disabled { color: $cTypography-help }
-.DatasetsList-itemInlineEdit { width: 56px }
 .DatasetsList-itemTitlePermission {
   margin-left: $sMargin-elementInline;
   background: white;
@@ -112,13 +111,18 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   width: 50%;
   text-align: left;
   white-space: nowrap;
-  margin-bottom: 2 * $sMargin-min;
 }
 .DatasetsList-itemMeta > *:nth-child(1) { @include flex-order(1) }
 .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(3) }
 .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(4) }
 .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(2) }
 .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
+.DatasetsList-itemTags { 
+  margin-top: 4px;
+  text-align: right;
+}
+.DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
+.DatasetsList-itemDescription { margin-top: 4px }
 
 @media (min-width: $sMedia-tablet) {
   .DatasetsList-itemMeta {
@@ -129,6 +133,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     margin-right: $sMargin-element;
     text-align: center;
   }
+  .DatasetsList-itemTags .DefaultEditInline-input { text-align: left }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
   .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
@@ -152,7 +157,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     @include flex-direction(column);
     flex-grow: 1;
     min-width: 400px;
-    margin-top: $sMargin-min;
   }
   .DatasetsList-itemMeta {
     @include justify-content(flex-end, end);

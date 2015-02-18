@@ -157,13 +157,12 @@
 .Form-inputError.is-visible {
   top: 36px;
 }
-.Form-copy {
+.Form-copyIcon {
   top: 10px;
   right: 12px;
+  font-size: $sFontSize-largest;
 }
-.Form-copyIcon { font-size: $sFontSize-largest }
-.Form-copy:hover .Form-copyIcon,
-.Form-copy.hover .Form-copyIcon { color: $cTypography-paragraphs }
+.Form-copyIcon.hover { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;

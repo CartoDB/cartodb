@@ -290,6 +290,14 @@ module CartoDB
       title: 'Import timed out',
       what_about: "There is been a problem importing your file due to the time is been taking to process it. Please try again and contact us if the problem persist."
     },
+    6668 => {
+      title: 'Too many table rows',
+      what_about: "The resulting table would contain too many rows. Contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20table%20rows%20import%20error'>support@cartodb.com</a>."
+    },
+    6669 => {
+      title: 'Too many concurrent imports',
+      what_about: "You cannot import more data until one of your active imports finishes. If you need further import slots contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>."
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

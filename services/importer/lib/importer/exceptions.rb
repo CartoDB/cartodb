@@ -15,12 +15,24 @@ module CartoDB
     end
 
     # Generic/unmapped errors
-    class GenericImportError                    < StandardError; end
+    class GenericImportError < StandardError; end
     # Mapped errors
 
     class FileTooBigError < BaseImportError
       def initialize(message="The file supplied exceeds the maximum allowed for the user")
         super(message, 6666)
+      end
+    end
+
+    class TooManyTableRowsError < BaseImportError
+      def initialize(message="The imported table contains more rows than allowed for the user")
+        super(message, 6668)
+      end
+    end
+
+    class UserConcurrentImportsLimitError < BaseImportError
+      def initialize(message="User already using all allowed import slots")
+        super(message,6669)
       end
     end
 
@@ -81,6 +93,8 @@ module CartoDB
       KmlNetworkLinkError                   => 3202,
       FileTooBigError                       => 6666,
       StatementTimeoutError                 => 6667,
+      TooManyTableRowsError                 => 6668,
+      UserConcurrentImportsLimitError       => 6669,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,

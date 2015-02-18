@@ -12,6 +12,7 @@
 * Added PlatformLimits importer max resulting table row count limit.
 * Fixed incompatible data for wizards [#1942](https://github.com/CartoDB/cartodb/issues/1942)
 * Added map previews in the delete table dialog
+* Fixed adding Mapbox basemaps.
 * Captures 4XX exceptions when loading faulty map preview
 * Adds static maps export dialog
 * Added new public pages [#2034](https://github.com/CartoDB/cartodb/pull/2142)

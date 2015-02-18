@@ -11,7 +11,7 @@ namespace :cartodb do
       CSV.foreach(input_file) do |row|
         verb, request, response_time = row
         uri = URI.parse(request)
-        r = routes.recognize_path(uri.path, method: verb)
+        r = routes.recognize_path(uri.path, method: verb) rescue next
         controller = r[:controller]
         action = r[:action]
         puts "#{verb},#{controller},#{action},#{response_time}"

@@ -20,6 +20,8 @@ require_relative '../../services/datasources/lib/datasources'
 require_relative '../../services/importer/lib/importer/unp'
 require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
+require_relative '../../services/platform-limits/platform_limits'
+
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
@@ -117,14 +119,14 @@ class DataImport < Sequel::Model
     self
   rescue CartoDB::QuotaExceeded => quota_exception
     CartoDB::notify_warning_exception(quota_exception)
-    handle_failure
+    handle_failure(quota_exception)
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
-    handle_failure
+    handle_failure(exception)
     self
   end
 
@@ -194,9 +196,12 @@ class DataImport < Sequel::Model
     self
   end
 
-  def handle_failure
+  def handle_failure(supplied_exception = nil)
     self.success    = false
     self.state      = STATE_FAILURE
+    if !supplied_exception.nil? && supplied_exception.respond_to?(:error_code)
+      self.error_code = supplied_exception.error_code
+    end
     log.append "ERROR!\n"
     self.save
     notify(results)
@@ -428,6 +433,12 @@ class DataImport < Sequel::Model
         error_code: 1013,
         log_info: ex.to_s
       }
+    rescue CartoDB::Importer2::FileTooBigError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: ex.error_code,
+        log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
+      }
     rescue => ex
       had_errors = true
       manual_fields = {
@@ -455,9 +466,14 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
-      runner        = CartoDB::Importer2::Runner.new(
-        database_options, downloader, log, current_user.remaining_quota, CartoDB::Importer2::Unp.new, post_import_handler
-      )
+      runner = CartoDB::Importer2::Runner.new({
+                                                pg: database_options,
+                                                downloader: downloader,
+                                                log: log,
+                                                user: current_user,
+                                                unpacker: CartoDB::Importer2::Unp.new,
+                                                post_import_handler: post_import_handler
+                                              })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       graphite_conf = Cartodb.config[:graphite]
       unless graphite_conf.nil?
@@ -539,6 +555,10 @@ class DataImport < Sequel::Model
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
+    if hit_platform_limit?(datasource_provider, metadata, current_user)
+      raise CartoDB::Importer2::FileTooBigError.new(metadata.inspect)
+    end
+
     if datasource_provider.providers_download_url?
       downloader = CartoDB::Importer2::Downloader.new(
           (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source
@@ -550,6 +570,15 @@ class DataImport < Sequel::Model
     end
 
     downloader
+  end
+
+  def hit_platform_limit?(datasource, metadata, user)
+    if datasource.has_resource_size?(metadata)
+      CartoDB::PlatformLimits::Importer::InputFileSize.new({ user: user })
+                                                      .is_over_limit!(metadata[:size])
+    else
+      false
+    end
   end
 
   def current_user

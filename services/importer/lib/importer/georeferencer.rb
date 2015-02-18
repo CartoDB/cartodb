@@ -3,6 +3,7 @@ require_relative './column'
 require_relative './job'
 require_relative './query_batcher'
 require_relative './content_guesser'
+require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 module CartoDB
   module Importer2
@@ -44,8 +45,8 @@ module CartoDB
 
         create_the_geom_from_geometry_column  ||
         create_the_geom_from_latlon           ||
-        create_the_geom_from_country_guessing ||
         create_the_geom_from_ip_guessing      ||
+        create_the_geom_from_country_guessing ||
         create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -160,9 +161,18 @@ module CartoDB
       end
 
       def geocode_countries country_column_name
+        job.log "Geocoding countries..."
+        geocode(country_column_name, 'polygon', 'admin0')
+      end
+
+      def geocode_ips ip_column_name
+        job.log "Geocoding ips..."
+        geocode(ip_column_name, 'point', 'ipaddress')
+      end
+
+      def geocode(formatter, geometry_type, kind)
         geocoder = nil
-        @importer_stats.timing('geocoding') do
-          job.log "Geocoding countries..."
+        @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
           create_the_geom_in(table_name)
           config = @options[:geocoder].merge(
@@ -170,65 +180,54 @@ module CartoDB
             table_name: table_name,
             qualified_table_name: qualified_table_name,
             connection: db,
-            formatter: country_column_name,
-            geometry_type: 'polygon',
-            kind: 'admin0',
+            formatter: formatter,
+            geometry_type: geometry_type,
+            kind: kind,
             max_rows: nil,
             country_column: nil
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-          geocoder.run
-          @tracker.call('importing')
+
+          begin
+            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name)
+            geocoding.force_geocoder(geocoder)
+            geocoding.user = user
+            geocoding.data_import_id = data_import.id unless data_import.nil?
+            geocoding.raise_on_save_failure = true
+            geocoding.run_geocoding!(row_count)
+            raise "Geocoding failed" if geocoding.state == 'failed'
+          rescue => e
+            config_info = config.select {|key, value| [:table_schema, :table_name, :qualified_table_name, :formatter, :geometry_type, :kind, :max_rows, :country_column, ].include?(key) }
+            Rollbar.report_message('Georeferencer could not register geocoding, fallback to geocoder.run',
+                                   'error', error_info: "user_id: #{user_id}, config: #{config_info}, exception: #{e.inspect} backtrace: #{e.backtrace.join('\n')}")
+            geocoder.run
+          end
+
           job.log "Geocoding finished"
         end
         geocoder.state == 'completed'
       end
 
-      def geocode_ips ip_column_name
-        job.log "Geocoding ips..."
-        @tracker.call('geocoding')
-        create_the_geom_in(table_name)
-        config = @options[:geocoder].merge(
-          table_schema: schema,
-          table_name: table_name,
-          qualified_table_name: qualified_table_name,
-          connection: db,
-          formatter: ip_column_name,
-          geometry_type: 'point',
-          kind: 'ipaddress',
-          max_rows: nil,
-          country_column: nil
-        )
-        geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-        geocoder.run
-        job.log "Geocoding finished"
-        geocoder.state == 'completed'
+      def row_count
+        @row_count ||= db[%Q{select count(1) from #{qualified_table_name}}].first[:count]
       end
 
+      def data_import
+        @data_import ||= DataImport.where(logger: @job.logger.id).first
+      end
+
+      def user
+        @user ||= User.where(id: user_id).first
+      end
+
+      def user_id
+        @job.logger.user_id
+      end
 
       # Note: Performs a really simple ',' to '.' normalization.
       # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"
       def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
-        QueryBatcher::execute(
-          db,
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET
-              the_geom = public.ST_GeomFromText(
-                'POINT(' || REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') || ' ' ||
-                  REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') || ')', 4326
-              )
-              #{QueryBatcher::QUERY_WHERE_PLACEHOLDER}
-            WHERE REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') ~
-              '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-            AND REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.')  ~
-              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-            #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
-          },
-          qualified_table_name,
-          job,
-          'Populating the_geom from latitude / longitude'
-        )
+        CartoDB::InternalGeocoder::LatitudeLongitude.new(db, job).geocode(schema, table_name, latitude_column_name, longitude_column_name)
       end
 
       def create_the_geom_in(table_name)

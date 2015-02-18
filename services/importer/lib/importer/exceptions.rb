@@ -5,13 +5,29 @@ require_relative '../../../../services/datasources/lib/datasources/exceptions'
 module CartoDB
   module Importer2
 
+    class BaseImportError < StandardError
+      def initialize(message, error_code=nil)
+        super(message)
+        self.error_code = error_code
+      end
+
+      attr_accessor :error_code
+    end
+
     # Generic/unmapped errors
     class GenericImportError                    < StandardError; end
     # Mapped errors
-    class FileTooBigError                       < StandardError; end
+
+    class FileTooBigError < BaseImportError
+      def initialize(message="The file supplied exceeds the maximum allowed for the user")
+        super(message, 6666)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
+    class PasswordNeededForExtractionError      < ExtractionError; end
     class GeometryCollectionNotSupportedError   < StandardError; end
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
@@ -35,6 +51,7 @@ module CartoDB
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end
+    class StatementTimeoutError                 < BaseImportError; end
 
     # @see also app/models/synchronization/member.rb => run() for more error codes
     # @see config/initializers/carto_db.rb For the texts
@@ -50,6 +67,7 @@ module CartoDB
       TooManyNodesError                     => 1007,
       GDriveNotPublicError                  => 1010,
       InvalidNameError                      => 1014,
+      PasswordNeededForExtractionError      => 1018,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,
@@ -62,6 +80,7 @@ module CartoDB
       GeometryCollectionNotSupportedError   => 3201,
       KmlNetworkLinkError                   => 3202,
       FileTooBigError                       => 6666,
+      StatementTimeoutError                 => 6667,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,

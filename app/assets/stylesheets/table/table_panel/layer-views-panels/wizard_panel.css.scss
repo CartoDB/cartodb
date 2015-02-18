@@ -108,7 +108,7 @@
       position:absolute;
       @include position(0, 0, false, 0);
       display:block;
-      width:1000px;
+      width:1050px;
       padding:0 30px;
 
       letter-spacing:-4px;
@@ -188,7 +188,8 @@
           &.cluster { background: image-url('layout/wizard-cluster.png') no-repeat;}
           &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
           &.torque  { background: image-url('layout/wizard-torque.png') no-repeat;}
-          &.torque_cat  { background: image-url('layout/wizard-torque-cat.png') no-repeat;}
+          &.torque_cat { background: image-url('layout/wizard-torque-cat.png') no-repeat;}
+          &.torque_heat { background: image-url('layout/wizard-torque-heat.png') no-repeat;}
 
           &:hover {
             border-color:$cGray2;

@@ -1,0 +1,190 @@
+@import "compass/css3/images";
+@import "../new_variables/colors";
+@import "../new_variables/mixins";
+@import "../new_variables/sizes";
+
+// Map card item
+//
+// Example usage:
+// <div class="MapCard">
+//   <div class="MapCard-header"></div>
+//   <div class="MapCard-content">
+//     <div class="MapCard-contentBody">
+//       <div class="MapCard-contentBodyRow">
+//         <h3 class="DefaultTitle">Foobar</h3>
+//         ...
+//
+//       <div class="MapCard-contentBodyRow">
+//         ...
+//
+//     </div>
+//     <div class="MapCard-contentFooter">
+//      ...
+//
+$sBorderCompensation: 2px;
+
+.MapCard {
+  position: relative;
+  width: $sCard-width - 10px - $sBorderCompensation;
+  border: 1px solid #DBDBDB;
+  background-color: $cStructure-mainBkg;
+  border-radius: $sCard-borderRadius;
+  margin: 0 auto;
+}
+.MapCard--selectable:hover {
+  background-color: $cCard-hoverFill;
+  border-color: $cCard-hoverBorder;
+}
+.MapCard--selectable.is-selected {
+  background-color: $cCard-selectedFill;
+  border-color: $cCard-selectedBorder;
+}
+.MapCard-header {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 170px;
+  @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
+  border-radius: 2px 2px 0 0;
+  overflow:hidden;
+}
+.MapCard-header.is-loading .MapCard-loader {
+  display: block;
+}
+.MapCard-header--compact {
+  height: 130px;
+}
+.MapCard-header:after {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  height: 2px;
+  background: black;
+  @include opacity(.1);
+  z-index:2;
+}
+.MapCard-header--fake {
+  background: $cStructure-mainBkg;
+}
+.MapCard-header--fake:after {
+  left: $sMargin-element;
+  right: $sMargin-element;
+}
+.MapCard-headerGraph {
+  position:absolute;
+  width: 70px;
+  height: 18px;
+  bottom:10px;
+  right:12px;
+  padding: 5px;
+  border-radius: 2px;
+  background:rgba(black,.4);
+  z-index:2;
+}
+.MapCard-header .MapCard-loader {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background: transparent;
+  overflow: hidden;
+}
+.MapCard-header .MapCard-loader:before {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 600px;
+  right: 0;
+  height: 2px;
+  background: rgba(black, 0.25);
+  @include animation(pulsate 1.5s linear infinite);
+}
+.MapCard-preview {
+  display: none;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
+}
+.MapCard.has-error .MapCard-error {
+  display: block;
+}
+.MapCard-error {
+  display: none;
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  margin-top: -30px;
+  width: 60px;
+  height: 59px;
+  border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
+  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
+}
+.MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  @include flex-direction(column);
+  border-radius: $sCard-borderRadius;
+  padding: $sMargin-element;
+  height: 140px;
+}
+.MapCard-content--compact {
+  height: auto;
+}
+.MapCard-contentBody {
+  width: 100%;
+}
+.MapCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
+.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+.MapCard-contentBodyRow--flex {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  @include flex-wrap(nowrap);
+}
+.MapCard-contentFooter {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  width: 100%;
+  padding-top: $sMargin-elementInline;
+  border-top: 1px solid $cStructure-softLine;
+}
+.MapCard-contentFooterDetails--left {
+  @include display-flex();
+  @include align-items(center, center);
+  @include justify-content(space-between, justify);
+}
+.MapCard-contentFooterDetails--left > *:not(:last-child) {
+  margin-right: 14px;
+}
+.MapCard-contentBodyTimeDiff .UserAvatar,
+.MapCard-contentFooterTimeDiff .UserAvatar {
+  margin-left: 5px;
+  line-height: $sAvatar-meta;
+}
+
+// Animation function
+@include keyframes(pulsate) {
+  0% {right:100%;}
+  50% {right:0%}
+  100% {right:-100%}
+}
+
+@media (min-width: $sMedia-tablet) {
+  .MapCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
+}

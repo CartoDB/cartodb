@@ -2,7 +2,7 @@
 require 'forwardable'
 require 'virtus'
 require 'json'
-require 'markdown_render'
+require_relative '../markdown_render'
 require_relative './collection'
 require_relative './presenter'
 require_relative './name_checker'
@@ -31,6 +31,7 @@ module CartoDB
       TYPE_CANONICAL  = 'table'
       TYPE_DERIVED    = 'derived'
       TYPE_SLIDE      = 'slide'
+      TYPE_REMOTE = 'remote'
 
       KIND_GEOM   = 'geom'
       KIND_RASTER = 'raster'
@@ -96,6 +97,19 @@ module CartoDB
         self.register_table_only = false
       end
 
+      def self.remote_member(name, user_id, privacy, description, tags, license, source)
+        Member.new({
+          name: name,
+          user_id: user_id,
+          privacy: privacy,
+          description: description,
+          tags: tags,
+          license: license,
+          source: source,
+          type: TYPE_REMOTE})
+      end
+
+
       def transition_options
         ::JSON.parse(self.slide_transition_options).symbolize_keys
       end
@@ -154,7 +168,18 @@ module CartoDB
         end
 
         if type_slide?
-          validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
+          if parent_id.nil?
+            validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
+          else
+            begin
+              parent_member = Member.new(id:parent_id).fetch
+              if parent_member.type != TYPE_DERIVED
+                validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have parent of type #{TYPE_DERIVED}")
+              end
+            rescue KeyError
+              validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} has non-existing parent id")
+            end
+          end
         else
           validator.errors.store(:parent_id, "Type #{type} must not have parent") unless parent_id.nil?
         end
@@ -614,7 +639,7 @@ module CartoDB
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           save_named_map
-          propagate_name_to(table) if table and propagate_changes
+          propagate_name_to(table) if !table.nil? and propagate_changes
         end
       end
 
@@ -678,7 +703,7 @@ module CartoDB
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
             .set_from(self)
-            .propagate_to_redis_and_varnish
+            .propagate_to_varnish
         end
         self
       end

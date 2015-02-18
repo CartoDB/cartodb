@@ -67,11 +67,14 @@ module CartoDB
       new_dashboard_deps.js
       new_dashboard.js
       new_dashboard_templates.js
+      new_public_dashboard_deps.js
+      new_public_dashboard.js
       dashboard.js keys.js login.js
       models.js
       organization.js
       modernizr.js statsc.js
-      table.js public_dashboard.js
+      table.js
+      public_dashboard.js
       public_table.js
       map_public.js
       public_like.js
@@ -81,6 +84,8 @@ module CartoDB
       common.js
       jquery.tipsy.js
       specs.js
+      sessions.js
+      modernizr.js
 
       cdb.css
       cdb/themes/css/cartodb.css
@@ -104,12 +109,14 @@ module CartoDB
       public.css
       password_protected.css
       public_dashboard.css
+      new_public_dashboard.css
       public_table.css
       public_map.css
       public_ie.css
       specs.css
       table.css
       tables.css
+      frontend
 
       *.jpg
       *.ico
@@ -130,6 +137,9 @@ end
 
 require 'csv'
 require 'state_machine'
+require 'cartodb/controller_flows/public/content'
+require 'cartodb/controller_flows/public/datasets'
+require 'cartodb/controller_flows/public/maps'
 require 'cartodb/errors'
 require 'cartodb/logger'
 require 'cartodb/sql_parser'

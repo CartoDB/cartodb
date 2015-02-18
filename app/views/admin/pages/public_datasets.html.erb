@@ -17,7 +17,7 @@
 <div class="content<%= " empty" if @datasets.size == 0 %>">
 
   <div class="inner">
-    
+
     <div class="info">
       <%= render(:partial => 'admin/pages/shared/user_info') %>
       <%= render(:partial => 'admin/pages/shared/tags', :locals => {:collection => @tags }) %>
@@ -102,4 +102,3 @@
   </div>
 
 </div>
-

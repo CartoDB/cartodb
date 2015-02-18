@@ -75,7 +75,14 @@ class Api::Json::UsersController < Api::ApplicationController
       end
     end
 
-    {can_fork: can_fork, organization_name: organization_name}
+    render json: {
+      urls: ["#{CartoDB.base_url(current_viewer.username, organization_name)}/dashboard"],
+      can_fork: can_fork,
+      username: current_viewer.username,
+      avatar_url: current_viewer.avatar_url,
+      email: current_viewer.email,
+      organization: current_viewer.organization,
+    }
   end
 
   # get visualization from url

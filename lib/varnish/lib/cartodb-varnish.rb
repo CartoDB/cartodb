@@ -4,7 +4,6 @@ module CartoDB
   class Varnish
     def purge(what)
       ActiveSupport::Notifications.instrument('purge.varnish', what: what) do |payload|
-
         conf = Cartodb::config[:varnish_management]
         if conf['http_port']
           request = Typhoeus::Request.new(
@@ -31,7 +30,6 @@ module CartoDB
           'Timeout' => conf["timeout"] || 5)
 
         connection.cmd('String' => command, 'Match' => /\n\n/) {|r| response = r.split("\n").first.strip}
-        p connection.respond_to?(:close)
         connection.close if connection.respond_to?(:close)
       rescue Exception => e
         if retries < conf["retries"]

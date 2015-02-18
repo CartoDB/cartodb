@@ -27,13 +27,17 @@
     <%= stylesheet_link_tag 'cartodb', 'new_common', 'new_public_dashboard' %>
   </head>
   <body class="PublicBody">
-    <%= render 'admin/shared/new_header', :public => true, :home_url => root_url %>
+    <%= render 'admin/shared/new_public_header' %>
     <div class="FavMap is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner"></div>
     </div>
     <div class="UserInfo js-user-info">
       <div class="UserAvatar UserInfo-avatar">
-        <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% if @avatar_url %>
+          <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+        <% else %>
+          <div class="UserAvatar-img UserAvatar-img--large UserAvatar-img--no-src"></div>
+        <% end %>
       </div>
       <h2 class="UserInfo-name">
         <%= @name %>
@@ -44,12 +48,9 @@
             <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
           <% end %>
           <% content_for(:js) do %>
-            <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown" style="display: none;">
+            <div class="js-breadcrumb-dropdown-content dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">
               <ul class="BreadcrumbsDropdown-list">
                 <li class="BreadcrumbsDropdown-listItem">
-                  <span class="BreadcrumbsDropdown-icon UserAvatar">
-                    <img class="UserAvatar-img UserAvatar-img--small" src="<%= @avatar_url %>" title="<%= @name %>" alt="<%= @username %>" />
-                  </span>
                   <nav class="BreadcrumbsDropdown-options">
                     <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
                     <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
@@ -61,9 +62,7 @@
         </span>
       </h2>
       <% if @description.present? %>
-        <p class="DefaultParagraph UserInfo-desc">
-          <%= @description %>
-        </p>
+        <p class="UserInfo-desc"><%= @description %></p>
       <% end %>
       <ul class="UserInfo-links">
         <% if @website.present? %>
@@ -91,6 +90,7 @@
 
     <%= render 'admin/shared/new_footer' %>
     <script type="text/javascript">
+      var account_host = '<%= Cartodb.config[:account_host] %>';
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>

@@ -218,6 +218,13 @@ module CartoDB
       attr_writer     :ogr2ogr, :georeferencer
       attr_accessor   :job, :layer
 
+      # @throws DuplicatedColumnError
+      # @throws InvalidGeoJSONError
+      # @throws TooManyColumnsError
+      # @throws StatementTimeoutError
+      # @throws FileTooBigError
+      # @throws LoadError
+      # @throws UnsupportedFormatError
       def run_ogr2ogr(append_mode=false)
         ogr2ogr.run(append_mode)
 
@@ -232,12 +239,13 @@ module CartoDB
         raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.command_output =~ /nrecognized GeoJSON/
         raise TooManyColumnsError.new(job.logger) if ogr2ogr.command_output =~ /tables can have at most 1600 columns/
         if ogr2ogr.command_output =~ /canceling statement due to statement timeout/i
-          raise StatementTimeoutError.new(exception.message, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
+          raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
         end
 
         if ogr2ogr.exit_code != 0
           # OOM
-          if ( (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || (ogr2ogr.exit_code == 35072 && ogr2ogr.command_output =~ /Killed/) )
+          if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) ||
+             (ogr2ogr.exit_code == 35072 && ogr2ogr.command_output =~ /Killed/)
             raise FileTooBigError.new(job.logger)
           end
           # Could be OOM, could be wrong input

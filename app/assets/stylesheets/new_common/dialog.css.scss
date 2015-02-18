@@ -92,8 +92,9 @@ body.is-inDialog {
   background: none;
 }
 .Dialog-footer {
-  border-top: 1px solid $cStructure-mainLine;
   padding: $sMargin-group 0;
+  text-align: center;
+  border-top: 1px solid $cStructure-mainLine;
 }
 .Dialog-headerIcon {
   position: relative;
@@ -103,7 +104,7 @@ body.is-inDialog {
   border-radius: $sIcon-borderRadius;
   margin: 0 auto $sMargin-element auto; /* center icon */
   font-size: 22px;
-  line-height: 48px;
+  line-height: 41px;
 }
 .Dialog-headerIcon--main {
   color: $cHighlight-main;

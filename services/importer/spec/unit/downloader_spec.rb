@@ -120,29 +120,29 @@ describe Downloader do
     it 'gets the file name from the Content-Disposition header if present' do
       headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@file_url)
-      downloader.name_from(headers, @file_url).should eq 'bar.csv'
+      downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
 
       headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
       downloader = Downloader.new(@file_url)
-      downloader.name_from(headers, @file_url).should eq 'bar.csv'
+      downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
 
       disposition = "attachment; filename=map_gaudi3d.geojson; " + 
                     'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
       headers = { "Content-Disposition" => disposition }
       downloader = Downloader.new(@file_url)
-      downloader.name_from(headers, @file_url).should eq 'map_gaudi3d.geojson'
+      downloader.send(:name_from, headers, @file_url).should eq 'map_gaudi3d.geojson'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header' do
       headers = {}
       downloader = Downloader.new(@file_url)
-      downloader.name_from(headers, @file_url).should eq 'foo.png'
+      downloader.send(:name_from, headers, @file_url).should eq 'foo.png'
     end
 
     it 'discards url query params' do
       headers = {}
       downloader = Downloader.new(@file_url)
-      downloader.name_from(headers, "#{@file_url}?foo=bar&woo=wee")
+      downloader.send(:name_from, headers, "#{@file_url}?foo=bar&woo=wee")
         .should eq 'foo.png'
     end
   end #name_from

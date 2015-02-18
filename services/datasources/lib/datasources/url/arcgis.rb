@@ -14,7 +14,7 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'arcgis'
 
-        ARCGIS_API_LIKE_URL_RE = /arcgis\/rest/i
+        ARCGIS_API_LIKE_URL_RE = /\/(arcgis|gis)\/rest/i
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
@@ -280,7 +280,7 @@ module CartoDB
             url:      nil,
             service:  DATASOURCE_NAME,
             checksum: nil,
-            size:     0,
+            size:     NO_CONTENT_SIZE_PROVIDED,
             filename: filename_from(@metadata[:name])
           }
         end
@@ -444,7 +444,7 @@ module CartoDB
           raise ResponseError.new("'fields' empty or invalid #{prepared_url}") \
             if (retrieved_fields.nil? || retrieved_fields.length == 0)
           raise ResponseError.new("'features' empty or invalid #{prepared_url}") \
-            if (retrieved_items.nil? || retrieved_items.length == 0)
+            if (retrieved_items.nil? || !retrieved_items.kind_of?(Array))
 
           # Fields can be optional, cannot be enforced to always be present
           desired_fields = fields.map { |field| field[:name] }

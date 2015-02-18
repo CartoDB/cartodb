@@ -505,7 +505,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def pretty_404
-    render(file: "public/404", layout: false, status: 404)
+    render(file: "public/404.html", layout: false, status: 404)
   end
 
   def user_domain_variable(request)

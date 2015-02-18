@@ -340,4 +340,16 @@ describe "Imports API" do
     last_import.table_names.should eq 'zipped_a zipped_b'
   end
 
+  it 'properly reports table row count limit' do
+    @user.update max_import_table_row_count: 2
+
+    post api_v1_imports_create_url,
+         params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 6668
+  end
+
 end

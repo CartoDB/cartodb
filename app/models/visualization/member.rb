@@ -311,16 +311,22 @@ module CartoDB
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
+      def redis_vizjson_key
+        @vizjson_key ||= "#{id}:vizjson"
+      end
+
       def to_vizjson
-        options = {
-          full: false,
-          user_name: user.username,
-          user_api_key: user.api_key,
-          user: user,
-          viewer_user: user,
-          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
-        }
-        VizJSON.new(self, options, configuration).to_poro
+        redis_cached(redis_vizjson_key) do
+          options = {
+            full: false,
+            user_name: user.username,
+            user_api_key: user.api_key,
+            user: user,
+            viewer_user: user,
+            dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
+          }
+          VizJSON.new(self, options, configuration).to_poro
+        end
       end
 
       def is_owner?(user)
@@ -571,6 +577,21 @@ module CartoDB
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
+
+      def redis_cached(key)
+        value = redis_cache.get(key)
+        if value.present?
+          return JSON.parse(value)
+        else
+          result = yield
+          redis_cache.setex(key, 24.hours.to_i, result.to_json)
+          return result
+        end
+      end
+
+      def redis_cache
+        @redis_cache ||= $visualizations
+      end
 
       def close_list_gap(other_vis)
         reload_self = false

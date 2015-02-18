@@ -51,8 +51,8 @@
             <label class="Form-label">Your API Key</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-            <a href="#/copy" data-title="Copy this" class="Form-copy"><i class="iconFont iconFont-Anchor Form-copyIcon"></i></a>
+            <input type="text" class="Form-input Form-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
+            <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
 

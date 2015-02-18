@@ -68,8 +68,10 @@ module CartoDB
           schema_name = context.fetch(:tables_schema, DEFAULT_SCHEMA)
 
           db.fetch(%Q{
-                      SELECT COUNT(*) AS row_count FROM "#{schema_name}"."#{table_name}"
-                  })
+                      SELECT reltuples::bigint AS row_count
+                        FROM pg_class
+                        WHERE oid='#{schema_name}.#{table_name}'::regclass;
+                   })
             .first[:row_count]
         end
 

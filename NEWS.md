@@ -1,4 +1,4 @@
-3.8.1 (2015-01-xx)
+3.8.1 (2015-02-xx)
 ------------------
 * Added config for basemaps [#1954], see
   [documentation](https://github.com/CartoDB/cartodb/wiki/How-to-configure-basemaps-in-CartoDB)
@@ -12,6 +12,8 @@
 * Added PlatformLimits importer max resulting table row count limit.
 * Fixed incompatible data for wizards [#1942](https://github.com/CartoDB/cartodb/issues/1942)
 * Added map previews in the delete table dialog
+* Captures 4XX exceptions when loading faulty map preview
+* Adds static maps export dialog 
 
 3.8.0 (2015-01-30)
 ------------------

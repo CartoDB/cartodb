@@ -6,4 +6,8 @@ require 'resque/failure/redis'
 # Load automatically all resque files from lib/resque
 Dir[Rails.root.join("lib/resque/*.rb")].each {|f| require f}
 
-Resque.redis = "#{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}"
+conf = Cartodb.config[:redis].symbolize_keys
+redis_conf = conf.select { |k, v| [:host, :port, :timeout, :tcp_keepalive].include?(k) }
+redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys if redis_conf[:tcp_keepalive]
+
+Resque.redis = Redis.new(redis_conf)

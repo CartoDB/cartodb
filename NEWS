@@ -1,3 +1,6 @@
+3.12.4 (18//02/2015)
+- Fixes leaflet point generation on events when using touch devices
+
 3.12.3 (17//02/2015)
 - Fixes a case were having an empty bbox would end up generatign an erroneous bounding box URL.
 

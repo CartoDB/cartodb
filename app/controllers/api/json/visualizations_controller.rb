@@ -419,8 +419,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def set_vizjson_response_headers_for(visualization)
-    response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+    # We don't cache non-public vis
+    if visualization.public? || visualization.public_with_link?
+      response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
+      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+    end
   end
 
   def payload

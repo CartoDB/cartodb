@@ -55,15 +55,26 @@ module ApplicationHelper
     account_url + '/upgrade'
   end
 
+  def sql_api_template
+      sql_api = Cartodb.config[:sql_api]["private"]
+      if CartoDB.subdomains_allowed?
+        sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s + sql_api["endpoint"]
+      else
+        sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/u/{user}" + sql_api["endpoint"]
+      end
+  end
+
+  def maps_api_template
+      maps_api = Cartodb.config[:maps_api]["private"]
+      maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"] + "/u/{user}"
+  end
+
   def frontend_config
     config = {
       tiler_protocol:             Cartodb.config[:tiler]["private"]["protocol"],
       tiler_port:                 Cartodb.config[:tiler]["private"]["port"],
       tiler_domain:               Cartodb.config[:tiler]["private"]["domain"],
-      sql_api_protocol:           Cartodb.config[:sql_api]["private"]["protocol"],
-      sql_api_domain:             Cartodb.config[:sql_api]["private"]["domain"],
-      sql_api_endpoint:           Cartodb.config[:sql_api]["private"]["endpoint"],
-      sql_api_port:               Cartodb.config[:sql_api]["private"]["port"],
+      sql_api_template: sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
       account_host:               Cartodb.config[:account_host],

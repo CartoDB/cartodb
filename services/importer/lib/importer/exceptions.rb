@@ -24,6 +24,12 @@ module CartoDB
       end
     end
 
+    class TooManyTableRowsError < BaseImportError
+      def initialize(message="The imported table contains more rows than allowed for the user")
+        super(message, 6668)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -81,6 +87,7 @@ module CartoDB
       KmlNetworkLinkError                   => 3202,
       FileTooBigError                       => 6666,
       StatementTimeoutError                 => 6667,
+      TooManyTableRowsError                 => 6668,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,

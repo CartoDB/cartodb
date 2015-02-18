@@ -1561,17 +1561,10 @@ end
 
     table_attributes  = JSON.parse(last_response.body)
     table_id          = table_attributes.fetch('id')
-    table_name        = table_attributes.fetch('name')
 
     put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
       { privacy: privacy }.to_json, @headers
 
-    sql = URI.escape(%Q{
-      INSERT INTO #{table_name} (description)
-      VALUES('bogus description')
-    })
-
-    #get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
     table_attributes
   end #table_factory
 end # Api::Json::VisualizationsController

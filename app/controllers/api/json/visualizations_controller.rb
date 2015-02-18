@@ -20,7 +20,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like, :index]
   before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
-                                                    :index]
+                                                    :index, :vizjson2]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
                                                       :add_like, :is_liked, :remove_like, :set_next_id]

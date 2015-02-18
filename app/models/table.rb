@@ -1222,7 +1222,7 @@ class Table < Sequel::Model(:user_tables)
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end
-    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless CartoDB::VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
+    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
   end
 
   # if the table is already renamed, we just need to update the name attribute

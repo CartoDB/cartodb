@@ -66,7 +66,11 @@ module ApplicationHelper
 
   def maps_api_template
       maps_api = Cartodb.config[:maps_api]["private"]
-      maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"] + "/u/{user}"
+      if CartoDB.subdomains_allowed?
+        maps_api["protocol"] + "://{user}." + maps_api["domain"] + ":" + maps_api["port"].to_s
+      else
+        maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"].to_s + "/u/{user}"
+      end
   end
 
   def frontend_config
@@ -74,7 +78,7 @@ module ApplicationHelper
       tiler_protocol:             Cartodb.config[:tiler]["private"]["protocol"],
       tiler_port:                 Cartodb.config[:tiler]["private"]["port"],
       tiler_domain:               Cartodb.config[:tiler]["private"]["domain"],
-      sql_api_template: sql_api_template,
+      sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
       account_host:               Cartodb.config[:account_host],

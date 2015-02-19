@@ -19,6 +19,11 @@
 * Added API keys and OAuth pages [#2142](https://github.com/CartoDB/cartodb/pull/2142)
 * Replace 404 error page
 
+Bugfixes:
+* When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
+* Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
+* Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
+
 3.8.0 (2015-01-30)
 ------------------
 * Mailchimp user lists importer dataset.

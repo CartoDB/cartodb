@@ -8,41 +8,34 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(center);
+  // @include flex-direction(column);
+  @include justify-content(flex-start, start);
   @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;
-  width: 100%;
+  width: $sLayout-width + 20;
   margin: 0 auto;
   padding: 0 $sMargin-elementInline;
 }
 .MapsList.is-hidden { display: none }
-.MapsList-item { width: 300px }
+.MapsList-item {
+  width: 300px;
+  margin: 10px;
+}
 .MapsList-item--fake {
   display: none;
   @include opacity(0.6);
 }
 
+@media (min-width: $sMedia-mobile) {
+  .MapsList-item--fake { display: none }
+}
 @media (min-width: $sMedia-tablet) {
   .MapsList {
-    @include flex-direction(row);
+    // @include flex-direction(row);
+    // @include justify-content(center, center);
   }
-  .MapsList.is-singleRow {
-    right: 0;
-  }
-  .MapsList-item {
-    margin: $sMargin-element $sMargin-element 0 0;
-  }
-  .MapsList.is-singleRow .MapsList-item:nth-child(3n) { margin-right: 0 }
-  .MapsList-item:nth-child(3n) { margin-right: 0 }
-  .MapsList-item--fake:last-child { display: block }
 }
 @media (min-width: $sMedia-desktop) {
-  .MapsList {
-    width: $sLayout-width;
-    padding: 0;
-    @include justify-content(flex-start, start);
-  }
   .MapsList-item--fake { display: block }
 }

@@ -6,7 +6,14 @@ module CartoDB
 
       # This limit uses User.max_import_file_size attribute to limit file sizes upon imports.
       # Has no storage as there's no need of it, and serves as a really simple Limit example.
+      #
+      # 'context' is expected to be an integer containing the file size in bytes
       class InputFileSize < AbstractLimit
+
+        # This limit needs additional fields present at options Hash:
+        # :user  (already defined, but mandatory)
+        # @see CartoDB::PlatformLimits::AbstractLimit initialize()
+        # @throws ArgumentError
         def initialize(options={})
           super(options)
 
@@ -25,10 +32,6 @@ module CartoDB
 
         def subkey
           'Importer:InputFileSize'
-        end
-
-        def load
-          # No need to load anything
         end
 
         # @param context mixed
@@ -61,21 +64,17 @@ module CartoDB
         end
 
         # Increases the limit
+        # @param context mixed
         # @param amount integer
-        def increase(amount=1)
+        def increase(context, amount=1)
           # Not useful here
         end
 
         # Decreases the limit
+        # @param context mixed
         # @param amount integer
-        def decrease(amount=1)
+        def decrease(context, amount=1)
           # Not useful here
-        end
-
-        # Sets the limit to a specific value
-        # @param value mixed
-        def set(value)
-          # Not useful here, relies on get()
         end
 
         # Resets the limit

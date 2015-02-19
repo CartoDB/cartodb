@@ -27,7 +27,7 @@ describe Search::Twitter do
     it 'tests basic full search flow with streaming' do
       pending 'needs new tweets dataset input'
       user_quota = 100
-      user_mock = Doubles::User.new({twitter_datasource_quota: user_quota})
+      user_mock = CartoDB::Datasources::Doubles::User.new({twitter_datasource_quota: user_quota})
       data_import_mock = Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)

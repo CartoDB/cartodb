@@ -6,6 +6,12 @@ module CartoDB
 
       # This limit uses User.max_import_table_row_count attribute to limit table size regarding row count.
       # Has no storage.
+      #
+      # 'context' is expected to be:
+      # Hash {
+      #   :table_name String
+      #   :tables_schema String|nil (Optional, defaults to import schema 'cdb_importer')
+      # }
       class TableRowCount < AbstractLimit
 
         # Where to search for the table if no schema specified at context
@@ -13,6 +19,7 @@ module CartoDB
 
         # This limit needs additional fields present at options Hash:
         # :db
+        # :user  (already defined, but mandatory)
         # @see CartoDB::PlatformLimits::AbstractLimit initialize()
         # @throws ArgumentError
         def initialize(options={})
@@ -37,10 +44,6 @@ module CartoDB
 
         def subkey
           'Importer:TableRowCount'
-        end
-
-        def load
-          # No need to load anything
         end
 
         # @param context mixed
@@ -87,21 +90,17 @@ module CartoDB
         end
 
         # Increases the limit
+        # @param context mixed
         # @param amount integer
-        def increase(amount=1)
+        def increase(context, amount=1)
           # Not useful here
         end
 
         # Decreases the limit
+        # @param context mixed
         # @param amount integer
-        def decrease(amount=1)
+        def decrease(context, amount=1)
           # Not useful here
-        end
-
-        # Sets the limit to a specific value
-        # @param value mixed
-        def set(value)
-          # Not useful here, relies on get()
         end
 
         # Resets the limit

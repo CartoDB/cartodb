@@ -15,7 +15,7 @@ module CartoDB
     end
 
     # Generic/unmapped errors
-    class GenericImportError                    < StandardError; end
+    class GenericImportError < StandardError; end
     # Mapped errors
 
     class FileTooBigError < BaseImportError
@@ -30,10 +30,17 @@ module CartoDB
       end
     end
 
+    class UserConcurrentImportsLimitError < BaseImportError
+      def initialize(message="User already using all allowed import slots")
+        super(message,6669)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
     class PasswordNeededForExtractionError      < ExtractionError; end
+    class TooManyLayersError                    < StandardError; end
     class GeometryCollectionNotSupportedError   < StandardError; end
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
@@ -74,6 +81,7 @@ module CartoDB
       GDriveNotPublicError                  => 1010,
       InvalidNameError                      => 1014,
       PasswordNeededForExtractionError      => 1018,
+      TooManyLayersError                    => 1019,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,
@@ -88,6 +96,7 @@ module CartoDB
       FileTooBigError                       => 6666,
       StatementTimeoutError                 => 6667,
       TooManyTableRowsError                 => 6668,
+      UserConcurrentImportsLimitError       => 6669,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,

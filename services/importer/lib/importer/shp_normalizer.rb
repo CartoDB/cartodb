@@ -43,7 +43,8 @@ module CartoDB
       # ArcGIS and Geopublisher, AtlasStyler and Geoserver: .cpg
       # Geoserver: cst
       def read_encoding_file(extension)
-        path = filepath.gsub(%r{\.shp$}, ".#{extension}")
+        current_extension = File.extname(filepath)
+        path = filepath.gsub(/.#{current_extension}$/, ".#{extension}")
         return nil unless File.exists?(path)
         saved_encoding = nil
         f = File.open(path, 'r') { |file|

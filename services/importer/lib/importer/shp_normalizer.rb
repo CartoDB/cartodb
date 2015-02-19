@@ -31,12 +31,27 @@ module CartoDB
       def shape_encoding_guessing
         normalize
         dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
-        encoding  = DBF::Table.new(dbf).encoding || 
+        encoding  = read_encoding_file('cpg') || read_encoding_file('cst') || DBF::Table.new(dbf).encoding ||
                     normalizer_output.fetch(:encoding, nil)
         encoding  = DEFAULT_ENCODING if encoding == 'None' 
         encoding  = codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if tab?
         encoding
+      end
+
+      # http://gis.stackexchange.com/questions/3529/which-character-encoding-is-used-by-the-dbf-file-in-shapefiles
+      # ArcGIS and Geopublisher, AtlasStyler and Geoserver: .cpg
+      # Geoserver: cst
+      def read_encoding_file(extension)
+        path = filepath.gsub(%r{\.shp$}, ".#{extension}")
+        return nil unless File.exists?(path)
+        saved_encoding = nil
+        f = File.open(path, 'r') { |file|
+          saved_encoding = file.read
+        }
+        saved_encoding
+      rescue => e
+        nil
       end
 
       def tab_encoding

@@ -317,15 +317,7 @@ module CartoDB
 
       def to_vizjson
         redis_cached(redis_vizjson_key) do
-          options = {
-            full: false,
-            user_name: user.username,
-            user_api_key: user.api_key,
-            user: user,
-            viewer_user: user,
-            dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
-          }
-          VizJSON.new(self, options, configuration).to_poro
+          calculate_vizjson
         end
       end
 
@@ -577,6 +569,19 @@ module CartoDB
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
+
+      def calculate_vizjson
+        options = {
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          user: user,
+          viewer_user: user,
+          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
+        }
+        ret = VizJSON.new(self, options, configuration).to_poro
+        ret
+      end
 
       def redis_cached(key)
         value = redis_cache.get(key)

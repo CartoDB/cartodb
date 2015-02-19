@@ -17,6 +17,7 @@
 * Adds static maps export dialog
 * Added new public pages [#2034](https://github.com/CartoDB/cartodb/pull/2142)
 * Added API keys and OAuth pages [#2142](https://github.com/CartoDB/cartodb/pull/2142)
+* Replace 404 error page
 
 3.8.0 (2015-01-30)
 ------------------

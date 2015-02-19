@@ -92,7 +92,7 @@ describe Visualization::Member do
       attributes  = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes, repository)
       member.store
-      
+
       member      = Visualization::Member.new({ id: member.id }, repository)
       member.fetch
       member.tags.should include('tag 1')
@@ -127,7 +127,7 @@ describe Visualization::Member do
     it 'invalidates vizjson cache in varnish if privacy changed' do
       # Need to at least have this decorated in the user data or checks before becoming private will raise an error
       CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
-      
+
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
@@ -410,7 +410,7 @@ describe Visualization::Member do
       # Test removing the password, should work
       visualization.remove_password
       visualization.has_password?.should be_false
-      lambda { 
+      lambda {
         visualization.is_password_valid?(password_value)
       }.should raise_error CartoDB::InvalidMember
     end
@@ -1013,5 +1013,24 @@ describe Visualization::Member do
     end
   end
 
-end
+  describe '#to_vizjson' do
+    it "calculates and returns the vizjson if not cached" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+      member.store
+      mocked_vizjson = {mocked: 'vizjson'}
+      member.expects(:calculate_vizjson).returns(mocked_vizjson).once
+
+      member.to_vizjson.should eq mocked_vizjson
+    end
+
+    it "Returns the vizjson if it was cached before" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+      member.store
+      mocked_vizjson = {mocked: 'vizjson'}
+      member.expects(:calculate_vizjson).returns(mocked_vizjson).once
+
+      vizjson = member.to_vizjson # calculate and cache
+      member.to_vizjson.should eq vizjson
+    end
+  end
 

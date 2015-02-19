@@ -44,7 +44,7 @@ module CartoDB
       # Geoserver: cst
       def read_encoding_file(extension)
         current_extension = File.extname(filepath)
-        path = filepath.gsub(/.#{current_extension}$/, ".#{extension}")
+        path = filepath.gsub(/#{current_extension}$/, ".#{extension}")
         return nil unless File.exists?(path)
         saved_encoding = nil
         f = File.open(path, 'r') { |file|

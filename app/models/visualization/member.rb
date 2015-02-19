@@ -579,8 +579,7 @@ module CartoDB
           viewer_user: user,
           dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
         }
-        ret = VizJSON.new(self, options, configuration).to_poro
-        ret
+        VizJSON.new(self, options, configuration).to_poro
       end
 
       def redis_cached(key)

@@ -18,6 +18,7 @@
 * Added new public pages [#2034](https://github.com/CartoDB/cartodb/pull/2142)
 * Added API keys and OAuth pages [#2142](https://github.com/CartoDB/cartodb/pull/2142)
 * Replace 404 error page
+* Only send JS errors+stats in production [#1987](https://github.com/CartoDB/cartodb/pull/1987)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

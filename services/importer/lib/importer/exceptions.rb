@@ -40,6 +40,7 @@ module CartoDB
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
     class PasswordNeededForExtractionError      < ExtractionError; end
+    class TooManyLayersError                    < StandardError; end
     class GeometryCollectionNotSupportedError   < StandardError; end
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
@@ -80,6 +81,7 @@ module CartoDB
       GDriveNotPublicError                  => 1010,
       InvalidNameError                      => 1014,
       PasswordNeededForExtractionError      => 1018,
+      TooManyLayersError                    => 1019,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,

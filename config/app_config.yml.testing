@@ -8,10 +8,14 @@ defaults: &defaults
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
-  secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
-  # If true, we allow both "#{USER}#{session_domain}" and "#{ORG}#{session_domain}/u/#{USER}"
-  # if false, only "#{session_domain}/u/#{USER}" is allowed (and organizations won't work)
+  # If true, both subdomain-based urls (xxx.cartodb.com) and subdomainless-urls (cartodb.com/u/xxxx) are allowed.
+  #   This true state takes precedence over the `subdomains_allowed` param.
+  # If false, `subdomains_allowed` will decide the type of urls allowed.
+  subdomains_optional: true
+  # If true, we allow both "#{USER}#{session_domain}" and "#{ORG}#{session_domain}/u/#{USER}".
+  # If false, only "#{session_domain}/u/#{USER}" is allowed (and organizations won't work).
   subdomains_allowed: true
+  secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   # nil|integer. HTTP port to use when building urls
   http_port:           # Leave empty to use default http/https port
   account_host:       'localhost:3000'

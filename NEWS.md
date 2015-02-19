@@ -1,8 +1,9 @@
 3.9.0 (2015-01-xx)
 ------------------
 * New features
-  - Allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...'
+  - Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)
     - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
+    - New Config entry: 'subdomains_optional' (see config/app_config.yml.sample for further details)
     - New Config entry: 'subdomains_allowed' (see config/app_config.yml.sample for further details)
 
 

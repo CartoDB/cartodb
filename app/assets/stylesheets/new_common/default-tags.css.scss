@@ -1,0 +1,28 @@
+// Default tags for datasets and maps
+// --------------------------------------------------
+
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.DefaultTags {
+  color:$cTypography-secondary;
+  font-weight: $sFontWeight-lighter;
+}
+.DefaultTags-item {
+  border: none;
+  color: $cTypography-link;
+  background: transparent;
+}
+.DefaultTags-item:focus {
+  background: transparent;
+}
+.DefaultTags-item:hover {
+  cursor: pointer;
+  color: $cTypography-linkHover;
+  text-decoration: underline;
+}
+.DefaultTags-item.is--empty {
+  color: $cTypography-help;
+  font-style: italic;
+  font-weight: $sFontWeight-lighter;
+}

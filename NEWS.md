@@ -1,4 +1,30 @@
-3.8.0 (2015-01-xx)
+3.8.1 (2015-02-xx)
+------------------
+* Added config for basemaps [#1954], see
+  [documentation](https://github.com/CartoDB/cartodb/wiki/How-to-configure-basemaps-in-CartoDB)
+* Added oEmbed support for visualizations [#1965](https://github.com/CartoDB/cartodb/issues/1965)
+* [content guessing] Prioritize ip over country guessing [#2089](https://github.com/CartoDB/cartodb/issues/2089)
+* Added new import error code (6667) for detecting and reporting statement timeouts.
+* Fixes creation of a visualization from a table [#2145](https://github.com/CartoDB/cartodb/issues/2145)
+* Changes the way geometry types are loaded client side (performance), see PR [#2189](https://github.com/CartoDB/cartodb/pull/218)
+* Cache the geometry types in table model server side (performance), see PR [#2165](https://github.com/CartoDB/cartodb/pull/2165)
+* Added PlatformLimits service. Includes an importer maximum file size limit.
+* Added PlatformLimits importer max resulting table row count limit.
+* Fixed incompatible data for wizards [#1942](https://github.com/CartoDB/cartodb/issues/1942)
+* Added map previews in the delete table dialog
+* Fixed adding Mapbox basemaps.
+* Captures 4XX exceptions when loading faulty map preview
+* Adds static maps export dialog
+* Added new public pages [#2034](https://github.com/CartoDB/cartodb/pull/2142)
+* Added API keys and OAuth pages [#2142](https://github.com/CartoDB/cartodb/pull/2142)
+* Replace 404 error page
+
+Bugfixes:
+* When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
+* Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
+* Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
+
+3.8.0 (2015-01-30)
 ------------------
 * Mailchimp user lists importer dataset.
   New Config entry-set: ['oauth']['mailchimp'] (see config/app_config.yml.sample for further details)
@@ -13,6 +39,7 @@
 * Added slides support for visualization
 * Added guessing of types for geojson (boolean and dates) via ogr2ogr2 [#1036](https://github.com/CartoDB/cartodb/issues/1036). Update `ogr2ogr2-static-bin` package for this to work
 * Fixed param `quoted_fields_guessing` on imports and syncs [#1966](https://github.com/CartoDB/cartodb/issues/1966)
+* Background importer for new dashboard.
 
 3.7.1 (2014-12-30)
 ------------------
@@ -104,7 +131,7 @@
 ------------------
 * New features
   - Removal of 19 unused or no longer needed gems
-  - Allows to show an 'available for hire' banner in your public profile. 
+  - Allows to show an 'available for hire' banner in your public profile.
 * Fixed bugs
   - Fixed internal geocoder for org users
 
@@ -176,7 +203,7 @@
 3.2.3 (2014-09-30)
 ------------------
 * New features
-  * Added ability to disable high resolution geocoding batch api by config 
+  * Added ability to disable high resolution geocoding batch api by config
 * Fixed bugs
   * Missing geocoding type (Admin regions, country column, polygons)
 
@@ -494,7 +521,7 @@
 NOTE: This version introduces another kind of privacy setting: "Link-only".
 Now visualizations and tables which are public are listed by default on user pages.
 Due to this, you may want to turn all your Public tables and visualizations to
-"Link-only" state. To do this, just run the following SQL query on your metadata 
+"Link-only" state. To do this, just run the following SQL query on your metadata
 database:
 
 ```
@@ -526,7 +553,7 @@ WHERE privacy=1;
 -------------------
 * Improvements
   * Frontend code (JS) is now no longer compiled using the assets pipeline. You can
-    use the asset_host setting on app_conflg.yml to point to assets on our own CDN 
+    use the asset_host setting on app_conflg.yml to point to assets on our own CDN
     or to your own ones if you compile them manually using Grunt.
     For more details, look at lib/build/UPGRADING.md.
   * Automate frontend unit tests
@@ -572,7 +599,7 @@ WHERE privacy=1;
   * Infowindow fields are renderer in reverse order.
   * Import files containing lat/lon with ',' instead of '.' break.
   * Infowindow content is not being loaded using https when embed is loaded with https.
-  
+
 2.11.0 (2014-03-10)
 -------------------
 
@@ -603,7 +630,7 @@ and any other future version. Also, versions starting with this one are
 incompatible with the old database schema with integer based ids.
 
 These are the steps you need to follow in order to run the manual script:
-``` 
+```
   $ cd <application_root>
   $ export RAILS_ENV=<rails_env>
   $ export DBNAME=<your_postgresql_database_name>
@@ -623,13 +650,13 @@ Now, back to the new features!
   * All metadata storage is now UUID-based
   * Implement new public map page
   * Implement new georeference options
-  * Implement new geocoder logic in the backend, allowing to geocode by regions 
+  * Implement new geocoder logic in the backend, allowing to geocode by regions
     using open data
 
 * Bugs Fixed
   * Improvements of traces for Sync Tables
   * Fix errors when deleting user databases on distributed environemtns
-  * Show in color-picker all the colors you are using in your visualization 
+  * Show in color-picker all the colors you are using in your visualization
     (colors from other layers and so on)
   * Make cartodb UI work without Google Maps JS
   * Fix error with geocoder row counts
@@ -790,11 +817,11 @@ Now, back to the new features!
   * Problem rendering some CSS gradients with last Chrome version.
   * Wizard is not refreshed with new properties when a simple wizard is applied and any CartoCSS property is changed.
   * Category colors are not re-rendered again when the previously applied column was removed.
-  * Fixed enabling fonts in map view. 
+  * Fixed enabling fonts in map view.
   * Autocomplete table_name when typing is not showing up in Codermirror editors.
   * Replaced the old table endpoint in the merge functionality.
   * Reduced default marker width and border-width.
-  * Fixed geocodings API authentication. 
+  * Fixed geocodings API authentication.
   * Check geocoding bindings in table and map views.
   * Fixed encoding issue with xlsx files.
   * Wizard is active and bland when a new layer without any geometry is added in a visualization.
@@ -946,7 +973,7 @@ Now, back to the new features!
   * Layer alias does not work on torque layers.
   * Customize infowindow empty throws error.
   * Purge varnish items with "cdb_tablemetadata" channel on table update (#308)
- 
+
 2.5.6 (2013-11-28)
 ------------------
 * Improvement
@@ -1043,12 +1070,12 @@ Now, back to the new features!
   * Basemap distribution on the selector is wrong. It should have 3 columns in total.
   * Geocoding error on tables with double-quoted strings.
   * Fixed convert_to_cartodb_type spec.
-  * When the geocoder process fails, the progress bar is hidden but no error message is shown up. 
+  * When the geocoder process fails, the progress bar is hidden but no error message is shown up.
   * Dialog to load a marker is the same than to import a file.
 
 2.5.1 (2013-11-14)
 ------------------
-* Improvements 
+* Improvements
   * Legend is disabled when "torque" wizard is applied.
   * Dragging the time slider stops the animation, and when dragging ends the animation starts.
 
@@ -1518,7 +1545,7 @@ Now, back to the new features!
 - Added legends.
 - Dropbox file import.
 - Icon and images management. Icons and patterns can be set from the wizards
-- The importer component now uses a separate database schema ('cdb_importer') 
+- The importer component now uses a separate database schema ('cdb_importer')
   for all imports, with the exception of OSM files. To create the schema in
   existing installations, run:
   ```
@@ -1574,7 +1601,7 @@ $ bundle exec rake cartodb:db:migrate_to[2.1]
 * Imports now never get stuck on the UI
 * Imports will populate created_at and updated_at fields as strings
   as a fallback if dates cannot be parsed.
-* Conversion of a numeric column to date is properly handled, 
+* Conversion of a numeric column to date is properly handled,
   by nullifying data in the column.
 * Vizjson now works with and without SSL
 * Fixed various errors when changing column types using the UI
@@ -1607,8 +1634,8 @@ bundle exec rake cartodb:db:load_functions
 * Added new cool wizard for point maps: Intensity.
 * New upgrade window.
 * when converting a column from string type to number type, figures using
-  decimal comma and point as grouping separator (e.g. 1.234.567,1234), are 
-  appropriately casted to floats using a decimal point separator 
+  decimal comma and point as grouping separator (e.g. 1.234.567,1234), are
+  appropriately casted to floats using a decimal point separator
   (e.g. 1234567.1234)
 
 2.0.5 (05/03/13)
@@ -1638,7 +1665,7 @@ bundle exec rake cartodb:db:load_functions
 -----
 * Add cartodb:db:update_test_quota_trigger rake task.
 * Added new infowindow theme: 'header with image'.
-* Brand new basemap layer selector. 
+* Brand new basemap layer selector.
 * Changed user quota calculation method.
 * Changed default basemap to Nokia.
 

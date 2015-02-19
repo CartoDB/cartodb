@@ -129,6 +129,10 @@ WORKING_SPECS_9 = \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
+  services/importer/spec/regression/query_batcher_spec.rb \
+  services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
+  services/platform-limits/spec/unit/ \
+  spec/models/platform-limits/ \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

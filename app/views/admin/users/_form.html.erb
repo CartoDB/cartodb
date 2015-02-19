@@ -76,6 +76,15 @@
                 </div>
               </div>
 
+              <% if @user.google_sign_in && @google_plus_config.present? %>
+                <div class="row" id="google_row">
+                  <div class="field">
+                    <label>GOOGLE+ ACCOUNT</label>
+                    <%= render partial: 'google_plus/google_plus_disconnect_button',  locals: { config: @google_plus_config } %>
+                  </div>
+                </div>
+              <% end %>
+
               <div class="row margin-bottom-10">
                 <div class="field">
                   <label>JOBS PROFILE</label>
@@ -191,7 +200,7 @@
             <div class="row">
               <div class="field field-2">
                 <%= form.label :email %>
-                <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
+                <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil, readonly: !@user.can_change_email %>
                 <%= form_error_for :email, @user.errors %>
               </div>
             </div>
@@ -254,6 +263,12 @@
           <div class="right-column">
             <div class="row">
               <p>Subdomain cannot be changed</p>
+            </div>
+            <div class="row">
+              <p><% if @user.google_sign_in && !@user.can_change_email %>Your account is linked to your Google account. You can change the email if you set a password.<% end %></p>
+            </div>
+            <div class="row">
+              <p><% if @user.google_sign_in && !@user.can_change_email %>Accounts linked to Google don't need a password.<% end %></p>
             </div>
             <div class="row">
               <p>

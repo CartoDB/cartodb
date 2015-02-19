@@ -11,7 +11,23 @@
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
         }
-      , user_data = <%=raw current_user.data.to_json.html_safe %>;
+      , can_change_email = <%= current_user.can_change_email %>
+      , user_data = <%=raw current_user.data.to_json.html_safe %>
+      , access_token = '';
+
+    function disconnectGoogleAccount(access_token, callback, errorCallback) {
+      var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token=' + access_token;
+      $.ajax({
+        type: 'GET',
+        url: revokeUrl,
+        async: false,
+        contentType: "application/json",
+        dataType: 'jsonp',
+        success: callback,
+        error: errorCallback
+      });
+    }
+
   </script>
 <% end %>
 <%= content_for(:css) do %>

@@ -1,4 +1,4 @@
-
+# encoding: UTF-8
 module CartoDB
   module Importer2
 
@@ -12,6 +12,41 @@ module CartoDB
       QUERY_WHERE_PLACEHOLDER = '/* BATCHER_WHERE */'
       QUERY_LIMIT_SUBQUERY_PLACEHOLDER = '/* BATCHER_SUBQUERY */'
 
+      def initialize(db, logger = nil, capture_exceptions = false, batch_size = DEFAULT_BATCH_SIZE)
+        @db = db
+        @logger = logger
+        @capture_exceptions = capture_exceptions
+        @batch_size = batch_size
+      end
+
+      # Executes update query of the form UPDATE table_name SET set_clause WHERE where_condition, by batches
+      # first_fragment: sql part before 'where' keyword. Example: 'update mytable set mycolumn = 1'
+      # condition_fragment: sql part after 'where' keyword (you must not include where keyword). Example: 'mycolumn = 555 and mycolumn2 != 3'
+      def execute_update(first_fragment, table_name,  condition_fragment = nil, message = nil)
+        message ||= "Batching #{first_fragment}, #{condition_fragment}"
+        temp_column = "cartodb_processed_#{table_name.hash.abs}"
+        batched_query = batched_query(first_fragment, table_name, temp_column, message, condition_fragment)
+        QueryBatcher.process(@db, batched_query, @logger, @capture_exceptions, table_name, temp_column, message)
+      end
+
+      # INFO: this method has the same purpose than `QueryBatcher.execute`, but it does it in a different way.
+      # Issue #1994 revealed previous method had a problem: if a batch does not match query condition processing
+      # stops. This method fixes this by setting the condition in the windowing fragment of the query instead of
+      # the main body of the query. It's not been fixed in the previous method because the use of placeholders
+      # made the fix really hard, risky (for backwards compatibility) and almost impossible to read. Receiving
+      # both parts separatelly makes things much easier.
+      def batched_query(first_fragment, table_name, temp_column, message, condition_fragment = nil)
+        condition_fragment = condition_fragment.nil? ? '' : %Q{and #{condition_fragment}}
+
+        limit_subquery_fragment = %Q{
+          where #{table_name}.CTID IN (
+            SELECT CTID FROM #{table_name} WHERE #{temp_column} IS NULL #{condition_fragment} LIMIT #{@batch_size}
+          )
+        }
+
+        first_fragment + %Q{, #{temp_column} = TRUE } + limit_subquery_fragment
+      end
+
       # @param db_object mixed
       # @param query string
       # @param table_name string
@@ -21,10 +56,6 @@ module CartoDB
       # @param batch_size int
       def self.execute(db_object, query, table_name, logger, log_message, capture_exceptions=false,
                        batch_size=DEFAULT_BATCH_SIZE)
-        log = logger.nil? ? ConsoleLog.new : logger
-
-        log.log log_message
-
         batched_query = query
 
         temp_column = "cartodb_processed_#{table_name.hash.abs}"
@@ -50,18 +81,25 @@ module CartoDB
           batched_query << ' WHERE ' + limit_subquery_fragment
         end
 
+        process(db_object, batched_query, logger, capture_exceptions, table_name, temp_column, log_message)
+      end
+
+      def self.process(db_object, batched_query, logger, capture_exceptions, table_name, temp_column, log_message)
+        log = logger.nil? ? ConsoleLog.new : logger
+        log.log log_message
+
         begin
           add_processed_column(db_object, table_name, temp_column)
           process_batched_query(db_object, batched_query, log, capture_exceptions)
           remove_processed_column(db_object, table_name, temp_column)
+
+          log.log "FINISHED: #{log_message}"
         rescue => exception
           raise exception unless capture_exceptions
-          log.log "QUERY:\n#{batched_query}\n---------------------------"
+          log.log "ERROR. QUERY:\n#{batched_query}\n---------------------------"
           log.log "#{exception.to_s}\n---------------------------"
           log.log "#{exception.backtrace}\n---------------------------"
         end
-
-        log.log "FINISHED: #{log_message}"
       end
 
       def self.process_batched_query(db_object, batched_query, log, capture_exceptions)

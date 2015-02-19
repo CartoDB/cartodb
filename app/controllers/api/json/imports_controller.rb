@@ -1,6 +1,9 @@
 #encoding: UTF-8
 
 require_relative '../../../../services/datasources/lib/datasources'
+require_relative '../../../models/visualization/external_source'
+require_relative '../../../../services/platform-limits/platform_limits'
+require_relative '../../../../services/importer/lib/importer/exceptions'
 
 class Api::Json::ImportsController < Api::ApplicationController
 
@@ -45,8 +48,34 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    if params[:url].present?
-      file_uri = params[:url]
+    type_guessing = params.fetch(:type_guessing, true)
+    quoted_fields_guessing = params.fetch(:quoted_fields_guessing, true)
+    content_guessing = ["true", true].include?(params[:content_guessing])
+
+    url = params[:url]
+    external_source = nil
+
+    concurrent_import_limit =
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                           user: current_user,
+                                                                           redis: {
+                                                                             db: $users_metadata
+                                                                           }
+                                                                         })
+    if concurrent_import_limit.is_over_limit!
+      raise CartoDB::Importer2::UserConcurrentImportsLimitError.new
+    end
+
+    if url.present?
+      file_uri = url
+      enqueue_importer_task = true
+    elsif params[:remote_visualization_id].present?
+      content_guessing = false
+      type_guessing = true
+      quoted_fields_guessing = true
+      external_source = external_source(params[:remote_visualization_id])
+      url = external_source.import_url
+      file_uri = url
       enqueue_importer_task = true
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
@@ -56,7 +85,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     service_name =
       params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
-    service_item_id = params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence
+    service_item_id = params[:service_item_id].present? ? params[:service_item_id] : url.presence
 
     options = {
         user_id:                current_user.id,
@@ -69,18 +98,33 @@ class Api::Json::ImportsController < Api::ApplicationController
         from_query:             params[:sql].presence,
         service_name:           service_name.presence,
         service_item_id:        service_item_id.presence,
-        type_guessing:          params.fetch(:type_guessing, true),
-        quoted_fields_guessing: params.fetch(:quoted_fields_guessing, true),
-        content_guessing:       ["true", true].include?(params[:content_guessing]),
+        type_guessing:          type_guessing,
+        quoted_fields_guessing: quoted_fields_guessing,
+        content_guessing:       content_guessing,
         state:                  enqueue_importer_task ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED,
         upload_host:            Socket.gethostname
     }
 
     data_import = DataImport.create(options)
+    if external_source.present?
+      ExternalDataImport.new(data_import.id, external_source.id).save
+    end
 
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if enqueue_importer_task
 
     render_jsonp({ item_queue_id: data_import.id, success: true })
+  rescue CartoDB::Importer2::UserConcurrentImportsLimitError
+    rl_value = decrement_concurrent_imports_rate_limit
+    render_jsonp({
+                   errors: {
+                              imports: "We're sorry but you're already using your allowed #{rl_value} import slots"
+                           }
+                 }, 429)
+  rescue => ex
+    decrement_concurrent_imports_rate_limit
+
+    CartoDB::Logger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
+    render_jsonp({ errors: { imports: ex.message } }, 400)
   end
 
   # ----------- Import OAuths Management -----------
@@ -249,6 +293,33 @@ class Api::Json::ImportsController < Api::ApplicationController
   rescue => ex
     CartoDB::Logger.info('Error: service_oauth_callback', "#{ex.message} #{ex.backtrace.inspect}")
     render_jsonp({ errors: { imports: ex.message } }, 400)
+  end
+
+  private
+
+  def external_source(remote_visualization_id)
+    external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
+    raise CartoDB::Datasources::AuthError.new('Illegal external load') unless remote_visualization_id.present? && external_source.importable_by(current_user)
+    external_source
+  end
+
+  def decrement_concurrent_imports_rate_limit
+    begin
+      concurrent_import_limit =
+        CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                             user: current_user,
+                                                                             redis: {
+                                                                               db: $users_metadata
+                                                                             }
+                                                                           })
+      # It's ok to decrease always as if over limit, will get just at limit and next try again go overlimit
+      concurrent_import_limit.decrement
+      concurrent_import_limit.peek  # return limit value
+    rescue => sub_exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
+      nil
+    end
   end
 
 end

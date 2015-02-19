@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title><%= "#{yield(:title)} — " if content_for?(:title) %>CartoDB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="<%= content_for?(:title) ? yield(:title) : "Create dynamic maps, analyze and build location-aware and geospatial applications with your data using the power of PostGIS in the cloud." %>">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <%= stylesheet_link_tag "frontend" %>
+  <%= yield :css %>
+  <%= csrf_meta_tag %>
+</head>
+<body class="frontend">
+  <%= yield %>
+
+  <%= yield :js %>
+
+  <script>
+    WebFontConfig = {
+      monotype: {
+        projectId: 'b6470a43-5105-49d3-95ae-75217a436bf8' // TODO: app_config.yml
+      }
+    };
+
+    (function() {
+      var wf = document.createElement('script');
+      wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+                '://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'true';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+    })();
+  </script>
+
+  <%= insert_google_analytics('primary') %>
+
+  <%= insert_trackjs() %>
+</body>
+</html>

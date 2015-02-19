@@ -4,6 +4,10 @@ require 'typhoeus'
 module Cartodb
   class Central
 
+    def self.sync_data_with_cartodb_central?
+      Cartodb.config[:cartodb_central_api].present? && Cartodb.config[:cartodb_central_api]['username'].present? && Cartodb.config[:cartodb_central_api]['password'].present?
+    end
+
     def initialize
       @host = "http#{'s' if Rails.env.production? || Rails.env.staging?}://#{ Cartodb.config[:cartodb_central_api]['host'] }"
       @host << ":#{Cartodb.config[:cartodb_central_api]['port']}" if Cartodb.config[:cartodb_central_api]['port'].present?
@@ -15,6 +19,10 @@ module Cartodb
 
     def host
       @host
+    end
+
+    def google_signup_url
+      "#{self.host}/google/signup"
     end
 
     def build_request(path, body, method, timeout = 200)
@@ -35,7 +43,7 @@ module Cartodb
       if expected_codes.include?(response.code)
         return response.body && response.body.length >= 2 ? JSON.parse(response.body) : {}
       else
-        raise CartoDB::CentralCommunicationFailure, "Application server responded with http #{ response.code }: #{ response.body }"
+        raise CartoDB::CentralCommunicationFailure.new(response)
       end
     end
 
@@ -92,4 +100,4 @@ module Cartodb
 
   end
 
-end # CartodbCentral
+end

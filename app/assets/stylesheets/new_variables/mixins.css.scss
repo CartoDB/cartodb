@@ -20,7 +20,7 @@
           #{$property}: #{$value};
 }
 
-// Display inline 
+// Display inline
 @mixin inline-block() {
   display:inline-block;
   vertical-align: top;
@@ -60,7 +60,18 @@
   -moz-flex-wrap: $v;
   -ms-flex-wrap: $v;
   flex-wrap: $v;
-  // IE10 doesn't support this property  
+  // IE10 doesn't support this property
+}
+@mixin flex-order($v) {
+  -webkit-flex-order: $v;
+  -webkit-box-ordinal-group: $v;
+  -moz-box-ordinal-group: $v;
+  -moz-flex-order: $v;
+  -ms-flex-order: $v;
+  -ms-order: $v;
+  box-ordinal-group: $v;
+  flex-order: $v;
+  order: $v;
 }
 @mixin justify-content($v, $ie-v: "") {
   $ie-v: $v !default;
@@ -96,6 +107,30 @@
   filter:alpha(opacity=($v*100)); // IE10
 }
 
+/* BACKGROUND GRADIENT */
+@mixin background-gradient($startColor: #3C3C3C, $endColor: #999999) {
+  background-color: $startColor;
+  background-image: -webkit-gradient(linear, left top, left bottom, from($startColor), to($endColor));
+  background-image: -webkit-linear-gradient(top, $startColor, $endColor);
+  background-image:    -moz-linear-gradient(top, $startColor, $endColor);
+  background-image:     -ms-linear-gradient(top, $startColor, $endColor);
+  background-image:      -o-linear-gradient(top, $startColor, $endColor);
+  background-image:         linear-gradient(top, $startColor, $endColor);
+  filter:            progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$startColor}', endColorStr='#{$endColor}');
+}
+
+/* BACKGROUND HORIZONTAL */
+@mixin background-horizontal($startColor: #3C3C3C, $endColor: #999999) {
+  background-color: $startColor;
+  background-image: -webkit-gradient(linear, left top, right top, from($startColor), to($endColor));
+  background-image: -webkit-linear-gradient(left, $startColor, $endColor);
+  background-image:    -moz-linear-gradient(left, $startColor, $endColor);
+  background-image:     -ms-linear-gradient(left, $startColor, $endColor);
+  background-image:      -o-linear-gradient(left, $startColor, $endColor);
+  background-image:         linear-gradient(left, $startColor, $endColor);
+  filter:            progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$startColor}', endColorStr='#{$endColor}', gradientType='1');
+}
+
 /* TRANSFORM  */
 @mixin transform($params) {
   @include css3-prefix('transform', $params);
@@ -108,7 +143,7 @@
 
 /* TRANSITION */
 @mixin transition($properties...) {
-  
+
   @if length($properties) >= 1 {
     @include css3-prefix('transition', $properties);
   }
@@ -125,13 +160,13 @@
   }
   @-moz-keyframes #{$animation-name} {
     @content;
-  }  
+  }
   @-ms-keyframes #{$animation-name} {
     @content;
   }
   @-o-keyframes #{$animation-name} {
     @content;
-  }  
+  }
   @keyframes #{$animation-name} {
     @content;
   }

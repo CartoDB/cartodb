@@ -1,0 +1,31 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+.ContentFooter {
+  height: 81px;
+  margin-top: $sMargin-group;
+}
+.ContentFooter-inner {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.ContentFooter-inner--paginationOnly {
+  @include justify-content(center);
+}
+.ContentFooter-lockedIcon {
+  font-size: $sFontSize-small;
+  margin-right: $sMargin-min;
+  color: $cTypography-help;
+}
+
+@media (min-width: $sMedia-tablet) {
+  .ContentFooter-inner {
+    @include flex-direction(row);
+    @include justify-content(space-between, justify);
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
+}

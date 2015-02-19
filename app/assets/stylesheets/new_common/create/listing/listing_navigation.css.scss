@@ -1,0 +1,11 @@
+@import "../../../new_variables/mixins";
+@import "../../../new_variables/colors";
+@import "../../../new_variables/sizes";
+
+// Navigation styles
+
+.Filters.Filters--navListing {
+  top: 157px;
+  background: $cStructure-grayBkg;
+}
+.Filters.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }

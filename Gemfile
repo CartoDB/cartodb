@@ -13,7 +13,7 @@ gem 'rails_warden',            '0.5.2' # Auth via the Warden Rack framework
 gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
-gem 'redis',                   '2.2.2'
+gem 'redis',                   '3.2.1'
 gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
@@ -68,7 +68,7 @@ gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 # TODO Production gems, put them in :production group
 gem 'mixpanel',              '4.0.2'
 gem 'rollbar',               '0.12.14'
-gem 'resque',                '1.23.0'
+gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
 group :development, :test do

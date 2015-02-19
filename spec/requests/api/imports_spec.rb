@@ -120,6 +120,19 @@ describe "Imports API" do
     import['state'].should be == 'complete'
   end
 
+  it 'fails with password protected files' do
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/alldata-pass.zip', 'application/octet-stream'))
+
+    item_queue_id = JSON.parse(response.body)['item_queue_id']
+
+    get api_v1_imports_show_url(:id => item_queue_id), params
+
+    response.code.should be == '200'
+    import = JSON.parse(response.body)
+    import['state'].should be == 'failure'
+  end
+
 
   it 'imports files with weird filenames' do
     post api_v1_imports_create_url,
@@ -325,6 +338,21 @@ describe "Imports API" do
     last_import.state.should be == 'complete'
     last_import.tables_created_count.should eq 2
     last_import.table_names.should eq 'zipped_a zipped_b'
+  end
+
+  it 'properly reports table row count limit' do
+    old_max_import_row_count = @user.max_import_table_row_count
+    @user.update max_import_table_row_count: 2
+
+    post api_v1_imports_create_url,
+         params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 6668
+
+    @user.update max_import_table_row_count: old_max_import_row_count
   end
 
 end

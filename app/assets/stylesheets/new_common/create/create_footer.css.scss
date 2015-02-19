@@ -7,6 +7,10 @@
 .CreateDialog-footer {
   position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: $cStructure-grayBkg;
   padding: 0!important;
   border: 0!important;
   text-align: center;
@@ -15,7 +19,7 @@
 .CreateDialog-footerInner {
   width: $sLayout-width;
   margin: 0 auto;
-  padding: $sMargin-group 0;
+  padding: 15px 0;
   border-top: 1px solid $cStructure-mainLine;
 }
 .CreateDialog-footerInner.is-expanded {

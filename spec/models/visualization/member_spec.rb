@@ -1108,6 +1108,30 @@ describe Visualization::Member do
         fail "this block shall not be executed"
       end
     end
+  end
 
+  describe '#invalidate_cache' do
+    it "Invalidates the varnish and redis caches" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+      member.expects(:invalidate_varnish_cache).once
+      member.expects(:invalidate_redis_cache).once
+
+      member.invalidate_cache
+    end
+  end
+
+  describe '#invalidate_redis_cache' do
+    it "Invalidates the vizjson in redis cache" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+      member.store
+      mocked_vizjson = {mocked: 'vizjson'}
+      member.expects(:calculate_vizjson).returns(mocked_vizjson).once
+
+      vizjson = member.to_vizjson
+      member.send(:redis_cache).get(member.redis_vizjson_key).should eq vizjson.to_json
+
+      member.invalidate_cache
+      member.send(:redis_cache).get(member.redis_vizjson_key).should be_nil
+    end
   end
 end

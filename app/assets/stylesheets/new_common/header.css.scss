@@ -47,6 +47,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 
   &:hover {
     color: white;
+    text-decoration: underline;
     &:after { border-top-color: white }
   }
 }
@@ -63,6 +64,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   font-size: $sFontSize-larger;
   line-height: $sLineHeight-larger;
 }
+.Header-settingsItemAvatar { height: 42px }
 .Header-settingsLink {
   font-weight: $sFontWeight-lighter;
   color: rgba(white, 0.6);

@@ -9,7 +9,7 @@ describe Url::ArcGIS do
 
   before(:all) do
     @url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
-    @user = Doubles::User.new
+    @user = CartoDB::Datasources::Doubles::User.new
   end
 
   before(:each) do

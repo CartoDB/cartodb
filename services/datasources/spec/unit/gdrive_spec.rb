@@ -18,7 +18,7 @@ describe Url::GDrive do
 
   describe '#filters' do
     it 'test that filter options work correctly' do
-      user_mock = Doubles::User.new
+      user_mock = CartoDB::Datasources::Doubles::User.new
 
       gdrive_provider = Url::GDrive.get_new(get_config, user_mock)
 

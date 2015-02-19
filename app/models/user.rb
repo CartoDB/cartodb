@@ -257,6 +257,8 @@ class User < Sequel::Model
         drop_database_and_user unless error_happened
       end
     end
+
+    self.feature_flags_user.each { |ffu| ffu.delete }
   end
 
   def after_destroy

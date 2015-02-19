@@ -34,10 +34,6 @@ module CartoDB
         crawl(temporary_directory).each { |dir_path| process(dir_path) }
         @source_files = split(source_files)
         self
-      rescue => exception
-        puts exception.to_s
-        puts exception.backtrace
-        raise exception #ExtractionError
       end
 
       def without_unpacking(path)

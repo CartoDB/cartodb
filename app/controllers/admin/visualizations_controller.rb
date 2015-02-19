@@ -32,7 +32,10 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
-    view =  current_user.has_feature_flag?('new_dashboard') ? 'new-dashboard' : 'index'
+
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new-dashboard' : 'index'
+    layout = new_dashboard ? 'new_application' : 'application'
 
     respond_to do |format|
       format.html { render view, layout: 'application' }

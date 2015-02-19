@@ -108,8 +108,7 @@ class Table < Sequel::Model(:user_tables)
         types = JSON.parse(types_str)
       else
         types = query_geometry_types
-        #30 min ttl if types list is non-empty
-        cache.setex(geometry_types_key, 1800, types) if types.length > 0
+        cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
       end
     else
       types = []

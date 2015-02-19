@@ -341,6 +341,7 @@ describe "Imports API" do
   end
 
   it 'properly reports table row count limit' do
+    old_max_import_row_count = @user.max_import_table_row_count
     @user.update max_import_table_row_count: 2
 
     post api_v1_imports_create_url,
@@ -350,6 +351,8 @@ describe "Imports API" do
     last_import = DataImport.order(:updated_at.desc).first
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 6668
+
+    @user.update max_import_table_row_count: old_max_import_row_count
   end
 
 end

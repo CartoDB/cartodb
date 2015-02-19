@@ -1,6 +1,6 @@
 <% unless customer.blank? %>
   <script>
-    window._trackJs = { enabled: <%= Rails.env.production? ? 'true' : 'false' %> };
+    window._trackJs = { enabled: <%= enabled ? 'true' : 'false' %> };
   </script>
   <script type="text/javascript" src="//d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js" data-token="<%= customer %>"></script>
 <% end %>

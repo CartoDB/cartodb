@@ -1034,3 +1034,80 @@ describe Visualization::Member do
     end
   end
 
+  describe '#redis_cached' do
+    it "Uses the block given to calculate a hash if there's a cache miss" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+
+      redis_cache = mock
+      redis_cache.expects(:get).returns(nil).once # cache miss
+      redis_cache.expects(:setex).once
+      member.stubs(:redis_cache).returns(redis_cache)
+
+      any_hash = {
+        any_key: 'any_value'
+      }
+      block_called = false
+      any_block = lambda {
+        block_called = true
+        any_hash
+      }
+
+      member.send(:redis_cached, 'any_key', &any_block).should eq any_hash
+      block_called.should be_true
+    end
+
+    it "Caches an arbitrary hash serialized if there's a miss " do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+
+      any_hash = {
+        any_key: 'any_value'
+      }
+
+      key = 'any_key'
+      redis_cache = mock
+      redis_cache.expects(:get).returns(nil).once # cache miss
+      redis_cache.expects(:setex).once.with(key, 24.hours.to_i, any_hash.to_json)
+      member.stubs(:redis_cache).returns(redis_cache)
+
+      member.send(:redis_cached, key) do
+        any_hash
+      end
+    end
+
+    it "Deserializes an arbitrary hash previously stored if there's a cache hit" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+
+      any_hash = {
+        any_key: 'any_value'
+      }
+      any_hash_serialized = any_hash.to_json
+
+      key = 'any_key'
+      redis_cache = mock
+      redis_cache.expects(:get).returns(any_hash_serialized).once # cache hit
+      redis_cache.expects(:setex).never
+      member.stubs(:redis_cache).returns(redis_cache)
+
+      member.send(:redis_cached, key) do
+        nil #not really interested in this block when there's a hit
+      end
+    end
+
+    it "Does not execute the block if there's a cache hit" do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+
+      any_hash_serialized = {}.to_json
+
+      key = 'any_key'
+      redis_cache = mock
+      redis_cache.expects(:get).once.returns(any_hash_serialized) # cache hit
+      redis_cache.expects(:setex).never
+      member.stubs(:redis_cache).returns(redis_cache)
+
+      member.send(:redis_cached, key) do
+        fail "this block shall not be executed"
+      end
+    end
+
+  end
+end

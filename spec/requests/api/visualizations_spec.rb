@@ -1528,6 +1528,134 @@ describe Api::Json::VisualizationsController do
       body['total_shared'].should eq 2
     end
 
+    it 'tests privacy of vizjsons' do
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+      user_1 = create_user(
+        username: "test#{rand(9999)}-1",
+        email: "client#{rand(9999)}@cartodb.com",
+        password: 'clientex',
+        private_tables_enabled: true
+      )
+
+      user_2 = create_user(
+        username: "test#{rand(9999)}-2",
+        email: "client#{rand(9999)}@cartodb.com",
+        password: 'clientex',
+        private_tables_enabled: true
+      )
+
+      organization = Organization.new
+      organization.name = "org#{rand(9999)}"
+      organization.quota_in_bytes = 1234567890
+      organization.seats = 5
+      organization.save
+      organization.valid?.should eq true
+
+      user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
+      user_org.promote_user_to_admin
+      organization.reload
+      user_1.reload
+
+      user_2.organization_id = organization.id
+      user_2.save.reload
+      organization.reload
+
+      post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
+           factory.to_json, @headers
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      u1_vis_1_id = body.fetch('id')
+      u1_vis_1_perm_id = body.fetch('permission').fetch('id')
+      # By default derived vis from private tables are WITH_LINK, so setprivate
+      put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
+          { privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE }.to_json, @headers
+      last_response.status.should == 200
+
+      # Share vis with user_2 in readonly (vis can never be shared in readwrite)
+      put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
+          {acl: [{
+                   type: CartoDB::Permission::TYPE_USER,
+                   entity: {
+                     id:   user_2.id,
+                   },
+                   access: CartoDB::Permission::ACCESS_READONLY
+                 }]}.to_json, @headers
+      last_response.status.should == 200
+
+      # privacy private checks
+      # ----------------------
+
+      # Owner, authenticated
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Other user, has it shared in readonly mode
+      get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Unauthenticated user
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+      last_response.status.should == 403
+
+      # Unauthenticated user
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+      last_response.status.should == 403
+
+      # Now with link
+      # -------------
+      put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
+          { privacy: CartoDB::Visualization::Member::PRIVACY_LINK }.to_json, @headers
+      last_response.status.should == 200
+
+      # Owner authenticated
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Other user has it shared in readonly mode
+      get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Unauthenticated user
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Now public
+      # ----------
+      put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
+          { privacy: CartoDB::Visualization::Member::PRIVACY_LINK }.to_json, @headers
+      last_response.status.should == 200
+
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Other user has it shared in readonly mode
+      get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+      # Unauthenticated user
+      get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+      last_response.status.should == 200
+      body = JSON.parse(last_response.body)
+      body['id'].should eq u1_vis_1_id
+
+    end
+
 end
 
 

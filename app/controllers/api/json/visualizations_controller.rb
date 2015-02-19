@@ -408,10 +408,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def allow_vizjson_v1_for?(table)
     table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
-  end #allow_vizjson_v1_for?
+  end
 
   def allow_vizjson_v2_for?(visualization)
-    (current_user && visualization) || (visualization && (visualization.public? || visualization.public_with_link?))
+    return false unless visualization
+    (current_user && visualization.user_id == current_user.id) ||
+      (current_viewer && visualization.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)) ||
+      (visualization.public? || visualization.public_with_link?)
   end
 
   def current_user_is_owner?(table)

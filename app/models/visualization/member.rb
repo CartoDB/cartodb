@@ -594,7 +594,7 @@ module CartoDB
       end
 
       def invalidate_redis_cache
-        redis_cache.expire(redis_vizjson_key)
+        redis_cache.del(redis_vizjson_key)
       end
 
       def invalidate_varnish_cache

@@ -222,6 +222,10 @@ module CartoDB
       title: 'File is password protected',
       what_about: "File is password protected and can't be imported. Please remove password protection or create a new compressed file without password and try again."
     },
+    1019 => {
+      title: 'Too Many Layers',
+      what_about: "The file has too many layers. It can have 50 as maximum." # ./services/importer/lib/importer/kml_splitter.rb
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."

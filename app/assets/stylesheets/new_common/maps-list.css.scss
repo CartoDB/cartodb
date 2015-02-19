@@ -8,7 +8,7 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
-  @include flex-direction(column);
+  // @include flex-direction(column);
   @include justify-content(flex-start, start);
   @include align-items(center);
   @include flex-wrap(wrap);
@@ -32,8 +32,8 @@
 }
 @media (min-width: $sMedia-tablet) {
   .MapsList {
-    @include flex-direction(row);
-    @include justify-content(center, center);
+    // @include flex-direction(row);
+    // @include justify-content(center, center);
   }
 }
 @media (min-width: $sMedia-desktop) {

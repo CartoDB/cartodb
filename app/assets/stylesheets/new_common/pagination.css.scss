@@ -22,6 +22,14 @@
 .Pagination-listItemLink {
   display: inline-block;
   padding: 10px 15px;
+  color: $cTypography-link;
+  border: none;
+  background: transparent;
+  outline: none;
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: underline;
+  }
 }
 .Pagination-listItem:first-child {
   border-radius: 5px 0 0 5px;
@@ -31,7 +39,9 @@
   border-radius: 0 5px 5px 0;
 }
 .Pagination-listItem.is-current,
-.Pagination-listItem.is-current a,
-.Pagination-listItem.is-current a:hover {
+.Pagination-listItem.is-current .Pagination-listItemLink,
+.Pagination-listItem.is-current .Pagination-listItemLink:hover {
   color: $cTypography-headers;
+  cursor: default;
+  text-decoration: none;
 }

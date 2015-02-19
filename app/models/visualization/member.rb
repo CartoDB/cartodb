@@ -581,10 +581,11 @@ module CartoDB
       def redis_cached(key)
         value = redis_cache.get(key)
         if value.present?
-          return JSON.parse(value)
+          return JSON.parse(value, symbolize_names: true)
         else
           result = yield
-          redis_cache.setex(key, 24.hours.to_i, result.to_json)
+          serialized = JSON.generate(result)
+          redis_cache.setex(key, 24.hours.to_i, serialized)
           return result
         end
       end

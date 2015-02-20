@@ -6,7 +6,7 @@ class Admin::UsersController < ApplicationController
   ssl_required :profile, :account, :oauth, :api_key, :regenerate_api_key
 
   before_filter :login_required, :check_permissions
-  before_filter :get_user, only: [:edit, :update, :destroy, :profile, :account]
+  before_filter :get_user, only: [:edit, :update, :destroy]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   def initialize_google_plus_config
@@ -20,7 +20,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def profile
-    debugger
     new_dashboard = current_user.has_feature_flag?('new_dashboard')
 
     unless new_dashboard

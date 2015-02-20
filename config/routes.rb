@@ -40,8 +40,8 @@ CartoDB::Application.routes.draw do
     get    '(/u/:user_domain)/organization/users/new'       => 'users#new',     as: :new_organization_user
 
     # New user profile and account pages
-    get    '(/u/:user_domain)/profile'                      => 'users#profile',    as: :profile_user, constraints: { id: /[0-z\.\-]+/ }
-    get    '(/u/:user_domain)/account'                      => 'users#account',    as: :account_user, constraints: { id: /[0-z\.\-]+/ }
+    get    '(/u/:user_domain)/profile'                      => 'users#profile',    as: :profile_user
+    get    '(/u/:user_domain)/account'                      => 'users#account',    as: :account_user
 
     # search
     get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search

@@ -42,6 +42,7 @@ CartoDB::Application.routes.draw do
     # New user profile and account pages
     get    '(/u/:user_domain)/profile'                      => 'users#profile',    as: :profile_user
     get    '(/u/:user_domain)/account'                      => 'users#account',    as: :account_user
+    put    '(/u/:user_domain)/account'                      => 'users#account_update',  as: :account_update_user
 
     # search
     get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search

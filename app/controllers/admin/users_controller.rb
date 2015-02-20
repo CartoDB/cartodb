@@ -111,6 +111,21 @@ class Admin::UsersController < ApplicationController
     render action: :edit
   end
 
+  def account_update
+    attributes = params[:user]
+    current_user.set_fields(attributes, [:email]) if attributes[:email].present?
+
+    current_user.save(raise_on_failure: true)
+
+    redirect_to account_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+  rescue CartoDB::CentralCommunicationFailure => e
+    set_flash_flags
+    flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
+    render action: :account
+  rescue Sequel::ValidationFailed => e
+    render action: :account
+  end
+
   def destroy
     @user.delete_in_central
     @user.destroy

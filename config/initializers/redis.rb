@@ -11,7 +11,10 @@ end
 
 # Redis interfaces definition:
 conf = Cartodb.config[:redis].symbolize_keys
-redis_conf = conf.select { |k, v| [:host, :port, :timeout].include?(k) }
+redis_conf = conf.select { |k, v| [:host, :port, :timeout, :tcp_keepalive].include?(k) }
+if redis_conf[:tcp_keepalive] and redis_conf[:tcp_keepalive].is_a? Hash
+  redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys
+end
 
 default_databases = {
   tables_metadata:     0,

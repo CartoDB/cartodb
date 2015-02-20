@@ -95,16 +95,18 @@ class Table < Sequel::Model(:user_tables)
     self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
   end #default_privacy_values
 
+  def geometry_types_key
+    @geometry_types_key ||= "#{key}:geometry_types"
+  end
+
   def geometry_types
     if schema.select { |key, value| key == :the_geom }.length > 0
-      geometry_types_key = "#{key}:geometry_types"
-      types_str = $tables_metadata.get geometry_types_key
-      if types_str.nil?
-        types = query_geometry_types
-        $tables_metadata.set geometry_types_key, types
-        $tables_metadata.expire geometry_types_key, 1800 # 30 min
-      else
+      types_str = cache.get geometry_types_key
+      if types_str.present?
         types = JSON.parse(types_str)
+      else
+        types = query_geometry_types
+        cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
       end
     else
       types = []
@@ -676,6 +678,7 @@ class Table < Sequel::Model(:user_tables)
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
     invalidate_varnish_cache
+    cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
@@ -840,9 +843,7 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_changed?
 
   def key
-    Table.key(owner.database_name, "#{owner.database_schema}.#{name}")
-  rescue
-    nil
+    key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
   end
 
   def sequel
@@ -1484,6 +1485,10 @@ class Table < Sequel::Model(:user_tables)
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
+  end
+
+  def cache
+    @cache ||= $tables_metadata
   end
 
   def update_cdb_tablemetadata

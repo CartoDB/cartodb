@@ -14,7 +14,7 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'arcgis'
 
-        ARCGIS_API_LIKE_URL_RE = /arcgis\/rest/i
+        ARCGIS_API_LIKE_URL_RE = /\/(arcgis|gis)\/rest/i
 
         METADATA_URL     = '%s?f=json'
         FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'

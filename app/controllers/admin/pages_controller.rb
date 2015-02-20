@@ -176,18 +176,11 @@ class Admin::PagesController < ApplicationController
         geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
-      @datasets.push(
-        {
-          title:         vis.name,
-          desc:          vis.description_clean,
-          updated_at:    vis.updated_at,
-          tags:          vis.tags,
-          owner:         vis.user,
+      @datasets << new_vis_item(vis).merge({
           rows_count:    vis.table.rows_counted,
           size_in_bytes: vis.table.table_size,
-          geometry_type: geometry_type
-        }
-      )
+          geometry_type: geometry_type,
+        })
     end
 
     respond_to do |format|
@@ -203,19 +196,24 @@ class Admin::PagesController < ApplicationController
 
     @visualizations = []
     vis_list.each do |vis|
-      @visualizations.push({
-        title:        vis.name,
-        description:  vis.description_clean,
-        id:           vis.id,
-        tags:         vis.tags,
-        updated_at:   vis.updated_at,
-        owner:        vis.user
-      })
+      @visualizations << new_vis_item(vis)
     end
 
     respond_to do |format|
       format.html { render 'new_public_maps', layout: 'new_public_dashboard' }
     end
+  end
+
+  def new_vis_item(vis)
+    return {
+      id:          vis.id,
+      title:       vis.name,
+      desc:        vis.description_clean,
+      tags:        vis.tags,
+      updated_at:  vis.updated_at,
+      owner:       vis.user,
+      likes_count: vis.likes.count,
+    }
   end
 
   def set_new_layout_vars_for_user(user, content_type)

@@ -21,13 +21,15 @@
 //     <div class="MapCard-contentFooter">
 //      ...
 //
+$sBorderCompensation: 2px;
+
 .MapCard {
   position: relative;
-  @include inline-block();
-  width: $sCard-width - 2; //compensate for border
+  width: $sCard-width - 10px - $sBorderCompensation;
   border: 1px solid #DBDBDB;
   background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
+  margin: 0 auto;
 }
 .MapCard--selectable:hover {
   background-color: $cCard-hoverFill;
@@ -38,6 +40,7 @@
   border-color: $cCard-selectedBorder;
 }
 .MapCard-header {
+  display: block;
   position: relative;
   width: 100%;
   height: 170px;
@@ -55,13 +58,20 @@
   content: ' ';
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
   display: block;
-  width: 100%;
   height: 2px;
   background: black;
   @include opacity(.1);
   z-index:2;
+}
+.MapCard-header--fake {
+  background: $cStructure-mainBkg;
+}
+.MapCard-header--fake:after {
+  left: $sMargin-element;
+  right: $sMargin-element;
 }
 .MapCard-headerGraph {
   position:absolute;
@@ -110,24 +120,14 @@
 .MapCard-error {
   display: none;
   position:absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  margin-top: -30px;
+  width: 60px;
+  height: 59px;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
-  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
-}
-.MapCard-error .error-00 {
-  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
-}
-.MapCard-error .error-01 {
-  @include background(image-url("layout/map_placeholder_1.png") no-repeat center 0);
-}
-.MapCard-error .error-02 {
-  @include background(image-url("layout/map_placeholder_2.png") no-repeat center 0);
-}
-.MapCard-error .error-03 {
-  @include background(image-url("layout/map_placeholder_3.png") no-repeat center 0);
+  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
   @include display-flex();
@@ -181,4 +181,10 @@
   0% {right:100%;}
   50% {right:0%}
   100% {right:-100%}
+}
+
+@media (min-width: $sMedia-tablet) {
+  .MapCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
 }

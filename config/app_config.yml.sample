@@ -49,6 +49,7 @@ defaults: &defaults
   tumblr:
     api_key: ''
   trackjs:
+    enabled: false
     customer: ''
   common_data:
        protocol: 'https'

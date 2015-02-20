@@ -62,11 +62,12 @@ module CartoDB
           user_id: user.id
         }
         # when looking for a visualization using name return the ones that user owns
-        Visualization::Collection.new.fetch(params.merge(filters))
-          .select { |u|
-            u.user_id == user.id
-          }
-          .first
+        Visualization::Collection.new
+                                 .fetch(params.merge(filters))
+                                 .select { |u|
+                                   u.user_id == user.id
+                                  }
+                                 .first
       rescue KeyError
         nil
       end

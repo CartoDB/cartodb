@@ -1,3 +1,6 @@
+3.12.5 (20//02/2015)
+- Fixes request to generate an image when the vizjson contains a named map and a torque layer with a named map
+
 3.12.4 (18//02/2015)
 - Fixes leaflet point generation on events when using touch devices
 

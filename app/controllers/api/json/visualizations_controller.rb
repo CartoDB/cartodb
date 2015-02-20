@@ -14,8 +14,6 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
-  skip_before_filter :login_required, only: [:vizjson2]
-
   ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
                :remove_like
   ssl_required :index, :show, :create, :update, :destroy, :set_next_id

@@ -51,6 +51,11 @@ module ApplicationHelper
   end
 
   # TODO: Check this for MU
+  def plan_url
+    account_url + '/plan'
+  end
+
+  # TODO: Check this for MU
   def upgrade_url
     account_url + '/upgrade'
   end

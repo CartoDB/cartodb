@@ -1,6 +1,6 @@
 // cartodb.js version: 3.12.3
 // uncompressed version: cartodb.uncompressed.js
-// sha: f3da4170f24c3b18cd8530b505eba7f8cf18d166
+// sha: 85440fde567871318118760c7818e6acc7a51ddd
 (function() {
   var root = this;
 
@@ -29641,8 +29641,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     } else {
       var rect = obj.getBoundingClientRect();
       var p = new L.Point(
-            o.e.clientX - rect.left - obj.clientLeft - window.scrollX,
-            o.e.clientY - rect.top - obj.clientTop - window.scrollY);
+            (o.e.clientX? o.e.clientX: x) - rect.left - obj.clientLeft - window.scrollX,
+            (o.e.clientY? o.e.clientY: y) - rect.top - obj.clientTop - window.scrollY);
       return map.containerPointToLayerPoint(p);
     }
   }

@@ -1,0 +1,10 @@
+@import "../../new_variables/mixins";
+@import "../../new_variables/colors";
+@import "../../new_variables/sizes";
+
+// Create dialog listing block styles
+
+.CreateDialog-listing {
+  display: block;
+  margin-top: 45px;
+}

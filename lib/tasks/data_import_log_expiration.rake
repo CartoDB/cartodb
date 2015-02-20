@@ -5,7 +5,7 @@ namespace :dataimport do
     task :set_expiration => :environment do
       redis           = $redis_migrator_logs || Redis.new
       two_days_secs   = 3600 * 24 * 2
-      block           = lambda { |key| redis.expire(key, two_days_in_ms) }
+      block           = lambda { |key| redis.expire(key, two_days_secs) }
 
       redis.keys("*importer:log:*").each(&block)
       redis.keys("*importer:entry:*").each(&block)

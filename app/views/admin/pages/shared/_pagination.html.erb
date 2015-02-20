@@ -1,0 +1,22 @@
+<div class="ContentFooter">
+  <div class="u-inner ContentFooter-inner ContentFooter-inner--paginationOnly">
+    <div class="js-content-footer"></div>
+  </div>
+</div>
+
+<% content_for(:js) do %>
+  <script type="text/javascript">
+    var paginationModelAttrs = {
+      current_page: <%= @current_page %>,
+      total_count: <%= @total_count %>,
+      per_page: <%= @per_page %>,
+      url_to: function(page) {
+        if (page === 1) {
+          return '<%= url_for(page: nil) %>';
+        } else {
+          return '<%= url_for(page: 12321) %>'.replace('12321', page);
+        }
+      }
+    }
+  </script>
+<% end %>

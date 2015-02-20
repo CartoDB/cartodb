@@ -11,6 +11,7 @@ require_relative '../doubles/downloader'
 require_relative '../doubles/loader'
 require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
+require_relative '../doubles/table_row_count_limit'
 
 include CartoDB::Importer2
 
@@ -34,10 +35,10 @@ describe Runner do
   describe '#initialize' do
     it 'requires postgres options and a downloader object' do
       expect {
-        CartoDB::Importer2::Runner.new
+        CartoDB::Importer2::Runner.new({ log: @fake_log })
       }.to raise_error KeyError
       expect {
-        CartoDB::Importer2::Runner.new({ pg: nil})
+        CartoDB::Importer2::Runner.new({ log: @fake_log, pg: nil })
       }.to raise_error KeyError
     end
   end
@@ -99,37 +100,40 @@ describe Runner do
     it 'creates a sucessful result if all import steps completed' do
       source_file = SourceFile.new(@filepath)
 
+      job = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+      def job.success_status; true; end
+
       runner = CartoDB::Importer2::Runner.new({
                             pg: @pg_options,
                             downloader: Object.new,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new
+                            user: CartoDB::Importer2::Doubles::User.new,
+                            job: job
                           })
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
-
-      def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; end
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq true
     end
 
     it 'creates a failed result if an exception raised during import' do
       source_file = SourceFile.new(@filepath)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+
       runner      = CartoDB::Importer2::Runner.new({
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new
+                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 job: job
                                })
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq false
     end
@@ -137,36 +141,48 @@ describe Runner do
     it 'checks the platform limits regarding file size' do
       source_file = SourceFile.new(@filepath)
 
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+      job         = CartoDB::Importer2::Job.new({
+                                                  pg_options: @pg_options,
+                                                  logger: @fake_log
+                                                })
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run(arg=nil); end
 
       # File is 5 bytes long, should allow
-      limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:5})
+      input_file_size_limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:5})
+      table_row_count_limit_checker = CartoDB::Importer2::Doubles::TableRowCountLimit.new
       runner      = CartoDB::Importer2::Runner.new({
                                                      pg: @pg_options,
                                                      downloader: Object.new,
                                                      log: @fake_log,
                                                      user: CartoDB::Importer2::Doubles::User.new,
-                                                     import_file_limit_instance: limit_checker
+                                                     limits: {
+                                                       import_file_size_instance: input_file_size_limit_checker,
+                                                       table_row_count_limit_instance: table_row_count_limit_checker
+                                                     },
+                                                     job: job
                                                    })
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq true
 
       # File is 3 bytes long, should fail
-      limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:2})
+      input_file_size_limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:2})
       runner      = CartoDB::Importer2::Runner.new({
                                                      pg: @pg_options,
                                                      downloader: Object.new,
                                                      log: @fake_log,
                                                      user: CartoDB::Importer2::Doubles::User.new,
-                                                     import_file_limit_instance: limit_checker
+                                                     limits: {
+                                                       import_file_size_instance: input_file_size_limit_checker,
+                                                       table_row_count_limit_instance: table_row_count_limit_checker
+                                                     },
+                                                     job: job
                                                    })
 
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq false
       result.error_code.should eq 6666 # @see services/importer/lib/importer/exceptions.rb -> FileTooBigError
@@ -197,18 +213,25 @@ describe Runner do
     end
 
     it 'does not fail if loader does not support logging' do
+      table_row_count_limit_checker = CartoDB::Importer2::Doubles::TableRowCountLimit.new
+
       source_file = SourceFile.new(@filepath)
+      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
+
       runner      = CartoDB::Importer2::Runner.new({
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new
+                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 job: job,
+                                 limits: {
+                                   table_row_count_limit_instance: table_row_count_limit_checker
+                                 }
                                })
       spy_runner_importer_stats(runner, @importer_stats_spy)
-      job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       fake_loader = CartoDB::Importer2::Doubles::Loader.new
-      runner.import(source_file, nil, job, fake_loader)
+      runner.send(:import, source_file, nil, fake_loader)
       runner.results.first.success?.should == true
     end
 

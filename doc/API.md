@@ -91,7 +91,7 @@ cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e
   });
 ```
 
-### Adding cartodb layers to an existing map
+### Adding CartoDB layers to an existing map
 
 In case you already have a map instantiated on your page, you can simply use the [createLayer](#cartodbcreatelayermap-layersource--options--callback) method to add new CartoDB layers to it. This is particullary useful when you have more things on your map apart from CartoDB layers or you have an application where you want to integrate CartoDB layers.
 
@@ -118,7 +118,7 @@ Below, you have an example using a previously instatiated Leaflet map.
 </script>
 ```
 
-[Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
+[Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/leaflet.html)
 
 ### Creating visualizations at runtime 
 

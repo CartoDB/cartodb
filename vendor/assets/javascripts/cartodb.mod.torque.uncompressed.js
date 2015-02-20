@@ -5480,7 +5480,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   toggleTime: function(e) {
     this.killEvent(e);
-    this.torqueLayer.toggle();  
+    this.torqueLayer.toggle();
   },
   toggleButton: function() {
     this.$('.button')

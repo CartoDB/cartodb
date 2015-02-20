@@ -46,6 +46,9 @@ describe("Image", function() {
     var regexp = new RegExp("http://documentation\.cartodb\.com:80/api/v1/map/static/bbox/(.*?)/-138\.6474609375,27\.761329874505233,-83\.408203125,51\.26191485308451/320/240\.pn");
 
     image.getUrl(function(err, url) {
+      expect(image.options.layers.layers.length).toEqual(2);
+      expect(image.options.layers.layers[0].type).toEqual("http");
+      expect(image.options.layers.layers[1].type).toEqual("torque");
       expect(url).toMatch(regexp);
       done();
     });

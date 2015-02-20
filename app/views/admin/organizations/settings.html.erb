@@ -19,7 +19,8 @@
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner?
         }}.to_json -%>
-      , user_data = <%= raw current_user.data.to_json.html_safe %>;
+      , user_data = <%= raw current_user.data.to_json.html_safe %>
+      , new_dashboard = <%= raw current_user.feature_flags.include?('new_dashboard') %>;
   </script>
 <% end %>
 

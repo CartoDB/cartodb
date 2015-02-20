@@ -67,6 +67,22 @@ describe SynchronizationOauth do
             token: UUIDTools::UUID.timestamp_create
         )
       }.to raise_exception Sequel::ValidationFailed
+
+      expect {
+        SynchronizationOauth.create(
+          user_id: @user_id,
+          service: service_name,
+          token: nil
+        )
+      }.to raise_exception Sequel::ValidationFailed
+
+      expect {
+        SynchronizationOauth.create(
+          user_id: @user_id,
+          service: service_name,
+          token: ''
+        )
+      }.to raise_exception Sequel::ValidationFailed
     end
   end
 

@@ -3,10 +3,10 @@ require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
 
 class Admin::UsersController < ApplicationController
-  ssl_required :oauth, :api_key, :regenerate_api_key
+  ssl_required :profile, :account, :oauth, :api_key, :regenerate_api_key
 
   before_filter :login_required, :check_permissions
-  before_filter :get_user, only: [:edit, :update, :destroy]
+  before_filter :get_user, only: [:edit, :update, :destroy, :profile, :account]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   def initialize_google_plus_config
@@ -17,6 +17,31 @@ class Admin::UsersController < ApplicationController
   def new
     @user = User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
+  end
+
+  def profile
+    debugger
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+
+    unless new_dashboard
+      redirect_to account_url and return
+    end
+
+    respond_to do |format|
+      format.html { render 'profile', layout: 'new_application' }
+    end
+  end
+
+  def account
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+
+    unless new_dashboard
+      redirect_to account_url and return
+    end
+
+    respond_to do |format|
+      format.html { render 'account', layout: 'new_application' }
+    end
   end
 
   def edit

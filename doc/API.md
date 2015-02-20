@@ -193,7 +193,6 @@ cartodb.createVis('map', url)
   - **title**: adds a header with the title of the visualization.
   - **description**: adds description to the header (as you set in the UI).
   - **search**: adds a search control (default: true).
-  - **searchControl**: adds a search control, searchControl over search (default: true).
   - **zoomControl**: adds zoom control (default: true).
   - **loaderControl**: adds loading control (default: true).
   - **center_lat**: latitude where the map is initializated.
@@ -1104,7 +1103,7 @@ We are committed to making sure your website works as intended no matter what ch
 We recommend that you always develop against the most recent version of CartoDB.js, right now:
 
 ```html
-<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.32/cartodb.js"></script>
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.11.35/cartodb.js"></script>
 ```
 
 Anytime you wish to push a stable version of your site to the web though, you can find the version of CartoDB.js you are using by looking at the first line of the library, here:

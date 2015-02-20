@@ -50,6 +50,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     text-decoration: underline;
     &:after { border-top-color: white }
   }
+  &.is-disabled {
+    &:hover {
+      text-decoration: none;
+      cursor: default;
+    }
+  }
 }
 .Header-settings { height: $height }
 .Header-settingsList {

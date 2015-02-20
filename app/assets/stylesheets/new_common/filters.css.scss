@@ -165,10 +165,7 @@
   border: none;
   outline: none;
 
-  &:hover {
-    color:$cTypography-linkSelected;
-    text-decoration: none;
-  }
+  &:hover { text-decoration: none }
 }
 .Filters-typeLink.is-selected {
   color:$cTypography-linkSelected;

@@ -44,10 +44,10 @@ You can find the documentation online [here](http://docs.cartodb.com/cartodb-pla
 
 ## Examples
 
- - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
+ - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps_force_basemap.html)
  - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
  - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
- - [A visulization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
+ - [A visualization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
  - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
  - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
 

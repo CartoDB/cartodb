@@ -3,7 +3,7 @@ require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
 
 class Admin::UsersController < ApplicationController
-  ssl_required :profile, :account, :oauth, :api_key, :regenerate_api_key
+  ssl_required :profile, :account, :oauth, :api_key, :regenerate_api_key, :account_update, :profile_update
 
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy]
@@ -124,6 +124,21 @@ class Admin::UsersController < ApplicationController
     render action: :account
   rescue Sequel::ValidationFailed => e
     render action: :account
+  end
+
+  def profile_update
+    attributes = params[:user]
+    current_user.set_fields(attributes, [:name]) if attributes[:name].present?
+
+    current_user.save
+
+    redirect_to profile_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+  rescue CartoDB::CentralCommunicationFailure => e
+    set_flash_flags
+    flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
+    render action: :profile
+  rescue Sequel::ValidationFailed => e
+    render action: :profile
   end
 
   def destroy

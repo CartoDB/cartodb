@@ -121,6 +121,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -174,6 +175,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -191,6 +193,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError
     head(404)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -231,7 +234,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    CartoDB.notify_exception(exception)
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     CartoDB.notify_exception(exception)
@@ -283,6 +286,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: ['Error saving next slide position'] }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -331,7 +335,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.add_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -377,7 +381,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.remove_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
 
     render_jsonp({
                    id:    vis.id,

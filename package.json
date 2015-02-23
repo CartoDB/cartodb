@@ -49,7 +49,6 @@
     "moment": "^2.8.4",
     "open": "0.0.5",
     "queue-async": "^1.0.7",
-    "remapify": "1.4.2",
     "rewireify": "0.0.13",
     "shelljs": "~0.2.6",
     "source-map-support": "^0.2.8",

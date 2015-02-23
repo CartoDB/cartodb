@@ -26,3 +26,4 @@
   z-index: 2;
 }
 .Filters.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
+.Filters.Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */

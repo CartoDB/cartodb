@@ -1,4 +1,4 @@
-/* wax - 7.0.1 - v6.0.4-168-g416a567 */
+/* wax - 7.0.1 - v6.0.4-172-gf63d1b5 */
 
 
 !function (name, context, definition) {
@@ -3060,10 +3060,12 @@ wax.interaction = function() {
         // Only track single-touches. Double-touches will not affect this
         // control
         } else if (e.type === 'touchstart' && e.touches.length === 1) {
-            // Don't make the user click close if they hit another tooltip
-            bean.fire(interaction, 'off');
-            // Touch moves invalidate touches
-            bean.add(parent(), touchEnds);
+            //GMaps fix: Because it's triggering always mousedown and click, we've to remove it
+            bean.remove(document.body, 'click', onUp); //GMaps fix
+
+            //When we finish dragging, then the click will be 
+            bean.add(document.body, 'click', onUp);
+            bean.add(document.body, 'touchEnd', dragEnd);
         } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
           // Don't make the user click close if they hit another tooltip
             bean.fire(interaction, 'off');
@@ -3074,6 +3076,11 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), pointerEnds);
+        } else {
+            // Fix layer interaction in IE10/11 (CDBjs #139)
+            // Reason: Internet Explorer is triggering pointerdown when you click on the marker, and other browsers don't.
+            // Because of that, _downLock was active and it believed that you're dragging the map, instead of dragging the marker
+            _downLock = false;
         }
 
     }
@@ -3410,6 +3417,16 @@ wax.u = {
             }
         };
 
+        //Function that protects 'Unspected error' with Internet Explorer 11
+        function calculateOffsetIE(){
+          calculateOffset(el);
+          try {
+              while (el = el.offsetParent) { calculateOffset(el); }
+          } catch(e) {
+              // Hello, internet explorer.
+          }
+        }
+
         // from jquery, offset.js
         if ( typeof el.getBoundingClientRect !== "undefined" ) {
           var body = document.body;
@@ -3419,17 +3436,17 @@ wax.u = {
           var scrollTop  = window.pageYOffset || doc.scrollTop;
           var scrollLeft = window.pageXOffset || doc.scrollLeft;
 
-          var box = el.getBoundingClientRect();
-          top = box.top + scrollTop  - clientTop;
-          left = box.left + scrollLeft - clientLeft;
-
-        } else {
-          calculateOffset(el);
+          //With Internet Explorer 11, the function getBoundingClientRect() sometimes
+          //triggers the error: 'Unspected error.' Protecting it with try/catch
           try {
-              while (el = el.offsetParent) { calculateOffset(el); }
+              var box = el.getBoundingClientRect();
+              top = box.top + scrollTop  - clientTop;
+              left = box.left + scrollLeft - clientLeft;
           } catch(e) {
-              // Hello, internet explorer.
+              calculateOffsetIE();
           }
+        } else {
+          calculateOffsetIE();
         }
 
         // Offsets from the body

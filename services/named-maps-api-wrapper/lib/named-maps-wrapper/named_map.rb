@@ -5,47 +5,51 @@ require_relative '../../../../app/models/visualization/vizjson'
 module CartoDB
   module NamedMapsWrapper
 
-		class NamedMap
-			NAMED_MAPS_VERSION  = '0.0.1'
-			NAME_PREFIX = 'tpl_'
-			AUTH_TYPE_OPEN = 'open'
-			AUTH_TYPE_SIGNED = 'token'
+    class NamedMap
+      NAMED_MAPS_VERSION  = '0.0.1'
+      NAME_PREFIX = 'tpl_'
+      AUTH_TYPE_OPEN = 'open'
+      AUTH_TYPE_SIGNED = 'token'
       EMPTY_CSS = '#dummy{}'
 
-			# Load with existing data
-			def initialize( name, template_data, parent )
-				raise NamedMapDataError, 'Name empty' if name.nil? or name.length == 0
-				@name = name
+      # Load with existing data
+      def initialize( name, template_data, parent )
+        raise NamedMapDataError, 'Name empty' if name.nil? or name.length == 0
+        @name = name
 
-				raise NamedMapDataError, 'Invalid parent named maps instance' if parent.nil?
-				@parent = parent
+        raise NamedMapDataError, 'Invalid parent named maps instance' if parent.nil?
+        @parent = parent
 
-				@template = template_data
-			end
+        @template = template_data
+      end
 
-			# Create a new named map
+      # Create a new named map
       # @throws HTTPResponseError
-			def self.create_new( visualization, parent )
-				template_data = NamedMap.get_template_data( visualization, parent )
+      def self.create_new( visualization, parent )
+        template_data = NamedMap.get_template_data( visualization, parent )
 
-				response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
-					headers:         parent.headers,
-					body:            ::JSON.dump( template_data ),
+        response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
+          headers:         parent.headers,
+          body:            ::JSON.dump( template_data ),
           ssl_verifypeer:  parent.verify_cert,
           ssl_verifyhost:  parent.verify_host,
           followlocation: true
-					} )
-        raise HTTPResponseError, "POST:#{response.code} #{response.request.url} #{response.body}" unless response.code == 200
+          } )
 
-				body = ::JSON.parse(response.response_body)
+        unless response.code == 204
+        #unless response.code == 200
+          raise HTTPResponseError.new("POST:#{response.code} #{response.request.url} #{response.body}", template_data)
+        end
 
-        raise HTTPResponseError, "Missing template_id: #{response.response_body}" unless body['template_id'].present?
+        body = ::JSON.parse(response.response_body)
 
-				self.new( body['template_id'], template_data, parent )
-			end
+        raise HTTPResponseError, "Missing template_id at response: #{response.response_body}" unless body['template_id'].present?
 
-			# Update a named map's template data (full replace update)
-			def update( visualization )
+        self.new( body['template_id'], template_data, parent )
+      end
+
+      # Update a named map's template data (full replace update)
+      def update( visualization )
         @template = NamedMap.get_template_data( visualization, @parent )
 
         retries = 0
@@ -66,15 +70,15 @@ module CartoDB
             ## We hit a Tiler lock, wait and retry
             retries += 1
           else
-            raise HTTPResponseError, "PUT:#{response.code} #{response.request.url}  #{response.body}"
+            raise HTTPResponseError.new("PUT:#{response.code} #{response.request.url} #{response.body}", @template)
           end
         end until success
         @template
-			end
+      end
 
-			# Delete existing named map
-			def delete
-				response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
+      # Delete existing named map
+      def delete
+        response = Typhoeus.delete( url + '?api_key=' + @parent.api_key,
           { 
             headers: @parent.headers,
             ssl_verifypeer: @parent.verify_cert,
@@ -82,17 +86,17 @@ module CartoDB
             followlocation: true
           } )
         raise HTTPResponseError, "DELETE:#{response.code} #{response.request.url} #{response.body}" unless response.code == 204
-			end #delete
+      end #delete
 
-			# Url to access a named map's tiles
-			def url
-				[ @parent.url, @name ].join('/')
-			end
+      # Url to access a named map's tiles
+      def url
+        [ @parent.url, @name ].join('/')
+      end
 
-			# Normalize a name to make it "named map valid"
-			def self.normalize_name( raw_name )
-				( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
-			end
+      # Normalize a name to make it "named map valid"
+      def self.normalize_name( raw_name )
+        ( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
+      end
 
       def self.get_template_data( visualization, parent )
         presenter_options = {
@@ -106,17 +110,17 @@ module CartoDB
 
         auth_type = (visualization.password_protected? || visualization.organization?) ? AUTH_TYPE_SIGNED : AUTH_TYPE_OPEN
 
-				# 1) general data
-				template_data = {
-					version:      NAMED_MAPS_VERSION,
-					name: 		    self.normalize_name(visualization.id),
-    			auth:         {
-                          method: 	auth_type
+        # 1) general data
+        template_data = {
+          version:      NAMED_MAPS_VERSION,
+          name:         self.normalize_name(visualization.id),
+          auth:         {
+                          method:   auth_type
                         },
           placeholders: { },
           layergroup:   {
-                    		  layers: []
-                    	  }
+                          layers: []
+                        }
         }
 
         if auth_type == AUTH_TYPE_SIGNED
@@ -137,7 +141,7 @@ module CartoDB
 
         layer_group = vizjson.layer_group_for( visualization )
         unless layer_group.nil?
-        	layer_group[:options][:layer_definition][:layers].each { |layer|
+          layer_group[:options][:layer_definition][:layers].each { |layer|
             layer_options = layer[:options].except [:sql, :interactivity]
 
             layer_placeholder = "layer#{layer_num}"
@@ -149,49 +153,49 @@ module CartoDB
               default:  layer[:visible] ? 1: 0
             }
 
-	        	if layer.include?(:infowindow) && !layer[:infowindow].nil? && layer[:infowindow].fetch('fields').size > 0
+            if layer.include?(:infowindow) && !layer[:infowindow].nil? && layer[:infowindow].fetch('fields').size > 0
               layer_options[:interactivity] = layer[:options][:interactivity]
-	        		layer_options[:attributes] = {
-        				id:       'cartodb_id', 
-	        			columns:  layer[:infowindow]['fields'].map { |field|
+              layer_options[:attributes] = {
+                id:       'cartodb_id', 
+                columns:  layer[:infowindow]['fields'].map { |field|
                           field.fetch('name')
                 }
-	        		}
-	        	end
+              }
+            end
 
-	          layers_data.push( {
+            layers_data.push( {
               type:     layer[:type].downcase,
               options:  layer_options
             } )
-	        }
+          }
         end
         
         other_layers = vizjson.other_layers_for( visualization )
         unless other_layers.nil?
-        	other_layers.compact.each { |layer|
-        		layers_data.push( {
-	            type:     layer[:type].downcase,
-	            options:  {
+          other_layers.compact.each { |layer|
+            layers_data.push( {
+              type:     layer[:type].downcase,
+              options:  {
                           cartocss_version: '2.0.1',
                           cartocss:         self.css_from(layer[:options]),
                           sql:              layer[:options].fetch( 'query' )
                         }
-	          } )
-        	}
+            } )
+          }
         end
 
         template_data[:layergroup][:layers] = layers_data.compact.flatten
         template_data[:layergroup][:stat_tag] = visualization.id
 
-				template_data
-			end
+        template_data
+      end
 
       def self.css_from(options)
         options.fetch('tile_style').strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
       end
 
-			attr_reader	:template
+      attr_reader :template
 
-		end
+    end
   end
 end

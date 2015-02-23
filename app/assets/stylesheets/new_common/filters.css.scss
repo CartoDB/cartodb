@@ -131,11 +131,11 @@
   right:0;
   width:29px;
   height:29px;
-  border-radius: 30px;
+  border-radius: 29px;
   border:1px solid #CCC;
   color:#CCC;
   text-align: center;
-  line-height:30px;
+  line-height:31px;
   background: transparent;
   outline: none;
   
@@ -144,6 +144,7 @@
     color:#999;
   }
 }
+a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(
 .Filters-searchInput::-webkit-input-placeholder {
   font-style:italic;

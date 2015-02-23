@@ -6,8 +6,8 @@ module CartoDB
     class NamedMapsGenericError   < StandardError
 
       def initialize(message, template_data={})
-        super(message)
         @template_data = template_data
+        super(message)
       end
 
       attr_reader :template_data

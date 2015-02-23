@@ -16,6 +16,7 @@
 
   div.custom-datepicker {
     position:relative;
+    width: 100%;
     margin-top:5px;
     z-index:3;
 
@@ -25,27 +26,16 @@
       @include display-flex();
       @include align-items(center, center);
       @include justify-content(flex-start, start);
-      height:46px;
+      height:38px;
       padding:0 14px;
       background:white;
       border:1px solid #CCC;
+      line-height: 38px;
       border-radius: $border-radius;
       outline:none;
 
-      // Icon
-      .calendar.icon {
-        @include inline-block();
-        width:14px;
-        height:14px;
-        @include elements-sprite(calendar);
-      }
-
       // Message
       .label {
-        margin-left:13px;
-        padding-left:10px;
-        line-height:24px;
-        border-left:1px solid #CCCCCC;
         color:#CCCCCC;
 
         em { color:#666666 }
@@ -118,10 +108,10 @@
     // Date picker + timers
     div.calendar {
       position:absolute;
-      bottom:54px;
+      bottom:44px;
       left:0;
       right:0;
-      padding:40px;
+      padding: 20px;
       border:1px solid #9E9E9E;
       background:white;
       @include border-radius($border-radius);

@@ -34,7 +34,7 @@
         <ul>
           <% @datasets.each_with_index do |dataset, i| %>
 
-            <% domain = dataset[:owner].organization ? dataset[:owner].username : nil %>
+            <% domain = dataset[:owner] && dataset[:owner].organization ? dataset[:owner].username : nil %>
 
             <li>
               <div class="title">

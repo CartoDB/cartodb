@@ -83,6 +83,8 @@
 
       this.queue = new Queue;
 
+      this.no_cdn = options.no_cdn;
+
       this.userOptions = options;
 
       options = _.defaults({ vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.defaults);
@@ -362,7 +364,7 @@
       var width  = size[0];
       var height = size[1];
 
-      var url = this._tilerHost() + this.endPoint;
+      var url = this._host() + this.endPoint;
 
       if (bbox && bbox.length) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");

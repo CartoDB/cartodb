@@ -1,3 +1,6 @@
+3.12.6 (23//02//2015)
+- Fixes mobile and IE interaction issues (#346, #313, #223, #139). 
+
 3.12.5 (20//02/2015)
 - Fixes request to generate an image when the vizjson contains a named map and a torque layer with a named map
 

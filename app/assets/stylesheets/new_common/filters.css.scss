@@ -188,6 +188,14 @@
     text-decoration: none;
   }
 }
+.Filters-typeLink.is-disabled {
+  color: rgba(black, 0.3);
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: rgba(black, 0.3);
+  }
+}
 .Filters-order {
   @include display-flex();
   @include justify-content(space-between, justify);

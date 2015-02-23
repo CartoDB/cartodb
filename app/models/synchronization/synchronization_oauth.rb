@@ -21,6 +21,8 @@ class SynchronizationOauth < Sequel::Model
   def validate
     super
 
+    validates_presence :token
+
     if new?
       existing_oauth = SynchronizationOauth.filter(
           user_id:  user_id,

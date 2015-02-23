@@ -51,7 +51,7 @@ module CartoDB
 
         enable_autovacuum
 
-        raise GeometryCollectionNotSupportedError if geometry_collection?(the_geom_column_name || 'the_geom')
+        raise GeometryCollectionNotSupportedError if get_geometry_type(the_geom_column_name || 'the_geom') == 'GEOMETRYCOLLECTION'
         self
       end
 
@@ -94,6 +94,16 @@ module CartoDB
         column.geometrify
 
         column_name = geometry_column_name
+        if column_exists_in?(table_name, 'the_geom')
+          geometry_type = get_geometry_type('the_geom') rescue nil
+          if geometry_type.nil? || geometry_type == 'GEOMETRYCOLLECTION'
+            invalid_the_geom = get_column('the_geom')
+            if !column_exists_in?(table_name, 'invalid_the_geom')
+              invalid_the_geom.rename_to('invalid_the_geom')
+            end
+          end
+        end
+
         unless column_exists_in?(table_name, 'the_geom')
           column_name = 'the_geom'
           column.rename_to(column_name)
@@ -283,9 +293,12 @@ module CartoDB
         column.drop
       end
 
-      def geometry_collection?(column = :the_geom)
-        column = Column.new(db, table_name, column, schema, job)
-        column.geometry_type == 'GEOMETRYCOLLECTION'
+      def get_column(column = :the_geom)
+        Column.new(db, table_name, column, schema, job)
+      end
+
+      def get_geometry_type(column = :the_geom)
+        get_column(column).geometry_type
       end
 
       def find_column_in(table_name, possible_names)

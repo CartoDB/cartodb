@@ -36,8 +36,7 @@ module CartoDB
           followlocation: true
           } )
 
-        unless response.code == 204
-        #unless response.code == 200
+        unless response.code == 200
           raise HTTPResponseError.new("POST:#{response.code} #{response.request.url} #{response.body}", template_data)
         end
 

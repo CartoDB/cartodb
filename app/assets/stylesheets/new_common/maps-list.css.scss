@@ -14,7 +14,7 @@
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width + 20;
-  margin: 0 auto;
+  margin: 10px auto 0;
   padding: 0 $sMargin-elementInline;
 }
 .MapsList.is-hidden { display: none }

@@ -85,14 +85,14 @@
   outline: none;
 
   &:after {
-    content: '|';
+    content: '';
     position: absolute;
     top: 50%;
     right: -5px;
+    width: 1px;
+    height: 20px;
     margin-top: -10px;
-    line-height: normal;
-    font-weight: $sFontWeight-lighter;
-    color: $cStructure-softLine;
+    background: $cStructure-softLine;
   }
 }
 .Filters-searchLinkIcon {

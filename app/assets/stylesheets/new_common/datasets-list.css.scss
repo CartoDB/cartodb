@@ -9,8 +9,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   position: relative;
   @include display-flex();
   @include flex-direction(column);
-  margin: 8px auto 0;
-  padding: $sMargin-elementInline $sMargin-element 0 $sMargin-element;
+  margin: 20px auto 0;
+  padding: 0 $sMargin-element 0 $sMargin-element;
 }
 .DatasetsList.is-hidden { display: none }
 .DatasetsList-item {

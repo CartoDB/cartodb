@@ -21,7 +21,9 @@
 //     <div class="MapCard-contentFooter">
 //      ...
 //
+
 $sBorderCompensation: 2px;
+$opacityTransition: 250ms;
 
 .MapCard {
   position: relative;
@@ -46,6 +48,8 @@ $sBorderCompensation: 2px;
   height: 170px;
   @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
   border-radius: 2px 2px 0 0;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
   overflow:hidden;
 }
 .MapCard-header.is-loading .MapCard-loader {
@@ -137,6 +141,8 @@ $sBorderCompensation: 2px;
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
   height: 140px;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
 }
 .MapCard-content--compact {
   height: auto;
@@ -174,6 +180,35 @@ $sBorderCompensation: 2px;
 .MapCard-contentFooterTimeDiff .UserAvatar {
   margin-left: 5px;
   line-height: $sAvatar-meta;
+}
+.MapCard-fake {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 352px;
+  @include background(image-url('layout/map-placeholder.png') no-repeat center center);
+  @include opacity(0);
+  @include transition(opacity, $opacityTransition);
+  z-index: 0;
+}
+.MapsList.is-loading .MapCard,
+.MapsList.is-loading .MapCard--selectable,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  pointer-events: none;
+  .MapCard-header { @include opacity(0) }
+  .MapCard-content { @include opacity(0) }
+  .MapCard-fake { @include opacity(1) }
+}
+.MapsList.is-loading .MapCard:hover,
+.MapsList.is-loading .MapCard--selectable:hover,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  cursor: default;
+  .MapCard-header { cursor: default }
 }
 
 // Animation function

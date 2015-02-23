@@ -86,8 +86,7 @@ class Admin::PagesController < ApplicationController
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
         per_page: NEW_DATASETS_PER_PAGE,
-      }),
-      user
+      })
     )
   end
 
@@ -103,8 +102,7 @@ class Admin::PagesController < ApplicationController
         user:     user,
         vis_type: Visualization::Member::TYPE_DERIVED,
         per_page: MAPS_PER_PAGE,
-      }),
-      user
+      })
     )
   end
 
@@ -154,7 +152,7 @@ class Admin::PagesController < ApplicationController
 
   private
 
-  def render_new_datasets(vis_list, user)
+  def render_new_datasets(vis_list)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    NEW_DATASETS_PER_PAGE,
@@ -178,7 +176,7 @@ class Admin::PagesController < ApplicationController
         geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
-      @datasets << new_vis_item(vis, user).merge({
+      @datasets << new_vis_item(vis).merge({
           rows_count:    vis.table.rows_counted,
           size_in_bytes: vis.table.table_size,
           geometry_type: geometry_type,
@@ -190,7 +188,7 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def render_new_maps(vis_list, user)
+  def render_new_maps(vis_list)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    MAPS_PER_PAGE,
@@ -198,7 +196,7 @@ class Admin::PagesController < ApplicationController
 
     @visualizations = []
     vis_list.each do |vis|
-      @visualizations << new_vis_item(vis, user)
+      @visualizations << new_vis_item(vis)
     end
 
     respond_to do |format|
@@ -206,7 +204,7 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def new_vis_item(vis, user)
+  def new_vis_item(vis)
     return {
       id:          vis.id,
       title:       vis.name,
@@ -215,7 +213,6 @@ class Admin::PagesController < ApplicationController
       updated_at:  vis.updated_at,
       owner:       vis.user,
       likes_count: vis.likes.count,
-      liked:       vis.liked_by?(user.id)
     }
   end
 

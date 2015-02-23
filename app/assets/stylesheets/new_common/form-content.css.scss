@@ -115,6 +115,11 @@
 
   &:focus { border-color: #999 }
 }
+.Form-input::-webkit-input-placeholder { font-style: italic; font-weight: $sFontWeight-lighter }
+.Form-input:-moz-placeholder           { font-style: italic; font-weight: $sFontWeight-lighter }
+.Form-input::-moz-placeholder          { font-style: italic; font-weight: $sFontWeight-lighter }
+.Form-input:-ms-input-placeholder      { font-style: italic; font-weight: $sFontWeight-lighter }
+
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }

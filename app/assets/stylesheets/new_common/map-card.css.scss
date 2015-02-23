@@ -172,8 +172,8 @@ $sBorderCompensation: 2px;
 }
 .MapCard-contentBodyTimeDiff .UserAvatar,
 .MapCard-contentFooterTimeDiff .UserAvatar {
+  height: $sAvatar-meta + 2;
   margin-left: 5px;
-  line-height: $sAvatar-meta;
 }
 
 // Animation function

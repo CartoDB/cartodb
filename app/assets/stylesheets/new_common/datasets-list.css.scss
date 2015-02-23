@@ -95,7 +95,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 .DatasetsList-itemTimeDiff .UserAvatar {
   margin-left: $sMargin-min;
-  line-height: $sAvatar-meta;
+  height: $sAvatar-meta + 2;
 }
 .DatasetsList-itemSource {
   @include display-flex();

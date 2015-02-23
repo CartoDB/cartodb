@@ -50,7 +50,6 @@ describe Downloader do
       stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'text/csv' })
       downloader = Downloader.new(@file_url_without_extension)
       downloader.run
-      debugger
       downloader.source_file.filename.should eq 'foowithoutextension.csv'
     end
 

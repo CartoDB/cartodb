@@ -287,7 +287,9 @@ module CartoDB
       end
 
       def content_type
-        headers.fetch('Content-Type', nil)
+        headers.fetch('Content-Type', nil) ||
+          headers.fetch('Content-type', nil) ||
+          headers.fetch('content-type', nil)
       end
 
       def name_from_http(headers)

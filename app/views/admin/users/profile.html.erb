@@ -13,24 +13,7 @@
 <%= render 'admin/shared/new_private_header' %>
 
 <div>
-  <div class="Filters is-relative">
-    <div class="u-inner">
-      <div class="Filters-inner">
-        <span class="Filters-separator"></span>
-        <div class="Filters-row">
-          <div class="Filters-type">
-            <ul class="Filters-list">
-              <li class="Filters-typeItem"><a href="<%= profile_user_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink is-selected">Profile</a></li>
-              <li class="Filters-typeItem"><a href="<%= account_user_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink">Account</a></li>
-              <li class="Filters-typeItem"><a href="<%= api_key_credentials_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink">Your API keys</a></li>
-              <li class="Filters-typeItem"><a href="<%= oauth_credentials_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink">Your OAuth credentials</a></li>
-              <li class="Filters-typeItem"><a href="<%= plan_url %>" class="Filters-typeLink">Your plan</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <%= render :partial => 'admin/shared/new_pages_subheader' %>
 
   <div class="CredentialsContent">
     <div class="u-inner">

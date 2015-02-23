@@ -6,6 +6,7 @@
 
 .Filters.Filters--navListing {
   // Avoiding hide scroll bars
+  position: fixed;
   top: 157px;
   left: 50%;
   width: 1000px;

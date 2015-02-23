@@ -312,7 +312,7 @@ module CartoDB
       end
 
       def redis_vizjson_key
-        @vizjson_key ||= "#{id}:vizjson"
+        @vizjson_key ||= "visualization:#{id}:vizjson"
       end
 
       def to_vizjson
@@ -595,7 +595,7 @@ module CartoDB
       end
 
       def redis_cache
-        @redis_cache ||= $visualizations
+        @redis_cache ||= $tables_metadata
       end
 
       def invalidate_redis_cache

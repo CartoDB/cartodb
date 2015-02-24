@@ -710,7 +710,7 @@ class Table < Sequel::Model(:user_tables)
 
   def invalidate_cache_for(visualizations)
     visualizations.each do |visualization|
-      visualization.invalidate_varnish_cache
+      visualization.invalidate_cache
     end
   end #invalidate_cache_for
 

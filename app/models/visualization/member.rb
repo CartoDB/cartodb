@@ -220,11 +220,16 @@ module CartoDB
 
         support_tables.delete_all
 
-        invalidate_varnish_cache
+        invalidate_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
-        safe_sequel_delete { map.destroy } if map
+        safe_sequel_delete {
+          # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
+          related_map = map
+          related_map.being_destroyed_by_vis_id = id
+          related_map.destroy
+        } if map
         safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
         safe_sequel_delete { children.map { |child|
                                             # Refetch each item before removal so Relator reloads prev/next cursors
@@ -240,7 +245,7 @@ module CartoDB
 
       # A visualization is linked to a table when it uses that table in a layergroup (but is not the canonical table)
       def unlink_from(table)
-        invalidate_varnish_cache
+        invalidate_cache
         remove_layers_from(table)
       end
 
@@ -311,16 +316,14 @@ module CartoDB
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
+      def redis_vizjson_key
+        @vizjson_key ||= "visualization:#{id}:vizjson"
+      end
+
       def to_vizjson
-        options = {
-          full: false,
-          user_name: user.username,
-          user_api_key: user.api_key,
-          user: user,
-          viewer_user: user,
-          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
-        }
-        VizJSON.new(self, options, configuration).to_poro
+        redis_cached(redis_vizjson_key) do
+          calculate_vizjson
+        end
       end
 
       def is_owner?(user)
@@ -379,13 +382,13 @@ module CartoDB
         ".*#{id}:vizjson"
       end
 
-      def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
-        parent.invalidate_varnish_cache unless parent_id.nil?
+      def invalidate_cache
+        invalidate_varnish_cache
+        invalidate_redis_cache
       end
 
       def invalidate_cache_and_refresh_named_map
-        invalidate_varnish_cache
+        invalidate_cache
         if type != TYPE_CANONICAL or organization?
           save_named_map
         end
@@ -572,6 +575,43 @@ module CartoDB
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
 
+      def calculate_vizjson
+        options = {
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          user: user,
+          viewer_user: user,
+          dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
+        }
+        VizJSON.new(self, options, configuration).to_poro
+      end
+
+      def redis_cached(key)
+        value = redis_cache.get(key)
+        if value.present?
+          return JSON.parse(value, symbolize_names: true)
+        else
+          result = yield
+          serialized = JSON.generate(result)
+          redis_cache.setex(key, 24.hours.to_i, serialized)
+          return result
+        end
+      end
+
+      def redis_cache
+        @redis_cache ||= $tables_metadata
+      end
+
+      def invalidate_redis_cache
+        redis_cache.del(redis_vizjson_key)
+      end
+
+      def invalidate_varnish_cache
+        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+        parent.invalidate_cache unless parent_id.nil?
+      end
+
       def close_list_gap(other_vis)
         reload_self = false
 
@@ -611,7 +651,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
+        invalidate_cache if name_changed || privacy_changed || description_changed
         set_timestamps
 
         repository.store(id, attributes.to_hash)

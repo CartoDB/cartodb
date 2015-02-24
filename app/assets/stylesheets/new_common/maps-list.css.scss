@@ -19,6 +19,7 @@
 }
 .MapsList.is-hidden { display: none }
 .MapsList-item {
+  position: relative;
   width: 300px;
   margin: 10px;
 }

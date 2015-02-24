@@ -14,7 +14,7 @@ class Api::Json::OembedController < Api::ApplicationController
     width = params[:maxwidth] || '100%'
     height = params[:maxheight] || '100%'
     format = request.query_parameters[:format]
-    force_https = true if params[:force_https].nil?
+    force_https = true if params[:allow_http].nil?
 
     if (width =~ /^[0-9]+(%|px)?$/) == nil
       raise ActionController::RoutingError.new('Incorrect width')

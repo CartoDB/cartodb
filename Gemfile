@@ -17,6 +17,7 @@ gem 'redis',                   '3.2.1'
 gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
+gem 'ruby-prof',               '0.15.1'
 
 # It's used in the dataimport and arcgis.
 # It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI

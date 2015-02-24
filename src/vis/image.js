@@ -366,7 +366,7 @@
 
       var url = this._host() + this.endPoint;
 
-      if (bbox && bbox.length) {
+      if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

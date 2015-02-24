@@ -1,4 +1,5 @@
 # coding: UTF-8
+require_relative '../../lib/cartodb/profiler.rb'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
@@ -35,10 +36,7 @@ class ApplicationController < ActionController::Base
 
   def wrap_in_profiler
     if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
-      result = RubyProf.profile do
-        yield
-      end
-      RubyProf::GraphPrinter.new(result).print(STDOUT, {})
+      CartoDB::Profiler.new().call(request) { yield }
     else
       yield
     end

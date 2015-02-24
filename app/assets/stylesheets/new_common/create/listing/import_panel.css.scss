@@ -24,7 +24,8 @@ $w: 780px;
   line-height: $sLineHeight-normal;
 }
 .ImportPanel-headerDescription {
-  margin-top: 5px;
+  width: 465px;
+  margin: 5px auto 0;
   color: $cTypography-paragraphs;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;

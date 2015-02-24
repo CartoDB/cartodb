@@ -85,14 +85,14 @@
   outline: none;
 
   &:after {
-    content: '|';
+    content: '';
     position: absolute;
     top: 50%;
     right: -5px;
+    width: 1px;
+    height: 20px;
     margin-top: -10px;
-    line-height: normal;
-    font-weight: $sFontWeight-lighter;
-    color: $cStructure-softLine;
+    background: $cStructure-softLine;
   }
 }
 .Filters-searchLinkIcon {
@@ -129,13 +129,13 @@
   position:absolute;
   top:23px;
   right:0;
-  width:28px;
-  height:28px;
-  border-radius: 30px;
+  width:29px;
+  height:29px;
+  border-radius: 29px;
   border:1px solid #CCC;
   color:#CCC;
   text-align: center;
-  line-height:30px;
+  line-height:31px;
   background: transparent;
   outline: none;
   
@@ -144,6 +144,7 @@
     color:#999;
   }
 }
+a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(
 .Filters-searchInput::-webkit-input-placeholder {
   font-style:italic;
@@ -166,7 +167,7 @@
   outline: none;
 
   &:hover {
-    color:$cTypography-linkSelected;
+    color: $cTypography-linkHover;
     text-decoration: none;
   }
 }

@@ -10,17 +10,39 @@
   left: 0;
   right: 0;
   width: 100%;
-  background: $cStructure-grayBkg;
   padding: 0!important;
   border: 0!important;
   text-align: center;
   z-index: 1;
 }
 .CreateDialog-footerInner {
-  width: $sLayout-width;
+  position: relative;
+  width: 940px;
   margin: 0 auto;
-  padding: 15px 0;
-  border-top: 1px solid $cStructure-mainLine;
+  padding: 15px 40px;
+  background: $cStructure-grayBkg;
+}
+.CreateDialog-footerInner:after {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 1020px;
+  height: 18px;
+  margin-left: -510px;
+  @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
+  z-index: 2;
+}
+.CreateDialog-footerInner:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 940px;
+  margin-left: -470px;
+  height: 1px;
+  background: $cStructure-mainLine;
+  z-index: 2;
 }
 .CreateDialog-footerInner.is-expanded {
   @include display-flex();

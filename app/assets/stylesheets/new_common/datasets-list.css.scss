@@ -11,7 +11,7 @@ $opacityTransition: 250ms;
   @include display-flex();
   @include flex-direction(column);
   margin: 0 auto;
-  padding: $sMargin-elementInline $sMargin-element 0 $sMargin-element;
+  padding: 20px $sMargin-element 0 $sMargin-element;
 }
 .DatasetsList.is-hidden { display: none }
 .DatasetsList-item {
@@ -131,7 +131,7 @@ $opacityTransition: 250ms;
 }
 .DatasetsList-itemTimeDiff .UserAvatar {
   margin-left: $sMargin-min;
-  line-height: $sAvatar-meta;
+  height: $sAvatar-meta + 2;
 }
 .DatasetsList-itemSource {
   @include display-flex();

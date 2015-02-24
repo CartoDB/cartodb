@@ -46,6 +46,9 @@ module CartoDB
           transition_options: visualization.transition_options
         }
 
+        auth_tokens = auth_tokens_for(visualization)
+        poro_data.merge!({auth_tokens: auth_tokens}) if auth_tokens.length > 0
+
         children = children_for(visualization)
         poro_data.merge!({slides: children}) if children.length > 0
         unless visualization.parent_id.nil?
@@ -150,6 +153,10 @@ module CartoDB
 
       def default_options
         { full: true, visualization_id: visualization.id }
+      end
+
+      def auth_tokens_for(visualization)
+        visualization.has_password? ? visualization.get_auth_tokens : []
       end
 
     end

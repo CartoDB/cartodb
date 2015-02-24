@@ -48,7 +48,9 @@ class Map < Sequel::Model
     maxlat: 85.0511 
   }
 
-  attr_accessor :table_id
+  attr_accessor :table_id,
+                # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
+                :being_destroyed_by_vis_id
 
   def before_save
     super
@@ -91,7 +93,7 @@ class Map < Sequel::Model
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
-      visualization.invalidate_cache_and_refresh_named_map
+      visualization.invalidate_cache_and_refresh_named_map unless visualization.id == being_destroyed_by_vis_id
     end
   end
 

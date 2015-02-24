@@ -1,0 +1,26 @@
+@import "../../../new_variables/mixins";
+@import "../../../new_variables/colors";
+@import "../../../new_variables/sizes";
+
+// Import twitter view styles
+
+.ImportTwitterPanel {}
+.TwitterCategory .Form-inputIcon {
+  top: 8px;
+  font-size: 20px;
+}
+.TwitterCategory {
+  height: 0;
+  @include opacity(0);
+  @include transition(all, 250ms, linear);
+  overflow: hidden;
+}
+.TwitterCategory.enabled {
+  height:60px;
+  @include opacity(1);
+}
+.CreditsUsage-info {
+  width: 300px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-normal;
+}

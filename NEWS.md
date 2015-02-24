@@ -19,7 +19,9 @@
 * Added API keys and OAuth pages [#2142](https://github.com/CartoDB/cartodb/pull/2142)
 * Replace 404 error page
 * Only send JS errors+stats in production [#1987](https://github.com/CartoDB/cartodb/pull/1987)
-* Update Browserify to latest version (9.0.3) [#2447](https://github.com/CartoDB/cartodb/pull/2447)
+* Read Content-Type header for downloads without extension [#2275](https://github.com/CartoDB/cartodb/issues/2275).
+* Cache vizjson in redis to avoid hitting DB [#2194](https://github.com/CartoDB/cartodb/pull/2194)
+* Update Browserify to latest version (9.0.3) [#2449](https://github.com/CartoDB/cartodb/pull/2449)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

@@ -70,6 +70,20 @@ describe("Image", function() {
 
   });
 
+  it("should extract the cdn_url from the vizjson", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/e7b04b62-b901-11e4-b0d7-0e018d66dc29/viz.json";
+
+    var image = cartodb.Image(vizjson);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.cdn_url.http).toEqual("api.cartocdn.com");
+      expect(image.options.cdn_url.https).toEqual("cartocdn.global.ssl.fastly.net");
+      done();
+    });
+
+  });
+
   it("should allow to set the zoom", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"

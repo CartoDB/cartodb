@@ -128,7 +128,10 @@
         var baseLayer = data.layers[0];
         var dataLayer = data.layers[1];
 
-        this.options.user_name = dataLayer.options.user_name;
+        if (dataLayer.options) {
+          this.options.user_name = dataLayer.options.user_name;
+          this.cdn_url = dataLayer.options.cdn_url;
+        }
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 

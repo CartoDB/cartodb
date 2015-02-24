@@ -15,6 +15,7 @@ redis_conf = conf.select { |k, v| [:host, :port, :timeout, :tcp_keepalive].inclu
 if redis_conf[:tcp_keepalive] and redis_conf[:tcp_keepalive].is_a? Hash
   redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys
 end
+redis_conf.merge! :driver => :hiredis
 
 default_databases = {
   tables_metadata:     0,

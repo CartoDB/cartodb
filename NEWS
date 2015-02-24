@@ -1,3 +1,6 @@
+3.12.8 ()
+- Allows to override the default use of the bounding box to generate an image, using the center instead.
+
 3.12.7 (23//02//2015)
 - By default we now serve the Static API images through CartoDB's CDN.
 

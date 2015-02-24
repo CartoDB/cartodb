@@ -5,7 +5,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "sequel-rails/railtie"
 require "action_mailer/railtie"
-require 'request_profiler'
+require 'ruby-prof'
 
 
 if defined?(Bundler)
@@ -140,8 +140,6 @@ module CartoDB
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
-
-    config.middleware.insert 0, 'Rack::RequestProfiler', :printer => ::RubyProf::CallTreePrinter
   end
 end
 

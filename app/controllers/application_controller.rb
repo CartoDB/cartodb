@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
 
   helper :all
 
+  around_filter :wrap_in_profiler
+
   before_filter :ensure_user_domain_param
   before_filter :ensure_user_organization_valid
   before_filter :ensure_org_url_if_org_user
@@ -30,6 +32,17 @@ class ApplicationController < ActionController::Base
 
 
   protected
+
+  def wrap_in_profiler
+    if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
+      result = RubyProf.profile do
+        yield
+      end
+      RubyProf::GraphPrinter.new(result).print(STDOUT, {})
+    else
+      yield
+    end
+  end
 
   def set_asset_debugging
     CartoDB::Application.config.assets.debug = \

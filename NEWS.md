@@ -24,7 +24,7 @@
 * Update Browserify to latest version (9.0.3) [#2449](https://github.com/CartoDB/cartodb/pull/2449)
 * Remove tmp and unused files [#2328](https://github.com/CartoDB/cartodb/pull/2328)
 * Open privacy dialog directly from items [#2442](https://github.com/CartoDB/cartodb/pull/2442)
-
+* Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

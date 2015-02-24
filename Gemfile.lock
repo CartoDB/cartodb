@@ -218,6 +218,8 @@ GEM
     redis-namespace (1.5.1)
       redis (~> 3.0, >= 3.0.4)
     ref (1.0.5)
+    request_profiler (0.0.4)
+      ruby-prof
     resque (1.25.2)
       mono_logger (~> 1.0)
       multi_json (~> 1.0)
@@ -352,6 +354,7 @@ DEPENDENCIES
   rb-readline
   redcarpet (= 3.1.1)
   redis (= 3.2.1)
+  request_profiler (= 0.0.4)
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
   retriable (= 1.4.1)

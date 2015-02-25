@@ -7,6 +7,53 @@ module CartoDB
   module Importer2
     class ShpNormalizer
       DEFAULT_ENCODING = 'LATIN1'
+
+      # INFO: http://www.postgresql.org/docs/9.1/static/multibyte.html
+      SUPPORTED_ENCODINGS = %W{
+        BIG5 WIN950 Windows950
+        EUC_CN
+        EUC_JP
+        EUC_JIS_2004
+        EUC_KR
+        EUC_TW
+        GB18030
+        GBK WIN936 Windows936
+        ISO_8859_5
+        ISO_8859_6 ISO_8859_7
+        ISO_8859_8
+        JOHAB
+        KOI8R KOI8
+        KOI8U
+        LATIN1 ISO88591 ISO-8859-1
+        LATIN2 ISO88592
+        LATIN3 ISO88593
+        LATIN4 ISO88594
+        LATIN5 ISO88599
+        LATIN6 ISO885910
+        LATIN7 ISO885913
+        LATIN8 ISO885914
+        LATIN9 ISO885915
+        LATIN10 ISO885916
+        MULE_INTERNAL
+        SJIS Mskanji ShiftJIS WIN932 Windows932
+        SHIFT_JIS_2004
+        SQL_ASCII
+        UHC WIN949 Windows949
+        UTF8 Unicode UTF-8
+        WIN866 ALT
+        WIN874
+        WIN1250
+        WIN1251 WIN
+        WIN1252
+        WIN1253
+        WIN1254
+        WIN1255
+        WIN1256
+        WIN1257
+        WIN1258 ABC TCVN TCVN5712 VSCII
+      }
+      SUPPORTED_ENCODINGS_DOWNCASED = SUPPORTED_ENCODINGS.map(&:downcase)
+
       NORMALIZER_RELATIVE_PATH = 
         "../../../../../lib/importer/misc/shp_normalizer.py"
 
@@ -31,12 +78,36 @@ module CartoDB
       def shape_encoding_guessing
         normalize
         dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
-        encoding  = DBF::Table.new(dbf).encoding || 
+        encoding  = read_encoding_files || DBF::Table.new(dbf).encoding ||
                     normalizer_output.fetch(:encoding, nil)
         encoding  = DEFAULT_ENCODING if encoding == 'None' 
         encoding  = codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if tab?
         encoding
+      end
+
+      # http://gis.stackexchange.com/questions/3529/which-character-encoding-is-used-by-the-dbf-file-in-shapefiles
+      # ArcGIS and Geopublisher, AtlasStyler and Geoserver: .cpg
+      # Geoserver: cst
+      def read_encoding_files
+        filter_supported_encodings(read_encoding_file('cpg') || read_encoding_file('cst'))
+      end
+
+      def filter_supported_encodings(encoding)
+        encoding.nil? || !SUPPORTED_ENCODINGS_DOWNCASED.include?(encoding.downcase) ? nil : encoding
+      end
+
+      def read_encoding_file(extension)
+        current_extension = File.extname(filepath)
+        path = filepath.gsub(/#{current_extension}$/, ".#{extension}")
+        return nil unless File.exists?(path)
+        saved_encoding = nil
+        f = File.open(path, 'r') { |file|
+          saved_encoding = file.read
+        }
+        saved_encoding
+      rescue => e
+        nil
       end
 
       def tab_encoding

@@ -70,6 +70,19 @@ describe("Image", function() {
 
   });
 
+  it("shouldn't use hidden layers to generate the image", function(done) { 
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/42e98b9a-bcce-11e4-9d68-0e9d821ea90d/viz.json";
+
+    var image = cartodb.Image(vizjson);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.layers.layers.length).toEqual(2);
+      done();
+    });
+
+  });
+
   it("should allow to set the zoom", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"

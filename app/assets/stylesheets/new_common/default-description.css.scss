@@ -3,12 +3,33 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .DefaultDescription {
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-normal;
   color: $cTypography-secondary;
   overflow-wrap: break-word;
+  position: relative;
+}
+.DefaultDescription--twoLines {
+  height: 2 * $sLineHeight-normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: $sLineHeight-normal;
+    width: 2 * $sLineHeight-normal;
+    @include background-horizontal(transparent, white);
+  }
 }
 .DefaultDescription.is--empty {
   color: $cTypography-help;

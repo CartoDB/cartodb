@@ -28,7 +28,7 @@
 
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                   <% if vis[:desc] %>
-                    <p class="DefaultDescription" title="<%= vis[:desc] %>"><%= raw truncate(vis[:desc], length: 45) %></p>
+                    <p class="DefaultDescription DefaultDescription--twoLines" title="<%= vis[:desc] %>"><%= raw vis[:desc] %></p>
                   <% else %>
                     <span class="DefaultDescription is--empty"></span>
                   <% end %>

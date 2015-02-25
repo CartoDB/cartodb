@@ -19,6 +19,11 @@
   height:60px;
   @include opacity(1);
 }
+.DatePicker-info {
+  max-width: 130px;
+  font-size: $sFontSize-smallUpperCase;
+  color: $cTypography-help;
+}
 .CreditsUsage-info {
   width: 300px;
   color: $cTypography-paragraphs;

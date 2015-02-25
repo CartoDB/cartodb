@@ -145,7 +145,7 @@ describe Layer do
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
       layer = Layer.create(
         kind: 'carto',
-        options: { query: "select * from #{@table.name}, #{table2.name};select cartodb_id from unexisting_table;selecterror;select 1;select * from #{table2.name}" }
+        options: { query: "select * from #{@table.name}, #{table2.name};select 1;select * from #{table2.name}" }
       )
       map.add_layer(layer)
 

@@ -2126,6 +2126,8 @@ describe Table do
       cache.expects(:get).never
       cache.expects(:setex).never
 
+      table.stubs(:cache).returns(cache)
+
       # A bit extreme way of getting a table without the_geom
       table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
       table.schema(reload: true)

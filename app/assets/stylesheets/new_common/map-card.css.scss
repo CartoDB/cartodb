@@ -21,13 +21,17 @@
 //     <div class="MapCard-contentFooter">
 //      ...
 //
+
+$sBorderCompensation: 2px;
+$opacityTransition: 250ms;
+
 .MapCard {
   position: relative;
-  @include inline-block();
-  width: $sCard-width - 2; //compensate for border
+  width: $sCard-width - 10px - $sBorderCompensation;
   border: 1px solid #DBDBDB;
   background-color: $cStructure-mainBkg;
   border-radius: $sCard-borderRadius;
+  margin: 0 auto;
 }
 .MapCard--selectable:hover {
   background-color: $cCard-hoverFill;
@@ -39,11 +43,15 @@
 }
 .MapCard-header {
   position: relative;
+  display: block;
   width: 100%;
   height: 170px;
   @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
   border-radius: 2px 2px 0 0;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
   overflow:hidden;
+  z-index: 1;
 }
 .MapCard-header.is-loading .MapCard-loader {
   display: block;
@@ -55,13 +63,20 @@
   content: ' ';
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
   display: block;
-  width: 100%;
   height: 2px;
   background: black;
   @include opacity(.1);
   z-index:2;
+}
+.MapCard-header--fake {
+  background: $cStructure-mainBkg;
+}
+.MapCard-header--fake:after {
+  left: $sMargin-element;
+  right: $sMargin-element;
 }
 .MapCard-headerGraph {
   position:absolute;
@@ -110,26 +125,17 @@
 .MapCard-error {
   display: none;
   position:absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  margin-top: -30px;
+  width: 60px;
+  height: 59px;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
-  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
-}
-.MapCard-error .error-00 {
-  @include background(image-url("layout/map_placeholder_0.png") no-repeat center 0);
-}
-.MapCard-error .error-01 {
-  @include background(image-url("layout/map_placeholder_1.png") no-repeat center 0);
-}
-.MapCard-error .error-02 {
-  @include background(image-url("layout/map_placeholder_2.png") no-repeat center 0);
-}
-.MapCard-error .error-03 {
-  @include background(image-url("layout/map_placeholder_3.png") no-repeat center 0);
+  @include background(image-url("layout/map-card-error.png") no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
@@ -137,6 +143,9 @@
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
   height: 140px;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  z-index: 1;
 }
 .MapCard-content--compact {
   height: auto;
@@ -172,8 +181,37 @@
 }
 .MapCard-contentBodyTimeDiff .UserAvatar,
 .MapCard-contentFooterTimeDiff .UserAvatar {
+  height: $sAvatar-meta + 2;
   margin-left: 5px;
-  line-height: $sAvatar-meta;
+}
+.MapCard-fake {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 352px;
+  @include background(image-url('layout/map-placeholder.png') no-repeat center center);
+  @include opacity(0);
+  @include transition(opacity, $opacityTransition);
+  z-index: 0;
+}
+.MapsList.is-loading .MapCard,
+.MapsList.is-loading .MapCard--selectable,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  pointer-events: none;
+  .MapCard-header { @include opacity(0) }
+  .MapCard-content { @include opacity(0) }
+  .MapCard-fake { @include opacity(1) }
+}
+.MapsList.is-loading .MapCard:hover,
+.MapsList.is-loading .MapCard--selectable:hover,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  cursor: default;
+  .MapCard-header { cursor: default }
 }
 
 // Animation function
@@ -181,4 +219,10 @@
   0% {right:100%;}
   50% {right:0%}
   100% {right:-100%}
+}
+
+@media (min-width: $sMedia-tablet) {
+  .MapCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
 }

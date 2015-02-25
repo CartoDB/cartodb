@@ -29,6 +29,8 @@
 .CreateDialog-templatesItem:nth-child(3n) { margin-right: 0 }
 .CreateDialog-templatesTitle {
   width: 100%;
+  line-height: 12px;
+  padding-bottom: 10px;
   text-transform: uppercase;
   font-size: $sFontSize-small;
   font-weight: $sFontWeight-lighter;

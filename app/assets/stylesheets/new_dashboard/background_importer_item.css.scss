@@ -9,7 +9,7 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  height: 50px;
+  height: 52px;
   margin: 0 20px;
   border-bottom: 1px solid $cStructure-mainLine;
 }

@@ -32,7 +32,10 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
-    view =  current_user.has_feature_flag?('new_dashboard') ? 'new-dashboard' : 'index'
+
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new-dashboard' : 'index'
+    layout = new_dashboard ? 'new_application' : 'application'
 
     respond_to do |format|
       format.html { render view, layout: 'application' }
@@ -505,7 +508,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def pretty_404
-    render(file: "public/404", layout: false, status: 404)
+    render(file: "public/404.html", layout: false, status: 404)
   end
 
   def user_domain_variable(request)

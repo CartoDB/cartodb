@@ -33,6 +33,9 @@ $opacityTransition: 250ms;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
+.MapCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
+}
 .MapCard-desc {
   height: 2 * $sLineHeight-normal;
   display: -webkit-box;

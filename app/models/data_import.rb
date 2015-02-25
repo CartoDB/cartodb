@@ -537,9 +537,8 @@ class DataImport < Sequel::Model
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table
 
-      source_data_import = importer.data_import
-      if importer.success? && source_data_import.create_visualization
-        self.visualization_id = source_data_import.visualization_id
+      if importer.success? && importer.data_import.create_visualization
+        self.visualization_id = importer.data_import.visualization_id
       end
 
       update_synchronization(importer)

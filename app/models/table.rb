@@ -569,8 +569,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_name = name
       @data_import.save
       if @data_import.create_visualization
-        vis = self.create_derived_visualization
-        @data_import.visualization_id = vis.id unless vis.nil?
+        @data_import.visualization_id = self.create_derived_visualization.id
         @data_import.save
       end
     end

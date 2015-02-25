@@ -10,7 +10,8 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
-      attr_accessor :table, :data_import
+      attr_reader :data_import
+      attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner
       # @param table_registrar CartoDB::TableRegistrar
@@ -31,6 +32,7 @@ module CartoDB
         @rename_attempts        = 0
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
+        @data_import            = nil
       end
 
       def run(tracker)
@@ -168,7 +170,7 @@ module CartoDB
       end
 
       def data_import
-        DataImport[@data_import_id]
+        @data_import ||= DataImport[@data_import_id]
       end
 
       private

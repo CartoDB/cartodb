@@ -42,8 +42,8 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    type_guessing = params.fetch(:type_guessing, true)
-    quoted_fields_guessing = params.fetch(:quoted_fields_guessing, true)
+    type_guessing = ["true", true].include?(params[:type_guessing])
+    quoted_fields_guessing = ["true", true].include?(params[:quoted_fields_guessing])
     content_guessing = ["true", true].include?(params[:content_guessing])
     create_derived_vis = ["true", true].include?(params[:create_vis])
 

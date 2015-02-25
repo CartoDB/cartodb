@@ -207,16 +207,11 @@
 
     },
 
-  visibleLayers: function() {
-    var layers = [];
-    for(var i = 0; i < this.options.layers.layers.length; ++i) {
-      var layer = this.options.layers.layers[i];
-      if(!layer.options.hidden) {
-        layers.push(layer);
-      }
-    }
-    return layers;
-  },
+    visibleLayers: function() {
+      // Overwrites the layer_definition method. 
+      // We return all the layers, since we have filtered before
+      return this.options.layers.layers;
+    },
 
     _getLayerByType: function(layers, type) {
       return _.find(layers, function(layer) { return layer.type === type; });

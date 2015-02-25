@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.8
+// cartodb.js version: 3.12.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: eb7837f821b4660a936ebc2d1c60643aa57ba77c
+// sha: 2827a7a2fec25915afc0d3a47db73726a83eb1bc
 (function() {
   var root = this;
 
@@ -34240,7 +34240,6 @@ cdb.vis.Vis = Vis;
 
         if (dataLayer.options) {
           this.options.user_name = dataLayer.options.user_name;
-          this.cdn_url = dataLayer.options.cdn_url;
         }
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
@@ -34318,6 +34317,12 @@ cdb.vis.Vis = Vis;
 
     },
 
+    visibleLayers: function() {
+      // Overwrites the layer_definition method.
+      // We return all the layers, since we have filtered them before
+      return this.options.layers.layers;
+    },
+
     _getLayerByType: function(layers, type) {
       return _.find(layers, function(layer) { return layer.type === type; });
     },
@@ -34343,7 +34348,7 @@ cdb.vis.Vis = Vis;
 
       var self = this;
 
-      this._requestPOST({}, function(data, error) {
+      this.getLayerToken(function(data, error) {
 
         if (error) {
           self.error = error;
@@ -34351,6 +34356,7 @@ cdb.vis.Vis = Vis;
 
         if (data) {
           self.imageOptions.layergroupid = data.layergroupid;
+          self.cdn_url = data.cdn_url;
         }
 
         self.queue.flush(this);
@@ -34482,7 +34488,9 @@ cdb.vis.Vis = Vis;
       var width  = size[0];
       var height = size[1];
 
-      var url = this._host() + this.endPoint;
+      var subhost = this.isHttps() ? null : "a";
+
+      var url = this._host(subhost) + this.endPoint;
 
       if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
@@ -35591,9 +35599,15 @@ Layers.register('torque', function(vis, data) {
         xhr = resp;
         resp = JSON.parse(resp.response);
       }
-      promise.trigger('done', resp, status, xhr);
-      if(success) success(resp, status, xhr);
-      if(callback) callback(resp);
+      //Timeout explanation. CartoDB.js ticket #336
+      //From St.Ov.: "what setTimeout does is add a new event to the browser event queue 
+      //and the rendering engine is already in that queue (not entirely true, but close enough) 
+      //so it gets executed before the setTimeout event."
+      setTimeout(function() {
+        promise.trigger('done', resp, status, xhr);
+        if(success) success(resp, status, xhr);
+        if(callback) callback(resp);
+      }, 0);
     }
 
     // call ajax

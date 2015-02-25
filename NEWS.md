@@ -30,6 +30,8 @@
 * Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
 * Change visuals in share view of privacy dialog [#2492](https://github.com/CartoDB/cartodb/pull/2492)
 * Added back Twitter import for new create dialog.
+* improved speed in dashboard caching frontend side
+  [#2465](https://github.com/CartoDB/cartodb/pull/2465)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

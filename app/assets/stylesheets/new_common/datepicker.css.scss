@@ -30,18 +30,21 @@ $border-radius: 4px;
   text-align: left;
   color: $cTypography-help;
 }
-.DatePicker-dates:hover,
-.DatePicker-dates:focus { border-color: #999 }
 .DatePicker-dates strong {
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs
 }
 .DatePicker-datesIcon {
   position: absolute;
-  top: 2px;
-  right: 10px;
+  top: 10px;
+  right: 15px;
   font-size: $sFontSize-larger;
   color: $cTypography-help;
+}
+.DatePicker-dates:hover,
+.DatePicker-dates:focus {
+  border-color: #999;
+  .DatePicker-datesIcon { color: $cTypography-secondary }
 }
 .DatePicker-dropdown {
   position: absolute;

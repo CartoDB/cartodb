@@ -3,16 +3,8 @@
     <!-- Generator: Sketch Beta 3.3 (11654) - http://www.bohemiancoding.com/sketch -->
     <title>icon-font_43_Calendar</title>
     <desc>Created with Sketch Beta.</desc>
-    <defs>
-        <rect id="path-1" x="0" y="0" width="500" height="500" rx="40"></rect>
-    </defs>
+    <defs></defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="icon-font_43_Calendar" sketch:type="MSLayerGroup">
-            <mask id="mask-2" sketch:name="Rectangle 1498" fill="white">
-                <use xlink:href="#path-1"></use>
-            </mask>
-            <use id="Rectangle-1498" stroke="#000000" stroke-width="10" sketch:type="MSShapeGroup" xlink:href="#path-1"></use>
-            <rect id="Rectangle-1499" fill="#000000" sketch:type="MSShapeGroup" mask="url(#mask-2)" x="0" y="-31.25" width="500" height="187.5"></rect>
-        </g>
+        <path d="M0,39.9930416 C0,17.9054946 17.9057764,0 39.9930416,0 L460.006958,0 C482.094505,0 500,17.9057764 500,39.9930416 L500,460.006958 C500,482.094505 482.094224,500 460.006958,500 L39.9930416,500 C17.9054946,500 0,482.094224 0,460.006958 L0,39.9930416 Z M21,157 L480,157 L480,440.009044 C480,462.095439 462.094761,480 439.994722,480 L61.0052785,480 C38.9109733,480 21,462.087175 21,440.009044 L21,157 Z" id="icon-font_43_Calendar" stroke="#979797" fill="#000000" sketch:type="MSShapeGroup"></path>
     </g>
 </svg>

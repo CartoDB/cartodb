@@ -56,6 +56,7 @@ module CartoDB
         @support_tables_helper.reset
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
+        result.name = name
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")

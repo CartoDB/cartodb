@@ -26,6 +26,7 @@
 * Open privacy dialog directly from items [#2442](https://github.com/CartoDB/cartodb/pull/2442)
 * Fixes error handling when adding an erroneous WMS URL.
 * Add new fields to data_import [#2257] and the feature of being able to create and redirect to a derived visualization after importing data (via import api new param `create_vis`)
+* Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

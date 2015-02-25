@@ -329,6 +329,9 @@
     _getLayergroupLayerDefinition: function(layer) {
 
       var options = layer.options;
+
+      options.layer_definition.layers = this._getVisibleLayers(options.layer_definition.layers);
+
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
       return layerDefinition.toJSON().layers;
@@ -341,14 +344,16 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      //layerDefinition.options.type = "named";
-
       return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
       }
 
+    },
+
+    _getVisibleLayers: function(layers) {
+      return _.filter(layers, function(layer) { return layer.visible; });
     },
 
     _getUrl: function() {

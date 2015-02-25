@@ -138,14 +138,14 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields)
+      def store_using_table(fields, table_privacy_changed=false)
         if type == TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = fields[:privacy_text]
           self.map_id = fields[:map_id]
         end
         # But as this method also notifies of changes in a table, must save always
-        do_store(false)
+        do_store(false, table_privacy_changed)
         self
       end
 
@@ -639,7 +639,7 @@ module CartoDB
         fetch if reload_self
       end
 
-      def do_store(propagate_changes=true)
+      def do_store(propagate_changes=true, table_privacy_changed=false)
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -651,7 +651,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_cache if name_changed || privacy_changed || description_changed
+        invalidate_cache if name_changed || privacy_changed || description_changed || table_privacy_changed
         set_timestamps
 
         repository.store(id, attributes.to_hash)

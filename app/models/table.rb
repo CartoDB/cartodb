@@ -593,7 +593,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization)
+      manager.propagate_to(visualization, privacy_changed?)
     }
   end
 

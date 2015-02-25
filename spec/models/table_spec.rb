@@ -2190,11 +2190,13 @@ describe Table do
 
   describe '#after_save' do
     it 'invalidates derived visualization cache if there are changes in table privacy' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      @user.private_tables_enabled = true
+      @user.save
       table = create_table(user_id: @user.id)
       table.save
       table.should be_private
 
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
       derived.store

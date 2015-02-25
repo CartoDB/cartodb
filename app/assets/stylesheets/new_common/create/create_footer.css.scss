@@ -13,7 +13,7 @@
   padding: 0!important;
   border: 0!important;
   text-align: center;
-  z-index: 1;
+  z-index: 4;
 }
 .CreateDialog-footerInner {
   position: relative;
@@ -67,6 +67,12 @@
   background: #F6D35C;
   border: 1px solid #F2C000;
   border-radius: 20px;
+}
+.CreateDialog-footerInfoEnquiry {
+  font-size: $sFontSize-normal;
+  color: $cTypography-headers;
+  font-style: italic;
+  padding-bottom: 10px;
 }
 .CreateDialog-footerActions {
   @include display-flex();

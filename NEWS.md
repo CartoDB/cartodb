@@ -27,7 +27,6 @@
 * Fixes error handling when adding an erroneous WMS URL.
 * Do not send visible=false layers for static previews
 * Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
->>>>>>> master
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

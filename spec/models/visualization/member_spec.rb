@@ -1024,6 +1024,8 @@ describe Visualization::Member do
     end
 
     it "Returns the vizjson if it was cached before" do
+      pending "Vizjson caching disabled, see https://github.com/CartoDB/cartodb/issues/2407#issuecomment-75820947"
+
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
       mocked_vizjson = {mocked: 'vizjson'}
@@ -1122,6 +1124,8 @@ describe Visualization::Member do
 
   describe '#invalidate_redis_cache' do
     it "Invalidates the vizjson in redis cache" do
+      pending "vizjson caching disabled, see https://github.com/CartoDB/cartodb/issues/2407#issuecomment-75820947"
+
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
       mocked_vizjson = {mocked: 'vizjson'}

@@ -14,6 +14,7 @@ class Api::Json::OembedController < Api::ApplicationController
     width = params[:maxwidth] || '100%'
     height = params[:maxheight] || '100%'
     format = request.query_parameters[:format]
+    force_https = true if params[:allow_http].nil?
 
     if (width =~ /^[0-9]+(%|px)?$/) == nil
       raise ActionController::RoutingError.new('Incorrect width')
@@ -40,7 +41,8 @@ class Api::Json::OembedController < Api::ApplicationController
       raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
     end
 
-    url = URI.join(public_visualizations_show_url(id: uuid, protocol: uri.scheme) + "/", 'embed_map')
+    protocol = force_https ? "https" : uri.scheme
+    url = URI.join(public_visualizations_show_url(id: uuid, protocol: protocol) + "/", 'embed_map')
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"
 
     response_data = {

@@ -10,6 +10,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
+      attr_reader :data_import
       attr_accessor :table
 
       # @param runner CartoDB::Importer2::Runner
@@ -31,6 +32,7 @@ module CartoDB
         @rename_attempts        = 0
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
+        @data_import            = nil
       end
 
       def run(tracker)
@@ -165,6 +167,10 @@ module CartoDB
       def error_code
         return 8002 if over_table_quota?
         results.map(&:error_code).compact.first
+      end
+
+      def data_import
+        @data_import ||= DataImport[@data_import_id]
       end
 
       private

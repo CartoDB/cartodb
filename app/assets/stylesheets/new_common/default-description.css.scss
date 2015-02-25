@@ -8,6 +8,7 @@
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+  overflow-wrap: break-word;
 }
 .DefaultDescription.is--empty {
   color: $cTypography-help;

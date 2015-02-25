@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.5
+// cartodb.js version: 3.12.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: dea3fa2fa0026682351c8dbaa3cdb4c1aa3a2b2b
+// sha: eb7837f821b4660a936ebc2d1c60643aa57ba77c
 (function() {
   var root = this;
 
@@ -11122,7 +11122,7 @@ L.Map.include({
 
 
 }(window, document));
-/* wax - 7.0.1 - v6.0.4-168-g416a567 */
+/* wax - 7.0.1 - v6.0.4-172-gf63d1b5 */
 
 
 !function (name, context, definition) {
@@ -14184,10 +14184,12 @@ wax.interaction = function() {
         // Only track single-touches. Double-touches will not affect this
         // control
         } else if (e.type === 'touchstart' && e.touches.length === 1) {
-            // Don't make the user click close if they hit another tooltip
-            bean.fire(interaction, 'off');
-            // Touch moves invalidate touches
-            bean.add(parent(), touchEnds);
+            //GMaps fix: Because it's triggering always mousedown and click, we've to remove it
+            bean.remove(document.body, 'click', onUp); //GMaps fix
+
+            //When we finish dragging, then the click will be 
+            bean.add(document.body, 'click', onUp);
+            bean.add(document.body, 'touchEnd', dragEnd);
         } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
           // Don't make the user click close if they hit another tooltip
             bean.fire(interaction, 'off');
@@ -14198,6 +14200,11 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), pointerEnds);
+        } else {
+            // Fix layer interaction in IE10/11 (CDBjs #139)
+            // Reason: Internet Explorer is triggering pointerdown when you click on the marker, and other browsers don't.
+            // Because of that, _downLock was active and it believed that you're dragging the map, instead of dragging the marker
+            _downLock = false;
         }
 
     }
@@ -14534,6 +14541,16 @@ wax.u = {
             }
         };
 
+        //Function that protects 'Unspected error' with Internet Explorer 11
+        function calculateOffsetIE(){
+          calculateOffset(el);
+          try {
+              while (el = el.offsetParent) { calculateOffset(el); }
+          } catch(e) {
+              // Hello, internet explorer.
+          }
+        }
+
         // from jquery, offset.js
         if ( typeof el.getBoundingClientRect !== "undefined" ) {
           var body = document.body;
@@ -14543,17 +14560,17 @@ wax.u = {
           var scrollTop  = window.pageYOffset || doc.scrollTop;
           var scrollLeft = window.pageXOffset || doc.scrollLeft;
 
-          var box = el.getBoundingClientRect();
-          top = box.top + scrollTop  - clientTop;
-          left = box.left + scrollLeft - clientLeft;
-
-        } else {
-          calculateOffset(el);
+          //With Internet Explorer 11, the function getBoundingClientRect() sometimes
+          //triggers the error: 'Unspected error.' Protecting it with try/catch
           try {
-              while (el = el.offsetParent) { calculateOffset(el); }
+              var box = el.getBoundingClientRect();
+              top = box.top + scrollTop  - clientTop;
+              left = box.left + scrollLeft - clientLeft;
           } catch(e) {
-              // Hello, internet explorer.
+              calculateOffsetIE();
           }
+        } else {
+          calculateOffsetIE();
         }
 
         // Offsets from the body
@@ -30814,7 +30831,7 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
   var obj = map.getDiv();
 
   var x, y;
-  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
+  if (o.e.changedTouches && o.e.changedTouches.length > 0 && (o.e.changedTouches[0] !== undefined) ) {
     x = o.e.changedTouches[0].clientX + window.scrollX;
     y = o.e.changedTouches[0].clientY + window.scrollY;
   } else {
@@ -30856,6 +30873,8 @@ CartoDBLayerGroupBase.prototype._manageOnEvents = function(map,o) {
     case 'touchend':
     case 'touchmove': // for some reason android browser does not send touchend
     case 'mspointerup':
+    case 'pointerup':
+    case 'pointermove':
       if (this.options.featureClick) {
         this.options.featureClick(o.e,latlng, point, o.data, o.layer);
       }
@@ -34174,6 +34193,8 @@ cdb.vis.Vis = Vis;
 
       this.queue = new Queue;
 
+      this.no_cdn = options.no_cdn;
+
       this.userOptions = options;
 
       options = _.defaults({ vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.defaults);
@@ -34217,7 +34238,10 @@ cdb.vis.Vis = Vis;
         var baseLayer = data.layers[0];
         var dataLayer = data.layers[1];
 
-        this.options.user_name = dataLayer.options.user_name;
+        if (dataLayer.options) {
+          this.options.user_name = dataLayer.options.user_name;
+          this.cdn_url = dataLayer.options.cdn_url;
+        }
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
@@ -34415,6 +34439,9 @@ cdb.vis.Vis = Vis;
     _getLayergroupLayerDefinition: function(layer) {
 
       var options = layer.options;
+
+      options.layer_definition.layers = this._getVisibleLayers(options.layer_definition.layers);
+
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
       return layerDefinition.toJSON().layers;
@@ -34427,14 +34454,16 @@ cdb.vis.Vis = Vis;
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      //layerDefinition.options.type = "named";
-
       return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
       }
 
+    },
+
+    _getVisibleLayers: function(layers) {
+      return _.filter(layers, function(layer) { return layer.visible; });
     },
 
     _getUrl: function() {
@@ -34453,9 +34482,9 @@ cdb.vis.Vis = Vis;
       var width  = size[0];
       var height = size[1];
 
-      var url = this._tilerHost() + this.endPoint;
+      var url = this._host() + this.endPoint;
 
-      if (bbox && bbox.length) {
+      if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

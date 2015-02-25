@@ -72,8 +72,7 @@ describe("Image", function() {
 
   it("shouldn't use hidden layers to generate the image", function(done) { 
 
-    // TODO: replace vizjson with one from the docs / local
-    var vizjson = "https://team.cartodb.com/api/v2/viz/205862b2-1e55-11e4-a972-0e73339ffa50/viz.json";
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/42e98b9a-bcce-11e4-9d68-0e9d821ea90d/viz.json";
 
     var image = cartodb.Image(vizjson);
 

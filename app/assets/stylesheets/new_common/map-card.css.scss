@@ -33,13 +33,39 @@ $opacityTransition: 250ms;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
-.MapCard--selectable:hover {
-  background-color: $cCard-hoverFill;
-  border-color: $cCard-hoverBorder;
+.MapCard-desc {
+  height: 2 * $sLineHeight-normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: $sLineHeight-normal;
+    width: 2 * $sLineHeight-normal;
+    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+  }
 }
-.MapCard--selectable.is-selected {
-  background-color: $cCard-selectedFill;
-  border-color: $cCard-selectedBorder;
+.MapCard--selectable{
+  &:hover {
+    background-color: $cCard-hoverFill;
+    border-color: $cCard-hoverBorder;
+    .MapCard-desc:after {
+      @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
+    }
+  }
+  &.is-selected {
+    background-color: $cCard-selectedFill;
+    border-color: $cCard-selectedBorder;
+    .MapCard-desc:after {
+      @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
+    }
+  }
 }
 .MapCard-header {
   position: relative;

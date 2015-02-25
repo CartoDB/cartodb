@@ -130,7 +130,6 @@
 
         if (dataLayer.options) {
           this.options.user_name = dataLayer.options.user_name;
-          this.cdn_url = dataLayer.options.cdn_url;
         }
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
@@ -241,6 +240,7 @@
 
         if (data) {
           self.imageOptions.layergroupid = data.layergroupid;
+          self.cdn_url = data.cdn_url;
         }
 
         self.queue.flush(this);

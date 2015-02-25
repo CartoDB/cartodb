@@ -702,9 +702,9 @@ class Table < Sequel::Model(:user_tables)
 
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
-  def invalidate_varnish_cache
+  def invalidate_varnish_cache(propagate_to_visualizations=true)
     CartoDB::Varnish.new.purge("#{varnish_key}")
-    invalidate_cache_for(affected_visualizations) if id && table_visualization
+    invalidate_cache_for(affected_visualizations) if id && table_visualization && propagate_to_visualizations
     self
   end
 

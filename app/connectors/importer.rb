@@ -10,7 +10,7 @@ module CartoDB
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
 
-      attr_accessor :table
+      attr_accessor :table, :data_import
 
       # @param runner CartoDB::Importer2::Runner
       # @param table_registrar CartoDB::TableRegistrar
@@ -164,6 +164,10 @@ module CartoDB
       def error_code
         return 8002 if over_table_quota?
         results.map(&:error_code).compact.first
+      end
+
+      def data_import
+        DataImport[@data_import_id]
       end
 
       private

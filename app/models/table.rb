@@ -7,6 +7,7 @@ require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
 require_relative './visualization/overlays'
+require_relative './visualization/table_blender'
 require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
@@ -59,6 +60,8 @@ class Table < Sequel::Model(:user_tables)
   }
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
+
+  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
   # Associations
   many_to_one  :map
@@ -227,6 +230,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
+    # noinspection RubyArgCount
     vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
       u.user_id == query_filters[:user_id]
     }.first
@@ -564,12 +568,18 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
+      if @data_import.create_visualization
+        vis = self.create_derived_visualization
+        @data_import.visualization_id = vis.id unless vis.nil?
+        @data_import.save
+      end
     end
     add_table_to_stats
 
     update_table_pg_stats
 
     self.cartodbfy
+
   rescue => e
     self.handle_creation_error(e)
   end
@@ -659,6 +669,23 @@ class Table < Sequel::Model(:user_tables)
     member.store
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def create_derived_visualization
+    blender = CartoDB::Visualization::TableBlender.new(self.owner, [ self ])
+    map = blender.blend
+    vis = CartoDB::Visualization::Member.new(
+      {
+        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        map_id:   map.id,
+        type:     CartoDB::Visualization::Member::TYPE_DERIVED,
+        privacy:  blender.blended_privacy,
+        user_id:  self.owner.id
+      }
+    )
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    vis.store
+    vis
   end
 
   def before_destroy

@@ -5,11 +5,14 @@
 // Map template video styles
 
 .MapTemplate {
+  position: absolute;
+  top: 50%;
   @include display-flex();
   @include css3-prefix(box-sizing, border-box);
   width: $sLayout-width;
-  margin-top: 60px;
+  margin-top: -216px;
   border: 1px solid rgba(black, 0.1);
+  background: white;
   border-radius: 4px;
 }
 .MapTemplate-info {

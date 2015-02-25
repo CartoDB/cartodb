@@ -44,4 +44,18 @@ namespace :cartodb do
     end
     puts "\n"
   end
+  
+  desc "Increase limits for twitter import users"
+  task :increase_limits_for_twitter_import_users => :environment do
+    file_size_quota = 1500*1024*1024
+    row_count_quota = 5000000
+
+    User.where(twitter_datasource_enabled: true).each do |user|
+      # Only increase, don't decrease
+      user.max_import_file_size = file_size_quota if file_size_quota > user.max_import_file_size
+      user.max_import_table_row_count = row_count_quota if row_count_quota > user.max_import_table_row_count
+      user.save
+      puts "#{user.username}"
+    end
+  end
 end

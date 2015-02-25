@@ -70,6 +70,33 @@ describe("Image", function() {
 
   });
 
+  it("shouldn't use hidden layers to generate the image", function(done) { 
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/42e98b9a-bcce-11e4-9d68-0e9d821ea90d/viz.json";
+
+    var image = cartodb.Image(vizjson);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.layers.layers.length).toEqual(2);
+      done();
+    });
+
+  });
+
+  it("should extract the cdn_url from the vizjson", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/e7b04b62-b901-11e4-b0d7-0e018d66dc29/viz.json";
+
+    var image = cartodb.Image(vizjson);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.cdn_url.http).toEqual("api.cartocdn.com");
+      expect(image.options.cdn_url.https).toEqual("cartocdn.global.ssl.fastly.net");
+      done();
+    });
+
+  });
+
   it("should allow to set the zoom", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
@@ -103,6 +130,20 @@ describe("Image", function() {
     var regexp = new RegExp("http://api.cartocdn.com/documentation/api/v1/map/static/bbox/(.*?)/-31\.05,-155\.74,82\.58,261\.21/400/300\.png");
 
     cartodb.Image(vizjson).bbox([-31.05, -155.74, 82.58, 261.21]).size(400,300).getUrl(function(error, url) {
+      expect(error).toEqual(null);
+      expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
+  it("should allow to override the bounding box", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
+
+    var regexp = new RegExp("http://api.cartocdn.com/documentation/api/v1/map/static/center/(.*?)/52\.5897007687178/52\.734375/400/300\.png");
+
+    cartodb.Image(vizjson, { override_bbox: true }).size(400,300).getUrl(function(error, url) {
       expect(error).toEqual(null);
       expect(url).toMatch(regexp);
       done();

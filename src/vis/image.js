@@ -128,7 +128,10 @@
         var baseLayer = data.layers[0];
         var dataLayer = data.layers[1];
 
-        this.options.user_name = dataLayer.options.user_name;
+        if (dataLayer.options) {
+          this.options.user_name = dataLayer.options.user_name;
+          this.cdn_url = dataLayer.options.cdn_url;
+        }
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
@@ -326,6 +329,9 @@
     _getLayergroupLayerDefinition: function(layer) {
 
       var options = layer.options;
+
+      options.layer_definition.layers = this._getVisibleLayers(options.layer_definition.layers);
+
       var layerDefinition = new LayerDefinition(options.layer_definition, options);
 
       return layerDefinition.toJSON().layers;
@@ -338,14 +344,16 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      //layerDefinition.options.type = "named";
-
       return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
       }
 
+    },
+
+    _getVisibleLayers: function(layers) {
+      return _.filter(layers, function(layer) { return layer.visible; });
     },
 
     _getUrl: function() {
@@ -366,7 +374,7 @@
 
       var url = this._host() + this.endPoint;
 
-      if (bbox && bbox.length) {
+      if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

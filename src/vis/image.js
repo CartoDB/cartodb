@@ -378,7 +378,9 @@
       var width  = size[0];
       var height = size[1];
 
-      var url = this._host() + this.endPoint;
+      var subhost = this.isHttps() ? null : "a";
+
+      var url = this._host(subhost) + this.endPoint;
 
       if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");

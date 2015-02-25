@@ -109,29 +109,4 @@ describe Api::Json::SynchronizationsController do
     end
   end
 
-  describe 'PUT /api/v1/synchronizations' do
-    it 'updates a synchronization' do
-    end
-
-    it 'makes the table modifiable if synchronization disabled' do
-    end
-
-    it 'makes the table unmodifiable if synchronization enabled' do
-    end
-
-    it 'returns 401 unless user has an appropriate plan' do
-    end
-  end
-
-  describe 'DELETE /api/v1/synchronizations' do
-    it 'deletes a synchronization' do
-    end
-
-    it 'makes the related table modifiable' do
-    end
-
-    it 'returns 401 unless user has an appropriate plan' do
-    end
-  end
-
 end

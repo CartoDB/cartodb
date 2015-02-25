@@ -1488,6 +1488,12 @@ class User < Sequel::Model
     )
     self.run_queries_in_transaction(
       [
+        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER}"
+      ],
+      true
+    )
+    self.run_queries_in_transaction(
+      [
         "GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
         "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
         "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"

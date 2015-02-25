@@ -207,6 +207,17 @@
 
     },
 
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.options.layers.layers.length; ++i) {
+      var layer = this.options.layers.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
     _getLayerByType: function(layers, type) {
       return _.find(layers, function(layer) { return layer.type === type; });
     },
@@ -232,7 +243,7 @@
 
       var self = this;
 
-      this._requestPOST({}, function(data, error) {
+      this.getLayerToken(function(data, error) {
 
         if (error) {
           self.error = error;

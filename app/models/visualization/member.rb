@@ -321,9 +321,9 @@ module CartoDB
       end
 
       def to_vizjson
-        calculate_vizjson
-        #redis_cached(redis_vizjson_key) do
-        #end
+        redis_cached(redis_vizjson_key) do
+          calculate_vizjson
+        end
       end
 
       def is_owner?(user)

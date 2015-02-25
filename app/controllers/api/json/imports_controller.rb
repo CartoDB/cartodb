@@ -34,23 +34,18 @@ class Api::Json::ImportsController < Api::ApplicationController
     if data_import.state == DataImport::STATE_COMPLETE
       data[:any_table_raster] = data_import.is_raster?
 
-      if data_import.service_name == CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
-
-      audit_entry = ::SearchTweet.where(data_import_id: data_import.id).first
-
-      data[:tweets_georeferenced] = audit_entry.retrieved_items
-      data[:tweets_cost] = audit_entry.price
-      data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0
-      end
+      decorate_twitter_import_data!(data, data_import)
+      decorate_default_visualization_data!(data, data_import)
     end
 
     render json: data
   end
 
   def create
-    type_guessing = params.fetch(:type_guessing, true)
-    quoted_fields_guessing = params.fetch(:quoted_fields_guessing, true)
+    type_guessing = ["true", true].include?(params[:type_guessing])
+    quoted_fields_guessing = ["true", true].include?(params[:quoted_fields_guessing])
     content_guessing = ["true", true].include?(params[:content_guessing])
+    create_derived_vis = ["true", true].include?(params[:create_vis])
 
     url = params[:url]
     external_source = nil
@@ -77,6 +72,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       url = external_source.import_url
       file_uri = url
       enqueue_importer_task = true
+      create_derived_vis = false
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
       file_uri = results[:file_uri]
@@ -102,7 +98,8 @@ class Api::Json::ImportsController < Api::ApplicationController
         quoted_fields_guessing: quoted_fields_guessing,
         content_guessing:       content_guessing,
         state:                  enqueue_importer_task ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED,
-        upload_host:            Socket.gethostname
+        upload_host:            Socket.gethostname,
+        create_visualization:   create_derived_vis
     }
 
     data_import = DataImport.create(options)
@@ -296,6 +293,26 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   private
+
+  def decorate_twitter_import_data!(data, data_import)
+    return if data_import.service_name != CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
+
+    audit_entry = ::SearchTweet.where(data_import_id: data_import.id).first
+    data[:tweets_georeferenced] = audit_entry.retrieved_items
+    data[:tweets_cost] = audit_entry.price
+    data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0
+  end
+
+  def decorate_default_visualization_data!(data, data_import)
+    derived_vis_id = nil
+
+    if data_import.create_visualization && !data_import.visualization_id.nil?
+      derived_vis = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch
+      derived_vis_id = derived_vis.id unless derived_vis.nil?
+    end
+
+    data[:derived_visualization_id] = derived_vis_id
+  end
 
   def external_source(remote_visualization_id)
     external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first

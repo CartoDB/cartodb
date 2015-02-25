@@ -46,6 +46,11 @@ body.is-inDialog {
   top: $sMargin-section;
   right: $sMargin-section;
 }
+.Dialog-backBtn {
+  position: fixed;
+  top: $sMargin-section;
+  left: $sMargin-section;
+}
 .Dialog-content {
   width: 100%;
 }
@@ -157,7 +162,8 @@ $sStickyHeight: 97px;
   @include flex-grow(100);
   border: 1px solid $cStructure-mainLine;
   background-color: $cExpandedBkg;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
@@ -170,8 +176,11 @@ $sStickyHeight: 97px;
   width: $sLayout-width;
   z-index: 100; // for underlying content not to be visible
 }
-.Dialog-body--expanded {
-  padding: #{$sStickyHeight+$sMargin-group} 0 $sStickyHeight 0; // compensate so content is not covered by "sticky" subheader or footer
+.Dialog-body--expanded.is-expandedWithSubHeader {
+  padding-top: $sStickyHeight + $sMargin-group;
+}
+.Dialog-body--expanded.is-expandedWithSubFooter {
+  padding-bottom: $sStickyHeight;
 }
 .Dialog-stickyFooter {
   position: fixed;
@@ -231,4 +240,3 @@ $sStickyHeight: 97px;
     @include transform(scale(2.0));
   }
 }
-

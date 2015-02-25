@@ -24,7 +24,7 @@ $cPrivacy-other:    rgba(#F5A623, 1);
   height: 8px;
   background-color: $cTypography-help;
   border-radius: 100%;
-  margin: 2px $sMargin-min 0 0;
+  margin: 2px 5px 0 0;
 }
 .PrivacyIndicator.is-public:before {
   background-color: $cPrivacy-public;

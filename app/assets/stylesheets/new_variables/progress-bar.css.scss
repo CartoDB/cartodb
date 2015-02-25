@@ -39,13 +39,13 @@
         @include border-radius($r);
 
         @if $grad {
-          &:after {
-            position:absolute;
-            content: '';
-            @include position(0,0,0,0);
-            width:100%;
-            @include background(linear-gradient(left,rgba(#FFF,0.30),rgba(#FFF,0)))
-          }
+          // &:after {
+          //   position:absolute;
+          //   content: '';
+          //   @include position(0,0,0,0);
+          //   width:100%;
+          //   @include background(linear-gradient(left,rgba(#FFF,0.30),rgba(#FFF,0)))
+          // }
         }
       }
 

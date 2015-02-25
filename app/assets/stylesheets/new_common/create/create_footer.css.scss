@@ -68,6 +68,12 @@
   border: 1px solid #F2C000;
   border-radius: 20px;
 }
+.CreateDialog-footerInfoEnquiry {
+  font-size: $sFontSize-normal;
+  color: $cTypography-headers;
+  font-style: italic;
+  padding-bottom: 10px;
+}
 .CreateDialog-footerActions {
   @include display-flex();
   @include align-items(center, center);   

@@ -5,6 +5,7 @@
 // Import twitter view styles
 
 .ImportTwitterPanel {}
+// Twitter categories
 .TwitterCategory .Form-inputIcon {
   top: 8px;
   font-size: 20px;
@@ -19,11 +20,13 @@
   height:60px;
   @include opacity(1);
 }
-.DatePicker-info {
-  max-width: 130px;
+// Datepicker
+.DatePicker-info { max-width: 140px }
+.Form-rowInfoText.DatePicker-infoText {
   font-size: $sFontSize-smallUpperCase;
   color: $cTypography-help;
 }
+// Credits usage
 .CreditsUsage-info {
   width: 300px;
   color: $cTypography-paragraphs;

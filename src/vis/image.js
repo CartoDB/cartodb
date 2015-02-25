@@ -208,8 +208,8 @@
     },
 
     visibleLayers: function() {
-      // Overwrites the layer_definition method. 
-      // We return all the layers, since we have filtered before
+      // Overwrites the layer_definition method.
+      // We return all the layers, since we have filtered them before
       return this.options.layers.layers;
     },
 

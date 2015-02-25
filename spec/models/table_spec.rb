@@ -590,7 +590,7 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-      .times(2)
+      .times(3)
       .with(".*#{id}:vizjson")
       .returns(true)
 

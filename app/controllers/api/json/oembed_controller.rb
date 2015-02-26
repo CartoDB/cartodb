@@ -25,10 +25,6 @@ class Api::Json::OembedController < Api::ApplicationController
 
     uri = URI.parse(url)
 
-    if uri.host != request.host
-      raise ActionController::RoutingError.new('URL origin not allowed')
-    end
-
     begin
       uuid = /(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/.match(uri.path)[0]
     rescue NoMethodError

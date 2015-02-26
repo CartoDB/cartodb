@@ -19,7 +19,7 @@
 .Filters.is-fixed {
   position: fixed;
   background: white;
-  
+
   &:before {
     content: '';
     position:absolute;
@@ -100,7 +100,7 @@
   vertical-align: middle;
   margin-right:5px;
   margin-left: 1px;
-  
+
 }
 .Filters-searchLink:hover { color: #333 }
 .Filters-searchItem {
@@ -123,7 +123,6 @@
   border:none;
   background:none;
   font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
 }
 .Filters-cleanSearch {
   position:absolute;
@@ -138,7 +137,7 @@
   line-height:31px;
   background: transparent;
   outline: none;
-  
+
   &:hover {
     border:1px solid #999;
     color:#999;
@@ -183,7 +182,7 @@ a.Filters-cleanSearch { line-height:32px }
     width:100%;
     height:1px;
     background:$cTypography-linkSelected;
-  } 
+  }
   &:hover {
     cursor:default;
     text-decoration: none;
@@ -232,7 +231,6 @@ a.Filters-cleanSearch { line-height:32px }
 
 .Filters-selectedItems {
   font-size:15px;
-  font-weight:300;
   color:$cTypography-secondary;
 }
 .Filters-actionsList {

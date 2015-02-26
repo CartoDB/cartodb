@@ -15,7 +15,6 @@
 }
 .Form-titleText {
   font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
   line-height: $sLineHeight-large;
 }
@@ -26,7 +25,6 @@
 }
 .Form-listItem {
   font-size: 14px;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
 .Form-row {
@@ -76,9 +74,8 @@
   margin: 0;
   background: transparent;
   font-size: 14px;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
-  
+
   &:before, &:after {
     content: '';
     position: absolute;
@@ -115,10 +112,10 @@
 
   &:focus { border-color: #999 }
 }
-.Form-input::-webkit-input-placeholder { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input:-moz-placeholder           { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input::-moz-placeholder          { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input:-ms-input-placeholder      { font-style: italic; font-weight: $sFontWeight-lighter }
+.Form-input::-webkit-input-placeholder { font-style: italic }
+.Form-input:-moz-placeholder           { font-style: italic }
+.Form-input::-moz-placeholder          { font-style: italic }
+.Form-input:-ms-input-placeholder      { font-style: italic }
 
 // Sizes
 .Form-input--longer { width: 434px }
@@ -172,7 +169,6 @@
   background: #FFF4F4;
   color: $cHighlight-negative;
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
   border-radius: 4px;
   @include transition(top, 200ms, ease-in-out);
 }
@@ -187,7 +183,6 @@
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }
@@ -234,7 +229,6 @@
 }
 .Form-footerText {
   font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .Form-footerIcon {

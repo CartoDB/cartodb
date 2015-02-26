@@ -19,7 +19,6 @@
 // It is not possible to be grouped :(
 .DefaultEditInline-input::-webkit-input-placeholder {
   font-style: italic;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-link;
 }
 .DefaultEditInline-input:hover::-webkit-input-placeholder { color: $cTypography-linkHover }

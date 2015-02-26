@@ -31,7 +31,6 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 }
 .UserInfo-name {
   font-size: 24px;
-  font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color: $cTypography-headers;
   margin-bottom: $sMargin-min;
@@ -43,7 +42,6 @@ $sAvatar-publicHalf: $sAvatar-public / 2;
 }
 .UserInfo-desc {
   font-size: 18px;
-  font-weight: $sFontWeight-lighter;
   max-width: 620px;
   margin: $sMargin-elementInline 0;
 }

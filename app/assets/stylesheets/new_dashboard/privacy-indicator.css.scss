@@ -12,7 +12,6 @@ $cPrivacy-other:    rgba(#F5A623, 1);
   @include align-items(center, center);
   position: relative;
   color: $cTypography-secondary;
-  font-weight: $sFontWeight-lighter;
 }
 .PrivacyIndicator:hover {
   text-decoration: none;

@@ -2,13 +2,11 @@
 @import "../new_variables/sizes";
 
 .RowsIndicator {
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .RowsIndicator-icon {
   margin-right: 4px;
   font-size: $sFontSize-smaller;
   line-height: $sLineHeight-smaller;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

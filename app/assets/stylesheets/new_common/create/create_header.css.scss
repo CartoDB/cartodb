@@ -32,7 +32,6 @@
 }
 .CreateDialog-header .Dialog-headerText {
   font-size: 14px;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }
 .CreateDialog-header .Dialog-headerIconBadge {
@@ -64,7 +63,6 @@
   border: 1px solid #CCC;
   outline: none;
   font-size: $sFontSize-largest;
-  font-weight: $sFontWeight-lighter;
   color: #CCC;
   border-radius: 40px;
   background: none;

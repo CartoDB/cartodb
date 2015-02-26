@@ -6,7 +6,6 @@
 
 .DefaultTags {
   color:$cTypography-secondary;
-  font-weight: $sFontWeight-lighter;
 }
 .DefaultTags-item {
   border: none;
@@ -24,6 +23,5 @@
 .DefaultTags-item.is--empty {
   color: $cTypography-help;
   font-style: italic;
-  font-weight: $sFontWeight-lighter;
   &:hover { text-decoration: none }
 }

@@ -2,12 +2,10 @@
 @import "../new_variables/sizes";
 
 .SizeIndicator {
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .SizeIndicator-icon {
   margin-right: 4px;
   font-size: $sFontSize-small;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }

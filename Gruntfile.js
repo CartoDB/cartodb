@@ -31,7 +31,7 @@
       pkg: grunt.file.readJSON('package.json'),
       aws: aws,
       env: env,
-      gitrev: exec('git rev-parse HEAD', { silent:true }).output.replace('\n', ''),
+      gitrev: exec('test -d .git && git rev-parse HEAD || cat REVISION', { silent:true }).output.replace('\n', ''),
 
       assets_dir: ASSETS_DIR,
       root_assets_dir: ROOT_ASSETS_DIR,

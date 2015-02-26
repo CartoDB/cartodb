@@ -39,10 +39,16 @@
 }
 .Pagination-listItem:first-child {
   border-radius: 5px 0 0 5px;
+  .Pagination-listItemInner {
+    border-radius: 5px 0 0 5px;
+  }
 }
 .Pagination-listItem:last-child {
   border-right-width: 1px;
   border-radius: 0 5px 5px 0;
+  .Pagination-listItemInner {
+    border-radius: 0 5px 5px 0;
+  }
 }
 .Pagination-listItem.is-current,
 .Pagination-listItem.is-current .Pagination-listItemInner--link,

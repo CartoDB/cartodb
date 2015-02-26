@@ -30,6 +30,7 @@
 * Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
 * Change visuals in share view of privacy dialog [#2492](https://github.com/CartoDB/cartodb/pull/2492)
 * Added back Twitter import for new create dialog.
+* Adds random quotes in the loading screens.
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
 
 Bugfixes:

@@ -321,9 +321,9 @@ module CartoDB
       end
 
       def to_vizjson
-        redis_cached(redis_vizjson_key) do
-          calculate_vizjson
-        end
+        calculate_vizjson
+        #redis_cached(redis_vizjson_key) do
+        #end
       end
 
       def is_owner?(user)
@@ -356,6 +356,10 @@ module CartoDB
         "#{user.database_name}:#{sorted_table_names},#{id}"
       end
 
+      def varnish_vizzjson_key
+        ".*#{id}:vizjson"
+      end
+
       def derived?
         type == TYPE_DERIVED
       end
@@ -378,9 +382,6 @@ module CartoDB
         derived? && !single_data_layer?
       end
 
-      def varnish_vizzjson_key
-        ".*#{id}:vizjson"
-      end
 
       def invalidate_cache
         invalidate_varnish_cache

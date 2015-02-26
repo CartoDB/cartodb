@@ -3,11 +3,15 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .DefaultDescription {
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-normal;
   color: $cTypography-secondary;
+  overflow-wrap: break-word;
+  position: relative;
 }
 .DefaultDescription.is--empty {
   color: $cTypography-help;

@@ -24,6 +24,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     default_fields_guessing  = true
     default_content_guessing = false
 
+    create_derived_vis = ["true", true].include?(params[:create_vis])
+
     member_attributes = payload.merge(
         name:                   params[:table_name],
         user_id:                current_user.id,
@@ -56,7 +58,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       service_item_id:    service_item_id,
       type_guessing:          params.fetch(:type_guessing, default_type_guessing),
       quoted_fields_guessing: params.fetch(:quoted_fields_guessing, default_fields_guessing),
-      content_guessing:       params.fetch(:content_guessing, default_content_guessing)
+      content_guessing:       params.fetch(:content_guessing, default_content_guessing),
+      create_visualization:   create_derived_vis
     }
       
     data_import = DataImport.create(options)

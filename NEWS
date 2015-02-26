@@ -1,3 +1,6 @@
+3.12.10 ()
+- Don't send the urlTemplate to generate a Static Map if we don't have it.
+
 3.12.9 (26//02//2015)
 - Updates Static Map module to use the CDN URL from the layergroup.
 

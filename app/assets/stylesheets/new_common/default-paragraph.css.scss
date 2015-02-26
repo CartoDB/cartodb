@@ -6,5 +6,7 @@
   line-height: $sLineHeight-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
-  
+}
+.DefaultParagraph--short {
+  width: 500px;
 }

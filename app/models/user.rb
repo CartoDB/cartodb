@@ -1488,6 +1488,12 @@ class User < Sequel::Model
     )
     self.run_queries_in_transaction(
       [
+        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER}"
+      ],
+      true
+    )
+    self.run_queries_in_transaction(
+      [
         "GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
         "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}",
         "GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}"
@@ -1841,7 +1847,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.2'
+      cdb_extension_target_version = '0.7.0'
     end
 
     in_database({

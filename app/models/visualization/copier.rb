@@ -7,6 +7,8 @@ require_relative '../overlay/copier'
 
 module CartoDB
   module Visualization
+    # Creates a new visualization using another as source.
+    # Do NOT use this to create derived visualizations as creates a new map.
     class Copier
       def initialize(user, visualization, name=nil)
         @user           = user

@@ -1,4 +1,15 @@
 module Cartodb
+  def self.get_config(*config_chain) 
+    current = Cartodb.config
+    config_chain.each { |config_param|
+      current = current[config_param]
+      if current.nil?
+        break
+      end
+    }
+    current
+  end
+
   def self.config
     return @config if @config
 

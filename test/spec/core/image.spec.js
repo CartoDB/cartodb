@@ -46,7 +46,6 @@ describe("Image", function() {
     var regexp = new RegExp("http://a.ashbu.cartocdn.com/documentation/api/v1/map/static/bbox/(.*?)/-138\.6474609375,27\.761329874505233,-83\.408203125,51\.26191485308451/320/240\.pn");
 
     image.getUrl(function(err, url) {
-
       expect(image.options.layers.layers.length).toEqual(2);
       expect(image.options.layers.layers[0].type).toEqual("http");
       expect(image.options.layers.layers[1].type).toEqual("torque");
@@ -400,6 +399,20 @@ describe("Image", function() {
     image.getUrl(function(err, url) {
       expect(url.match(regexp).length).toEqual(2);
       expect(url).toMatch(regexp);
+      done();
+    });
+
+  });
+
+  it("shouldn't send the urlTemplate if the vizjson doesn't contain it", function(done) {
+
+    var vizjson = "https://documentation.cartodb.com/api/v2/viz/75b90cd6-e9cf-11e2-8be0-5404a6a683d5/viz.json"
+
+    var image = cartodb.Image(vizjson).size(400, 300);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.layers.layers.length).toEqual(1);
+      expect(image.options.layers.layers[0].type).toEqual("cartodb");
       done();
     });
 

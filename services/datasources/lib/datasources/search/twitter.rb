@@ -31,6 +31,8 @@ module CartoDB
         FILTER_CATEGORIES     = :categories
         FILTER_TOTAL_RESULTS  = :totalResults
 
+        USER_LIMITS_FILTER_CREDITS = :twitter_credits
+
         CATEGORY_NAME_KEY  = :name
         CATEGORY_TERMS_KEY = :terms
 
@@ -58,8 +60,9 @@ module CartoDB
         # ]
         # @param user User
         # @param redis_storage Redis|nil (optional)
+        # @param user_defined_limits Hash|nil (optional)
         # @throws UninitializedError
-        def initialize(config, user, redis_storage = nil)
+        def initialize(config, user, redis_storage = nil, user_defined_limits={})
           @service_name = DATASOURCE_NAME
           @filters = Hash.new
 
@@ -68,6 +71,9 @@ module CartoDB
           raise MissingConfigurationError.new('missing username', DATASOURCE_NAME) unless config.include?('username')
           raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
           raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
+
+
+          @user_defined_limits = user_defined_limits
 
           @search_api_config = {
             TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED              => config['auth_required'],
@@ -98,9 +104,10 @@ module CartoDB
         # @param config {}
         # @param user User
         # @param redis_storage Redis|nil
+        # @param user_defined_limits Hash|nil
         # @return CartoDB::Datasources::Search::TwitterSearch
-        def self.get_new(config, user, redis_storage = nil)
-          return new(config, user, redis_storage)
+        def self.get_new(config, user, redis_storage = nil, user_defined_limits={})
+          return new(config, user, redis_storage, user_defined_limits)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -236,6 +243,19 @@ module CartoDB
         attr_accessor :search_api_config, :csv_dumper
         attr_reader   :data_import_item
 
+        # Returns if the user set a maximum credits to use
+        # @return Integer
+        def twitter_credit_limits
+          @user_defined_limits.fetch(USER_LIMITS_FILTER_CREDITS, 0)
+        end
+
+        # Wraps check of specified user limit or not (to use instead his max quota)
+        # @return Integer
+        def remaining_quota
+          twitter_credit_limits > 0 ? [@user.remaining_twitter_quota, twitter_credit_limits].min
+                                    : @user.remaining_twitter_quota
+        end
+
         def table_name
           terms_fragment = @filters[FILTER_CATEGORIES].map { |category|
             clean_category(category[CATEGORY_TERMS_KEY]).gsub(/[^0-9a-z,]/i, '').gsub(/[,]/i, '_')
@@ -318,10 +338,11 @@ module CartoDB
           log("Temp files:\n#{@csv_dumper.file_paths}")
           log("#{@csv_dumper.original_file_paths}\n#{@csv_dumper.headers_path}")
 
-          # Make sure we don't charge extra tweets if the user cannot go overquota
-          # (even if we "lose" charging a block or two of tweets)
-          if !@user.soft_twitter_datasource_limit && (@user.remaining_twitter_quota - @used_quota) < 0
-            @used_quota = @user.remaining_twitter_quota
+          if twitter_credit_limits > 0 || !@user.soft_twitter_datasource_limit
+            if (remaining_quota - @used_quota) < 0
+              # Make sure we don't charge extra tweets (even if we "lose" charging a block or two of tweets)
+              @used_quota = remaining_quota
+            end
           end
 
           # remaining quota is calc. on the fly based on audits/imports
@@ -342,9 +363,12 @@ module CartoDB
             out_of_quota = false
 
             @user_semaphore.synchronize {
-              if !@user.soft_twitter_datasource_limit && (@user.remaining_twitter_quota - @used_quota) <= 0
-                out_of_quota = true
-                next_results_cursor = nil
+              # Credit limits must be honoured above soft limit
+              if twitter_credit_limits > 0 || !@user.soft_twitter_datasource_limit
+                if remaining_quota - @used_quota <= 0
+                  out_of_quota = true
+                  next_results_cursor = nil
+                end
               end
             }
 
@@ -490,25 +514,34 @@ module CartoDB
           }.compact
         end
 
+        # Max results per page
+        # @param user User
         def build_maxresults_field(user)
-          # user about to hit quota?
-          if user.remaining_twitter_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
-            if user.soft_twitter_datasource_limit
-              # But can go beyond limits
-              TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
-            else
-              user.remaining_twitter_quota
-            end
+          if twitter_credit_limits > 0
+            [remaining_quota, TwitterSearch::SearchAPI::MAX_PAGE_RESULTS].min
           else
-            TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+            # user about to hit quota?
+            if remaining_quota < TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+              if user.soft_twitter_datasource_limit
+                # But can go beyond limits
+                TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+              else
+                remaining_quota
+              end
+            else
+              TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
+            end
           end
         end
 
+
+        # Max total results
+        # @param user User
         def build_total_results_field(user)
-          if user.soft_twitter_datasource_limit
+          if twitter_credit_limits == 0 && user.soft_twitter_datasource_limit
             NO_TOTAL_RESULTS
           else
-            user.remaining_twitter_quota
+            remaining_quota
           end
         end
 
@@ -530,6 +563,7 @@ module CartoDB
         # @param user User
         # @return boolean
         def has_enough_quota?(user)
+          # As this is used to disallow searches (and throw exceptions) don't use here user limits
           user.soft_twitter_datasource_limit || (user.remaining_twitter_quota > 0)
         end
 

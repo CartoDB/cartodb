@@ -39,8 +39,8 @@ module CartoDB
             when Url::MailChimp::DATASOURCE_NAME
               Url::MailChimp.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Search::Twitter::DATASOURCE_NAME
-              Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user),
-                                      user, additional_config[:redis_storage])
+              Search::Twitter.get_new(DatasourcesFactory.config_for(datasource_name, user), user,
+                                      additional_config[:redis_storage], additional_config[:user_defined_limits])
             when nil
               nil
             else

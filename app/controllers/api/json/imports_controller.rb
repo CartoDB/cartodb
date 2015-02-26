@@ -57,29 +57,29 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     options = default_creation_options
 
-    if params.fetch(:url).present?
+    if params[:url].present?
       options.merge!({
-                       data_source: params.fetch(:url).presence
+                       data_source: params.fetch(:url)
                      })
     elsif params[:remote_visualization_id].present?
       external_source = external_source(params[:remote_visualization_id])
       options.merge!({
-                       content_guessing: false,
-                       type_guessing: true,
-                       quoted_fields_guessing: true,
-                       data_source: external_source.import_url.presence,
-		       create_visualization: false
+                        content_guessing: false,
+                        type_guessing: true,
+                        quoted_fields_guessing: true,
+                        data_source: external_source.import_url.presence,
+                        create_visualization: false
                      })
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
       options.merge!({
-                       data_source: results[:file_uri].presence,
-                       # Not queued import is set by skipping pending state and setting directly as already enqueued
-                       state: results[:enqueue] ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED
+                        data_source: results[:file_uri].presence,
+                        # Not queued import is set by skipping pending state and setting directly as already enqueued
+                        state: results[:enqueue] ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED
                      })
     end
 
-    data_import = DataImport.create(options)
+    data_import = DataImport.create(options.merge!({ user_defined_limits: ::JSON.dump(options[:user_defined_limits]) }))
 
     ExternalDataImport.new(data_import.id, external_source.id).save if external_source.present?
 
@@ -271,6 +271,11 @@ class Api::Json::ImportsController < Api::ApplicationController
   private
 
   def default_creation_options
+    user_defined_limits = params.fetch(:user_defined_limits, {})
+    # Sanitize
+    user_defined_limits[:twitter_credits_limit] =
+        user_defined_limits[:twitter_credits_limit].presence.nil? ? 0 : user_defined_limits[:twitter_credits_limit].to_i
+
     {
       user_id:                current_user.id,
       table_name:             params[:table_name].presence,
@@ -287,8 +292,10 @@ class Api::Json::ImportsController < Api::ApplicationController
       content_guessing:       ["true", true].include?(params[:content_guessing]),
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
       upload_host:            Socket.gethostname,
-      create_visualization:   ["true", true].include?(params[:create_vis])
+      create_visualization:   ["true", true].include?(params[:create_vis]),
+      user_defined_limits:    user_defined_limits
     }
+  end
 
   def decorate_twitter_import_data!(data, data_import)
     return if data_import.service_name != CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME

@@ -38,6 +38,7 @@ Bugfixes:
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
 * Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
 * Fixes for new dashboard texts [#2499](https://github.com/CartoDB/cartodb/pull/2499)
+* Fixes a problem generating images from private visualizations of private org users. 
 
 3.8.0 (2015-01-30)
 ------------------

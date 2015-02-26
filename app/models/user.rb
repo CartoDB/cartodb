@@ -99,11 +99,6 @@ class User < Sequel::Model
   end
 
   ## Callbacks
-  def before_validation
-    # Convert email to downcase
-    self.email = self.email.to_s.strip.downcase
-  end
-
   def before_create
     super
     self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
@@ -426,8 +421,7 @@ class User < Sequel::Model
   end
 
   def self.authenticate(email, password)
-    sanitized_input = email.strip.downcase
-    if candidate = User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
+    if candidate = User.filter("email ILIKE ? OR username ILIKE ?", email, email).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil

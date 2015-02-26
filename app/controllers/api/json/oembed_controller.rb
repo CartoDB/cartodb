@@ -31,12 +31,6 @@ class Api::Json::OembedController < Api::ApplicationController
       raise ActionController::RoutingError.new('UUID not found in URL')
     end
 
-    begin
-      viz = CartoDB::Visualization::Member.new(id: uuid).fetch
-    rescue KeyError
-      raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
-    end
-
     protocol = force_https ? "https" : uri.scheme
     url = URI.join(public_visualizations_show_url(id: uuid, protocol: protocol) + "/", 'embed_map')
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"

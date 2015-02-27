@@ -24,7 +24,6 @@ module CartoDB
         # @return mixed
         # @throws MissingConfigurationError
         def self.get_datasource(datasource_name, user, additional_config = {})
-
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME
               Url::Dropbox.get_new(DatasourcesFactory.config_for(datasource_name, user), user)

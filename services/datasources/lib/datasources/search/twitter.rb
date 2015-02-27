@@ -31,7 +31,7 @@ module CartoDB
         FILTER_CATEGORIES     = :categories
         FILTER_TOTAL_RESULTS  = :totalResults
 
-        USER_LIMITS_FILTER_CREDITS = :twitter_credits
+        USER_LIMITS_FILTER_CREDITS = :twitter_credits_limit
 
         CATEGORY_NAME_KEY  = :name
         CATEGORY_TERMS_KEY = :terms

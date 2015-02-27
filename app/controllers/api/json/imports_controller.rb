@@ -279,6 +279,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     user_defined_limits[:twitter_credits_limit] =
         user_defined_limits[:twitter_credits_limit].presence.nil? ? 0 : user_defined_limits[:twitter_credits_limit].to_i
 
+    # Already had an internal issue due to forgetting to send always a string (e.g. for Twitter is an stringified JSON)
+    raise "service_item_id field should be empty or a string" unless (params[:service_item_id].is_a?(String) ||
+                                                                      params[:service_item_id].is_a?(NilClass))
+
     {
       user_id:                current_user.id,
       table_name:             params[:table_name].presence,

@@ -1,4 +1,8 @@
-3.8.1 (2015-02-xx)
+3.9.0 (2015-02-xx)
+------------------
+
+
+3.8.1 (2015-02-26)
 ------------------
 * Added config for basemaps [#1954], see
   [documentation](https://github.com/CartoDB/cartodb/wiki/How-to-configure-basemaps-in-CartoDB)
@@ -32,13 +36,14 @@
 * Added back Twitter import for new create dialog.
 * Adds random quotes in the loading screens.
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
+* Add user_defined_limits to DataImport, and the feature of imports to support certain user defined limits. Currently only used for `twitter_credits_limit` at importer create endpoint.
 * Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
-
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
 * Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
 * Fixes for new dashboard texts [#2499](https://github.com/CartoDB/cartodb/pull/2499)
+* Fixes a problem generating images from private visualizations of private org users. 
 
 3.8.0 (2015-01-30)
 ------------------

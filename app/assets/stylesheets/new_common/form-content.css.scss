@@ -115,6 +115,10 @@
 
   &:focus { border-color: #999 }
 }
+.Form-input.Form-input--error { border-color: rgba(#DD3B37,0.6) }
+.Form-input.Form-input--error:focus,
+.Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
+
 .Form-input::-webkit-input-placeholder { font-style: italic; font-weight: $sFontWeight-lighter }
 .Form-input:-moz-placeholder           { font-style: italic; font-weight: $sFontWeight-lighter }
 .Form-input::-moz-placeholder          { font-style: italic; font-weight: $sFontWeight-lighter }
@@ -179,6 +183,7 @@
 .Form-inputError.is-visible {
   top: 36px;
 }
+.Form-input.is-disabled { background: $cStructure-grayBkg }
 .Form-textarea {
   padding: 12px;
   min-height: 110px;
@@ -283,6 +288,7 @@
   font-size: $sFontSize-normal;
   color: $cTypography-help;
 }
+.Form-rowInfoText--error { color: #DD3B37 }
 .Form-footer {
   @include display-flex();
   @include justify-content(space-between, justify);

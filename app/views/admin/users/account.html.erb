@@ -65,10 +65,12 @@
             <label class="Form-label">Old password</label>
           </div>
           <div class="Form-rowData">
-            <%= f.password_field nil, :class => "Form-input Form-input--long" %>
+            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if current_user.errors[:old_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
-            
+            <% if (current_user.errors[:old_password].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error">Old password not valid</p>
+            <% end %>
           </div>
         </div>
 
@@ -77,10 +79,12 @@
             <label class="Form-label">New password</label>
           </div>
           <div class="Form-rowData">
-            <%= f.password_field nil, :class => "Form-input Form-input--long" %>
+            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if current_user.errors[:new_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
-
+          <% if (current_user.errors[:new_password].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error">New password and confirm password are not the same</p>
+            <% end %>
           </div>
         </div>
 
@@ -89,10 +93,7 @@
             <label class="Form-label">Confirm password</label>
           </div>
           <div class="Form-rowData">
-            <%= f.password_field nil, :class => "Form-input Form-input--long" %>
-          </div>
-          <div class="Form-rowInfo">
-            <p class="Form-rowInfoText"></p>
+            <%= f.password_field :confirm_password, :class => "Form-input Form-input--long" %>
           </div>
         </div>
 

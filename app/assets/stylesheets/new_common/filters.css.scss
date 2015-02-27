@@ -4,7 +4,7 @@
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
-
+@import "../new_variables/progress-bar";
 
 .Filters {
   position: absolute;
@@ -261,4 +261,17 @@ a.Filters-cleanSearch { line-height:32px }
 
   .Filters-searchEnabler { display:inline }
   .Filters-searchItem { display:inherit }
+}
+.Filters-progress {
+  @include display-flex();
+  @include align-items(center, center);
+}
+.Filters-progressSize {
+  margin-right: 12px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-smallUpperCase;
+}
+.Filters-progressBar {
+  @include progress-bar(6px, 9px, true, false);
+  width: 178px;
 }

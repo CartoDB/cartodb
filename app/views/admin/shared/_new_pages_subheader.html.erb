@@ -14,6 +14,23 @@
             <% end %>
           </ul>
         </div>
+        <div class="Filters-order"> 
+          <div class="Filters-progress">
+            <% per = (current_user.db_size_in_bytes * 100) / current_user.quota_in_bytes %>
+            <% className = '' %>
+            <% if (per > 80 && per < 90) %>
+              <% className = 'caution' %>
+            <% elsif (per > 89) %>
+              <% className = 'danger' %>
+            <% end %>
+            <span class="Filters-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes) %> of <%= number_to_human_size(current_user.quota_in_bytes) %> used</span>
+            <div class="Filters-progressBar">
+              <div class="progress-bar">
+                <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

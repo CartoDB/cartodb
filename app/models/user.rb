@@ -1005,10 +1005,11 @@ class User < Sequel::Model
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
       result = in_database({:as => :superuser, statement_timeout: 60000}).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       result
-    rescue
+    rescue => e
       attempts += 1
       in_database({:as => :superuser, statement_timeout: 60000}).fetch("ANALYZE")
       retry unless attempts > 2
+      Rollbar.report_exception(e)
     end
   end
 

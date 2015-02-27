@@ -1003,12 +1003,12 @@ class User < Sequel::Model
     begin
       # Hack to support users without the new MU functiones loaded
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
-      result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
+      result = in_database({:as => :superuser, statement_timeout: 60000}).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       result
     rescue
       attempts += 1
-      in_database(:as => :superuser).fetch("ANALYZE")
-      retry unless attempts > 1
+      in_database({:as => :superuser, statement_timeout: 60000}).fetch("ANALYZE")
+      retry unless attempts > 2
     end
   end
 

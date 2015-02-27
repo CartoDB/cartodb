@@ -25,4 +25,5 @@
   color: $cTypography-help;
   font-style: italic;
   font-weight: $sFontWeight-lighter;
+  &:hover { text-decoration: none }
 }

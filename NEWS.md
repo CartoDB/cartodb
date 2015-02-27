@@ -19,11 +19,26 @@
 * Added API keys and OAuth pages [#2142](https://github.com/CartoDB/cartodb/pull/2142)
 * Replace 404 error page
 * Only send JS errors+stats in production [#1987](https://github.com/CartoDB/cartodb/pull/1987)
+* Read Content-Type header for downloads without extension [#2275](https://github.com/CartoDB/cartodb/issues/2275).
+* Cache vizjson in redis to avoid hitting DB [#2194](https://github.com/CartoDB/cartodb/pull/2194)
+* Update Browserify to latest version (9.0.3) [#2449](https://github.com/CartoDB/cartodb/pull/2449)
+* Remove tmp and unused files [#2328](https://github.com/CartoDB/cartodb/pull/2328)
+* Open privacy dialog directly from items [#2442](https://github.com/CartoDB/cartodb/pull/2442)
+* Fixes error handling when adding an erroneous WMS URL.
+* Do not send visible=false layers for static previews
+* Add new fields to data_import [#2257] and the feature of being able to create and redirect to a derived visualization after importing data (via import api new param `create_vis`)
+* Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
+* Change visuals in share view of privacy dialog [#2492](https://github.com/CartoDB/cartodb/pull/2492)
+* Added back Twitter import for new create dialog.
+* Adds random quotes in the loading screens.
+* Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
+* Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
 * Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
+* Fixes for new dashboard texts [#2499](https://github.com/CartoDB/cartodb/pull/2499)
 
 3.8.0 (2015-01-30)
 ------------------

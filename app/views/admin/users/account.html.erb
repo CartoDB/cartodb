@@ -14,14 +14,11 @@
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 
-
 <%= render 'admin/shared/new_private_header' %>
 
-<div class="FlashMessage">
-  <% if params[:flash].present? %>
-    <%= render :partial => 'shared/new_flash_message' %>
-  <% end %>
-</div>
+<% if params[:flash].present? %>
+  <%= render :partial => 'shared/new_flash_message' %>
+<% end %>
 
 <div>
   <%= render :partial => 'admin/shared/new_pages_subheader' %>

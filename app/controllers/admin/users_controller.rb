@@ -3,7 +3,7 @@ require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
 
 class Admin::UsersController < ApplicationController
-  ssl_required :profile, :account, :oauth, :api_key, :regenerate_api_key, :account_update, :profile_update
+  ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
 
   before_filter :get_config
   before_filter :login_required, :check_permissions
@@ -27,11 +27,11 @@ class Admin::UsersController < ApplicationController
   end
 
   def profile
-    # new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
 
-    # unless new_dashboard
-    #   redirect_to account_url and return
-    # end
+    unless new_dashboard
+      redirect_to account_url and return
+    end
 
     respond_to do |format|
       format.html { render 'profile', layout: 'new_application' }

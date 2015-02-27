@@ -59,6 +59,7 @@ $br: 4px;
 .DatasetSelected-syncLabel {
   width: 100px;
   font-size: 14px;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
   line-height: 16px;
   border-right: 1px solid $cStructure-softLine;
@@ -91,6 +92,7 @@ $br: 4px;
   width: 550px;
   font-size: 14px;
   font-style: italic;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-headers;
 }
 .DatasetSelected-upgradeButton {

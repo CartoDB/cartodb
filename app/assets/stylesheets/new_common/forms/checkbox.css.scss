@@ -53,6 +53,7 @@
 }
 .Checkbox-label {
   margin-left: 8px;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .Checkbox.is-disabled .Checkbox-input {

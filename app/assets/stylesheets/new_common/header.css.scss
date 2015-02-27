@@ -35,12 +35,14 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header-navigationBreadcrumbItem {
   padding-left:6px;
   font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color: rgba(white, 0.6);
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
   font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-largest;
   color: white;
 
@@ -71,6 +73,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsItem--avatar { height: 42px }
 .Header-settingsLink {
+  font-weight: $sFontWeight-lighter;
   color: rgba(white, 0.6);
 
   &:hover {

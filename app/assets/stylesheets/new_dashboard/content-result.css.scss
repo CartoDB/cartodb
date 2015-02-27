@@ -114,6 +114,7 @@
   display: block;
   font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
+  font-weight: $sFontWeight-lighter;
 }
 
 @include keyframes(pulsate) {

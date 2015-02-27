@@ -20,6 +20,7 @@ $w: 780px;
 }
 .ServiceList-headerTitle {
   font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .ServiceList-body {}
@@ -64,6 +65,7 @@ $w: 780px;
   display: block;
   margin-top: 3px;
   font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .ServiceList-itemButton {

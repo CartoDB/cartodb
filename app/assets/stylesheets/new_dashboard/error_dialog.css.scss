@@ -45,6 +45,7 @@ $width: 620px;
 }
 .ErrorDetails-itemText {
   width: $width - 120;
+  font-weight: $sFontWeight-lighter;
   font-size: 14px;
   color: $cTypography-paragraphs;
 }

@@ -136,6 +136,7 @@ body.is-inDialog {
 .Dialog-headerText {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
+  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
 .Dialog-footerBtn {

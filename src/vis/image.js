@@ -251,12 +251,7 @@
 
         if (data) {
           self.imageOptions.layergroupid = data.layergroupid;
-
-          if (!data.cdn_url || (!data.cdn_url.http && !data.cdn_url.https)) {
-            self.no_cdn = true;
-          } else {
-            self.cdn_url = data.cdn_url;
-          }
+          self.cdn_url = data.cdn_url;
         }
 
         self.queue.flush(this);

@@ -72,7 +72,6 @@ module CartoDB
           raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
           raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
 
-
           @user_defined_limits = user_defined_limits
 
           @search_api_config = {

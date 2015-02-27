@@ -695,6 +695,7 @@ class DataImport < Sequel::Model
       datasource = DatasourcesFactory.get_datasource(
         datasource_name, current_user, {
                                           redis_storage: $tables_metadata,
+
                                           user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
                                        })
       datasource.report_component = Rollbar

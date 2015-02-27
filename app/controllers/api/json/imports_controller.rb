@@ -79,7 +79,10 @@ class Api::Json::ImportsController < Api::ApplicationController
                      })
     end
 
-    data_import = DataImport.create(options.merge!({ user_defined_limits: ::JSON.dump(options[:user_defined_limits]) }))
+    data_import = DataImport.create(options.merge!({
+                                                     # override param to store as string
+                                                     user_defined_limits: ::JSON.dump(options[:user_defined_limits])
+                                                   }))
 
     ExternalDataImport.new(data_import.id, external_source.id).save if external_source.present?
 
@@ -286,7 +289,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       table_copy:             params[:table_copy].presence,
       from_query:             params[:sql].presence,
       service_name:           params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME,
-      service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params.fetch(:url).presence,
+      service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence,
       type_guessing:          ["true", true].include?(params[:type_guessing]),
       quoted_fields_guessing: ["true", true].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing]),

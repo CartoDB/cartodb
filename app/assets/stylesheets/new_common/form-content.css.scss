@@ -217,6 +217,23 @@
   display: none;
   color: $cHighlight-negative;
 }
+.Form-row .dz-preview { display: none }
+.Form-fileDropzone {
+  position: absolute;
+  display: none;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: 2px dashed $cStructure-mainLine;
+  background: $cStructure-grayBkg;
+  border-radius: 4px;
+  line-height: 38px;
+  text-align: center;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-large;
+  z-index: 1;
+}
 .Form-rowInfo {
   width: 380px;
 }

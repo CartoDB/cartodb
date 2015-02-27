@@ -32,6 +32,7 @@
 * Added back Twitter import for new create dialog.
 * Adds random quotes in the loading screens.
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
+* Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
 
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)

@@ -27,11 +27,11 @@ class Admin::UsersController < ApplicationController
   end
 
   def profile
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    # new_dashboard = current_user.has_feature_flag?('new_dashboard')
 
-    unless new_dashboard
-      redirect_to account_url and return
-    end
+    # unless new_dashboard
+    #   redirect_to account_url and return
+    # end
 
     respond_to do |format|
       format.html { render 'profile', layout: 'new_application' }

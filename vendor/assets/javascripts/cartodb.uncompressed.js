@@ -1,6 +1,6 @@
 // cartodb.js version: 3.12.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2827a7a2fec25915afc0d3a47db73726a83eb1bc
+// sha: 84b6993f8d55b4ca15a7d53abc9f33076a4ec00e
 (function() {
   var root = this;
 
@@ -34285,7 +34285,12 @@ cdb.vis.Vis = Vis;
 
         }
 
-        var layers = [ this._getBasemapLayer() ];
+        var layers = [];
+        var basemap = this._getBasemapLayer();
+
+        if (basemap) {
+          layers.push(basemap);
+        }
 
         for (var i = 1; i < data.layers.length; i++) {
 
@@ -34379,10 +34384,16 @@ cdb.vis.Vis = Vis;
 
     _getHTTPBasemapLayer: function(basemap) {
 
+      var urlTemplate = basemap.options.urlTemplate;
+
+      if (!urlTemplate) {
+        return null;
+      }
+
       return {
         type: "http",
         options: {
-          urlTemplate: basemap.options.urlTemplate,
+          urlTemplate: urlTemplate,
           subdomains: basemap.options.subdomains || this.defaults.basemap_subdomains
         }
       };

@@ -5,5 +5,7 @@
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   color: $cTypography-paragraphs;
-  
+}
+.DefaultParagraph--short {
+  width: 500px;
 }

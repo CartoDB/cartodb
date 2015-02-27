@@ -1,6 +1,6 @@
 3.9.0 (2015-02-xx)
 ------------------
-
+* Fixes a error that preventing the load of WMS layers.
 
 3.8.1 (2015-02-26)
 ------------------

@@ -116,10 +116,10 @@
 
   &:focus { border-color: #999 }
 }
-.Form-input::-webkit-input-placeholder { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input:-moz-placeholder           { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input::-moz-placeholder          { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input:-ms-input-placeholder      { font-style: italic; font-weight: $sFontWeight-lighter }
+.Form-input::-webkit-input-placeholder { font-style: italic; }
+.Form-input:-moz-placeholder           { font-style: italic; }
+.Form-input::-moz-placeholder          { font-style: italic; }
+.Form-input:-ms-input-placeholder      { font-style: italic; }
 
 // Sizes
 .Form-input--longer { width: 434px }

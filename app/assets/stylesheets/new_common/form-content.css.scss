@@ -44,6 +44,7 @@
 .Form-label {
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
+  @include nicer-lato-typography();
   color: $cTypography-paragraphs;
 }
 .Form-rowPreview {
@@ -186,6 +187,7 @@
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
+  @include nicer-lato-typography();
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }

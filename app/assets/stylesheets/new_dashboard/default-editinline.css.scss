@@ -3,13 +3,11 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
-
+@import "../new_variables/mixins";
 
 .DefaultEditInline {
-  
 }
 .DefaultEditInline-form {
-
 }
 .DefaultEditInline-input {
   border:none;
@@ -19,6 +17,7 @@
 // It is not possible to be grouped :(
 .DefaultEditInline-input::-webkit-input-placeholder {
   font-style: italic;
+  @include nicer-lato-typography();
   color: $cTypography-link;
 }
 .DefaultEditInline-input:hover::-webkit-input-placeholder { color: $cTypography-linkHover }

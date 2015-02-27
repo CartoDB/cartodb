@@ -46,4 +46,5 @@
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
   color: $cTypography-secondary;
+  @include nicer-lato-typography();
 }

@@ -7,14 +7,11 @@
 
 .DefaultDescription {
   font-size: $sFontSize-normal;
+  @include nicer-lato-typography();
   line-height: $sLineHeight-normal;
   color: $cTypography-secondary;
   overflow-wrap: break-word;
   position: relative;
-}
-.DefaultDescription.is--empty {
-  color: $cTypography-help;
-  font-style: italic;
 }
 .DefaultDescription--error {
   color: $cHighlight-negative;

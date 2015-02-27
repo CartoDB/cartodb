@@ -32,7 +32,6 @@
 .Form-row {
   @include display-flex();
   @include justify-content(flex-start, start);
-  @include align-items(center, center);
   padding: 10px 0;
 }
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
@@ -42,6 +41,7 @@
   text-align: right;
 }
 .Form-label {
+  line-height: 40px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs;
@@ -179,6 +179,11 @@
 .Form-inputError.is-visible {
   top: 36px;
 }
+.Form-textarea {
+  padding: 12px;
+  min-height: 110px;
+  max-height: 110px;
+}
 .Form-copyIcon {
   top: 10px;
   right: 12px;
@@ -191,6 +196,41 @@
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }
+.Form-avatar {
+
+}
+.Form-avatarPreview {
+  width: 100px;
+  border: 1px solid $cTypography-help;
+  border-radius: 4px;
+}
+.Form-avatar .input-group {
+  position: absolute;
+  top: 10px;
+  left: 120px;
+}
+.Form-avatar .form-control {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  border: none;
+  color: $cTypography-secondary;
+  display: none;
+}
+.Form-avatar .btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 85px;
+  color: $cTypography-link;
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $cTypography-linkHover;
+  }
+}
+
 .Form-file {
   &:hover .Button--main { background: #007fbd }
   &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
@@ -217,7 +257,7 @@
   display: none;
   color: $cHighlight-negative;
 }
-.Form-row .dz-preview { display: none }
+.Form .dz-preview { display: none }
 .Form-fileDropzone {
   position: absolute;
   display: none;
@@ -235,7 +275,9 @@
   z-index: 1;
 }
 .Form-rowInfo {
-  width: 380px;
+  @include display-flex();
+  line-height: 40px;
+  max-width: 380px;
 }
 .Form-rowInfoText {
   font-size: $sFontSize-normal;

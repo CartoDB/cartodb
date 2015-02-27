@@ -2,7 +2,12 @@
   Your account |
 <% end %>
 <%= content_for(:js) do %>
-  
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%=raw frontend_config.html_safe %>;
+    var user_data = <%= raw current_user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 <%= content_for(:css) do %>
   <%= render 'shared/lato_font' %>
@@ -19,7 +24,6 @@
 </div>
 
 <div>
-
   <%= render :partial => 'admin/shared/new_pages_subheader' %>
 
   <div class="CredentialsContent">
@@ -48,10 +52,14 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long" %>
+            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if current_user.errors[:email].present? }" %>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">You enter through team.cartodb.com/u/piensaenpixel</p>
+            <% if (current_user.errors[:email].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
+            <% else %>
+              <p class="Form-rowInfoText">You enter through team.cartodb.com/u/piensaenpixel</p>
+            <% end %>
           </div>
         </div>
 
@@ -63,7 +71,7 @@
             <%= f.password_field nil, :class => "Form-input Form-input--long" %>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText"></p>
+            
           </div>
         </div>
 
@@ -75,7 +83,7 @@
             <%= f.password_field nil, :class => "Form-input Form-input--long" %>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText"></p>
+
           </div>
         </div>
 
@@ -103,5 +111,9 @@
   </div>
 
 </div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
 
 <%= render 'admin/shared/new_footer' %>

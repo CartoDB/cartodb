@@ -135,9 +135,27 @@ class Admin::UsersController < ApplicationController
 
   def profile_update
     attributes = params[:user]
-    current_user.set_fields(attributes, [:name]) if attributes[:name].present?
 
-    current_user.save
+    if attributes[:avatar_url].present?
+      asset = Asset.new
+      asset.raise_on_save_failure = true
+      asset.user_id = current_user.id
+      asset.asset_file = attributes[:avatar_url]
+      asset.kind = Asset::KIND_ORG_AVATAR
+      if asset.save
+        current_user.avatar_url = asset.public_url
+      end
+    end
+
+    current_user.set_fields(attributes, [:name]) if attributes[:name].present?
+    current_user.set_fields(attributes, [:website]) if attributes[:website].present?
+    current_user.set_fields(attributes, [:description]) if attributes[:description].present?
+    current_user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
+    current_user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
+    current_user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
+
+    current_user.update_in_central
+    current_user.save(raise_on_failure: true)
 
     redirect_to profile_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
@@ -145,6 +163,7 @@ class Admin::UsersController < ApplicationController
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: :profile
   rescue Sequel::ValidationFailed => e
+    flash.now[:error] = e.message
     render action: :profile
   end
 

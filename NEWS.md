@@ -34,8 +34,10 @@
 * Add loading+error state for privacy dialog [#2484](https://github.com/CartoDB/cartodb/pull/2484)
 * Change visuals in share view of privacy dialog [#2492](https://github.com/CartoDB/cartodb/pull/2492)
 * Added back Twitter import for new create dialog.
+* Adds random quotes in the loading screens.
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
 * Add user_defined_limits to DataImport, and the feature of imports to support certain user defined limits. Currently only used for `twitter_credits_limit` at importer create endpoint.
+* Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)

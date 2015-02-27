@@ -14,6 +14,7 @@ gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.2.1'
+gem 'hiredis',                 '0.6.0'
 gem 'nokogiri',                '1.6.0'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'

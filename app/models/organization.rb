@@ -54,6 +54,23 @@ class Organization < Sequel::Model
     raise errors unless valid?
   end
 
+  # INFO: replacement for destroy because destroying owner triggers
+  # organization destroy
+  def destroy_cascade
+    destroy_non_owner_users
+    self.owner.destroy
+  end
+
+  def destroy_non_owner_users
+    non_owner_users.each { |u|
+      u.destroy
+    }
+  end
+
+  def non_owner_users
+    self.users.select { |u| u.id != self.owner.id }
+  end
+
   ##
   # SLOW! Checks map views for every user in every organization
   # delta: get organizations who are also this percentage below their limit.

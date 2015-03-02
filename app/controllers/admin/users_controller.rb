@@ -6,7 +6,7 @@ class Admin::UsersController < ApplicationController
   ssl_required  :account, :profile, :account_update, :profile_update
 
   before_filter :login_required
-  before_filter :get_user
+  before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
 
   def initialize_google_plus_config
@@ -67,11 +67,13 @@ class Admin::UsersController < ApplicationController
       end
     end
 
-    @user.set_fields(attributes, [:name]) if attributes[:name].present?
-    @user.set_fields(attributes, [:website]) if attributes[:website].present?
-    @user.set_fields(attributes, [:description]) if attributes[:description].present?
-    @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
-    @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
+    # This fields are optional
+    @user.name = attributes.fetch(:name, nil)
+    @user.website = attributes.fetch(:website, nil)
+    @user.description = attributes.fetch(:description, nil)
+    @user.twitter_username = attributes.fetch(:twitter_username, nil)
+    @user.disqus_shortname = attributes.fetch(:disqus_shortname, nil)
+
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
 
     @user.update_in_central
@@ -89,7 +91,7 @@ class Admin::UsersController < ApplicationController
 
   private
 
-  def get_user
+  def setup_user
     @user = current_user
   end
 

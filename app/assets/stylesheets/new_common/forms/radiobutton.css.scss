@@ -23,7 +23,7 @@
   border: 2px solid $cStructure-mainLine;
   border-radius: 16px;
   background: white;
-  
+
   &:hover { border-color: #AAA }
 }
 .RadioButton-input.is-checked {
@@ -40,8 +40,8 @@
 }
 .RadioButton-label {
   margin-left: 8px;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+  @include nicer-lato-typography();
 }
 .RadioButton.is-disabled .RadioButton-input {
   @include opacity(0.4);

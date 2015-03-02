@@ -25,10 +25,6 @@ class Api::Json::OembedController < Api::ApplicationController
 
     uri = URI.parse(url)
 
-    if uri.host != request.host
-      raise ActionController::RoutingError.new('URL origin not allowed')
-    end
-
     begin
       uuid = /(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/.match(uri.path)[0]
     rescue NoMethodError
@@ -38,7 +34,9 @@ class Api::Json::OembedController < Api::ApplicationController
     begin
       viz = CartoDB::Visualization::Member.new(id: uuid).fetch
     rescue KeyError
-      raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
+      name = ''
+    else
+      name = viz.name
     end
 
     protocol = force_https ? "https" : uri.scheme
@@ -50,7 +48,7 @@ class Api::Json::OembedController < Api::ApplicationController
         :version => '1.0',
         :width => width,
         :height => height,
-        :title => viz.name,
+        :title => name,
         :html => html
     }
 

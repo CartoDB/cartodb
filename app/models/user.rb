@@ -99,6 +99,11 @@ class User < Sequel::Model
   end
 
   ## Callbacks
+  def before_validation
+    # Convert email to downcase
+    self.email = self.email.to_s.strip.downcase
+  end
+
   def before_create
     super
     self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
@@ -421,7 +426,8 @@ class User < Sequel::Model
   end
 
   def self.authenticate(email, password)
-    if candidate = User.filter("email ILIKE ? OR username ILIKE ?", email, email).first
+    sanitized_input = email.strip.downcase
+    if candidate = User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil
@@ -1847,7 +1853,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.7.0'
+      cdb_extension_target_version = '0.7.1'
     end
 
     in_database({

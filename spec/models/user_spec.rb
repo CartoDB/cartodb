@@ -1323,6 +1323,35 @@ describe User do
       @user.save(raise_on_failure: true)
     }.to raise_exception
 
+    @user.change_password('aaaaaa', nil, nil)
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password(@user_password, nil, nil)
+    @user.valid?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password(nil, nil, nil)
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password(nil, new_valid_password, new_valid_password)
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+
     @user.change_password(@user_password, new_valid_password, new_valid_password)
     @user.valid?.should eq true
     @user.save

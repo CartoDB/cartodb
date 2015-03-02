@@ -3,9 +3,9 @@
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>";
+    var username = "<%= @user.username %>";
     var config = <%=raw frontend_config.html_safe %>;
-    var user_data = <%= raw current_user.data.to_json.html_safe %>;
+    var user_data = <%= raw @user.data.to_json.html_safe %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
@@ -16,16 +16,14 @@
 
 <%= render 'admin/shared/new_private_header' %>
 
-<% if params[:flash].present? %>
-  <%= render :partial => 'shared/new_flash_message' %>
-<% end %>
+<%= render :partial => 'shared/new_flash_message' %>
 
 <div>
   <%= render :partial => 'admin/shared/new_pages_subheader' %>
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_for current_user, url: account_update_user_path(user_domain: params[:user_domain]), :class => "Form" do |f| %>
+      <%= form_for @user, url: account_update_user_path(user_domain: params[:user_domain]), :class => "Form" do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
@@ -49,10 +47,10 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if current_user.errors[:email].present? }" %>
+            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
           </div>
           <div class="Form-rowInfo">
-            <% if (current_user.errors[:email].present?) %>
+            <% if (@user.errors[:email].present?) %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
             <% else %>
               <p class="Form-rowInfoText">You enter through team.cartodb.com/u/piensaenpixel</p>
@@ -65,10 +63,10 @@
             <label class="Form-label">Old password</label>
           </div>
           <div class="Form-rowData">
-            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if current_user.errors[:old_password].present? }" %>
+            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
-            <% if (current_user.errors[:old_password].present?) %>
+            <% if (@user.errors[:old_password].present?) %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Old password not valid</p>
             <% end %>
           </div>
@@ -79,10 +77,10 @@
             <label class="Form-label">New password</label>
           </div>
           <div class="Form-rowData">
-            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if current_user.errors[:new_password].present? }" %>
+            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
-          <% if (current_user.errors[:new_password].present?) %>
+          <% if (@user.errors[:new_password].present?) %>
               <p class="Form-rowInfoText Form-rowInfoText--error">New password and confirm password are not the same</p>
             <% end %>
           </div>

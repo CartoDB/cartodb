@@ -3,8 +3,9 @@ require_relative '../spec_helper'
 
 describe User do
   before(:all) do
+    @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
-    @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
+    @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'
 
     puts "[rspec][user_spec] Loading user data..."
@@ -1282,6 +1283,59 @@ describe User do
     user1.save
 
     organization.destroy
+  end
+
+  it "Tests password change" do
+    # @user_password = 'admin123'
+    # @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
+
+    new_valid_password = '123456'
+
+    old_crypted_password = @user.crypted_password
+
+    @user.change_password('aaabbb', new_valid_password, new_valid_password)
+    @user.valid?.should eq false
+
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password(@user_password, 'aaabbb', 'bbbaaa')
+    @user.valid?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password(@user_password, 'tiny', 'tiny')
+    @user.valid?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception
+
+    @user.change_password(@user_password, new_valid_password, new_valid_password)
+    @user.valid?.should eq true
+    @user.save
+
+    new_crypted_password = @user.crypted_password
+
+    (old_crypted_password != new_crypted_password).should eq true
+
+    @user.change_password(new_valid_password, @user_password, @user_password)
+    @user.valid?.should eq true
+    @user.save
+
+    @user.crypted_password.should eq old_crypted_password
   end
 
   def create_org(org_name, org_quota, org_seats)

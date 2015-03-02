@@ -3,9 +3,9 @@
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>";
+    var username = "<%= @user.username %>";
     var config = <%=raw frontend_config.html_safe %>;
-    var user_data = <%= raw current_user.data.to_json.html_safe %>;
+    var user_data = <%= raw @user.data.to_json.html_safe %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>  
 <% end %>
@@ -17,16 +17,14 @@
 
 <%= render 'admin/shared/new_private_header' %>
 
-<% if params[:flash].present? %>
-  <%= render :partial => 'shared/new_flash_message' %>
-<% end %>
+<%= render :partial => 'shared/new_flash_message' %>
 
 <div>
   <%= render :partial => 'admin/shared/new_pages_subheader' %>
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_for current_user, url: profile_update_user_path(user_domain: params[:user_domain], id: current_user.username) do |f| %>
+      <%= form_for @user, url: profile_update_user_path(user_domain: params[:user_domain], id: @user.username) do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">
@@ -74,7 +72,7 @@
             <label class="Form-label">Avatar</label>
           </div>
           <div class="Form-rowData Form-avatar">
-            <img src="<%= current_user.avatar_url %>" title="" alt="" class="Form-avatarPreview" />
+            <img src="<%= @user.avatar_url %>" title="" alt="" class="Form-avatarPreview" />
             <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
           </div>
           <div class="Form-rowInfo">

@@ -5,25 +5,18 @@ require_relative '../../../lib/google_plus_config'
 class Admin::UsersController < ApplicationController
   ssl_required  :account, :profile, :account_update, :profile_update
 
-  before_filter :get_config
   before_filter :login_required
+  before_filter :get_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
-
-  def get_config
-    @extras_enabled = extras_enabled?
-    @extra_geocodings_enabled = extra_geocodings_enabled?
-    @extra_tweets_enabled = extra_tweets_enabled?
-  end
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(Cartodb.config, signup_action)
+    # TODO: Uncomment when going to test G+ auth, else goes crazy with requires and every change requires restarting Rails
+    #@google_plus_config = ::GooglePlusConfig.instance(Cartodb.config, signup_action)
   end
 
   def profile
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-
-    unless new_dashboard
+    unless @user.has_feature_flag?('new_dashboard')
       redirect_to account_url and return
     end
 
@@ -33,9 +26,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def account
-    new_dashboard = current_user.has_feature_flag?('new_dashboard')
-
-    unless new_dashboard
+    unless @user.has_feature_flag?('new_dashboard')
       redirect_to account_url and return
     end
 
@@ -44,30 +35,22 @@ class Admin::UsersController < ApplicationController
     end
   end
 
-  def edit
-    set_flash_flags
-  end
-
-  def set_flash_flags(show_dashboard_details_flash = nil, show_account_settings_flash = nil)
-    @show_dashboard_details_flash = session[:show_dashboard_details_flash] || show_dashboard_details_flash
-    @show_account_settings_flash = session[:show_account_settings_flash] || show_account_settings_flash
-    session[:show_dashboard_details_flash] = nil
-    session[:show_account_settings_flash] = nil
-  end
-
   def account_update
     attributes = params[:user]
-    current_user.set_fields(attributes, [:email]) if attributes[:email].present?
-
-    current_user.save(raise_on_failure: true)
+    @user.set_fields(attributes, [:email]) if attributes[:email].present?
+    @user.change_password(attributes[:old_password].presence, attributes[:new_password].presence,
+                                 attributes[:confirm_password].presence)
+    @user.update_in_central
+    @user.save(raise_on_failure: true)
 
     redirect_to account_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    set_flash_flags
-    flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: :account
+    Rollbar.report_exception(e, params, @user)
+    flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
+    render action: :account, layout: 'new_application'
   rescue Sequel::ValidationFailed => e
-    render action: :account
+    flash.now[:error] = "Error updating your account details"
+    render action: :account, layout: 'new_application'
   end
 
   def profile_update
@@ -76,46 +59,38 @@ class Admin::UsersController < ApplicationController
     if attributes[:avatar_url].present?
       asset = Asset.new
       asset.raise_on_save_failure = true
-      asset.user_id = current_user.id
+      asset.user_id = @user.id
       asset.asset_file = attributes[:avatar_url]
       asset.kind = Asset::KIND_ORG_AVATAR
       if asset.save
-        current_user.avatar_url = asset.public_url
+        @user.avatar_url = asset.public_url
       end
     end
 
-    current_user.set_fields(attributes, [:name]) if attributes[:name].present?
-    current_user.set_fields(attributes, [:website]) if attributes[:website].present?
-    current_user.set_fields(attributes, [:description]) if attributes[:description].present?
-    current_user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
-    current_user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
-    current_user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
+    @user.set_fields(attributes, [:name]) if attributes[:name].present?
+    @user.set_fields(attributes, [:website]) if attributes[:website].present?
+    @user.set_fields(attributes, [:description]) if attributes[:description].present?
+    @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
+    @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
+    @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
 
-    current_user.update_in_central
-    current_user.save(raise_on_failure: true)
+    @user.update_in_central
+    @user.save(raise_on_failure: true)
 
     redirect_to profile_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    set_flash_flags
-    flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: :profile
+    Rollbar.report_exception(e, params, @user)
+    flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
+    render action: :profile, layout: 'new_application'
   rescue Sequel::ValidationFailed => e
-    flash.now[:error] = e.message
-    render action: :profile
-  end
-
-  def extras_enabled?
-    extra_geocodings_enabled? || extra_tweets_enabled?
-  end
-
-  def extra_geocodings_enabled?
-    !Cartodb.get_config(:geocoder, 'app_id').blank?
-  end
-
-  def extra_tweets_enabled?
-    !Cartodb.get_config(:datasource_search, 'twitter_search', 'standard', 'username').blank?
+    flash.now[:error] = "Error updating your profile details"
+    render action: :profile, layout: 'new_application'
   end
 
   private
+
+  def get_user
+    @user = current_user
+  end
 
 end

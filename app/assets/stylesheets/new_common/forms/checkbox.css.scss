@@ -23,7 +23,7 @@
   border: 2px solid $cStructure-mainLine;
   border-radius: 3px;
   background: white;
-  
+
   &:hover {
     border-color: #AAA;
   }
@@ -53,7 +53,6 @@
 }
 .Checkbox-label {
   margin-left: 8px;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
 .Checkbox.is-disabled .Checkbox-input {

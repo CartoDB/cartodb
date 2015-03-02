@@ -44,6 +44,7 @@
   line-height: 40px;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
+  @include nicer-lato-typography();
   color: $cTypography-paragraphs;
 }
 .Form-rowPreview {
@@ -78,7 +79,7 @@
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
-  
+
   &:before, &:after {
     content: '';
     position: absolute;
@@ -119,10 +120,10 @@
 .Form-input.Form-input--error:focus,
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
 
-.Form-input::-webkit-input-placeholder { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input:-moz-placeholder           { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input::-moz-placeholder          { font-style: italic; font-weight: $sFontWeight-lighter }
-.Form-input:-ms-input-placeholder      { font-style: italic; font-weight: $sFontWeight-lighter }
+.Form-input::-webkit-input-placeholder { font-style: italic; }
+.Form-input:-moz-placeholder           { font-style: italic; }
+.Form-input::-moz-placeholder          { font-style: italic; }
+.Form-input:-ms-input-placeholder      { font-style: italic; }
 
 // Sizes
 .Form-input--longer { width: 434px }
@@ -176,7 +177,6 @@
   background: #FFF4F4;
   color: $cHighlight-negative;
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
   border-radius: 4px;
   @include transition(top, 200ms, ease-in-out);
 }
@@ -197,7 +197,7 @@
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
 .Form-text--preview {
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
+  @include nicer-lato-typography();
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }

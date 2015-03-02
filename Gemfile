@@ -34,10 +34,6 @@ group :production, :staging do
   gem 'raindrops',             '0.12.0'
 end
 
-group :staging do
-  gem 'debugger',              '1.6.8'
-end
-
 group :assets do
   gem "compass",               "0.12.3"
 end

@@ -45,6 +45,7 @@ Bugfixes:
 * Fixes for new dashboard texts [#2499](https://github.com/CartoDB/cartodb/pull/2499)
 * Fixes a problem generating images from private visualizations of private org users.
 * Remove lighter font weights [#2513](https://github.com/CartoDB/cartodb/pull/2513)
+* Fix quota usage rounding [#2561](https://github.com/CartoDB/cartodb/pull/2561)
 
 3.8.0 (2015-01-30)
 ------------------

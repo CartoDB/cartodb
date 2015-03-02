@@ -175,7 +175,12 @@
 
         }
 
-        var layers = [ this._getBasemapLayer() ];
+        var layers = [];
+        var basemap = this._getBasemapLayer();
+
+        if (basemap) {
+          layers.push(basemap);
+        }
 
         for (var i = 1; i < data.layers.length; i++) {
 
@@ -269,10 +274,16 @@
 
     _getHTTPBasemapLayer: function(basemap) {
 
+      var urlTemplate = basemap.options.urlTemplate;
+
+      if (!urlTemplate) {
+        return null;
+      }
+
       return {
         type: "http",
         options: {
-          urlTemplate: basemap.options.urlTemplate,
+          urlTemplate: urlTemplate,
           subdomains: basemap.options.subdomains || this.defaults.basemap_subdomains
         }
       };
@@ -378,7 +389,9 @@
       var width  = size[0];
       var height = size[1];
 
-      var url = this._host() + this.endPoint;
+      var subhost = this.isHttps() ? null : "a";
+
+      var url = this._host(subhost) + this.endPoint;
 
       if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");

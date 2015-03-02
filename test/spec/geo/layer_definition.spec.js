@@ -174,6 +174,17 @@
     expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
   });
 
+  it("should use the tiler url when there's explicitly empty cdn defined", function() {
+    layerDefinition.options.cdn_url = {
+      http: "", https: ""
+    };
+    expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
+    layerDefinition.options.tiler_protocol = "https";
+    expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
+  });
+
   it("should use cdn_url from tiler when present", function(done) {
     var params;
     delete layerDefinition.options.no_cdn;

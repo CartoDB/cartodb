@@ -138,14 +138,14 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields)
+      def store_using_table(fields, table_privacy_changed=false)
         if type == TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = fields[:privacy_text]
           self.map_id = fields[:map_id]
         end
         # But as this method also notifies of changes in a table, must save always
-        do_store(false)
+        do_store(false, table_privacy_changed)
         self
       end
 
@@ -356,6 +356,10 @@ module CartoDB
         "#{user.database_name}:#{sorted_table_names},#{id}"
       end
 
+      def varnish_vizzjson_key
+        ".*#{id}:vizjson"
+      end
+
       def derived?
         type == TYPE_DERIVED
       end
@@ -378,13 +382,11 @@ module CartoDB
         derived? && !single_data_layer?
       end
 
-      def varnish_vizzjson_key
-        ".*#{id}:vizjson"
-      end
 
       def invalidate_cache
         invalidate_varnish_cache
         invalidate_redis_cache
+        parent.invalidate_cache unless parent_id.nil?
       end
 
       def invalidate_cache_and_refresh_named_map
@@ -609,7 +611,6 @@ module CartoDB
 
       def invalidate_varnish_cache
         CartoDB::Varnish.new.purge(varnish_vizzjson_key)
-        parent.invalidate_cache unless parent_id.nil?
       end
 
       def close_list_gap(other_vis)
@@ -639,7 +640,7 @@ module CartoDB
         fetch if reload_self
       end
 
-      def do_store(propagate_changes=true)
+      def do_store(propagate_changes=true, table_privacy_changed=false)
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -651,7 +652,7 @@ module CartoDB
           raise CartoDB::InvalidMember
         end
 
-        invalidate_cache if name_changed || privacy_changed || description_changed
+        invalidate_cache if name_changed || privacy_changed || description_changed || table_privacy_changed
         set_timestamps
 
         repository.store(id, attributes.to_hash)

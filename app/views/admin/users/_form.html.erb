@@ -237,16 +237,20 @@
               </div>
 
               <!-- USER EXTRAS -->
+              <% if @extras_enabled %>
                 <div class="extras margin20">
                   <div class="row">
                     <div class="field field-1">
                       <label class="bottom-border">EXTRAS</label>
                       <ul class="extras">
-                        <li>
-                          <span class="light">Allow extra geocodings</span>
-                          <div><%= form.check_box :soft_geocoding_limit %></div>
-                        </li>
-                        <% if (Cartodb.config[:datasource_search].present?) %>
+                        <% if @extra_geocodings_enabled %>
+                          <li>
+                            <span class="light">Allow extra geocodings</span>
+                            <div><%= form.check_box :soft_geocoding_limit %></div>
+                          </li>
+                        <% end %>
+
+                        <% if @extra_tweets_enabled %>
                           <li>
                             <span class="light">Allow extra tweets</span>
                             <div><%= form.check_box :soft_twitter_datasource_limit %></div>
@@ -256,6 +260,7 @@
                     </div>
                   </div>
                 </div>
+              <% end %>
 
             <% end -%>
           </div>

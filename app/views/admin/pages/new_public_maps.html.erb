@@ -21,16 +21,16 @@
             <div class="MapCard-content">
               <div class="MapCard-contentBody">
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-                  <h3 class="DefaultTitle">
+                  <h3 class="MapCard-title DefaultTitle">
                     <a href="<%= public_visualizations_public_map_url(user_domain: user_domain, id: vis[:id]) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis[:title] %>"><%= vis[:title] %></a>
                   </h3>
                 </div>
 
                 <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                   <% if vis[:desc] %>
-                    <p class="DefaultDescription" title="<%= vis[:desc] %>"><%= raw truncate(vis[:desc], :length => 85) %></p>
+                    <p class="MapCard-desc DefaultDescription DefaultDescription--twoLines" title="<%= vis[:desc] %>"><%= raw vis[:desc] %></p>
                   <% else %>
-                    <span class="DefaultDescription is--empty"></span>
+                    <span class="NoResults"></span>
                   <% end %>
                 </div>
 

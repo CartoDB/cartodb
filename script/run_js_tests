@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby
-cartodb_path    = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-phantom_jasmine = "lib/assets/test/lib/phantom-jasmine/bin/phantom-jasmine"
-test_runner     = "lib/assets/test/spec/test_runner.html"
-command         = "node #{cartodb_path}/#{phantom_jasmine} " + 
-                  "#{cartodb_path}/#{test_runner}"
-exec command
-

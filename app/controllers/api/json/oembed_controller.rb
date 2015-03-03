@@ -43,10 +43,10 @@ class Api::Json::OembedController < Api::ApplicationController
 
     url_data = URI.split(url)
     if url_data[5][0..2] == "/u/"
-      user = data[5].split('/')[2]
+      user = url_data[5].split('/')[2]
       user_profile = "#{protocol}://#{url_data[2]}/u/#{user}"
     else
-      user = data[2].split('.')[0]
+      user = url_data[2].split('.')[0]
       user_profile = "#{protocol}://#{url_data[2]}"
     end
 

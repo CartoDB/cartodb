@@ -12,7 +12,7 @@ class Api::Json::OembedController < Api::ApplicationController
   def show
     url = params[:url]
     width = params[:maxwidth] || '100%'
-    height = params[:maxheight] || '100%'
+    height = params[:maxheight] || '520px'
     format = request.query_parameters[:format]
     force_https = true if params[:allow_http].nil?
 

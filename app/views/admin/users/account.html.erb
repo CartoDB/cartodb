@@ -53,7 +53,7 @@
             <% if (@user.errors[:email].present?) %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
             <% else %>
-              <p class="Form-rowInfoText">You enter through team.cartodb.com/u/piensaenpixel</p>
+              <p class="Form-rowInfoText">You enter through <%= @user.public_url %> </p>
             <% end %>
           </div>
         </div>
@@ -67,7 +67,7 @@
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:old_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error">Old password not valid</p>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].join(', ')%></p>
             <% end %>
           </div>
         </div>
@@ -81,7 +81,7 @@
           </div>
           <div class="Form-rowInfo">
           <% if (@user.errors[:new_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error">New password and confirm password are not the same</p>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].join(', ')%></p>
             <% end %>
           </div>
         </div>

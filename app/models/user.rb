@@ -379,12 +379,17 @@ class User < Sequel::Model
   attr_reader :password
 
   def validate_password_change
-    return if @changing_passwords.nil?
+    return if @changing_passwords.nil?  # Called always, validate whenever proceeds
+
     errors.add(:old_password, "Old password not valid") unless @old_password_validated
-    errors.add(:new_password, "New password and confirm password are not the same") if @new_password_confirmation.nil?
+
+    if @new_password != @new_password_confirmation
+      errors.add(:new_password, "New password and confirm password are not the same")
+    end
     errors.add(:new_password, "Missing new password") if @new_password.nil?
-    errors.add(:new_password, "New password is too short (6 chars min)") if !@new_password.nil? &&
-                                                                            @new_password.length < MIN_PASSWORD_LENGTH
+    if !@new_password.nil? && @new_password.length < MIN_PASSWORD_LENGTH
+      errors.add(:new_password, "New password is too short (6 chars min)")
+    end
   end
 
   def change_password(old_password, new_password_value, new_password_confirmation_value)
@@ -395,13 +400,13 @@ class User < Sequel::Model
     @changing_passwords = true
 
     @new_password = new_password_value
-    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
+    @new_password_confirmation = new_password_confirmation_value
 
+    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
     return unless @old_password_validated
 
     return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
 
-    @new_password_confirmation = new_password_confirmation_value
     self.password = new_password_value
   end
 

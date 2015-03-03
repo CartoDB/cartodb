@@ -38,8 +38,7 @@ class Api::Json::OembedController < Api::ApplicationController
     else
       name = viz.name
     end
-
-
+    
     protocol = force_https ? "https" : uri.scheme
 
     url_data = URI.split(url)

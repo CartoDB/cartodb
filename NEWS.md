@@ -3,6 +3,9 @@
 * Fixes a error that preventing the load of WMS layers.
 * Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
 
+Bugfixes:
+* Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)
+
 3.8.1 (2015-02-26)
 ------------------
 * Added config for basemaps [#1954], see

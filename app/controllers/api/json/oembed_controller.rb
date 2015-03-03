@@ -49,7 +49,9 @@ class Api::Json::OembedController < Api::ApplicationController
         :width => width,
         :height => height,
         :title => name,
-        :html => html
+        :html => html,
+        :provider_name => 'CartoDB',
+        :provider_url => 'http://www.cartodb.com/'
     }
 
     if format == 'xml'

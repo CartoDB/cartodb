@@ -67,7 +67,7 @@
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:old_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].join(', ')%></p>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
             <% end %>
           </div>
         </div>
@@ -80,8 +80,10 @@
             <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
           </div>
           <div class="Form-rowInfo">
-          <% if (@user.errors[:new_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].join(', ')%></p>
+            <% if (@user.errors[:new_password].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+            <% else %>
+              <p class="Form-rowInfoText">Password should be 6 characters at least</p>
             <% end %>
           </div>
         </div>
@@ -95,14 +97,14 @@
           </div>
         </div>
 
-          <% if @user.google_sign_in && @google_plus_config.present? %>
-              <div class="row" id="google_row">
-                <div class="field">
-                  <label>GOOGLE+ ACCOUNT</label>
-                  <%= render partial: 'google_plus/google_plus_disconnect_button',  locals: { config: @google_plus_config } %>
-                </div>
-              </div>
-          <% end %>
+        <% if @user.google_sign_in && @google_plus_config.present? %>
+          <div class="row" id="google_row">
+            <div class="field">
+              <label>GOOGLE+ ACCOUNT</label>
+              <%= render partial: 'google_plus/google_plus_disconnect_button',  locals: { config: @google_plus_config } %>
+            </div>
+          </div>
+        <% end %>
 
         <div class="Form-footer">
           <p class="Form-footerText"></p>

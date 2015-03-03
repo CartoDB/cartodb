@@ -112,7 +112,7 @@ describe User do
     it "should not be valid if his organization doesn't have more seats" do
 
       organization = create_org('testorg', 10.megabytes, 1)
-      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
       user1.organization = organization
       user1.save
       organization.owner_id = user1.id

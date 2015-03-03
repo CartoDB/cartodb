@@ -53,7 +53,7 @@
             <% if (@user.errors[:email].present?) %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
             <% else %>
-              <p class="Form-rowInfoText">You enter through <%= @user.public_url %> </p>
+              <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
             <% end %>
           </div>
         </div>

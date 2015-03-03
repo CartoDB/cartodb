@@ -1,6 +1,7 @@
 3.9.0 (2015-02-xx)
 ------------------
 * Fixes a error that preventing the load of WMS layers.
+* Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
 
 3.8.1 (2015-02-26)
 ------------------
@@ -38,6 +39,7 @@
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
 * Add user_defined_limits to DataImport, and the feature of imports to support certain user defined limits. Currently only used for `twitter_credits_limit` at importer create endpoint.
 * Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
+
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)

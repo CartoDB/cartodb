@@ -292,7 +292,7 @@ class Table < Sequel::Model(:user_tables)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
 
-      # if the table exists, is private, but the owner no longer has private privilidges
+      # if the table exists, is private, but the owner no longer has private privileges
       if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end

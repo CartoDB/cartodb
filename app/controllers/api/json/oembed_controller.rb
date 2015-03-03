@@ -39,7 +39,18 @@ class Api::Json::OembedController < Api::ApplicationController
       name = viz.name
     end
 
+
     protocol = force_https ? "https" : uri.scheme
+
+    url_data = URI.split(url)
+    if url_data[5][0..2] == "/u/"
+      user = data[5].split('/')[2]
+      user_profile = "#{protocol}://#{url_data[2]}/u/#{user}"
+    else
+      user = data[2].split('.')[0]
+      user_profile = "#{protocol}://#{url_data[2]}"
+    end
+
     url = URI.join(public_visualizations_show_url(id: uuid, protocol: protocol) + "/", 'embed_map')
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"
 
@@ -50,6 +61,8 @@ class Api::Json::OembedController < Api::ApplicationController
         :height => height,
         :title => name,
         :html => html,
+        :author_name => user,
+        :author_url => user_profile,
         :provider_name => 'CartoDB',
         :provider_url => 'http://www.cartodb.com/'
     }

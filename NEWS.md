@@ -2,6 +2,8 @@
 ------------------
 * Fixes a error that preventing the load of WMS layers.
 * New user account & profile management pages, inside CartoDB Editor.
+* Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
+* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package
 
 3.8.1 (2015-02-26)
 ------------------

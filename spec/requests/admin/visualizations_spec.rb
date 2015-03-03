@@ -173,11 +173,11 @@ describe Admin::VisualizationsController do
 
       get "/viz/non_existent/embed_map", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /pity/
+      last_response.body.should =~ /404/
 
       get "/viz/non_existent/embed_map.js", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /pity/
+      last_response.body.should =~ /404/
     end
   end # GET /viz/:name/embed_map
 

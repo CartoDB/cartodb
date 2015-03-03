@@ -42,15 +42,23 @@ class Api::Json::OembedController < Api::ApplicationController
     protocol = force_https ? "https" : uri.scheme
 
     url_data = URI.split(url)
+    organization = nil
     if url_data[5][0..2] == "/u/"
       user = url_data[5].split('/')[2]
       user_profile = "#{protocol}://#{url_data[2]}/u/#{user}"
+      organization = url_data[2].split('.')[0]
     else
       user = url_data[2].split('.')[0]
       user_profile = "#{protocol}://#{url_data[2]}"
     end
 
-    url = URI.join(public_visualizations_show_url(id: uuid, protocol: protocol) + "/", 'embed_map')
+    # build the url using full schema because any visuaization should work with any user
+    url = CartoDB.user_url(user, organization)  + public_visualizations_show_path(id: uuid)
+    # force the schema
+    if protocol == 'https' && !url.include?('https')
+      url = url.sub('http', 'https')
+    end
+
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"
 
     response_data = {

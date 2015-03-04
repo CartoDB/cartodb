@@ -331,6 +331,12 @@ namespace :cartodb do
       end
     end
 
+    desc 'Set user privileges in CartoDB schema and CDB_TableMetadata'
+    task :set_user_privileges_in_cartodb_schema, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.set_user_privileges_in_cartodb_schema
+    end
+
     ##########################
     # SET TRIGGER CHECK QUOTA
     ##########################

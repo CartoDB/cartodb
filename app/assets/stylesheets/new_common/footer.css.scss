@@ -6,7 +6,6 @@
 @import "../new_variables/sizes";
 
 .Footer {
-  background:red;
   position: relative;
   display: block;
   width: 100%;
@@ -31,12 +30,12 @@
 
 @media only screen and (max-width: $sMedia-tablet) {
   .Footer {
-    background:green;
+    /* ... */
   }
 }
 @media only screen and (max-width: $sMedia-mobile) {
   .Footer {
-    background:blue;
+    /* ... */
   }
   .Footer-logo {
     position: absolute;

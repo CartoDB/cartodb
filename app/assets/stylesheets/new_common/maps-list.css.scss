@@ -31,9 +31,8 @@
   @include opacity(0.6);
 }
 
-@media only screen and (max-width: 663px) {
+@media only screen and (max-width: 663px) { /* TODO: add var */
   .MapsList {
-    background:pink;
     padding: 0;
     @include justify-content(center);
   }
@@ -49,7 +48,6 @@
     display: none;
   }
   .MapsList {
-    background:green!important;
     padding: 0;
   }
   .MapsList .MapsList-item {
@@ -60,7 +58,6 @@
 
 @media only screen and (max-width: $sMedia-tablet) {
   .MapsList {
-    background:#f1f1f1;
     @include flex-direction(row);
     @include justify-content(flex-start);
   }

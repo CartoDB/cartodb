@@ -42,7 +42,7 @@
             layer.on('featureOver', featureOver);
           })
 
-        function featureOver(e, pos, latlng, data) {
+        function featureOver(e, latlng, pos, data) {
           console.log(data.cartodb_id)
         }
       }

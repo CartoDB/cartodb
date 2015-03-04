@@ -4,6 +4,7 @@
 3.12.10 (02//03//2015)
 - Don't send the urlTemplate to generate a Static Map if we don't have it.
 - Disables the CDN if the server doesn't send us the configuration.
+- fixes bootstrap collisions (#87, #107)
 
 3.12.9 (26//02//2015)
 - Updates Static Map module to use the CDN URL from the layergroup.

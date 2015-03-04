@@ -51,6 +51,11 @@ module ApplicationHelper
   end
 
   # TODO: Check this for MU
+  def plan_url
+    account_url + '/plan'
+  end
+
+  # TODO: Check this for MU
   def upgrade_url
     account_url + '/upgrade'
   end
@@ -156,7 +161,7 @@ module ApplicationHelper
 
   def insert_trackjs
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
-      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
+      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'], enabled: Cartodb.config[:trackjs]['enabled'] })
     end
   end
 

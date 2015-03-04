@@ -19,19 +19,41 @@
   border: 1px $cStructure-mainLine solid;
   border-right-width: 0;
 }
-.Pagination-listItemLink {
+.Pagination-listItemInner {
   display: inline-block;
   padding: 10px 15px;
+  border: none;
+  background: $cStructure-mainBkg;
+  outline: none;
+}
+.Pagination-listItemInner--link {
+  color: $cTypography-link;
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: underline;
+  }
+}
+.Pagination-listItemInner--more {
+  background-color: $cStructure-grayBkg;
+  color: $cTypography-help;
 }
 .Pagination-listItem:first-child {
   border-radius: 5px 0 0 5px;
+  .Pagination-listItemInner {
+    border-radius: 5px 0 0 5px;
+  }
 }
 .Pagination-listItem:last-child {
   border-right-width: 1px;
   border-radius: 0 5px 5px 0;
+  .Pagination-listItemInner {
+    border-radius: 0 5px 5px 0;
+  }
 }
 .Pagination-listItem.is-current,
-.Pagination-listItem.is-current a,
-.Pagination-listItem.is-current a:hover {
+.Pagination-listItem.is-current .Pagination-listItemInner--link,
+.Pagination-listItem.is-current .Pagination-listItemInner--link:hover {
   color: $cTypography-headers;
+  cursor: default;
+  text-decoration: none;
 }

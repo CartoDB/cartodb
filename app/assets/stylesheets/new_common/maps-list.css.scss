@@ -8,17 +8,21 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
-  @include flex-direction(column);
+  // @include flex-direction(column);
   @include justify-content(flex-start, start);
   @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width + 20;
-  margin: 0 auto;
+  margin: 10px auto 0;
   padding: 0 $sMargin-elementInline;
+}
+.MapsList--centerItems {
+  @include justify-content(center, center);
 }
 .MapsList.is-hidden { display: none }
 .MapsList-item {
+  position: relative;
   width: 300px;
   margin: 10px;
 }
@@ -32,8 +36,8 @@
 }
 @media (min-width: $sMedia-tablet) {
   .MapsList {
-    @include flex-direction(row);
-    @include justify-content(center, center);
+    // @include flex-direction(row);
+    // @include justify-content(center, center);
   }
 }
 @media (min-width: $sMedia-desktop) {

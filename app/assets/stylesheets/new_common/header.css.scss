@@ -39,6 +39,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   line-height: $sLineHeight-largest;
   color: rgba(white, 0.6);
 }
+.Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
@@ -49,6 +50,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     color: white;
     text-decoration: underline;
     &:after { border-top-color: white }
+  }
+  &.is-disabled {
+    &:hover {
+      text-decoration: none;
+      cursor: default;
+    }
   }
 }
 .Header-settings { height: $height }
@@ -64,7 +71,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   font-size: $sFontSize-larger;
   line-height: $sLineHeight-larger;
 }
-.Header-settingsItemAvatar { height: 42px }
+.Header-settingsItem--avatar { height: 42px }
 .Header-settingsLink {
   font-weight: $sFontWeight-lighter;
   color: rgba(white, 0.6);

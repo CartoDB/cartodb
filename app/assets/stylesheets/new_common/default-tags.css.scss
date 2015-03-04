@@ -3,14 +3,22 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .DefaultTags {
-  color:$cTypography-secondary;
-  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+  @include nicer-lato-typography();
 }
-.DefaultTags-item {}
-.DefaultTags-item.is--empty {
-  color: $cTypography-help;
-  font-style: italic;
-  font-weight: $sFontWeight-lighter;
+.DefaultTags-item {
+  border: none;
+  color: $cTypography-link;
+  background: transparent;
+}
+.DefaultTags-item:focus {
+  background: transparent;
+}
+.DefaultTags-item:hover {
+  cursor: pointer;
+  color: $cTypography-linkHover;
+  text-decoration: underline;
 }

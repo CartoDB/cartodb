@@ -39,11 +39,11 @@ module CartoDB
       self
     end
 
-    def propagate_to(visualization)
+    def propagate_to(visualization, table_privacy_changed=false)
       visualization.store_using_table({
                                         privacy_text: ::Table::PRIVACY_VALUES_TO_TEXTS[privacy],
                                         map_id: visualization.map_id
-                                      })
+                                      }, table_privacy_changed)
       self
     end
 
@@ -87,15 +87,7 @@ module CartoDB
     end
 
     def invalidate_varnish_cache
-      Varnish.new.purge("#{varnish_key}")
-    end
-
-    def varnish_key
-      if table.owner.cartodb_extension_version_pre_mu?
-        "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
-      else
-        "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
-      end
+      table.invalidate_varnish_cache(false)
     end
 
   end

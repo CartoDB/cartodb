@@ -16,10 +16,24 @@ class Admin::PagesController < ApplicationController
 
   ssl_required :common_data, :public, :datasets
 
-  before_filter :login_required, :except => [:public, :datasets, :sitemap]
+  before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
   before_filter :belongs_to_organization
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
+
+  # Just an entrypoint to dispatch to different places according to
+  def index
+    # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
+    if !current_user.nil? && !current_viewer.nil? && current_user.id == current_viewer.id
+      redirect_to dashboard_url
+    # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
+    elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
+      redirect_to public_maps_home_url
+    # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
+    else
+      redirect_to public_maps_home_url
+    end
+  end
 
   def sitemap
     username = CartoDB.extract_subdomain(request)
@@ -34,7 +48,7 @@ class Admin::PagesController < ApplicationController
       # Redirect to org url if has only user
       if viewed_user.has_organization?
         if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_pathand and return
+          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_path and return
         end
       end
 
@@ -86,8 +100,7 @@ class Admin::PagesController < ApplicationController
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
         per_page: NEW_DATASETS_PER_PAGE,
-      }),
-      user
+      })
     )
   end
 
@@ -103,8 +116,7 @@ class Admin::PagesController < ApplicationController
         user:     user,
         vis_type: Visualization::Member::TYPE_DERIVED,
         per_page: MAPS_PER_PAGE,
-      }),
-      user
+      })
     )
   end
 
@@ -154,7 +166,7 @@ class Admin::PagesController < ApplicationController
 
   private
 
-  def render_new_datasets(vis_list, user)
+  def render_new_datasets(vis_list)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    NEW_DATASETS_PER_PAGE,
@@ -178,7 +190,7 @@ class Admin::PagesController < ApplicationController
         geometry_type = table_geometry_types.first.present? ? geometry_mapping.fetch(table_geometry_types.first.downcase, '') : ''
       end
 
-      @datasets << new_vis_item(vis, user).merge({
+      @datasets << new_vis_item(vis).merge({
           rows_count:    vis.table.rows_counted,
           size_in_bytes: vis.table.table_size,
           geometry_type: geometry_type,
@@ -190,7 +202,7 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def render_new_maps(vis_list, user)
+  def render_new_maps(vis_list)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    MAPS_PER_PAGE,
@@ -198,7 +210,7 @@ class Admin::PagesController < ApplicationController
 
     @visualizations = []
     vis_list.each do |vis|
-      @visualizations << new_vis_item(vis, user)
+      @visualizations << new_vis_item(vis)
     end
 
     respond_to do |format|
@@ -206,7 +218,7 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def new_vis_item(vis, user)
+  def new_vis_item(vis)
     return {
       id:          vis.id,
       title:       vis.name,
@@ -215,7 +227,6 @@ class Admin::PagesController < ApplicationController
       updated_at:  vis.updated_at,
       owner:       vis.user,
       likes_count: vis.likes.count,
-      liked:       vis.liked_by?(user.id)
     }
   end
 

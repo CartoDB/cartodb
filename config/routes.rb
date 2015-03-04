@@ -33,11 +33,17 @@ CartoDB::Application.routes.draw do
     get    '(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
     put    '(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
     # Organization users management
-    get    '(/u/:user_domain)/organization/users/:id/edit'  => 'users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
-    put    '(/u/:user_domain)/organization/users/:id'       => 'users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
-    post   '(/u/:user_domain)/organization/users'           => 'users#create',  as: :create_organization_user
-    delete '(/u/:user_domain)/organization/users/:id'       => 'users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
-    get    '(/u/:user_domain)/organization/users/new'       => 'users#new',     as: :new_organization_user
+    get    '(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
+    put    '(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    post   '(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
+    delete '(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    get    '(/u/:user_domain)/organization/users/new'       => 'organization_users#new',     as: :new_organization_user
+
+    # New user profile and account pages
+    get    '(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
+    put    '(/u/:user_domain)/profile' => 'users#profile_update', as: :profile_update_user
+    get    '(/u/:user_domain)/account' => 'users#account',        as: :account_user
+    put    '(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
 
     # search
     get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search

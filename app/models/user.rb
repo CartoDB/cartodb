@@ -59,6 +59,8 @@ class User < Sequel::Model
   }
 
 
+  MIN_PASSWORD_LENGTH = 6
+
   GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
@@ -79,9 +81,11 @@ class User < Sequel::Model
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
 
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-    if new? || password.present?
+
+    if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
+    validate_password_change
     if organization.present?
       if new?
         errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
@@ -374,6 +378,38 @@ class User < Sequel::Model
   # allow extra vars for auth
   attr_reader :password
 
+  def validate_password_change
+    return if @changing_passwords.nil?  # Called always, validate whenever proceeds
+
+    errors.add(:old_password, "Old password not valid") unless @old_password_validated
+
+    if @new_password != @new_password_confirmation
+      errors.add(:new_password, "New password and confirm password are not the same")
+    end
+    errors.add(:new_password, "Missing new password") if @new_password.nil?
+    if !@new_password.nil? && @new_password.length < MIN_PASSWORD_LENGTH
+      errors.add(:new_password, "New password is too short (6 chars min)")
+    end
+  end
+
+  def change_password(old_password, new_password_value, new_password_confirmation_value)
+    # First of all reset fields
+    @old_password_validated = nil
+    @new_password_confirmation = nil
+    # Mark as changing passwords
+    @changing_passwords = true
+
+    @new_password = new_password_value
+    @new_password_confirmation = new_password_confirmation_value
+
+    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
+    return unless @old_password_validated
+
+    return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
+
+    self.password = new_password_value
+  end
+
   def password_confirmation
     @password_confirmation
   end
@@ -420,6 +456,8 @@ class User < Sequel::Model
   end
 
   def password=(value)
+    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)

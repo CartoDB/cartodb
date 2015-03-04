@@ -21,7 +21,7 @@ describe Admin::VisualizationsController do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test'
+      password: 'test12'
     )
     @api_key = @user.api_key
   end

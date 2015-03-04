@@ -1,10 +1,13 @@
 # coding: UTF-8
+require_relative '../../lib/cartodb/profiler.rb'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
   protect_from_forgery
 
   helper :all
+
+  around_filter :wrap_in_profiler
 
   before_filter :ensure_user_domain_param
   before_filter :ensure_user_organization_valid
@@ -30,6 +33,14 @@ class ApplicationController < ActionController::Base
 
 
   protected
+
+  def wrap_in_profiler
+    if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
+      CartoDB::Profiler.new().call(request) { yield }
+    else
+      yield
+    end
+  end
 
   def set_asset_debugging
     CartoDB::Application.config.assets.debug = \

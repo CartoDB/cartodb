@@ -590,7 +590,7 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-      .times(2)
+      .times(3)
       .with(".*#{id}:vizjson")
       .returns(true)
 
@@ -2185,6 +2185,31 @@ describe Table do
       table.destroy
 
       $tables_metadata.get(key).should eq(nil), "the geometry types cache should be invalidated upon table removal"
+    end
+  end
+
+  describe '#after_save' do
+    it 'invalidates derived visualization cache if there are changes in table privacy' do
+      @user.private_tables_enabled = true
+      @user.save
+      table = create_table(user_id: @user.id)
+      table.save
+      table.should be_private
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
+      derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
+
+      # Do not create all member objects anew to be able to set expectations
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
+
+      derived.expects(:invalidate_cache).once()
+
+      table.privacy = Table::PRIVACY_PUBLIC
+      table.save
     end
   end
 

@@ -33,6 +33,6 @@ module CartoDB
         @db.drop_table(relation.to_sym)
       end #drop
     end
-  end # Visualization
-end # CartoDB
+  end
+end
 

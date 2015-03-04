@@ -1207,6 +1207,7 @@ div.cartodb-share a {
   text-transform: uppercase;
   text-shadow: none;
   padding: 7px 7px;
+  box-sizing: content-box;
 
   background: #ffffff url('../img/share.png') no-repeat 7px 8px;
 
@@ -1250,6 +1251,7 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
   width: 14px;
   height: 14px;
   padding: 7px;
+  box-sizing: content-box;
 
   background: #ffffff url('../img/fullscreen.png') no-repeat 7px 3px;
 

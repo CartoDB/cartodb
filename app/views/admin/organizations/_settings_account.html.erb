@@ -17,7 +17,7 @@
           <p>Configuration, logo,...</p>
         </span>
       </a>
-      <a href="<%= account_url %>">
+      <a href="<%= current_user.account_url(request.protocol) %>">
         <span class="icon settings"></span>
         <span class="info">
           <h2>Account settings</h2>

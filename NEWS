@@ -1,3 +1,6 @@
+3.12.11 (04//03//2015)
+- LayerDefinition now trusts the tiler and uses whatever CDN configuration it gets (or nothing, if cdn_url is empty).
+
 3.12.10 (02//03//2015)
 - Don't send the urlTemplate to generate a Static Map if we don't have it.
 - Disables the CDN if the server doesn't send us the configuration.

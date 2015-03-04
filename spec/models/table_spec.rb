@@ -2123,7 +2123,7 @@ describe Table do
       table = create_table(user_id: @user.id)
 
       cache = mock()
-      cache.expects(:get).never
+      cache.expects(:get).once
       cache.expects(:setex).never
 
       table.stubs(:cache).returns(cache)

@@ -5,7 +5,8 @@
     <ul class="right">
       <li><%= link_to 'tables', tables_index_path(user_domain: params[:user_domain]), :class => :tables %></a></li>
       <li><%= link_to 'visualizations', visualizations_index_path(user_domain: params[:user_domain]), :class => :visualizations %></a></li>
-      <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+      <% if ( ( Cartodb.config[:common_data]['username'] && (Cartodb.config[:common_data]['username'] != "")) && ( Cartodb.config[:common_data]['host'] && (Cartodb.config[:common_data]['host'] != "") ) && ( Cartodb.config[:common_data]['api_key'] && (Cartodb.config[:common_data]['api_key'] != "") ) 
+        ) %>
         <li><%= link_to 'common data', dashboard_common_data_path(user_domain: params[:user_domain]), :class => selected_if(current_path.include? 'common_data') %></a></li>
       <% end %>
       <li><%= link_to 'documentation', Cartodb.config[:developers_host] %></a></li>

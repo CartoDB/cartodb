@@ -53,7 +53,7 @@ class Api::Json::OembedController < Api::ApplicationController
     end
 
     # build the url using full schema because any visuaization should work with any user
-    url = CartoDB.user_url(user, organization)  + public_visualizations_show_path(id: uuid) + "/embed_map"
+    url = CartoDB.user_url(user, organization)  + public_visualizations_embed_map_path(id: uuid)
     # force the schema
     if protocol == 'https' && !url.include?('https')
       url = url.sub('http', 'https')

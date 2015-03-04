@@ -28,15 +28,44 @@
   @include opacity(0.6);
 }
 
-@media (min-width: $sMedia-mobile) {
-  .MapsList-item--fake { display: none }
-}
-@media (min-width: $sMedia-tablet) {
+@media only screen and (max-width: 663px) {
   .MapsList {
-    // @include flex-direction(row);
-    // @include justify-content(center, center);
+    background:pink;
+    padding: 0;
+    @include justify-content(center);
+  }
+  .MapsList .MapsList-item {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
+
+
+@media only screen and (max-width: $sMedia-mobile) {
+  .MapsList-item--fake {
+    display: none;
+  }
+  .MapsList {
+    background:green!important;
+    padding: 0;
+  }
+  .MapsList .MapsList-item {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media only screen and (max-width: $sMedia-tablet) {
+  .MapsList {
+    background:#f1f1f1;
+    @include flex-direction(row);
+    @include justify-content(flex-start);
+  }
+  .MapsList-item--fake {
+    display: block;
+  }
+}
+
 @media (min-width: $sMedia-desktop) {
   .MapsList-item--fake { display: block }
 }

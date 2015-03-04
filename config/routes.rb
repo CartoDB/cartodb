@@ -7,7 +7,7 @@
 
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
-  root :to => 'admin/pages#public'
+  root :to => 'admin/pages#index'
 
   get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login
   get   '(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
@@ -39,7 +39,7 @@ CartoDB::Application.routes.draw do
     delete '(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
     get    '(/u/:user_domain)/organization/users/new'       => 'organization_users#new',     as: :new_organization_user
 
-    # New user profile and account pages
+    # User profile and account pages
     get    '(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
     put    '(/u/:user_domain)/profile' => 'users#profile_update', as: :profile_update_user
     get    '(/u/:user_domain)/account' => 'users#account',        as: :account_user
@@ -216,6 +216,7 @@ CartoDB::Application.routes.draw do
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
+    get '(/u/:user_domain)/maps'                     => 'pages#public', as: :public_maps_home
     get '(/u/:user_domain)/page/:page'               => 'pages#public', as: :public_page
     get '(/u/:user_domain(/page/:page))'             => 'pages#public', as: :public_page_alt
     get '(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag

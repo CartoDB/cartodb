@@ -602,7 +602,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization)
+      manager.propagate_to(visualization, privacy_changed?)
     }
   end
 
@@ -1518,16 +1518,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_cdb_tablemetadata
-    # TODO: use upsert
     owner.in_database(as: :superuser).run(%Q{
-      INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
-      VALUES ('#{table_id}', NOW())
-    })
-  rescue Sequel::DatabaseError
-    owner.in_database(as: :superuser).run(%Q{
-      UPDATE cartodb.cdb_tablemetadata
-      SET updated_at = NOW()
-      WHERE tabname = '#{table_id}'
+      SELECT CDB_TableMetadataTouch('#{table_id}')
     })
   end
 

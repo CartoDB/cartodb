@@ -4,7 +4,7 @@
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
-
+@import "../new_variables/progress-bar";
 
 .Filters {
   position: absolute;
@@ -19,7 +19,7 @@
 .Filters.is-fixed {
   position: fixed;
   background: white;
-  
+
   &:before {
     content: '';
     position:absolute;
@@ -100,7 +100,7 @@
   vertical-align: middle;
   margin-right:5px;
   margin-left: 1px;
-  
+
 }
 .Filters-searchLink:hover { color: #333 }
 .Filters-searchItem {
@@ -138,7 +138,7 @@
   line-height:31px;
   background: transparent;
   outline: none;
-  
+
   &:hover {
     border:1px solid #999;
     color:#999;
@@ -147,14 +147,17 @@
 a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(
 .Filters-searchInput::-webkit-input-placeholder {
+  font-weight: $sFontWeight-normal;
   font-style:italic;
   color:#DDD;
 }
 .Filters-searchInput::-moz-placeholder {
+  font-weight: $sFontWeight-normal;
   font-style:italic;
   color:#DDD;
 }
 .Filters-searchInput:-ms-placeholder {
+  font-weight: $sFontWeight-normal;
   font-style:italic;
   color:#DDD;
 }
@@ -183,7 +186,7 @@ a.Filters-cleanSearch { line-height:32px }
     width:100%;
     height:1px;
     background:$cTypography-linkSelected;
-  } 
+  }
   &:hover {
     cursor:default;
     text-decoration: none;
@@ -261,4 +264,17 @@ a.Filters-cleanSearch { line-height:32px }
 
   .Filters-searchEnabler { display:inline }
   .Filters-searchItem { display:inherit }
+}
+.Filters-progress {
+  @include display-flex();
+  @include align-items(center, center);
+}
+.Filters-progressSize {
+  margin-right: 12px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-smallUpperCase;
+}
+.Filters-progressBar {
+  @include progress-bar(6px, 9px, true, false);
+  width: 178px;
 }

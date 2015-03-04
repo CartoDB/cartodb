@@ -1,6 +1,13 @@
 3.9.0 (2015-02-xx)
 ------------------
+* New user account & profile management pages, inside CartoDB Editor.
+* Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
+* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package
+* Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
+
+Bugfixes:
 * Fixes a error that preventing the load of WMS layers.
+* Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)
 
 3.8.1 (2015-02-26)
 ------------------
@@ -38,12 +45,15 @@
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
 * Add user_defined_limits to DataImport, and the feature of imports to support certain user defined limits. Currently only used for `twitter_credits_limit` at importer create endpoint.
 * Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
+
 Bugfixes:
 * When being in any configuration page remove the arrow from the breadcrumb [#2312](https://github.com/CartoDB/cartodb/pull/2312)
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
 * Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
 * Fixes for new dashboard texts [#2499](https://github.com/CartoDB/cartodb/pull/2499)
-* Fixes a problem generating images from private visualizations of private org users. 
+* Fixes a problem generating images from private visualizations of private org users.
+* Remove lighter font weights [#2513](https://github.com/CartoDB/cartodb/pull/2513)
+* Fix quota usage rounding [#2561](https://github.com/CartoDB/cartodb/pull/2561)
 
 3.8.0 (2015-01-30)
 ------------------
@@ -290,7 +300,7 @@ Bugfixes:
   * Several minor improvements
 
 * Fixed bugs
-  * Security fix regarding Typhoeus library  
+  * Security fix regarding Typhoeus library
   * Several minor bugs
 
 * Migration Type (see UPGRADE): Mandatory migration

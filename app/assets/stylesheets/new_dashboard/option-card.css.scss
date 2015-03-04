@@ -45,6 +45,6 @@
 .OptionCard-desc {
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+  @include nicer-lato-typography();
 }

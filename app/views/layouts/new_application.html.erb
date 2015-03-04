@@ -9,7 +9,7 @@
   </head>
   <body>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <%= render 'admin/shared/header' %>
+      <%= render 'admin/shared/new_private_header' %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>

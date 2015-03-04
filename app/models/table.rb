@@ -99,7 +99,7 @@ class Table < Sequel::Model(:user_tables)
   end #default_privacy_values
 
   def geometry_types_key
-    @geometry_types_key ||= "#{key}:geometry_types"
+    @geometry_types_key ||= "#{redis_key}:geometry_types"
   end
 
   def geometry_types
@@ -864,8 +864,8 @@ class Table < Sequel::Model(:user_tables)
     previous_changes.keys.include?(:privacy)
   end #privacy_changed?
 
-  def key
-    key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
+  def redis_key
+    key ||= "rails:table:#{id}"
   end
 
   def sequel

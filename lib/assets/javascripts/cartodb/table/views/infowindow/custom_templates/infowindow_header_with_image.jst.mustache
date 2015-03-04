@@ -3,17 +3,18 @@
   <div class="cartodb-popup-header">
     <div class="cover">
       <div id="spinner"></div>
-      <div class="image_not_found"> <i></i> <a href="#/map" class="help">Non-valid picture URL</a></div>
-      {{#content.fields}}
-      {{^position}}
+      <div class="image_not_found">
+        <i></i>
+        <a href="#/map" class="help">Non-valid picture URL</a>
+      </div>
       <span class="separator"></span>
+      <div class="shadow"></div>
+      {{#content.fields.length}}
       {{#content.fields.1 }}
       <h1 class="order1">{{=<% %>=}}{{<%={{ }}=%>{{{ content.fields.1.name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
       {{/content.fields.1 }}
-      <div class="shadow"></div>
-      <img src="{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%>" style="height:138px;display:inline" />
-      {{/position}}
-      {{/content.fields}}
+      <img src="{{=<% %>=}}{{<%={{ }}=%>{{{ content.fields.0.name }}}{{=<% %>=}}}}<%={{ }}=%>" />
+      {{/content.fields.length}}
     </div>
   </div>
   <div class="cartodb-popup-content-wrapper">

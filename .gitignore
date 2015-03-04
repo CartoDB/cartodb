@@ -24,7 +24,6 @@ config/database.yml
 config/app_config.yml
 config/redis.conf
 config/grunt_production.json
-src/
 spec/support/data/failed_remote/*
 *.swp
 *.swo

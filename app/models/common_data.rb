@@ -19,6 +19,10 @@ class CommonData
     @datasets
   end
 
+  def is_enabled?
+    !config('username').nil? && !config('api_key').nil?
+  end
+
   private
 
   def get_datasets(json)
@@ -81,10 +85,6 @@ class CommonData
 
   def export_query(table_name)
     "select * from #{table_name}"
-  end
-
-  def is_enabled
-    !config('username').nil? && !config('api_key').nil?
   end
 
   def config(key, default=nil)

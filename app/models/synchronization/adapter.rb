@@ -85,17 +85,8 @@ module CartoDB
 
       def update_cdb_tablemetadata(name)
         qualified_name = "\"#{user.database_schema}\".\"#{name}\""
-
-        # TODO: use upsert (see table.update_cdb_tablemetadata)
         user.in_database(as: :superuser).run(%Q{
-          INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
-          VALUES ('#{qualified_name}'::regclass::oid, NOW())
-        })
-      rescue Sequel::DatabaseError
-        user.in_database(as: :superuser).run(%Q{
-           UPDATE cartodb.cdb_tablemetadata
-           SET updated_at = NOW()
-           WHERE tabname = '#{qualified_name}'::regclass
+          SELECT CDB_TableMetadataTouch('#{qualified_name}')
         })
       end
 

@@ -42,12 +42,6 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    type_guessing = ["true", true].include?(params[:type_guessing])
-    quoted_fields_guessing = ["true", true].include?(params[:quoted_fields_guessing])
-    content_guessing = ["true", true].include?(params[:content_guessing])
-    create_derived_vis = ["true", true].include?(params[:create_vis])
-
-    url = params[:url]
     external_source = nil
 
     concurrent_import_limit =
@@ -61,53 +55,38 @@ class Api::Json::ImportsController < Api::ApplicationController
       raise CartoDB::Importer2::UserConcurrentImportsLimitError.new
     end
 
-    if url.present?
-      file_uri = url
-      enqueue_importer_task = true
+    options = default_creation_options
+
+    if params[:url].present?
+      options.merge!({
+                       data_source: params.fetch(:url)
+                     })
     elsif params[:remote_visualization_id].present?
-      content_guessing = false
-      type_guessing = true
-      quoted_fields_guessing = true
       external_source = external_source(params[:remote_visualization_id])
-      url = external_source.import_url
-      file_uri = url
-      enqueue_importer_task = true
-      create_derived_vis = false
+      options.merge!({
+                        content_guessing: false,
+                        type_guessing: true,
+                        quoted_fields_guessing: true,
+                        data_source: external_source.import_url.presence,
+                        create_visualization: false
+                     })
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
-      file_uri = results[:file_uri]
-      enqueue_importer_task = results[:enqueue]
+      options.merge!({
+                        data_source: results[:file_uri].presence,
+                        # Not queued import is set by skipping pending state and setting directly as already enqueued
+                        state: results[:enqueue] ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED
+                     })
     end
 
-    service_name =
-      params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
-    service_item_id = params[:service_item_id].present? ? params[:service_item_id] : url.presence
+    data_import = DataImport.create(options.merge!({
+                                                     # override param to store as string
+                                                     user_defined_limits: ::JSON.dump(options[:user_defined_limits])
+                                                   }))
 
-    options = {
-        user_id:                current_user.id,
-        table_name:             params[:table_name].presence,
-        # Careful as this field has rules (@see DataImport data_source=)
-        data_source:            file_uri.presence,
-        table_id:               params[:table_id].presence,
-        append:                 (params[:append].presence == 'true'),
-        table_copy:             params[:table_copy].presence,
-        from_query:             params[:sql].presence,
-        service_name:           service_name.presence,
-        service_item_id:        service_item_id.presence,
-        type_guessing:          type_guessing,
-        quoted_fields_guessing: quoted_fields_guessing,
-        content_guessing:       content_guessing,
-        state:                  enqueue_importer_task ? DataImport::STATE_PENDING : DataImport::STATE_ENQUEUED,
-        upload_host:            Socket.gethostname,
-        create_visualization:   create_derived_vis
-    }
+    ExternalDataImport.new(data_import.id, external_source.id).save if external_source.present?
 
-    data_import = DataImport.create(options)
-    if external_source.present?
-      ExternalDataImport.new(data_import.id, external_source.id).save
-    end
-
-    Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if enqueue_importer_task
+    Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
 
     render_jsonp({ item_queue_id: data_import.id, success: true })
   rescue CartoDB::Importer2::UserConcurrentImportsLimitError
@@ -293,6 +272,37 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   private
+
+  def default_creation_options
+    user_defined_limits = params.fetch(:user_defined_limits, {})
+    # Sanitize
+    user_defined_limits[:twitter_credits_limit] =
+        user_defined_limits[:twitter_credits_limit].presence.nil? ? 0 : user_defined_limits[:twitter_credits_limit].to_i
+
+    # Already had an internal issue due to forgetting to send always a string (e.g. for Twitter is an stringified JSON)
+    raise "service_item_id field should be empty or a string" unless (params[:service_item_id].is_a?(String) ||
+                                                                      params[:service_item_id].is_a?(NilClass))
+
+    {
+      user_id:                current_user.id,
+      table_name:             params[:table_name].presence,
+      # Careful as this field has rules (@see DataImport data_source=)
+      data_source:            nil,
+      table_id:               params[:table_id].presence,
+      append:                 (params[:append].presence == 'true'),
+      table_copy:             params[:table_copy].presence,
+      from_query:             params[:sql].presence,
+      service_name:           params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME,
+      service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence,
+      type_guessing:          ["true", true].include?(params[:type_guessing]),
+      quoted_fields_guessing: ["true", true].include?(params[:quoted_fields_guessing]),
+      content_guessing:       ["true", true].include?(params[:content_guessing]),
+      state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
+      upload_host:            Socket.gethostname,
+      create_visualization:   ["true", true].include?(params[:create_vis]),
+      user_defined_limits:    user_defined_limits
+    }
+  end
 
   def decorate_twitter_import_data!(data, data_import)
     return if data_import.service_name != CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME

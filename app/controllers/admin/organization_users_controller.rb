@@ -8,7 +8,7 @@ class Admin::OrganizationUsersController < ApplicationController
   before_filter :get_config
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy]
-  before_filter :initialize_google_plus_config, only: [:edit, :update]
+  # before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   def get_config
     @extras_enabled = extras_enabled?
@@ -24,10 +24,26 @@ class Admin::OrganizationUsersController < ApplicationController
   def new
     @user = User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
+
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'create' : 'new'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def edit
     set_flash_flags
+
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_edit' : 'edit'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def set_flash_flags(show_dashboard_details_flash = nil, show_account_settings_flash = nil)

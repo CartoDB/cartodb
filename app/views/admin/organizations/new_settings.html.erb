@@ -14,15 +14,13 @@
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 
-
 <%= render 'admin/shared/new_private_header' %>
-
 <%= render :partial => 'shared/new_flash_message' %>
 
 <div>
   <%= render :partial => 'admin/shared/new_org_subheader' %>
 
-  <div class="CredentialsContent">
+  <div class="OrganizationContent">
     <div class="u-inner">
       <%= form_for @organization, url: organization_settings_update_path(user_domain: params[:user_domain]), multipart: true do |f| %>
         <%= csrf_meta_tags %>

@@ -1,0 +1,18 @@
+@import "../new_variables/mixins";
+@import "../new_variables/colors";
+@import "../new_variables/sizes";
+
+// Confirmation flash message
+// --------------------------------------------------
+
+.FlashMessage {
+  width: 100%;
+  padding: 30px 0;
+  background: #FFF7DF;
+}
+.FlashMessage--success { background: #E8F0D6 }
+.FlashMessage--error { background: #FFDBDB }
+.FlashMessage-info {
+  color: $cTypography-headers;
+  font-size: $sFontSize-large;
+}

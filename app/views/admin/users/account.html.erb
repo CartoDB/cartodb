@@ -1,0 +1,117 @@
+<% content_for(:page_title) do %>
+  Your account |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= @user.username %>";
+    var config = <%=raw frontend_config.html_safe %>;
+    var user_data = <%= raw @user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= render 'shared/lato_font' %>
+  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
+<% end %>
+
+<%= render 'admin/shared/new_private_header' %>
+
+<%= render :partial => 'shared/new_flash_message' %>
+
+<div>
+  <%= render :partial => 'admin/shared/new_pages_subheader' %>
+
+  <div class="CredentialsContent">
+    <div class="u-inner">
+      <%= form_for @user, url: account_update_user_path(user_domain: params[:user_domain]), :class => "Form" do |f| %>
+        <%= csrf_meta_tags %>
+
+        <div class="Form-title">
+          <p class="Form-titleText">Change your account preferences</p>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Username</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :username, readonly: true, :class => "Form-input Form-input--long is-disabled" %>
+          </div>
+          <div class="Form-rowInfo">
+            <p class="Form-rowInfoText">Subdomain cannot be changed</p>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Email</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@user.errors[:email].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
+            <% else %>
+              <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Old password</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@user.errors[:old_password].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">New password</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.password_field :new_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:new_password].present? }" %>
+          </div>
+          <div class="Form-rowInfo">
+            <% if (@user.errors[:new_password].present?) %>
+              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+            <% else %>
+              <p class="Form-rowInfoText">Password should be 6 characters at least</p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="Form-row">
+          <div class="Form-rowLabel">
+            <label class="Form-label">Confirm password</label>
+          </div>
+          <div class="Form-rowData">
+            <%= f.password_field :confirm_password, :class => "Form-input Form-input--long" %>
+          </div>
+        </div>
+
+        <div class="Form-footer">
+          <p class="Form-footerText"></p>
+          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+            <% content_tag(:span, 'Save changes') %>
+          <% end %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+<% if !Cartodb.config[:cartodb_com_hosted].present? %>
+  <div class="SupportBanner" id="support-banner"></div>
+<% end %>
+
+<%= render 'admin/shared/new_footer' %>

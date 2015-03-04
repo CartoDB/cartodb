@@ -70,6 +70,9 @@ module CartoDB
       new_public_dashboard_deps.js
       new_public_dashboard.js
       dashboard.js
+      account_templates.js
+      account_deps.js
+      account.js
       new_keys_templates.js
       new_keys_deps.js
       new_keys.js

@@ -117,14 +117,6 @@ class Table < Sequel::Model(:user_tables)
     types
   end
 
-  def calculate_the_geom_type
-    return self.the_geom_type if self.the_geom_type.present?
-
-    calculated = query_geometry_types.first
-    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
-    self.the_geom_type = calculated
-  end
-
   def is_raster?
     schema.select { |key, value| value == 'raster' }.length > 0
   end
@@ -1502,6 +1494,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   private
+
+  def calculate_the_geom_type
+    return self.the_geom_type if self.the_geom_type.present?
+
+    calculated = query_geometry_types.first
+    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
+    self.the_geom_type = calculated
+  end
 
   def query_geometry_types
     owner.in_database[ %Q{

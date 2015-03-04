@@ -24,7 +24,6 @@ config/database.yml
 config/app_config.yml
 config/redis.conf
 config/grunt_production.json
-src/
 spec/support/data/failed_remote/*
 *.swp
 *.swo
@@ -55,3 +54,5 @@ node_modules
 _SpecRunner.html
 vendor/assets/javascripts/cartodb.*
 vendor/assets/stylesheets/cartodb.*
+public/test_support.csv
+public/test_guess_country.csv

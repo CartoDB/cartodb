@@ -71,7 +71,7 @@ class Api::Json::OembedController < Api::ApplicationController
         :author_name => user,
         :author_url => user_profile,
         :provider_name => 'CartoDB',
-        :provider_url => '#{protocol}://www.cartodb.com/'
+        :provider_url => "#{protocol}://www.cartodb.com/"
     }
 
     if format == 'xml'

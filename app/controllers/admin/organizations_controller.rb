@@ -4,9 +4,23 @@ class Admin::OrganizationsController < ApplicationController
   before_filter :login_required, :load_organization_and_members
 
   def show
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_show' : 'show'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def settings
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_settings' : 'settings'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def settings_update

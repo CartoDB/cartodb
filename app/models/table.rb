@@ -667,6 +667,8 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
+    member.map.recalculate_bounds!
+
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
 

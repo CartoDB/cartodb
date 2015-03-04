@@ -102,6 +102,7 @@ Layers.register('namedmap', function(vis, data) {
 });
 
 Layers.register('torque', function(vis, data) {
+  normalizeOptions(vis, data);
   // default is https
   if(vis.https) {
     if(data.sql_api_domain && data.sql_api_domain.indexOf('cartodb.com') !== -1) {

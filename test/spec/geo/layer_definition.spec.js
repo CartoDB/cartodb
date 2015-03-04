@@ -142,12 +142,23 @@
 
   it("should generate url for with cdn", function() {
     layerDefinition.options.no_cdn = false;
+    layerDefinition.options.cdn_url = { http: "api.cartocdn.com" }
     layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
     var tiles = layerDefinition._layerGroupTiles('test_layer');
     expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
     expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/{z}/{x}/{y}.png');
     expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
     expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+  });
+
+  it("should generate url for without cdn", function() {
+    layerDefinition.options.no_cdn = false;
+    layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+    var tiles = layerDefinition._layerGroupTiles('test_layer');
+    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.tiles[1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/{z}/{x}/{y}.png');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
+    expect(tiles.grids[0][1]).toEqual('http://rambo.cartodb.com:8081/api/v1/map/test_layer/0/{z}/{x}/{y}.grid.json');
   });
 
   it("grid url should not include interactivity", function() {
@@ -165,13 +176,24 @@
     expect(layerDefinition.toJSON().layers[0].options.interactivity).toEqual(['cartodb_id', 'john']);
   });
 
-  it("should use cdn_url as default", function() {
-    delete layerDefinition.options.no_cdn;
-    expect(layerDefinition._host()).toEqual('http://api.cartocdn.com/rambo');
-    expect(layerDefinition._host('0')).toEqual('http://0.api.cartocdn.com/rambo');
+  it("should use the tiler url when there's explicitly empty cdn defined", function() {
+    layerDefinition.options.cdn_url = {
+      http: "", https: ""
+    };
+    expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
     layerDefinition.options.tiler_protocol = "https";
-    expect(layerDefinition._host()).toEqual('https://cartocdn.global.ssl.fastly.net/rambo');
-    expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
+    expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
+  });
+
+  it("should use the tiler url when there's explicitly no cdn", function() {
+    layerDefinition.options.cdn_url = undefined;
+    expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
+    layerDefinition.options.tiler_protocol = "https";
+    expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
+    expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
   });
 
   it("should use cdn_url from tiler when present", function(done) {
@@ -781,6 +803,17 @@ describe("NamedMap", function() {
     });
 
   })
+
+  it("should get sublayer", function() {
+    named_map = {
+      name: 'testing',
+      params: {
+        color: 'red'
+      }
+    };
+    namedMap = new NamedMap(named_map, {})
+    expect(namedMap.getSubLayer(0)).not.toEqual(undefined);
+  });
 
   it("should enable/disable layers", function(done) {
     var params;

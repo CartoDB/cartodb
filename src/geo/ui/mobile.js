@@ -118,6 +118,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.hasLayerSelector = false;
+    this.layersLoading    = 0;
 
     this.slides_data   = this.options.slides_data;
     this.visualization = this.options.visualization;
@@ -141,35 +142,17 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
-    this.mapView.bind('newLayerView', this._addLoading, this);
-
     this._addWheelEvent();
 
-  },
-
-  _addLoading: function (layerView) {
-    if (layerView) {
-      var self = this;
-
-      var loadingTiles = function() {
-        self.loadingTiles();
-      };
-
-      var loadTiles = function() {
-        self.loadTiles();
-      };
-
-      layerView.bind('loading', loadingTiles);
-      layerView.bind('load',    loadTiles);
-    }
   },
 
   loadingTiles: function() {
     if (this.loader) {
       this.loader.show()
     }
-    if(this.layersLoading === 0) {
-        this.trigger('loading');
+
+    if (this.layersLoading === 0) {
+      this.trigger('loading');
     }
     this.layersLoading++;
   },

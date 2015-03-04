@@ -2649,7 +2649,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     if (options.animationDuration) {
       this.animator.duration(options.animationDuration);
     }
-
+    this._clearCaches();
     this.redraw();
     return this;
   },
@@ -4175,10 +4175,14 @@ var Profiler = require('../profiler');
       var host = this.options.dynamic_cdn ? this.url().replace('{s}', '0'): this._tilerHost();
       var url = host + "/api/v1/map";
       var named = this.options.named_map;
+      var allParams = {};
 
       if(named) {
         //tiles/template
         url = host + "/api/v1/map/named/" + named.name + "/jsonp";
+        if(typeof named.params !== "undefined"){
+          layergroup = named.params;
+        }
       } else {
         layergroup = {
           "version": "1.0.1",
@@ -4193,7 +4197,12 @@ var Profiler = require('../profiler');
           }]
         };
       }
-      var extra = this._extraParams(this.options.stat_tag ? { stat_tag: this.options.stat_tag }: {} );
+      
+      if(this.options.stat_tag){
+        allParams["stat_tag"] = this.options.stat_tag;
+      }
+
+      extra = this._extraParams(allParams);
 
       // tiler needs map_key instead of api_key
       // so replace it
@@ -4655,7 +4664,10 @@ var filters = require('./torque_filters');
           if (typeof self._icons.itemsToLoad === 'undefined'){
             this._icons.itemsToLoad = img_names.length;
           }
-          new_img.crossOrigin = "Anonymous";
+          var filtered = self._shader.getLayers().some(function(layer){return typeof layer.shader["image-filters"] !== "undefined"});
+          if (filtered){
+            new_img.crossOrigin = 'Anonymous';
+          }
           new_img.onload = function(e){
             self._icons[this.src] = this;
             if (Object.keys(self._icons).length === img_names.length + 1){
@@ -4669,6 +4681,9 @@ var filters = require('./torque_filters');
           new_img.onerror = function(){
             self._forcePoints = true;
             self.clearSpriteCache();
+            if(filtered){
+              console.info("Only CORS-enabled, or same domain image-files can be used in combination with image-filters");
+            }
             console.error("Couldn't get marker-file " + this.src);
           };
           this.itemsToLoad++;

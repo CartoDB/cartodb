@@ -1,14 +1,66 @@
-3.12.0 ()
-- Added Odyssey support for visualizations
+3.12.10 (02//03//2015)
+- Don't send the urlTemplate to generate a Static Map if we don't have it.
+- Disables the CDN if the server doesn't send us the configuration.
 - fixes bootstrap collisions (#87, #107)
 
-3.11.32 (29//01//2014)
+3.12.9 (26//02//2015)
+- Updates Static Map module to use the CDN URL from the layergroup.
+
+3.12.8 (26//02//2015)
+- Allows to override the default use of the bounding box to generate an image, using the center instead.
+- Fixes the static map module to avoid using hidden layers to generate images.
+- Extracts the CDN host configuration from the vizjson.
+- Removes cdbui bower dependency.
+
+3.12.7 (23//02//2015)
+- By default we now serve the Static API images through CartoDB's CDN.
+
+3.12.6 (23//02//2015)
+- Fixes mobile and IE interaction issues (#346, #313, #223, #139). 
+
+3.12.5 (20//02/2015)
+- Fixes request to generate an image when the vizjson contains a named map and a torque layer with a named map
+
+3.12.4 (18//02/2015)
+- Fixes leaflet point generation on events when using touch devices
+
+3.12.3 (17//02/2015)
+- Fixes a case were having an empty bbox would end up generatign an erroneous bounding box URL.
+
+3.12.2 (17//02/2015)
+- Fixes error generating a map preview of a visualization with a torque layer.
+- Fixed use of https parameter in torque layer
+- Fixed change of play/pause state in timeslider
+- Fixed legend values named 0 being evaluated as NULL
+
+3.12.1 (13//02/2015)
+- Allows to force the https protocol when requesting a vizjson to generate a static image
+
+3.12.0 (09//02/2015)
+- Added Odyssey support for visualizations
+- Adds new API to generate static images (https://github.com/CartoDB/cartodb.js/wiki/CartoDB-Map-API)
+- Fixes the hiding of the tile loader in mobile
+- Adds heatmap support for torque
+
+3.11.36 (09//02//2014)
+- Fixes slider style problem in narrower devices.
+
+3.11.35 (06//02//2014)
+- re-fixes google maps mobile events
+
+3.11.34 (06//02//2014)
+- Fixes google maps mobile events
+
+3.11.33 (05//02//2014)
+- Fixes tooltip style.
+
+3.11.32 (29//01//2015)
 - Fixed touch events on mobile (Android)
 
-3.11.31 (23//01//2014)
+3.11.31 (23//01//2015)
 - #291 - Removes padding and margin reset for webkit browsers
 
-3.11.30 (13//01//2014)
+3.11.30 (13//01//2015)
 - #264 - Fix addTo (when the second param specifies index)
 
 3.11.29 (30//12//2014)
@@ -47,7 +99,7 @@
 - fixes a bug that made the hidden Torque layers visible
 
 3.11.21 (24//10//2014)
-- enabled dynamic_cdn to route layergroup calls though the CDN
+- enabled dynamic_cdn to route layergroup calls through the CDN
 
 3.11.20 (24//10//2014)
 - enabled fixed callback for layergroups and infowindows

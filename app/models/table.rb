@@ -111,11 +111,9 @@ class Table < Sequel::Model(:user_tables)
       # cache hit
       types = JSON.parse(types_str)
     else
-      # cache miss, check schema and query, store if length > 0
-      if schema.select { |key, value| key == :the_geom }.length > 0
-        types = query_geometry_types
-        cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
-      end
+      # cache miss, query and store if length > 0
+      types = query_geometry_types
+      cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
     end
 
     types
@@ -1502,19 +1500,24 @@ class Table < Sequel::Model(:user_tables)
   def calculate_the_geom_type
     return self.the_geom_type if self.the_geom_type.present?
 
-    calculated = query_geometry_types.first
+    calculated = geometry_types.first
     calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
     self.the_geom_type = calculated
   end
 
   def query_geometry_types
-    owner.in_database[ %Q{
-      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-        SELECT the_geom
-        FROM "#{self.name}"
-        WHERE (the_geom is not null) LIMIT 10
-      ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
+    # We do not query the DB, if the_geom does not exist we just recover
+    begin
+      owner.in_database[ %Q{
+        SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+          SELECT the_geom
+          FROM "#{self.name}"
+          WHERE (the_geom is not null) LIMIT 10
+        ) as foo
+      }].all.map {|r| r[:st_geometrytype] }
+    rescue
+      []
+    end
   end
 
   def cache

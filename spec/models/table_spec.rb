@@ -1379,7 +1379,11 @@ describe Table do
       # Schema gets cached, force reload
       table.reload
       table.schema(reload:true)
-      table.geometry_types.should == []
+
+      # This is no longer true: it should be considered a stat or guessing
+      # for the UI to plot icons on table listings and similar stuff and will
+      # not be invalidated from the editor.
+      #table.geometry_types.should == []
 
       table.destroy
     end

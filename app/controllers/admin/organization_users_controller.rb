@@ -8,7 +8,7 @@ class Admin::OrganizationUsersController < ApplicationController
   before_filter :get_config
   before_filter :login_required, :check_permissions
   before_filter :get_user, only: [:edit, :update, :destroy]
-  # before_filter :initialize_google_plus_config, only: [:edit, :update]
+  before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   def get_config
     @extras_enabled = extras_enabled?

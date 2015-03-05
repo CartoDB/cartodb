@@ -1658,6 +1658,7 @@ describe Api::Json::VisualizationsController do
 
     it 'Sanitizes vizjson callback' do
       valid_callback = 'my_function'
+      valid_callback2 = 'a'
       invalid_callback1 = 'alert(1);'
       invalid_callback2 = '%3B'
       invalid_callback3 = '123func'    # JS names cannot start by number
@@ -1669,20 +1670,21 @@ describe Api::Json::VisualizationsController do
       (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
 
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback1}", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
+      last_response.status.should == 400
 
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback2}", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
+      last_response.status.should == 400
 
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback3}", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
+      last_response.status.should == 400
 
+      # if param specified, must not be empty
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=", {}, @headers
+      last_response.status.should == 400
+
+      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{valid_callback2}", {}, @headers
       last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
+      (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
 
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200

@@ -45,11 +45,13 @@ namespace :cartodb do
       }
     end
 
-    desc 'Load common data account remotes for everybody'
-    task :load_all => [:environment] do |t|
+    desc 'Load common data account remotes for multiple users, in alphabetical order. If you pass a username, it will do it beginning in the next username'
+    task :load_all, [:from_username] => [:environment] do |t, args|
       datasets = CommonDataSingleton.instance.datasets[:datasets]
       puts DateTime.now
-      User.all.each do |user|
+      users = User.order_by(:username)
+      users = users.where("username > '#{args[:from_username]}'") unless args[:from_username].nil?
+      users.all.each do |user|
         added, updated, not_modified, failed = user.load_common_data(datasets)
         printf("%20s: +%03d; *%03d; =%03d; e%03d\n", user.username, added, updated, not_modified, failed)
       end

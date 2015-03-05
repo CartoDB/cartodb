@@ -24,6 +24,10 @@ class Admin::OrganizationsController < ApplicationController
   end
 
   def settings_update
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_settings' : 'settings'
+    layout = new_dashboard ? 'new_application' : 'application'
+
     attributes = params[:organization]
 
     if attributes.include?(:avatar_url)
@@ -50,10 +54,10 @@ class Admin::OrganizationsController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: :settings
+    render action: view, layout: layout
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
-    render action: :settings
+    render action: view, layout: layout
   end
 
   private

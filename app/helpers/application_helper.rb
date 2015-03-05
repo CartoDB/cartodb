@@ -43,23 +43,6 @@ module ApplicationHelper
     end
   end
 
-  # TODO: Check this for MU
-  def account_url
-    if Cartodb.config[:account_host]
-      request.protocol + CartoDB.account_host + CartoDB.account_path + '/' + current_user.username
-    end
-  end
-
-  # TODO: Check this for MU
-  def plan_url
-    account_url + '/plan'
-  end
-
-  # TODO: Check this for MU
-  def upgrade_url
-    account_url + '/upgrade'
-  end
-
   def frontend_config
     config = {
       tiler_protocol:             Cartodb.config[:tiler]["private"]["protocol"],

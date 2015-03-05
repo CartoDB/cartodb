@@ -293,7 +293,7 @@
                 <% if false %><p>Or <a href="#/generate-pass" class="pass-generator">generate</a> a random password for this user</p><% end %>
               </div>
               <div class="row">
-                <p>Do you need more quota? <%= link_to 'Upgrade your account', upgrade_url %></p>
+                <p>Do you need more quota? <%= link_to 'Upgrade your account', current_user.upgrade_url(request.protocol) %></p>
               </div>
             <% end %>
           </div>

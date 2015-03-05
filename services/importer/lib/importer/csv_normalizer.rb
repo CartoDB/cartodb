@@ -65,8 +65,8 @@ module CartoDB
         lines_for_detection = Array.new
 
         LINES_FOR_DETECTION.times {
-          line = stream.gets 
-          lines_for_detection << line unless line.nil?
+          line = stream.gets
+          lines_for_detection << remove_quoted_strings(line) unless line.nil?
         }
 
         stream.rewind
@@ -256,6 +256,10 @@ module CartoDB
         m = mean(items_list)
         sum = items_list.inject(0){|accum, i| accum + (i-m)**2 }
         sum / (items_list.length - 1).to_f
+      end
+
+      def remove_quoted_strings(input)
+        input.gsub(/"[^\\"]*"/, '')
       end
 
       attr_writer :temporary_directory

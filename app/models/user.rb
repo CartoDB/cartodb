@@ -2235,6 +2235,20 @@ TRIGGER
     CartoDB.base_url(self.subdomain, user_name)
   end
 
+  def account_url(request_protocol)
+    if Cartodb.config[:account_host]
+      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+    end
+  end
+
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
+  def upgrade_url(request_protocol)
+    account_url(request_protocol) + '/upgrade'
+  end
+
   def subdomain
     organization.nil? ? username : organization.name
   end

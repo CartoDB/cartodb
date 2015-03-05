@@ -16,7 +16,7 @@ class Admin::UsersController < ApplicationController
 
   def profile
     unless @user.has_feature_flag?('new_dashboard')
-      redirect_to account_url and return
+      redirect_to @user.account_url(request.protocol) and return
     end
 
     respond_to do |format|
@@ -26,7 +26,7 @@ class Admin::UsersController < ApplicationController
 
   def account
     unless @user.has_feature_flag?('new_dashboard')
-      redirect_to account_url and return
+      redirect_to @user.account_url(request.protocol) and return
     end
 
     respond_to do |format|

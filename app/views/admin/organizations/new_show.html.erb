@@ -79,7 +79,7 @@
             <% if (current_user.organization.seats - @users.count) < 5 %>
               <p class="Form-footerText">
                 <i class="iconFont iconFont-Info Form-footerIcon"></i>
-                You are near your seats limit. Consider to <a href="<%= upgrade_url %>">upgrade your account</a>.
+                You are near your seats limit. Consider to <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a>.
               </p>
             <% end %>
             <a href="<%= new_organization_user_path(user_domain: params[:user_domain]) %>" class="Button Button--main"><span>Create new user</span></a>
@@ -88,7 +88,7 @@
               <i class="iconFont iconFont-Info Form-footerIcon"></i>
               <a href="mailto:sales@cartodb.com">Contact us</a> if you have any question.
             </p>
-            <a href="<%= upgrade_url %>" class="Button Button--positive"><span>Upgrade account</span></a>
+            <a href="<%= current_user.upgrade_url(request.protocol) %>" class="Button Button--positive"><span>Upgrade account</span></a>
           <% end %>
         </div>
       </div>

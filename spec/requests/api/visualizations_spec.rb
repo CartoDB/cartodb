@@ -1678,9 +1678,9 @@ describe Api::Json::VisualizationsController do
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{invalid_callback3}", {}, @headers
       last_response.status.should == 400
 
+      # if param specified, must not be empty
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=", {}, @headers
-      last_response.status.should == 200
-      (last_response.body =~ /^\{/i).should eq 0
+      last_response.status.should == 400
 
       get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}&callback=#{valid_callback2}", {}, @headers
       last_response.status.should == 200

@@ -24,6 +24,6 @@ class Api::ApplicationController < ApplicationController
 
   def callback_valid?
     # While only checks basic characters, represents most common use of JS function names
-    params[:callback].nil?  || params[:callback].length == 0 || !!(params[:callback] =~ /^[$a-z_][0-9a-z_$]*$/i)
+    params[:callback].nil?  || !!(params[:callback] =~ /^[$a-z_][0-9a-z_$]*$/i)
   end
 end

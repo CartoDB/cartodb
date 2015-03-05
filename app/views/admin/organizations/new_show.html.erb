@@ -81,6 +81,8 @@
                 <i class="iconFont iconFont-Info Form-footerIcon"></i>
                 You are near your seats limit. Consider to <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a>.
               </p>
+            <% else %>
+              <em></em>
             <% end %>
             <a href="<%= new_organization_user_path(user_domain: params[:user_domain]) %>" class="Button Button--main"><span>Create new user</span></a>
           <% elsif !Cartodb.config[:cartodb_com_hosted].present? %>

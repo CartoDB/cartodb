@@ -317,7 +317,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     derived_vis_id = nil
 
     if data_import.create_visualization && !data_import.visualization_id.nil?
-      derived_vis = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch
+      derived_vis_id = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch.id
     end
 
     data[:derived_visualization_id] = derived_vis_id

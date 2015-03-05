@@ -11,24 +11,38 @@
   <% end %>
 </script>
 
-<%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)) do |f| %>
+<%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)), :class =>'Form' do |f| %>
 
   <%= f.hidden_field :private_tables_enabled %>
   <%= hidden_field_tag :show_account_settings_flash, true %>
   <%= csrf_meta_tags %>
 
+  <div class="Form-title">
+    <% if !@user.new? %>
+      <p class="Form-titleText">Edit or delete <%= @user.username %> user from you <%= current_user.organization.name %> organization.</p>
+    <% else %>
+      <p class="Form-titleText">Create a new user for your <%= current_user.organization.name %> organization.
+      <% if !Cartodb.config[:cartodb_com_hosted].present? %>
+        If you need more resources, don't hesitate to <a href="mailto:support@cartodb.com">contact us</a>.
+      <% end %>
+      </p>
+    <% end %>
+  </div>
+
   <div class="Form-row">
     <div class="Form-rowLabel">
       <label class="Form-label">User name</label>
     </div>
-    <div class="Form-rowData">
-      <%= f.text_field :username, :class => "Form-input Form-input--long #{ 'is-disabled' if !@user.new? }", :readonly => !@user.new? %>
+    <div class="Form-rowData Form-rowData--med">
+      <%= f.text_field :username, :class => "Form-input Form-input--med #{ 'is-disabled' if !@user.new? } #{ 'Form-input--error' if @user.errors[:username].present? }", :readonly => !@user.new? %>
     </div>
     <div class="Form-rowInfo">
       <% if (@user.errors[:username].present?) %>
         <p class="Form-rowInfoText Form-rowInfoText--error">Username not valid</p>
       <% elsif !@user.new? %>
         <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
+      <% else %>
+        <p class="Form-rowInfoText">Once you choose the username, you won't be able to change it</p>
       <% end %>
     </div>
   </div>
@@ -37,12 +51,14 @@
     <div class="Form-rowLabel">
       <label class="Form-label">User email</label>
     </div>
-    <div class="Form-rowData">
-      <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'is-disabled' if !@user.can_change_email }", readonly: !@user.can_change_email %>
+    <div class="Form-rowData Form-rowData--med">
+      <%= f.text_field :email, :class => "Form-input Form-input--med #{ 'is-disabled' if !@user.can_change_email } #{ 'Form-input--error' if @user.errors[:email].present? }", readonly: !@user.can_change_email %>
     </div>
     <div class="Form-rowInfo">
       <% if (@user.errors[:email].present?) %>
         <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
+      <% elsif @user.new? %>
+        <p class="Form-rowInfoText">We encourage you to choose an email from your organization</p>
       <% end %>
     </div>
   </div>
@@ -51,219 +67,70 @@
     <div class="Form-rowLabel">
       <label class="Form-label">User password</label>
     </div>
-    <div class="Form-rowData">
-      <%= password_field_tag 'user[password]', nil, :class => "Form-input Form-input--short #{ 'hello' if @user.errors[:password].present?}" %>
-      <%= password_field_tag 'user[password_confirmation]', nil, :class => "Form-input Form-input--short #{ 'hello' if @user.errors[:password].present?}" %>
+    <div class="Form-rowData Form-rowData--med">
+      <%= password_field_tag 'user[password]', nil, :placeholder => "new password", :class => "Form-input Form-input--short #{ 'Form-input--error' if @user.errors[:password].present? }" %>
+      <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "confirm new one", :class => "Form-input Form-input--short #{ 'hello' if @user.errors[:password].present?}" %>
     </div>
     <div class="Form-rowInfo">
       <% if (@user.errors[:password].present?) %>
-        <p class="Form-rowInfoText Form-rowInfoText--error">Password not valid not valid</p>
+        <p class="Form-rowInfoText Form-rowInfoText--error">Password not valid</p>
       <% else %>
         <p class="Form-rowInfoText">Password should be 6 characters at least</p>
       <% end %>
     </div>
   </div>
 
+  <div class="Form-row">
+    <div class="Form-rowLabel">
+      <label class="Form-label">User quota</label>
+    </div>
+    <%= f.hidden_field :quota_in_bytes, :id => "user_quota" %>
+    <%= 'ERROR!' if @user.errors[:quota_in_bytes].present? %>
+  </div>
+
+  <div class="Form-row">
+    <div class="Form-rowLabel">
+      <label class="Form-label">Extra geocoding</label>
+    </div>
+    <div class="Form-rowData">
+      <div class="Toggler">
+        <%= f.check_box :soft_geocoding_limit, :id => "soft_geocoding_limit" %>
+        <%= label_tag(:soft_geocoding_limit, '') %>
+      </div>
+    </div>
+  </div>
+
+  <div class="Form-row">
+    <div class="Form-rowLabel">
+      <label class="Form-label">Extra tweets</label>
+    </div>
+    <div class="Form-rowData">
+      <div class="Toggler">
+        <%= f.check_box :soft_twitter_datasource_limit, :id => "soft_twitter_datasource_limit" %>
+        <%= label_tag(:soft_twitter_datasource_limit, '') %>
+      </div>
+      
+    </div>
+  </div>
+
   <div class="Form-footer">
-    <% if !@user.new? -%>
-      <%= link_to("delete this user", delete_organization_user_path(user_domain: params[:user_domain], id: @user.username), :class => "left delete red margin15") if current_user.organization_owner? %>
-      <%= f.submit 'Save changes', :class => "right grey button new" %>
+    <% if !@user.new? && current_user.organization_owner? -%>
+      <% if @user != current_user %>
+        <a href="<%= delete_organization_user_path(user_domain: params[:user_domain], id: @user.username) %>" class="Button Button--negative">
+          <span>Delete this user</span>
+        </a>
+      <% else %>
+        <em></em>
+      <% end %>
+      <button type="submit" class="Button Button--main">
+        <span>Save changes</span>
+      </button>
     <% else %>
       <em></em>
-      <%= f.submit 'Create user', :class => "right grey button new" %>
+      <button type="submit" class="Button Button--main">
+        <span>Create user</span>
+      </button>
     <% end %>
   </div>
 
 <% end %>
-
-
-
-<!-- Account settings (password, email, etc) -->
-
-<section class="block <%= 'margin40' if !current_user.organization_owner? %>">
-  <% if current_user.organization_owner? %>
-    <%= link_to "back", organization_url(user_domain: params[:user_domain]), :class => "back" %>
-  <% end %>
-
-  <%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)) do |form| %>
-
-    <%= form.hidden_field :private_tables_enabled %>
-    <%= hidden_field_tag :show_account_settings_flash, true %>
-    <%= csrf_meta_tags %>
-
-    <div class="head">
-      <% if !@user.new? && @user.avatar_url.present? && current_user.organization_owner? %>
-        <img src="<%= @user.avatar_url %>" alt="<%= @user.username %>" title="<%= @user.username %>" />
-      <% end %>
-      <h2>
-        <% if @user.new? -%>
-          Create new user
-        <% elsif current_user.organization_owner? %>
-          <%= "#{@user.username} details" %>
-        <% else %>
-          Your account
-        <% end %>
-      </h2>
-    </div>
-
-    <% if @show_account_settings_flash %>
-      <ul><%= render partial: 'shared/flash_message' %></ul>
-    <% end %>
-
-    <% if !@user.new? && current_user.organization_owner? -%>
-    <div class="content user-details">
-      <ul>
-        <li><%= @user.tables.count %> tables created</li>
-        <li><%= @user.visualization_count %> visualizations created</li>
-        <li><%= @user.get_geocoding_calls %> georeferenced rows</li>
-
-        <%#
-          It needs to know the limits:
-            · quota used < 75% -> ok
-            · quota used => 75% && quota used < 95% -> danger
-            · quota used => 95% -> boom
-        -%>
-        <% used_percentage = @user.db_size_in_bytes / @user.quota_in_bytes.to_f -%>
-        <% user_type = case used_percentage
-        when 0..0.7
-          'ok'
-        when 0.7..0.9
-          'danger'
-        else
-          'boom'
-        end -%>
-
-        <li><strong class="<%= user_type %>"><%= number_to_percentage used_percentage, precision: 2 %></strong> of user quota used</li>
-        <li><%= @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum %> map views this month</li>
-        <li>Last access: <%= "#{distance_of_time_in_words_to_now(@user.get_last_active_time)} ago" rescue "--" %></li>
-      </ul>
-    </div>
-    <% end %>
-
-    <div class="content">
-      <div class="org-user-form">
-
-        <div class="left-column">
-          <div class="row">
-            <div class="field field-2">
-              <%= form.label :username %>
-              <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil, :disabled => !@user.new? %>
-              <%= form_error_for :username, @user.errors %>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field field-2">
-              <%= form.label :email %>
-              <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil, readonly: !@user.can_change_email %>
-              <%= form_error_for :email, @user.errors %>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field field-2">
-              <%= label_tag 'user[password]', 'New password' %>
-              <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
-              <%= form_error_for :password, @user.errors %>
-            </div>
-            <div class="field field-2">
-              <%= label_tag 'user[password_confirmation]', 'Confirm password' %>
-              <%= password_field_tag 'user[password_confirmation]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
-              <%= form_error_for :password_confirmation, @user.errors %>
-            </div>
-          </div>
-
-          <% if current_user.organization_owner? -%>
-            <div class="row">
-              <div class="field field-1">
-                <label>
-                  <% if @user.new? -%>
-                    New user will have
-                  <% else %>
-                    <%= @user.username %> has
-                  <% end %>
-                  <strong><%= number_to_human_size(@user.quota_in_bytes) %> assigned</strong> -
-                  <a href="#/change-quota" class="change_quota">change</a>
-                </label>
-                <div class="progress-bar"></div>
-                <%= form.hidden_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil, :id => "user_quota" %>
-                <%= form_error_for :quota_in_bytes, @user.errors %>
-              </div>
-            </div>
-
-            <!-- USER EXTRAS -->
-            <% if @extras_enabled %>
-              <div class="extras margin20">
-                <div class="row">
-                  <div class="field field-1">
-                    <label class="bottom-border">EXTRAS</label>
-                    <ul class="extras">
-                      <% if @extra_geocodings_enabled %>
-                        <li>
-                          <span class="light">Allow extra geocodings</span>
-                          <div><%= form.check_box :soft_geocoding_limit %></div>
-                        </li>
-                      <% end %>
-
-                      <% if @extra_tweets_enabled %>
-                        <li>
-                          <span class="light">Allow extra tweets</span>
-                          <div><%= form.check_box :soft_twitter_datasource_limit %></div>
-                        </li>
-                      <% end %>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-
-          <% end -%>
-        </div>
-
-        <div class="right-column">
-          <div class="row">
-            <p>Subdomain cannot be changed</p>
-          </div>
-          <div class="row">
-            <p><% if @user.google_sign_in && !@user.can_change_email %>Your account is linked to your Google account. You can change the email if you set a password.<% end %></p>
-          </div>
-          <div class="row">
-            <p><% if @user.google_sign_in && !@user.can_change_email %>Accounts linked to Google don't need a password.<% end %></p>
-          </div>
-          <div class="row">
-            <p>
-              <% unless @user.new? -%>
-                <% if current_user.organization_owner? -%>
-                  This user
-                  <%= @user.new? ? "will enter" : "enters" %>
-                <% else %>
-                  You enter
-                <% end %>
-                through <%= link_to "#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}", "http://#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}" %></p>
-              <% end -%>
-          </div>
-
-          <% if current_user.organization_owner? -%>
-            <div class="row">
-              <% if false %><p>Or <a href="#/generate-pass" class="pass-generator">generate</a> a random password for this user</p><% end %>
-            </div>
-            <div class="row">
-              <p>Do you need more quota? <%= link_to 'Upgrade your account', upgrade_url %></p>
-            </div>
-          <% end %>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="foot">
-      <% if !@user.new? -%>
-        <%= link_to("delete this user", delete_organization_user_path(user_domain: params[:user_domain], id: @user.username), :class => "left delete red margin15") if current_user.organization_owner? %>
-        <%= form.submit 'Save changes', :class => "right grey button new" %>
-      <% else %>
-        <%= form.submit 'Create user', :class => "right grey button new" %>
-      <% end %>
-    </div>
-
-  <% end %>
-</section>

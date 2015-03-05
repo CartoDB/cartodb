@@ -11,7 +11,7 @@
 <% end %>
 <%= content_for(:css) do %>
   <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
+  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_organization.css',  :media => 'all' %>
 <% end %>
 
 
@@ -25,7 +25,12 @@
         <div class="Filters-row">
           <div class="Filters-type">
             <ul class="Filters-list">
-              <li class="Filters-typeItem"><a class="Filters-typeLink is-selected"><%= @user.username %></a></li>
+              <li>
+                <a href="<%= organization_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+                  <i class="iconFont iconFont-ArrowPrev"></i>
+                </a>
+              </li>
+              <li class="Filters-typeItem"><a class="Filters-typeLink is-selected"><%= @user.username.capitalize %> details</a></li>
             </ul>
           </div>
         </div>
@@ -35,6 +40,60 @@
 
   <div class="OrganizationContent">
     <div class="u-inner">
+      <div class="OrganizationUser">
+        <ul class="OrganizationUser-stats">
+          <li class="OrganizationUser-stat">
+            <i class="iconFont iconFont-Document OrganizationUser-statIcon"></i>
+            <div class="OrganizationUser-statInfo">
+              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.tables.count) %></em>
+              <label class="OrganizationUser-statLabel"><%= "Dataset".pluralize(@user.tables.count) %></label>
+            </div>
+          </li>
+          <li class="OrganizationUser-stat">
+            <i class="iconFont iconFont-Eye OrganizationUser-statIcon"></i>
+            <div class="OrganizationUser-statInfo">
+              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.visualization_count) %></em>
+              <label class="OrganizationUser-statLabel"><%= "Map".pluralize(@user.visualization_count) %></label>
+            </div>
+          </li>
+          <li class="OrganizationUser-stat">
+            <i class="iconFont iconFont-Marker OrganizationUser-statIcon"></i>
+            <div class="OrganizationUser-statInfo">
+              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.get_geocoding_calls) %></em>
+              <label class="OrganizationUser-statLabel"><%= "Georeferenced row".pluralize(@user.get_geocoding_calls) %></label>
+            </div>
+          </li>
+          <li class="OrganizationUser-stat">
+            <i class="iconFont iconFont-ProgressBar OrganizationUser-statIcon"></i>
+            <div class="OrganizationUser-statInfo">
+              <em class="OrganizationUser-statTitle"><%= number_to_percentage @user.db_size_in_bytes / @user.quota_in_bytes.to_f, precision: 0 %></em>
+              <label class="OrganizationUser-statLabel">Quota used</label>
+            </div>
+          </li>
+          <li class="OrganizationUser-stat">
+            <i class="iconFont iconFont-Map OrganizationUser-statIcon"></i>
+            <div class="OrganizationUser-statInfo">
+              <em class="OrganizationUser-statTitle"><%= number_with_delimiter(@user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum) %></em>
+              <label class="OrganizationUser-statLabel"><%= "Map view".pluralize(@user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum) %></label>
+            </div>
+          </li>
+          <li class="OrganizationUser-stat">
+            <i class="iconFont iconFont-Clock OrganizationUser-statIcon"></i>
+            <div class="OrganizationUser-statInfo">
+              <% last_access = distance_of_time_in_words_to_now(@user.get_last_active_time) rescue 'Never' %>
+              <em class="OrganizationUser-statTitle"><%= last_access %></em>
+              <label class="OrganizationUser-statLabel">
+                <% if last_access == "Never" %>
+                  <%= "connected" %>
+                <% else %>
+                  <%= "ago last access" %>
+                <% end %>
+              </label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    
       <%= render partial: 'new_form' %>
     </div>
   </div>

@@ -6,7 +6,9 @@
       <% if clone %>
         <li><a href="http://cartodb.com/login">Clone this</a><li>
       <% end %>
-      <li><a class="signup" href="http://cartodb.com/signup">Sign up</a><li>
+      <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+        <li><a class="signup" href="http://cartodb.com/signup">Sign up</a><li>
+      <% end %>
       <li><a href="http://cartodb.com/login" class="border login">Login</a></li>
     </ul>
   </div>

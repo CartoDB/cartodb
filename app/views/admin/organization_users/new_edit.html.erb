@@ -68,7 +68,7 @@
             <div class="OrganizationUser-statInfo">
               <%
                 if @user.quota_in_bytes == 0
-                  userPer = 0
+                  userPer = '0%'
                 else
                   userPer = number_to_percentage ((@user.db_size_in_bytes * 100) / @user.quota_in_bytes.to_f), precision: 0
                 end

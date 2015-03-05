@@ -4,7 +4,6 @@
 @import "../new_variables/mixins";
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
-@import "../new_variables/progress-bar";
 
 .OrganizationUser-stats {
   @include display-flex();

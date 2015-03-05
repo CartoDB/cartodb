@@ -66,7 +66,7 @@
           <li class="OrganizationUser-stat">
             <i class="iconFont iconFont-ProgressBar OrganizationUser-statIcon"></i>
             <div class="OrganizationUser-statInfo">
-              <em class="OrganizationUser-statTitle"><%= number_to_percentage @user.db_size_in_bytes / @user.quota_in_bytes.to_f, precision: 0 %></em>
+              <em class="OrganizationUser-statTitle"><%= number_to_percentage ((@user.db_size_in_bytes * 100) / @user.quota_in_bytes.to_f), precision: 0 %></em>
               <label class="OrganizationUser-statLabel">Quota used</label>
             </div>
           </li>

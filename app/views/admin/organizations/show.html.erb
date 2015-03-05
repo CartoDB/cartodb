@@ -63,9 +63,13 @@
       <div class="foot">
         <% if current_user.organization.seats > @users.count %>
           <%= link_to "Create new user", new_organization_user_path(user_domain: params[:user_domain]), :class => 'right button grey' %>
-          <%= link_to "Buy more seats", current_user.upgrade_url(request.protocol), :class => 'margin10 underline left' %>
+          <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+            <%= link_to "Buy more seats", current_user.upgrade_url(request.protocol), :class => 'margin10 underline left' %>
+          <% end %>
         <% else %>
-          <%= link_to "Upgrade your quota", current_user.upgrade_url(request.protocol), :class => "button green right" %>
+          <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+            <%= link_to "Upgrade your quota", current_user.upgrade_url(request.protocol), :class => "button green right" %>
+          <% end %>
         <% end %>
       </div>
     </section>

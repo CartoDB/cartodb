@@ -99,30 +99,24 @@ class Table < Sequel::Model(:user_tables)
   end #default_privacy_values
 
   def geometry_types_key
-    @geometry_types_key ||= "#{key}:geometry_types"
+    @geometry_types_key ||= "#{redis_key}:geometry_types"
   end
 
   def geometry_types
-    if schema.select { |key, value| key == :the_geom }.length > 0
-      types_str = cache.get geometry_types_key
-      if types_str.present?
-        types = JSON.parse(types_str)
-      else
-        types = query_geometry_types
-        cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
-      end
+    # default return value
+    types = []
+
+    types_str = cache.get geometry_types_key
+    if types_str.present?
+      # cache hit
+      types = JSON.parse(types_str)
     else
-      types = []
+      # cache miss, query and store if length > 0
+      types = query_geometry_types
+      cache.setex(geometry_types_key, 24.hours.to_i, types) if types.length > 0
     end
+
     types
-  end
-
-  def calculate_the_geom_type
-    return self.the_geom_type if self.the_geom_type.present?
-
-    calculated = query_geometry_types.first
-    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
-    self.the_geom_type = calculated
   end
 
   def is_raster?
@@ -870,8 +864,8 @@ class Table < Sequel::Model(:user_tables)
     previous_changes.keys.include?(:privacy)
   end #privacy_changed?
 
-  def key
-    key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"
+  def redis_key
+    key ||= "rails:table:#{id}"
   end
 
   def sequel
@@ -1505,14 +1499,27 @@ class Table < Sequel::Model(:user_tables)
 
   private
 
+  def calculate_the_geom_type
+    return self.the_geom_type if self.the_geom_type.present?
+
+    calculated = geometry_types.first
+    calculated = calculated.present? ? calculated.downcase.sub('st_', '') : DEFAULT_THE_GEOM_TYPE
+    self.the_geom_type = calculated
+  end
+
   def query_geometry_types
-    owner.in_database[ %Q{
-      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-        SELECT the_geom
-        FROM "#{self.name}"
-        WHERE (the_geom is not null) LIMIT 10
-      ) as foo
-    }].all.map {|r| r[:st_geometrytype] }
+    # We do not query the DB, if the_geom does not exist we just recover
+    begin
+      owner.in_database[ %Q{
+        SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+          SELECT the_geom
+          FROM "#{self.name}"
+          WHERE (the_geom is not null) LIMIT 10
+        ) as foo
+      }].all.map {|r| r[:st_geometrytype] }
+    rescue
+      []
+    end
   end
 
   def cache

@@ -259,7 +259,7 @@ module CartoDB
       end
 
       def remove_quoted_strings(input)
-        input.gsub(/".*?[^\\]"/, '')
+        input.gsub(/"[^\\"]*"/, '')
       end
 
       attr_writer :temporary_directory

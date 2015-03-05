@@ -7,6 +7,8 @@ require_relative '../doubles/log'
 include CartoDB::Importer2::Doubles
 
 describe CartoDB::Importer2::CsvNormalizer do
+
+  BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv"
   
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
@@ -41,6 +43,13 @@ describe CartoDB::Importer2::CsvNormalizer do
       csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
       csv.detect_delimiter.should eq ','
     end
+
+    it 'detects it correctly with triple quotes, quoted strings and all' do
+      fixture = bug_columns_wrong_split_factory
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv.detect_delimiter.should eq ','
+    end
+
   end
 
   describe '#encoding' do
@@ -229,6 +238,15 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     filepath
   end
+
+  def bug_columns_wrong_split_factory
+    temp_destination = get_temp_csv_fullpath
+
+    ::FileUtils::copy BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE, temp_destination
+
+    temp_destination
+  end
+
 
 
 

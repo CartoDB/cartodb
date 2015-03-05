@@ -12,8 +12,15 @@ class Api::ApplicationController < ApplicationController
 
   # dry up the jsonp output
   def render_jsonp obj, status = 200, options = {}
-    options.reverse_merge! :json => obj, :status => status, :callback => params[:callback]
+    options.reverse_merge! :json => obj, :status => status, :callback => sanitize_callback(params[:callback])
     render options
+  end
+
+  private
+
+  def sanitize_callback(callback)
+    # While only checks basic characters, most common use of JS function names
+    !!(callback =~ /^[$a-z_][0-9a-z_$]*$/i) ? params[:callback] : nil
   end
 
 end

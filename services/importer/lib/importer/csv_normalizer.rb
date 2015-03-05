@@ -66,7 +66,7 @@ module CartoDB
 
         LINES_FOR_DETECTION.times {
           line = stream.gets 
-          lines_for_detection << line unless line.nil?
+          lines_for_detection << line.gsub(/".*?"/, '') unless line.nil?
         }
 
         stream.rewind

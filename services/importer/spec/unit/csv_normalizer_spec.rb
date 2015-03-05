@@ -29,6 +29,12 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       FileUtils.rm(fixture)
     end
+
+    it 'delimiter is detected correctly even with quoted strings containing delimiters' do
+      fixture = quoted_string_with_delimiter_factory
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv.detect_delimiter.should eq ','
+    end
   end
 
   describe '#encoding' do
@@ -193,6 +199,19 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     filepath
   end
+
+  def quoted_string_with_delimiter_factory
+    filepath = get_temp_csv_fullpath
+
+    ::File.open(filepath, 'w') do |file|
+      file << 'name,description ; with semicolon,wadus' << "\n"
+      file << 'foo,"this description contains; a semicolon and a, comma to affect frequency table",bar' << "\n"
+      file << 'foobar,"this description contains; a semicolon but no comma",barfoo' << "\n"
+    end
+
+    filepath
+  end
+
 
   def get_temp_csv_fullpath
     "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"

@@ -164,6 +164,7 @@
     }
   %>
   var assigned_user_quota = <%= @user.quota_in_bytes %>;
+  var used_user_quota = <%= @user.db_size_in_bytes rescue 0 %>;
   var user_name = "<%= @user.username %>";
   var organization_data = {
     quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,

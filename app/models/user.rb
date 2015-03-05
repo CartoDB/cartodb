@@ -147,26 +147,53 @@ class User < Sequel::Model
   end
 
   def load_common_data(datasets = CommonDataSingleton.instance.datasets[:datasets])
+    added = 0
+    updated = 0
+    not_modified = 0
+    failed = 0
+
     Rollbar.report_message('common data', 'debug', {
       :action => 'load',
       :user_id => self.id,
       :username => self.username
     })
     datasets.each do |d|
-      v = CartoDB::Visualization::Member.remote_member(
-        d['name'],
-        self.id,
-        CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-        d['description'],
-        [ d['category'] ],
-        d['license'],
-        d['source'])
-      v.store
+      begin
+        existing_remote_vis = CartoDB::Visualization::Member.matching_remote(self.id, d['name'])
+        vis = if existing_remote_vis
+          if existing_remote_vis.update_remote_data(
+              CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+              d['description'], [ d['category'] ], d['license'],
+              d['source'])
+            existing_remote_vis.store
+            updated += 1
+          else
+            not_modified += 1
+          end
+          existing_remote_vis
+        else
+          v = CartoDB::Visualization::Member.remote_member(
+            d['name'], self.id, CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+            d['description'], [ d['category'] ], d['license'],
+            d['source'])
+          v.store
+          added += 1
+          v
+        end
 
-      CartoDB::Visualization::ExternalSource.new(v.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+        existing_external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: vis.id).first
+        if existing_external_source
+          existing_external_source.save if !(existing_external_source.update_data(d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').changed_columns.empty?)
+        else
+          CartoDB::Visualization::ExternalSource.new(vis.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+        end
+      rescue => e
+        Rollbar.report_exception(e)
+        failed += 1
+      end
     end
-  rescue => e
-    Rollbar.report_exception(e)
+
+    return added, updated, not_modified, failed
   end
 
   def delete_common_data

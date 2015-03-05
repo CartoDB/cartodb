@@ -1,3 +1,4 @@
+require 'date'
 require_relative '../../app/models/common_data'
 
 namespace :cartodb do
@@ -42,6 +43,17 @@ namespace :cartodb do
       o.users.each {|u|
         u.load_common_data(datasets)
       }
+    end
+
+    desc 'Load common data account remotes for everybody'
+    task :load_all => [:environment] do |t|
+      datasets = CommonDataSingleton.instance.datasets[:datasets]
+      puts DateTime.now
+      User.all.each do |user|
+        added, updated, not_modified, failed = user.load_common_data(datasets)
+        printf("%20s: +%03d; *%03d; =%03d; e%03d\n", user.username, added, updated, not_modified, failed)
+      end
+      puts DateTime.now
     end
 
   end

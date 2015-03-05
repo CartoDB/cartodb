@@ -3,7 +3,7 @@
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
+  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 
   # The production environment is meant for finished, "live" apps.

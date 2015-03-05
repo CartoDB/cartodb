@@ -1,10 +1,13 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .DefaultParagraph {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
-  
+}
+.DefaultParagraph--short {
+  width: 500px;
 }

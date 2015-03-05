@@ -29,6 +29,21 @@ Warden::Strategies.add(:password) do
   end
 end
 
+Warden::Strategies.add(:google_access_token) do
+  def authenticate!
+    if params[:google_access_token]
+      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      if(user.present?)
+        success!(user)
+      else
+        fail!
+      end
+    else
+      fail!
+    end
+  end
+end
+
 Warden::Strategies.add(:api_authentication) do
   def authenticate!
     # WARNING: The following code is a modified copy of the oauth10_token method from

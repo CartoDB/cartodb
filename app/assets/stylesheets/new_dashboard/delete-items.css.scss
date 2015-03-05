@@ -4,12 +4,12 @@
 .DeleteItems-affectedEntities {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  @include align-items(center);
 }
 .DeleteItems-affectedEntitiesAvatar {
   margin-left: $sMargin-min;
 }
 .DeleteItems-footer {
   @include display-flex();
-  @include justify-content(center, center);
+  @include justify-content(center);
 }

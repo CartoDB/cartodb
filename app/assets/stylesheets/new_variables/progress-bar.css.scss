@@ -23,8 +23,9 @@
       width:100%;
       height: $h;
       @include border-radius($r);
-      background:#E5E5E5;
+      background: #F5F5F5;
       overflow:hidden;
+      box-shadow: inset 0 1px 0 0 rgba(black, .1);
 
       .bar-3,
       .bar-2,
@@ -38,26 +39,18 @@
         }
         @include border-radius($r);
 
-        @if $grad {
-          &:after {
-            position:absolute;
-            content: '';
-            @include position(0,0,0,0);
-            width:100%;
-            @include background(linear-gradient(left,rgba(#FFF,0.30),rgba(#FFF,0)))
-          }
-        }
+        @if $grad {}
       }
 
       // Blue dark
       .bar-3 {
-        @include background(linear-gradient(#2C6E9C,#245D8C));
+        background: #2C6E9C;
         z-index:3;
       }
 
       // Blue light
       .bar-2 {
-        @include background(linear-gradient(#419EDE,#3486C9));
+        background: #0090D7;
         z-index:2;
       }
 
@@ -82,11 +75,7 @@
       }
 
       // Danger and caution background
-      .danger {
-        @include background(linear-gradient(#FF5255,#CB2828))
-      }
-      .caution {
-        @include background(linear-gradient(#F8B85C,#F49000))
-      }
+      .danger { background: #c74b43 }
+      .caution { background: #F8B85C }
     }
   }

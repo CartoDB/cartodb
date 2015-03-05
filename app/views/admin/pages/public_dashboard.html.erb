@@ -12,7 +12,7 @@
 
   <% @visualizations.map do |v| 
     urls.push(
-      :url => "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: v[:id]).sub(/(http:|https:)/i, '') }.json",
+      :url => vis_json_url(v[:id]),
       :layer_visibility => v[:layers].map{ |layer| { visible: layer.options["visible"] ? true : false } },
     )
   end %>
@@ -46,7 +46,7 @@
         <ul>
           <% @visualizations.each_with_index do |vis, i| %>
 
-            <% domain = vis[:owner].organization ? vis[:owner].username : nil %>
+            <% domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
 
             <li>
               <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">

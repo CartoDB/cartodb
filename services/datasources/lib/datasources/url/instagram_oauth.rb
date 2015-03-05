@@ -117,7 +117,7 @@ module CartoDB
               url:      'All your photos and videos',
               service:  DATASOURCE_NAME,
               checksum: '',
-              size:     1
+              size:     NO_CONTENT_SIZE_PROVIDED
             }
           ]
         end

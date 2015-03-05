@@ -48,7 +48,9 @@ class Map < Sequel::Model
     maxlat: 85.0511 
   }
 
-  attr_accessor :table_id
+  attr_accessor :table_id,
+                # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
+                :being_destroyed_by_vis_id
 
   def before_save
     super
@@ -91,7 +93,7 @@ class Map < Sequel::Model
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
-      visualization.invalidate_cache_and_refresh_named_map
+      visualization.invalidate_cache_and_refresh_named_map unless visualization.id == being_destroyed_by_vis_id
     end
   end
 
@@ -139,12 +141,14 @@ class Map < Sequel::Model
                     ).first
     if related_table.map_id != id
       # Manually propagate to visualization (@see Table.after_save) if exists (at table creation won't)
-      CartoDB::Visualization::Collection.new.fetch(
-          user_id:  user_id,
-          map_id:   related_table.map_id
-      ).each { |entry|
-        entry.store_from_map(map_id: id)
-      }
+      if related_table.map_id.present?
+        CartoDB::Visualization::Collection.new.fetch(
+            user_id:  user_id,
+            map_id:   related_table.map_id
+        ).each { |entry|
+          entry.store_from_map(map_id: id)
+        }
+      end
       # HERE BE DRAGONS! If we try to store using model, callbacks break hell. Manual update required
       related_table.this.update(map_id: id)
     end
@@ -184,8 +188,8 @@ class Map < Sequel::Model
 
   def table_visualization
     CartoDB::Visualization::Collection.new
-      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::CANONICAL_TYPE)
-      .first
+                                      .fetch(map_id: [self.id], type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+                                      .first
   end
 
   def admits_more_data_layers?

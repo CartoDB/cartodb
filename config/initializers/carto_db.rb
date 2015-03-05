@@ -214,6 +214,18 @@ module CartoDB
       title: 'Dropbox permission revoked',
       what_about: "CartoDB has not permission to access your files at Dropbox. Please import file again."
     },
+    1017 => {
+      title: 'GDrive file was deleted',
+      what_about: "GDrive file was removed and can't be synced, please import file again."
+    },
+    1018 => {
+      title: 'File is password protected',
+      what_about: "File is password protected and can't be imported. Please remove password protection or create a new compressed file without password and try again."
+    },
+    1019 => {
+      title: 'Too Many Layers',
+      what_about: "The file has too many layers. It can have 50 as maximum." # ./services/importer/lib/importer/kml_splitter.rb
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -276,7 +288,19 @@ module CartoDB
     },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality."
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then using the 'Merge Tables' functionality, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>."
+    },
+    6667 => {
+      title: 'Import timed out',
+      what_about: "There is been a problem importing your file due to the time is been taking to process it. Please try again and contact us if the problem persist."
+    },
+    6668 => {
+      title: 'Too many table rows',
+      what_about: "The resulting table would contain too many rows. Contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20table%20rows%20import%20error'>support@cartodb.com</a>."
+    },
+    6669 => {
+      title: 'Too many concurrent imports',
+      what_about: "You cannot import more data until one of your active imports finishes. If you need further import slots contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>."
     },
     99999 => {
       title: 'Unknown',

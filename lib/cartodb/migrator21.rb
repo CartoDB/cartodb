@@ -19,7 +19,7 @@ module CartoDB
             CartoDB::Visualization::Member.new(
               name: table.name, 
               map_id: table.map_id, 
-              type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+              type: CartoDB::Visualization::Member::TYPE_CANONICAL,
               description: table.description,
               tags: table.tags.to_s.split(','),
               privacy: (table.privacy == ::Table::PRIVACY_PUBLIC ? ::Table::PRIVACY_PUBLIC_TEXT : ::Table::PRIVACY_PRIVATE_TEXT)
@@ -51,9 +51,13 @@ module CartoDB
       ::Table.db['delete from layers_user_tables']
       # Remove redis keys
       @tables_to_migrate.all.each do |table|
-        $tables_metadata.hdel(table.key, "migrated_to_#{@version}")
+        $tables_metadata.hdel(key(table), "migrated_to_#{@version}")
       end
     end
 
+    private
+    def key(table)
+      "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}")
+    end
   end
 end # CartoDB

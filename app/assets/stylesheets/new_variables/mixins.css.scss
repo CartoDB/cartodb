@@ -20,7 +20,7 @@
           #{$property}: #{$value};
 }
 
-// Display inline 
+// Display inline
 @mixin inline-block() {
   display:inline-block;
   vertical-align: top;
@@ -60,7 +60,18 @@
   -moz-flex-wrap: $v;
   -ms-flex-wrap: $v;
   flex-wrap: $v;
-  // IE10 doesn't support this property  
+  // IE10 doesn't support this property
+}
+@mixin flex-order($v) {
+  -webkit-flex-order: $v;
+  -webkit-box-ordinal-group: $v;
+  -moz-box-ordinal-group: $v;
+  -moz-flex-order: $v;
+  -ms-flex-order: $v;
+  -ms-order: $v;
+  box-ordinal-group: $v;
+  flex-order: $v;
+  order: $v;
 }
 @mixin justify-content($v, $ie-v: "") {
   $ie-v: $v !default;
@@ -80,6 +91,15 @@
   // Hello IE10
   -ms-flex-align: $ie-v;
 }
+@mixin align-content($v, $ie-v: "") {
+  $ie-v: $v !default;
+  -webkit-align-content: $v;
+  -moz-align-content: $v;
+  -ms-align-content: $v;
+  align-content: $v;
+  // Hello IE10
+  -ms-flex-align: $ie-v;
+}
 
 // CSS3 typical functions
 @mixin opacity($v) {
@@ -87,19 +107,46 @@
   filter:alpha(opacity=($v*100)); // IE10
 }
 
-/* TRANSFORM  */
+// The Lato font we use does not render well on some browsers (e.g. IE) when the font size is <= 13px and has a light
+// font-weight. This mixin alleviates that we cannot use a light font-weight to make the text render a bit nicer at least.
+// It may also be used for font sizes >13px, but only on white background to look OK.
+@mixin nicer-lato-typography() {
+  -webkit-text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@mixin background-gradient($startColor: #3C3C3C, $endColor: #999999) {
+  background-color: $startColor;
+  background-image: -webkit-gradient(linear, left top, left bottom, from($startColor), to($endColor));
+  background-image: -webkit-linear-gradient(top, $startColor, $endColor);
+  background-image:    -moz-linear-gradient(top, $startColor, $endColor);
+  background-image:     -ms-linear-gradient(top, $startColor, $endColor);
+  background-image:      -o-linear-gradient(top, $startColor, $endColor);
+  background-image:         linear-gradient(top, $startColor, $endColor);
+  filter:            progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$startColor}', endColorStr='#{$endColor}');
+}
+
+@mixin background-horizontal($startColor: #3C3C3C, $endColor: #999999) {
+  background-color: $startColor;
+  background-image: -webkit-gradient(linear, left top, right top, from($startColor), to($endColor));
+  background-image: -webkit-linear-gradient(left, $startColor, $endColor);
+  background-image:    -moz-linear-gradient(left, $startColor, $endColor);
+  background-image:     -ms-linear-gradient(left, $startColor, $endColor);
+  background-image:      -o-linear-gradient(left, $startColor, $endColor);
+  background-image:         linear-gradient(left, $startColor, $endColor);
+  filter:            progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$startColor}', endColorStr='#{$endColor}', gradientType='1');
+}
+
 @mixin transform($params) {
   @include css3-prefix('transform', $params);
 }
 
-/* TRANSFORM STYLE */
 @mixin transform-style($style: preserve-3d) {
   @include css3-prefix('transform-style', $style);
 }
 
-/* TRANSITION */
 @mixin transition($properties...) {
-  
+
   @if length($properties) >= 1 {
     @include css3-prefix('transition', $properties);
   }
@@ -109,26 +156,24 @@
   }
 }
 
-/* KEYFRAMES */
 @mixin keyframes($animation-name) {
   @-webkit-keyframes #{$animation-name} {
     @content;
   }
   @-moz-keyframes #{$animation-name} {
     @content;
-  }  
+  }
   @-ms-keyframes #{$animation-name} {
     @content;
   }
   @-o-keyframes #{$animation-name} {
     @content;
-  }  
+  }
   @keyframes #{$animation-name} {
     @content;
   }
 }
 
-/* ANIMATION */
 @mixin animation($str) {
   @include css3-prefix('animation', $str);
 }

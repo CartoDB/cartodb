@@ -9,7 +9,7 @@ module CartoDB
       def initialize(user, checker=nil)
         @user     = user
         @checker  = checker || NameChecker.new(user)
-      end #initialize
+      end
 
       def name(candidate=PATTERN, iteration=0)
         candidate = (candidate || PATTERN).strip
@@ -17,12 +17,12 @@ module CartoDB
 
         new_candidate = "#{candidate} #{iteration}"
         name(new_candidate, iteration + 1)
-      end #name
+      end
 
       private
 
       attr_reader :checker, :user
-    end # NameGenerator
-  end # Visualization
-end # CartoDB
+    end
+  end
+end
 

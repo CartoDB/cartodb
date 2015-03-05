@@ -41,6 +41,8 @@
             <%= link_to 'Go to your public page', CartoDB.base_url(@organization.name), :class => "right-link" %>
           </div>
 
+          <ul><%= render :partial => 'shared/flash_message' %></ul>
+
           <div class="content">
 
             <div class="left-column">

@@ -3,9 +3,12 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
+require_relative './visualization/external_source'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
+require_relative '../../app/models/common_data'
+require_relative './feature_flag'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -17,6 +20,9 @@ class User < Sequel::Model
   # @param name             String
   # @param avatar_url       String
   # @param database_schema  String
+  # @param max_import_file_size Integer
+  # @param max_import_table_row_count Integer
+  # @param max_concurrent_import_count Integer
 
   one_to_one  :client_application
   one_to_many :synchronization_oauths
@@ -53,6 +59,8 @@ class User < Sequel::Model
   }
 
 
+  MIN_PASSWORD_LENGTH = 6
+
   GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
@@ -73,9 +81,11 @@ class User < Sequel::Model
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
 
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-    if new? || password.present?
+
+    if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
+    validate_password_change
     if organization.present?
       if new?
         errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
@@ -93,6 +103,11 @@ class User < Sequel::Model
   end
 
   ## Callbacks
+  def before_validation
+    # Convert email to downcase
+    self.email = self.email.to_s.strip.downcase
+  end
+
   def before_create
     super
     self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
@@ -101,6 +116,7 @@ class User < Sequel::Model
 
   def before_save
     super
+    self.quota_in_bytes = self.quota_in_bytes.to_i if !self.quota_in_bytes.nil? && self.quota_in_bytes != self.quota_in_bytes.to_i
     self.updated_at = Time.now
     # Set account_type and default values for organization users
     # TODO: Abstract this
@@ -108,9 +124,6 @@ class User < Sequel::Model
     if self.organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.here_maps_enabled          = self.organization.here_maps_enabled
-        self.stamen_maps_enabled        = self.organization.stamen_maps_enabled
-        self.rainbow_maps_enabled       = self.organization.rainbow_maps_enabled
         self.new_dashboard_enabled      = self.organization.new_dashboard_enabled
       end
       self.max_layers ||= 6
@@ -124,11 +137,51 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+    load_common_data if FeatureFlag.allowed?('load_common_data')
     monitor_user_notification
-    sleep 3
+    sleep 1
     set_statement_timeouts
     if self.has_organization_enabled?
       ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
+    end
+  end
+
+  def load_common_data(datasets = CommonDataSingleton.instance.datasets[:datasets])
+    Rollbar.report_message('common data', 'debug', {
+      :action => 'load',
+      :user_id => self.id,
+      :username => self.username
+    })
+    datasets.each do |d|
+      v = CartoDB::Visualization::Member.remote_member(
+        d['name'],
+        self.id,
+        CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        d['description'],
+        [ d['category'] ],
+        d['license'],
+        d['source'])
+      v.store
+
+      CartoDB::Visualization::ExternalSource.new(v.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
+    end
+  rescue => e
+    Rollbar.report_exception(e)
+  end
+
+  def delete_common_data
+    CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: self.id}).map do |v|
+      begin
+        CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
+        v.delete
+      rescue Sequel::DatabaseError => e
+        match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
+        if match.present? && match >= 0
+          puts "Couldn't delete #{v.id} visualization because it's been imported"
+        else
+          raise e
+        end
+      end
     end
   end
 
@@ -214,6 +267,8 @@ class User < Sequel::Model
         drop_database_and_user unless error_happened
       end
     end
+
+    self.feature_flags_user.each { |ffu| ffu.delete }
   end
 
   def after_destroy
@@ -322,7 +377,47 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
-  attr_accessor :password_confirmation
+
+  def validate_password_change
+    return if @changing_passwords.nil?  # Called always, validate whenever proceeds
+
+    errors.add(:old_password, "Old password not valid") unless @old_password_validated
+
+    if @new_password != @new_password_confirmation
+      errors.add(:new_password, "New password and confirm password are not the same")
+    end
+    errors.add(:new_password, "Missing new password") if @new_password.nil?
+    if !@new_password.nil? && @new_password.length < MIN_PASSWORD_LENGTH
+      errors.add(:new_password, "New password is too short (6 chars min)")
+    end
+  end
+
+  def change_password(old_password, new_password_value, new_password_confirmation_value)
+    # First of all reset fields
+    @old_password_validated = nil
+    @new_password_confirmation = nil
+    # Mark as changing passwords
+    @changing_passwords = true
+
+    @new_password = new_password_value
+    @new_password_confirmation = new_password_confirmation_value
+
+    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
+    return unless @old_password_validated
+
+    return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
+
+    self.password = new_password_value
+  end
+
+  def password_confirmation
+    @password_confirmation
+  end
+
+  def password_confirmation=(password_confirmation)
+    self.last_password_change_date = Time.zone.now unless new?
+    @password_confirmation = password_confirmation
+  end
 
   ##
   # SLOW! Checks map views for every user
@@ -361,13 +456,16 @@ class User < Sequel::Model
   end
 
   def password=(value)
+    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 
   def self.authenticate(email, password)
-    if candidate = User.filter("email ILIKE ? OR username ILIKE ?", email, email).first
+    sanitized_input = email.strip.downcase
+    if candidate = User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil
@@ -520,7 +618,7 @@ class User < Sequel::Model
   end
 
   # List all public visualization tags of the user
-  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::DERIVED_TYPE)
+  def tags(exclude_shared=false, type=CartoDB::Visualization::Member::TYPE_DERIVED)
     require_relative './visualization/tags'
     options = {}
     options[:exclude_shared] = true if exclude_shared
@@ -534,7 +632,7 @@ class User < Sequel::Model
   def map_tags
     require_relative './visualization/tags'
     CartoDB::Visualization::Tags.new(self).names({
-       type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+       type: CartoDB::Visualization::Member::TYPE_CANONICAL,
        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
     })
   end #map_tags
@@ -546,7 +644,7 @@ class User < Sequel::Model
   def tables_including_shared
     CartoDB::Visualization::Collection.new.fetch(
         user_id: self.id,
-        type: CartoDB::Visualization::Member::CANONICAL_TYPE
+        type: CartoDB::Visualization::Member::TYPE_CANONICAL
     ).map { |item|
       item.table
     }
@@ -687,6 +785,8 @@ class User < Sequel::Model
   end
 
   def private_maps_enabled
+    enabled = super
+    return enabled if enabled.present? && enabled == true
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
@@ -808,7 +908,7 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls
     else
       remaining = geocoding_quota - get_geocoding_calls
     end
@@ -933,6 +1033,10 @@ class User < Sequel::Model
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
 
+  def can_change_email
+    return !self.google_sign_in || self.last_password_change_date.present?
+  end
+
   private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
@@ -944,12 +1048,17 @@ class User < Sequel::Model
       # Hack to support users without the new MU functiones loaded
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
       result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
-      update_gauge("db_size", result)
       result
-    rescue
+    rescue => e
       attempts += 1
-      in_database(:as => :superuser).fetch("ANALYZE")
+      begin
+        in_database(:as => :superuser).fetch("ANALYZE")
+      rescue => ee
+        Rollbar.report_exception(ee)
+        raise ee
+      end
       retry unless attempts > 1
+      Rollbar.report_exception(e)
     end
   end
 
@@ -987,33 +1096,42 @@ class User < Sequel::Model
   end
 
   # this method search for tables with all the columns needed in a cartodb table.
-  # it does not check column types or triggers attached
+  # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
   # returns the list of tables in the database with those columns but not in metadata database
   def search_for_cartodbfied_tables
     metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
+
     db = self.in_database(:as => :superuser)
     reserved_columns = Table::CARTODB_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
     cartodb_columns = (reserved_columns).map { |t| "'" + t.to_s + "'" }.join(',')
     sql = %Q{
       WITH a as (
         SELECT table_name, count(column_name::text) cdb_columns_count
-        FROM information_schema.columns c, pg_tables t
+        FROM information_schema.columns c, pg_tables t, pg_trigger tg
         WHERE
-        t.tablename = c.table_name AND
-        t.schemaname = c.table_schema AND
-        t.tableowner = '#{database_username}' AND
+          t.tablename = c.table_name AND
+          t.schemaname = c.table_schema AND
+          c.table_schema = '#{database_schema}' AND
+          t.tableowner = '#{database_username}' AND
     }
 
     if metadata_table_names.length != 0
-      sql += "c.table_name not in (#{metadata_table_names}) AND"
+      sql += %Q{
+        c.table_name NOT IN (#{metadata_table_names}) AND
+      }
     end
 
     sql += %Q{
-          column_name in (#{cartodb_columns})
-          group by 1
+          column_name IN (#{cartodb_columns}) AND
+
+          tg.tgrelid = (t.schemaname || '.' || t.tablename)::regclass::oid AND
+          tg.tgname = 'test_quota_per_row'
+
+          GROUP BY 1
       )
-      select table_name from a where cdb_columns_count = #{reserved_columns.length}
+      SELECT table_name FROM a WHERE cdb_columns_count = #{reserved_columns.length}
     }
+
     db[sql].all.map { |t| t[:table_name] }
   end
 
@@ -1141,7 +1259,7 @@ class User < Sequel::Model
   # Only returns owned tables (not shared ones)
   def table_count(filters={})
     filters.merge!(
-      type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
       exclude_shared: true
     )
 
@@ -1163,7 +1281,7 @@ class User < Sequel::Model
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
-      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true
@@ -1194,22 +1312,6 @@ class User < Sequel::Model
       "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
       "LIMIT 1;", id)
       .to_a.fetch(0, {}).fetch(:created_at, nil)
-  end
-
-  def metric_key
-    "cartodb.#{Rails.env.production? ? "user" : Rails.env + "-user"}.#{self.username}"
-  end
-
-  def update_gauge(gauge, value)
-    Statsd.gauge("#{metric_key}.#{gauge}", value)
-  rescue
-  end
-
-  def update_visualization_metrics
-    update_gauge("visualizations.total", maps.count)
-    update_gauge("visualizations.table", table_count)
-
-    update_gauge("visualizations.derived", visualization_count({ exclude_shared: true, exclude_raster: true }))
   end
 
   def rebuild_quota_trigger
@@ -1290,7 +1392,7 @@ class User < Sequel::Model
   end
 
   def belongs_to_organization?(organization)
-    organization_user? and self.organization.eql? organization
+    organization_user? and self.organization_id == organization.id
   end
 
   def feature_flags
@@ -1432,6 +1534,12 @@ class User < Sequel::Model
     )
     self.run_queries_in_transaction(
       self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      true
+    )
+    self.run_queries_in_transaction(
+      [
+        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER}"
+      ],
       true
     )
     self.run_queries_in_transaction(
@@ -1748,12 +1856,9 @@ TRIGGER
 
   # Cartodb functions
   def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
-    if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.1'
-    end
-
     add_python
 
+    # Install dependencies of cartodb extension
     in_database({
                     as: :superuser,
                     no_cartodb_in_schema: true
@@ -1774,6 +1879,37 @@ TRIGGER
         db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%Q{
             SELECT count(*) FROM pg_extension WHERE extname='postgis'
           }).first[:count] > 0
+
+        unless statement_timeout.nil?
+          db.run("SET statement_timeout TO '#{old_timeout}';")
+        end
+      end
+    end
+
+    upgrade_cartodb_postgres_extension(statement_timeout, cdb_extension_target_version)
+
+    # We reset the connections to this database to be sure the change in default search_path is effective
+    self.reset_pooled_connections
+
+    self.rebuild_quota_trigger
+  end
+
+  # Upgrade the cartodb postgresql extension
+  def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
+    if cdb_extension_target_version.nil?
+      cdb_extension_target_version = '0.7.3'
+    end
+
+    in_database({
+                  as: :superuser,
+                  no_cartodb_in_schema: true
+                }) do |db|
+      db.transaction do
+
+        unless statement_timeout.nil?
+          old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
+          db.run("SET statement_timeout TO '#{statement_timeout}';")
+        end
 
         db.run(%Q{
           DO LANGUAGE 'plpgsql' $$
@@ -1813,15 +1949,8 @@ TRIGGER
         unless cartodb_extension_semver(cdb_extension_target_version) == cartodb_extension_semver(obtained)
           raise("Expected cartodb extension '#{cdb_extension_target_version}' obtained '#{obtained}'")
         end
-
-#       db.run('SELECT cartodb.cdb_enable_ddl_hooks();')
       end
     end
-
-    # We reset the connections to this database to be sure the change in default search_path is effective
-    self.reset_pooled_connections
-
-    self.rebuild_quota_trigger
   end
 
   def set_statement_timeouts
@@ -2101,10 +2230,31 @@ TRIGGER
 
   # return public user url -> string
   def public_url
-    subdomain = organization.nil? ? username : organization.name
     user_name = organization.nil? ? nil : username
 
-    CartoDB.base_url(subdomain, user_name)
+    CartoDB.base_url(self.subdomain, user_name)
+  end
+
+  def account_url(request_protocol)
+    if Cartodb.config[:account_host]
+      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+    end
+  end
+
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
+  def upgrade_url(request_protocol)
+    account_url(request_protocol) + '/upgrade'
+  end
+
+  def subdomain
+    organization.nil? ? username : organization.name
+  end
+
+  def name_or_username
+    name.present? ? name : username
   end
 
   private

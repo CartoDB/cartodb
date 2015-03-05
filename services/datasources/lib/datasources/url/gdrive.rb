@@ -210,8 +210,10 @@ module CartoDB
         # @return Hash
         # @throws TokenExpiredOrInvalidError
         # @throws DataDownloadError
+        # @throws NotFoundDownloadError
         def get_resource_metadata(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
+          raise NotFoundDownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}, should stop syncing", DATASOURCE_NAME) if result.status == 404
           raise DataDownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
           item_data = format_item_data(result.data.to_hash)
           return item_data.to_hash
@@ -308,7 +310,7 @@ module CartoDB
             data[:url] = item_data.fetch('exportLinks').first.last
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
             data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
-            data[:size] = 0
+            data[:size] = NO_CONTENT_SIZE_PROVIDED
           else
             data[:url] = item_data.fetch('downloadUrl')
             # For Drive files, title == filename + extension

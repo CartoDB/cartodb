@@ -1,0 +1,10 @@
+/*
+ *  Olark widget style hack
+ *  - It moves the widget to the middle
+ *    of the screen.
+ */
+
+#habla_window_div {
+  margin: 0 0 0 -115px!important;
+  left: 50%!important;
+}

@@ -21,7 +21,7 @@ describe Admin::VisualizationsController do
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
-      password: 'test'
+      password: 'test12'
     )
     @api_key = @user.api_key
   end
@@ -173,11 +173,11 @@ describe Admin::VisualizationsController do
 
       get "/viz/non_existent/embed_map", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /pity/
+      last_response.body.should =~ /404/
 
       get "/viz/non_existent/embed_map.js", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /pity/
+      last_response.body.should =~ /404/
     end
   end # GET /viz/:name/embed_map
 
@@ -222,7 +222,7 @@ describe Admin::VisualizationsController do
       CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
-          :propagate_to_redis_and_varnish => nil
+          :propagate_to_varnish => nil
       )
 
       User.any_instance.stubs(

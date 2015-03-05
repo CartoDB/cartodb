@@ -1,12 +1,17 @@
 # encoding: utf-8
 require 'csv'
-require 'roo'
 require_relative './job'
 require_relative './csv_normalizer'
 
 module CartoDB
   module Importer2
     class Excel2Csv
+
+      NEWLINE_REMOVER_RELPATH = "../../../../../lib/importer/misc/csv_remove_newlines.py"
+
+      IN2CSV_WARNINGS = [ "WARNING *** OLE2 inconsistency: SSCS size is 0 but SSAT size is non-zero",
+        "*** No CODEPAGE record, no encoding_override: will use 'ascii'"]
+
       def self.supported?(extension)
         extension == ".#{@format}"
       end #self.supported?
@@ -19,13 +24,10 @@ module CartoDB
 
       def run
         job.log "Converting #{@format.upcase} to CSV"
-        spreadsheet = Roo::Spreadsheet.open(filepath)
-
-        spreadsheet = remove_newlines(spreadsheet)
+        %x[in2csv #{filepath} | #{in2csv_warning_filter} | #{newline_remover_path} > #{converted_filepath}]
 
         # Can be check locally using wc -l ... (converted_filepath)
-        job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"        
-        spreadsheet.to_csv(converted_filepath)
+        job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"
         normalizer = CsvNormalizer.new(converted_filepath, job)
         # Roo gem is not exporting always correctly when source Excel has atypical UTF-8 characters
         normalizer.force_normalize
@@ -42,36 +44,15 @@ module CartoDB
 
       protected
 
-      def remove_newlines(spreadsheet)
-        job.log 'Removing newlines...'
-        spreadsheet.default_sheet = spreadsheet.sheets.first
-        job.log 'Processing first sheet'
+      def newline_remover_path
+        File.expand_path(NEWLINE_REMOVER_RELPATH, __FILE__)
+      end
 
-        job.log 'Calculating columns (this can take long as will scan the full document)'
-        col_count = spreadsheet.sheet(0).last_column
-        job.log 'Calculating rows'
-        row_count = spreadsheet.sheet(0).last_row
-
-        for row_index in 1..row_count
-          for col_index in 1..col_count
-            if spreadsheet.celltype(row_index, col_index) == :string
-              current_value = spreadsheet.cell(row_index,col_index)
-              # As we are going to export to CSV, remove newlines or will cause problems (even being quoted)
-              if current_value.index("\n") != nil
-                spreadsheet.set(row_index, col_index, current_value.gsub("\n",''))
-              end
-            end
-          end
-        end
-
-        job.log 'Newlines removed'
-        spreadsheet
-      rescue => exception
-        raise XLSXFormatError.new(exception.to_s)
-      end #remove_newlines
+      def in2csv_warning_filter
+        IN2CSV_WARNINGS.map { |w| "grep -v \"#{w.gsub('*', "\\*")}\"" }.join(' | ')
+      end
 
       attr_reader :filepath, :job
     end #Excel2Csv
   end # Importer2
 end # CartoDB
-

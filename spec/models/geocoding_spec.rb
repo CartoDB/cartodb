@@ -96,7 +96,7 @@ describe Geocoding do
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5000)
       geocoding.table_geocoder.stubs(:process_results).returns true
-      geocoding.stubs(:processable_rows).returns 10
+      geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
       CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
@@ -109,7 +109,7 @@ describe Geocoding do
 
     it 'marks the geocoding as failed if the geocoding job fails' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table: @table, formatter: 'b')
-      geocoding.stubs(:processable_rows).returns 10
+      geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
       CartoDB.expects(:notify_exception).times(1)
 
@@ -119,7 +119,7 @@ describe Geocoding do
 
     it 'raises a timeout error if geocoding takes more than 15 minutes to start' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, table: @table, formatter: 'b')
-      geocoding.stubs(:processable_rows).returns 10
+      geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
@@ -132,7 +132,7 @@ describe Geocoding do
 
     it 'succeeds if there are no rows to geocode' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table: @table, formatter: 'b')
-      geocoding.stubs(:processable_rows).returns 0
+      geocoding.class.stubs(:processable_rows).returns 0
       geocoding.run!
       geocoding.processed_rows.should eq 0
       geocoding.state.should eq 'finished'

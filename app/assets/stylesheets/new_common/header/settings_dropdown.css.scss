@@ -29,22 +29,13 @@
   margin-top: 3px !important;
 }
 .SettingsDropdown-progressBar {
-  @include progress-bar(6px, 9px, true, false);
+  position: relative;
   margin: 5px 0 15px 0;
   background: #F5F5F5;
+  @include progress-bar(6px, 9px, true, false);
 }
-.SettingsDropdown-progressBar.is--inAlert span { background: $cHighlight-alert }
-.SettingsDropdown-progressBar.is--inDanger span { background: $cHighlight-negative }
-.SettingsDropdown-progressBar:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: #E8E8E8;
-  z-index: 0;
-}
+.SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-alert!important }
+.SettingsDropdown-progressBar.is--inDanger div.progress-bar span { background: $cHighlight-negative!important }
 .SettingsDropdown-itemLink {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;

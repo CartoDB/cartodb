@@ -7,30 +7,39 @@ require_relative '../overlay/copier'
 
 module CartoDB
   module Visualization
+    # Creates a new visualization using another as source.
+    # Do NOT use this to create derived visualizations as creates a new map.
     class Copier
       def initialize(user, visualization, name=nil)
         @user           = user
         @visualization  = visualization
         @name           = name
-      end #initialize
+      end
 
-      def copy
+      def copy(overlays=true, layers=true, additional_fields = {})
         member = Member.new(
           name:         new_name,
           tags:         visualization.tags,
           description:  visualization.description,
-          type:         Member::DERIVED_TYPE,
-          map_id:       map_copy.id,
+          type:         type_from(additional_fields),
+          parent_id:    additional_fields.fetch(:parent_id, nil),
+          map_id:       map_copy(layers, type_from(additional_fields) == Member::TYPE_SLIDE).id,
           privacy:      visualization.privacy,
           user_id:      @user.id
         )
-        overlays_copy(member)
+        if overlays
+          overlays_copy(member)
+        end
         member
       end
 
       private
 
       attr_reader :visualization, :user, :name
+
+      def type_from(fields)
+        fields.fetch(:type, Member::TYPE_DERIVED)
+      end
 
       def overlays_copy(new_visualization)
         copier = CartoDB::Overlay::Copier.new(new_visualization.id)
@@ -40,8 +49,8 @@ module CartoDB
         }
       end
 
-      def map_copy
-        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map)
+      def map_copy(layers, create_as_children=false)
+        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers, create_as_children)
       end
 
       def new_name

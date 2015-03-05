@@ -136,19 +136,19 @@ class Organization < Sequel::Model
   end
 
   def public_visualizations(page_num = 1, items_per_page = 5, tag = nil)
-    public_vis_by_type(CartoDB::Visualization::Member::DERIVED_TYPE, page_num, items_per_page, tag)
+    public_vis_by_type(CartoDB::Visualization::Member::TYPE_DERIVED, page_num, items_per_page, tag)
   end
 
   def public_visualizations_count
-    public_vis_count_by_type(CartoDB::Visualization::Member::DERIVED_TYPE)
+    public_vis_count_by_type(CartoDB::Visualization::Member::TYPE_DERIVED)
   end
 
   def public_datasets(page_num = 1, items_per_page = 5, tag = nil)
-    public_vis_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE, page_num, items_per_page, tag)
+    public_vis_by_type(CartoDB::Visualization::Member::TYPE_CANONICAL, page_num, items_per_page, tag)
   end
 
   def public_datasets_count
-    public_vis_count_by_type(CartoDB::Visualization::Member::CANONICAL_TYPE)
+    public_vis_count_by_type(CartoDB::Visualization::Member::TYPE_CANONICAL)
   end
 
   def tags(type, exclude_shared=true)
@@ -163,9 +163,7 @@ class Organization < Sequel::Model
     self.auth_token
   end
 
-  private
-
-  def public_vis_by_type(type, page_num, items_per_page, tags)
+  def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
         type:     type,
@@ -173,10 +171,12 @@ class Organization < Sequel::Model
         page:     page_num,
         per_page: items_per_page,
         tags:     tags,
-        order:    'updated_at',
+        order:    order,
         o:        {updated_at: :desc}
     )
   end
+
+  private
 
   def public_vis_count_by_type(type)
     CartoDB::Visualization::Collection.new.fetch(
@@ -204,4 +204,3 @@ class Organization < Sequel::Model
   end
 
 end
-

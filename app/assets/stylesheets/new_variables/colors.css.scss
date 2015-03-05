@@ -9,10 +9,10 @@ $cTypography-linkHover:         rgba(#62B4E3, 1);
 $cTypography-linkSelected:      rgba(#333, 1);
 
 // Structure
-$cStructure-mainBkg:  rgba(#FFF, 1);
-$cStructure-mainLine: rgba(#DDD, 1);
-$cStructure-grayBkg:  rgba(#F9F9F9, 1);
-$cStructure-softLine: rgba(#EEE, 1);
+$cStructure-mainBkg:        rgba(#FFF, 1);
+$cStructure-mainLine:       rgba(#DDD, 1);
+$cStructure-grayBkg:        rgba(#F9F9F9, 1);
+$cStructure-softLine:       rgba(#EEE, 1);
 
 // Cards/Rows
 $cCard-hoverFill:      rgba(#F5FAFE, 1);
@@ -21,11 +21,14 @@ $cCard-selectedFill:   rgba(#EFF8FF, 1);
 $cCard-selectedBorder: rgba(#BCD8F1, 1);
 
 // Highlight
-$cHighlight-main:     rgba(#0090D7, 1);
-$cHighlight-positive: rgba(#8FB83F, 1);
-$cHighlight-negative: rgba(#C74B43, 1);
-$cHighlight-alert:    rgba(#C67B44, 1);
+$cHighlight-main:      rgba(#0090D7, 1);
+$cHighlight-positive:  rgba(#8FB83F, 1);
+$cHighlight-negative:  rgba(#C74B43, 1);
+$cHighlight-alert:     rgba(#C67B44, 1);
 
 // Icons
 $cIcons-default: rgba(#CCC, 1);
 $cIcons-active:  rgba(#666, 1); // Active & hover
+
+// Forms
+$cForms-border: rgba(#CCC, 1);

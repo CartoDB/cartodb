@@ -29,7 +29,7 @@ describe Visualization::Member do
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
     CartoDB::TablePrivacyManager.any_instance.stubs(
         :set_from_table_privacy => nil,
-        :propagate_to_redis_and_varnish => nil
+        :propagate_to_varnish => nil
     )
 
     User.any_instance.stubs(
@@ -161,7 +161,7 @@ describe Visualization::Member do
     vis = Visualization::Member.new(
         name:     'wadus_vis',
         map_id:   map.id,
-        type:     Visualization::Member::DERIVED_TYPE,
+        type:     Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
         user_id:  user.id
     )
@@ -186,7 +186,7 @@ describe Visualization::Member do
     table.reload
 
     # table = create_table(user_id: user.id, name: 'wadus_table')
-    table.table_visualization.type.should eq Visualization::Member::CANONICAL_TYPE
+    table.table_visualization.type.should eq Visualization::Member::TYPE_CANONICAL
 
     table
   end

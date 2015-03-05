@@ -13,6 +13,7 @@ PENDING_SPECS = \
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
+	spec/models/table/relator_spec.rb \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
@@ -128,6 +129,10 @@ WORKING_SPECS_9 = \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
+  services/importer/spec/regression/query_batcher_spec.rb \
+  services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
+  services/platform-limits/spec/unit/ \
+  spec/models/platform-limits/ \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -172,6 +177,7 @@ update_cdb:
 	cd $(CDB_PATH); make cartodb dist/cartodb.css
 	cp $(CDB_PATH)/dist/cartodb.full.uncompressed.js vendor/assets/javascripts/cartodb.uncompressed.js
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts
+	cp $(CDB_PATH)/dist/cartodb.mod.odyssey.uncompressed.js vendor/assets/javascripts
 	cp $(CDB_PATH)/dist/cartodb.css vendor/assets/stylesheets/cartodb.css
 
 

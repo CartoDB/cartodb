@@ -39,27 +39,17 @@ module CartoDB
       self
     end
 
-    def propagate_to(visualization)
+    def propagate_to(visualization, table_privacy_changed=false)
       visualization.store_using_table({
                                         privacy_text: ::Table::PRIVACY_VALUES_TO_TEXTS[privacy],
                                         map_id: visualization.map_id
-                                      })
+                                      }, table_privacy_changed)
       self
     end
 
-    def privacy_for_redis
-      case @table.privacy
-        when ::Table::PRIVACY_PUBLIC, ::Table::PRIVACY_LINK
-          ::Table::PRIVACY_PUBLIC
-        else
-          ::Table::PRIVACY_PRIVATE
-      end
-    end
-
-    def propagate_to_redis_and_varnish
+    def propagate_to_varnish
       raise 'table privacy cannot be nil' unless privacy
       # TODO: Improve this, hack because tiler checks it
-      $tables_metadata.hset redis_key, 'privacy', privacy_for_redis
       invalidate_varnish_cache
       self
     end
@@ -97,20 +87,9 @@ module CartoDB
     end
 
     def invalidate_varnish_cache
-      Varnish.new.purge("#{varnish_key}")
+      table.invalidate_varnish_cache(false)
     end
 
-    def varnish_key
-      if table.owner.cartodb_extension_version_pre_mu?
-        "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
-      else
-        "^#{table.owner.database_name}:(.*#{owner.database_schema}\\.#{table.name}.*)|(table)$"
-      end
-    end
-
-    def redis_key
-      "rails:#{table.owner.database_name}:#{owner.database_schema}.#{table.name}"
-    end
   end
 end
 

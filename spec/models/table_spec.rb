@@ -183,7 +183,6 @@ describe Table do
     it "should have a privacy associated and it should be private by default" do
       table = create_table :user_id => @user.id
       table.should be_private
-      $tables_metadata.hget(table.key,'privacy').to_i.should == Table::PRIVACY_PRIVATE
     end
 
     it 'changes to and from public-with-link privacy' do
@@ -441,7 +440,6 @@ describe Table do
       table = create_table(:user_id => @user.id)
 
       table.should be_private
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PRIVATE
 
       table.privacy = Table::PRIVACY_PUBLIC
       table.save
@@ -449,8 +447,6 @@ describe Table do
       expect {
         @user.in_database(:as => :public_user).run("select * from #{table.name}")
       }.to_not raise_error
-
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PUBLIC
     end
 
     it "should be associated to a database table" do
@@ -532,11 +528,6 @@ describe Table do
       table.save
     end
 
-    it "should store the identifier of its owner when created" do
-      table = create_table(:user_id => @user.id)
-      $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
-    end
-
     it "should rename the pk sequence when renaming the table" do
       table1 = new_table :name => 'table 1', :user_id => @user.id
       table1.save.reload
@@ -591,56 +582,22 @@ describe Table do
     end
   end
 
-  context "redis syncs" do
-    it "should have a unique key to be identified in Redis" do
-      table = create_table(:user_id => @user.id)
-      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
-    end
+  it "should remove varnish cache when updating the table privacy" do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+    @user.private_tables_enabled = true
+    @user.save
+    table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
 
-    it "should rename the entries in Redis when the table has been renamed" do
-      table = create_table(:user_id => @user.id)
-      original_name = table.name
-      original_the_geom_type = table.the_geom_type
+    id = table.table_visualization.id
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .times(3)
+      .with(".*#{id}:vizjson")
+      .returns(true)
 
-      table.name = "brand_new_name"
-      table.save_changes
-      table.reload
-
-      table.key.should == "rails:#{table.owner.database_name}:#{table.owner.database_schema}.#{table.name}"
-      $tables_metadata.exists(table.key).should be_true
-      $tables_metadata.exists(original_name).should be_false
-      $tables_metadata.hget(table.key, "privacy").should be_present
-      $tables_metadata.hget(table.key, "user_id").should be_present
-      $tables_metadata.hget(table.key,"the_geom_type").should == original_the_geom_type
-    end
-
-    it "should store the_geom_type in Redis" do
-      table = create_table(:user_id => @user.id)
-
-      table.the_geom_type.should == "geometry"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "geometry"
-
-      table.the_geom_type = "multipolygon"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
-    end
-
-    it "should remove varnish cache when updating the table privacy" do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      @user.private_tables_enabled = true
-      @user.save
-      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
-      
-      id = table.table_visualization.id
-      CartoDB::Varnish.any_instance.expects(:purge)
-        .times(2)
-        .with(".*#{id}:vizjson")
-        .returns(true)
-
-      CartoDB::TablePrivacyManager.any_instance
-        .expects(:propagate_to_redis_and_varnish)
-      table.privacy = Table::PRIVACY_PUBLIC
-      table.save
-    end
+    CartoDB::TablePrivacyManager.any_instance
+      .expects(:propagate_to_varnish)
+    table.privacy = Table::PRIVACY_PUBLIC
+    table.save
   end
 
   context "when removing the table" do
@@ -671,10 +628,6 @@ describe Table do
       table.keep_user_database_table = true
       table.destroy
       @user.in_database["select * from #{table.name}"].all.should == []
-    end
-
-    it "should remove the table metadata from Redis" do
-      $tables_metadata.exists(@doomed_table.key).should be_false
     end
 
     it "should update denormalized counters" do
@@ -1377,7 +1330,7 @@ describe Table do
       fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
       data_import   = create_import(@user, fixture)
       table         = data_import.table
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
       table_schema  = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
@@ -1415,7 +1368,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       table.geometry_types.should == ['ST_Point']
 
@@ -1447,7 +1400,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+      table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       schema = table.schema(:cartodb_types => true)
       schema.include?([:updated_at, "date"]).should == true
@@ -2141,6 +2094,122 @@ describe Table do
       Table.get_valid_table_name(new_name, {
         name_candidates: %w(table_ table_1)
       }).should_not == 'table_1'
+    end
+  end
+
+  describe '#key' do
+    it 'computes a suitable key for a table' do
+      table = create_table(name: "any_name", user_id: @user.id)
+      table.key.should == "rails:#{@user.database_name}:public.any_name"
+    end
+
+    it 'computes different keys for different tables' do
+      table_1 = create_table(user_id: @user.id)
+      table_2 = create_table(user_id: @user.id)
+
+      table_1.key.should_not == table_2.key
+    end
+  end
+
+  describe '#geometry_types_key' do
+    it 'computes a suitable key' do
+      table = create_table(name: 'any_other_name', user_id: @user.id)
+      table.geometry_types_key.should == "rails:#{@user.database_name}:public.any_other_name:geometry_types"
+    end
+  end
+
+  describe '#geometry_types' do
+    it "returns an empty array and does not cache if there's no column the_geom" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).never
+      cache.expects(:setex).never
+
+      table.stubs(:cache).returns(cache)
+
+      # A bit extreme way of getting a table without the_geom
+      table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
+      table.schema(reload: true)
+
+      table.geometry_types.should == []
+    end
+
+    it "returns an empty array and does not cache if there are no geometries in the query" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once.returns(nil)
+      cache.expects(:setex).never
+
+      table.stubs(:cache).returns(cache)
+
+      table.geometry_types.should == []
+    end
+
+    it "caches if there are geometries" do
+      table = create_table(user_id: @user.id)
+
+      cache = mock()
+      cache.expects(:get).once
+      cache.expects(:setex).once
+
+      table.stubs(:cache).returns(cache)
+      table.owner.in_database.run(%Q{
+        INSERT INTO #{table.name}(the_geom)
+        VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
+      })
+
+      table.geometry_types.should == ['ST_Point']
+    end
+
+    it "returns the value from the cache if it is there" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+
+      table.geometry_types.should eq(any_types), "cache miss failure"
+      table.geometry_types.should eq(any_types), "cache hit failure"
+      $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
+    end
+  end
+
+  describe '#destroy' do
+    it "invalidates geometry_types cache entry" do
+      table = create_table(user_id: @user.id)
+      any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
+      table.expects(:query_geometry_types).once.returns(any_types)
+      table.geometry_types.should eq(any_types)
+
+      key = table.geometry_types_key
+      table.destroy
+
+      $tables_metadata.get(key).should eq(nil), "the geometry types cache should be invalidated upon table removal"
+    end
+  end
+
+  describe '#after_save' do
+    it 'invalidates derived visualization cache if there are changes in table privacy' do
+      @user.private_tables_enabled = true
+      @user.save
+      table = create_table(user_id: @user.id)
+      table.save
+      table.should be_private
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
+      derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
+
+      # Do not create all member objects anew to be able to set expectations
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
+
+      derived.expects(:invalidate_cache).once()
+
+      table.privacy = Table::PRIVACY_PUBLIC
+      table.save
     end
   end
 

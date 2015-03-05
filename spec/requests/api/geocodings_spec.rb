@@ -51,7 +51,7 @@ describe "Geocodings API" do
       payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 422
-        response.body[:description].should eq "formatter is not present, table_id is not present"
+        response.body[:description].should eq "formatter is not present"
       end
     end
 

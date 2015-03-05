@@ -9,7 +9,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, except: [:create]
   before_filter :set_start_time
-  before_filter :link_ghost_tables, only: [:show]
 
   # Very basic controller method to simply make blank tables
   # All other table creation things are controlled via the imports_controller#create
@@ -108,6 +107,7 @@ class Api::Json::TablesController < Api::ApplicationController
     CartoDB::Logger.info e.class.name, e.message
     render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -120,6 +120,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.destroy
     head :no_content
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)

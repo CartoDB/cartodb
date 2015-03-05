@@ -3,8 +3,9 @@ require_relative '../spec_helper'
 
 describe User do
   before(:all) do
+    @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
-    @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
+    @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'
 
     puts "[rspec][user_spec] Loading user data..."
@@ -111,7 +112,7 @@ describe User do
     it "should not be valid if his organization doesn't have more seats" do
 
       organization = create_org('testorg', 10.megabytes, 1)
-      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
       user1.organization = organization
       user1.save
       organization.owner_id = user1.id
@@ -238,7 +239,7 @@ describe User do
     it 'should create remote user in central if needed' do
       pending "Central API credentials not provided" unless User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
-      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user1'
+      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
       user.organization = organization
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
@@ -250,12 +251,24 @@ describe User do
   end
 
   it 'should store feature flags' do
-    ff = FactoryGirl.create(:feature_flag)
+    ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
 
     user = create_user :email => 'ff@example.com', :username => 'ff-user-01', :password => 'ff-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
+  end
+
+  it 'should delete feature flags assignations to a deleted user' do
+    ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
+
+    user = create_user :email => 'ff2@example.com', :username => 'ff2-user-01', :password => 'ff2-user-01'
+    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
+    user.save
+    user_id = user.id
+    user.destroy
+    Rails::Sequel.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
+    Rails::Sequel.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
   end
 
   it "should have a default dashboard_viewed? false" do
@@ -460,6 +473,30 @@ describe User do
       User.any_instance.stubs(:organization).returns(Organization.new)
       User.overquota.should be_empty
     end
+  end
+
+  describe '#private_maps_enabled' do
+    it 'should not have private maps enabled by default' do
+      user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
+      user_missing_private_maps.private_maps_enabled.should eq false
+    end
+
+    it 'should have private maps if enabled' do
+      user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
+      user_with_private_maps.private_maps_enabled.should eq true
+    end
+
+    it 'should not have private maps if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
+      user_without_private_maps.private_maps_enabled.should eq false
+    end
+
+    it 'should have private maps if he is AMBASSADOR even if disabled' do
+      user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
+      user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
+      user_without_private_maps.private_maps_enabled.should eq true
+    end
+
   end
 
   describe '#get_geocoding_calls' do
@@ -937,6 +974,21 @@ describe User do
 
     it "should return cartodbfied tables" do
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.in_database.run('create table non_ghost_table (test integer)')
       tables = @user.search_for_cartodbfied_tables
       tables.should =~ ['ghost_table']
@@ -945,6 +997,21 @@ describe User do
     it "should link a table in the database" do
       tables = @user.tables.all.map(&:name)
       @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.link_ghost_tables
       new_tables = @user.tables.all.map(&:name)
       new_tables.should include('ghost_table')
@@ -953,6 +1020,21 @@ describe User do
     it "should link a renamed table in the database" do
       tables = @user.tables.all.map(&:name)
       @user.in_database.run('create table ghost_table_2 (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+
+      @user.in_database.run(%Q{
+        CREATE OR REPLACE FUNCTION test_quota_per_row()
+          RETURNS trigger
+          AS $$
+          BEGIN
+            RETURN NULL;
+          END;
+          $$
+          LANGUAGE plpgsql;
+      })
+      @user.in_database.run( %Q{
+        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table_2 EXECUTE PROCEDURE test_quota_per_row()
+      })
+
       @user.link_ghost_tables
       @user.in_database.run('alter table ghost_table_2 rename to ghost_table_renamed')
       @user.link_ghost_tables
@@ -1201,6 +1283,88 @@ describe User do
     user1.save
 
     organization.destroy
+  end
+
+  it "Tests password change" do
+    # @user_password = 'admin123'
+    # @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => @user_password
+
+    new_valid_password = '123456'
+
+    old_crypted_password = @user.crypted_password
+
+    @user.change_password('aaabbb', new_valid_password, new_valid_password)
+    @user.valid?.should eq false
+
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid") # "to_s" of validation msg
+
+    @user.change_password(@user_password, 'aaabbb', 'bbbaaa')
+    @user.valid?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "new_password New password and confirm password are not the same")
+
+    @user.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password and confirm password are not the same")
+
+    @user.change_password(@user_password, 'tiny', 'tiny')
+    @user.valid?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "new_password New password is too short (6 chars min)")
+
+    @user.change_password('aaaaaa', nil, nil)
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password Missing new password")
+
+    @user.change_password(@user_password, nil, nil)
+    @user.valid?.should eq false
+    @user.errors.fetch(:new_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "new_password Missing new password")
+
+    @user.change_password(nil, nil, nil)
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password Missing new password")
+
+    @user.change_password(nil, new_valid_password, new_valid_password)
+    @user.valid?.should eq false
+    @user.errors.fetch(:old_password).nil?.should eq false
+    expect {
+      @user.save(raise_on_failure: true)
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid")
+
+
+    @user.change_password(@user_password, new_valid_password, new_valid_password)
+    @user.valid?.should eq true
+    @user.save
+
+    new_crypted_password = @user.crypted_password
+
+    (old_crypted_password != new_crypted_password).should eq true
+
+    @user.change_password(new_valid_password, @user_password, @user_password)
+    @user.valid?.should eq true
+    @user.save
+
+    @user.crypted_password.should eq old_crypted_password
   end
 
   def create_org(org_name, org_quota, org_seats)

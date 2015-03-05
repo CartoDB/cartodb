@@ -17,7 +17,7 @@
           <p>Configuration, logo,...</p>
         </span>
       </a>
-      <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+      <% if (!Cartodb.config[:cartodb_com_hosted].nil? && !Cartodb.config[:cartodb_com_hosted]) %>
         <a href="<%= current_user.account_url(request.protocol) %>">
           <span class="icon settings"></span>
           <span class="info">

@@ -92,7 +92,7 @@
     </div>
   </div>
   
-  <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+  <% if (!Cartodb.config[:cartodb_com_hosted].nil? && !Cartodb.config[:cartodb_com_hosted]) %>
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin">

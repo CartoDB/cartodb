@@ -25,7 +25,7 @@
         <li class="Header-settingsItem js-learn" style="display:none;">
           <a href="http://docs.cartodb.com/" class="Header-settingsLink">Learn</a>
         </li>
-        <% if ( Cartodb.config[:account_host] == "cartodb.com") %>
+        <% if (!Cartodb.config[:cartodb_com_hosted].nil? && !Cartodb.config[:cartodb_com_hosted]) %>
           <li class="Header-settingsItem Header-settingsItem--avatar js-user-settings">
             <a href="http://cartodb.com/signup" class="Button Button--headerPositive">
               <span>Sign up</span>

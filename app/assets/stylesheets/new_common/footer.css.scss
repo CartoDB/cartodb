@@ -39,11 +39,11 @@
   }
   .Footer-logo {
     position: absolute;
-    top: 100px;
     left: 50%;
     margin-left: -$sIcon-layout / 2;
   }
 }
+
 @media (min-width: $sMedia-tablet) {
   .Footer-list {
     @include display-flex();

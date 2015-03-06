@@ -9,7 +9,7 @@ class CommonData
 
       _datasets = DATASETS_EMPTY
 
-      if is_enabled
+      if is_enabled?
         _datasets = get_datasets(get_datasets_json)
       end
 

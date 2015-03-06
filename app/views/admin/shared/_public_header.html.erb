@@ -6,7 +6,7 @@
       <% if clone %>
         <li><a href="http://cartodb.com/login">Clone this</a><li>
       <% end %>
-      <% if cartodb_com_hosted? %>
+      <% unless cartodb_com_hosted? %>
         <li><a class="signup" href="http://cartodb.com/signup">Sign up</a><li>
       <% end %>
       <li><a href="http://cartodb.com/login" class="border login">Login</a></li>

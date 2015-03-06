@@ -294,7 +294,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       from_query:             params[:sql].presence,
       service_name:           params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME,
       service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence,
-      type_guessing:          ["true", true].include?(params[:type_guessing]),
+      # By default true
+      type_guessing:          params.fetch(:type_guessing, true),
       quoted_fields_guessing: ["true", true].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing]),
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task

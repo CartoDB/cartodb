@@ -9,7 +9,7 @@
 <%= content_for(:js) do %>
   <script>
     var user_name = '<%= @username %>';
-    var customInstall = '<%= !(!Cartodb.config[:cartodb_com_hosted].nil? && !Cartodb.config[:cartodb_com_hosted]) %>';
+    var cartodb_com_hosted = <%= cartodb_com_hosted? %>;
   </script>
 
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>

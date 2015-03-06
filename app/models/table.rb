@@ -7,6 +7,7 @@ require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
 require_relative './visualization/overlays'
+require_relative './visualization/table_blender'
 require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
@@ -60,7 +61,7 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
-  VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
+  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
   # Associations
   many_to_one  :map
@@ -229,6 +230,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
+    # noinspection RubyArgCount
     vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
       u.user_id == query_filters[:user_id]
     }.first
@@ -290,7 +292,7 @@ class Table < Sequel::Model(:user_tables)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
 
-      # if the table exists, is private, but the owner no longer has private privilidges
+      # if the table exists, is private, but the owner no longer has private privileges
       if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
@@ -566,12 +568,17 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
+      if @data_import.create_visualization
+        @data_import.visualization_id = self.create_derived_visualization.id
+        @data_import.save
+      end
     end
     add_table_to_stats
 
     update_table_pg_stats
 
     self.cartodbfy
+
   rescue => e
     self.handle_creation_error(e)
   end
@@ -595,7 +602,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization)
+      manager.propagate_to(visualization, privacy_changed?)
     }
   end
 
@@ -660,7 +667,26 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
+    member.map.recalculate_bounds!
+
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def create_derived_visualization
+    blender = CartoDB::Visualization::TableBlender.new(self.owner, [ self ])
+    map = blender.blend
+    vis = CartoDB::Visualization::Member.new(
+      {
+        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        map_id:   map.id,
+        type:     CartoDB::Visualization::Member::TYPE_DERIVED,
+        privacy:  blender.blended_privacy,
+        user_id:  self.owner.id
+      }
+    )
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    vis.store
+    vis
   end
 
   def before_destroy
@@ -704,15 +730,15 @@ class Table < Sequel::Model(:user_tables)
 
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
-  def invalidate_varnish_cache
+  def invalidate_varnish_cache(propagate_to_visualizations=true)
     CartoDB::Varnish.new.purge("#{varnish_key}")
-    invalidate_cache_for(affected_visualizations) if id && table_visualization
+    invalidate_cache_for(affected_visualizations) if id && table_visualization && propagate_to_visualizations
     self
   end
 
   def invalidate_cache_for(visualizations)
     visualizations.each do |visualization|
-      visualization.invalidate_varnish_cache
+      visualization.invalidate_cache
     end
   end #invalidate_cache_for
 
@@ -1494,16 +1520,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_cdb_tablemetadata
-    # TODO: use upsert
     owner.in_database(as: :superuser).run(%Q{
-      INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
-      VALUES ('#{table_id}', NOW())
-    })
-  rescue Sequel::DatabaseError
-    owner.in_database(as: :superuser).run(%Q{
-      UPDATE cartodb.cdb_tablemetadata
-      SET updated_at = NOW()
-      WHERE tabname = '#{table_id}'
+      SELECT CDB_TableMetadataTouch('#{table_id}')
     })
   end
 

@@ -5406,6 +5406,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     end = end.getTime ? end : new Date(end);
     var range = (end.getTime() - start.getTime()) / 1000;
     var ONE_DAY = 3600*24;
+    var THREE_DAYS = ONE_DAY*3;
     var ONE_YEAR = ONE_DAY * 31 * 12;
 
     function pad(n) {
@@ -5420,7 +5421,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       return pad(date.getUTCHours()) + ":" + pad(date.getUTCMinutes());
     }
 
-    if (range < ONE_DAY) {
+    if (range < THREE_DAYS) {
       if (start.getUTCDate() === end.getUTCDate()) {
         return toTimeStr;
       } else {
@@ -5480,7 +5481,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   toggleTime: function(e) {
     this.killEvent(e);
-    this.torqueLayer.toggle();  
+    this.torqueLayer.toggle();
   },
   toggleButton: function() {
     this.$('.button')

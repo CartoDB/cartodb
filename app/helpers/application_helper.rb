@@ -43,18 +43,6 @@ module ApplicationHelper
     end
   end
 
-  # TODO: Check this for MU
-  def account_url
-    if Cartodb.config[:account_host]
-      request.protocol + CartoDB.account_host + CartoDB.account_path + '/' + current_user.username
-    end
-  end
-
-  # TODO: Check this for MU
-  def upgrade_url
-    account_url + '/upgrade'
-  end
-
   def sql_api_template
       sql_api = Cartodb.config[:sql_api]["private"]
       if CartoDB.subdomains_allowed?
@@ -171,7 +159,7 @@ module ApplicationHelper
 
   def insert_trackjs
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
-      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
+      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'], enabled: Cartodb.config[:trackjs]['enabled'] })
     end
   end
 

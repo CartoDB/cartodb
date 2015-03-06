@@ -5,6 +5,9 @@
 * Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package
 * Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
 * Updates cartodb.js to 3.12.11
+* Fixes update table as statements from the editor #2620
+* Fixes the showing of map previews in the delete items dialog #2639
+* New organization pages done
 
 Bugfixes:
 * Fixes a error that preventing the load of WMS layers.

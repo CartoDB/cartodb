@@ -226,7 +226,7 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
     get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_datasets_tag
     get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_datasets_tag_page
-    get '/sitemap.xml'              => 'pages#sitemap',  as: :public_sitemap
+    get '/sitemap.xml'                               => 'pages#sitemap',  as: :public_sitemap
     # Public tables
     get '(/u/:user_domain)/tables/:id/'              => 'visualizations#show',            as: :public_tables_show,      constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     get '(/u/:user_domain)/tables/:id'               => 'visualizations#show',            as: :public_tables_show_bis,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }

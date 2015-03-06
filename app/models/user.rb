@@ -1288,6 +1288,15 @@ class User < Sequel::Model
     })
   end
 
+  # Get user owned visualizations
+  def owned_visualizations_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      exclude_shared: true,
+      exclude_raster: false
+    })
+  end
+
   # Get a count of visualizations with some optional filters
   def visualization_count(filters = {})
     type_filter           = filters.fetch(:type, nil)
@@ -2233,6 +2242,20 @@ TRIGGER
     user_name = organization.nil? ? nil : username
 
     CartoDB.base_url(self.subdomain, user_name)
+  end
+
+  def account_url(request_protocol)
+    if Cartodb.config[:account_host]
+      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+    end
+  end
+
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
+  def upgrade_url(request_protocol)
+    account_url(request_protocol) + '/upgrade'
   end
 
   def subdomain

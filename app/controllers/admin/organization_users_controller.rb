@@ -24,10 +24,26 @@ class Admin::OrganizationUsersController < ApplicationController
   def new
     @user = User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
+
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'create' : 'new'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def edit
     set_flash_flags
+
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_edit' : 'edit'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def set_flash_flags(show_dashboard_details_flash = nil, show_account_settings_flash = nil)
@@ -38,6 +54,10 @@ class Admin::OrganizationUsersController < ApplicationController
   end
 
   def create
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'create' : 'new'
+    layout = new_dashboard ? 'new_application' : 'application'
+
     @user = User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
@@ -56,12 +76,16 @@ class Admin::OrganizationUsersController < ApplicationController
     set_flash_flags
     flash.now[:error] = e.user_message
     @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
-    render action: :new
+    render action: view, layout: layout
   rescue Sequel::ValidationFailed => e
-    render action: :new
+    render action: view, layout: layout
   end
 
   def update
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_edit' : 'edit'
+    layout = new_dashboard ? 'new_application' : 'application'
+
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
@@ -89,9 +113,9 @@ class Admin::OrganizationUsersController < ApplicationController
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: :edit
+    render action: view, layout: layout
   rescue Sequel::ValidationFailed => e
-    render action: :edit
+    render action: view, layout: layout
   end
 
   def destroy

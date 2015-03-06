@@ -109,8 +109,8 @@ module CartoDB
           type: TYPE_REMOTE})
       end
 
-      def self.matching_remote(user_id, name)
-        Collection.new.fetch(type: TYPE_REMOTE, name: name, user_id: user_id).first
+      def self.user_remotes(user_id)
+        CartoDB::Visualization::Collection.new.fetch(type: TYPE_REMOTE, user_id: user_id)
       end
 
       def update_remote_data(privacy, description, tags, license, source)

@@ -157,6 +157,7 @@ class User < Sequel::Model
       :user_id => self.id,
       :username => self.username
     })
+    # TODO: instead of doing one query per dataset, retrieve all remotes and all external sources in two queries
     datasets.each do |d|
       begin
         existing_remote_vis = CartoDB::Visualization::Member.matching_remote(self.id, d['name'])

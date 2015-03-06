@@ -49,6 +49,7 @@ namespace :cartodb do
     task :load_all, [:from_username] => [:environment] do |t, args|
       datasets = CommonDataSingleton.instance.datasets[:datasets]
       puts DateTime.now
+      # TODO: batch
       users = User.order_by(:username)
       users = users.where("username > '#{args[:from_username]}'") unless args[:from_username].nil?
       users.all.each do |user|

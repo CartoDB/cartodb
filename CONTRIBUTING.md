@@ -48,7 +48,6 @@ Until our guidelines are publically available follow the existing file/directory
 Tests reside in the `lib/assets/test` directory. We use
  - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
  - [SinonJS 1.3.4](sinonjs.org) for test spies/stubs/mocks when Jasmine spies isn't good enough
- - [Rewirefy](https://github.com/i-like-robots/rewireify) to mock CommonJS (browserify) `require` calls
 
 When adding new files make sure they exist in an appropriate file located in `lib/build/js_files` (will depends
 if you're writing tests for current code or the newer browserify modules).
@@ -113,4 +112,3 @@ This will watch CSS and JS files and rebuild bundles automatically upon changes.
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
-

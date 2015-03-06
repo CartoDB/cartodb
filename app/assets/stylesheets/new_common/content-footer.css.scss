@@ -3,9 +3,14 @@
 @import "../new_variables/sizes";
 
 .ContentFooter {
-  height: 81px;
-  margin-top: $sMargin-group;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  width: $sLayout-width;
+  padding: $sMargin-group 0;
+  margin: 0 auto;  
 }
+/*REVIEW IF THIS CLASS IS NECESSARY*/
 .ContentFooter-inner {
   @include display-flex();
   @include justify-content(space-between, justify);

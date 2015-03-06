@@ -1288,6 +1288,15 @@ class User < Sequel::Model
     })
   end
 
+  # Get user owned visualizations
+  def owned_visualizations_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      exclude_shared: true,
+      exclude_raster: false
+    })
+  end
+
   # Get a count of visualizations with some optional filters
   def visualization_count(filters = {})
     type_filter           = filters.fetch(:type, nil)

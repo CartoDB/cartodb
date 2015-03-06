@@ -52,7 +52,7 @@
           <li class="OrganizationUser-stat">
             <i class="iconFont iconFont-Eye OrganizationUser-statIcon"></i>
             <div class="OrganizationUser-statInfo">
-              <% mapCount = @user.visualization_count({ type: CartoDB::Visualization::Member::TYPE_DERIVED, exclude_shared: true, exclude_raster: true }) %>
+              <% mapCount = @user.owned_visualizations_count %>
               <em class="OrganizationUser-statTitle"><%= number_with_delimiter(mapCount) %></em>
               <label class="OrganizationUser-statLabel"><%= "Map".pluralize(mapCount) %></label>
             </div>

@@ -164,7 +164,8 @@ module CartoDB
         def get_resource_metadata(id)
           {
             id:       FORMAT_ALL_MEDIA,
-            filename: "#{DATASOURCE_NAME}_#{@client.user.username}.csv"
+            filename: "#{DATASOURCE_NAME}_#{@client.user.username}.csv",
+            size:     NO_CONTENT_SIZE_PROVIDED
           }
         rescue => ex
           handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")

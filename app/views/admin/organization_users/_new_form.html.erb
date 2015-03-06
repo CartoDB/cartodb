@@ -131,7 +131,8 @@
 
   <div class="Form-footer">
     <% if !@user.new? && current_user.organization_owner? -%>
-      <% if @user != current_user %>
+      <%# @user != current_user %>
+      <% if false %>
         <a href="<%= delete_organization_user_path(user_domain: params[:user_domain], id: @user.username) %>" class="Button Button--negative">
           <span>Delete this user</span>
         </a>

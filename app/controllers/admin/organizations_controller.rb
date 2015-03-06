@@ -4,12 +4,30 @@ class Admin::OrganizationsController < ApplicationController
   before_filter :login_required, :load_organization_and_members
 
   def show
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_show' : 'show'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def settings
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_settings' : 'settings'
+    layout = new_dashboard ? 'new_application' : 'application'
+
+    respond_to do |format|
+      format.html { render view, layout: layout }
+    end
   end
 
   def settings_update
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
+    view =  new_dashboard ? 'new_settings' : 'settings'
+    layout = new_dashboard ? 'new_application' : 'application'
+
     attributes = params[:organization]
 
     if attributes.include?(:avatar_url)
@@ -34,11 +52,12 @@ class Admin::OrganizationsController < ApplicationController
 
     redirect_to organization_settings_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
-    flash[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists."
-    render action: :settings
+    @organization.reload
+    flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
+    render action: view, layout: layout
   rescue Sequel::ValidationFailed => e
-    flash[:error] = e.message
-    render action: :settings
+    flash.now[:error] = e.message
+    render action: view, layout: layout
   end
 
   private

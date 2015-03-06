@@ -84,7 +84,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
         load_table
         return head(400) if @table.nil?
         input = @table.sequel.distinct.select_map(params[:column_name].to_sym)
-      rescue Sequel::DatabaseError
+      rescue Sequel::DatabaseError => e
+        Rollbar.report_exception(e)
         render(json: []) and return
       end
     end
@@ -100,8 +101,10 @@ class Api::Json::GeocodingsController < Api::ApplicationController
                 .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
 
     geometries = []
-    geometries.append 'point' if services.map { |i| i['postal_code_points'] }.inject(:'&')
-    geometries.append 'polygon' if services.map { |i| i['postal_code_polygons'] }.inject(:'&')
+    points = services.select { |s| s['postal_code_points'] }.size
+    polygons = services.select { |s| s['postal_code_polygons'] }.size
+    geometries.append 'point' if points > 0 && points >= polygons
+    geometries.append 'polygon' if polygons > 0 && polygons >= points
 
     render(json: geometries || [])
   end

@@ -2,16 +2,30 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
 
-.ContentFooterInner {
+.ContentFooter {
+  height: 81px;
+  margin-top: $sMargin-group;
+}
+.ContentFooter-inner {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  position: relative;
-  height: 81px;
-  padding: 0 0 $sMargin-section 0;
-  overflow: hidden;
+}
+.ContentFooter-inner--paginationOnly {
+  @include justify-content(center);
 }
 .ContentFooter-lockedIcon {
   font-size: $sFontSize-small;
+  margin-right: $sMargin-min;
   color: $cTypography-help;
+}
+
+@media (min-width: $sMedia-tablet) {
+  .ContentFooter-inner {
+    @include flex-direction(row);
+    @include justify-content(space-between, justify);
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
 }

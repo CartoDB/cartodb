@@ -29,28 +29,37 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  PUBLIC_ATTRIBUTES = %W{
-    id
-    user_id
-    table_id
-    data_type
-    table_name
-    state
-    error_code
-    queue_id
-    get_error_text
-    tables_created_count
-    synchronization_id
-    service_name
-    service_item_id
-    type_guessing
-    quoted_fields_guessing
-    content_guessing
-    server
-    host
-    upload_host
-    resque_ppid
-  }
+  # @see store_results() method also when adding new fields
+  PUBLIC_ATTRIBUTES = [
+    'id',
+    'user_id',
+    'table_id',
+    'data_type',
+    'table_name',
+    'state',
+    'error_code',
+    'queue_id',
+    'get_error_text',
+    'tables_created_count',
+    'synchronization_id',
+    'service_name',
+    'service_item_id',
+    'type_guessing',
+    'quoted_fields_guessing',
+    'content_guessing',
+    'server',
+    'host',
+    'upload_host',
+    'resque_ppid',
+    'create_visualization',
+    'visualization_id',
+    # String field containing a json, format:
+    # {
+    #   twitter_credits: Integer
+    # }
+    # No automatic conversion coded
+    'user_defined_limits'
+  ]
 
   # Not all constants are used, but so that we keep track of available states
   STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
@@ -182,7 +191,7 @@ class DataImport < Sequel::Model
 
     path = Rails.root.join('public', 'uploads', uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
-  end #remove_uploaded_resources
+  end
 
   def handle_success
     self.success  = true
@@ -192,6 +201,18 @@ class DataImport < Sequel::Model
     self.tables_created_count = table_names.size
     log.append "Import finished\n"
     save
+    begin
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                             user: current_user,
+                                                                             redis: {
+                                                                               db: $users_metadata
+                                                                             }
+                                                                         })
+                                                                    .decrement
+    rescue => exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{exception.message} #{exception.backtrace.inspect}")
+    end
     notify(results)
     self
   end
@@ -204,6 +225,18 @@ class DataImport < Sequel::Model
     end
     log.append "ERROR!\n"
     self.save
+    begin
+      CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
+                                                                           user: current_user,
+                                                                           redis: {
+                                                                             db: $users_metadata
+                                                                           }
+                                                                         })
+      .decrement
+    rescue => exception
+      CartoDB::Logger.info('Error decreasing concurrent import limit',
+                           "#{exception.message} #{exception.backtrace.inspect}")
+    end
     notify(results)
     self
   rescue => exception
@@ -506,11 +539,16 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
+      # Table.after_create() setted fields that won't be saved to "final" data import unless specified here
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table
 
+      if importer.success? && importer.data_import.create_visualization
+        self.visualization_id = importer.data_import.visualization_id
+      end
+
       update_synchronization(importer)
-      importer.success? ? set_datasource_audit_to_complete(datasource_provider, \
+      importer.success? ? set_datasource_audit_to_complete(datasource_provider,
                                                          importer.success? && importer.table ? importer.table.id : nil)
       : set_datasource_audit_to_failed(datasource_provider)
     end
@@ -603,7 +641,7 @@ class DataImport < Sequel::Model
                   'is_sync_import'    => !self.synchronization_id.nil?,
                   'import_time'       => self.updated_at - self.created_at,
                   'file_stats'        => ::JSON.parse(self.stats),
-                  'resque_ppid'              => self.resque_ppid
+                  'resque_ppid'       => self.resque_ppid
                  }
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
@@ -655,7 +693,11 @@ class DataImport < Sequel::Model
       oauth = current_user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
       datasource = DatasourcesFactory.get_datasource(
-        datasource_name, current_user, { redis_storage: $tables_metadata })
+        datasource_name, current_user, {
+                                          redis_storage: $tables_metadata,
+
+                                          user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
+                                       })
       datasource.report_component = Rollbar
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex

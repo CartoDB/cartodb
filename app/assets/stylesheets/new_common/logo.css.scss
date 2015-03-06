@@ -10,8 +10,6 @@ $size: 40px;
   @include inline-block();
 }
 .Logo--text {
-  width: 90px;
-  height: 16px;
   i {
     line-height: $size;
     font-size: 17px;
@@ -43,4 +41,3 @@ $size: 40px;
     color: white;
   }
 }
-

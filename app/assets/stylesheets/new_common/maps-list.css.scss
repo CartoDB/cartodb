@@ -8,22 +8,38 @@
 // --------------------------------------------------
 .MapsList {
   @include display-flex();
+  // @include flex-direction(column);
   @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;
-  width: $sLayout-width;
-  margin: 0 auto;
+  width: $sLayout-width + 20;
+  margin: 10px auto 0;
+  padding: 0 $sMargin-elementInline;
+}
+.MapsList--centerItems {
+  @include justify-content(center, center);
 }
 .MapsList.is-hidden { display: none }
-.MapsList--centerItems { @include justify-content(center) }
 .MapsList-item {
+  position: relative;
   width: 300px;
-  margin: $sMargin-element $sMargin-element 0 0;
+  margin: 10px;
 }
-.MapsList-item:nth-child(3n) { margin-right: 0 }
-.MapsList.is-singleRow {
-  width: $sLayout-width;
-  right: 0;
+.MapsList-item--fake {
+  display: none;
+  @include opacity(0.6);
 }
-.MapsList.is-singleRow .MapsList-item:nth-child(3n) { margin-right: 0 }
+
+@media (min-width: $sMedia-mobile) {
+  .MapsList-item--fake { display: none }
+}
+@media (min-width: $sMedia-tablet) {
+  .MapsList {
+    // @include flex-direction(row);
+    // @include justify-content(center, center);
+  }
+}
+@media (min-width: $sMedia-desktop) {
+  .MapsList-item--fake { display: block }
+}

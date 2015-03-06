@@ -231,20 +231,10 @@ describe "Imports API" do
     import_table.should have_required_indexes_and_triggers
   end
 
-  it 'gets a list of failed imports'
-  it 'gets a list of succeeded imports'
-  it 'kills pending imports'
-
   it 'imports all the sample data' do
     @user.update table_quota: 10
     import_files = [
         "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
- #                   "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-#                    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"
     ]
 
     import_files.each do |url|
@@ -338,6 +328,47 @@ describe "Imports API" do
     last_import.state.should be == 'complete'
     last_import.tables_created_count.should eq 2
     last_import.table_names.should eq 'zipped_a zipped_b'
+  end
+
+  it 'properly reports table row count limit' do
+    old_max_import_row_count = @user.max_import_table_row_count
+    @user.update max_import_table_row_count: 2
+
+    post api_v1_imports_create_url,
+         params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 6668
+
+    @user.update max_import_table_row_count: old_max_import_row_count
+  end
+
+  it 'returns derived visualization id if created with create_vis flag' do
+    @user.update private_tables_enabled: false
+    post api_v1_imports_create_url,
+         params.merge({
+                        filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
+                        create_vis: true
+                      })
+    response.code.should be == '200'
+
+    item_queue_id = ::JSON.parse(response.body)['item_queue_id']
+
+    get api_v1_imports_show_url(id: item_queue_id), params
+
+    import = DataImport[item_queue_id]
+
+    import.state.should be == 'complete'
+    import.visualization_id.nil?.should eq false
+    import.create_visualization.should eq true
+
+    vis = CartoDB::Visualization::Member.new(id: import.visualization_id).fetch
+    vis.nil?.should eq false
+    vis.name =~ /csv_with_lat_lon/  # just in case we change the prefix
+
+    @user.update private_tables_enabled: true
   end
 
 end

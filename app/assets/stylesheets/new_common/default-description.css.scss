@@ -3,15 +3,15 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .DefaultDescription {
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
+  @include nicer-lato-typography();
+  line-height: $sLineHeight-normal;
   color: $cTypography-secondary;
-}
-.DefaultDescription.is--empty {
-  color: $cTypography-help;
-  font-style: italic;
+  overflow-wrap: break-word;
+  position: relative;
 }
 .DefaultDescription--error {
   color: $cHighlight-negative;

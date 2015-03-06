@@ -46,7 +46,7 @@
         <ul>
           <% @visualizations.each_with_index do |vis, i| %>
 
-            <% domain = vis[:owner].organization ? vis[:owner].username : nil %>
+            <% domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
 
             <li>
               <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">

@@ -278,6 +278,13 @@ namespace :cartodb do
       end
     end
 
+
+    desc 'Install/upgrade Varnish trigger for a single user'
+    task :load_varnish_trigger_user, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.create_function_invalidate_varnish
+    end
+
     desc 'Install/upgrade Varnish invalidation trigger'
     task :load_varnish_trigger, [:num_threads, :thread_sleep, :database_host, :sleep] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
@@ -322,6 +329,12 @@ namespace :cartodb do
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.fix_permissions
       end
+    end
+
+    desc 'Set user privileges in CartoDB schema and CDB_TableMetadata'
+    task :set_user_privileges_in_cartodb_schema, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.set_user_privileges_in_cartodb_schema
     end
 
     ##########################
@@ -862,28 +875,6 @@ namespace :cartodb do
             log(message, :grant_general_raster_permissions.to_s)
           end
       end
-    end
-
-    desc "Adapt max_import_file_size according to disk quota"
-    task :setup_max_import_file_size_based_on_disk_quota => :environment do
-      mid_size = 500*1024*1024
-      big_size = 1000*1024*1024
-
-      User.all.each do |user|
-        quota_in_mb = user.quota_in_bytes/1024/1024
-        if quota_in_mb >= 450 && quota_in_mb < 1500
-          user.max_import_file_size = mid_size
-          user.save
-          print "M"
-        elsif quota_in_mb >= 1500
-          user.max_import_file_size = big_size
-          user.save
-          print "B"
-        else
-          print "."
-        end
-      end
-      puts "\n"
     end
 
     desc "Enable oracle_fdw extension in database"

@@ -20,7 +20,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like, :index]
   before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
-                                                    :index]
+                                                    :index, :vizjson2]
   before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
                                                       :add_like, :is_liked, :remove_like, :set_next_id]
@@ -121,6 +121,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -174,6 +175,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -191,6 +193,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError
     head(404)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -231,7 +234,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    CartoDB.notify_exception(exception)
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     CartoDB.notify_exception(exception)
@@ -283,6 +286,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: ['Error saving next slide position'] }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -331,7 +335,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.add_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -377,7 +381,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.remove_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
 
     render_jsonp({
                    id:    vis.id,
@@ -408,10 +412,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def allow_vizjson_v1_for?(table)
     table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
-  end #allow_vizjson_v1_for?
+  end
 
   def allow_vizjson_v2_for?(visualization)
-    visualization && (visualization.public? || visualization.public_with_link?)
+    return false unless visualization
+    (current_user && visualization.user_id == current_user.id) ||
+      (current_viewer && visualization.has_permission?(current_viewer, Visualization::Member::PERMISSION_READONLY)) ||
+      (visualization.public? || visualization.public_with_link?)
   end
 
   def current_user_is_owner?(table)
@@ -419,8 +426,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def set_vizjson_response_headers_for(visualization)
-    response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+    # We don't cache non-public vis
+    if visualization.public? || visualization.public_with_link?
+      response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
+      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+    end
   end
 
   def payload

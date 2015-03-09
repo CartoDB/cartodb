@@ -28,15 +28,7 @@
   text-align: center;
 }
 
-@media only screen and (max-width: $sMedia-tablet) {
-  .Footer {
-    /* ... */
-  }
-}
 @media only screen and (max-width: $sMedia-mobile) {
-  .Footer {
-    /* ... */
-  }
   .Footer-logo {
     position: absolute;
     left: 50%;
@@ -77,6 +69,7 @@
   .Footer-listItem:first-child { padding-left: 0 }
   .Footer-listItem:last-child { padding-right: 0 }
 }
+
 @media (min-width: $sMedia-desktop) {
   .Footer-list {
     padding: 0;

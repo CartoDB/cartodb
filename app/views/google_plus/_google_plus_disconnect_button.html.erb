@@ -3,11 +3,16 @@
 </span>
 
 <span id="google_disconnect" style="display: none">
-  <a onclick="#" id="disconnectGoogleButton">Disconnect your Google+ account</a>
+  <% if @user.last_password_change_date.nil? %>
+    <span>You must set a password before being able to disconnect yout Google+ account</span>
+  <% else %>
+    <a style="cursor: pointer;" onclick="if(confirm('Are you sure you want to disconnect your Google+ account')) { disconnectGoogleAccount(access_token, function() { $('#google_disconnect').hide(); }, function() { alert('There was an error disconnecting your Google account'); }) } " id="disconnectGoogleButton">Disconnect your Google+ account</a>
+  <% end %>
 </span>
 
 <script>
   document.domain = '<%= config.domain %>'
+  var access_token = '';
 
   function signinCallback(authResult) {
     if (typeof authResult.access_token != 'undefined') {
@@ -25,4 +30,18 @@
       signinCallbackCalled(authResult);
     }
   }
+
+  function disconnectGoogleAccount(access_token, callback, errorCallback) {
+    var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token=' + access_token;
+    $.ajax({
+      type: 'GET',
+      url: revokeUrl,
+      async: false,
+      contentType: "application/json",
+      dataType: 'jsonp',
+      success: callback,
+      error: errorCallback
+    });
+  }
+
 </script>

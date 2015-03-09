@@ -45,7 +45,7 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
+            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' if !@user.can_change_email }", :readonly => !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:email].present?) %>

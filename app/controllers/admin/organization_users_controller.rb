@@ -1,6 +1,6 @@
 # coding: utf-8
-require_dependency '../../../lib/google_plus_api'
-require_dependency '../../../lib/google_plus_config'
+require_dependency '../../lib/google_plus_api'
+require_dependency '../../lib/google_plus_config'
 
 class Admin::OrganizationUsersController < ApplicationController
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key

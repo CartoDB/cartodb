@@ -8,6 +8,7 @@
 * Fixes update table as statements from the editor #2620
 * Fixes the showing of map previews in the delete items dialog #2639
 * New organization pages done
+* Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
 
 Bugfixes:
 * Fixes a error that preventing the load of WMS layers.

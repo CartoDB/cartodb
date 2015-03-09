@@ -8,6 +8,7 @@ $opacityTransition: 250ms;
 
 .DatasetsList {
   position: relative;
+  width: 100%;
   @include display-flex();
   @include flex-direction(column);
   margin: 0 auto;
@@ -160,7 +161,10 @@ $opacityTransition: 250ms;
 .DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
 .DatasetsList-itemDescription { margin-top: 4px }
 
-@media (min-width: $sMedia-tablet) {
+@media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
+  .DatasetsList {
+    width: 100%;
+  }
   .DatasetsList-itemMeta {
     @include align-items(center);
   }
@@ -169,7 +173,23 @@ $opacityTransition: 250ms;
     margin-right: $sMargin-element;
     text-align: center;
   }
-  // .DatasetsList-itemTags .DefaultEditInline-input { text-align: left }
+  .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
+  .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
+  .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
+  .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
+}
+@media only screen and (max-width: $sMedia-tablet) {
+  .DatasetsList {
+    width: 100%;
+  }
+  .DatasetsList-itemMeta {
+    @include align-items(center);
+  }
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: $sMargin-element;
+    text-align: center;
+  }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
   .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }

@@ -14,7 +14,7 @@
       <% @visualizations.each do |vis| %>
         <% user_domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
         <li class="MapsList-item">
-          <div class="MapCard" data-vizjson-url="<%= api_v2_visualizations_vizjson_url(user_domain: user_domain, id: vis[:id]) %>.json">
+          <div class="MapCard" data-zoom="<%= vis[:map_zoom] %>" data-vizjson-url="<%= api_v2_visualizations_vizjson_url(user_domain: user_domain, id: vis[:id]) %>.json">
             <a href="<%= public_visualizations_public_map_url(user_domain: user_domain, id: vis[:id]) %>" class="MapCard-header js-header">
               <div class="MapCard-loader"></div>
             </a>

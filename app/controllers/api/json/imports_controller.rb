@@ -294,7 +294,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       from_query:             params[:sql].presence,
       service_name:           params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME,
       service_item_id:        params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence,
-      type_guessing:          ["true", true].include?(params[:type_guessing]),
+      # By default true
+      type_guessing:          params.fetch(:type_guessing, true),
       quoted_fields_guessing: ["true", true].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing]),
       state:                  DataImport::STATE_PENDING,  # Pending == enqueue the task
@@ -317,8 +318,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     derived_vis_id = nil
 
     if data_import.create_visualization && !data_import.visualization_id.nil?
-      derived_vis = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch
-      derived_vis_id = derived_vis.id unless derived_vis.nil?
+      derived_vis_id = CartoDB::Visualization::Member.new(id: data_import.visualization_id).fetch.id
     end
 
     data[:derived_visualization_id] = derived_vis_id

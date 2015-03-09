@@ -34,6 +34,11 @@
   display: -webkit-flex;     /* NEW - Chrome */
   display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
 }
+@mixin display-inline-flex() {
+  display: inline-block;
+  display: -webkit-inline-flex;
+  display: inline-flex;
+}
 @mixin flex($v) {
   -webkit-box-flex: $v;
   -moz-box-flex:  $v;

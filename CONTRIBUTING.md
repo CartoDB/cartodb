@@ -62,12 +62,7 @@ grunt jasmine
 grunt jasmine-server
 ```
 
-If you only want to run a subset of tests use the browser approach (see above) and append this querystring to the URL:
-`?spec=start-of-describe`, i.e.:
-```
-http://0.0.0.0:8089/_SpecRunner.html?spec=cdb.admin.User
-```
-
+If you only want to run a subset of tests the easiest and fastest way is to use [focused tests](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
 
 ## CSS
 
@@ -79,7 +74,7 @@ Source files are located at `app/assets/stylesheets`. We used to use Rails sproc
 
 See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
-Until our guidelines are publically available follow the existing file/directory and style structure.
+Until our guidelines are publicly available follow the existing file/directory and style structure.
 
 ## Grunt
 

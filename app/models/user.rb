@@ -3,11 +3,10 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
-require_relative './visualization/external_source'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
-require_relative '../../app/models/common_data'
+require_relative '../services/visualization/common_data_service'
 require_relative './feature_flag'
 
 class User < Sequel::Model
@@ -146,74 +145,8 @@ class User < Sequel::Model
     end
   end
 
-  def load_common_data(datasets = CommonDataSingleton.instance.datasets[:datasets])
-    added = 0
-    updated = 0
-    not_modified = 0
-    failed = 0
-
-    Rollbar.report_message('common data', 'debug', {
-      :action => 'load',
-      :user_id => self.id,
-      :username => self.username
-    })
-    remotes_by_name = {}
-    CartoDB::Visualization::Member.user_remotes(self.id).each { |r|
-      remotes_by_name[r.name] = r
-    }
-    datasets.each do |d|
-      begin
-        existing_remote_vis = remotes_by_name[d['name']]
-        vis = if existing_remote_vis
-          if existing_remote_vis.update_remote_data(
-              CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-              d['description'], [ d['category'] ], d['license'],
-              d['source'])
-            existing_remote_vis.store
-            updated += 1
-          else
-            not_modified += 1
-          end
-          existing_remote_vis
-        else
-          v = CartoDB::Visualization::Member.remote_member(
-            d['name'], self.id, CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-            d['description'], [ d['category'] ], d['license'],
-            d['source'])
-          v.store
-          added += 1
-          v
-        end
-
-        existing_external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: vis.id).first
-        if existing_external_source
-          existing_external_source.save if !(existing_external_source.update_data(d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').changed_columns.empty?)
-        else
-          CartoDB::Visualization::ExternalSource.new(vis.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
-        end
-      rescue => e
-        Rollbar.report_exception(e)
-        failed += 1
-      end
-    end
-
-    return added, updated, not_modified, failed
-  end
-
-  def delete_common_data
-    CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: self.id}).map do |v|
-      begin
-        CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
-        v.delete
-      rescue Sequel::DatabaseError => e
-        match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
-        if match.present? && match >= 0
-          puts "Couldn't delete #{v.id} visualization because it's been imported"
-        else
-          raise e
-        end
-      end
-    end
+  def load_common_data
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
   end
 
   def after_save

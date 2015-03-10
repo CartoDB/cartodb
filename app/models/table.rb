@@ -5,6 +5,7 @@ require 'forwardable'
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
+require_relative './table/table_storage'
 require_relative './visualization/member'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
@@ -14,7 +15,7 @@ require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
-class Table < Sequel::Model(:user_tables)
+class Table
   extend Forwardable
 
   PRIVACY_PRIVATE = 0
@@ -63,21 +64,53 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
-  # Associations
-  many_to_one  :map
-  many_to_many :layers, join_table: :layers_user_tables,
-                        left_key:   :user_table_id,
-                        right_key:  :layer_id,
-                        reciprocal: :user_tables
-  one_to_one   :automatic_geocoding
-  one_to_many  :geocodings
-
-  plugin :association_dependencies, map:                  :destroy,
-                                    layers:               :nullify,
-                                    automatic_geocoding:  :destroy
-  plugin :dirty
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
+
+
+  def initialize(attributes = {})
+    @table_storage = TableStorage.new(attributes)
+    @table_storage.set_hooks_listener(self)
+  end
+
+  # Stuff that must be delegated in to the storage layer -----------------------
+  # TODO: these are to be removed
+  def id
+    @table_storage.id
+  end
+
+  def user_id=(id)
+    @table_storage.user_id = id
+  end
+
+  def user_id
+    @table_storage.user_id = id
+  end
+
+  def [](key)
+    @table_storage[key]
+  end
+
+  def []=(key, value)
+    @table_storage[key] = value
+  end
+
+  def name
+    @table_storage.name
+  end
+
+  def new?
+    @table_storage.new?
+  end
+
+  def save
+    @table_storage.save
+  end
+
+  # ----------------------------------------------------------------------------
+
+
+
 
   def public_values(options = {}, viewer_user=nil)
     selected_attrs = if options[:except].present?
@@ -128,31 +161,6 @@ class Table < Sequel::Model(:user_tables)
   def is_raster?
     schema.select { |key, value| value == 'raster' }.length > 0
   end
-
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
-  def_dataset_method(:multiple_order) do |criteria|
-    if criteria.nil? || criteria.empty?
-      order(:id)
-    else
-      order_params = criteria.map do |key, order|
-        Sequel.send(order.to_sym, key.to_sym)
-      end
-      order(*order_params)
-    end
-  end #multiple_order
-
-
-  # Ignore mass-asigment on not allowed columns
-  self.strict_param_setting = false
-
-  # Allowed columns
-  set_allowed_columns(:privacy, :tags, :description)
 
   attr_accessor :force_schema,
                 :import_from_file,
@@ -266,12 +274,7 @@ class Table < Sequel::Model(:user_tables)
 
   # Core validation method that is automatically called before create and save
   def validate
-    super
-
     ## SANITY CHECKS
-
-    # userid and table name tuple must be unique
-    validates_unique [:name, :user_id], :message => 'is already taken'
 
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
@@ -308,8 +311,7 @@ class Table < Sequel::Model(:user_tables)
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    self.privacy ||= (owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC)
-    super
+    @table_storage.privacy ||= (owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
@@ -509,7 +511,6 @@ class Table < Sequel::Model(:user_tables)
 
   def before_create
     raise CartoDB::QuotaExceeded if owner.over_table_quota?
-    super
     update_updated_at
 
     # The Table model only migrates now, never imports
@@ -552,7 +553,6 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def after_create
-    super
     self.create_default_map_and_layers
     self.create_default_visualization
 
@@ -588,7 +588,6 @@ class Table < Sequel::Model(:user_tables)
   end #before_save
 
   def after_save
-    super
     manage_tags
     update_name_changes
 
@@ -696,11 +695,9 @@ class Table < Sequel::Model(:user_tables)
     end
     @dependent_visualizations_cache     = dependent_visualizations.to_a
     @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
-    super
   end
 
   def after_destroy
-    super
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
     Tag.filter(:user_id => user_id, :table_id => id).delete

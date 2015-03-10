@@ -7,6 +7,7 @@ module Carto
     belongs_to :organization, inverse_of: :users
 
     def user_shared_visualizations
+      # INFO: we can't join both because of entity_id column type
       Visualization.where(id: visualization_shares.pluck(:entity_id))
     end
 

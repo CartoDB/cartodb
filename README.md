@@ -116,7 +116,12 @@ file](https://github.com/CartoDB/cartodb/archive/master.zip).
 
 ## Add CartoDB [PPA](https://help.ubuntu.com/community/PPA)s ##
 
-First install python software properties to be able to run `add-apt-repository`
+First, retrieve new lists of packages:
+```
+sudo apt-get update
+```
+
+Install python software properties to be able to run `add-apt-repository`
 ```
 sudo apt-get install python-software-properties
 ```
@@ -310,6 +315,7 @@ We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
 
 ### rvm
 ```bash
+sudo apt-get install curl
 sudo curl -L https://get.rvm.io | bash
 sudo su
 source /home/username/.rvm/scripts/rvm
@@ -397,7 +403,7 @@ accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API.
 
 ```bash
-sudo apt-get install varnish=2.1.5-2~cdb2 #or any version <3.x
+sudo apt-get install varnish=2.1.5.1-cdb1 #or any version <3.x
 ```
 
 Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.

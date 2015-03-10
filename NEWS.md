@@ -15,6 +15,7 @@ Bugfixes:
 * Fixes an unncessary binding that made the dashboard reloading twice.
 * Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)
 * Fix new dashboard URLs creation [#2662](https://github.com/CartoDB/cartodb/pull/2662)
+* Redirect to list on delete table vis [#2697](https://github.com/CartoDB/cartodb/pull/2697)
 * Fix account settings order [#2700](https://github.com/CartoDB/cartodb/pull/2700)
 
 3.8.1 (2015-02-26)

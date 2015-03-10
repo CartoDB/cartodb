@@ -9,6 +9,7 @@
 * Fixes the showing of map previews in the delete items dialog #2639
 * New organization pages done
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
+* Allows to remove overlays using the backspace key.
 
 Bugfixes:
 * Fixes a error that preventing the load of WMS layers.

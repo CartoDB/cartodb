@@ -69,7 +69,7 @@ class Table
   end
 
   def user_id
-    @table_storage.user_id = id
+    @table_storage.user_id
   end
 
   def [](key)

@@ -278,6 +278,13 @@ namespace :cartodb do
       end
     end
 
+
+    desc 'Install/upgrade Varnish trigger for a single user'
+    task :load_varnish_trigger_user, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.create_function_invalidate_varnish
+    end
+
     desc 'Install/upgrade Varnish invalidation trigger'
     task :load_varnish_trigger, [:num_threads, :thread_sleep, :database_host, :sleep] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i
@@ -322,6 +329,12 @@ namespace :cartodb do
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.fix_permissions
       end
+    end
+
+    desc 'Set user privileges in CartoDB schema and CDB_TableMetadata'
+    task :set_user_privileges_in_cartodb_schema, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.set_user_privileges_in_cartodb_schema
     end
 
     ##########################

@@ -8,6 +8,8 @@ describe Downloader do
     @file_url =
       "https://developer.mozilla.org/samples/video/chroma-key/foo.png" 
     @file_filepath  = path_to('foo.png')
+    @file_url_without_extension = "http://www.example.com/foowithoutextension"
+    @file_filepath_without_extension  = path_to('foowithoutextension')
     @fusion_tables_url =
       "https://www.google.com/fusiontables/exporttable" +
       "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
@@ -42,6 +44,13 @@ describe Downloader do
       downloader = Downloader.new(@file_url)
       downloader.run
       downloader.source_file.name.should eq 'foo'
+    end
+
+    it 'uses Content-Type header for files without extension' do
+      stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'text/csv' })
+      downloader = Downloader.new(@file_url_without_extension)
+      downloader.run
+      downloader.source_file.filename.should eq 'foowithoutextension.csv'
     end
 
     it 'extracts the source_file name from Content-Disposition header' do
@@ -153,7 +162,7 @@ describe Downloader do
     headers   = options.fetch(:headers, {})
 
     Typhoeus.stub(url).and_return(response_for(filepath, headers))
-  end #stub_download
+  end
 
   def stub_failed_download(options)
     url       = options.fetch(:url)

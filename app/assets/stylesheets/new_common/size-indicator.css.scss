@@ -1,12 +1,14 @@
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .SizeIndicator {
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
+  @include nicer-lato-typography();
 }
 .SizeIndicator-icon {
+  margin-right: 4px;
   font-size: $sFontSize-small;
-  font-weight: $sFontWeight-lighter;
+  @include nicer-lato-typography();
   color: $cTypography-help;
 }

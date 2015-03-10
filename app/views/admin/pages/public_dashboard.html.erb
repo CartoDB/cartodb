@@ -21,6 +21,7 @@
     var visualizations = <%= raw urls.to_json %>;
     var no_cdn =  <%= !Rails.env.production? ? true : false %>;
     var user_name = '<%= @username %>';
+    var cartodb_com_hosted = <%= cartodb_com_hosted? %>;
   </script>
 
   <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
@@ -46,7 +47,7 @@
         <ul>
           <% @visualizations.each_with_index do |vis, i| %>
 
-            <% domain = vis[:owner].organization ? vis[:owner].username : nil %>
+            <% domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
 
             <li>
               <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">

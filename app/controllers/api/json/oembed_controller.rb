@@ -12,8 +12,9 @@ class Api::Json::OembedController < Api::ApplicationController
   def show
     url = params[:url]
     width = params[:maxwidth] || '100%'
-    height = params[:maxheight] || '100%'
+    height = params[:maxheight] || '520px'
     format = request.query_parameters[:format]
+    force_https = true if params[:allow_http].nil?
 
     if (width =~ /^[0-9]+(%|px)?$/) == nil
       raise ActionController::RoutingError.new('Incorrect width')
@@ -24,10 +25,6 @@ class Api::Json::OembedController < Api::ApplicationController
 
     uri = URI.parse(url)
 
-    if uri.host != request.host
-      raise ActionController::RoutingError.new('URL origin not allowed')
-    end
-
     begin
       uuid = /(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/.match(uri.path)[0]
     rescue NoMethodError
@@ -37,10 +34,31 @@ class Api::Json::OembedController < Api::ApplicationController
     begin
       viz = CartoDB::Visualization::Member.new(id: uuid).fetch
     rescue KeyError
-      raise ActionController::RoutingError.new('Visualization not found: ' + uuid)
+      name = ''
+    else
+      name = viz.name
+    end
+    
+    protocol = force_https ? "https" : uri.scheme
+
+    url_data = URI.split(url)
+    organization = nil
+    if url_data[5][0..2] == "/u/"
+      user = url_data[5].split('/')[2]
+      user_profile = "#{protocol}://#{url_data[2]}/u/#{user}"
+      organization = url_data[2].split('.')[0]
+    else
+      user = url_data[2].split('.')[0]
+      user_profile = "#{protocol}://#{url_data[2]}"
     end
 
-    url = URI.join(public_visualizations_show_url(id: uuid, protocol: uri.scheme) + "/", 'embed_map')
+    # build the url using full schema because any visuaization should work with any user
+    url = CartoDB.user_url(user, organization)  + public_visualizations_embed_map_path(id: uuid)
+    # force the schema
+    if protocol == 'https' && !url.include?('https')
+      url = url.sub('http', 'https')
+    end
+
     html = "<iframe width='#{width}' height='#{height}' frameborder='0' src='#{url}' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>"
 
     response_data = {
@@ -48,8 +66,12 @@ class Api::Json::OembedController < Api::ApplicationController
         :version => '1.0',
         :width => width,
         :height => height,
-        :title => viz.name,
-        :html => html
+        :title => name,
+        :html => html,
+        :author_name => user,
+        :author_url => user_profile,
+        :provider_name => 'CartoDB',
+        :provider_url => "#{protocol}://www.cartodb.com/"
     }
 
     if format == 'xml'

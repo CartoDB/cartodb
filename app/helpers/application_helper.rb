@@ -43,18 +43,6 @@ module ApplicationHelper
     end
   end
 
-  # TODO: Check this for MU
-  def account_url
-    if Cartodb.config[:account_host]
-      request.protocol + CartoDB.account_host + CartoDB.account_path + '/' + current_user.username
-    end
-  end
-
-  # TODO: Check this for MU
-  def upgrade_url
-    account_url + '/upgrade'
-  end
-
   def sql_api_template
       sql_api = Cartodb.config[:sql_api]["private"]
       if CartoDB.subdomains_allowed?
@@ -171,7 +159,7 @@ module ApplicationHelper
 
   def insert_trackjs
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
-      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
+      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'], enabled: Cartodb.config[:trackjs]['enabled'] })
     end
   end
 
@@ -243,5 +231,10 @@ module ApplicationHelper
 
   def vis_json_url(vis_id)
     "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: vis_id).sub(/(http:|https:)/i, '') }.json"
+  end
+
+  #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
+  def cartodb_com_hosted?
+    Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
   end
 end

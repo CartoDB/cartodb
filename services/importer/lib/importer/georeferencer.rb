@@ -43,15 +43,15 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        create_the_geom_from_geometry_column  ||
-        create_the_geom_from_latlon           ||
-        create_the_geom_from_ip_guessing      ||
-        create_the_geom_from_country_guessing ||
-        create_the_geom_in(table_name)
+        the_geom_column_name = create_the_geom_from_geometry_column  ||
+          create_the_geom_from_latlon           ||
+          create_the_geom_from_ip_guessing      ||
+          create_the_geom_from_country_guessing ||
+          create_the_geom_in(table_name)
 
         enable_autovacuum
 
-        raise_if_geometry_collection
+        raise GeometryCollectionNotSupportedError if get_geometry_type(the_geom_column_name || 'the_geom') == 'GEOMETRYCOLLECTION'
         self
       end
 
@@ -80,6 +80,7 @@ module CartoDB
         populate_the_geom_from_latlon(
           qualified_table_name, latitude_column_name, longitude_column_name
         )
+        'the_geom'
       end
 
       def create_the_geom_from_geometry_column
@@ -91,11 +92,25 @@ module CartoDB
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
-        unless column_exists_in?(table_name, :the_geom)
-          column.rename_to(:the_geom)
+
+        column_name = geometry_column_name
+        if column_exists_in?(table_name, 'the_geom')
+          geometry_type = get_geometry_type('the_geom') rescue nil
+          if geometry_type.nil? || geometry_type == 'GEOMETRYCOLLECTION'
+            invalid_the_geom = get_column('the_geom')
+            if !column_exists_in?(table_name, 'invalid_the_geom')
+              invalid_the_geom.rename_to('invalid_the_geom')
+            end
+          end
         end
+
+        unless column_exists_in?(table_name, 'the_geom')
+          column_name = 'the_geom'
+          column.rename_to(column_name)
+        end
+
         handle_multipoint(qualified_table_name) if multipoint?
-        self
+        column_name
       rescue => exception
         job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
         if /statement timeout/.match(exception.message).nil?
@@ -132,8 +147,8 @@ module CartoDB
                                  'warning',
                                  {user_id: @job.logger.user_id, backtrace: ex.backtrace})
           job.log "WARNING: #{message}"
-          return false
         end
+        return false
       end
 
       def create_the_geom_from_ip_guessing
@@ -206,6 +221,7 @@ module CartoDB
           job.log "Geocoding finished"
         end
         geocoder.state == 'completed'
+        'the_geom'
       end
 
       def row_count
@@ -239,6 +255,7 @@ module CartoDB
             '#{schema}','#{table_name}','the_geom',4326,'geometry',2
           );
         })
+        'the_geom'
       end
 
       def column_exists_in?(table_name, column_name)
@@ -276,10 +293,12 @@ module CartoDB
         column.drop
       end
 
-      def raise_if_geometry_collection
-        column = Column.new(db, table_name, :the_geom, schema, job)
-        return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
-        raise GeometryCollectionNotSupportedError
+      def get_column(column = :the_geom)
+        Column.new(db, table_name, column, schema, job)
+      end
+
+      def get_geometry_type(column = :the_geom)
+        get_column(column).geometry_type
       end
 
       def find_column_in(table_name, possible_names)

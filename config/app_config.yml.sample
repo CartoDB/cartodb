@@ -58,7 +58,9 @@ defaults: &defaults
   tumblr:
     api_key: ''
   trackjs:
+    enabled: false
     customer: ''
+  hubspot: ''
   common_data:
        protocol: 'https'
        username: ''

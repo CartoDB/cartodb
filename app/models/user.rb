@@ -59,6 +59,8 @@ class User < Sequel::Model
   }
 
 
+  MIN_PASSWORD_LENGTH = 6
+
   GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
@@ -79,9 +81,11 @@ class User < Sequel::Model
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
 
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-    if new? || password.present?
+
+    if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
+    validate_password_change
     if organization.present?
       if new?
         errors.add(:organization, "not enough seats") if organization.users.count >= organization.seats
@@ -99,6 +103,11 @@ class User < Sequel::Model
   end
 
   ## Callbacks
+  def before_validation
+    # Convert email to downcase
+    self.email = self.email.to_s.strip.downcase
+  end
+
   def before_create
     super
     self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
@@ -107,6 +116,7 @@ class User < Sequel::Model
 
   def before_save
     super
+    self.quota_in_bytes = self.quota_in_bytes.to_i if !self.quota_in_bytes.nil? && self.quota_in_bytes != self.quota_in_bytes.to_i
     self.updated_at = Time.now
     # Set account_type and default values for organization users
     # TODO: Abstract this
@@ -368,6 +378,38 @@ class User < Sequel::Model
   # allow extra vars for auth
   attr_reader :password
 
+  def validate_password_change
+    return if @changing_passwords.nil?  # Called always, validate whenever proceeds
+
+    errors.add(:old_password, "Old password not valid") unless @old_password_validated
+
+    if @new_password != @new_password_confirmation
+      errors.add(:new_password, "New password and confirm password are not the same")
+    end
+    errors.add(:new_password, "Missing new password") if @new_password.nil?
+    if !@new_password.nil? && @new_password.length < MIN_PASSWORD_LENGTH
+      errors.add(:new_password, "New password is too short (6 chars min)")
+    end
+  end
+
+  def change_password(old_password, new_password_value, new_password_confirmation_value)
+    # First of all reset fields
+    @old_password_validated = nil
+    @new_password_confirmation = nil
+    # Mark as changing passwords
+    @changing_passwords = true
+
+    @new_password = new_password_value
+    @new_password_confirmation = new_password_confirmation_value
+
+    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
+    return unless @old_password_validated
+
+    return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
+
+    self.password = new_password_value
+  end
+
   def password_confirmation
     @password_confirmation
   end
@@ -414,13 +456,16 @@ class User < Sequel::Model
   end
 
   def password=(value)
+    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 
   def self.authenticate(email, password)
-    if candidate = User.filter("email ILIKE ? OR username ILIKE ?", email, email).first
+    sanitized_input = email.strip.downcase
+    if candidate = User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil
@@ -1004,10 +1049,16 @@ class User < Sequel::Model
       user_data_size_function = self.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()" : "CDB_UserDataSize('#{self.database_schema}')"
       result = in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
       result
-    rescue
+    rescue => e
       attempts += 1
-      in_database(:as => :superuser).fetch("ANALYZE")
+      begin
+        in_database(:as => :superuser).fetch("ANALYZE")
+      rescue => ee
+        Rollbar.report_exception(ee)
+        raise ee
+      end
       retry unless attempts > 1
+      Rollbar.report_exception(e)
     end
   end
 
@@ -1234,6 +1285,15 @@ class User < Sequel::Model
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true
+    })
+  end
+
+  # Get user owned visualizations
+  def owned_visualizations_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      exclude_shared: true,
+      exclude_raster: false
     })
   end
 
@@ -1483,6 +1543,12 @@ class User < Sequel::Model
     )
     self.run_queries_in_transaction(
       self.grant_read_on_schema_queries('cartodb', CartoDB::PUBLIC_DB_USER),
+      true
+    )
+    self.run_queries_in_transaction(
+      [
+        "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER}"
+      ],
       true
     )
     self.run_queries_in_transaction(
@@ -1840,7 +1906,7 @@ TRIGGER
   # Upgrade the cartodb postgresql extension
   def upgrade_cartodb_postgres_extension(statement_timeout=nil, cdb_extension_target_version=nil)
     if cdb_extension_target_version.nil?
-      cdb_extension_target_version = '0.5.2'
+      cdb_extension_target_version = '0.7.3'
     end
 
     in_database({
@@ -2177,6 +2243,20 @@ TRIGGER
     user_name = organization.nil? || !CartoDB.subdomains_allowed? ? nil : username
 
     CartoDB.base_url(subdomain, user_name)
+  end
+
+  def account_url(request_protocol)
+    if Cartodb.config[:account_host]
+      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
+    end
+  end
+
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
+  def upgrade_url(request_protocol)
+    account_url(request_protocol) + '/upgrade'
   end
 
   def subdomain

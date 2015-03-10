@@ -9,6 +9,7 @@
 <%= content_for(:js) do %>
   <script>
     var user_name = '<%= @username %>';
+    var cartodb_com_hosted = <%= cartodb_com_hosted? %>;
   </script>
 
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>
@@ -34,7 +35,7 @@
         <ul>
           <% @datasets.each_with_index do |dataset, i| %>
 
-            <% domain = dataset[:owner].organization ? dataset[:owner].username : nil %>
+            <% domain = dataset[:owner] && dataset[:owner].organization ? dataset[:owner].username : nil %>
 
             <li>
               <div class="title">

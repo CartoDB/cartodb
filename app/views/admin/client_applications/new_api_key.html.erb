@@ -14,29 +14,9 @@
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_keys.css', :media => 'all' %>
 <% end %>
 
-
-<%= render 'admin/shared/new_private_header' %>
-
 <div>
 
-  <div class="Filters is-relative">
-    <div class="u-inner">
-      <div class="Filters-inner">
-        <span class="Filters-separator"></span>
-        <div class="Filters-row">
-          <div class="Filters-type">
-            <ul class="Filters-list">
-              <li class="Filters-typeItem"><a href="<%= account_url %>" class="Filters-typeLink">Profile</a></li>
-              <li class="Filters-typeItem"><a href="<%= account_url %>" class="Filters-typeLink">Account</a></li>
-              <li class="Filters-typeItem"><a href="<%= api_key_credentials_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink is-selected">Your API keys</a></li>
-              <li class="Filters-typeItem"><a href="<%= oauth_credentials_url(user_domain: params[:user_domain]) %>" class="Filters-typeLink">Your OAuth credentials</a></li>
-              <li class="Filters-typeItem"><a href="<%= account_url %>" class="Filters-typeLink">Your plan</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <%= render :partial => 'admin/shared/new_pages_subheader' %>
 
   <div class="CredentialsContent">
     <div class="u-inner">
@@ -79,7 +59,7 @@
         <div class="Form-footer">
           <p class="Form-footerText">
             <i class="iconFont iconFont-Info Form-footerIcon"></i>
-            Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
+            Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
           </p>
           <%= button_tag(type: 'submit', class: 'Button Button--main js-submit', value: 'api') do %>
             <% content_tag(:span, 'Request a new api key') %>

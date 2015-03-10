@@ -53,8 +53,12 @@ class Table
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
 
 
-  def initialize(attributes = {})
-    @table_storage = TableStorage.new(attributes)
+  def initialize(args = {})
+    if args[:table_storage].nil?
+      @table_storage = TableStorage.new(args)
+    else
+      @table_storage = args[:table_storage]
+    end
     @table_storage.set_hooks_listener(self)
   end
 
@@ -634,8 +638,8 @@ class Table
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  self.description,
-      tags:         (tags.split(',') if tags),
+      description:  @table_storage.description,
+      tags:         (@table_torage.tags.split(',') if @table_storage.tags),
       privacy:      TableStorage::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
       kind:         kind

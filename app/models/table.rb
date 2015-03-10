@@ -573,7 +573,8 @@ class Table < Sequel::Model(:user_tables)
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|
-          decorator.decorate_layer(layer)
+          decorator.decorate_layer!(layer)
+          layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
         end
       end
 

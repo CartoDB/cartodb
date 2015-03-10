@@ -7,6 +7,7 @@ require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
+require_relative './external_data_import'
 require_relative './feature_flag'
 
 class User < Sequel::Model
@@ -149,6 +150,10 @@ class User < Sequel::Model
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
   end
 
+  def delete_common_data
+    CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
+  end
+
   def after_save
     super
     save_metadata
@@ -204,6 +209,8 @@ class User < Sequel::Model
       self.tables.all.each { |t| t.destroy }
 
       # Remove user data imports, maps, layers and assets
+      self.delete_external_data_imports
+      self.delete_external_sources
       self.data_imports.each { |d| d.destroy }
       self.maps.each { |m| m.destroy }
       self.layers.each { |l| remove_layer l }
@@ -233,6 +240,19 @@ class User < Sequel::Model
     end
 
     self.feature_flags_user.each { |ffu| ffu.delete }
+  end
+
+  def delete_external_data_imports
+    external_data_imports = ExternalDataImport.by_user_id(self.id)
+    external_data_imports.each { |edi| edi.destroy }
+  rescue => e
+    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+  end
+
+  def delete_external_sources
+    delete_common_data
+  rescue => e
+    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
   end
 
   def after_destroy

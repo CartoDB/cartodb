@@ -402,12 +402,16 @@ class User < Sequel::Model
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
-    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
+    @old_password_validated = validate_old_password(old_password)
     return unless @old_password_validated
 
     return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
 
     self.password = new_password_value
+  end
+
+  def validate_old_password(old_password)
+    self.class.password_digest(old_password, self.salt) == self.crypted_password
   end
 
   def password_confirmation

@@ -1693,10 +1693,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def valid_geometry?(feature)
-    !feature.nil? && !feature.is_empty?
-  end
-
   def manage_tags
     if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete

@@ -96,8 +96,12 @@ class Admin::UsersController < ApplicationController
 
     @user.delete_in_central
     @user.destroy
-    # TODO: redirect to goodbye page
-    redirect_to "http://www.cartodb.com"
+
+    if Cartodb::Central.sync_data_with_cartodb_central?
+      redirect_to "http://www.cartodb.com"
+    else
+      render(file: "public/404.html", layout: false, status: 404)
+    end
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_message('Central error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
     flash.now[:error] = "Error deleting user: #{e.user_message}"

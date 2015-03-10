@@ -638,7 +638,7 @@ class User < Sequel::Model
   end #map_tags
 
   def tables
-    ::Table.filter(:user_id => self.id).order(:id).reverse
+    ::TableStorage.filter(:user_id => self.id).order(:id).reverse
   end
 
   def tables_including_shared

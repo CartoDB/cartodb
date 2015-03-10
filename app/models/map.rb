@@ -4,7 +4,7 @@ require_relative '../models/visualization/collection'
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
-  one_to_many   :tables
+  one_to_many   :tables, class: ::TableStorage
   many_to_one   :user
 
   many_to_many :layers, order: :order, after_add: proc { |map, layer| 

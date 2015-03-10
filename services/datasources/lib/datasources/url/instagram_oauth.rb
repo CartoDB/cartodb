@@ -34,6 +34,8 @@ module CartoDB
           @app_key      = config.fetch('app_key')
           @app_secret   = config.fetch('app_secret')
 
+          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.feature_flags.include?('instagram_import')
+
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
@@ -164,7 +166,8 @@ module CartoDB
         def get_resource_metadata(id)
           {
             id:       FORMAT_ALL_MEDIA,
-            filename: "#{DATASOURCE_NAME}_#{@client.user.username}.csv"
+            filename: "#{DATASOURCE_NAME}_#{@client.user.username}.csv",
+            size:     NO_CONTENT_SIZE_PROVIDED
           }
         rescue => ex
           handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")

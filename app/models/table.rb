@@ -1529,10 +1529,6 @@ class Table < Sequel::Model(:user_tables)
     self.updated_at = Time.now
   end
 
-  def update_updated_at!
-    update_updated_at && save_changes
-  end
-
   def get_valid_name(name, options={})
     name_candidates = []
     name_candidates = self.owner.tables.select_map(:name) if owner
@@ -1697,10 +1693,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def valid_geometry?(feature)
-    !feature.nil? && !feature.is_empty?
-  end
-
   def manage_tags
     if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -1735,16 +1727,6 @@ class Table < Sequel::Model(:user_tables)
     end
   rescue => exception
     CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
-  end
-
-  def flush_cache
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/flush_cache?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'cache#flush error', "#{exception.inspect}"
   end
 
   def tile_request(request_method, request_uri, form = {})

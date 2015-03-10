@@ -127,8 +127,23 @@ class TableStorage < Sequel::Model(:user_tables)
     table.invalidate_varnish_cache(propagate_to_visualizations)
   end
 
+
   def privacy_text
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
+  end
+
+  # enforce standard format for this field
+  def privacy=(value)
+    case value
+      when 'PUBLIC', PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
+        self[:privacy] = PRIVACY_PUBLIC
+      when 'LINK', PRIVACY_LINK, PRIVACY_LINK.to_s
+        self[:privacy] = PRIVACY_LINK
+      when 'PRIVATE', PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
+        self[:privacy] = PRIVACY_PRIVATE
+      else
+        raise "Invalid privacy value '#{value}'"
+    end
   end
 
 

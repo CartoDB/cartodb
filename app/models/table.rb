@@ -837,23 +837,13 @@ class Table
     save
   end
 
-  # enforce standard format for this field
   def privacy=(value)
-    case value
-      when PRIVACY_PUBLIC_TEXT.upcase, PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
-        @table_storage[:privacy] = PRIVACY_PUBLIC
-      when PRIVACY_LINK_TEXT.upcase, PRIVACY_LINK, PRIVACY_LINK.to_s
-        @table_storage[:privacy] = PRIVACY_LINK
-      when PRIVACY_PRIVATE_TEXT.upcase, PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
-        @table_storage[:privacy] = PRIVACY_PRIVATE
-      else
-        raise "Invalid privacy value '#{value}'"
-    end
-  end #privacy=
+    @table_storage[:privacy] = value
+  end
 
   def privacy_changed?
-    previous_changes.keys.include?(:privacy)
-  end #privacy_changed?
+    @table_storage.previous_changes.keys.include?(:privacy)
+  end
 
   def key
     key ||= "rails:#{owner.database_name}:#{owner.database_schema}.#{name}"

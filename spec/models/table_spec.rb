@@ -596,7 +596,7 @@ describe Table do
 
     CartoDB::TablePrivacyManager.any_instance
       .expects(:propagate_to_varnish)
-    table.privacy = Table::PRIVACY_PUBLIC
+    table.privacy = TableStorage::PRIVACY_PUBLIC
     table.save
   end
 

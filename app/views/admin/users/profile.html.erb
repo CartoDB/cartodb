@@ -7,15 +7,13 @@
     var config = <%=raw frontend_config.html_safe %>;
     var user_data = <%= raw @user.data.to_json.html_safe %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>  
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 <%= content_for(:css) do %>
   <%= render 'shared/lato_font' %>
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 
-
-<%= render 'admin/shared/new_private_header' %>
 
 <%= render :partial => 'shared/new_flash_message' %>
 
@@ -109,7 +107,10 @@
             <label class="Form-label">Available for hire</label>
           </div>
           <div class="Form-rowData">
-            <%= f.check_box :available_for_hire %>
+            <div class="Toggler">
+              <%= f.check_box :available_for_hire, :id => "available_for_hire" %>
+              <%= label_tag(:available_for_hire, '') %>
+            </div>
           </div>
           <div class="Form-rowInfo">
             <p class="Form-rowInfoText">Show a banner in your public profile linked to your email</p>

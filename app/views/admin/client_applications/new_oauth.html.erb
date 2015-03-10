@@ -14,9 +14,6 @@
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_keys.css', :media => 'all' %>
 <% end %>
 
-
-<%= render 'admin/shared/new_private_header' %>
-
 <div>
 
   <%= render :partial => 'admin/shared/new_pages_subheader' %>
@@ -38,7 +35,7 @@
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
           <div class="Form-rowInfo">
-            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/documentation/sql-api.html#authentication" %> in CartoDB.</p>
+            <p class="Form-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB.</p>
           </div>
         </div>
 

@@ -3,7 +3,6 @@ require 'forwardable'
 require 'virtus'
 require 'json'
 require_relative '../markdown_render'
-require_relative './collection'
 require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
@@ -107,10 +106,6 @@ module CartoDB
           license: license,
           source: source,
           type: TYPE_REMOTE})
-      end
-
-      def self.user_remotes(user_id)
-        CartoDB::Visualization::Collection.new.fetch(type: TYPE_REMOTE, user_id: user_id)
       end
 
       def update_remote_data(privacy, description, tags, license, source)

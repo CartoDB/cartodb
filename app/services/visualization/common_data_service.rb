@@ -26,7 +26,8 @@ module CartoDB
           :username => user.username
         })
         remotes_by_name = {}
-        Member.user_remotes(user.id).each { |r|
+        user_remotes = CartoDB::Visualization::Collection.new.fetch(type: CartoDB::Visualization::Member::TYPE_REMOTE, user_id: user.id)
+        user_remotes.each { |r|
           remotes_by_name[r.name] = r
         }
         @datasets.each do |d|

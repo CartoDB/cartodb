@@ -110,7 +110,6 @@ file](https://github.com/CartoDB/cartodb/archive/master.zip).
   - PostGIS 2.1.x
   - Mapnik 2.1.1
   - Windshaft-cartodb
-  - Varnish 2.1+ (WARNING: must be < 3.0!)
   - ImageMagick 6.6.9+ (for the testsuite)
 
 
@@ -155,11 +154,6 @@ Add CartoDB PostgreSQL PPA
 ```bash
 sudo add-apt-repository  ppa:cartodb/postgresql-9.3
 ```
-Add CartoDB Varnish PPA
-```bash
-sudo add-apt-repository  ppa:cartodb/varnish
-```
-
 Resfresh repositories to use the PPAs
 ```bash
 sudo apt-get update
@@ -397,19 +391,6 @@ sudo python setup.py build_ext --include-dirs=/usr/include/gdal
 sudo pip install --no-download GDAL
 ```
 
-## Install Varnish
-[Varnish](https://www.varnish-cache.org) is a web application
-accelerator. Components like Windshaft use it to speed up serving tiles
-via the Maps API.
-
-```bash
-sudo apt-get install varnish=2.1.5.1-cdb1 #or any version <3.x
-```
-
-Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
-
-
-
 ## Install Mapnik ##
 [Mapnik](http://mapnik.org) is an API for creating beautiful maps.
 CartoDB uses Mapnik for creating and styling map tiles. 
@@ -459,8 +440,22 @@ node app.js development
 sudo apt-get install imagemagick
 ```
 
-## Optional installation
-These are not strictly required to run CartoDB, but if you are installing CartoDB to do change something you might need them:
+## Optional components
+The following are not strictly required to run CartoDB:
+
+### Varnish
+
+[Varnish](https://www.varnish-cache.org) is a web application
+accelerator. Components like Windshaft use it to speed up serving tiles
+via the Maps API.
+
+Add CartoDB Varnish PPA and install it:
+```bash
+sudo add-apt-repository  ppa:cartodb/varnish
+sudo apt-get install varnish=2.1.5.1-cdb1 #or any version <3.x
+```
+
+Varnish should allow telnet access in order to work with CartoDB, so you need to edit the `/etc/default/varnish` file and in the `DAEMON_OPTS` variable remove the `-S /etc/varnish/secret \` line.
 
 ### Raster import support
 Raster importer needs `raster2pgsql` to be in your path. You can check whether it's available by running `which raster2pgsql`. If it's not, you should link it: `$ sudo ln -s /usr/local/src/postgis-2.1.2/raster/loader/raster2pgsql /usr/bin/`.

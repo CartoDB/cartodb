@@ -59,7 +59,7 @@ class Table
   end
 
   # Stuff that must be delegated in to the storage layer -----------------------
-  # TODO: these are to be removed
+  # TODO: these are to be removed??
   def id
     @table_storage.id
   end
@@ -90,6 +90,10 @@ class Table
 
   def save
     @table_storage.save
+  end
+
+  def map_id
+    @table_storage.map_id
   end
 
   # ----------------------------------------------------------------------------
@@ -485,7 +489,6 @@ class Table
 
   def before_create
     raise CartoDB::QuotaExceeded if owner.over_table_quota?
-    update_updated_at
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
@@ -558,7 +561,7 @@ class Table
   end
 
   def before_save
-    self.updated_at = table_visualization.updated_at if table_visualization
+    @table_storage.updated_at = table_visualization.updated_at if table_visualization
   end #before_save
 
   def after_save
@@ -1380,7 +1383,7 @@ class Table
   end #relator
 
   def set_table_id
-    self.table_id = self.get_table_id
+    @table_storage.table_id = self.get_table_id
   end # set_table_id
 
   def get_table_id
@@ -1491,10 +1494,6 @@ class Table
     owner.in_database(as: :superuser).run(%Q{
       SELECT CDB_TableMetadataTouch('#{table_id}')
     })
-  end
-
-  def update_updated_at
-    self.updated_at = Time.now
   end
 
   def get_valid_name(name, options={})

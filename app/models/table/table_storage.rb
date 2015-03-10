@@ -83,12 +83,13 @@ class TableStorage < Sequel::Model(:user_tables)
   end
 
   def before_validation
-    super
     @listener.before_validation
+    super
   end
 
   def before_create
     super
+    update_updated_at # TODO move to a DB trigger
     @listener.before_create
   end
 
@@ -123,5 +124,12 @@ class TableStorage < Sequel::Model(:user_tables)
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end
 
+
+
+  private
+
+  def update_updated_at
+    self.updated_at = Time.now
+  end
 
 end

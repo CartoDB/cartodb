@@ -96,6 +96,10 @@ class Table
     @table_storage.save
   end
 
+  def reload
+    @table_storage.reload
+  end
+
   def map_id
     @table_storage.map_id
   end
@@ -396,7 +400,7 @@ class Table
   end
 
   def import_to_cartodb(uniname=nil)
-    @data_import ||= DataImport.where(id: data_import_id).first || DataImport.new(user_id: owner.id)
+    @data_import ||= DataImport.where(id: @table_storage.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
       @data_import.data_source = migrate_existing_table || uniname
@@ -496,12 +500,12 @@ class Table
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-      if self.data_import_id.nil? #needed for non ui-created tables
+      if @table_storage.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
         @data_import.updated_at = Time.now
         @data_import.save
       else
-        @data_import  = DataImport.find(:id=>self.data_import_id)
+        @data_import  = DataImport.find(:id=>@table_storage.data_import_id)
       end
 
       importer_result_name = import_to_cartodb(name)
@@ -544,8 +548,8 @@ class Table
     self.new_table = true
 
     # finally, close off the data import
-    if data_import_id
-      @data_import = DataImport.find(id: data_import_id)
+    if @table_storage.data_import_id
+      @data_import = DataImport.find(id: @table_storage.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
@@ -815,19 +819,19 @@ class Table
 
   # TODO move to storage
   def private?
-    self.privacy == TableStorage::PRIVACY_PRIVATE
+    @table_storage.privacy == TableStorage::PRIVACY_PRIVATE
   end #private?
 
   def public?
-    self.privacy == TableStorage::PRIVACY_PUBLIC
+    @table_storage.privacy == TableStorage::PRIVACY_PUBLIC
   end #public?
 
   def public_with_link_only?
-    self.privacy == PRIVACY_LINK
+    @table_storage.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
   def set_default_table_privacy
-    self.privacy ||= default_privacy_values
+    @table_storage.privacy ||= default_privacy_values
     save
   end
 
@@ -835,11 +839,11 @@ class Table
   def privacy=(value)
     case value
       when PRIVACY_PUBLIC_TEXT.upcase, PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
-        self[:privacy] = PRIVACY_PUBLIC
+        @table_storage[:privacy] = PRIVACY_PUBLIC
       when PRIVACY_LINK_TEXT.upcase, PRIVACY_LINK, PRIVACY_LINK.to_s
-        self[:privacy] = PRIVACY_LINK
+        @table_storage[:privacy] = PRIVACY_LINK
       when PRIVACY_PRIVATE_TEXT.upcase, PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
-        self[:privacy] = PRIVACY_PRIVATE
+        @table_storage[:privacy] = PRIVACY_PRIVATE
       else
         raise "Invalid privacy value '#{value}'"
     end

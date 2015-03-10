@@ -94,10 +94,12 @@ class Table
 
   def save
     @table_storage.save
+    self
   end
 
   def reload
     @table_storage.reload
+    self
   end
 
   def map_id

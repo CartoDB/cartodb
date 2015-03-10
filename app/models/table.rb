@@ -1729,16 +1729,6 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
   end
 
-  def flush_cache
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/flush_cache?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'cache#flush error', "#{exception.inspect}"
-  end
-
   def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{Cartodb.config[:tiler]['internal']['domain']}"
     port = Cartodb.config[:tiler]['internal']['port'] || 443

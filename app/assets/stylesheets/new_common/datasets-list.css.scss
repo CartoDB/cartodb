@@ -101,14 +101,14 @@ $opacityTransition: 250ms;
 
 .DatasetsList-itemStatus {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -8px;
+  right: -8px;
   width: 17px;
   height: 17px;
   line-height: 17px!important;
-  border: 1px solid #CCC;
+  border: 1px solid rgba(black, 0.1);
   border-radius: 17px;
-  background: white;
+  background: rgba(white, .85);
   font-size: 9px;
   color: $cHighlight-alert;
   text-align: center;

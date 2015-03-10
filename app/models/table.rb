@@ -1529,10 +1529,6 @@ class Table < Sequel::Model(:user_tables)
     self.updated_at = Time.now
   end
 
-  def update_updated_at!
-    update_updated_at && save_changes
-  end
-
   def get_valid_name(name, options={})
     name_candidates = []
     name_candidates = self.owner.tables.select_map(:name) if owner

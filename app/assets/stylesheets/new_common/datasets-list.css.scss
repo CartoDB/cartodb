@@ -68,7 +68,7 @@ $opacityTransition: 250ms;
 // Position of the geometry type icon
 @mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
   @include background(image-url('layout/geometry-types-icons.png') no-repeat $x-pos $y-pos);
-  @include image-2x("logo2x.png", 40px, 40px, ($x-pos*2), ($y-pos*2));
+  @include image-2x("layout/geometry-types-icons@x2.png", 200px, 80px, ($x-pos), ($y-pos));
 }
 
 .DatasetsList-itemCategory {

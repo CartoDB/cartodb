@@ -5,6 +5,16 @@ class TableStorage < Sequel::Model(:user_tables)
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }
 
+  PRIVACY_PRIVATE = 0
+  PRIVACY_PUBLIC = 1
+  PRIVACY_LINK = 2
+
+  PRIVACY_VALUES_TO_TEXTS = {
+      PRIVACY_PRIVATE => 'private',
+      PRIVACY_PUBLIC => 'public',
+      PRIVACY_LINK => 'link'
+  }
+
   # Associations
   many_to_one  :map
   many_to_many :layers, join_table: :layers_user_tables,
@@ -63,6 +73,12 @@ class TableStorage < Sequel::Model(:user_tables)
       :name, 'is a reserved keyword, please choose a different one'
     ) if RESERVED_TABLE_NAMES.include?(self.name) 
 
+    # TODO this kind of check should be moved to the DB
+    # privacy setting must be a sane value
+    if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
+      errors.add(:privacy, "has an invalid value '#{privacy}'")
+    end
+
     @listener.validate
   end
 
@@ -100,5 +116,12 @@ class TableStorage < Sequel::Model(:user_tables)
     super
     @listener.after_destroy
   end
+  # --------------------------------------------------------------------------------
+
+
+  def privacy_text
+    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
+  end
+
 
 end

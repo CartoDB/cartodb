@@ -586,7 +586,7 @@ describe Table do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     @user.private_tables_enabled = true
     @user.save
-    table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
+    table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: TableStorage::PRIVACY_PRIVATE)
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)

@@ -18,27 +18,12 @@ require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_l
 class Table
   extend Forwardable
 
-  PRIVACY_PRIVATE = 0
-  PRIVACY_PUBLIC = 1
-  PRIVACY_LINK = 2
-
-  PRIVACY_PRIVATE_TEXT = 'private'
-  PRIVACY_PUBLIC_TEXT = 'public'
-  PRIVACY_LINK_TEXT = 'link'
-
-  PRIVACY_VALUES_TO_TEXTS = {
-      PRIVACY_PRIVATE => PRIVACY_PRIVATE_TEXT,
-      PRIVACY_PUBLIC => PRIVACY_PUBLIC_TEXT,
-      PRIVACY_LINK => PRIVACY_LINK_TEXT
-  }
-
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
 
-  RESERVED_TABLE_NAMES = %W{ layergroup all }
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
@@ -127,9 +112,9 @@ class Table
     attrs
   end
 
-  def default_privacy_values
-    self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
-  end #default_privacy_values
+  def default_privacy_value
+    self.owner.try(:private_tables_enabled) ? TableStorage::PRIVACY_PRIVATE : TableStorage::PRIVACY_PUBLIC
+  end
 
   def geometry_types_key
     @geometry_types_key ||= "#{key}:geometry_types"
@@ -275,34 +260,23 @@ class Table
   # Core validation method that is automatically called before create and save
   def validate
     ## SANITY CHECKS
-
-    # tables must have a user
-    errors.add(:user_id, "can't be blank") if user_id.blank?
-
-    errors.add(
-      :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(self.name) 
-
-    # privacy setting must be a sane value
-    if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
-      errors.add(:privacy, "has an invalid value '#{privacy}'")
-    end
+    # TODO this should be fully moved to storage
 
     # Branch if owner does not have private table privileges
     unless self.owner.try(:private_tables_enabled)
       # If it's a new table and the user is trying to make it private
-      if self.new? && privacy == PRIVACY_PRIVATE
-        errors.add(:privacy, 'unauthorized to create private tables')
+      if self.new? && @table_storage.privacy == TableStorage::PRIVACY_PRIVATE
+        @table_storage.errors.add(:privacy, 'unauthorized to create private tables')
       end
 
       # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
-        errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      if !self.new? && @table_storage.privacy == TableStorage::PRIVACY_PRIVATE && @table_storage.changed_columns.include?(:privacy)
+        @table_storage.errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
 
       # cannot change any existing table to 'with link'
-      if !self.new? && privacy == PRIVACY_LINK && self.changed_columns.include?(:privacy)
-        errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
+      if !self.new? && @table_storage.privacy == TableStorage::PRIVACY_LINK && self.changed_columns.include?(:privacy)
+        @table_storage.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 
     end
@@ -311,7 +285,7 @@ class Table
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    @table_storage.privacy ||= (owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC)
+    @table_storage.privacy ||= (owner.try(:private_tables_enabled) ? TableStorage::PRIVACY_PRIVATE : PRIVACY_PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
@@ -659,7 +633,7 @@ class Table
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  self.description,
       tags:         (tags.split(',') if tags),
-      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values],
+      privacy:      TableStorage::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
       kind:         kind
     )
@@ -832,12 +806,13 @@ class Table
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
+  # TODO move to storage
   def private?
-    self.privacy == PRIVACY_PRIVATE
+    self.privacy == TableStorage::PRIVACY_PRIVATE
   end #private?
 
   def public?
-    self.privacy == PRIVACY_PUBLIC
+    self.privacy == TableStorage::PRIVACY_PUBLIC
   end #public?
 
   def public_with_link_only?
@@ -1395,10 +1370,6 @@ class Table
     nil
   end
 
-  def privacy_text
-    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
-  end #privacy_text
-
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
     privacy == PRIVACY_LINK ? PRIVACY_PUBLIC_TEXT.upcase : privacy_text
@@ -1557,7 +1528,7 @@ class Table
 
     return name if name == options[:current_name]
 
-    name = "#{name}_t" if RESERVED_TABLE_NAMES.include?(name)
+    name = "#{name}_t" if TableStorage::RESERVED_TABLE_NAMES.include?(name)
 
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 

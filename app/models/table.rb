@@ -853,7 +853,7 @@ class Table
   end #public?
 
   def public_with_link_only?
-    @table_storage.privacy == PRIVACY_LINK
+    @table_storage.privacy == TableStorage::PRIVACY_LINK
   end #public_with_link_only?
 
   def set_default_table_privacy

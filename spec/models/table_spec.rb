@@ -188,13 +188,13 @@ describe Table do
     it 'changes to and from public-with-link privacy' do
       table = create_table :user_id => @user.id
 
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = TableStorage::PRIVACY_LINK
       table.save
       table.reload
       table.should be_public_with_link_only
       table.table_visualization.should be_public_with_link
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
       table.reload
       table                           .should be_public
@@ -209,7 +209,7 @@ describe Table do
       table.should be_private
       table.table_visualization.should be_private
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
       table.reload
       table                           .should be_public
@@ -219,7 +219,7 @@ describe Table do
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = TableStorage::PRIVACY_PRIVATE
       table.save
       table.reload
       table                           .should be_private
@@ -246,14 +246,14 @@ describe Table do
       table.reload
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
 
       table.affected_visualizations.map { |vis|
         vis.public?.should == vis.table?
       }
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = TableStorage::PRIVACY_PRIVATE
       table.save
 
       table.affected_visualizations.map { |vis|
@@ -267,7 +267,7 @@ describe Table do
 
       table = create_table(user_id: @user.id)
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
       derived_vis = CartoDB::Visualization::Copier.new(
           @user, table.table_visualization
@@ -278,7 +278,7 @@ describe Table do
       table.reload
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = TableStorage::PRIVACY_LINK
       table.save
       table.reload
 
@@ -323,14 +323,14 @@ describe Table do
       @user.private_tables_enabled = false
       @user.save
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == TableStorage::PRIVACY_PUBLIC
     end
 
     it "should be private if it's creating user has the ability to make private tables" do
       @user.private_tables_enabled = true
       @user.save
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == TableStorage::PRIVACY_PRIVATE
     end
 
     it "should be able to make private tables if the user gets the ability to do it" do
@@ -338,13 +338,13 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == TableStorage::PRIVACY_PUBLIC
 
       @user.private_tables_enabled = true
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == TableStorage::PRIVACY_PRIVATE
     end
 
     it "should only be able to make public tables if the user is stripped of permissions" do
@@ -352,13 +352,13 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == TableStorage::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == TableStorage::PRIVACY_PUBLIC
     end
 
     it "should still be able to edit the private table if the user is stripped of permissions" do
@@ -366,7 +366,7 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == TableStorage::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
@@ -380,12 +380,12 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == TableStorage::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save.should be_true
     end
 
@@ -394,9 +394,9 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PUBLIC
+      table.privacy.should == TableStorage::PRIVACY_PUBLIC
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = TableStorage::PRIVACY_PRIVATE
       expect {
         table.save
       }.to raise_error(Sequel::ValidationFailed)
@@ -407,16 +407,16 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVACY_PRIVATE
+      table.privacy.should == TableStorage::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
       table.owner.reload # this is because the ORM is stupid
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = TableStorage::PRIVACY_PRIVATE
       expect {
         table.save
       }.to raise_error(Sequel::ValidationFailed)
@@ -441,7 +441,7 @@ describe Table do
 
       table.should be_private
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
 
       expect {
@@ -1841,35 +1841,35 @@ describe Table do
       table = Table.new
 
       # A user who can create private tables has by default private tables
-      table.default_privacy_values.should eq ::Table::PRIVACY_PRIVATE
+      table.default_privacy_values.should eq ::TableStorage::PRIVACY_PRIVATE
 
       table.user_id = UUIDTools::UUID.timestamp_create.to_s
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.name = 'test'
       table.validate
       table.errors.size.should eq 0
 
-      table.privacy = Table::PRIVACY_PRIVATE
+      table.privacy = TableStorage::PRIVACY_PRIVATE
       table.validate
       table.errors.size.should eq 0
 
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = TableStorage::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 0
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       user_mock.stubs(:private_tables_enabled).returns(false)
 
       # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = TableStorage::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 0
 
       # Save so privacy changes instead of being "new"
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
 
-      table.privacy = Table::PRIVACY_LINK
+      table.privacy = TableStorage::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 1
       expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
@@ -1877,7 +1877,7 @@ describe Table do
 
       table = Table.new
       # A user who cannot create private tables has by default public
-      table.default_privacy_values.should eq ::Table::PRIVACY_PUBLIC
+      table.default_privacy_values.should eq ::TableStorage::PRIVACY_PUBLIC
 
     end
   end #validation_for_link_privacy
@@ -2208,7 +2208,7 @@ describe Table do
 
       derived.expects(:invalidate_cache).once()
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = TableStorage::PRIVACY_PUBLIC
       table.save
     end
   end

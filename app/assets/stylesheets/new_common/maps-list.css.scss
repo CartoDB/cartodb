@@ -48,7 +48,7 @@
     @include justify-content(flex-start);
   }
   .MapsList-item--fake {
-    display: block;
+    display: none;
   }
 }
 
@@ -62,6 +62,9 @@
     padding: 0;
     @include justify-content(center);
   }
+  .MapsList-item--fake {
+    display: none;
+  }
   .MapsList .MapsList-item {
     margin: 10px auto;
   }
@@ -72,6 +75,9 @@
     width: 100%;
     padding: 0;
     @include justify-content(center);
+  }
+  .MapsList-item--fake {
+    display: none;
   }
   .MapsList .MapsList-item {
     margin: 10px auto;

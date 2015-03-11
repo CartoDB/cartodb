@@ -57,15 +57,15 @@
   &:hover { background-color: rgba(#B93F37, 1) }
 }
 .Button--secondary {
-  border: 1px solid $cIcons-default;
+  border: 1px solid $cNavButton-default;
   background-color: rgba(white, 1);
   span {
-    color: $cIcons-default;
+    color: $cNavButton-default;
   }
   &:hover {
-    border-color: $cIcons-active;
+    border-color: $cNavButton-active;
     span {
-      color: $cIcons-active;
+      color: $cNavButton-active;
     }
   }
 }

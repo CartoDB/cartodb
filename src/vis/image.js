@@ -186,11 +186,11 @@
 
           var layer = data.layers[i];
 
-          if (layer.type === "torque" && !ignoreTorqueLayer) {
+          if (layer.type === "torque" && !ignoreTorqueLayer && (layer.options.named_map === undefined)) {
 
             layers.push(this._getTorqueLayerDefinition(layer));
 
-          } else if (layer.type === "namedmap") {
+          } else if (layer.type === "namedmap" || (!namedMap && layer.type === "torque" && layer.options.named_map)) {
 
             layers.push(this._getNamedmapLayerDefinition(layer));
 

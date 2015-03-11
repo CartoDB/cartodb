@@ -2,7 +2,7 @@ module CartoDB
 
   # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
-    self.subdomains_allowed? ? self.extract_subdomain_flexible(request) : self.extract_subdomain_strict(request)
+    self.subdomains_allowed? ? self.extract_username_flexible(request) : self.extract_username_strict(request)
   end
 
   def self.extract_host_subdomain(request)
@@ -34,6 +34,18 @@ module CartoDB
     end
 
     base_url
+  end
+
+  # NOTE: Not intended for usage outside testing (where is needed to clean state between tests)
+  def self.clear_internal_cache
+    @@hostname = nil
+    @@http_port = nil
+    @@session_domain = nil
+    @@domain = nil
+    @@subdomains_allowed = nil
+    @@subdomains_optional = nil
+    @@account_host = nil
+    @@account_path = nil
   end
 
   def self.hostname
@@ -69,10 +81,6 @@ module CartoDB
 
   def self.account_path
     @@account_path ||= self.get_account_path
-  end
-
-  module API
-    VERSION_1 = "v1"
   end
 
   begin
@@ -272,7 +280,7 @@ module CartoDB
   # "private" methods, not intended for direct usage
 
   # Allows both 'user.cartodb.com' and 'org.cartodb.com/u/user'
-  def self.extract_subdomain_flexible(request)
+  def self.extract_username_flexible(request)
     if request.params[:user_domain].nil?
       request.host.to_s.gsub(self.session_domain, '')
     else
@@ -281,7 +289,7 @@ module CartoDB
   end
 
   # Allows 'org.cartodb.com/u/user' only
-  def self.extract_subdomain_strict(request)
+  def self.extract_username_strict(request)
     request.params[:user_domain]
   end
 

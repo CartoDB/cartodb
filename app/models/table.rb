@@ -578,9 +578,9 @@ class Table
     manage_tags
     update_name_changes
 
-    self.map.save
-    manager = CartoDB::TablePrivacyManager.new(self)
-    manager.set_from_table_privacy(privacy)
+    @table_storage.map.save
+    manager = CartoDB::TablePrivacyManager.new(@table_storage)
+    manager.set_from_table_privacy(@table_storage.privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
       manager.propagate_to_varnish
@@ -1492,7 +1492,7 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{table_id}')
+      SELECT CDB_TableMetadataTouch('#{@table_storage.table_id}')
     })
   end
 

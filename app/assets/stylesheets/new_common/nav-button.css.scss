@@ -10,15 +10,15 @@
   text-align: center;
   background: transparent;
   border-radius: 30px;
-  border: 1px solid $cIcons-default;
-  color: $cIcons-default;
+  border: 1px solid $cNavButton-default;
+  color: $cNavButton-default;
   font-weight: $sFontWeight-lighter;
   font-size: 18px;
   outline: none;
-  
+
   &:hover {
-    border-color: $cIcons-active;
-    color: $cIcons-active;
+    border-color: $cNavButton-active;
+    color: $cNavButton-active;
   }
 }
 

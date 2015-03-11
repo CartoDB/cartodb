@@ -119,6 +119,13 @@ class Table
     @table_storage.table_id
   end
 
+  # TODO I'm worried about exposing that many storage stuff from here, most likely usages of Table must be changed
+  # so instead of exposing storage stuff (façade) here, the client classes use directly the storage class
+  # for the moment doing so to keep compatibility and get the code working.
+  def layers
+    @table_storage.layers
+  end
+
   # ----------------------------------------------------------------------------
 
 
@@ -1428,11 +1435,11 @@ class Table
       propagate_namechange_to_table_vis unless errored
 
       unless errored
-        if layers.blank?
+        if @table_storage.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
           CartoDB::notify_exception(exception_to_raise, user: owner)
         else
-          layers.each do |layer|
+          @table_storage.layers.each do |layer|
             layer.rename_table(@name_changed_from, name).save
           end
         end
@@ -1447,11 +1454,11 @@ class Table
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    "#{owner.database_schema}__#{self.name}".to_sym
+    "#{owner.database_schema}__#{@table_storage.name}".to_sym
   end
 
   def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{self.name}\""
+    "\"#{owner.database_schema}\".\"#{@table_storage.name}\""
   end
 
   def database_schema

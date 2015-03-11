@@ -215,7 +215,7 @@ describe Table do
       table                           .should be_public
       table.table_visualization       .should be_public
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = TableStorage.where(id: table.id).first
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
@@ -225,7 +225,7 @@ describe Table do
       table                           .should be_private
       table.table_visualization       .should be_private
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = TableStorage.where(id: table.id).first
       rehydrated                      .should be_private
       rehydrated.table_visualization  .should be_private
     end
@@ -304,7 +304,7 @@ describe Table do
       table                           .should be_public
       table.table_visualization       .should be_public
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = TableStorage.where(id: table.id).first
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
@@ -314,7 +314,7 @@ describe Table do
       table                           .should be_private
       table.table_visualization       .should be_private
 
-      rehydrated = Table.where(id: table.id).first
+      rehydrated = TableStorage.where(id: table.id).first
       rehydrated                      .should be_private
       rehydrated.table_visualization  .should be_private
     end

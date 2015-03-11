@@ -178,7 +178,7 @@
             'boom'
           end -%>
 
-         <li><strong class="<%= user_type %>"><%= number_to_percentage (used_percentage * 100), precision: 2 %></strong> of user quota used</li>
+          <li><strong class="<%= user_type %>"><%= number_to_percentage (used_percentage * 100), precision: 2 %></strong> of user quota used</li>
           <li><%= @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum %> map views this month</li>
           <li>Last access: <%= "#{distance_of_time_in_words_to_now(@user.get_last_active_time)} ago" rescue "--" %></li>
         </ul>

@@ -79,7 +79,7 @@
   padding-right: 2px;
   font-size: 14px;
   line-height: 80px;
-  color: $cTypography-help;
+  color: $cTypography-linkSelected;
   background: transparent;
   border: none;
   outline: none;
@@ -132,16 +132,16 @@
   width:29px;
   height:29px;
   border-radius: 29px;
-  border:1px solid #CCC;
-  color:#CCC;
+  border:1px solid $cNavButton-default;
+  color: $cNavButton-default;
   text-align: center;
   line-height:31px;
   background: transparent;
   outline: none;
 
   &:hover {
-    border:1px solid #999;
-    color:#999;
+    border:1px solid $cNavButton-active;
+    color: $cNavButton-active;
   }
 }
 a.Filters-cleanSearch { line-height:32px }

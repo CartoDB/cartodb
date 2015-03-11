@@ -14,11 +14,21 @@
 * Fixes the showing of map previews in the delete items dialog #2639
 * New organization pages done
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
+* Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
 
 Bugfixes:
 * Fixes an error that preventing the load of WMS layers.
-* Fixes an unncessary binding that made the dashboard reloading twice. 
+* Fixes an unncessary binding that made the dashboard reloading twice.
 * Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)
+* Fix new dashboard URLs creation [#2662](https://github.com/CartoDB/cartodb/pull/2662)
+* Redirect to list on delete table vis [#2697](https://github.com/CartoDB/cartodb/pull/2697)
+* Fix account settings order [#2700](https://github.com/CartoDB/cartodb/pull/2700)
+* Fix geocoding by Lon/Lat: refresh the table [#2699](https://github.com/CartoDB/cartodb/pull/2699)
+* Fix multiuser quota is not well calculated in multiuser dashboard [#2722](https://github.com/CartoDB/cartodb/pull/2722)
+* Fix new public pagination [#2716](https://github.com/CartoDB/cartodb/pull/2716)
+* Fix contrast for nav buttons [#2696](https://github.com/CartoDB/cartodb/pull/2696)
+* Fix top/bottom padding for delete dialog [#2721](https://github.com/CartoDB/cartodb/pull/2721)
+* Fix filters view's search component behavior [#2708](https://github.com/CartoDB/cartodb/pull/2708)
 
 3.8.1 (2015-02-26)
 ------------------

@@ -12,13 +12,17 @@ module CartoDB
         end
 
         # @param layer Layer|nil
-        # @return Layer|nil
-        def decorate_layer(layer=nil)
-          return nil if layer.nil?
-          return layer unless layer.respond_to?('data_layer?'.to_sym)
-
+        # @return bool
+        def layer_eligible?(layer=nil)
+          return false if layer.nil?
           # Only data/cartodb layers
-          return layer unless layer.data_layer?
+          return false unless layer.respond_to?(:data_layer?)
+          return false unless layer.data_layer?
+        end
+
+        # @param layer Layer|nil
+        def decorate_layer!(layer=nil)
+          return nil unless layer_eligible?(layer)
 
           layer.infowindow = {
             fields: [
@@ -42,9 +46,7 @@ module CartoDB
             width: 226,
             template: '<div class="cartodb-popup v2"><a href="#close" class="cartodb-popup-close-button close">x</a><div class="cartodb-popup-content-wrapper"><div class="cartodb-popup-content"><p><img src="{{thumbnail}}"/></p><p>{{caption}}</p><p>Likes: {{likes_count}}</p><p>Comments: {{comments_count}}</p><p><a href="{{link}}">View photo</a></p></div></div><div class="cartodb-popup-tip-container"></div></div>'
           }
-
-          layer.save
-          layer
+          nil
         end
 
       end

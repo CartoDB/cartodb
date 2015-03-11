@@ -6,6 +6,7 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
 require_relative './overlay/member'
@@ -574,7 +575,8 @@ class Table < Sequel::Model(:user_tables)
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|
-          decorator.decorate_layer(layer)
+          decorator.decorate_layer!(layer)
+          layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
         end
       end
 

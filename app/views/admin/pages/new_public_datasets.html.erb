@@ -14,7 +14,7 @@
       <% @datasets.each do |vis| %>
         <% user_domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
         <li class="DatasetsList-item">
-          <div class="LayoutIcon DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
+          <div class="DatasetsList-itemCategory is--<%= vis[:geometry_type] %>Dataset"></div>
           <div class="DatasetsList-itemInfo">
             <div class="DatasetsList-itemPrimaryInfo">
               <h3 class="DatasetsList-itemTitle DefaultTitle">

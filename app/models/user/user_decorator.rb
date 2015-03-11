@@ -62,7 +62,8 @@ module CartoDB
         notification: self.notification,
         avatar_url: self.avatar_url,
         new_dashboard_enabled: self.new_dashboard_enabled,
-        feature_flags: self.feature_flags
+        feature_flags: self.feature_flags,
+        base_url: self.public_url
       }
 
       data[:organization] = self.organization.to_poro(self) if self.organization.present?

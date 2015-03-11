@@ -11,7 +11,7 @@ $opacityTransition: 250ms;
   @include display-flex();
   @include flex-direction(column);
   margin: 0 auto;
-  padding: 20px $sMargin-element 0 $sMargin-element;
+  padding: 10px $sMargin-element 0 $sMargin-element;
 }
 .DatasetsList.is-hidden { display: none }
 .DatasetsList-item {
@@ -49,52 +49,65 @@ $opacityTransition: 250ms;
   @include transition(opacity, $opacityTransition);
 }
 .DatasetsList.is-loading .DatasetsList-item,
-.DatasetsList.is-loading .DatasetsList-item--selectable {
-  min-height: 44px;
-  pointer-events: none;
-  .DatasetsList-itemCategory { @include opacity(0) }
-  .DatasetsList-itemInfo { @include opacity(0) }
-  .DatasetsList-fake { @include opacity(1) }
-}
+.DatasetsList.is-loading .DatasetsList-item--selectable,
+.DatasetsList.is-loading .DatasetsList-item--selectable.is--selected,
 .DatasetsList.is-loading .DatasetsList-item:hover,
-.DatasetsList.is-loading .DatasetsList-item--selectable:hover {
+.DatasetsList.is-loading .DatasetsList-item--selectable:hover,
+.DatasetsList.is-loading .DatasetsList-item--selectable:hover.is--selected {
   margin: 0;
   padding: $sMargin-group 0;
   border: none;
   border-bottom: 1px solid $cStructure-mainLine;
   cursor: default;
   background: none;
+  .DatasetsList-itemCategory { @include opacity(0) }
+  .DatasetsList-itemInfo { @include opacity(0) }
+  .DatasetsList-fake { @include opacity(1) }
 }
+
+// Position of the geometry type icon
+@mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
+  @include background(image-url('layout/geometry-types-icons.png') no-repeat $x-pos $y-pos);
+  @include image-2x("layout/geometry-types-icons@x2.png", 200px, 80px, ($x-pos), ($y-pos));
+}
+
 .DatasetsList-itemCategory {
+  position: relative;
+  display: inline-block;
+  min-width: 40px;
+  height: 40px;
   margin-right: $sMargin-element;
   margin-top: 3px;
-  @include background(image-url('layout/no-geometry-dataset.png') no-repeat center center white);
+  @include geometry-type-icon(-160px);
   @include opacity(1);
-  @include transition(opacity, $opacityTransition);
+  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
+  border: none;
   z-index: 1;
 }
-.DatasetsList-itemCategory.is--lineDataset {
-  @include background(image-url('layout/lines-dataset.png') no-repeat center center white);
+.DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px) }
+.DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px) }
+.DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon() }
+.DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px) }
+
+.DatasetsList-item--selectable:hover,
+.DatasetsList-item--selectable.is--selected {
+  .DatasetsList-itemCategory { @include geometry-type-icon(-160px, -40px) }
+  .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -40px) }
+  .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -40px) }
+  .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -40px) }
+  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -40px) }  
 }
-.DatasetsList-itemCategory.is--polygonDataset {
-  @include background(image-url('layout/polygons-dataset.png') no-repeat center center white);
-}
-.DatasetsList-itemCategory.is--pointDataset {
-  @include background(image-url('layout/points-dataset.png') no-repeat center center white);
-}
-.DatasetsList-itemCategory.is--rasterDataset {
-  @include background(image-url('layout/raster-dataset.png') no-repeat center center white);
-}
+
 .DatasetsList-itemStatus {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -8px;
+  right: -8px;
   width: 17px;
   height: 17px;
   line-height: 17px!important;
-  border: 1px solid #CCC;
+  border: 1px solid rgba(black, 0.1);
   border-radius: 17px;
-  background: white;
+  background: rgba(white, .85);
   font-size: 9px;
   color: $cHighlight-alert;
   text-align: center;

@@ -102,8 +102,8 @@
 // RowData sizes
 .Form-rowData--longer { width: 460px }
 .Form-rowData--long { width: 380px }
-.Form-rowData--med {}
-.Form-rowData--short {}
+.Form-rowData--med { width: 300px }
+.Form-rowData--short { }
 
 .Form-input {
   position: relative;
@@ -128,8 +128,8 @@
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
-.Form-input--med {}
-.Form-input--short {}
+.Form-input--med { width: 274px }
+.Form-input--short { width: 114px }
 // Types
 .Form-input.has-icon {
   padding: 0 42px 0 12px;

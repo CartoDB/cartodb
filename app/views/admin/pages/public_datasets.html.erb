@@ -9,6 +9,7 @@
 <%= content_for(:js) do %>
   <script>
     var user_name = '<%= @username %>';
+    var cartodb_com_hosted = <%= cartodb_com_hosted? %>;
   </script>
 
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_dashboard' %>

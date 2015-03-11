@@ -605,7 +605,7 @@ describe Table do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
-      @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
+      @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table.storage)
       @doomed_table.destroy
     end
 

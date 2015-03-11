@@ -139,6 +139,12 @@ class Table
     @table_storage.destroy
   end
 
+
+  # TODO Let other clases peek and use storage?
+  def storage
+    @table_storage
+  end
+
   # ----------------------------------------------------------------------------
 
 

@@ -9,6 +9,7 @@
 * Fixes the showing of map previews in the delete items dialog #2639
 * New organization pages done
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
+* update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
 
 Bugfixes:
 * Fixes an error that preventing the load of WMS layers.

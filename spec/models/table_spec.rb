@@ -634,7 +634,7 @@ describe Table do
       @user.reload
       @user.tables_count.should == 0
       Tag.count.should == 0
-      Table.count == 0
+      TableStorage.count == 0
     end
 
     it "should remove varnish cache" do
@@ -648,7 +648,7 @@ describe Table do
       @user.in_database.drop_table(table.name.to_sym)
 
       table.destroy
-      Table[table.id].should be_nil
+      TableStorage[table.id].should be_nil
     end
 
     it 'deletes derived visualizations that depend on this table' do

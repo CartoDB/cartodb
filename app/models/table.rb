@@ -97,6 +97,11 @@ class Table
     self
   end
 
+  def update(args)
+    @table_storage.update(args)
+    self
+  end
+
   def reload
     @table_storage.reload
     self
@@ -812,14 +817,14 @@ class Table
 
   def name=(value)
     value = value.downcase if value
-    return if value == self[:name] || value.blank?
+    return if value == @table_storage[:name] || value.blank?
     new_name = get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = self.name if !new? && self.name.present?
+    @name_changed_from = @table_storage.name if !new? && @table_storage.name.present?
 
     self.invalidate_varnish_cache if !owner.nil? && owner.database_name
-    self[:name] = new_name
+    @table_storage[:name] = new_name
   end
 
   def tags=(value)

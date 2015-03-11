@@ -123,8 +123,9 @@ class TableStorage < Sequel::Model(:user_tables)
   # TODO This is called from other models but should probably never be done outside this class
   # it depends on the table relator
   def invalidate_varnish_cache(propagate_to_visualizations=true)
-    table = Table.new(table_storage: self)
-    table.invalidate_varnish_cache(propagate_to_visualizations)
+    # TODO rename @listener to something else
+    # probably Table -> TableFacade; TableStorage -> UserTable or UserTableStorage
+    @listener.invalidate_varnish_cache(propagate_to_visualizations) if @listener.present?
   end
 
 

@@ -38,14 +38,14 @@ module CartoDB
 
   # NOTE: Not intended for usage outside testing (where is needed to clean state between tests)
   def self.clear_internal_cache
-    @@hostname = nil
-    @@http_port = nil
-    @@session_domain = nil
-    @@domain = nil
-    @@subdomains_allowed = nil
-    @@subdomains_optional = nil
-    @@account_host = nil
-    @@account_path = nil
+    remove_class_variable(:@@hostname) if defined?(@@hostname)
+    remove_class_variable(:@@http_port) if defined?(@@http_port)
+    remove_class_variable(:@@session_domain) if defined?(@@session_domain)
+    remove_class_variable(:@@domain) if defined?(@@domain)
+    remove_class_variable(:@@subdomains_allowed) if defined?(@@subdomains_allowed)
+    remove_class_variable(:@@subdomains_optional) if defined?(@@subdomains_optional)
+    remove_class_variable(:@@account_host) if defined?(@@account_host)
+    remove_class_variable(:@@account_path) if defined?(@@account_path)
   end
 
   def self.hostname
@@ -68,11 +68,13 @@ module CartoDB
   # If true, we allow both 'user.cartodb.com' and 'org.cartodb.com/u/user'
   # if false, only cartodb.com/u/user is allowed (and organizations won't work)
   def self.subdomains_allowed?
-    @@subdomains_allowed ||= self.get_subdomains_allowed
+    return @@subdomains_allowed if defined?(@@subdomains_allowed)
+    @@subdomains_allowed = self.get_subdomains_allowed
   end
 
   def self.subdomains_optional?
-    @@subdomains_optional ||= self.get_subdomains_optional
+    return @@subdomains_optional if defined?(@@subdomains_optional)
+    @@subdomains_optional = self.get_subdomains_optional
   end
 
   def self.account_host

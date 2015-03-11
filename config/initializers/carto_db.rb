@@ -20,8 +20,9 @@ module CartoDB
 
   # Warning, if subdomains are allowed includes the username as the subdomain,
   #  but else returns a base url WITHOUT '/u/username'
-  def self.base_url(subdomain, org_username=nil)
-    protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
+  def self.base_url(subdomain, org_username=nil, protocol_override=nil)
+    default_protocol = self.use_https? ? 'https' : 'http'
+    protocol = protocol_override.nil? ? default_protocol : protocol_override
 
     if self.subdomains_allowed?
       base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{self.http_port}"
@@ -45,7 +46,7 @@ module CartoDB
 
   # Stores the non-user part of the domain (e.g. '.cartodb.com')
   def self.session_domain
-    @@session_domain ||= Cartodb.config[:session_domain]
+    @@session_domain ||= self.get_session_domain
   end
 
   def self.domain
@@ -55,15 +56,19 @@ module CartoDB
   # If true, we allow both 'user.cartodb.com' and 'org.cartodb.com/u/user'
   # if false, only cartodb.com/u/user is allowed (and organizations won't work)
   def self.subdomains_allowed?
-    @@subdomains_allowed ||= Cartodb.config[:subdomains_allowed]
+    @@subdomains_allowed ||= self.get_subdomains_allowed
+  end
+
+  def self.subdomains_optional?
+    @@subdomains_optional ||= self.get_subdomains_optional
   end
 
   def self.account_host
-    Cartodb.config[:account_host]
+    @@account_host ||= self.get_account_host
   end
 
   def self.account_path
-    Cartodb.config[:account_path]
+    @@account_path ||= self.get_account_path
   end
 
   module API
@@ -281,7 +286,7 @@ module CartoDB
   end
 
   def self.get_hostname
-    protocol = Rails.env.production? || Rails.env.staging? ? 'https' : 'http'
+    protocol = self.use_https? ? 'https' : 'http'
     "#{protocol}://#{self.domain}#{self.http_port}"
   end
 
@@ -298,6 +303,30 @@ module CartoDB
     else
       "test#{self.session_domain}"
     end
+  end
+
+  def self.use_https?
+    Rails.env.production? || Rails.env.staging?
+  end
+
+  def self.get_session_domain
+    Cartodb.config[:session_domain]
+  end
+
+  def self.get_subdomains_allowed
+    Cartodb.config[:subdomains_allowed]
+  end
+
+  def self.get_subdomains_optional
+    Cartodb.config[:subdomains_optional]
+  end
+
+  def self.get_account_host
+    Cartodb.config[:account_host]
+  end
+
+  def self.get_account_path
+    Cartodb.config[:account_path]
   end
 
 end

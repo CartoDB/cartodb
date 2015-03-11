@@ -16,12 +16,8 @@ class Api::Json::OembedController < Api::ApplicationController
     format = request.query_parameters[:format]
     force_https = true if params[:allow_http].nil?
 
-    if (width =~ /^[0-9]+(%|px)?$/) == nil
-      raise ActionController::RoutingError.new('Incorrect width')
-    end
-    if (height =~ /^[0-9]+(%|px)?$/) == nil
-      raise ActionController::RoutingError.new('Incorrect height')
-    end
+    raise ActionController::RoutingError.new('Incorrect width') if (width =~ /^[0-9]+(%|px)?$/).nil?
+    raise ActionController::RoutingError.new('Incorrect height') if (height =~ /^[0-9]+(%|px)?$/).nil?
 
     uri = URI.parse(url)
 
@@ -39,23 +35,12 @@ class Api::Json::OembedController < Api::ApplicationController
       name = viz.name
     end
     
-    protocol = force_https ? "https" : uri.scheme
-
-    url_data = URI.split(url)
-    organization = nil
-    if url_data[5][0..2] == "/u/"
-      user = url_data[5].split('/')[2]
-      user_profile = "#{protocol}://#{url_data[2]}/u/#{user}"
-      organization = url_data[2].split('.')[0]
-    else
-      user = url_data[2].split('.')[0]
-      user_profile = "#{protocol}://#{url_data[2]}"
-    end
+    fields = url_fields_from_fragments(url, force_https)
 
     # build the url using full schema because any visuaization should work with any user
-    url = CartoDB.user_url(user, organization)  + public_visualizations_embed_map_path(id: uuid)
+    url = CartoDB.base_url(fields[:username], fields[:organization_name])  + public_visualizations_embed_map_path(id: uuid)
     # force the schema
-    if protocol == 'https' && !url.include?('https')
+    if fields[:protocol] == 'https' && !url.include?('https')
       url = url.sub('http', 'https')
     end
 
@@ -68,10 +53,10 @@ class Api::Json::OembedController < Api::ApplicationController
         :height => height,
         :title => name,
         :html => html,
-        :author_name => user,
-        :author_url => user_profile,
+        :author_name => fields[:username],
+        :author_url => fields[:user_profile_url],
         :provider_name => 'CartoDB',
-        :provider_url => "#{protocol}://www.cartodb.com/"
+        :provider_url => "#{fields[:protocol]}://www.cartodb.com/"
     }
 
     if format == 'xml'
@@ -80,4 +65,58 @@ class Api::Json::OembedController < Api::ApplicationController
       render json: response_data.to_json
     end
   end
+
+  private
+
+  def url_fields_from_fragments(url, force_https)
+    uri = URI.parse(url)
+
+    protocol = force_https ? "https" : uri.scheme
+
+    # @see http://ruby-doc.org/stdlib-1.9.3/libdoc/uri/rdoc/URI.html#method-c-split
+    url_data = URI.split(url)
+
+    # url_data[5]: Path
+    # url_data[2]: Host
+
+    if url_data[5][0..2] == "/u/"
+      username = url_data[5].split('/')[2]
+      user_profile_url = "#{protocol}://#{url_data[2]}/u/#{username}"
+      organization_name = url_data[2].split('.')[0]
+    else
+      username = url_data[2].split('.')[0]
+      user_profile_url = "#{protocol}://#{url_data[2]}"
+      organization_name = nil
+    end
+
+    # TODO: Support optional subdomains
+#    if CartoDB.subdomains_optional?
+      # both options
+#    else
+#      if CartoDB.subdomains_allowed?
+#      else
+#      end
+#    end
+
+    {
+      organization_name: organization_name,
+      username: username,
+      user_profile_url: user_profile_url,
+      protocol: protocol
+    }
+  end
+
+  # https://cartodb.com/u/testuser/...
+  def from_domainless_url(url_fragments, raise_on_error=true)
+    # url_data[5]: Path
+    if url_data[5][0..2] == "/u/"
+      username = url_data[5].split('/')[2]
+      user_profile_url = "#{protocol}://#{url_data[2]}/u/#{username}"
+      organization_name = url_data[2].sub(session_domain, '.').split
+      organization_name = url_data[2].split('.')[0]
+    else
+      raise "URL needs username specified in the Path" if raise_on_error
+    end
+  end
+
 end

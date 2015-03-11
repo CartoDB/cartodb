@@ -114,7 +114,7 @@ module CartoDB
 
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,
-          updated_at:   table.updated_at
+          updated_at:   table.storage.updated_at
         )
 
         table_data.merge!(table.row_count_and_size)

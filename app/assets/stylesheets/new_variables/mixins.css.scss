@@ -37,6 +37,8 @@
 @mixin display-inline-flex() {
   display: inline-block;
   display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flex;
   display: inline-flex;
 }
 @mixin flex($v) {

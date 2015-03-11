@@ -131,6 +131,10 @@ class Table
     @table_storage.map
   end
 
+  def privacy
+    @table_storage.privacy
+  end
+
   # ----------------------------------------------------------------------------
 
 
@@ -324,7 +328,7 @@ class Table
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    @table_storage.privacy ||= (owner.try(:private_tables_enabled) ? TableStorage::PRIVACY_PRIVATE : PRIVACY_PUBLIC)
+    @table_storage.privacy ||= (owner.try(:private_tables_enabled) ? TableStorage::PRIVACY_PRIVATE : TableStorage::PRIVACY_PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)

@@ -399,7 +399,7 @@ module CartoDB
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
-          has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
+          has_private_tables |= table.private?
         }
         has_private_tables
       end

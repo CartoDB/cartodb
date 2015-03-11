@@ -1413,8 +1413,8 @@ class Table
 
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy == PRIVACY_LINK ? PRIVACY_PUBLIC_TEXT.upcase : privacy_text
-  end #privacy_text_for_vizjson
+    privacy == TableStorage::PRIVACY_LINK ? 'PUBLIC' : @table_storage.privacy_text
+  end
 
   def relator
     @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)

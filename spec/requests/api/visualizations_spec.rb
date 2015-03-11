@@ -1143,11 +1143,11 @@ describe Api::Json::VisualizationsController do
       user_2.save.reload
       organization.reload
 
-      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: user_1.id)
+      table = create_table(privacy: TableStorage::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: user_1.id)
       u1_t_1_id = table.table_visualization.id
       u1_t_1_perm_id = table.table_visualization.permission.id
 
-      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: user_2.id)
+      table = create_table(privacy: TableStorage::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: user_2.id)
       u2_t_1_id = table.table_visualization.id
 
       post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
@@ -1372,14 +1372,14 @@ describe Api::Json::VisualizationsController do
       # user 2 will share 1 table and 1 vis with the org
       # user 2 will share the other table and other vis with user 1
 
-      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: user_1.id)
+      table = create_table(privacy: TableStorage::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: user_1.id)
       u1_t_1_id = table.table_visualization.id
 
-      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+      table = create_table(privacy: TableStorage::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
       u2_t_1_id = table.table_visualization.id
       u2_t_1_perm_id = table.table_visualization.permission.id
 
-      table = create_table(privacy: Table::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
+      table = create_table(privacy: TableStorage::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: user_2.id)
       u2_t_2_id = table.table_visualization.id
       u2_t_2_perm_id = table.table_visualization.permission.id
 

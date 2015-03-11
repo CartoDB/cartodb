@@ -22,7 +22,7 @@ module CartoDB
               type: CartoDB::Visualization::Member::TYPE_CANONICAL,
               description: table.description,
               tags: table.tags.to_s.split(','),
-              privacy: (table.privacy == ::Table::PRIVACY_PUBLIC ? ::Table::PRIVACY_PUBLIC_TEXT : ::Table::PRIVACY_PRIVATE_TEXT)
+              privacy: (table.privacy == ::TableStorage::PRIVACY_PUBLIC ? ::TableStorage::PRIVACY_PUBLIC_TEXT : ::TableStorage::PRIVACY_PRIVATE_TEXT)
             ).store
 
             migrated!(table)

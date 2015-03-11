@@ -59,8 +59,9 @@ class Table
     else
       @table_storage = args[:table_storage]
     end
-    @table_storage.set_hooks_listener(self)
+    @table_storage.set_facade(self)
   end
+
 
   # Stuff that must be delegated in to the storage layer -----------------------
   # TODO: these are to be removed??

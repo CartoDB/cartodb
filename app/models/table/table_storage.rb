@@ -53,9 +53,9 @@ class TableStorage < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags, :description)
 
-  # The listener should take care of all hooks
-  def set_hooks_listener(listener)
-    @listener = listener
+  # The facade should take care of all hooks
+  def set_facade(table_obj)
+    @facade = table_obj
   end
 
 
@@ -79,43 +79,43 @@ class TableStorage < Sequel::Model(:user_tables)
       errors.add(:privacy, "has an invalid value '#{privacy}'")
     end
 
-    @listener.validate
+    facade.validate
   end
 
   def before_validation
-    @listener.before_validation
+    facade.before_validation
     super
   end
 
   def before_create
     super
     update_updated_at # TODO move to a DB trigger
-    @listener.before_create
+    facade.before_create
   end
 
   def after_create
     super
-    @listener.after_create
+    facade.after_create
   end
 
   def before_save
     super
-    @listener.before_save
+    facade.before_save
   end
 
   def after_save
     super
-    @listener.after_save
+    facade.after_save
   end
 
   def before_destroy
     super
-    @listener.before_destroy
+    facade.before_destroy
   end
 
   def after_destroy
     super
-    @listener.after_destroy
+    facade.after_destroy
   end
   # --------------------------------------------------------------------------------
 
@@ -123,9 +123,12 @@ class TableStorage < Sequel::Model(:user_tables)
   # TODO This is called from other models but should probably never be done outside this class
   # it depends on the table relator
   def invalidate_varnish_cache(propagate_to_visualizations=true)
-    # TODO rename @listener to something else
     # probably Table -> TableFacade; TableStorage -> UserTable or UserTableStorage
-    @listener.invalidate_varnish_cache(propagate_to_visualizations) if @listener.present?
+    facade.invalidate_varnish_cache(propagate_to_visualizations)
+  end
+
+  def table_visualization
+    facade.table_visualization
   end
 
 
@@ -153,6 +156,11 @@ class TableStorage < Sequel::Model(:user_tables)
 
   def update_updated_at
     self.updated_at = Time.now
+  end
+
+  # Lazy initialization of facade if not present
+  def facade
+    @facade ||= ::Table.new(table_storage: self)
   end
 
 end

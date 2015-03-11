@@ -150,6 +150,18 @@ class TableStorage < Sequel::Model(:user_tables)
     end
   end
 
+  def private?
+    self.privacy == PRIVACY_PRIVATE
+  end #private?
+
+  def public?
+    self.privacy == PRIVACY_PUBLIC
+  end #public?
+
+  def public_with_link_only?
+    self.privacy == PRIVACY_LINK
+  end #public_with_link_only?
+
 
   # --------------------------------------------------------------------------------
   private

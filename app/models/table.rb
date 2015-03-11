@@ -844,18 +844,17 @@ class Table
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
-  # TODO move to storage
   def private?
-    @table_storage.privacy == TableStorage::PRIVACY_PRIVATE
-  end #private?
+    @table_storage.private?
+  end
 
   def public?
-    @table_storage.privacy == TableStorage::PRIVACY_PUBLIC
-  end #public?
+    @table_storage.public?
+  end
 
   def public_with_link_only?
-    @table_storage.privacy == TableStorage::PRIVACY_LINK
-  end #public_with_link_only?
+    @table_storage.public_with_link_only?
+  end
 
   def set_default_table_privacy
     @table_storage.privacy ||= default_privacy_values

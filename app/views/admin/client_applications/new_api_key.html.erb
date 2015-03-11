@@ -49,7 +49,7 @@
 
         <div class="Form-row Form-row--spaced">
           <div class="Form-rowLabel">
-            <label class="Form-label">Example private table read</label>
+            <label class="Form-label">Example read private</label>
           </div>
           <div class="Form-rowPreview">
             <p class="Form-text Form-text--preview">http://<%= current_user.username %>.<%= Cartodb.config[:account_host] %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
@@ -59,7 +59,7 @@
         <div class="Form-footer">
           <p class="Form-footerText">
             <i class="iconFont iconFont-Info Form-footerIcon"></i>
-            Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB
+            Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-platform.html" %> in CartoDB
           </p>
           <%= button_tag(type: 'submit', class: 'Button Button--main js-submit', value: 'api') do %>
             <% content_tag(:span, 'Request a new api key') %>

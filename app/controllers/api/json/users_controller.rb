@@ -66,6 +66,7 @@ class Api::Json::UsersController < Api::ApplicationController
       avatar_url: current_viewer.avatar_url,
       email: current_viewer.email,
       organization: current_viewer.organization.nil? ? nil : current_viewer.organization.to_poro,
+      base_url: current_viewer.public_url,
     }
   end
 

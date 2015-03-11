@@ -48,7 +48,6 @@ Until our guidelines are publically available follow the existing file/directory
 Tests reside in the `lib/assets/test` directory. We use
  - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
  - [SinonJS 1.3.4](sinonjs.org) for test spies/stubs/mocks when Jasmine spies isn't good enough
- - [Rewirefy](https://github.com/i-like-robots/rewireify) to mock CommonJS (browserify) `require` calls
 
 When adding new files make sure they exist in an appropriate file located in `lib/build/js_files` (will depends
 if you're writing tests for current code or the newer browserify modules).
@@ -63,12 +62,7 @@ grunt jasmine
 grunt jasmine-server
 ```
 
-If you only want to run a subset of tests use the browser approach (see above) and append this querystring to the URL:
-`?spec=start-of-describe`, i.e.:
-```
-http://0.0.0.0:8089/_SpecRunner.html?spec=cdb.admin.User
-```
-
+If you only want to run a subset of tests the easiest and fastest way is to use [focused tests](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
 
 ## CSS
 
@@ -80,7 +74,7 @@ Source files are located at `app/assets/stylesheets`. We used to use Rails sproc
 
 See [doc/frontend.md](doc/frontend.md) for more in-depth documentation.
 
-Until our guidelines are publically available follow the existing file/directory and style structure.
+Until our guidelines are publicly available follow the existing file/directory and style structure.
 
 ## Grunt
 
@@ -113,4 +107,3 @@ This will watch CSS and JS files and rebuild bundles automatically upon changes.
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
-

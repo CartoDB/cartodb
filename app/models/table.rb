@@ -110,6 +110,10 @@ class Table
     @table_storage.valid?
   end
 
+  def table_id
+    @table_storage.table_id
+  end
+
   # ----------------------------------------------------------------------------
 
 

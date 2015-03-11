@@ -46,9 +46,9 @@ module CartoDB
 
     def rollback!
       # Remove any visualizations and related data
-      ::Table.db['delete from visualizations']
-      ::Table.db['delete from overlays']
-      ::Table.db['delete from layers_user_tables']
+      Sequel::Model.db['delete from visualizations']
+      Sequel::Model.db['delete from overlays']
+      Sequel::Model.db['delete from layers_user_tables']
       # Remove redis keys
       @tables_to_migrate.all.each do |table|
         $tables_metadata.hdel(key(table), "migrated_to_#{@version}")

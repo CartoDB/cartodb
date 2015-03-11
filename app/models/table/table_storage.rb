@@ -22,7 +22,7 @@ class TableStorage < Sequel::Model(:user_tables)
                         right_key:  :layer_id,
                         reciprocal: :user_tables
   one_to_one   :automatic_geocoding, key: :table_id
-  one_to_many  :geocodings
+  one_to_many  :geocodings, key: :table_id
 
   plugin :association_dependencies, map:                  :destroy,
                                     layers:               :nullify,

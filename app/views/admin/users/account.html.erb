@@ -97,9 +97,16 @@
         </div>
 
         <div class="Form-footer">
-          <a href="#" class="Button Button--secondary js-deleteAccount">
-            <span>Delete my account</span>
-          </a>
+          <% if !current_user.organization_owner? -%>
+            <button class="Button Button--secondary js-deleteAccount">
+              <span>Delete my account</span>
+            </button>
+          <% else %>
+            <p class="Form-footerText">
+              <i class="iconFont iconFont-Info Form-footerIcon"></i>
+              You can't delete your account because you are admin of an organization
+            </p>
+          <% end %>
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
             <% content_tag(:span, 'Save changes') %>
           <% end %>

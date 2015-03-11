@@ -109,8 +109,8 @@ class TableStorage < Sequel::Model(:user_tables)
   end
 
   def before_destroy
-    super
     facade.before_destroy
+    super
   end
 
   def after_destroy

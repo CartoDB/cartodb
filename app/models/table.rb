@@ -126,6 +126,10 @@ class Table
     @table_storage.layers
   end
 
+  def map
+    @table_storage.map
+  end
+
   # ----------------------------------------------------------------------------
 
 

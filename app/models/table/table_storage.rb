@@ -103,9 +103,9 @@ class TableStorage < Sequel::Model(:user_tables)
     @listener.before_save
   end
 
-  def after_create
+  def after_save
     super
-    @listener.after_create
+    @listener.after_save
   end
 
   def before_destroy

@@ -1031,6 +1031,8 @@ class User < Sequel::Model
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes
+    return 0 if self.new?
+
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded

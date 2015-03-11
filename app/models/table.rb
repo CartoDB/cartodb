@@ -106,6 +106,10 @@ class Table
     @table_storage.map_id
   end
 
+  def valid?
+    @table_storage.valid?
+  end
+
   # ----------------------------------------------------------------------------
 
 

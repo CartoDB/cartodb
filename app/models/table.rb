@@ -135,6 +135,10 @@ class Table
     @table_storage.privacy
   end
 
+  def destroy
+    @table_storage.destroy
+  end
+
   # ----------------------------------------------------------------------------
 
 

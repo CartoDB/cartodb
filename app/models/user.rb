@@ -1149,7 +1149,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = ::Table.find(:table_id => t[:oid])
+      table = Table.new(::TableStorage.find(:table_id => t[:oid]))
       begin
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
@@ -1174,9 +1174,9 @@ class User < Sequel::Model
           :new_table => t[:relname]
         })
         table = Table.new
-        table.user_id  = self.id
-        table.name     = t[:relname]
-        table.table_id = t[:oid]
+        table.storage.user_id  = self.id
+        table.storage.name     = t[:relname]
+        table.storage.table_id = t[:oid]
         table.register_table_only = true
         table.keep_user_database_table = true
         table.save

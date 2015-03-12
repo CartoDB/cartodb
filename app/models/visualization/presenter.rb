@@ -109,7 +109,7 @@ module CartoDB
         unless table_visualization.nil?
           table_data[:permission] = (!permission.nil? && table_visualization.id == permission.entity_id) ?
                                       permission.to_poro : table_visualization.permission.to_poro
-          table_data[:geometry_types] = table.geometry_types
+          table_data[:geometry_types] = table.service.geometry_types
         end
 
         table_data.merge!(

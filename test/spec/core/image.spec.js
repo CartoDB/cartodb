@@ -56,9 +56,24 @@ describe("Image", function() {
 
   });
 
-  it("should generate the right layer configuration for a torque layer with a named map ", function(done) {
+  it("should generate the right layer configuration for a torque layer and a named map", function(done) {
 
     var vizjson = "http://documentation.cartodb.com/api/v2/viz/e7b04b62-b901-11e4-b0d7-0e018d66dc29/viz.json";
+
+    var image = cartodb.Image(vizjson);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.layers.layers.length).toEqual(2);
+      expect(image.options.layers.layers[0].type).toEqual("http");
+      expect(image.options.layers.layers[1].type).toEqual("named");
+      done();
+    });
+
+  });
+
+  it("should generate the right layer configuration for a torque layer with a named map inside", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/6b447f26-c80b-11e4-8164-0e018d66dc29/viz.json";
 
     var image = cartodb.Image(vizjson);
 

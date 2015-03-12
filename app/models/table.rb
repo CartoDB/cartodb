@@ -1637,7 +1637,7 @@ class Table
     type = type.to_s.upcase
 
     self.the_geom_type = type.downcase
-    save_changes unless new?
+    @table_storage.save_changes unless @table_storage.new?
   end
 
   def create_table_in_database!

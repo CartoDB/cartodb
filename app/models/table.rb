@@ -328,7 +328,7 @@ class Table
       end
 
       # cannot change any existing table to 'with link'
-      if !self.new? && @table_storage.privacy == TableStorage::PRIVACY_LINK && self.changed_columns.include?(:privacy)
+      if !self.new? && @table_storage.privacy == TableStorage::PRIVACY_LINK && @table_storage.changed_columns.include?(:privacy)
         @table_storage.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 

@@ -20,6 +20,7 @@ class Table
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
+   # TODO Part of a service along with schema
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -64,7 +65,7 @@ class Table
 
 
   # Stuff that must be delegated in to the storage layer -----------------------
-  # TODO: these are to be removed??
+  # TODO: these are to be removed, access them through table.storage
   def id
     @table_storage.id
   end

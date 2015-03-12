@@ -5,6 +5,7 @@
   <script type="text/javascript">
     var username = "<%= @user.username %>";
     var config = <%=raw frontend_config.html_safe %>;
+    var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= raw @user.data.to_json.html_safe %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
@@ -96,7 +97,16 @@
         </div>
 
         <div class="Form-footer">
-          <p class="Form-footerText"></p>
+          <% if !current_user.organization_owner? -%>
+            <button class="Button Button--secondary js-deleteAccount">
+              <span>Delete my account</span>
+            </button>
+          <% else %>
+            <p class="Form-footerText">
+              <i class="iconFont iconFont-Info Form-footerIcon"></i>
+              You can't delete your account because you are admin of an organization
+            </p>
+          <% end %>
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
             <% content_tag(:span, 'Save changes') %>
           <% end %>

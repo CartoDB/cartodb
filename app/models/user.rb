@@ -3,11 +3,11 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
-require_relative './visualization/external_source'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
-require_relative '../../app/models/common_data'
+require_relative '../services/visualization/common_data_service'
+require_relative './external_data_import'
 require_relative './feature_flag'
 
 class User < Sequel::Model
@@ -146,43 +146,12 @@ class User < Sequel::Model
     end
   end
 
-  def load_common_data(datasets = CommonDataSingleton.instance.datasets[:datasets])
-    Rollbar.report_message('common data', 'debug', {
-      :action => 'load',
-      :user_id => self.id,
-      :username => self.username
-    })
-    datasets.each do |d|
-      v = CartoDB::Visualization::Member.remote_member(
-        d['name'],
-        self.id,
-        CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-        d['description'],
-        [ d['category'] ],
-        d['license'],
-        d['source'])
-      v.store
-
-      CartoDB::Visualization::ExternalSource.new(v.id, d['url'], d['geometry_types'], d['rows'], d['size'], 'common-data').save
-    end
-  rescue => e
-    Rollbar.report_exception(e)
+  def load_common_data
+    CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
   end
 
   def delete_common_data
-    CartoDB::Visualization::Collection.new.fetch({type: 'remote', user_id: self.id}).map do |v|
-      begin
-        CartoDB::Visualization::ExternalSource.where(visualization_id: v.id).delete
-        v.delete
-      rescue Sequel::DatabaseError => e
-        match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
-        if match.present? && match >= 0
-          puts "Couldn't delete #{v.id} visualization because it's been imported"
-        else
-          raise e
-        end
-      end
-    end
+    CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
   end
 
   def after_save
@@ -240,6 +209,8 @@ class User < Sequel::Model
       self.tables.all.each { |t| t.destroy }
 
       # Remove user data imports, maps, layers and assets
+      self.delete_external_data_imports
+      self.delete_external_sources
       self.data_imports.each { |d| d.destroy }
       self.maps.each { |m| m.destroy }
       self.layers.each { |l| remove_layer l }
@@ -269,6 +240,19 @@ class User < Sequel::Model
     end
 
     self.feature_flags_user.each { |ffu| ffu.delete }
+  end
+
+  def delete_external_data_imports
+    external_data_imports = ExternalDataImport.by_user_id(self.id)
+    external_data_imports.each { |edi| edi.destroy }
+  rescue => e
+    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
+  end
+
+  def delete_external_sources
+    delete_common_data
+  rescue => e
+    Rollbar.report_message('Error deleting external data imports at user deletion', 'error', { user: self.inspect, error: e.inspect })
   end
 
   def after_destroy
@@ -402,12 +386,16 @@ class User < Sequel::Model
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
-    @old_password_validated = self.class.password_digest(old_password, self.salt) == self.crypted_password
+    @old_password_validated = validate_old_password(old_password)
     return unless @old_password_validated
 
     return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
 
     self.password = new_password_value
+  end
+
+  def validate_old_password(old_password)
+    self.class.password_digest(old_password, self.salt) == self.crypted_password
   end
 
   def password_confirmation
@@ -1043,6 +1031,8 @@ class User < Sequel::Model
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes
+    return 0 if self.new?
+
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded

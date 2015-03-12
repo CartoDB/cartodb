@@ -1847,15 +1847,15 @@ describe Table do
       table.privacy = TableStorage::PRIVACY_PUBLIC
       table.name = 'test'
       table.validate
-      table.errors.size.should eq 0
+      table.storage.errors.size.should eq 0
 
       table.privacy = TableStorage::PRIVACY_PRIVATE
       table.validate
-      table.errors.size.should eq 0
+      table.storage.errors.size.should eq 0
 
       table.privacy = TableStorage::PRIVACY_LINK
       table.validate
-      table.errors.size.should eq 0
+      table.storage.errors.size.should eq 0
 
       table.privacy = TableStorage::PRIVACY_PUBLIC
       user_mock.stubs(:private_tables_enabled).returns(false)
@@ -1863,7 +1863,7 @@ describe Table do
       # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
       table.privacy = TableStorage::PRIVACY_LINK
       table.validate
-      table.errors.size.should eq 0
+      table.storage.errors.size.should eq 0
 
       # Save so privacy changes instead of being "new"
       table.privacy = TableStorage::PRIVACY_PUBLIC
@@ -1871,9 +1871,9 @@ describe Table do
 
       table.privacy = TableStorage::PRIVACY_LINK
       table.validate
-      table.errors.size.should eq 1
+      table.storage.errors.size.should eq 1
       expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
-      table.errors.should eq expected_errors_hash
+      table.storage.errors.should eq expected_errors_hash
 
       table = Table.new
       # A user who cannot create private tables has by default public

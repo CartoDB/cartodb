@@ -186,11 +186,11 @@
 
           var layer = data.layers[i];
 
-          if (layer.type === "torque" && !ignoreTorqueLayer && (layer.options.named_map === undefined)) {
+          if (layer.type === "torque" && !ignoreTorqueLayer) {
 
             layers.push(this._getTorqueLayerDefinition(layer));
 
-          } else if (layer.type === "namedmap" || (!namedMap && layer.type === "torque" && layer.options.named_map)) {
+          } else if (layer.type === "namedmap") {
 
             layers.push(this._getNamedmapLayerDefinition(layer));
 
@@ -327,6 +327,10 @@
     },
 
     _getTorqueLayerDefinition: function(layer_definition) {
+
+      if (layer_definition.options.named_map) { // If the layer contains a named map inside, use it instead
+        return this._getNamedmapLayerDefinition(layer_definition);
+      }
 
       var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 

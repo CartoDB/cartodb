@@ -18,8 +18,8 @@ module CartoDB
       end
 
       def blended_privacy
-        return Member::PRIVACY_PRIVATE if tables.map(&:privacy_text).include?(Member::PRIVACY_PRIVATE.upcase)
-        return Member::PRIVACY_LINK if tables.map(&:privacy_text).include?(Member::PRIVACY_LINK.upcase)
+        return Member::PRIVACY_PRIVATE if tables.map{|t| t.storage.private?}.any?
+        return Member::PRIVACY_LINK if tables.map{|t| t.storage.public_with_link_only?}.any?
         Member::PRIVACY_PUBLIC
       end
 

@@ -74,18 +74,18 @@ class Api::Json::OembedController < Api::ApplicationController
     protocol = force_https ? "https" : uri.scheme
 
     # @see http://ruby-doc.org/stdlib-1.9.3/libdoc/uri/rdoc/URI.html#method-c-split
-    url_data = URI.split(url)
+    url_fragments = URI.split(url)
 
-    # url_data[5]: Path
-    # url_data[2]: Host
+    # url_fragments[5]: Path
+    # url_fragments[2]: Host
 
-    if url_data[5][0..2] == "/u/"
-      username = url_data[5].split('/')[2]
-      user_profile_url = "#{protocol}://#{url_data[2]}/u/#{username}"
-      organization_name = url_data[2].split('.')[0]
+    if url_fragments[5][0..2] == "/u/"
+      username = url_fragments[5].split('/')[2]
+      user_profile_url = "#{protocol}://#{url_fragments[2]}/u/#{username}"
+      organization_name = url_fragments[2].split('.')[0]
     else
-      username = url_data[2].split('.')[0]
-      user_profile_url = "#{protocol}://#{url_data[2]}"
+      username = url_fragments[2].split('.')[0]
+      user_profile_url = "#{protocol}://#{url_fragments[2]}"
       organization_name = nil
     end
 
@@ -106,18 +106,51 @@ class Api::Json::OembedController < Api::ApplicationController
     }
   end
 
-  # https://cartodb.com/u/testuser/...
-  def from_domainless_url(url_fragments, raise_on_error=true)
-    # url_data[5]: Path
+  # testuser.cartodb.com || testorg.cartodb.com/u/user
+  def from_url(url_fragments, protocol, domain)
+    # To ease testing don't request eactly all URI.split params
+    raise "Invalid url_fragments parameter" unless url_fragments.length > 5
+
+    subdomain = url_fragments[2].sub(domain, '.').split('.')[0]
+    raise "Subdomain not found at url" if subdomain.nil?
+
+    # org-based
     if url_fragments[5][0..2] == "/u/"
-      path_fragments = url_fragments[5].split('/')
-      username = path_fragments[2]
-      user_profile_url = "#{protocol}://#{url_fragments[2]}/u/#{username}"
-      organization_name = url_fragments[2].sub(session_domain, '.').split
-      organization_name = url_fragments[2].split('.')[0]
+      organization_name = subdomain
+      username = username_from_url_fragments(url_fragments)
     else
-      raise "URL needs username specified in the Path" if raise_on_error
+      organization_name = nil
+      username = subdomain
     end
+
+    {
+      username: username,
+      organization_name: organization_name,
+      user_profile_url: CartoDB.base_url(subdomain, organization_name.nil? ? nil : username, protocol)
+    }
+  end
+
+  # https://cartodb.com/u/testuser/...
+  def from_domainless_url(url_fragments, protocol, domain)
+    # To ease testing don't request eactly all URI.split params
+    raise "Invalid url_fragments parameter" unless url_fragments.length > 5
+
+                                                      # url_fragments[5]: Path
+    raise "URL needs username specified in the Path" if url_fragments[5][0..2] != "/u/"
+
+    username = username_from_url_fragments(url_fragments)
+    {
+      username: username,
+      organization_name: nil,
+                                        # url_fragments[2]: Host
+      user_profile_url: "#{protocol}://#{url_fragments[2]}/u/#{username}"
+    }
+  end
+
+  def username_from_url_fragments(url_fragments)
+    path_fragments = url_fragments[5].split('/')
+    raise "Username not found at url" if path_fragments.length < 3 || path_fragments[2].length == 0
+    path_fragments[2]
   end
 
 end

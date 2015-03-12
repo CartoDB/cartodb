@@ -133,6 +133,8 @@ WORKING_SPECS_9 = \
   services/importer/spec/regression/cartodb_id_query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
   spec/models/platform-limits/ \
+  spec/lib/initializers/carto_db_spec.rb \
+  spec/unit/controllers/api/json/oembed_controller_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

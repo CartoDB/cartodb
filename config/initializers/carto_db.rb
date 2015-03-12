@@ -48,12 +48,11 @@ module CartoDB
     remove_class_variable(:@@account_path) if defined?(@@account_path)
   end
 
+  # Note: use ||= only for fields who always have a non-nil, non-false value
+  #       else, rely on defined? and pure assignment to allow nils and values caching the value
+
   def self.hostname
     @@hostname ||= self.get_hostname
-  end
-
-  def self.http_port
-    @@http_port ||= self.get_http_port
   end
 
   # Stores the non-user part of the domain (e.g. '.cartodb.com')
@@ -61,8 +60,14 @@ module CartoDB
     @@session_domain ||= self.get_session_domain
   end
 
+  def self.http_port
+    return @@http_port if defined?(@@http_port)
+    @@http_port = self.get_http_port
+  end
+
   def self.domain
-    @@domain ||= self.get_domain
+    return @@domain if defined?(@@domain)
+    @@domain = self.get_domain
   end
 
   # If true, we allow both 'user.cartodb.com' and 'org.cartodb.com/u/user'

@@ -15,6 +15,9 @@ module CartoDB
       end
 
       def load_common_data_for_user(user)
+        user.last_common_data_update_date = Time.now
+        user.save
+
         added = 0
         updated = 0
         not_modified = 0

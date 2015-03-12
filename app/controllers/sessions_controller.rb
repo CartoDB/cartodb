@@ -1,6 +1,7 @@
 # encoding: UTF-8
-require_relative '../../lib/google_plus_api'
-require_relative '../../lib/google_plus_config'
+require_dependency '../../lib/google_plus_api'
+require_dependency '../../lib/google_plus_config'
+require_dependency '../../lib/resque/user_jobs'
 
 class SessionsController < ApplicationController
   layout 'frontend'
@@ -44,6 +45,7 @@ class SessionsController < ApplicationController
 
     user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
     CartodbStats.increment_login_counter(user.email)
+    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, user.id) if user.should_load_common_data?
 
     destination_url = dashboard_path(trailing_slash: true)
     if user.organization.nil?

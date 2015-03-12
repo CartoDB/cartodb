@@ -146,6 +146,10 @@ class User < Sequel::Model
     end
   end
 
+  def should_load_common_data?
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
+  end
+
   def load_common_data
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
   end

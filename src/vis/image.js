@@ -328,6 +328,10 @@
 
     _getTorqueLayerDefinition: function(layer_definition) {
 
+      if (layer_definition.options.named_map) { // If the layer contains a named map inside, use it instead
+        return this._getNamedmapLayerDefinition(layer_definition);
+      }
+
       var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 
       var query    = layerDefinition.options.query || "SELECT * FROM " + layerDefinition.options.table_name;

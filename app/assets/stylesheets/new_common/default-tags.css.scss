@@ -3,10 +3,11 @@
 
 @import "../new_variables/colors";
 @import "../new_variables/sizes";
+@import "../new_variables/mixins";
 
 .DefaultTags {
-  color:$cTypography-secondary;
-  font-weight: $sFontWeight-lighter;
+  color: $cTypography-secondary;
+  @include nicer-lato-typography();
 }
 .DefaultTags-item {
   border: none;
@@ -20,9 +21,4 @@
   cursor: pointer;
   color: $cTypography-linkHover;
   text-decoration: underline;
-}
-.DefaultTags-item.is--empty {
-  color: $cTypography-help;
-  font-style: italic;
-  font-weight: $sFontWeight-lighter;
 }

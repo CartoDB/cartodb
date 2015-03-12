@@ -25,7 +25,7 @@ module CartoDB
           DateTime  :ran_at
           Integer   :retried_times
           String    :service_name
-          Stringe   :service_item_id
+          String    :service_item_id
         end
       end #migrate
 
@@ -33,6 +33,6 @@ module CartoDB
         @db.drop_table(relation.to_sym)
       end #drop
     end
-  end # Visualization
-end # CartoDB
+  end
+end
 

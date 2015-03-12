@@ -38,7 +38,7 @@ class Admin::VisualizationsController < ApplicationController
     layout = new_dashboard ? 'new_application' : 'application'
 
     respond_to do |format|
-      format.html { render view, layout: 'application' }
+      format.html { render view, layout: layout }
     end
 
   end #index
@@ -150,7 +150,7 @@ class Admin::VisualizationsController < ApplicationController
     }
 
     @total_visualizations  = @non_dependent_visualizations + @dependent_visualizations
-    
+
     @total_nonpublic_total_vis_count = @table.non_dependent_visualizations.select{
         |vis| vis.privacy != Visualization::Member::PRIVACY_PUBLIC
     }.count + @table.dependent_visualizations.select{
@@ -314,7 +314,7 @@ class Admin::VisualizationsController < ApplicationController
 
     respond_to do |format|
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
-    end    
+    end
   rescue
     public_map_protected
   end
@@ -338,14 +338,14 @@ class Admin::VisualizationsController < ApplicationController
 
     respond_to do |format|
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
-    end    
+    end
   rescue
     embed_protected
   end
 
   def embed_map
     @visualization, @table = resolve_visualization_and_table(request)
-    
+
     return(pretty_404) unless @visualization
     return(pretty_404) if disallowed_type?(@visualization)
 
@@ -490,7 +490,7 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def data_for(table, type, extension)
-    { 
+    {
       type:         "application/#{type}; charset=binary; header=present",
       disposition:  "attachment; filename=#{table.name}.#{extension}"
     }
@@ -498,7 +498,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def is_liked(vis)
     return false unless current_user.present?
-    vis.liked_by?(current_user.id) 
+    vis.liked_by?(current_user.id)
   end
 
   def update_user_last_activity

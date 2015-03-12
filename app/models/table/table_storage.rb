@@ -53,9 +53,9 @@ class TableStorage < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags, :description)
 
-  # The facade should take care of all hooks
-  def set_facade(table_obj)
-    @facade = table_obj
+  # The service should take care of all hooks
+  def set_service(table_obj)
+    @service = table_obj
   end
 
   # Helper methods encapsulating queries. Move to query object?
@@ -106,43 +106,43 @@ class TableStorage < Sequel::Model(:user_tables)
       errors.add(:privacy, "has an invalid value '#{privacy}'")
     end
 
-    facade.validate
+    service.validate
   end
 
   def before_validation
-    facade.before_validation
+    service.before_validation
     super
   end
 
   def before_create
     super
     update_updated_at # TODO move to a DB trigger
-    facade.before_create
+    service.before_create
   end
 
   def after_create
     super
-    facade.after_create
+    service.after_create
   end
 
   def before_save
     super
-    facade.before_save
+    service.before_save
   end
 
   def after_save
     super
-    facade.after_save
+    service.after_save
   end
 
   def before_destroy
-    facade.before_destroy
+    service.before_destroy
     super
   end
 
   def after_destroy
     super
-    facade.after_destroy
+    service.after_destroy
   end
   # --------------------------------------------------------------------------------
 
@@ -150,12 +150,12 @@ class TableStorage < Sequel::Model(:user_tables)
   # TODO This is called from other models but should probably never be done outside this class
   # it depends on the table relator
   def invalidate_varnish_cache(propagate_to_visualizations=true)
-    # probably Table -> TableFacade; TableStorage -> UserTable or UserTableStorage
-    facade.invalidate_varnish_cache(propagate_to_visualizations)
+    # probably Table -> TableService; TableStorage -> UserTable or UserTableStorage
+    service.invalidate_varnish_cache(propagate_to_visualizations)
   end
 
   def table_visualization
-    facade.table_visualization
+    service.table_visualization
   end
 
 
@@ -203,9 +203,9 @@ class TableStorage < Sequel::Model(:user_tables)
     self.updated_at = Time.now
   end
 
-  # Lazy initialization of facade if not present
-  def facade
-    @facade ||= ::Table.new(table_storage: self)
+  # Lazy initialization of service if not present
+  def service
+    @service ||= ::Table.new(table_storage: self)
   end
 
 end

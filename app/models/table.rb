@@ -60,7 +60,7 @@ class Table
     else
       @table_storage = args[:table_storage]
     end
-    @table_storage.set_facade(self)
+    @table_storage.set_service(self)
   end
 
 

@@ -1153,7 +1153,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
@@ -1171,7 +1171,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       pk = nil

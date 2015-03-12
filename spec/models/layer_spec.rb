@@ -100,7 +100,7 @@ describe Layer do
           map.expects(:invalidate_vizjson_varnish_cache).times(1)
         end
 
-        key = @layer.affected_tables.first.varnish_key
+        key = @layer.affected_tables.first.service.varnish_key
         CartoDB::Varnish.any_instance.expects(:purge).times(1).with("#{key}").returns(true)
 
         vizzjson_key = @layer.affected_tables.first.table_visualization.varnish_vizzjson_key

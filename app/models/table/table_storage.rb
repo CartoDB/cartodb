@@ -58,6 +58,11 @@ class TableStorage < Sequel::Model(:user_tables)
     @service = table_obj
   end
 
+  # Lazy initialization of service if not present
+  def service
+    @service ||= ::Table.new(table_storage: self)
+  end
+
   # Helper methods encapsulating queries. Move to query object?
   # note this one spams multiple tables
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
@@ -201,11 +206,6 @@ class TableStorage < Sequel::Model(:user_tables)
 
   def update_updated_at
     self.updated_at = Time.now
-  end
-
-  # Lazy initialization of service if not present
-  def service
-    @service ||= ::Table.new(table_storage: self)
   end
 
 end

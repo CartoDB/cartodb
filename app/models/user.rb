@@ -1149,7 +1149,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = Table.new(::TableStorage.find(:table_id => t[:oid]))
+      table = Table.new(:table_storage => ::TableStorage.find(:table_id => t[:oid]))
       begin
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
@@ -1199,11 +1199,12 @@ class User < Sequel::Model
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
 
     # Remove tables with oids that don't exist on the db
-    self.tables.where(table_id: dropped_tables).all.each do |table|
+    self.tables.where(table_id: dropped_tables).all.each do |table_storage|
       Rollbar.report_message('ghost tables', 'debug', {
         :action => 'dropping table',
-        :new_table => table.name
+        :new_table => table_storage.name
       })
+      table = Table.new(table_storage: table_storage)
       table.keep_user_database_table = true
       table.destroy
     end if dropped_tables.present?

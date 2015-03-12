@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 module CartoDB
   module Visualization
     class TableBlender
@@ -18,9 +19,9 @@ module CartoDB
       end
 
       def blended_privacy
-        return Member::PRIVACY_PRIVATE if tables.map{|t| t.storage.private?}.any?
-        return Member::PRIVACY_LINK if tables.map{|t| t.storage.public_with_link_only?}.any?
-        Member::PRIVACY_PUBLIC
+        return Visualization::Member::PRIVACY_PRIVATE if tables.map{|t| t.storage.private?}.any?
+        return Visualization::Member::PRIVACY_LINK if tables.map{|t| t.storage.public_with_link_only?}.any?
+        Visualization::Member::PRIVACY_PUBLIC
       end
 
       private

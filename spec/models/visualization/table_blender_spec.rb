@@ -1,8 +1,14 @@
 # encoding: utf-8
 require_relative '../../../app/models/visualization/table_blender'
+require 'mocha'
 
 include CartoDB::Visualization
 
+RSpec.configure do |config|
+  config.mock_with :mocha
+end
+
+# TODO this file cannot be executed in isolation
 describe TableBlender do
   describe '#blend' do
     it 'returns a map with layers from the passed tables' do
@@ -10,6 +16,8 @@ describe TableBlender do
     end
   end #blend
 
+  # TODO test too coupled with implementation outside blender
+  # refactor once Privacy is extracted
   describe '#blended_privacy' do
     it 'returns private if any of all tables is private' do
       user   = Object.new
@@ -30,14 +38,20 @@ describe TableBlender do
 
 
   def fake_public_table
-    table = Object.new
-    def table.privacy_text; 'PUBLIC'; end
+    storage = mock
+    storage.stubs(:private?).returns(false)
+    storage.stubs(:public_with_link_only?).returns(false)
+    table = mock
+    table.stubs(:storage).returns(storage)
     table
   end #fake_public_table
 
   def fake_private_table
-    table = Object.new
-    def table.privacy_text; 'PRIVATE'; end
+    storage = mock
+    storage.stubs(:private?).returns(true)
+    storage.stubs(:public_with_link_only?).returns(false)
+    table = mock
+    table.stubs(:storage).returns(storage)
     table
   end #fake_private_table
 end # TableBlender

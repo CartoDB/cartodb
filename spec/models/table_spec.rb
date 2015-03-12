@@ -1749,11 +1749,11 @@ describe Table do
       table.save.reload
 
       ['borders', 'polygons', 'spain', 'countries'].each do |query|
-        tables = Table.search(query)
+        tables = TableStorage.search(query)
         tables.should_not be_empty
         tables.first.id.should == table.id
       end
-      tables = Table.search("wadus")
+      tables = TableStorage.search("wadus")
       tables.should be_empty
     end
 
@@ -1764,20 +1764,20 @@ describe Table do
       table.storage.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
       table.save.reload
 
-      tables = Table.search("eur")
+      tables = TableStorage.search("eur")
       tables.should_not be_empty
       tables.first.id.should == table.id
     end
   end
 
-  describe 'Table.multiple_order' do
+  describe 'TableStorage.multiple_order' do
     it 'returns sorted records' do
       table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
       table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
 
-      Table.search('bogus').multiple_order(name: 'asc')
+      TableStorage.search('bogus').multiple_order(name: 'asc')
         .to_a.first.name.should == 'bogus_table_1'
-      Table.search('bogus').multiple_order(name: 'desc')
+      TableStorage.search('bogus').multiple_order(name: 'desc')
         .to_a.first.name.should == 'bogus_table_2'
     end
   end # Table.multiple_order

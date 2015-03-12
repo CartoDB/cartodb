@@ -113,6 +113,8 @@ $opacityTransition: 250ms;
   text-align: center;
   z-index: 2;
 }
+.DatasetsList-itemStatus.iconFont-Book { font-size: 12px }
+.DatasetsList-itemStatus.is-public { color: $cHighlight-positive }
 .DatasetsList-itemStatus.is-failure { color: $cHighlight-negative }
 .DatasetsList-itemStatus.is-success { color: $cHighlight-positive }
 .DatasetsList-itemInfo {

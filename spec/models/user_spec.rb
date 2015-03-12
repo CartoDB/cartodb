@@ -526,7 +526,7 @@ describe User do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => TableStorage::PRIVACY_PUBLIC
     @user2.reload
-    @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
+    @user2.tables.all.should == [TableStorage.first(:user_id => @user2.id)]
   end
 
   it "should generate a data report"
@@ -537,7 +537,7 @@ describe User do
     expect { create_table :user_id => @user2.id, :privacy => TableStorage::PRIVACY_PUBLIC }
       .to change { @user2.remaining_table_quota }.by(-1)
 
-    table = Table.filter(:user_id => @user2.id).first
+    table = Table.new(table_storage: TableStorage.filter(:user_id => @user2.id).first)
     50.times { |i| table.insert_row!(:name => "row #{i}") }
 
     @user2.remaining_quota.should be < initial_quota
@@ -851,7 +851,7 @@ describe User do
                       :data_source => '/../db/fake_data/clubbing.csv').run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
-    uuid      = Table.where(id: table_id).first.table_visualization.id
+    uuid      = TableStorage.where(id: table_id).first.table_visualization.id
 
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{doomed_user.database_name}.*")
@@ -868,7 +868,7 @@ describe User do
     doomed_user.destroy
 
     DataImport.where(:user_id => doomed_user.id).count.should == 0
-    Table.where(:user_id => doomed_user.id).count.should == 0
+    TableStorage.where(:user_id => doomed_user.id).count.should == 0
     Layer.db["SELECT * from layers_users WHERE user_id = '#{doomed_user.id}'"].count.should == 0
   end
 

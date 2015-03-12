@@ -5,7 +5,7 @@ require 'ruby-debug'
 describe Geocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
-    @table = FactoryGirl.create(:table, user_id: @user.id)
+    @table = FactoryGirl.create(:table_storage, user_id: @user.id)
   end
 
   before(:each) do

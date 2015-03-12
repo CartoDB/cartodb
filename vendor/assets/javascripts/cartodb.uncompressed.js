@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.11
+// cartodb.js version: 3.12.12
 // uncompressed version: cartodb.uncompressed.js
-// sha: b5def4c653d9d33c24ff47eb29766c56a3c07b43
+// sha: 8b3466848d4083c63f3b4216128de59c187c8d27
 (function() {
   var root = this;
 
@@ -20753,7 +20753,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.12.11";
+    cdb.VERSION = "3.12.12";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -34440,6 +34440,10 @@ cdb.vis.Vis = Vis;
     },
 
     _getTorqueLayerDefinition: function(layer_definition) {
+
+      if (layer_definition.options.named_map) { // If the layer contains a named map inside, use it instead
+        return this._getNamedmapLayerDefinition(layer_definition);
+      }
 
       var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 

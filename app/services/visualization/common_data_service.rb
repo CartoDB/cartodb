@@ -18,6 +18,7 @@ module CartoDB
         added = 0
         updated = 0
         not_modified = 0
+        deleted = 0
         failed = 0
 
         Rollbar.report_message('common data', 'debug', {
@@ -32,7 +33,7 @@ module CartoDB
         }
         @datasets.each do |d|
           begin
-            visualization = remotes_by_name[d['name']]
+            visualization = remotes_by_name.delete(d['name'])
             if visualization
               if visualization.update_remote_data(
                   Member::PRIVACY_PUBLIC,
@@ -63,26 +64,37 @@ module CartoDB
           end
         end
 
-        return added, updated, not_modified, failed
+        remotes_by_name.each { |name, remote|
+          deleted += 1 if delete_remote_visualization(remote)
+        }
+
+        return added, updated, not_modified, deleted, failed
       end
 
       def delete_common_data_for_user(user)
         Collection.new.fetch({type: 'remote', user_id: user.id}).map do |v|
-          begin
-            ExternalSource.where(visualization_id: v.id).delete
-            v.delete
-          rescue Sequel::DatabaseError => e
-            match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
-            if match.present? && match >= 0
-              puts "Couldn't delete #{v.id} visualization because it's been imported"
-            else
-              raise e
-            end
-          end
+          delete_remote_visualization(v)
         end
       end
 
       private
+
+      def delete_remote_visualization(visualization)
+        begin
+          ExternalSource.where(visualization_id: visualization.id).delete
+          visualization.delete
+          true
+        rescue Sequel::DatabaseError => e
+          match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
+          if match.present? && match >= 0
+            # TODO: "mark as deleted" or similar to disable old, imported visualizations
+            puts "Couldn't delete #{visualization.id} visualization because it's been imported"
+            false
+          else
+            raise e
+          end
+        end
+      end
 
     end
 

@@ -684,7 +684,7 @@ class Table
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  @table_storage.description,
-      tags:         (@table_torage.tags.split(',') if @table_storage.tags),
+      tags:         (@table_storage.tags.split(',') if @table_storage.tags),
       privacy:      TableStorage::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
       kind:         kind

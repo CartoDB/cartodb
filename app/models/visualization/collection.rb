@@ -142,20 +142,21 @@ module CartoDB
 
       # Warning, this is a cached count, do not use if adding/removing collection items
       # @throws KeyError
-      def total_shared_entries(raise_on_error = false)
+      def total_shared_entries(type = nil)
         total = 0
         unless @unauthenticated_flag
           if @user_id.nil? && raise_on_error
             raise KeyError.new("Can't retrieve shared count without specifying user id")
           else
-            total = user_shared_entities_count + organization_shared_entities_count
+            total = user_shared_entities_count(type) + organization_shared_entities_count(type)
           end
         end
         total
       end
 
       # @throws KeyError
-      def total_liked_entries(raise_on_error = false)
+      def total_liked_entries(type = nil)
+        type ||= @type
         if @user_id.nil?
           if raise_on_error
             raise KeyError.new("Can't retrieve likes count without specifying user id")
@@ -165,9 +166,9 @@ module CartoDB
         end
 
         if @unauthenticated_flag
-          @type.nil? ? unauthenticated_likes_without_type : unauthenticated_likes_with_type
+          unauthenticated_likes(type)
         else
-          @type.nil? ? authenticated_likes_without_type : authenticated_likes_with_type
+          authenticated_likes(type)
         end
       end
 
@@ -178,45 +179,26 @@ module CartoDB
       attr_reader :collection
 
       # noinspection RubyArgCount
-      def unauthenticated_likes_without_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
+      def unauthenticated_likes(type)
+        options = { :id.cast(:uuid) => :subject,
               :user_id => @user_id,
-              :privacy => Visualization::Member::PRIVACY_PUBLIC)
+              :privacy => Visualization::Member::PRIVACY_PUBLIC }
+        options.merge!({:type => type}) if type
+
+        CartoDB::Like.select(:subject)
+        .join(:visualizations, options)
         .distinct
         .count
       end
 
       # noinspection RubyArgCount
-      def unauthenticated_likes_with_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id,
-              :privacy => Visualization::Member::PRIVACY_PUBLIC,
-              :type => @type)
-        .distinct
-        .count
-      end
+      def authenticated_likes(type)
+        options = { :id.cast(:uuid) => :subject,
+              :user_id => @user_id }
+        options.merge!({:type => type}) if type
 
-      # noinspection RubyArgCount
-      def authenticated_likes_without_type
         CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id)
-        .distinct
-        .count
-      end
-
-      # noinspection RubyArgCount
-      def authenticated_likes_with_type
-        CartoDB::Like.select(:subject)
-        .join(:visualizations,
-              :id.cast(:uuid) => :subject,
-              :user_id => @user_id,
-              :type => @type)
+        .join(:visualizations, options)
         .distinct
         .count
       end
@@ -239,23 +221,25 @@ module CartoDB
         end
       end
 
-      def user_shared_entities_count
+      def user_shared_entities_count(type = nil)
+        type ||= @type
         user_shared_count = CartoDB::SharedEntity.select(:entity_id)
         .where(:recipient_id => @user_id,
                :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
                :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
-        if @type.nil?
+        if type.nil?
           user_shared_count = user_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id)
         else
           user_shared_count = user_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id,
-                                                     :type => @type)
+                                                     :type => type)
         end
         user_shared_count.count
       end
 
-      def organization_shared_entities_count
+      def organization_shared_entities_count(type)
+        type ||= @type
         user = User.where(id: @user_id).first
         if user.nil? || user.organization.nil?
           0
@@ -264,13 +248,13 @@ module CartoDB
           .where(:recipient_id => user.organization_id,
                  :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
                  :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
-          if @type.nil?
+          if type.nil?
             org_shared_count = org_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id)
           else
             org_shared_count = org_shared_count.join(:visualizations,
                                                      :visualizations__id.cast(:uuid) => :entity_id,
-                                                     :type => @type)
+                                                     :type => type)
           end
           org_shared_count.count
         end

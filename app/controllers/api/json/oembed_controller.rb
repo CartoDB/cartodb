@@ -109,11 +109,12 @@ class Api::Json::OembedController < Api::ApplicationController
   # https://cartodb.com/u/testuser/...
   def from_domainless_url(url_fragments, raise_on_error=true)
     # url_data[5]: Path
-    if url_data[5][0..2] == "/u/"
-      username = url_data[5].split('/')[2]
-      user_profile_url = "#{protocol}://#{url_data[2]}/u/#{username}"
-      organization_name = url_data[2].sub(session_domain, '.').split
-      organization_name = url_data[2].split('.')[0]
+    if url_fragments[5][0..2] == "/u/"
+      path_fragments = url_fragments[5].split('/')
+      username = path_fragments[2]
+      user_profile_url = "#{protocol}://#{url_fragments[2]}/u/#{username}"
+      organization_name = url_fragments[2].sub(session_domain, '.').split
+      organization_name = url_fragments[2].split('.')[0]
     else
       raise "URL needs username specified in the Path" if raise_on_error
     end

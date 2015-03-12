@@ -149,7 +149,13 @@ describe CartoDB do
       CartoDB.base_url(orgname, username, protocol_override_https)
         .should eq "#{protocol_override_https}://#{expected_session_domain}#{expected_http_port}"
 
+      CartoDB.unstub(:use_https?)
+      CartoDB.expects(:use_https?).times(2).returns(true)
 
+      CartoDB.base_url(username, nil, nil).should eq "https://#{expected_session_domain}#{expected_http_port}"
+
+      CartoDB.base_url(username, nil, protocol_override_http)
+        .should eq "#{protocol_override_http}://#{expected_session_domain}#{expected_http_port}"
     end
 
   end

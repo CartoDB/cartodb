@@ -34,6 +34,10 @@
   @include justify-content(flex-start, start);
   padding: 10px 0;
 }
+.Form-row.Form-row--centered {
+  @include justify-content(center, center);
+  margin-left: -140px;
+}
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
 .Form-rowLabel {
   width: 140px;

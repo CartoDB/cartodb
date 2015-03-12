@@ -1788,9 +1788,9 @@ describe Table do
       table.name = 'awesome name'
       table.save.reload
 
-      Table.find_by_identifier(@user.id, table.name).id.should == table.id
+      TableStorage.find_by_identifier(@user.id, table.name).id.should == table.id
       lambda {
-        Table.find_by_identifier(666, table.name)
+        TableStorage.find_by_identifier(666, table.name)
       }.should raise_error
     end
   end

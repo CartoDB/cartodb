@@ -136,6 +136,7 @@ class TableStorage < Sequel::Model(:user_tables)
     PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end
 
+  # TODO move privacy to value object
   # enforce standard format for this field
   def privacy=(value)
     case value
@@ -162,6 +163,11 @@ class TableStorage < Sequel::Model(:user_tables)
     self.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
+  # TODO move tags to value object. A set is more appropriate
+  def tags=(value)
+    return unless value
+    self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
+  end
 
   # --------------------------------------------------------------------------------
   private

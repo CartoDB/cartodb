@@ -853,11 +853,6 @@ class Table
     @table_storage[:name] = new_name
   end
 
-  def tags=(value)
-    return unless value
-    self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
-  end
-
   def private?
     @table_storage.private?
   end
@@ -1699,10 +1694,10 @@ class Table
   end
 
   def manage_tags
-    if self[:tags].blank?
+    if @table_storage[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
     else
-      tag_names = tags.split(',')
+      tag_names = @table_storage.tags.split(',')
       table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
       unless table_tags.empty?
         # Remove tags that are not in the new names list

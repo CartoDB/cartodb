@@ -694,16 +694,16 @@ describe Table do
       tag3.user_id.should  == @user.id
       tag3.table_id.should == table.id
 
-      table.tags = "tag 1"
-      table.save_changes
+      table.storage.tags = "tag 1"
+      table.storage.save_changes
 
       Tag.count.should == 1
       tag1 = Tag[:name => 'tag 1']
       tag1.user_id.should  == @user.id
       tag1.table_id.should == table.id
 
-      table.tags = "    "
-      table.save_changes
+      table.storage.tags = "    "
+      table.storage.save_changes
       Tag.count.should == 0
     end
 

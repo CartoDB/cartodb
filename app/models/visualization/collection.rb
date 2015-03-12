@@ -332,6 +332,7 @@ module CartoDB
       def apply_filters(dataset, filters)
         @type = filters.fetch(:type, nil)
         dataset = repository.apply_filters(dataset, filters, AVAILABLE_FIELD_FILTERS)
+        dataset = filter_by_types(dataset, filters.fetch(:types, nil))
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
@@ -407,6 +408,12 @@ module CartoDB
         else
           order_by_base_attribute(dataset, criteria)
         end
+      end
+
+      def filter_by_types(dataset, types = nil)
+        return dataset if types.nil? || types == ''
+        types_array = types.is_a?(String) ? types.split(',') : types
+        dataset.where(:type => types_array)
       end
 
       def filter_by_tags(dataset, tags=[])

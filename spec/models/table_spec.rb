@@ -1745,7 +1745,7 @@ describe Table do
       table = Table.new
       table.user_id = @user.id
       table.name = "clubbing_spain_1_copy"
-      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
+      table.storage.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
       table.save.reload
 
       ['borders', 'polygons', 'spain', 'countries'].each do |query|
@@ -1761,7 +1761,7 @@ describe Table do
       table = Table.new
       table.user_id = @user.id
       table.name = "european_countries_1"
-      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
+      table.storage.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
       table.save.reload
 
       tables = Table.search("eur")

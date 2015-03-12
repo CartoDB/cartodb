@@ -30,30 +30,36 @@ class DataImport < Sequel::Model
   attr_accessor   :log, :results
 
   # @see store_results() method also when adding new fields
-  PUBLIC_ATTRIBUTES = %W{
-    id
-    user_id
-    table_id
-    data_type
-    table_name
-    state
-    error_code
-    queue_id
-    get_error_text
-    tables_created_count
-    synchronization_id
-    service_name
-    service_item_id
-    type_guessing
-    quoted_fields_guessing
-    content_guessing
-    server
-    host
-    upload_host
-    resque_ppid
-    create_visualization
-    visualization_id
-  }
+  PUBLIC_ATTRIBUTES = [
+    'id',
+    'user_id',
+    'table_id',
+    'data_type',
+    'table_name',
+    'state',
+    'error_code',
+    'queue_id',
+    'get_error_text',
+    'tables_created_count',
+    'synchronization_id',
+    'service_name',
+    'service_item_id',
+    'type_guessing',
+    'quoted_fields_guessing',
+    'content_guessing',
+    'server',
+    'host',
+    'upload_host',
+    'resque_ppid',
+    'create_visualization',
+    'visualization_id',
+    # String field containing a json, format:
+    # {
+    #   twitter_credits: Integer
+    # }
+    # No automatic conversion coded
+    'user_defined_limits'
+  ]
 
   # Not all constants are used, but so that we keep track of available states
   STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
@@ -687,7 +693,11 @@ class DataImport < Sequel::Model
       oauth = current_user.oauths.select(datasource_name)
       # Tables metadata DB also store resque data
       datasource = DatasourcesFactory.get_datasource(
-        datasource_name, current_user, { redis_storage: $tables_metadata })
+        datasource_name, current_user, {
+                                          redis_storage: $tables_metadata,
+
+                                          user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
+                                       })
       datasource.report_component = Rollbar
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex

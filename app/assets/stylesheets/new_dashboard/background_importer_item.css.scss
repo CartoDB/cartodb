@@ -21,7 +21,6 @@
   white-space: nowrap;
   overflow: hidden;
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
 .ImportItem-textState {
@@ -45,7 +44,7 @@
   width: 24px;
   height: 24px;
   line-height: 24px;
-  border: 1px solid #CCC;
+  border: 1px solid $cNavButton-default;
   border-radius: 22px;
   text-align: center;
   background: transparent;
@@ -56,8 +55,8 @@
   color: $cTypography-help;
 }
 .ImportItem-closeButton:hover {
-  border-color: $cTypography-secondary;
-  .ImportItem-closeButtonIcon { color: $cTypography-secondary }
+  border-color: $cNavButton-active;
+  .ImportItem-closeButtonIcon { color: $cNavButton-active }
 }
 .ImportItem-showButton {
   height: 24px;
@@ -68,7 +67,7 @@
   border-radius: 40px;
   font-size: $sFontSize-smallUpperCase;
   color: $cTypography-paragraphs;
-  
+
   &:hover {
     border-color: $cTypography-paragraphs;
     color: $cTypography-paragraphs;

@@ -1,4 +1,32 @@
-3.8.1 (2015-02-xx)
+3.9.0 (2015-02-xx)
+------------------
+* New user account & profile management pages, inside CartoDB Editor.
+* Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
+* Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package
+* Added Hubspot for usage statistics [#2575](https://github.com/CartoDB/cartodb/pull/2575)
+* Updates cartodb.js to 3.12.11
+* Fixes update table as statements from the editor #2620
+* Fixes the showing of map previews in the delete items dialog #2639
+* New organization pages done
+* Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
+* Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
+
+Bugfixes:
+* Fix layer refresh when the method of a density visualization changes [#2673](https://github.com/CartoDB/cartodb/issues/2673)
+* Fixes an error that preventing the load of WMS layers.
+* Fixes an unncessary binding that made the dashboard reloading twice.
+* Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)
+* Fix new dashboard URLs creation [#2662](https://github.com/CartoDB/cartodb/pull/2662)
+* Redirect to list on delete table vis [#2697](https://github.com/CartoDB/cartodb/pull/2697)
+* Fix account settings order [#2700](https://github.com/CartoDB/cartodb/pull/2700)
+* Fix geocoding by Lon/Lat: refresh the table [#2699](https://github.com/CartoDB/cartodb/pull/2699)
+* Fix multiuser quota is not well calculated in multiuser dashboard [#2722](https://github.com/CartoDB/cartodb/pull/2722)
+* Fix new public pagination [#2716](https://github.com/CartoDB/cartodb/pull/2716)
+* Fix contrast for nav buttons [#2696](https://github.com/CartoDB/cartodb/pull/2696)
+* Fix top/bottom padding for delete dialog [#2721](https://github.com/CartoDB/cartodb/pull/2721)
+* Fix filters view's search component behavior [#2708](https://github.com/CartoDB/cartodb/pull/2708)
+
+3.8.1 (2015-02-26)
 ------------------
 * Added config for basemaps [#1954], see
   [documentation](https://github.com/CartoDB/cartodb/wiki/How-to-configure-basemaps-in-CartoDB)
@@ -32,6 +60,7 @@
 * Added back Twitter import for new create dialog.
 * Adds random quotes in the loading screens.
 * Improved speed in dashboard caching frontend side [#2465](https://github.com/CartoDB/cartodb/pull/2465)
+* Add user_defined_limits to DataImport, and the feature of imports to support certain user defined limits. Currently only used for `twitter_credits_limit` at importer create endpoint.
 * Improve new pagination [#2529](https://github.com/CartoDB/cartodb/pull/2529)
 
 Bugfixes:
@@ -39,6 +68,9 @@ Bugfixes:
 * Pressing enter when deleting a table opens a new modal [#2126](https://github.com/CartoDB/cartodb/pull/2126)
 * Deselect all doesn't work [#2341](https://github.com/CartoDB/cartodb/issues/2341)
 * Fixes for new dashboard texts [#2499](https://github.com/CartoDB/cartodb/pull/2499)
+* Fixes a problem generating images from private visualizations of private org users.
+* Remove lighter font weights [#2513](https://github.com/CartoDB/cartodb/pull/2513)
+* Fix quota usage rounding [#2561](https://github.com/CartoDB/cartodb/pull/2561)
 
 3.8.0 (2015-01-30)
 ------------------
@@ -285,7 +317,7 @@ Bugfixes:
   * Several minor improvements
 
 * Fixed bugs
-  * Security fix regarding Typhoeus library  
+  * Security fix regarding Typhoeus library
   * Several minor bugs
 
 * Migration Type (see UPGRADE): Mandatory migration

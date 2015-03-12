@@ -51,6 +51,7 @@ defaults: &defaults
   trackjs:
     enabled: false
     customer: ''
+  hubspot: ''
   common_data:
        protocol: 'https'
        username: ''

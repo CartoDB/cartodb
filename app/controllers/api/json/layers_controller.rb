@@ -1,6 +1,7 @@
 # coding: UTF-8
 require_relative '../../../models/layer/presenter'
 require_relative '../../../models/visualization/member'
+require_relative '../../../models/visualization/collection'
 
 class Api::Json::LayersController < Api::ApplicationController
 

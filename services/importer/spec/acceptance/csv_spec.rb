@@ -118,6 +118,14 @@ describe 'csv regression tests' do
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
   end
 
+  it 'imports files with invalid the_geom but previous valid geometry column (see #2108)' do
+    runner = runner_with_fixture('invalid_the_geom_valid_wkb_geometry.csv')
+    runner.run
+    
+    result = runner.results.first
+    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+  end
+
   it 'import big row files' do
     runner = runner_with_fixture('big_row.csv')
     runner.run

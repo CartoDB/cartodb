@@ -13,7 +13,8 @@ module CartoDB
       {
           id:         user.id,
           username:   user.username,
-          avatar_url: user.avatar_url
+          avatar_url: user.avatar_url,
+          base_url:   user.public_url
       }
     end
 

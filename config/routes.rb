@@ -7,7 +7,7 @@
 
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
-  root :to => 'admin/pages#public'
+  root :to => 'admin/pages#index'
 
   get   '(/u/:user_domain)/login'           => 'sessions#new',     as: :login
   get   '(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
@@ -33,11 +33,19 @@ CartoDB::Application.routes.draw do
     get    '(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
     put    '(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
     # Organization users management
-    get    '(/u/:user_domain)/organization/users/:id/edit'  => 'users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
-    put    '(/u/:user_domain)/organization/users/:id'       => 'users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
-    post   '(/u/:user_domain)/organization/users'           => 'users#create',  as: :create_organization_user
-    delete '(/u/:user_domain)/organization/users/:id'       => 'users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
-    get    '(/u/:user_domain)/organization/users/new'       => 'users#new',     as: :new_organization_user
+    get    '(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
+    put    '(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    post   '(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
+    delete '(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    get    '(/u/:user_domain)/organization/users/new'       => 'organization_users#new',     as: :new_organization_user
+
+    # User profile and account pages
+    get    '(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
+    put    '(/u/:user_domain)/profile' => 'users#profile_update', as: :profile_update_user
+    get    '(/u/:user_domain)/account' => 'users#account',        as: :account_user
+    delete '(/u/:user_domain)/account' => 'users#delete',        as: :account_user
+    put    '(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
+    delete '(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
 
     # search
     get '(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
@@ -210,6 +218,7 @@ CartoDB::Application.routes.draw do
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
+    get '(/u/:user_domain)/maps'                     => 'pages#public', as: :public_maps_home
     get '(/u/:user_domain)/page/:page'               => 'pages#public', as: :public_page
     get '(/u/:user_domain(/page/:page))'             => 'pages#public', as: :public_page_alt
     get '(/u/:user_domain)/tag/:tag'                 => 'pages#public', as: :public_tag
@@ -219,7 +228,7 @@ CartoDB::Application.routes.draw do
     get '(/u/:user_domain)/datasets/page/:page'      => 'pages#datasets', as: :public_datasets_page
     get '(/u/:user_domain)/datasets/tag/:tag'        => 'pages#datasets', as: :public_datasets_tag
     get '(/u/:user_domain)/datasets/tag/:tag/:page'  => 'pages#datasets', as: :public_datasets_tag_page
-    get '/sitemap.xml'              => 'pages#sitemap',  as: :public_sitemap
+    get '/sitemap.xml'                               => 'pages#sitemap',  as: :public_sitemap
     # Public tables
     get '(/u/:user_domain)/tables/:id/'              => 'visualizations#show',            as: :public_tables_show,      constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     get '(/u/:user_domain)/tables/:id'               => 'visualizations#show',            as: :public_tables_show_bis,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.9
+// cartodb.js version: 3.12.12
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2827a7a2fec25915afc0d3a47db73726a83eb1bc
+// sha: 8b3466848d4083c63f3b4216128de59c187c8d27
 (function() {
   var root = this;
 
@@ -20753,7 +20753,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.12.00";
+    cdb.VERSION = "3.12.12";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28179,18 +28179,21 @@ Map.prototype = {
   },
 
   _host: function(subhost) {
+
     var opts = this.options;
-    if (opts.no_cdn) {
+    var cdn_host = opts.cdn_url;
+    var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
+
+    if (opts.no_cdn || has_empty_cdn) {
       return this._tilerHost();
     } else {
+
       var h = opts.tiler_protocol + "://";
+
       if (subhost) {
         h += subhost + ".";
       }
-      var cdn_host = opts.cdn_url || cdb.CDB_HOST;
-      if(!cdn_host.http && !cdn_host.https) {
-        throw new Error("cdn_host should contain http and/or https entries");
-      }
+
       h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
       return h;
     }
@@ -34285,7 +34288,12 @@ cdb.vis.Vis = Vis;
 
         }
 
-        var layers = [ this._getBasemapLayer() ];
+        var layers = [];
+        var basemap = this._getBasemapLayer();
+
+        if (basemap) {
+          layers.push(basemap);
+        }
 
         for (var i = 1; i < data.layers.length; i++) {
 
@@ -34379,10 +34387,16 @@ cdb.vis.Vis = Vis;
 
     _getHTTPBasemapLayer: function(basemap) {
 
+      var urlTemplate = basemap.options.urlTemplate;
+
+      if (!urlTemplate) {
+        return null;
+      }
+
       return {
         type: "http",
         options: {
-          urlTemplate: basemap.options.urlTemplate,
+          urlTemplate: urlTemplate,
           subdomains: basemap.options.subdomains || this.defaults.basemap_subdomains
         }
       };
@@ -34426,6 +34440,10 @@ cdb.vis.Vis = Vis;
     },
 
     _getTorqueLayerDefinition: function(layer_definition) {
+
+      if (layer_definition.options.named_map) { // If the layer contains a named map inside, use it instead
+        return this._getNamedmapLayerDefinition(layer_definition);
+      }
 
       var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 

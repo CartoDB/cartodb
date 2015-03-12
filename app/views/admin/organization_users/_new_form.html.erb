@@ -109,11 +109,14 @@
     <div class="Form-rowLabel">
       <label class="Form-label">Extra geocoding</label>
     </div>
-    <div class="Form-rowData">
+    <div class="Form-rowData Form-rowData--med">
       <div class="Toggler">
         <%= f.check_box :soft_geocoding_limit, :id => "soft_geocoding_limit" %>
         <%= label_tag(:soft_geocoding_limit, '') %>
       </div>
+    </div>
+    <div class="Form-rowInfo">
+      <p class="Form-rowInfoText">User will be able to exceed geocodings organization quota</p>
     </div>
   </div>
 
@@ -121,11 +124,14 @@
     <div class="Form-rowLabel">
       <label class="Form-label">Extra tweets</label>
     </div>
-    <div class="Form-rowData">
+    <div class="Form-rowData Form-rowData--med">
       <div class="Toggler">
         <%= f.check_box :soft_twitter_datasource_limit, :id => "soft_twitter_datasource_limit" %>
         <%= label_tag(:soft_twitter_datasource_limit, '') %>
       </div>
+    </div>
+    <div class="Form-rowInfo">
+      <p class="Form-rowInfoText">User will be able to exceed Twitter organization credits</p>
     </div>
   </div>
 

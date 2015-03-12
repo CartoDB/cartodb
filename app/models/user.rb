@@ -391,6 +391,8 @@ class User < Sequel::Model
 
     return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
 
+    self.last_password_change_date = Time.zone.now unless new?
+
     self.password = new_password_value
   end
 

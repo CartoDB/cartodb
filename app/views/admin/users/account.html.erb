@@ -45,7 +45,7 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
+            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' if !@user.can_change_email }", :readonly => !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
             <% if (@user.errors[:email].present?) %>
@@ -96,6 +96,11 @@
         </div>
 
         <div class="Form-footer">
+          <% if @google_plus_config.present? %>
+            <%= render partial: 'google_plus/google_plus_disconnect_button',  locals: { config: @google_plus_config } %>
+          <% end %>
+
+
           <p class="Form-footerText"></p>
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
             <% content_tag(:span, 'Save changes') %>

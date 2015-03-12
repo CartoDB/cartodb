@@ -76,10 +76,9 @@
                 </div>
               </div>
 
-              <% if @user.google_sign_in && @google_plus_config.present? %>
+              <% if @google_plus_config.present? %>
                 <div class="row" id="google_row">
                   <div class="field">
-                    <label>GOOGLE+ ACCOUNT</label>
                     <%= render partial: 'google_plus/google_plus_disconnect_button',  locals: { config: @google_plus_config } %>
                   </div>
                 </div>

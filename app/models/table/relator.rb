@@ -87,7 +87,7 @@ module CartoDB
               WHERE relname = ?
             },
             @table.owner.database_schema,
-            @table_storage.name
+            @table.storage.name
           ).first
       rescue => exception
         data = nil

@@ -6,12 +6,14 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
 require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 class Table < Sequel::Model(:user_tables)
@@ -568,6 +570,15 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
+
+      decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
+      if !decorator.nil? && decorator.decorates_layer?
+        self.map.layers.each do |layer|
+          decorator.decorate_layer!(layer)
+          layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
+        end
+      end
+
       if @data_import.create_visualization
         @data_import.visualization_id = self.create_derived_visualization.id
         @data_import.save

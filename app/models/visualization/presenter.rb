@@ -93,15 +93,15 @@ module CartoDB
 
       def table_data_for(table=nil, permission = nil)
         return {} unless table
-        table_name = table.name
+        table_name = table.storage.name
         unless @viewing_user.nil?
           unless @visualization.is_owner?(@viewing_user)
-            table_name = "#{@visualization.user.sql_safe_database_schema}.#{table.name}"
+            table_name = "#{@visualization.user.sql_safe_database_schema}.#{table.storage.name}"
           end
         end
 
         table_data = {
-          id:           table.id,
+          id:           table.storage.id,
           name:         table_name,
           permission:   nil
         }
@@ -109,7 +109,7 @@ module CartoDB
         unless table_visualization.nil?
           table_data[:permission] = (!permission.nil? && table_visualization.id == permission.entity_id) ?
                                       permission.to_poro : table_visualization.permission.to_poro
-          table_data[:geometry_types] = table.service.geometry_types
+          table_data[:geometry_types] = table.geometry_types
         end
 
         table_data.merge!(

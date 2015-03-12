@@ -863,7 +863,6 @@ describe User do
       .with(".*#{uuid}:vizjson")
       .times(2 + 5)
       .returns(true)
-    Table.any_instance.expects(:delete_tile_style).returns(true)
 
     doomed_user.destroy
 

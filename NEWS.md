@@ -12,6 +12,7 @@
 * Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
 
 Bugfixes:
+* Fix layer refresh when the method of a density visualization changes [#2673](https://github.com/CartoDB/cartodb/issues/2673)
 * Fixes an error that preventing the load of WMS layers.
 * Fixes an unncessary binding that made the dashboard reloading twice.
 * Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)

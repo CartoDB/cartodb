@@ -866,7 +866,7 @@ class Table
   end
 
   def set_default_table_privacy
-    @table_storage.privacy ||= default_privacy_values
+    @table_storage.privacy ||= default_privacy_value
     save
   end
 

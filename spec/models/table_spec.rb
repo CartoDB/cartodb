@@ -1841,7 +1841,7 @@ describe Table do
       table = Table.new
 
       # A user who can create private tables has by default private tables
-      table.default_privacy_values.should eq ::TableStorage::PRIVACY_PRIVATE
+      table.default_privacy_value.should eq ::TableStorage::PRIVACY_PRIVATE
 
       table.user_id = UUIDTools::UUID.timestamp_create.to_s
       table.privacy = TableStorage::PRIVACY_PUBLIC
@@ -1877,7 +1877,7 @@ describe Table do
 
       table = Table.new
       # A user who cannot create private tables has by default public
-      table.default_privacy_values.should eq ::TableStorage::PRIVACY_PUBLIC
+      table.default_privacy_value.should eq ::TableStorage::PRIVACY_PUBLIC
 
     end
   end #validation_for_link_privacy

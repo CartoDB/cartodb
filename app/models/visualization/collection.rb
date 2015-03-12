@@ -335,7 +335,7 @@ module CartoDB
         applied_filters = AVAILABLE_FIELD_FILTERS.dup
         applied_filters = applied_filters.delete_if { |k, v| k == 'type' } if @type.nil?
         dataset = repository.apply_filters(dataset, filters, applied_filters)
-        dataset = filter_by_types(dataset, filters.fetch(:types, nil))
+        dataset = filter_by_types(dataset, filters.fetch('types', nil))
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))

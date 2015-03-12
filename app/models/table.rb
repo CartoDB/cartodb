@@ -223,7 +223,7 @@ class Table
     table = nil
     return table unless viewer_user
 
-    table_temp = Table.where(id: table_id).first
+    table_temp = TableStorage.where(id: table_id).first.service
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,

@@ -284,7 +284,7 @@ class Table
     table = vis.nil? ? nil : vis.table
 
     if rx.match(id_or_name) && table.nil?
-      table_temp = Table.where(id: id_or_name).first
+      table_temp = TableStorage.where(id: id_or_name).first.try(:service)
       unless table_temp.nil?
         # Make sure we're allowed to see the table
         vis = CartoDB::Visualization::Collection.new.fetch(

@@ -1269,7 +1269,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/twitters.csv' )
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
@@ -1302,7 +1302,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/csv_no_quotes.csv' )
       data_import.run_import!
 
-      table2 = Table[data_import.table_id]
+      table2 = Table.new(table_storage: TableStorage[data_import.table_id])
       table2.should_not be_nil, "Import failure: #{data_import.log}"
       table2.name.should == 'csv_no_quotes'
 
@@ -1346,7 +1346,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
       data_import.run_import!
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       table_schema = @user.in_database.schema(table.name)
@@ -1367,7 +1367,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       table.geometry_types.should == ['ST_Point']
@@ -1399,7 +1399,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
 
       schema = table.schema(:cartodb_types => true)
@@ -1679,7 +1679,7 @@ describe Table do
                                        :migrate_table => 'exttable')
       data_import.run_import!
 
-      table = Table[data_import.table_id]
+      table = Table.new(table_storage: TableStorage[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       table.name.should == 'exttable'
       table.rows_counted.should == 2
@@ -1711,7 +1711,7 @@ describe Table do
       # append_to_table doesn't automatically destroy the table
       append_this.destroy
 
-      Table[append_this.id].should == nil
+      TableStorage[append_this.id].should == nil
       table.name.should match(/^twitters/)
       table.rows_counted.should == 2005
     end

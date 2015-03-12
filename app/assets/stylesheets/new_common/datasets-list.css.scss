@@ -231,4 +231,13 @@ $opacityTransition: 250ms;
     @include justify-content(flex-end, end);
     margin-bottom: 0;
   }
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: 10px;
+    text-align: center;
+  }
+  .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
+  .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
+  .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
+  .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
 }

@@ -183,6 +183,7 @@
     expect(layerDefinition._host()).toEqual('http://rambo.cartodb.com:8081');
     expect(layerDefinition._host('0')).toEqual('http://rambo.cartodb.com:8081');
     layerDefinition.options.tiler_protocol = "https";
+    layerDefinition._buildMapsApiTemplate(layerDefinition.options);
     expect(layerDefinition._host()).toEqual('https://rambo.cartodb.com:8081');
     expect(layerDefinition._host('a')).toEqual('https://rambo.cartodb.com:8081');
   });

@@ -43,8 +43,8 @@ module ApplicationHelper
     end
   end
 
-  def sql_api_template
-      sql_api = Cartodb.config[:sql_api]["private"]
+  def sql_api_template(privacy="private")
+      sql_api = Cartodb.config[:sql_api][privacy]
       if CartoDB.subdomains_allowed?
         sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s + sql_api["endpoint"]
       else
@@ -52,8 +52,8 @@ module ApplicationHelper
       end
   end
 
-  def maps_api_template
-      maps_api = Cartodb.config[:maps_api]["private"]
+  def maps_api_template(privacy="private")
+      maps_api = Cartodb.config[:tiler][privacy]
       if CartoDB.subdomains_allowed?
         maps_api["protocol"] + "://{user}." + maps_api["domain"] + ":" + maps_api["port"].to_s
       else
@@ -63,9 +63,7 @@ module ApplicationHelper
 
   def frontend_config
     config = {
-      tiler_protocol:             Cartodb.config[:tiler]["private"]["protocol"],
-      tiler_port:                 Cartodb.config[:tiler]["private"]["port"],
-      tiler_domain:               Cartodb.config[:tiler]["private"]["domain"],
+      maps_api_template:          maps_api_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
@@ -110,9 +108,7 @@ module ApplicationHelper
 
   def frontend_config_public(options={ https_sql_api: false })
     config = {
-      tiler_protocol:      Cartodb.config[:tiler]["public"]["protocol"],
-      tiler_port:          Cartodb.config[:tiler]["public"]["port"],
-      tiler_domain:        Cartodb.config[:tiler]["public"]["domain"],
+      maps_api_template:   maps_api_template("public"),
       user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
       account_host:        CartoDB.account_host,
@@ -122,10 +118,7 @@ module ApplicationHelper
 
     # Assumption: it is safe to expose private SQL API endpoint (or it is the same just using HTTPS)
     sql_api_type = (options[:https_sql_api].present? && options[:https_sql_api]) ? 'private' : 'public'
-    config[:sql_api_protocol] = Cartodb.config[:sql_api][sql_api_type]['protocol']
-    config[:sql_api_domain]   = Cartodb.config[:sql_api][sql_api_type]['domain']
-    config[:sql_api_endpoint] = Cartodb.config[:sql_api][sql_api_type]['endpoint']
-    config[:sql_api_port]     = Cartodb.config[:sql_api][sql_api_type]['port']
+    config[:sql_api_template] =  sql_api_template(sql_api_type)
 
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']

@@ -3,7 +3,6 @@ require 'forwardable'
 require 'virtus'
 require 'json'
 require_relative '../markdown_render'
-require_relative './collection'
 require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
@@ -109,6 +108,30 @@ module CartoDB
           type: TYPE_REMOTE})
       end
 
+      def update_remote_data(privacy, description, tags, license, source)
+        changed = false
+        if self.privacy != privacy
+          changed = true
+          self.privacy = privacy
+        end
+        if self.description != description
+          changed = true
+          self.description = description
+        end
+        if self.tags != tags
+          changed = true
+          self.tags = tags
+        end
+        if self.license != license
+          changed = true
+          self.license = license
+        end
+        if self.source != source
+          changed = true
+          self.source = source
+        end
+        changed
+      end
 
       def transition_options
         ::JSON.parse(self.slide_transition_options).symbolize_keys
@@ -673,7 +696,7 @@ module CartoDB
           permission.clear
         end
 
-        if type == TYPE_CANONICAL
+        if type == TYPE_CANONICAL || type == TYPE_REMOTE
           if organization?
             save_named_map
           end

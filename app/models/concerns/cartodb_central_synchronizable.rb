@@ -23,11 +23,15 @@ module Concerns
 
     def delete_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
-        if self.organization.owner && self.organization.owner != self
-          cartodb_central_client.delete_organization_user(organization.name, username)
+      if self.is_a?(User)
+        if organization.nil?
+          cartodb_central_client.delete_user(self.username)
         else
-          raise "Can't destroy the organization owner"
+          if self.organization.owner && self.organization.owner != self
+            cartodb_central_client.delete_organization_user(organization.name, username)
+          else
+            raise "Can't destroy the organization owner"
+          end
         end
       end
       return true

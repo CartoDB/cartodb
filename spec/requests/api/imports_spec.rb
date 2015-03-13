@@ -334,6 +334,9 @@ describe "Imports API" do
     old_max_import_row_count = @user.max_import_table_row_count
     @user.update max_import_table_row_count: 2
 
+    # Internally uses reltuples from pg_class which is an estimation and non-deterministic so...
+    CartoDB::PlatformLimits::Importer::TableRowCount.any_instance.expects(:get).returns(5)
+
     post api_v1_imports_create_url,
          params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 

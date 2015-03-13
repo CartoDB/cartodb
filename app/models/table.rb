@@ -7,12 +7,14 @@ require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './table/table_storage'
 require_relative './visualization/member'
+require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
 require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 class Table
@@ -595,6 +597,15 @@ class Table
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
+
+      decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
+      if !decorator.nil? && decorator.decorates_layer?
+        self.map.layers.each do |layer|
+          decorator.decorate_layer!(layer)
+          layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
+        end
+      end
+
       if @data_import.create_visualization
         @data_import.visualization_id = self.create_derived_visualization.id
         @data_import.save
@@ -735,7 +746,6 @@ class Table
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    delete_tile_style
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
   end
@@ -1694,39 +1704,6 @@ class Table
         new_tag.save
       end
     end
-  end
-
-  def delete_tile_style
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/style?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
-  end
-
-  def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['internal']['domain']}"
-    port = Cartodb.config[:tiler]['internal']['port'] || 443
-    tiler_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? uri : Cartodb.config[:tiler]['internal']['host']
-    http_req = Net::HTTP.new tiler_ip, port
-    http_req.use_ssl = Cartodb.config[:tiler]['internal']['protocol'] == 'https' ? true : false
-    http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => uri}
-    case request_method
-      when 'GET'
-        http_res = http_req.request_get(request_uri, request_headers)
-      when 'POST'
-        http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
-      when 'DELETE'
-        extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
-      else
-        http_res = nil
-    end
-    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
-    http_res
   end
 
   def add_table_to_stats

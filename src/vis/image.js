@@ -113,6 +113,7 @@
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
       this.endPoint = "/api/v1/map";
+      this._buildMapsApiTemplate(this.options);
 
       this.options.layers = layerDefinition;
 
@@ -232,6 +233,8 @@
         this.options.tiler_protocol = "https";
         this.options.tiler_port     = 443;
       }
+
+      this._buildMapsApiTemplate(this.options);
 
     },
 

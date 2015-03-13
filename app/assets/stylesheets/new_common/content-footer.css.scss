@@ -6,7 +6,7 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  width: 100%;
+  width: $sLayout-width;
   padding: $sMargin-group 0;
   margin: 0 auto;  
 }
@@ -23,6 +23,40 @@
   font-size: $sFontSize-small;
   margin-right: $sMargin-min;
   color: $cTypography-help;
+}
+
+
+
+@media only screen and (max-width: 984px) {
+  .ContentFooter {
+    width: 640px;
+  }
+  .ContentFooter .Pagination {
+    padding: 0 20px;
+  }
+}
+
+@media (min-width: $sMedia-desktop) {
+  .ContentFooter {
+    width: $sLayout-width;
+  }
+}
+
+@media only screen and (max-width: $sMedia-tablet) {
+  .ContentFooter {
+    width: 100%;
+  }
+  .ContentFooter .Pagination {
+    padding: 0 20px;
+  }
+}
+@media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
+  .ContentFooter {
+    width: 100%;
+  }
+  .ContentFooter .Pagination {
+    padding: 0 20px;
+  }
 }
 
 @media (min-width: $sMedia-tablet) {

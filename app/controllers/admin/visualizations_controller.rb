@@ -217,7 +217,7 @@ class Admin::VisualizationsController < ApplicationController
     @user_domain = user_domain_variable(request)
 
     @public_tables_count    = @visualization.user.public_table_count
-    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::TableStorage::PRIVACY_PUBLIC }.count
+    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::UserTable::PRIVACY_PUBLIC }.count
 
     @is_liked    = is_liked(@visualization)
     @likes_count = @visualization.likes.count

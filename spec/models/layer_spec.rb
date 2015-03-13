@@ -289,7 +289,7 @@ describe Layer do
 
       derived.layers(:cartodb).length.should == 1
       derived.layers(:cartodb).first.uses_private_tables?.should be_true
-      @table.privacy = TableStorage::PRIVACY_PUBLIC
+      @table.privacy = UserTable::PRIVACY_PUBLIC
       @table.save
       @user.reload
 

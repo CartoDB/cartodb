@@ -5,7 +5,7 @@ require_relative '../models/table/table_storage'
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
-  one_to_many   :tables, class: ::TableStorage
+  one_to_many   :tables, class: ::UserTable
   many_to_one   :user
 
   many_to_many :layers, order: :order, after_add: proc { |map, layer| 
@@ -137,7 +137,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = ::TableStorage.filter(
+    related_table = ::UserTable.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id

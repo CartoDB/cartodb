@@ -81,7 +81,7 @@ module CartoDB
       def table
         return nil unless defined?(::Table)
         return nil if map_id.nil?
-        @table ||= ::TableStorage.where(map_id: map_id).first.try(:service)
+        @table ||= ::UserTable.where(map_id: map_id).first.try(:service)
       end
 
       def related_tables

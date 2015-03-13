@@ -202,7 +202,10 @@ class UserTable < Sequel::Model
 
   def name=(value)
     value = value.downcase if value
-    return if value == self[:name] || value.blank?
+    if value == self[:name] || value.blank?
+      @old_name = nil
+      return
+    end
     new_name = service.get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved

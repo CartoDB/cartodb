@@ -63,7 +63,7 @@
     @include justify-content(center);
   }
   .MapsList-item--fake {
-    display: none;
+    display: block;
   }
   .MapsList .MapsList-item {
     margin: 10px auto;
@@ -77,7 +77,7 @@
     @include justify-content(center);
   }
   .MapsList-item--fake {
-    display: none;
+    display: block;
   }
   .MapsList .MapsList-item {
     margin: 10px auto;

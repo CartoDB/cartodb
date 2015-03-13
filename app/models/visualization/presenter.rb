@@ -93,15 +93,15 @@ module CartoDB
 
       def table_data_for(table=nil, permission = nil)
         return {} unless table
-        table_name = table.storage.name
+        table_name = table.user_table.name
         unless @viewing_user.nil?
           unless @visualization.is_owner?(@viewing_user)
-            table_name = "#{@visualization.user.sql_safe_database_schema}.#{table.storage.name}"
+            table_name = "#{@visualization.user.sql_safe_database_schema}.#{table.user_table.name}"
           end
         end
 
         table_data = {
-          id:           table.storage.id,
+          id:           table.user_table.id,
           name:         table_name,
           permission:   nil
         }
@@ -114,7 +114,7 @@ module CartoDB
 
         table_data.merge!(
           privacy:      table.privacy_text_for_vizjson,
-          updated_at:   table.storage.updated_at
+          updated_at:   table.user_table.updated_at
         )
 
         table_data.merge!(table.row_count_and_size)

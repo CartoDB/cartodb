@@ -1164,9 +1164,9 @@ class User < Sequel::Model
           :new_table => t[:relname]
         })
         table = Table.new
-        table.storage.user_id  = self.id
-        table.storage.name     = t[:relname]
-        table.storage.table_id = t[:oid]
+        table.user_table.user_id  = self.id
+        table.user_table.name     = t[:relname]
+        table.user_table.table_id = t[:oid]
         table.register_table_only = true
         table.keep_user_database_table = true
         table.save

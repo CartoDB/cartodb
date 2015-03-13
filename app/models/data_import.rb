@@ -378,7 +378,7 @@ class DataImport < Sequel::Model
     table.user_id = user_id
     table.name    = new_name
     table.migrate_existing_table = imported_name
-    table.storage.data_import_id = self.id
+    table.user_table.data_import_id = self.id
 
     if table.valid?
       log.append 'Table valid'

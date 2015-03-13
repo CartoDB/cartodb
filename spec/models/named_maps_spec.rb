@@ -123,7 +123,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       }
 
       table = create_table( user_id: @user.id )
-      table.storage.privacy = UserTable::PRIVACY_PUBLIC
+      table.user_table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 

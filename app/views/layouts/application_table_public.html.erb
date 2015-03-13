@@ -7,13 +7,13 @@
     <title><%= yield :page_title %>CartoDB</title>
     <%= favicon_link_tag "/favicons/favicon.ico" %>
 
-    <meta name="description" content="<%= @table.storage.description || @table.name.gsub(/_/," ") %>">
-    <meta name="keywords" content="Map,cartodb,<%= @table.storage.name.gsub(/_/,",").gsub(/ /,",") %>">
+    <meta name="description" content="<%= @table.user_table.description || @table.name.gsub(/_/," ") %>">
+    <meta name="keywords" content="Map,cartodb,<%= @table.user_table.name.gsub(/_/,",").gsub(/ /,",") %>">
     <meta name="author" content="CartoDB">
     <meta name="DC.title" content="<%= yield :page_title %> | CartoDB">
     
     <meta property="og:title" content="<%= yield :page_title %> | CartoDB"/>
-    <meta property="og:description" content="<%= @table.storage.description || @table.storage.name.gsub(/_/," ") %>"/>
+    <meta property="og:description" content="<%= @table.user_table.description || @table.user_table.name.gsub(/_/," ") %>"/>
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
     <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
@@ -22,7 +22,7 @@
     <meta name="twitter:site" content="@cartodb">
     <meta name="twitter:creator" content="@cartodb">
     <meta name="twitter:title" content="<%= yield :page_title %> | CartoDB">
-    <meta name="twitter:description" content="<%= @table.storage.description || @table.storage.name.gsub(/_/," ") %>">
+    <meta name="twitter:description" content="<%= @table.user_table.description || @table.user_table.name.gsub(/_/," ") %>">
     <meta name="twitter:image" content="<%= image_path "layout/cartofante_blue.png" %>">
     <meta name="twitter:url" content="<%= request.fullpath %>" />
 

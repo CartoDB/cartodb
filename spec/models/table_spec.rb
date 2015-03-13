@@ -605,7 +605,7 @@ describe Table do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
-      @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table.storage)
+      @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table.user_table)
       @doomed_table.destroy
     end
 
@@ -694,16 +694,16 @@ describe Table do
       tag3.user_id.should  == @user.id
       tag3.table_id.should == table.id
 
-      table.storage.tags = "tag 1"
-      table.storage.save_changes
+      table.user_table.tags = "tag 1"
+      table.user_table.save_changes
 
       Tag.count.should == 1
       tag1 = Tag[:name => 'tag 1']
       tag1.user_id.should  == @user.id
       tag1.table_id.should == table.id
 
-      table.storage.tags = "    "
-      table.storage.save_changes
+      table.user_table.tags = "    "
+      table.user_table.save_changes
       Tag.count.should == 0
     end
 
@@ -1745,7 +1745,7 @@ describe Table do
       table = Table.new
       table.user_id = @user.id
       table.name = "clubbing_spain_1_copy"
-      table.storage.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
+      table.user_table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
       table.save.reload
 
       ['borders', 'polygons', 'spain', 'countries'].each do |query|
@@ -1761,7 +1761,7 @@ describe Table do
       table = Table.new
       table.user_id = @user.id
       table.name = "european_countries_1"
-      table.storage.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
+      table.user_table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
       table.save.reload
 
       tables = UserTable.search("eur")
@@ -1847,15 +1847,15 @@ describe Table do
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.name = 'test'
       table.validate
-      table.storage.errors.size.should eq 0
+      table.user_table.errors.size.should eq 0
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       table.validate
-      table.storage.errors.size.should eq 0
+      table.user_table.errors.size.should eq 0
 
       table.privacy = UserTable::PRIVACY_LINK
       table.validate
-      table.storage.errors.size.should eq 0
+      table.user_table.errors.size.should eq 0
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       user_mock.stubs(:private_tables_enabled).returns(false)
@@ -1863,7 +1863,7 @@ describe Table do
       # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
       table.privacy = UserTable::PRIVACY_LINK
       table.validate
-      table.storage.errors.size.should eq 0
+      table.user_table.errors.size.should eq 0
 
       # Save so privacy changes instead of being "new"
       table.privacy = UserTable::PRIVACY_PUBLIC
@@ -1871,9 +1871,9 @@ describe Table do
 
       table.privacy = UserTable::PRIVACY_LINK
       table.validate
-      table.storage.errors.size.should eq 1
+      table.user_table.errors.size.should eq 1
       expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
-      table.storage.errors.should eq expected_errors_hash
+      table.user_table.errors.should eq expected_errors_hash
 
       table = Table.new
       # A user who cannot create private tables has by default public

@@ -67,7 +67,7 @@ class Table
 
 
   # Stuff that must be delegated in to the storage layer -----------------------
-  # TODO: these are to be removed, access them through table.storage
+  # TODO: these are to be removed, access them through table.user_table
   def id
     @user_table.id
   end

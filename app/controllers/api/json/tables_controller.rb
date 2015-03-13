@@ -23,10 +23,10 @@ class Api::Json::TablesController < Api::ApplicationController
           database_schema:  current_user.database_schema
       })
     end
-    @table.description    = params[:description]   if params[:description]
+    @table.storage.description    = params[:description]   if params[:description]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     @table.force_schema   = params[:schema]        if params[:schema]
-    @table.tags           = params[:tags]          if params[:tags]
+    @table.storage.tags           = params[:tags]          if params[:tags]
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save

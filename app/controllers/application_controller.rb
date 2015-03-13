@@ -164,7 +164,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ensure_user_organization_valid
-    return unless CartoDB.subdomains_allowed?
+    return if !CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
 
     org_subdomain = CartoDB.extract_host_subdomain(request)
     unless org_subdomain.nil? || current_user.nil?

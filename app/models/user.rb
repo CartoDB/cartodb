@@ -2230,7 +2230,7 @@ TRIGGER
   end
 
   def account_url(request_protocol)
-    if Cartodb.config[:account_host]
+    if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
     end
   end

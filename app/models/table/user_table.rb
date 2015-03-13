@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 # This class is intended to deal exclusively with storage
-class TableStorage < Sequel::Model(:user_tables)
+class UserTable < Sequel::Model
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }
 
@@ -155,7 +155,6 @@ class TableStorage < Sequel::Model(:user_tables)
   # TODO This is called from other models but should probably never be done outside this class
   # it depends on the table relator
   def invalidate_varnish_cache(propagate_to_visualizations=true)
-    # probably Table -> TableService; TableStorage -> UserTable or UserTableStorage
     service.invalidate_varnish_cache(propagate_to_visualizations)
   end
 

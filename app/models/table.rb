@@ -5,7 +5,7 @@ require 'forwardable'
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
-require_relative './table/table_storage'
+require_relative './table/user_table'
 require_relative './visualization/member'
 require_relative './visualization/collection'
 require_relative './visualization/overlays'
@@ -57,95 +57,95 @@ class Table
 
 
   def initialize(args = {})
-    if args[:table_storage].nil?
-      @table_storage = TableStorage.new(args)
+    if args[:user_table].nil?
+      @user_table = UserTable.new(args)
     else
-      @table_storage = args[:table_storage]
+      @user_table = args[:user_table]
     end
-    @table_storage.set_service(self)
+    @user_table.set_service(self)
   end
 
 
   # Stuff that must be delegated in to the storage layer -----------------------
   # TODO: these are to be removed, access them through table.storage
   def id
-    @table_storage.id
+    @user_table.id
   end
 
   def user_id=(id)
-    @table_storage.user_id = id
+    @user_table.user_id = id
   end
 
   def user_id
-    @table_storage.user_id
+    @user_table.user_id
   end
 
   def [](key)
-    @table_storage[key]
+    @user_table[key]
   end
 
   def []=(key, value)
-    @table_storage[key] = value
+    @user_table[key] = value
   end
 
   def name
-    @table_storage.name
+    @user_table.name
   end
 
   def new?
-    @table_storage.new?
+    @user_table.new?
   end
 
   def save
-    @table_storage.save
+    @user_table.save
     self
   end
 
   def update(args)
-    @table_storage.update(args)
+    @user_table.update(args)
     self
   end
 
   def reload
-    @table_storage.reload
+    @user_table.reload
     self
   end
 
   def map_id
-    @table_storage.map_id
+    @user_table.map_id
   end
 
   def valid?
-    @table_storage.valid?
+    @user_table.valid?
   end
 
   def table_id
-    @table_storage.table_id
+    @user_table.table_id
   end
 
   # TODO I'm worried about exposing that many storage stuff from here, most likely usages of Table must be changed
   # so instead of exposing storage stuff (façade) here, the client classes use directly the storage class
   # for the moment doing so to keep compatibility and get the code working.
   def layers
-    @table_storage.layers
+    @user_table.layers
   end
 
   def map
-    @table_storage.map
+    @user_table.map
   end
 
   def privacy
-    @table_storage.privacy
+    @user_table.privacy
   end
 
   def destroy
-    @table_storage.destroy
+    @user_table.destroy
   end
 
 
   # TODO Let other clases peek and use storage?
-  def storage
-    @table_storage
+  def user_table
+    @user_table
   end
 
   # ----------------------------------------------------------------------------
@@ -169,7 +169,7 @@ class Table
   end
 
   def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? TableStorage::PRIVACY_PRIVATE : TableStorage::PRIVACY_PUBLIC
+    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
   end
 
   def geometry_types_key
@@ -225,7 +225,7 @@ class Table
     table = nil
     return table unless viewer_user
 
-    table_temp = TableStorage.where(id: table_id).first.service
+    table_temp = UserTable.where(id: table_id).first.service
     unless table_temp.nil?
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
@@ -251,7 +251,7 @@ class Table
           user_id = owner.id
         end
       end
-      TableStorage.where(user_id: user_id, name: table_name).first
+      UserTable.where(user_id: user_id, name: table_name).first
     }
   end #tables_from
 
@@ -286,7 +286,7 @@ class Table
     table = vis.nil? ? nil : vis.table
 
     if rx.match(id_or_name) && table.nil?
-      table_temp = TableStorage.where(id: id_or_name).first.try(:service)
+      table_temp = UserTable.where(id: id_or_name).first.try(:service)
       unless table_temp.nil?
         # Make sure we're allowed to see the table
         vis = CartoDB::Visualization::Collection.new.fetch(
@@ -321,18 +321,18 @@ class Table
     # Branch if owner does not have private table privileges
     unless self.owner.try(:private_tables_enabled)
       # If it's a new table and the user is trying to make it private
-      if self.new? && @table_storage.privacy == TableStorage::PRIVACY_PRIVATE
-        @table_storage.errors.add(:privacy, 'unauthorized to create private tables')
+      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
+        @user_table.errors.add(:privacy, 'unauthorized to create private tables')
       end
 
       # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && @table_storage.privacy == TableStorage::PRIVACY_PRIVATE && @table_storage.changed_columns.include?(:privacy)
-        @table_storage.errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
+        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
 
       # cannot change any existing table to 'with link'
-      if !self.new? && @table_storage.privacy == TableStorage::PRIVACY_LINK && @table_storage.changed_columns.include?(:privacy)
-        @table_storage.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
+      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
+        @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 
     end
@@ -341,7 +341,7 @@ class Table
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    @table_storage.privacy ||= (owner.try(:private_tables_enabled) ? TableStorage::PRIVACY_PRIVATE : TableStorage::PRIVACY_PUBLIC)
+    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
@@ -444,7 +444,7 @@ class Table
   end
 
   def import_to_cartodb(uniname=nil)
-    @data_import ||= DataImport.where(id: @table_storage.data_import_id).first || DataImport.new(user_id: owner.id)
+    @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
       @data_import.data_source = migrate_existing_table || uniname
@@ -544,12 +544,12 @@ class Table
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-      if @table_storage.data_import_id.nil? #needed for non ui-created tables
+      if @user_table.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
         @data_import.updated_at = Time.now
         @data_import.save
       else
-        @data_import  = DataImport.find(:id=>@table_storage.data_import_id)
+        @data_import  = DataImport.find(:id=>@user_table.data_import_id)
       end
 
       importer_result_name = import_to_cartodb(name)
@@ -592,8 +592,8 @@ class Table
     self.new_table = true
 
     # finally, close off the data import
-    if @table_storage.data_import_id
-      @data_import = DataImport.find(id: @table_storage.data_import_id)
+    if @user_table.data_import_id
+      @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
@@ -622,16 +622,16 @@ class Table
   end
 
   def before_save
-    @table_storage.updated_at = table_visualization.updated_at if table_visualization
+    @user_table.updated_at = table_visualization.updated_at if table_visualization
   end #before_save
 
   def after_save
     manage_tags
     update_name_changes
 
-    @table_storage.map.save
-    manager = CartoDB::TablePrivacyManager.new(@table_storage)
-    manager.set_from_table_privacy(@table_storage.privacy)
+    @user_table.map.save
+    manager = CartoDB::TablePrivacyManager.new(@user_table)
+    manager.set_from_table_privacy(@user_table.privacy)
     manager.propagate_to(table_visualization)
     if privacy_changed?
       manager.propagate_to_varnish
@@ -673,7 +673,7 @@ class Table
 
   def create_default_map_and_layers
     m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
-    @table_storage.map_id = m.id
+    @user_table.map_id = m.id
     base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
@@ -695,9 +695,9 @@ class Table
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  @table_storage.description,
-      tags:         (@table_storage.tags.split(',') if @table_storage.tags),
-      privacy:      TableStorage::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      description:  @user_table.description,
+      tags:         (@user_table.tags.split(',') if @user_table.tags),
+      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
       kind:         kind
     )
@@ -854,39 +854,39 @@ class Table
 
   def name=(value)
     value = value.downcase if value
-    return if value == @table_storage[:name] || value.blank?
+    return if value == @user_table[:name] || value.blank?
     new_name = get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = @table_storage.name if !new? && @table_storage.name.present?
+    @name_changed_from = @user_table.name if !new? && @user_table.name.present?
 
     self.invalidate_varnish_cache if !owner.nil? && owner.database_name
-    @table_storage[:name] = new_name
+    @user_table[:name] = new_name
   end
 
   def private?
-    @table_storage.private?
+    @user_table.private?
   end
 
   def public?
-    @table_storage.public?
+    @user_table.public?
   end
 
   def public_with_link_only?
-    @table_storage.public_with_link_only?
+    @user_table.public_with_link_only?
   end
 
   def set_default_table_privacy
-    @table_storage.privacy ||= default_privacy_value
+    @user_table.privacy ||= default_privacy_value
     save
   end
 
   def privacy=(value)
-    @table_storage[:privacy] = value
+    @user_table[:privacy] = value
   end
 
   def privacy_changed?
-    @table_storage.previous_changes.keys.include?(:privacy)
+    @user_table.previous_changes.keys.include?(:privacy)
   end
 
   def key
@@ -1395,7 +1395,7 @@ class Table
 
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy == TableStorage::PRIVACY_LINK ? 'PUBLIC' : @table_storage.privacy_text
+    privacy == UserTable::PRIVACY_LINK ? 'PUBLIC' : @user_table.privacy_text
   end
 
   def relator
@@ -1403,7 +1403,7 @@ class Table
   end #relator
 
   def set_table_id
-    @table_storage.table_id = self.get_table_id
+    @user_table.table_id = self.get_table_id
   end # set_table_id
 
   def get_table_id
@@ -1435,11 +1435,11 @@ class Table
       propagate_namechange_to_table_vis unless errored
 
       unless errored
-        if @table_storage.layers.blank?
+        if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
           CartoDB::notify_exception(exception_to_raise, user: owner)
         else
-          @table_storage.layers.each do |layer|
+          @user_table.layers.each do |layer|
             layer.rename_table(@name_changed_from, name).save
           end
         end
@@ -1454,11 +1454,11 @@ class Table
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    "#{owner.database_schema}__#{@table_storage.name}".to_sym
+    "#{owner.database_schema}__#{@user_table.name}".to_sym
   end
 
   def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{@table_storage.name}\""
+    "\"#{owner.database_schema}\".\"#{@user_table.name}\""
   end
 
   def database_schema
@@ -1512,7 +1512,7 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{@table_storage.table_id}')
+      SELECT CDB_TableMetadataTouch('#{@user_table.table_id}')
     })
   end
 
@@ -1547,7 +1547,7 @@ class Table
 
     return name if name == options[:current_name]
 
-    name = "#{name}_t" if TableStorage::RESERVED_TABLE_NAMES.include?(name)
+    name = "#{name}_t" if UserTable::RESERVED_TABLE_NAMES.include?(name)
 
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 
@@ -1624,7 +1624,7 @@ class Table
     type = type.to_s.upcase
 
     self.the_geom_type = type.downcase
-    @table_storage.save_changes unless @table_storage.new?
+    @user_table.save_changes unless @user_table.new?
   end
 
   def create_table_in_database!
@@ -1681,10 +1681,10 @@ class Table
   end
 
   def manage_tags
-    if @table_storage[:tags].blank?
+    if @user_table[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
     else
-      tag_names = @table_storage.tags.split(',')
+      tag_names = @user_table.tags.split(',')
       table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
       unless table_tags.empty?
         # Remove tags that are not in the new names list

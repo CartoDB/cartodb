@@ -13,7 +13,7 @@ class Geocoding < Sequel::Model
                        :used_credits, :remaining_quota, :country_column, :data_import_id]
 
   many_to_one :user
-  many_to_one :table
+  many_to_one :table, class: :UserTable
   many_to_one :automatic_geocoding
   many_to_one :data_import
 
@@ -54,11 +54,12 @@ class Geocoding < Sequel::Model
 
   def table_geocoder
     geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder::Geocoder)
+    table_service = table.try(:service)
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
-      table_schema:  table.try(:database_schema),
+      table_schema:  table_service.try(:database_schema),
       table_name:    table.try(:name),
-      qualified_table_name: table.try(:qualified_table_name),
-      sequel_qualified_table_name: table.try(:sequel_qualified_table_name),
+      qualified_table_name: table_service.try(:qualified_table_name),
+      sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
       formatter:     translate_formatter,
       connection:    (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:     remote_id,

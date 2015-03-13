@@ -248,7 +248,8 @@ class DataImport < Sequel::Model
   def table
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
-    ::Table.where(id: table_id, user_id: user_id).first
+    # TODO better to use an association for this
+    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
   end
 
 
@@ -377,7 +378,7 @@ class DataImport < Sequel::Model
     table.user_id = user_id
     table.name    = new_name
     table.migrate_existing_table = imported_name
-    table.data_import_id = self.id
+    table.user_table.data_import_id = self.id
 
     if table.valid?
       log.append 'Table valid'

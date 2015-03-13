@@ -59,7 +59,7 @@ describe Map do
       map = Map.create(user_id: @user.id, table_id: @table.id)
       @table.reload
       map.reload
-      map.tables.should include(@table)
+      map.tables.should include(@table.user_table)
       map.destroy
     end
 
@@ -77,7 +77,7 @@ describe Map do
 
       map2 = Map.create(user_id: @user.id, table_id: @table.id)
       # Change map_id on the table, but visualization still points to old map.id
-      @table.map_id = map2.id
+      @table.user_table.map_id = map2.id
       @table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
@@ -136,7 +136,7 @@ describe Map do
     end
 
     it "recalculates bounds" do
-      table = Table.new :privacy => Table::PRIVACY_PRIVATE, :name => 'Madrid Bars',
+      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars',
                         :tags => 'movies, personal'
       table.user_id = @user.id
       table.force_schema = "name text, address text, latitude float, longitude float"
@@ -234,7 +234,7 @@ describe Map do
       derived.store
 
       derived.layers(:cartodb).length.should == 1
-      @table1.privacy = Table::PRIVACY_PUBLIC
+      @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
       derived.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       derived.store

@@ -30,12 +30,12 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = ::Table.where(id: @table.id).first
+      @table = ::TableStorage.where(id: @table.id).first.try(:service)
       render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
-      render_jsonp( { :description => @table.errors.full_messages,
-                      :stack => @table.errors.full_messages
+      render_jsonp( { :description => @table.storage.errors.full_messages,
+                      :stack => @table.storage.errors.full_messages
                     }, 400)
     end
   rescue CartoDB::QuotaExceeded
@@ -97,11 +97,11 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = ::Table.where(id: @table.id).first
+      @table = ::Table.Storage.where(id: @table.id).first.try(:service)
 
       render_jsonp(@table.public_values.merge(warnings: warnings))
     else
-      render_jsonp({ :errors => @table.errors.full_messages}, 400)
+      render_jsonp({ :errors => @table.storage.errors.full_messages}, 400)
     end
   rescue => e
     CartoDB::Logger.info e.class.name, e.message

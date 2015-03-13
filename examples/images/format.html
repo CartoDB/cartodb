@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Single image example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      #content {
+        padding: 20px;
+        text-align: center;
+      }
+
+      .map {
+        float:left;
+        margin: 10px;
+        width: 500px;
+        height: 500px;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+      }
+    </style>
+
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js"></script>
+  </head>
+  <body>
+    <div id="content">
+      <div class="map">
+        <script>
+          cartodb.Image("https://documentation.cartodb.com/api/v2/viz/df45a412-d5dc-11e3-855b-0e10bcd91c2b/viz.json").bbox([[-87.82814025878906,41.88719899247721], [ -87.5936508178711,41.942765696654604]]).size(500, 500).format("jpg").write();
+        </script>
+      </div>
+    </div>
+  </body>
+</html>

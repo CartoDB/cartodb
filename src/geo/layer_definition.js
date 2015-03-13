@@ -107,7 +107,7 @@ Map.prototype = {
   },
 
   getLayerCount: function() {
-    return this.layers.length;
+    return this.layers ? this.layers.length: 0;
   },
 
   _encodeBase64Native: function (input) {
@@ -630,8 +630,12 @@ Map.prototype = {
   },
 
   _host: function(subhost) {
+
     var opts = this.options;
-    if (opts.no_cdn) {
+    var cdn_host = opts.cdn_url;
+    var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
+
+    if (opts.no_cdn || has_empty_cdn) {
       return this._tilerHost();
     } else {
       var protocol = this.isHttps() ? 'https': 'http';
@@ -639,13 +643,11 @@ Map.prototype = {
       if (subhost) {
         h += subhost + ".";
       }
-      var cdn_host = opts.cdn_url || cdb.CDB_HOST;
-      if(!cdn_host.http && !cdn_host.https) {
-        throw new Error("cdn_host should contain http and/or https entries");
-      }
 
       var cdn_url = cdn_host[protocol];
-      // build template url
+      // build default template url if the cdn url is not templatized
+      // this is for backwards compatiblity, ideally we should use the url
+      // that tiler sends to us right away
       if (!this._isUserTemplateUrl(cdn_url)) {
         cdn_url = cdn_url  + "/{user}";
       }
@@ -718,6 +720,19 @@ Map.prototype = {
 };
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
+
+  getSubLayer: function(index) {
+    var layer = this.layers[index];
+    // for named maps we don't know how many layers are defined so 
+    // we create the layer on the fly
+    if (!layer) {
+      layer = this.layers[index] = {
+        options: {}
+      };
+    }
+    layer.sub = layer.sub || new SubLayer(this, index);
+    return layer.sub;
+  },
 
   setLayerDefinition: function(named_map, options) {
     options = options || {}
@@ -1072,7 +1087,7 @@ function SubLayer(_parent, position) {
   this._position = position;
   this._added = true;
   this._bindInteraction();
-  if (Backbone.Model) {
+  if (Backbone.Model && this._parent.getLayer(this._position)) {
     this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
     this.infowindow.bind('change', function() {
       var def = this._parent.getLayer(this._position);

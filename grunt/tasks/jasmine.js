@@ -76,6 +76,7 @@ module.exports = {
           "src/ui/common/tabpane.js",
           "src/ui/common/dropdown.js",
           "src/vis/vis.js",
+          "src/vis/image.js",
           "src/vis/layers.js",
           "src/vis/overlays.js",
           "src/api/layers.js",

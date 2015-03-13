@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.12.00";
+    cdb.VERSION = "3.12.12";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -22,6 +22,7 @@
 
     root.cdb.config = {};
     root.cdb.core = {};
+    root.cdb.image = {};
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
     root.cdb.geo.geocoder = {};
@@ -58,6 +59,7 @@
         'core/template.js',
         'core/model.js',
         'core/view.js',
+        'core/loader.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -108,6 +110,7 @@
         'ui/common/dropdown.js',
 
         'vis/vis.js',
+        'vis/image.js',
         'vis/overlays.js',
         'vis/layers.js',
 

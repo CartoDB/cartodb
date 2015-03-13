@@ -51,26 +51,26 @@ describe('api.layers', function() {
       });
 
       it("should fecth layer when user and pass are specified", function() {
-        spyOn(cdb.vis.Loader, 'get');
+        spyOn(cdb.core.Loader, 'get');
         cartodb.createLayer(map, {
           user: 'development',
           table: 'clubbing',
           host: 'localhost.lan:3000',
           protocol: 'http'
         });
-        expect(cdb.vis.Loader.get).toHaveBeenCalled();
+        expect(cdb.core.Loader.get).toHaveBeenCalled();
       });
 
       it("should fecth layer when a url is specified", function() {
-        spyOn(cdb.vis.Loader, 'get');
+        spyOn(cdb.core.Loader, 'get');
         cartodb.createLayer(map, 'http://test.com/layer.json');
-        expect(cdb.vis.Loader.get).toHaveBeenCalled();
+        expect(cdb.core.Loader.get).toHaveBeenCalled();
       });
 
       it("should not fecth layer when kind and options are specified", function() {
-        spyOn(cdb.vis.Loader, 'get');
+        spyOn(cdb.core.Loader, 'get');
         cartodb.createLayer(map, { kind: 'plain', options: {} });
-        expect(cdb.vis.Loader.get).not.toHaveBeenCalled();
+        expect(cdb.core.Loader.get).not.toHaveBeenCalled();
       });
 
       it("should create a layer", function(done) {
@@ -270,7 +270,32 @@ describe('api.layers', function() {
         }, wait);
       });
 
-      it("should not add a torque layer timeslider if steps are not greather than 1", function(done) {
+      it("should ask for https data when https is on at torque layer", function(done) {
+        var layer;
+        var s = sinon.spy();
+        
+        cartodb.createLayer(map, {
+          updated_at: 'jaja',
+          layers: [
+            null,
+            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
+            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}, infowindow: null }
+          ]
+        }, { layerIndex: 2, https: true }, s).done(function(lyr) {
+          layer = lyr;
+          
+        }).addTo(map)
+
+        var wait = 500;
+        if (!map.getContainer) wait = 2500;
+
+        setTimeout(function() {
+          expect(layer.provider.options.tiler_protocol).toBe("https");
+          done()
+        }, wait);
+      });
+
+      it("should not add a torque layer timeslider if steps are not greater than 1", function(done) {
         var layer;
         var s = sinon.spy();
         

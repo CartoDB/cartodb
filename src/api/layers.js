@@ -47,7 +47,7 @@
       url = layer;
     }
     if(url) {
-      cdb.vis.Loader.get(url, callback);
+      cdb.core.Loader.get(url, callback);
     } else {
       _.defer(function() { callback(null); });
     }
@@ -168,16 +168,19 @@
           promise.trigger('error', "layer not supported");
           return promise;
         }
+
         if(options.infowindow) {
           viz.addInfowindow(layerView);
         }
+
         if(options.tooltip) {
           viz.addTooltip(layerView);
         }
+
         if(options.legends) {
           var layerModel = cdb.vis.Layers.create(layerData.type || layerData.kind, viz, layerData);
 
-          viz.addLegends(new cdb.geo.Layers([layerModel]), ((mobileEnabled && options.mobile_layout) || options.force_mobile));
+          viz._addLegends(viz._createLayerLegendView(layerModel.attributes,  layerView))
         }
 
         if(options.time_slider && layerView.model.get('type') === 'torque') {

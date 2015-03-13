@@ -42,7 +42,7 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
   render: function() {
 
     var value;
-
+    this.model.attributes.name = ""+this.model.attributes.name;
     if (this.model.get("type") == 'image' && this.model.get("value")) {
       value = "url( " + this.model.get("value") + ")";
     } else {

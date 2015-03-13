@@ -31,8 +31,7 @@ cartodb.createLayer(map, {
      sql: 'select * from pop',
      cartocss: '#pop { raster-opacity: 1.0; }',
      raster: true,
-  }],
-  no_cdn: true
+  }]
 })
 .addTo(map)
 ```
@@ -55,7 +54,7 @@ level you are working on.
 
 ## using SQL for analysis
 
-You can also access raster tables using SQL API  though cartodb.js, the following example gets the
+You can also access raster tables using SQL API  through cartodb.js, the following example gets the
 average value for a raster in a radius of 100 meters with center in latlng 0, 0
 
 ```

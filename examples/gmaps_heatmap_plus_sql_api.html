@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GMaps Heatmap of bike trips | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include google maps library + visualization-->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=visualization"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.11/cartodb.js"></script>
+
+    <script>
+      var map, pointarray, heatmap;
+      var google_api_key = "AIzaSyCADWr4a6NraGN1ldmcBKN4W_6c6teuImw"
+      function main() {
+
+        // Map center
+        var myLatlng = new google.maps.LatLng(40.722, -73.997);
+        var myOptions = {
+          zoom: 14,
+          center: myLatlng, 
+          disableDefaultUI: true,
+          mapTypeId: google.maps.MapTypeId.SATELLITE
+        }
+
+        // Render basemap
+        map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+        var sql = cartodb.SQL({ user: 'andrew', format: 'geojson'});
+        sql.execute("SELECT cartodb_id, the_geom FROM cleveland_spring_points").done(function(data) {
+          data = data.features.map(function(r) {
+              return new google.maps.LatLng(r.geometry.coordinates[1], r.geometry.coordinates[0]) 
+            });
+          var pointArray = new google.maps.MVCArray(data);
+          heatmap = new google.maps.visualization.HeatmapLayer({
+            data: pointArray
+          });
+          heatmap.set('radius', heatmap.get('radius') ? null : 20);
+          heatmap.setMap(map);
+        });
+
+      }
+      window.onload = main;
+    </script>
+  </body>
+</html>

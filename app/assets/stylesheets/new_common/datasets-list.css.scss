@@ -179,6 +179,9 @@ $opacityTransition: 250ms;
   .DatasetsList {
     width: 100%;
   }
+  .DatasetsList-itemTitle {
+    margin-bottom: 3px;
+  }
   .DatasetsList-itemMeta {
     @include align-items(center);
   }
@@ -191,10 +194,14 @@ $opacityTransition: 250ms;
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
   .DatasetsList-itemMeta > *:nth-child(3) { @include flex-order(3) }
   .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
+  .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
 }
 @media only screen and (max-width: $sMedia-tablet) {
   .DatasetsList {
     width: 100%;
+  }
+  .DatasetsList-itemTitle {
+    margin-bottom: 3px;
   }
   .DatasetsList-itemMeta {
     @include align-items(center);
@@ -227,6 +234,9 @@ $opacityTransition: 250ms;
     @include flex-direction(column);
     flex-grow: 1;
     min-width: 400px;
+  }
+  .DatasetsList-itemTitle {
+    margin-bottom: 0;
   }
   .DatasetsList-itemMeta {
     @include justify-content(flex-end, end);

@@ -2,10 +2,9 @@
 
 module LoginHelper
 
-  # TODO: Check this for MU
   def forget_password_url
-    if Cartodb.config[:account_host]
-      "#{request.protocol}#{Cartodb.config[:account_host]}/password_resets/new"
+    if CartoDB.account_host
+      "#{request.protocol}#{CartoDB.account_host}/password_resets/new"
     end
   end
   

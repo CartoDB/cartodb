@@ -6,7 +6,7 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  width: $sLayout-width;
+  width: 100%;
   padding: $sMargin-group 0;
   margin: 0 auto;  
 }

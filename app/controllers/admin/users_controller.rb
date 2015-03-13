@@ -37,8 +37,14 @@ class Admin::UsersController < ApplicationController
   def account_update
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present?
-    @user.change_password(attributes[:old_password].presence, attributes[:new_password].presence,
-                                 attributes[:confirm_password].presence)
+
+    if attributes[:old_password].present? || attributes[:new_password].present? || attributes[:confirm_password].present?
+      @user.change_password(
+        attributes[:old_password].presence,
+        attributes[:new_password].presence,
+        attributes[:confirm_password].presence
+      )
+    end
     @user.update_in_central
     @user.save(raise_on_failure: true)
 

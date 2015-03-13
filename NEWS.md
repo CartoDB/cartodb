@@ -1,4 +1,4 @@
-3.9.0 (2015-02-13)
+3.9.0 (2015-03-13)
 ------------------
 * New user account & profile management pages, inside CartoDB Editor.
 * Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)

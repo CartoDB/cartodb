@@ -23,18 +23,18 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   def tiler_regex
     if (tiler_port == '8888')
-      %r{http:\/\/127\.0\.0\.1:8888\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
+      %r{http:\/\/127\.0\.0\.1:8888\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
     else
-      %r{http:\/\/127\.0\.0\.1:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
+      %r{http:\/\/127\.0\.0\.1:8181\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
     end
   end
 
   def named_maps_url(user_api_key)
-    "http://127.0.0.1:#{tiler_port}/tiles/template?api_key=#{user_api_key}"
+    "http://127.0.0.1:#{tiler_port}/api/v1/map/named?api_key=#{user_api_key}"
   end
 
   def named_map_url(template_id, user_api_key)
-    "http://127.0.0.1:#{tiler_port}/tiles/template/#{template_id}?api_key=#{user_api_key}"
+    "http://127.0.0.1:#{tiler_port}/api/v1/map/named/#{template_id}?api_key=#{user_api_key}"
   end
 
   before(:all) do

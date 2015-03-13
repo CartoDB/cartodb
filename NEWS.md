@@ -9,6 +9,7 @@
 * Fixes the showing of map previews in the delete items dialog #2639
 * New organization pages done
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
+* Allows to remove overlays using the backspace key.
 * Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
 
 Bugfixes:
@@ -25,6 +26,7 @@ Bugfixes:
 * Fix contrast for nav buttons [#2696](https://github.com/CartoDB/cartodb/pull/2696)
 * Fix top/bottom padding for delete dialog [#2721](https://github.com/CartoDB/cartodb/pull/2721)
 * Fix filters view's search component behavior [#2708](https://github.com/CartoDB/cartodb/pull/2708)
+* Fix bubble wizard legend not being updated on column change [#2747](https://github.com/CartoDB/cartodb/pull/2747)
 
 3.8.1 (2015-02-26)
 ------------------

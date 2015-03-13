@@ -189,15 +189,15 @@ describe Table do
       table = create_table :user_id => @user.id
 
       table.user_table.privacy = UserTable::PRIVACY_LINK
-      table.save
-      table.reload
-      table.should be_public_with_link_only
+      table.user_table.save
+      table.user_table.reload
+      table.user_table.should be_public_with_link_only
       table.table_visualization.should be_public_with_link
 
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
-      table.reload
-      table                           .should be_public
+      table.user_table.save
+      table.user_table.reload
+      table.user_table                .should be_public
       table.table_visualization       .should be_public
     end
 
@@ -235,7 +235,7 @@ describe Table do
       CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
       table = create_table(user_id: @user.id)
-      table.should be_private
+      table.user_table.should be_private
       table.table_visualization.should be_private
       derived_vis = CartoDB::Visualization::Copier.new(
         @user, table.table_visualization
@@ -243,18 +243,18 @@ describe Table do
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
       derived_vis.store
-      table.reload
+      table.user_table.reload
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
+      table.user_table.save
 
       table.affected_visualizations.map { |vis|
         vis.public?.should == vis.table?
       }
 
       table.user_table.privacy = UserTable::PRIVACY_PRIVATE
-      table.save
+      table.user_table.save
 
       table.affected_visualizations.map { |vis|
         vis.private?.should == true
@@ -268,19 +268,19 @@ describe Table do
       table = create_table(user_id: @user.id)
 
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
+      table.user_table.save
       derived_vis = CartoDB::Visualization::Copier.new(
           @user, table.table_visualization
       ).copy
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
       derived_vis.store
-      table.reload
+      table.user_table.reload
 
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       table.user_table.privacy = UserTable::PRIVACY_LINK
-      table.save
-      table.reload
+      table.user_table.save
+      table.user_table.reload
 
       table.affected_visualizations.map { |vis|
         vis.public?.should == vis.derived?  # Derived kept public
@@ -295,27 +295,27 @@ describe Table do
       CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
       table = create_table(user_id: @user.id)
-      table.should be_private
+      table.user_table.should be_private
       table.table_visualization.should be_private
 
       table.table_visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       table.table_visualization.store
-      table.reload
-      table                           .should be_public
+      table.user_table.reload
+      table.user_table                 .should be_public
       table.table_visualization       .should be_public
 
-      rehydrated = UserTable.where(id: table.id).first
-      rehydrated                      .should be_public
+      rehydrated = Table.new(UserTable.where(id: table.user_table.id).first)
+      rehydrated.user_table           .should be_public
       rehydrated.table_visualization  .should be_public
 
       table.table_visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
       table.table_visualization.store
-      table.reload
-      table                           .should be_private
+      table.user_table.reload
+      table.user_table                .should be_private
       table.table_visualization       .should be_private
 
-      rehydrated = UserTable.where(id: table.id).first
-      rehydrated                      .should be_private
+      rehydrated = Table.new(UserTable.where(id: table.user_table.id).first)
+      rehydrated.user_table           .should be_private
       rehydrated.table_visualization  .should be_private
     end
 
@@ -371,8 +371,8 @@ describe Table do
       @user.private_tables_enabled = false
       @user.save
 
-      table.name = "my_super_test"
-      table.save.should be_true
+      table.user_table.name = "my_super_test"
+      table.user_table.save.should be_true
     end
 
     it "should be able to convert to public table if the user is stripped of permissions" do
@@ -386,7 +386,7 @@ describe Table do
       @user.save
 
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save.should be_true
+      table.user_table.save.should be_true
     end
 
     it "should not be able to convert to public table if the user has no permissions" do

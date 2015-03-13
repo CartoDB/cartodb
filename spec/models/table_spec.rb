@@ -152,13 +152,13 @@ describe Table do
     
     it 'propagates name changes to affected layers' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
-      layer = table.layers.first
+      layer = table.user_table.layers.first
 
       table.user_table.name = 'bogus_name_1'
       table.user_table.save
 
       table.user_table.reload
-      layer.user_table.reload
+      layer.reload
       layer.options.fetch('table_name').should == table.user_table.name
     end
 

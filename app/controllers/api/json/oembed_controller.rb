@@ -69,39 +69,32 @@ class Api::Json::OembedController < Api::ApplicationController
   private
 
   def url_fields_from_fragments(url, force_https)
-    uri = URI.parse(url)
-
-    protocol = force_https ? "https" : uri.scheme
-
+    domain = CartoDB.session_domain
     # @see http://ruby-doc.org/stdlib-1.9.3/libdoc/uri/rdoc/URI.html#method-c-split
     url_fragments = URI.split(url)
+    protocol = force_https ? "https" : URI.parse(url).scheme
 
-    # url_fragments[5]: Path
-    # url_fragments[2]: Host
+    data = nil
 
-    if url_fragments[5][0..2] == "/u/"
-      username = url_fragments[5].split('/')[2]
-      user_profile_url = "#{protocol}://#{url_fragments[2]}/u/#{username}"
-      organization_name = url_fragments[2].split('.')[0]
-    else
-      username = url_fragments[2].split('.')[0]
-      user_profile_url = "#{protocol}://#{url_fragments[2]}"
-      organization_name = nil
+    if CartoDB.subdomains_allowed?
+      begin
+        data = from_url(url_fragments, protocol, domain)
+      rescue => e
+        # TODO: Proper exception to only silence intended ones
+      end
     end
 
-    # TODO: Support optional subdomains
-#    if CartoDB.subdomains_optional?
-      # both options
-#    else
-#      if CartoDB.subdomains_allowed?
-#      else
-#      end
-#    end
+    # Either subdomains disallowed or url doesn't uses them
+    if data.nil?
+      data = from_domainless_url(url_fragments, protocol)
+    end
+
+    raise "Couldn't extract URL fields" if data.nil?
 
     {
-      organization_name: organization_name,
-      username: username,
-      user_profile_url: user_profile_url,
+      organization_name: data[:organization_name],
+      username: data[:username],
+      user_profile_url: data[:user_profile_url],
       protocol: protocol
     }
   end
@@ -131,7 +124,7 @@ class Api::Json::OembedController < Api::ApplicationController
   end
 
   # https://cartodb.com/u/testuser/...
-  def from_domainless_url(url_fragments, protocol, domain)
+  def from_domainless_url(url_fragments, protocol)
     # To ease testing don't request eactly all URI.split params
     raise "Invalid url_fragments parameter" unless url_fragments.length > 5
 

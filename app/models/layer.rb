@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_relative 'layer/presenter'
-require_relative 'table/table_storage'
+require_relative 'table/user_table'
 
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow, :tooltip

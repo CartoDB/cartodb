@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_relative '../models/visualization/collection'
-require_relative '../models/table/table_storage'
+require_relative '../models/table/user_table'
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false

@@ -1,6 +1,6 @@
 FactoryGirl.define do
 
-  factory :table_storage do
+  factory :user_table do
   end
 
 end

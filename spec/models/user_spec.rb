@@ -537,7 +537,7 @@ describe User do
     expect { create_table :user_id => @user2.id, :privacy => UserTable::PRIVACY_PUBLIC }
       .to change { @user2.remaining_table_quota }.by(-1)
 
-    table = Table.new(table_storage: UserTable.filter(:user_id => @user2.id).first)
+    table = Table.new(user_table: UserTable.filter(:user_id => @user2.id).first)
     50.times { |i| table.insert_row!(:name => "row #{i}") }
 
     @user2.remaining_quota.should be < initial_quota

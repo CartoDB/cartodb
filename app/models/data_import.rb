@@ -249,7 +249,7 @@ class DataImport < Sequel::Model
     # We can assume the owner is always who imports the data
     # so no need to change to a Visualization::Collection based load
     # TODO better to use an association for this
-    ::Table.new(table_storage: UserTable.where(id: table_id, user_id: user_id).first)
+    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
   end
 
 

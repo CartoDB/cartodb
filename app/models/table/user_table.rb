@@ -60,7 +60,7 @@ class UserTable < Sequel::Model
 
   # Lazy initialization of service if not present
   def service
-    @service ||= ::Table.new(table_storage: self)
+    @service ||= ::Table.new(user_table: self)
   end
 
   # Helper methods encapsulating queries. Move to query object?

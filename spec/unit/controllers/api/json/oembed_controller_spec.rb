@@ -39,12 +39,12 @@ describe Api::Json::OembedController do
       url_fragments = [ '', '', domain, '', '', "/something" ]
       expect {
         controller.send(:from_domainless_url, url_fragments, protocol)
-      }.to raise_error "URL needs username specified in the Path"
+      }.to raise_error UrlFRagmentsError, "URL needs username specified in the Path"
 
       url_fragments = [ '', '', domain, '', '', "/u/" ]
       expect {
         controller.send(:from_domainless_url, url_fragments, protocol)
-      }.to raise_error "Username not found at url"
+      }.to raise_error UrlFRagmentsError, "Username not found at url"
     end
 
     it 'Tests from_url()' do
@@ -63,7 +63,7 @@ describe Api::Json::OembedController do
       url_fragments = [ '', '', "#{domain}", '', '', '' ]
       expect {
         controller.send(:from_url, url_fragments, protocol, domain)
-      }.to raise_error "Subdomain not found at url"
+      }.to raise_error UrlFRagmentsError, "Subdomain not found at url"
 
       # testuser.test.local
       url_fragments = [ '', '', "#{username}#{domain}", '', '', '/vis' ]
@@ -86,7 +86,7 @@ describe Api::Json::OembedController do
       url_fragments = [ '', '', "#{orgname}#{domain}", '', '', "/u//vis" ]
       expect {
         controller.send(:from_url, url_fragments, protocol, domain)
-      }.to raise_error  "Username not found at url"
+      }.to raise_error  UrlFRagmentsError, "Username not found at url"
     end
 
     it 'Tests url_fields_from_fragments()' do
@@ -150,7 +150,7 @@ describe Api::Json::OembedController do
 
       expect {
         controller.send(:url_fields_from_fragments, "http://#{domain}", force_https)
-      }.to raise_error "URL needs username specified in the Path"
+      }.to raise_error UrlFRagmentsError, "URL needs username specified in the Path"
 
       expected_results = {
         username: username,
@@ -172,7 +172,7 @@ describe Api::Json::OembedController do
 
       expect {
         controller.send(:url_fields_from_fragments, "http://#{orgname}#{domain}/u//vis", force_https)
-      }.to raise_error  "Username not found at url"
+      }.to raise_error  UrlFRagmentsError, "Username not found at url"
 
     end
 

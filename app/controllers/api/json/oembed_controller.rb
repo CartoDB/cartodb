@@ -79,8 +79,8 @@ class Api::Json::OembedController < Api::ApplicationController
     if CartoDB.subdomains_allowed?
       begin
         data = from_url(url_fragments, protocol, domain)
-      rescue => e
-        # TODO: Proper exception to only silence intended ones
+      rescue UrlFRagmentsError
+        # URL is subdomainless so do nothing
       end
     end
 
@@ -89,7 +89,7 @@ class Api::Json::OembedController < Api::ApplicationController
       data = from_domainless_url(url_fragments, protocol)
     end
 
-    raise "Couldn't extract URL fields" if data.nil?
+    raise UrlFRagmentsError.new("Couldn't extract URL fields") if data.nil?
 
     {
       organization_name: data[:organization_name],
@@ -102,10 +102,10 @@ class Api::Json::OembedController < Api::ApplicationController
   # testuser.cartodb.com || testorg.cartodb.com/u/user
   def from_url(url_fragments, protocol, domain)
     # To ease testing don't request eactly all URI.split params
-    raise "Invalid url_fragments parameter" unless url_fragments.length > 5
+    raise UrlFRagmentsError.new("Invalid url_fragments parameter") unless url_fragments.length > 5
 
     subdomain = url_fragments[2].sub(domain, '.').split('.')[0]
-    raise "Subdomain not found at url" if subdomain.nil?
+    raise UrlFRagmentsError.new("Subdomain not found at url") if subdomain.nil?
 
     # org-based
     if url_fragments[5][0..2] == "/u/"
@@ -126,10 +126,10 @@ class Api::Json::OembedController < Api::ApplicationController
   # https://cartodb.com/u/testuser/...
   def from_domainless_url(url_fragments, protocol)
     # To ease testing don't request eactly all URI.split params
-    raise "Invalid url_fragments parameter" unless url_fragments.length > 5
+    raise UrlFRagmentsError.new("Invalid url_fragments parameter") unless url_fragments.length > 5
 
                                                       # url_fragments[5]: Path
-    raise "URL needs username specified in the Path" if url_fragments[5][0..2] != "/u/"
+    raise UrlFRagmentsError.new("URL needs username specified in the Path") if url_fragments[5][0..2] != "/u/"
 
     username = username_from_url_fragments(url_fragments)
     {
@@ -142,8 +142,12 @@ class Api::Json::OembedController < Api::ApplicationController
 
   def username_from_url_fragments(url_fragments)
     path_fragments = url_fragments[5].split('/')
-    raise "Username not found at url" if path_fragments.length < 3 || path_fragments[2].length == 0
+    raise UrlFRagmentsError.new("Username not found at url") if path_fragments.length < 3 || path_fragments[2].length == 0
     path_fragments[2]
   end
+
+end
+
+class UrlFRagmentsError < StandardError
 
 end

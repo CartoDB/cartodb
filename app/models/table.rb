@@ -235,17 +235,17 @@ class Table
     # Branch if owner does not have private table privileges
     unless self.owner.try(:private_tables_enabled)
       # If it's a new table and the user is trying to make it private
-      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
+      if @user_table.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
         @user_table.errors.add(:privacy, 'unauthorized to create private tables')
       end
 
       # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
+      if !@user_table.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
         @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
 
       # cannot change any existing table to 'with link'
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
+      if !@user_table.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
         @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 

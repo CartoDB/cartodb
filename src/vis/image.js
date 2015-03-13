@@ -83,6 +83,8 @@
 
       this.queue = new Queue;
 
+      this.no_cdn = options.no_cdn;
+
       this.userOptions = options;
 
       options = _.defaults({ vizjson: vizjson, temp_id: "s" + this._getUUID() }, this.defaults);
@@ -126,7 +128,9 @@
         var baseLayer = data.layers[0];
         var dataLayer = data.layers[1];
 
-        this.options.user_name = dataLayer.options.user_name;
+        if (dataLayer.options) {
+          this.options.user_name = dataLayer.options.user_name;
+        }
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
@@ -150,16 +154,72 @@
           this.imageOptions.basemap = baseLayer;
         }
 
-        if (dataLayer.type === "namedmap") {
-          this.options.layers = this._getNamedmapLayerDefinition(dataLayer.options);
-        } else {
-          this.options.layers = this._getLayergroupLayerDefinition(dataLayer.options);
+        /* If the vizjson contains a named map and a torque layer with a named map,
+           ignore the torque layer */
+
+        var ignoreTorqueLayer = false;
+
+        var namedMap = this._getLayerByType(data.layers, "namedmap");
+
+        if (namedMap) {
+
+          var torque = this._getLayerByType(data.layers, "torque");
+
+          if (torque && torque.options && torque.options.named_map) {
+
+            if (torque.options.named_map.name === namedMap.options.named_map.name) {
+              ignoreTorqueLayer = true;
+            }
+
+          }
+
         }
 
+        var layers = [];
+        var basemap = this._getBasemapLayer();
+
+        if (basemap) {
+          layers.push(basemap);
+        }
+
+        for (var i = 1; i < data.layers.length; i++) {
+
+          var layer = data.layers[i];
+
+          if (layer.type === "torque" && !ignoreTorqueLayer) {
+
+            layers.push(this._getTorqueLayerDefinition(layer));
+
+          } else if (layer.type === "namedmap") {
+
+            layers.push(this._getNamedmapLayerDefinition(layer));
+
+          } else if (layer.type !== "torque" && layer.type !== "namedmap") {
+
+            var ll = this._getLayergroupLayerDefinition(layer);
+
+            for (var j = 0; j < ll.length; j++) {
+              layers.push(ll[j]);
+            }
+
+          }
+        }
+
+        this.options.layers = { layers: layers };
         this._requestLayerGroupID();
 
       }
 
+    },
+
+    visibleLayers: function() {
+      // Overwrites the layer_definition method.
+      // We return all the layers, since we have filtered them before
+      return this.options.layers.layers;
+    },
+
+    _getLayerByType: function(layers, type) {
+      return _.find(layers, function(layer) { return layer.type === type; });
     },
 
     _setupTilerConfiguration: function(protocol, domain, port) {
@@ -183,7 +243,7 @@
 
       var self = this;
 
-      this._requestPOST({}, function(data, error) {
+      this.getLayerToken(function(data, error) {
 
         if (error) {
           self.error = error;
@@ -191,6 +251,7 @@
 
         if (data) {
           self.imageOptions.layergroupid = data.layergroupid;
+          self.cdn_url = data.cdn_url;
         }
 
         self.queue.flush(this);
@@ -213,10 +274,16 @@
 
     _getHTTPBasemapLayer: function(basemap) {
 
+      var urlTemplate = basemap.options.urlTemplate;
+
+      if (!urlTemplate) {
+        return null;
+      }
+
       return {
         type: "http",
         options: {
-          urlTemplate: basemap.options.urlTemplate,
+          urlTemplate: urlTemplate,
           subdomains: basemap.options.subdomains || this.defaults.basemap_subdomains
         }
       };
@@ -240,10 +307,18 @@
 
       if (basemap) {
 
-        var type = basemap.options.type.toLowerCase();
+        // TODO: refactor this
+        var type = basemap.type.toLowerCase();
 
-        if (type === "plain") return this._getPlainBasemapLayer(basemap.options.color);
-        else                  return this._getHTTPBasemapLayer(basemap);
+        if (basemap.options && basemap.options.type) {
+          type = basemap.options.type.toLowerCase();
+        }
+
+        if (type === "plain") {
+          return this._getPlainBasemapLayer(basemap.options.color);
+        } else {
+          return this._getHTTPBasemapLayer(basemap);
+        }
 
       }
 
@@ -251,37 +326,55 @@
 
     },
 
-    _getLayergroupLayerDefinition: function(options) {
+    _getTorqueLayerDefinition: function(layer_definition) {
 
-      var layerDefinition = new LayerDefinition(options.layer_definition, options);
-      var ld = layerDefinition.toJSON();
+      if (layer_definition.options.named_map) { // If the layer contains a named map inside, use it instead
+        return this._getNamedmapLayerDefinition(layer_definition);
+      }
 
-      ld.layers.unshift(this._getBasemapLayer());
+      var layerDefinition = new LayerDefinition(layer_definition, layer_definition.options);
 
-      return ld;
+      var query    = layerDefinition.options.query || "SELECT * FROM " + layerDefinition.options.table_name;
+      var cartocss = layer_definition.options.tile_style;
+
+      return {
+        type: "torque",
+        options: {
+          sql: query,
+          cartocss: cartocss
+        }
+      };
 
     },
 
-    _getNamedmapLayerDefinition: function(options) {
+    _getLayergroupLayerDefinition: function(layer) {
+
+      var options = layer.options;
+
+      options.layer_definition.layers = this._getVisibleLayers(options.layer_definition.layers);
+
+      var layerDefinition = new LayerDefinition(options.layer_definition, options);
+
+      return layerDefinition.toJSON().layers;
+
+    },
+
+    _getNamedmapLayerDefinition: function(layer) {
+
+      var options = layer.options;
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      layerDefinition.options.type = "named";
-
-      var layers  =  [
-        this._getBasemapLayer(), {
-        type: "named",
+      return { type: "named",
         options: {
           name: layerDefinition.named_map.name
         }
-      }];
+      }
 
-      var ld = {
-        layers: layers
-      };
+    },
 
-      return ld;
-
+    _getVisibleLayers: function(layers) {
+      return _.filter(layers, function(layer) { return layer.visible; });
     },
 
     _getUrl: function() {
@@ -300,9 +393,11 @@
       var width  = size[0];
       var height = size[1];
 
-      var url = this._tilerHost() + this.endPoint;
+      var subhost = this.isHttps() ? null : "a";
 
-      if (bbox) {
+      var url = this._host(subhost) + this.endPoint;
+
+      if (bbox && bbox.length && !this.userOptions.override_bbox) {
         return [url, "static/bbox" , layergroupid, bbox.join(","), width, height + "." + format].join("/");
       } else {
         return [url, "static/center" , layergroupid, zoom, lat, lon, width, height + "." + format].join("/");

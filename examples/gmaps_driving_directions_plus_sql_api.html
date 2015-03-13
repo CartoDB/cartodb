@@ -61,7 +61,7 @@
             cdb.vis.Vis.addCursorInteraction(map, subLayer); // undo with removeCursorInteraction
 
             // Setup our event when an object is clicked
-            layers.on('featureClick', function(e, latlng, pos, data){
+            layers.on('featureClick', function(e, pos, latlng, data){
               // the location of the clicked school
               var school = new google.maps.LatLng(data.lat, data.lon);
 

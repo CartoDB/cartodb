@@ -67,7 +67,7 @@
             }
           });
 
-          function featureOver(e, pos, latlng, data) {
+          function featureOver(e, latlng, pos, data) {
             featureOut();
             var pol = polygons[data.cartodb_id] || [];
             for(var i = 0; i < pol.length; ++i) {

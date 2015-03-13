@@ -27,6 +27,7 @@ Bugfixes:
 * Fix top/bottom padding for delete dialog [#2721](https://github.com/CartoDB/cartodb/pull/2721)
 * Fix filters view's search component behavior [#2708](https://github.com/CartoDB/cartodb/pull/2708)
 * Fix bubble wizard legend not being updated on column change [#2747](https://github.com/CartoDB/cartodb/pull/2747)
+* Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
 
 3.8.1 (2015-02-26)
 ------------------

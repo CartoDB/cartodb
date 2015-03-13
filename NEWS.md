@@ -1,4 +1,4 @@
-3.9.0 (2015-02-xx)
+3.9.0 (2015-02-13)
 ------------------
 * New features
   - Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)
@@ -14,9 +14,11 @@
 * Fixes the showing of map previews in the delete items dialog #2639
 * New organization pages done
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
+* Allows to remove overlays using the backspace key.
 * Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
 
 Bugfixes:
+* Fix layer refresh when the method of a density visualization changes [#2673](https://github.com/CartoDB/cartodb/issues/2673)
 * Fixes an error that preventing the load of WMS layers.
 * Fixes an unncessary binding that made the dashboard reloading twice.
 * Fix markdown from descriptions not rendered correctly in dashboard view [#2572](https://github.com/CartoDB/cartodb/issues/2572)
@@ -29,6 +31,7 @@ Bugfixes:
 * Fix contrast for nav buttons [#2696](https://github.com/CartoDB/cartodb/pull/2696)
 * Fix top/bottom padding for delete dialog [#2721](https://github.com/CartoDB/cartodb/pull/2721)
 * Fix filters view's search component behavior [#2708](https://github.com/CartoDB/cartodb/pull/2708)
+* Fix bubble wizard legend not being updated on column change [#2747](https://github.com/CartoDB/cartodb/pull/2747)
 
 3.8.1 (2015-02-26)
 ------------------

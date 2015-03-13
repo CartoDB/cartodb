@@ -38,20 +38,20 @@ describe TableBlender do
 
 
   def fake_public_table
-    storage = mock
-    storage.stubs(:private?).returns(false)
-    storage.stubs(:public_with_link_only?).returns(false)
+    user_table = mock
+    user_table.stubs(:private?).returns(false)
+    user_table.stubs(:public_with_link_only?).returns(false)
     table = mock
-    table.stubs(:storage).returns(storage)
+    table.stubs(:user_table).returns(user_table)
     table
   end #fake_public_table
 
   def fake_private_table
-    storage = mock
-    storage.stubs(:private?).returns(true)
-    storage.stubs(:public_with_link_only?).returns(false)
+    user_table = mock
+    user_table.stubs(:private?).returns(true)
+    user_table.stubs(:public_with_link_only?).returns(false)
     table = mock
-    table.stubs(:storage).returns(storage)
+    table.stubs(:user_table).returns(user_table)
     table
   end #fake_private_table
 end # TableBlender

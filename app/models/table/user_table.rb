@@ -60,7 +60,7 @@ class UserTable < Sequel::Model
 
   # Lazy initialization of service if not present
   def service
-    @service ||= ::Table.new(user_table: self)
+    @service ||= ::Table.new(self)
   end
 
   # Helper methods encapsulating queries. Move to query object?
@@ -184,15 +184,19 @@ class UserTable < Sequel::Model
 
   def private?
     self.privacy == PRIVACY_PRIVATE
-  end #private?
+  end
 
   def public?
     self.privacy == PRIVACY_PUBLIC
-  end #public?
+  end
 
   def public_with_link_only?
     self.privacy == PRIVACY_LINK
-  end #public_with_link_only?
+  end
+
+  def privacy_changed?
+    self.previous_changes.keys.include?(:privacy)
+  end
 
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)

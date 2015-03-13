@@ -23,7 +23,7 @@ module CartoDB
 
     def table_visualization
       @table_visualization ||= Visualization::Collection.new.fetch(
-        map_id: @table.map_id,
+        map_id: @table.user_table.map_id,
         type:   Visualization::Member::TYPE_CANONICAL
       ).first
     end
@@ -107,7 +107,7 @@ module CartoDB
       db[:visualizations].with_sql(%Q{
         SELECT  *
         FROM    layers_user_tables, layers_maps, visualizations
-        WHERE   layers_user_tables.user_table_id = '#{table.id}'
+        WHERE   layers_user_tables.user_table_id = '#{table.user_table.id}'
         AND     layers_user_tables.layer_id = layers_maps.layer_id
         AND     layers_maps.map_id = visualizations.map_id
       })
@@ -117,8 +117,8 @@ module CartoDB
       @syncronization_record ||= db[:synchronizations].with_sql(%Q{
         SELECT *
         FROM synchronizations
-        WHERE synchronizations.user_id = '#{table.user_id}'
-        AND synchronizations.name = '#{table.name}'
+        WHERE synchronizations.user_id = '#{table.user_table.user_id}'
+        AND synchronizations.name = '#{table.user_table.name}'
         LIMIT 1
       }).to_a
     rescue => exception

@@ -56,101 +56,15 @@ class Table
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
 
 
-  def initialize(args = {})
-    if args[:user_table].nil?
-      @user_table = UserTable.new(args)
-    else
-      @user_table = args[:user_table]
-    end
+  def initialize(user_table)
+    @user_table = user_table
     @user_table.set_service(self)
-  end
-
-
-  # Stuff that must be delegated in to the storage layer -----------------------
-  # TODO: these are to be removed, access them through table.user_table
-  def id
-    @user_table.id
-  end
-
-  def user_id=(id)
-    @user_table.user_id = id
-  end
-
-  def user_id
-    @user_table.user_id
-  end
-
-  def [](key)
-    @user_table[key]
-  end
-
-  def []=(key, value)
-    @user_table[key] = value
-  end
-
-  def name
-    @user_table.name
-  end
-
-  def new?
-    @user_table.new?
-  end
-
-  def save
-    @user_table.save
     self
   end
 
-  def update(args)
-    @user_table.update(args)
-    self
-  end
-
-  def reload
-    @user_table.reload
-    self
-  end
-
-  def map_id
-    @user_table.map_id
-  end
-
-  def valid?
-    @user_table.valid?
-  end
-
-  def table_id
-    @user_table.table_id
-  end
-
-  # TODO I'm worried about exposing that many storage stuff from here, most likely usages of Table must be changed
-  # so instead of exposing storage stuff (façade) here, the client classes use directly the storage class
-  # for the moment doing so to keep compatibility and get the code working.
-  def layers
-    @user_table.layers
-  end
-
-  def map
-    @user_table.map
-  end
-
-  def privacy
-    @user_table.privacy
-  end
-
-  def destroy
-    @user_table.destroy
-  end
-
-
-  # TODO Let other clases peek and use storage?
   def user_table
     @user_table
   end
-
-  # ----------------------------------------------------------------------------
-
-
 
 
   def public_values(options = {}, viewer_user=nil)
@@ -450,8 +364,8 @@ class Table
       @data_import.data_source = migrate_existing_table || uniname
       @data_import.save
 
-      # ensure unique name, also ensures self.name can override any imported table name
-      uniname ||= self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+      # ensure unique name, also ensures @user_table.name can override any imported table name
+      uniname ||= @user_table.name ? get_valid_name(@user_table.name) : get_valid_name(migrate_existing_table)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -497,7 +411,7 @@ class Table
       existing_pk = user_database[%Q{
         SELECT c.conname AS pk_name
         FROM pg_class r, pg_constraint c, pg_namespace n
-        WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
+        WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{@user_table.name}'
         AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
       }].first
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
@@ -522,7 +436,7 @@ class Table
         end
         unless already_had_cartodb_id
           user_database.run(%Q{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
-          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{@user_table.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
           # only reset the sequence on real imports.
 
@@ -545,7 +459,7 @@ class Table
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
       if @user_table.data_import_id.nil? #needed for non ui-created tables
-        @data_import  = DataImport.new(:user_id => self.user_id)
+        @data_import  = DataImport.new(:user_id => @user_table.user_id)
         @data_import.updated_at = Time.now
         @data_import.save
       else
@@ -633,13 +547,13 @@ class Table
     manager = CartoDB::TablePrivacyManager.new(@user_table)
     manager.set_from_table_privacy(@user_table.privacy)
     manager.propagate_to(table_visualization)
-    if privacy_changed?
+    if @user_table.privacy_changed?
       manager.propagate_to_varnish
       update_cdb_tablemetadata
     end
 
     affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization, privacy_changed?)
+      manager.propagate_to(visualization, @user_table.privacy_changed?)
     }
   end
 
@@ -662,7 +576,7 @@ class Table
   def handle_creation_error(e)
     CartoDB::Logger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
-    unless self.name.blank? || e.message =~ /relation .* already exists/
+    unless @user_table.name.blank? || e.message =~ /relation .* already exists/
       @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
 
       self.remove_table_from_user_database unless keep_user_database_table
@@ -672,15 +586,15 @@ class Table
   end
 
   def create_default_map_and_layers
-    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: @user_table.id, user_id: @user_table.user_id))
     @user_table.map_id = m.id
     base_layer = ::Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
     data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
-    data_layer.options['table_name'] = self.name
+    data_layer.options['table_name'] = @user_table.name
     data_layer.options['user_name'] = self.owner.username
-    data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
+    data_layer.options['tile_style'] = "##{@user_table.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = []
     data_layer.tooltip ||= {}
@@ -692,8 +606,8 @@ class Table
     kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
 
     member = CartoDB::Visualization::Member.new(
-      name:         self.name,
-      map_id:       self.map_id,
+      name:         @user_table.name,
+      map_id:       @user_table.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  @user_table.description,
       tags:         (@user_table.tags.split(',') if @user_table.tags),
@@ -714,7 +628,7 @@ class Table
     map = blender.blend
     vis = CartoDB::Visualization::Member.new(
       {
-        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        name:     [@user_table.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
         map_id:   map.id,
         type:     CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
@@ -738,7 +652,7 @@ class Table
   def after_destroy
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
-    Tag.filter(:user_id => user_id, :table_id => id).delete
+    Tag.filter(:user_id => @user_table.user_id, :table_id => id).delete
     remove_table_from_stats
     invalidate_varnish_cache
     cache.del geometry_types_key
@@ -766,7 +680,7 @@ class Table
   # tiles included. Use with care O:-)
   def invalidate_varnish_cache(propagate_to_visualizations=true)
     CartoDB::Varnish.new.purge("#{varnish_key}")
-    invalidate_cache_for(affected_visualizations) if id && table_visualization && propagate_to_visualizations
+    invalidate_cache_for(affected_visualizations) if @user_table.id && table_visualization && propagate_to_visualizations
     self
   end
 
@@ -778,9 +692,9 @@ class Table
 
   def varnish_key
     if owner.cartodb_extension_version_pre_mu?
-      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
+      "^#{self.owner.database_name}:(.*#{@user_table.name}.*)|(table)$"
     else
-      "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+      "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{@user_table.name}.*)|(table)$"
     end
   end
 
@@ -855,7 +769,7 @@ class Table
   def name=(value)
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
-    new_name = get_valid_name(value, current_name: self.name)
+    new_name = get_valid_name(value, current_name: @user_table.name)
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = @user_table.name if !new? && @user_table.name.present?
@@ -864,29 +778,10 @@ class Table
     @user_table[:name] = new_name
   end
 
-  def private?
-    @user_table.private?
-  end
-
-  def public?
-    @user_table.public?
-  end
-
-  def public_with_link_only?
-    @user_table.public_with_link_only?
-  end
-
   def set_default_table_privacy
     @user_table.privacy ||= default_privacy_value
-    save
-  end
-
-  def privacy=(value)
-    @user_table[:privacy] = value
-  end
-
-  def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
+    @user_table.save
+    self
   end
 
   def key
@@ -907,7 +802,7 @@ class Table
 
   def rows_estimated(user=nil)
     user ||= self.owner
-    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples]
+    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{@user_table.name}'::regclass"].first[:reltuples]
   end
 
   def rows_counted
@@ -930,7 +825,7 @@ class Table
     first_columns     = []
     middle_columns    = []
     last_columns      = []
-    owner.in_database.schema(name, options.slice(:reload).merge(schema: owner.database_schema)).each do |column|
+    owner.in_database.schema(@user_table.name, options.slice(:reload).merge(schema: owner.database_schema)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
 
       calculate_the_geom_type if column[0] == :the_geom
@@ -999,7 +894,7 @@ class Table
           raise e
         else
           new_column_type = get_new_column_type(invalid_column)
-          user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
+          user_database.set_column_type(@user_table.name, invalid_column.to_sym, new_column_type)
           retry
         end
       end
@@ -1037,7 +932,7 @@ class Table
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
             new_column_type = get_new_column_type(invalid_column)
             if new_column_type
-              user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+              user_database.set_column_type @user_table.name, invalid_column.to_sym, new_column_type
               retry
             end
           else
@@ -1241,7 +1136,7 @@ class Table
       set_the_geom_column!('point')
 
       owner.in_database do |user_database|
-        CartoDB::InternalGeocoder::LatitudeLongitude.new(user_database).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
+        CartoDB::InternalGeocoder::LatitudeLongitude.new(user_database).geocode(owner.database_schema, @user_table.name, options[:latitude_column], options[:longitude_column])
       end
       schema(reload: true)
     else
@@ -1284,7 +1179,7 @@ class Table
   def has_trigger?(trigger_name)
     owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
       .where(:event_object_catalog => owner.database_name,
-             :event_object_table => self.name,
+             :event_object_table => @user_table.name,
              :trigger_name => trigger_name).count > 0
   end
 
@@ -1308,7 +1203,7 @@ class Table
         AND a.attrelid = t.oid
         AND a.attnum = ANY(ix.indkey)
         AND t.relkind = 'r'
-        AND t.relname = '#{self.name}';
+        AND t.relname = '#{@user_table.name}';
     }).all.map { |t| t[:attname] }
   end
 
@@ -1318,7 +1213,7 @@ class Table
     else
       schema_name = owner.database_schema
     end
-    table_name = "#{owner.database_schema}.#{self.name}"
+    table_name = "#{owner.database_schema}.#{@user_table.name}"
 
     # Following is equivalent to running "SELECT cartodb.CDB_CartodbfyTable('#{schema_name}','#{table_name}')"
     owner.in_database do |user_database|
@@ -1378,7 +1273,7 @@ class Table
   end
 
   def owner
-    @owner ||= User.where(id: self.user_id).first
+    @owner ||= User.where(id: @user_table.user_id).first
   end
 
   def table_style
@@ -1388,7 +1283,7 @@ class Table
   def data_last_modified
     owner.in_database.select(:updated_at)
                      .from(:cdb_tablemetadata.qualify(:cartodb))
-                     .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
+                     .where(tabname: "'#{@user_table.name}'::regclass".lit).first[:updated_at]
   rescue
     nil
   end
@@ -1410,7 +1305,7 @@ class Table
     record = owner.in_database.select(:pg_class__oid)
       .from(:pg_class)
       .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => owner.database_schema, :relname => name).first
+      .where(:relkind => 'r', :nspname => owner.database_schema, :relname => @user_table.name).first
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
@@ -1500,7 +1395,7 @@ class Table
     owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
-        FROM "#{self.name}"
+        FROM "#{@user_table.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
@@ -1600,9 +1495,9 @@ class Table
     #if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == 'multipoint'
       owner.in_database(:as => :superuser) do |user_database|
-        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{@user_table.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
-        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
+        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{@user_table.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
       end
       type = 'point'
@@ -1611,9 +1506,9 @@ class Table
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
     if %w(linestring polygon).include?(type.to_s.downcase)
       owner.in_database(:as => :superuser) do |user_database|
-        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
+        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{@user_table.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
         user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
-        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
+        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{@user_table.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
         type = user_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
@@ -1628,7 +1523,7 @@ class Table
   end
 
   def create_table_in_database!
-    self.name ||= get_valid_name(self.name)
+    @user_table.name ||= get_valid_name(@user_table.name)
 
     owner.in_database do |user_database|
       if force_schema.blank?
@@ -1682,10 +1577,10 @@ class Table
 
   def manage_tags
     if @user_table[:tags].blank?
-      Tag.filter(:user_id => user_id, :table_id => id).delete
+      Tag.filter(:user_id => @user_table.user_id, :table_id => @user_table.id).delete
     else
       tag_names = @user_table.tags.split(',')
-      table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
+      table_tags = Tag.filter(:user_id => @user_table.user_id, :table_id => @user_table.id).all
       unless table_tags.empty?
         # Remove tags that are not in the new names list
         table_tags.each do |tag|
@@ -1699,7 +1594,7 @@ class Table
       # Create the new tags in the this table
       tag_names.each do |new_tag_name|
         new_tag = Tag.new :name => new_tag_name
-        new_tag.user_id = user_id
+        new_tag.user_id = @user_table.user_id
         new_tag.table_id = id
         new_tag.save
       end
@@ -1726,14 +1621,14 @@ class Table
   # @param [User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
     from_schema = self.owner.database_schema
-    table_name = self.name
+    table_name = @user_table.name
     to_role_user = organization_user.database_username
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
   end
 
   def perform_organization_table_permission_change(cartodb_pg_func)
     from_schema = self.owner.database_schema
-    table_name = self.name
+    table_name = @user_table.name
     perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
   end
 

@@ -25,31 +25,48 @@
   color: $cTypography-help;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 984px) {
   .ContentFooter {
-    width: 330px;
+    display:block;
+    width: 635px;
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
   }
 }
 @media only screen and (max-width: 600px) and (min-width: $sMedia-mobile) {
   .ContentFooter {
-    width: 330px;
+    display:block;
+    width: 310px;
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
   }
 }
 @media only screen and (min-width: 600px) {
   .ContentFooter {
+    display:block;
     width: 635px;
+  }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
   }
 }
 @media only screen and (min-width: $sMedia-tablet) {
   .ContentFooter {
     width: 640px;
   }
+  .ContentFooter-inner--paginationOnly {
+    @include justify-content(flex-end, end);
+  }
 }
 @media (min-width: $sMedia-desktop) {
   .ContentFooter {
+    @include display-flex();
     width: $sLayout-width;
   }
 }
+
 @media (min-width: $sMedia-tablet) {
   .ContentFooter-inner {
     @include flex-direction(row);

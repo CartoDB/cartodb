@@ -204,6 +204,19 @@ class UserTable < Sequel::Model
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
+  def name=(value)
+    value = value.downcase if value
+    return if value == self[:name] || value.blank?
+    new_name = service.get_valid_name(value, current_name: self.name)
+
+    # Do not keep track of name changes until table has been saved
+    @name_changed_from = self.name if !new? && self.name.present?
+
+    self.invalidate_varnish_cache if !service.owner.nil? && service.owner.database_name
+    self[:name] = new_name
+  end
+
+
   # --------------------------------------------------------------------------------
   private
 

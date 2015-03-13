@@ -766,18 +766,6 @@ class Table
     end
   end
 
-  def name=(value)
-    value = value.downcase if value
-    return if value == @user_table[:name] || value.blank?
-    new_name = get_valid_name(value, current_name: @user_table.name)
-
-    # Do not keep track of name changes until table has been saved
-    @name_changed_from = @user_table.name if !new? && @user_table.name.present?
-
-    self.invalidate_varnish_cache if !owner.nil? && owner.database_name
-    @user_table[:name] = new_name
-  end
-
   def set_default_table_privacy
     @user_table.privacy ||= default_privacy_value
     @user_table.save
@@ -1389,6 +1377,19 @@ class Table
     perform_organization_table_permission_change('CDB_Organization_Remove_Organization_Access_Permission')
   end
 
+  def get_valid_name(name, options={})
+    name_candidates = []
+    name_candidates = self.owner.tables.select_map(:name) if owner
+
+    options.merge!(name_candidates: name_candidates)
+    options.merge!(connection: self.owner.connection) unless self.owner.nil?
+    unless options[:database_schema].present? || self.owner.nil?
+      options.merge!(database_schema: self.owner.database_schema)
+    end
+
+    Table.get_valid_table_name(name, options)
+  end
+
   private
 
   def query_geometry_types
@@ -1409,19 +1410,6 @@ class Table
     owner.in_database(as: :superuser).run(%Q{
       SELECT CDB_TableMetadataTouch('#{@user_table.table_id}')
     })
-  end
-
-  def get_valid_name(name, options={})
-    name_candidates = []
-    name_candidates = self.owner.tables.select_map(:name) if owner
-
-    options.merge!(name_candidates: name_candidates)
-    options.merge!(connection: self.owner.connection) unless self.owner.nil?
-    unless options[:database_schema].present? || self.owner.nil?
-      options.merge!(database_schema: self.owner.database_schema)
-    end
-
-    Table.get_valid_table_name(name, options)
   end
 
   # Gets a valid postgresql table name for a given database

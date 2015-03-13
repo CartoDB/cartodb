@@ -55,26 +55,26 @@ describe Table do
 
   context "table setups" do
     it "should set a default name different than the previous" do
-      table = Table.new
+      table = UserTable.new
       table.user_id = @user.id
       table.save.reload
       table.name.should == "untitled_table"
 
-      table2 = Table.new
+      table2 = UserTable.new
       table2.user_id = @user.id
       table2.save.reload
       table2.name.should == "untitled_table_1"
     end
 
     it 'is renames "layergroup" to "layergroup_t"' do
-      table         = Table.new
+      table         = UserTable.new
       table.user_id = @user.id
       table.name    = 'layergroup'
       table.valid?.should == true
     end
 
     it 'renames "all" to "all_t"' do
-      table         = Table.new
+      table         = UserTable.new
       table.user_id = @user.id
       table.name    = 'all'
       table.name.should eq 'all_t'

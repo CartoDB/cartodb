@@ -558,9 +558,9 @@ class Table
   end
 
   def propagate_namechange_to_table_vis
-    table_visualization.name = name
+    table_visualization.name = @user_table.name
     table_visualization.store
-  end #propagate_namechange_to_table_vis
+  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -1302,12 +1302,12 @@ class Table
     exception_to_raise = nil
     errored = false
 
-    if @name_changed_from.present? && @name_changed_from != name
-      reload
+    if @user_table.name_changed?
+      @user_table.reload
 
       unless register_table_only
         begin
-          owner.in_database.rename_table(@name_changed_from, name) unless errored
+          owner.in_database.rename_table(@user_table.old_name, @user_table.name) unless errored
         rescue StandardError => exception
           exception_to_raise = CartoDB::BaseCartoDBError.new(
               "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
@@ -1323,7 +1323,7 @@ class Table
           CartoDB::notify_exception(exception_to_raise, user: owner)
         else
           @user_table.layers.each do |layer|
-            layer.rename_table(@name_changed_from, name).save
+            layer.rename_table(@user_table.old_name, @user_table.name).save
           end
         end
       end
@@ -1332,7 +1332,6 @@ class Table
         raise exception_to_raise
       end
     end
-    @name_changed_from = nil
   end
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names

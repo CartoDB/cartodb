@@ -206,12 +206,19 @@ class UserTable < Sequel::Model
     new_name = service.get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = self.name if !new? && self.name.present?
+    @old_name = self.name if !new? && self.name.present?
 
     self.invalidate_varnish_cache if !service.owner.nil? && service.owner.database_name
     self[:name] = new_name
   end
 
+  def name_changed?
+    @old_name.present? && @old_name != self.name
+  end
+
+  def old_name
+    @old_name if @old_name.present?
+  end
 
   # --------------------------------------------------------------------------------
   private

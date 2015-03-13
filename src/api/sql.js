@@ -155,9 +155,15 @@
         xhr = resp;
         resp = JSON.parse(resp.response);
       }
-      promise.trigger('done', resp, status, xhr);
-      if(success) success(resp, status, xhr);
-      if(callback) callback(resp);
+      //Timeout explanation. CartoDB.js ticket #336
+      //From St.Ov.: "what setTimeout does is add a new event to the browser event queue 
+      //and the rendering engine is already in that queue (not entirely true, but close enough) 
+      //so it gets executed before the setTimeout event."
+      setTimeout(function() {
+        promise.trigger('done', resp, status, xhr);
+        if(success) success(resp, status, xhr);
+        if(callback) callback(resp);
+      }, 0);
     }
 
     // call ajax

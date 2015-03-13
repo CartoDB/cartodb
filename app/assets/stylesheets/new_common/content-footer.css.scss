@@ -25,8 +25,6 @@
   color: $cTypography-help;
 }
 
-
-
 @media only screen and (max-width: 984px) {
   .ContentFooter {
     width: 640px;
@@ -36,26 +34,29 @@
   }
 }
 
-@media (min-width: $sMedia-desktop) {
+@media only screen and (max-width: $sMedia-tablet) {
   .ContentFooter {
-    width: $sLayout-width;
+    width: 640px;
+  }
+  .ContentFooter .Pagination {
+    padding: 0 20px;
+  }
+}
+@media only screen and (max-width: $sMedia-mobile) {
+  .ContentFooter {
+    width: 340px;
   }
 }
 
-@media only screen and (max-width: $sMedia-tablet) {
+@media (min-width: $sMedia-mobile) {
   .ContentFooter {
-    width: 100%;
-  }
-  .ContentFooter .Pagination {
-    padding: 0 20px;
+    width: 340px;
   }
 }
-@media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
+
+@media (min-width: $sMedia-desktop) {
   .ContentFooter {
-    width: 100%;
-  }
-  .ContentFooter .Pagination {
-    padding: 0 20px;
+    width: $sLayout-width;
   }
 }
 

@@ -36,7 +36,7 @@ module CartoDB
       set_public                if visualization.public?
       set_public_with_link_only if visualization.public_with_link?
       set_private               if visualization.private? or visualization.organization?
-      table.update(privacy: privacy)
+      table.user_table.update(privacy: privacy)
       self
     end
 
@@ -66,7 +66,7 @@ module CartoDB
     end
 
     def owner
-      @owner ||= User.where(id: table.user_id).first
+      @owner ||= User.where(id: table.user_table.user_id).first
     end
 
     def set_database_permissions(query)
@@ -75,14 +75,14 @@ module CartoDB
 
     def revoke_query
       %Q{
-        REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
+        REVOKE SELECT ON "#{owner.database_schema}"."#{table.user_table.name}"
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
 
     def grant_query
       %Q{
-        GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
+        GRANT SELECT ON "#{owner.database_schema}"."#{table.user_table.name}"
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end

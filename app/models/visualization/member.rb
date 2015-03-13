@@ -765,7 +765,7 @@ module CartoDB
 
       def propagate_privacy_to(table)
         if type == TYPE_CANONICAL
-          CartoDB::TablePrivacyManager.new(table)
+          CartoDB::TablePrivacyManager.new(table.user_table)
             .set_from(self)
             .propagate_to_varnish
         end

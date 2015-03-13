@@ -5,8 +5,8 @@ require_relative 'user_table'
 
 module CartoDB
   class TablePrivacyManager
-    def initialize(table)
-      @table  = table
+    def initialize(user_table)
+      @user_table  = user_table
     end
 
     def set_public
@@ -36,7 +36,7 @@ module CartoDB
       set_public                if visualization.public?
       set_public_with_link_only if visualization.public_with_link?
       set_private               if visualization.private? or visualization.organization?
-      table.user_table.update(privacy: privacy)
+      user_table.update(privacy: privacy)
       self
     end
 
@@ -57,7 +57,7 @@ module CartoDB
 
     private
 
-    attr_reader   :table
+    attr_reader   :user_table
     attr_accessor :privacy
 
     def set_public_with_link_only
@@ -66,7 +66,7 @@ module CartoDB
     end
 
     def owner
-      @owner ||= User.where(id: table.user_table.user_id).first
+      @owner ||= User.where(id: user_table.user_id).first
     end
 
     def set_database_permissions(query)
@@ -75,20 +75,20 @@ module CartoDB
 
     def revoke_query
       %Q{
-        REVOKE SELECT ON "#{owner.database_schema}"."#{table.user_table.name}"
+        REVOKE SELECT ON "#{owner.database_schema}"."#{user_table.name}"
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
 
     def grant_query
       %Q{
-        GRANT SELECT ON "#{owner.database_schema}"."#{table.user_table.name}"
+        GRANT SELECT ON "#{owner.database_schema}"."#{user_table.name}"
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end
 
     def invalidate_varnish_cache
-      table.invalidate_varnish_cache(false)
+      user_table.invalidate_varnish_cache(false)
     end
 
   end

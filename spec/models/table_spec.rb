@@ -210,7 +210,7 @@ describe Table do
       table.table_visualization.should be_private
 
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
+      table.user_table.save
       table.reload
       table                           .should be_public
       table.table_visualization       .should be_public
@@ -220,7 +220,7 @@ describe Table do
       rehydrated.table_visualization  .should be_public
 
       table.user_table.privacy = UserTable::PRIVACY_PRIVATE
-      table.save
+      table.user_table.save
       table.reload
       table                           .should be_private
       table.table_visualization       .should be_private
@@ -398,7 +398,7 @@ describe Table do
 
       table.user_table.privacy = UserTable::PRIVACY_PRIVATE
       expect {
-        table.save
+        table.user_table.save
       }.to raise_error(Sequel::ValidationFailed)
     end
 
@@ -413,12 +413,12 @@ describe Table do
       @user.save
 
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
+      table.user_table.save
       table.owner.reload # this is because the ORM is stupid
 
       table.user_table.privacy = UserTable::PRIVACY_PRIVATE
       expect {
-        table.save
+        table.user_table.save
       }.to raise_error(Sequel::ValidationFailed)
     end
 
@@ -427,10 +427,10 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.should be_private
+      table.user_table.should be_private
 
       expect {
-        @user.in_database(:as => :public_user).run("select * from #{table.name}")
+        @user.in_database(:as => :public_user).run("select * from #{table.user_table.name}")
       }.to raise_error(Sequel::DatabaseError)
     end
 
@@ -439,13 +439,13 @@ describe Table do
       @user.save
       table = create_table(:user_id => @user.id)
 
-      table.should be_private
+      table.user_table.should be_private
 
       table.user_table.privacy = UserTable::PRIVACY_PUBLIC
-      table.save
+      table.user_table.save
 
       expect {
-        @user.in_database(:as => :public_user).run("select * from #{table.name}")
+        @user.in_database(:as => :public_user).run("select * from #{table.user_table.name}")
       }.to_not raise_error
     end
 
@@ -454,10 +454,10 @@ describe Table do
       @user.save
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
 
-      Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+      Rails::Sequel.connection.table_exists?(table.user_table.name.to_sym).should be_false
 
       @user.in_database do |user_database|
-        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?(table.user_table.name.to_sym).should be_true
       end
     end
 
@@ -476,24 +476,24 @@ describe Table do
 
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
 
-      Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+      Rails::Sequel.connection.table_exists?(table.user_table.name.to_sym).should be_false
       @user.in_database do |user_database|
-        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?(table.user_table.name.to_sym).should be_true
       end
 
-      table.name = 'Wadus table #23'
-      table.save
-      table.reload
-      table.name.should == "Wadus table #23".sanitize
+      table.user_table.name = 'Wadus table #23'
+      table.user_table.save
+      table.user_table.reload
+      table.user_table.name.should == "Wadus table #23".sanitize
       @user.in_database do |user_database|
         user_database.table_exists?('wadus_table'.to_sym).should be_false
         user_database.table_exists?('wadus_table_23'.to_sym).should be_true
       end
 
-      table.name = ''
-      table.save
-      table.reload
-      table.name.should == "Wadus table #23".sanitize
+      table.user_table.name = ''
+      table.user_table.save
+      table.user_table.reload
+      table.user_table.name.should == "Wadus table #23".sanitize
       @user.in_database do |user_database|
         user_database.table_exists?('wadus_table_23'.to_sym).should be_true
       end
@@ -505,15 +505,15 @@ describe Table do
       @user.save
 
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
-      table.name.should == 'wadus_table'
+      table.user_table.name.should == 'wadus_table'
 
-      Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+      Rails::Sequel.connection.table_exists?(table.user_table.name.to_sym).should be_false
       @user.in_database do |user_database|
-        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?(table.user_table.name.to_sym).should be_true
       end
 
-      table.name = 'Wadus_table'
-      table.name.should == 'wadus_table'
+      table.user_table.name = 'Wadus_table'
+      table.user_table.name.should == 'wadus_table'
     end
 
     it "should remove varnish cache when the table is renamed" do
@@ -525,7 +525,7 @@ describe Table do
       CartoDB::TablePrivacyManager.any_instance
       table.expects(:invalidate_varnish_cache)
       table.name = 'Wadus table #23'
-      table.save
+      table.user_table.save
     end
 
     it "should rename the pk sequence when renaming the table" do
@@ -557,8 +557,8 @@ describe Table do
         user_database.table_exists?(table.name.to_sym).should be_true
       end
 
-      table.name = 'where'
-      table.save
+      table.user_table.name = 'where'
+      table.user_table.save
       table.reload
       @user.in_database do |user_database|
         user_database.table_exists?('where'.to_sym).should be_true
@@ -825,7 +825,7 @@ describe Table do
     it "can be created with a given schema if it is valid" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
-      table.save
+      table.user_table.save
       check_schema(table, [
         [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
@@ -837,7 +837,7 @@ describe Table do
       delete_user_data @user
       table = new_table(:user_id => @user.id)
       table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
-      table.save
+      table.user_table.save
       check_schema(table, [
         [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
@@ -848,7 +848,7 @@ describe Table do
     it "should alter the schema automatically to a a wide range of numbers when inserting" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar, age integer"
-      table.save
+      table.user_table.save
 
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
@@ -863,7 +863,7 @@ describe Table do
     it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar, age integer"
-      table.save
+      table.user_table.save
 
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
@@ -878,7 +878,7 @@ describe Table do
     it "should alter the schema automatically to a a wide range of numbers when updating" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar, age integer"
-      table.save
+      table.user_table.save
 
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
@@ -893,7 +893,7 @@ describe Table do
     pending "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar(40)"
-      table.save
+      table.user_table.save
 
       table.schema(:cartodb_types => false).should_not include([:name, "text"])
 
@@ -906,14 +906,14 @@ describe Table do
 
     it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
       table = new_table({:name => 'table1', :user_id => @user.id})
-      table.save
+      table.user_table.save
       pk = table.insert_row!({:name => "name #1", :description => "description #1"})
 
       Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
 
       table = new_table({:name => 'table1', :user_id => @user.id})
       lambda {
-        table.save
+        table.user_table.save
       }.should raise_error(CartoDB::InvalidGeomType)
 
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
@@ -921,7 +921,7 @@ describe Table do
 
     it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do
       table = new_table({:name => 'table1', :user_id => @user.id})
-      table.save
+      table.user_table.save
 
       pk = table.insert_row!({:name => "name #1", :description => "description #1"})
 
@@ -1092,7 +1092,7 @@ describe Table do
 
     it "should be able to insert a row with a geometry value" do
       table = new_table(:user_id => @user.id)
-      table.save.reload
+      table.user_table.save.reload
 
       lat = -43.941
       lon = 3.429
@@ -1107,7 +1107,7 @@ describe Table do
     it "should update null value to nil when inserting and updating" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "valid boolean"
-      table.save.reload
+      table.user_table.save.reload
 
       pk = table.insert_row!({:valid => "null"})
       table.record(pk)[:valid].should be_nil
@@ -1133,7 +1133,7 @@ describe Table do
 
     it "should be able to update a row with a geometry value" do
       table = new_table(:user_id => @user.id)
-      table.save.reload
+      table.user_table.save.reload
 
       lat = -43.941
       lon = 3.429
@@ -1211,7 +1211,7 @@ describe Table do
   context "preimport tests" do
     it "rename a table to a name that exists should add a _1 to the new name" do
       table = new_table :name => 'empty_file', :user_id => @user.id
-      table.save.reload
+      table.user_table.save.reload
       table.name.should == 'empty_file'
 
       table2 = new_table :name => 'empty_file', :user_id => @user.id
@@ -1221,7 +1221,7 @@ describe Table do
 
     it "should escape table names starting with numbers" do
       table = new_table :user_id => @user.id, :name => '123_table_name'
-      table.save.reload
+      table.user_table.save.reload
 
       table.name.should == "table_123_table_name"
     end
@@ -1281,7 +1281,7 @@ describe Table do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.should_not be_nil
-      table.save.reload
+      table.user_table.save.reload
       table.name.should == 'empty_file'
 
       fixture     = "#{Rails.root}/db/fake_data/empty_file.csv"
@@ -1295,7 +1295,7 @@ describe Table do
     it "should not drop a table that exists when upload does not fail" do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
-      table.save.reload
+      table.user_table.save.reload
       table.name.should == 'empty_file'
 
       data_import = DataImport.create( :user_id       => @user.id,
@@ -1496,14 +1496,14 @@ describe Table do
       table = new_table :user_id => @user.id
       table.force_schema = "address varchar, the_geom geometry"
       table.the_geom_type = "line"
-      table.save
+      table.user_table.save
       table.reload
       table.the_geom_type.should == "multilinestring"
     end
 
     it "should create a the_geom_webmercator column with the_geom projected to 3785" do
       table = new_table :user_id => @user.id
-      table.save.reload
+      table.user_table.save.reload
 
       lat = -43.941
       lon = 3.429
@@ -1520,7 +1520,7 @@ describe Table do
     it "should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced" do
       table = new_table :user_id => @user.id
       table.force_schema = "name varchar, the_geom geometry"
-      table.save.reload
+      table.user_table.save.reload
 
       lat = -43.941
       lon = 3.429
@@ -1539,7 +1539,7 @@ describe Table do
       table.user_id = @user.id
       table.name = 'Madrid Bars'
       table.force_schema = "name varchar, address varchar, latitude float, longitude float"
-      table.save
+      table.user_table.save
       table.insert_row!({:name => "Hawai",
                          :address => "Calle de Pérez Galdós 9, Madrid, Spain",
                          :latitude => 40.423012,
@@ -1565,7 +1565,7 @@ describe Table do
       table.user_id = @user.id
       table.name = 'Madrid Bars'
       table.force_schema = "name varchar, address varchar, latitude varchar, longitude varchar"
-      table.save
+      table.user_table.save
 
       table.insert_row!({:name => "Hawai",
                          :address => "Calle de Pérez Galdós 9, Madrid, Spain",
@@ -1591,7 +1591,7 @@ describe Table do
       it "should return a geojson for the_geom if it is a point" do
         table = new_table :user_id => @user.id
         table.the_geom_type = "point"
-        table.save.reload
+        table.user_table.save.reload
 
         lat = -43.941
         lon = 3.429
@@ -1610,7 +1610,7 @@ describe Table do
 
       it "should raise an error when the geojson provided is invalid" do
         table = new_table :user_id => @user.id
-        table.save.reload
+        table.user_table.save.reload
 
         lat = -43.941
         lon = 3.429
@@ -1623,7 +1623,7 @@ describe Table do
       it "should return new geojson even if geojson provided had other projection" do
         table = new_table :user_id => @user.id
         table.the_geom_type = "point"
-        table.save.reload
+        table.user_table.save.reload
 
         lat = -43.941
         lon = 3.429
@@ -1650,7 +1650,7 @@ describe Table do
       @user.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
       @user.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
-      table.save
+      table.user_table.save
       table.name.should == 'exttable'
       table.rows_counted.should == 2
     end
@@ -1663,7 +1663,7 @@ describe Table do
       @user.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
       @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
-      table.save
+      table.user_table.save
       table.name.should == 'exttable'
       table.rows_counted.should == 2
     end

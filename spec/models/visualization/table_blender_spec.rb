@@ -38,20 +38,16 @@ describe TableBlender do
 
 
   def fake_public_table
-    user_table = mock
-    user_table.stubs(:private?).returns(false)
-    user_table.stubs(:public_with_link_only?).returns(false)
     table = mock
-    table.stubs(:user_table).returns(user_table)
+    table.stubs(:private?).returns(false)
+    table.stubs(:public_with_link_only?).returns(false)
     table
   end #fake_public_table
 
   def fake_private_table
-    user_table = mock
-    user_table.stubs(:private?).returns(true)
-    user_table.stubs(:public_with_link_only?).returns(false)
     table = mock
-    table.stubs(:user_table).returns(user_table)
+    table.stubs(:private?).returns(true)
+    table.stubs(:public_with_link_only?).returns(false)
     table
   end #fake_private_table
 end # TableBlender

@@ -13,7 +13,7 @@ module CartoDB
       # INFO: we're not creating but registering an existent table, so we want fixed, known name
       table.instance_eval { self[:name] = table_name }
       table.migrate_existing_table  = table_name
-      table.user_table.data_import_id  = data_import_id
+      table.data_import_id  = data_import_id
       table.save
       table.optimize
       table.map.recalculate_bounds!

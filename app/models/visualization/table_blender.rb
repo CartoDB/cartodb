@@ -19,8 +19,8 @@ module CartoDB
       end
 
       def blended_privacy
-        return Visualization::Member::PRIVACY_PRIVATE if tables.map{|t| t.user_table.private?}.any?
-        return Visualization::Member::PRIVACY_LINK if tables.map{|t| t.user_table.public_with_link_only?}.any?
+        return Visualization::Member::PRIVACY_PRIVATE if tables.map{|t| t.private?}.any?
+        return Visualization::Member::PRIVACY_LINK if tables.map{|t| t.public_with_link_only?}.any?
         Visualization::Member::PRIVACY_PUBLIC
       end
 

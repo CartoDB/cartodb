@@ -59,7 +59,7 @@ describe Map do
       map = Map.create(user_id: @user.id, table_id: @table.id)
       @table.reload
       map.reload
-      map.tables.should include(@table.user_table)
+      map.tables.map(&:id).should include(@table.id)
       map.destroy
     end
 
@@ -77,7 +77,7 @@ describe Map do
 
       map2 = Map.create(user_id: @user.id, table_id: @table.id)
       # Change map_id on the table, but visualization still points to old map.id
-      @table.user_table.map_id = map2.id
+      @table.map_id = map2.id
       @table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one

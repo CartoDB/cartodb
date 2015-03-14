@@ -4,20 +4,40 @@
 class UserTable < Sequel::Model
 
   INTERFACE = %w{
+    pk
+    associations
     id
+    id=
+    name
+    description
+    description=
     user_id
     user_id=
     []
     []=
-    name
     new?
     save
+    save_changes
     map_id
+    map_id=
     valid?
     table_id
+    table_id=
     map
+    tags
+    tags=
+    data_import_id
+    data_import_id=
+    user_id
+    user_id=
+    updated_at
+    automatic_geocoding
+    private?
+    public_with_link_only?
     privacy
+    privacy=
     destroy
+    errors
   }
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }

@@ -86,11 +86,6 @@ class Table
     self
   end
 
-  # TODO Let other clases peek and use storage?
-  def user_table
-    @user_table
-  end
-
   # ----------------------------------------------------------------------------
 
 

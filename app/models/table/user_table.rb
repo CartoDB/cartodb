@@ -3,6 +3,23 @@
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
 
+  INTERFACE = %w{
+    id
+    user_id
+    user_id=
+    []
+    []=
+    name
+    new?
+    save
+    map_id
+    valid?
+    table_id
+    map
+    privacy
+    destroy
+  }
+
   RESERVED_TABLE_NAMES = %W{ layergroup all }
 
   PRIVACY_PRIVATE = 0

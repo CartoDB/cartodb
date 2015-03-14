@@ -54,6 +54,7 @@ class Table
 
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
+  def_delegators :@user_table, *::UserTable::INTERFACE
 
 
   def initialize(args = {})
@@ -65,35 +66,9 @@ class Table
     @user_table.set_service(self)
   end
 
-
-  # Stuff that must be delegated in to the storage layer -----------------------
-  # TODO: these are to be removed, access them through table.user_table
-  def id
-    @user_table.id
-  end
-
-  def user_id=(id)
-    @user_table.user_id = id
-  end
-
-  def user_id
-    @user_table.user_id
-  end
-
-  def [](key)
-    @user_table[key]
-  end
-
-  def []=(key, value)
-    @user_table[key] = value
-  end
-
-  def name
-    @user_table.name
-  end
-
-  def new?
-    @user_table.new?
+  # forwardable does not work well with this one
+  def layers
+    @user_table.layers
   end
 
   def save
@@ -110,38 +85,6 @@ class Table
     @user_table.reload
     self
   end
-
-  def map_id
-    @user_table.map_id
-  end
-
-  def valid?
-    @user_table.valid?
-  end
-
-  def table_id
-    @user_table.table_id
-  end
-
-  # TODO I'm worried about exposing that many storage stuff from here, most likely usages of Table must be changed
-  # so instead of exposing storage stuff (façade) here, the client classes use directly the storage class
-  # for the moment doing so to keep compatibility and get the code working.
-  def layers
-    @user_table.layers
-  end
-
-  def map
-    @user_table.map
-  end
-
-  def privacy
-    @user_table.privacy
-  end
-
-  def destroy
-    @user_table.destroy
-  end
-
 
   # TODO Let other clases peek and use storage?
   def user_table

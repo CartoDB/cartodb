@@ -36,6 +36,7 @@ class UserTable < Sequel::Model
     public_with_link_only?
     privacy
     privacy=
+    privacy_text
     destroy
     errors
   }

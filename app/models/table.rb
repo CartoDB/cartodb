@@ -802,25 +802,9 @@ class Table
     @user_table[:name] = new_name
   end
 
-  def private?
-    @user_table.private?
-  end
-
-  def public?
-    @user_table.public?
-  end
-
-  def public_with_link_only?
-    @user_table.public_with_link_only?
-  end
-
   def set_default_table_privacy
     @user_table.privacy ||= default_privacy_value
     save
-  end
-
-  def privacy=(value)
-    @user_table[:privacy] = value
   end
 
   def privacy_changed?

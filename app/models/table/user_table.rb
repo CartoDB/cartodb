@@ -33,9 +33,11 @@ class UserTable < Sequel::Model
     updated_at
     automatic_geocoding
     private?
+    public?
     public_with_link_only?
     privacy
     privacy=
+    privacy_changed?
     privacy_text
     destroy
     errors
@@ -231,6 +233,10 @@ class UserTable < Sequel::Model
   def public_with_link_only?
     self.privacy == PRIVACY_LINK
   end #public_with_link_only?
+
+  def privacy_changed?
+    @user_table.previous_changes.keys.include?(:privacy)
+  end
 
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)

@@ -422,7 +422,7 @@ module CartoDB
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
-          has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
+          has_private_tables |= table.user_table.private?
         }
         has_private_tables
       end
@@ -765,7 +765,7 @@ module CartoDB
 
       def propagate_privacy_to(table)
         if type == TYPE_CANONICAL
-          CartoDB::TablePrivacyManager.new(table)
+          CartoDB::TablePrivacyManager.new(table.user_table)
             .set_from(self)
             .propagate_to_varnish
         end
@@ -774,9 +774,9 @@ module CartoDB
 
       # @param table Table
       def propagate_name_to(table)
-        table.name = self.name
+        table.user_table.name = self.name
         table.register_table_only = self.register_table_only
-        table.update(name: self.name)
+        table.user_table.update(name: self.name)
         if name_changed
           support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
         end

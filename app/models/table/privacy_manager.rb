@@ -1,30 +1,31 @@
 # encoding: utf-8
 require_relative '../../../lib/varnish/lib/cartodb-varnish'
 require_relative '../user'
+require_relative 'user_table'
 
 module CartoDB
   class TablePrivacyManager
-    def initialize(table)
-      @table  = table
+    def initialize(user_table)
+      @user_table  = user_table
     end
 
     def set_public
-      self.privacy = ::Table::PRIVACY_PUBLIC
+      self.privacy = ::UserTable::PRIVACY_PUBLIC
       set_database_permissions(grant_query)
       self
     end
 
     def set_private
-      self.privacy = ::Table::PRIVACY_PRIVATE
+      self.privacy = ::UserTable::PRIVACY_PRIVATE
       set_database_permissions(revoke_query)
       self
     end
 
     def set_from_table_privacy(table_privacy)
       case table_privacy
-        when ::Table::PRIVACY_PUBLIC
+        when ::UserTable::PRIVACY_PUBLIC
           set_public
-        when ::Table::PRIVACY_LINK
+        when ::UserTable::PRIVACY_LINK
           set_public_with_link_only
         else
           set_private
@@ -35,13 +36,13 @@ module CartoDB
       set_public                if visualization.public?
       set_public_with_link_only if visualization.public_with_link?
       set_private               if visualization.private? or visualization.organization?
-      table.update(privacy: privacy)
+      user_table.update(privacy: privacy)
       self
     end
 
     def propagate_to(visualization, table_privacy_changed=false)
       visualization.store_using_table({
-                                        privacy_text: ::Table::PRIVACY_VALUES_TO_TEXTS[privacy],
+                                        privacy_text: ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy],
                                         map_id: visualization.map_id
                                       }, table_privacy_changed)
       self
@@ -56,16 +57,16 @@ module CartoDB
 
     private
 
-    attr_reader   :table
+    attr_reader   :user_table
     attr_accessor :privacy
 
     def set_public_with_link_only
-      self.privacy = ::Table::PRIVACY_LINK
+      self.privacy = ::UserTable::PRIVACY_LINK
       set_database_permissions(grant_query)
     end
 
     def owner
-      @owner ||= User.where(id: table.user_id).first
+      @owner ||= User.where(id: user_table.user_id).first
     end
 
     def set_database_permissions(query)
@@ -74,20 +75,20 @@ module CartoDB
 
     def revoke_query
       %Q{
-        REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
+        REVOKE SELECT ON "#{owner.database_schema}"."#{user_table.name}"
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
 
     def grant_query
       %Q{
-        GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
+        GRANT SELECT ON "#{owner.database_schema}"."#{user_table.name}"
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end
 
     def invalidate_varnish_cache
-      table.invalidate_varnish_cache(false)
+      user_table.invalidate_varnish_cache(false)
     end
 
   end

@@ -1,10 +1,11 @@
 # encoding: utf-8
 require_relative '../models/visualization/collection'
+require_relative '../models/table/user_table'
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
-  one_to_many   :tables
+  one_to_many   :tables, class: ::UserTable
   many_to_one   :user
 
   many_to_many :layers, order: :order, after_add: proc { |map, layer| 
@@ -127,7 +128,7 @@ class Map < Sequel::Model
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
     table       = tables.first
-    from_table  = table.data_last_modified if table
+    from_table  = table.service.data_last_modified if table
 
     [from_table, data_layers.map(&:updated_at)].flatten.compact.max
   end
@@ -136,7 +137,7 @@ class Map < Sequel::Model
     return unless table_id
 
     # Cannot filter by user_id as might be a shared table not owned by us
-    related_table = ::Table.filter(
+    related_table = ::UserTable.filter(
                       id: table_id
                     ).first
     if related_table.map_id != id

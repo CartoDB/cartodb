@@ -46,30 +46,32 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
+            <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
-            <% if (@user.errors[:email].present?) %>
+            <% if @user.errors[:email].present? %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
-            <% else %>
-              <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
+            <% elsif @user.google_sign_in && !@user.can_change_email %>
+              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">Your account is linked to your Google account. You can change the email if you set a password.</p>
             <% end %>
           </div>
         </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Old password</label>
+        <% if @user.should_display_old_password? %>
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Old password</label>
+            </div>
+            <div class="Form-rowData">
+              <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+            </div>
+            <div class="Form-rowInfo">
+              <% if (@user.errors[:old_password].present?) %>
+                <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+              <% end %>
+            </div>
           </div>
-          <div class="Form-rowData">
-            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
-          </div>
-          <div class="Form-rowInfo">
-            <% if (@user.errors[:old_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
-            <% end %>
-          </div>
-        </div>
+        <% end %>
 
         <div class="Form-row">
           <div class="Form-rowLabel">

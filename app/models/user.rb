@@ -395,7 +395,11 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    self.class.password_digest(old_password, self.salt) == self.crypted_password
+    (self.class.password_digest(old_password, self.salt) == self.crypted_password) || (self.google_sign_in && self.last_password_change_date.nil?)
+  end
+
+  def should_display_old_password?
+    self.google_sign_in.nil? || !self.google_sign_in || !self.last_password_change_date.nil?
   end
 
   def password_confirmation
@@ -1068,7 +1072,7 @@ class User < Sequel::Model
 
   def link_ghost_tables_working
     # search in the first 100. This is random number
-    enqeued = Resque.peek(:users, 0, 100).select { |job| 
+    enqeued = Resque.peek(:users, 0, 100).select { |job|
       job && job['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
     }.length
     workers = Resque::Worker.all

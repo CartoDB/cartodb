@@ -121,6 +121,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -174,6 +175,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -191,6 +193,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError
     head(404)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -231,7 +234,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    CartoDB.notify_exception(exception)
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     CartoDB.notify_exception(exception)
@@ -283,6 +286,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: ['Error saving next slide position'] }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
@@ -331,7 +335,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.add_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
     render_jsonp({
                    id:    vis.id,
                    likes: vis.likes.count,
@@ -377,7 +381,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     vis.remove_like_from(current_viewer.id)
        .fetch
-       .invalidate_varnish_cache
+       .invalidate_cache
 
     render_jsonp({
                    id:    vis.id,
@@ -473,7 +477,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def prepare_params_for_total_count(params)
-      params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge({type: 'table'}) : params
+    params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge({type: 'table'}) : params
   end
 
   def index_not_logged_in
@@ -487,7 +491,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       filtered_params = params.dup.merge(scope_for(user))
       filtered_params[:unauthenticated] = true
 
-      total_user_entries = Visualization::Collection.new.count_total(prepare_params_for_total_count(filtered_params))
+      params_for_total_count = prepare_params_for_total_count(filtered_params)
+      total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
 
       collection = Visualization::Collection.new.fetch(filtered_params)
       public_visualizations  = collection.map { |vis|
@@ -502,8 +507,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
       }.compact
 
-      total_liked_entries = collection.total_liked_entries
-      total_shared_entries = collection.total_shared_entries
+      total_liked_entries = collection.total_liked_entries(params_for_total_count[:type])
+      total_shared_entries = collection.total_shared_entries(params_for_total_count[:type])
     end
 
     response = {
@@ -522,7 +527,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     collection = Visualization::Collection.new.fetch(filters)
 
-    total_user_entries = Visualization::Collection.new.count_total(prepare_params_for_total_count(filters))
+    params_for_total_count = prepare_params_for_total_count(filters)
+    total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
 
     table_data = collection.map { |vis|
       if vis.table.nil?
@@ -554,8 +560,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       visualizations: representation,
       total_entries:  collection.total_entries,
       total_user_entries: total_user_entries,
-      total_likes:    collection.total_liked_entries,
-      total_shared:   collection.total_shared_entries
+      total_likes:    collection.total_liked_entries(params_for_total_count[:type]),
+      total_shared:   collection.total_shared_entries(params_for_total_count[:type])
     }
     render_jsonp(response)
   end

@@ -8,3 +8,10 @@
   display: block;
   margin-top: 45px;
 }
+.DatasetsPaginator {
+  width: 940px;
+  margin: 30px auto 50px;
+}
+.DatasetsPaginator .Pagination {
+  @include justify-content(flex-end, end);
+}

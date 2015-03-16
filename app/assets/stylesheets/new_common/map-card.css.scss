@@ -21,7 +21,9 @@
 //     <div class="MapCard-contentFooter">
 //      ...
 //
+
 $sBorderCompensation: 2px;
+$opacityTransition: 250ms;
 
 .MapCard {
   position: relative;
@@ -31,22 +33,54 @@ $sBorderCompensation: 2px;
   border-radius: $sCard-borderRadius;
   margin: 0 auto;
 }
-.MapCard--selectable:hover {
-  background-color: $cCard-hoverFill;
-  border-color: $cCard-hoverBorder;
+.MapCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
 }
-.MapCard--selectable.is-selected {
-  background-color: $cCard-selectedFill;
-  border-color: $cCard-selectedBorder;
+.MapCard-desc {
+  height: 2 * $sLineHeight-normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: $sLineHeight-normal;
+    width: 2 * $sLineHeight-normal;
+    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+  }
+}
+.MapCard--selectable{
+  &:hover {
+    background-color: $cCard-hoverFill;
+    border-color: $cCard-hoverBorder;
+    .MapCard-desc:after {
+      @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
+    }
+  }
+  &.is-selected {
+    background-color: $cCard-selectedFill;
+    border-color: $cCard-selectedBorder;
+    .MapCard-desc:after {
+      @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
+    }
+  }
 }
 .MapCard-header {
-  display: block;
   position: relative;
+  display: block;
   width: 100%;
   height: 170px;
   @include background(image-url("layout/default-map-bkg.png") no-repeat center 0);
   border-radius: 2px 2px 0 0;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
   overflow:hidden;
+  z-index: 1;
 }
 .MapCard-header.is-loading .MapCard-loader {
   display: block;
@@ -130,6 +164,7 @@ $sBorderCompensation: 2px;
   @include background(image-url("layout/map-card-error.png") no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
@@ -137,6 +172,9 @@ $sBorderCompensation: 2px;
   border-radius: $sCard-borderRadius;
   padding: $sMargin-element;
   height: 140px;
+  @include opacity(1);
+  @include transition(opacity, $opacityTransition);
+  z-index: 1;
 }
 .MapCard-content--compact {
   height: auto;
@@ -172,8 +210,37 @@ $sBorderCompensation: 2px;
 }
 .MapCard-contentBodyTimeDiff .UserAvatar,
 .MapCard-contentFooterTimeDiff .UserAvatar {
+  height: $sAvatar-meta + 2;
   margin-left: 5px;
-  line-height: $sAvatar-meta;
+}
+.MapCard-fake {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 352px;
+  @include background(image-url('layout/map-placeholder.png') no-repeat center center);
+  @include opacity(0);
+  @include transition(opacity, $opacityTransition);
+  z-index: 0;
+}
+.MapsList.is-loading .MapCard,
+.MapsList.is-loading .MapCard--selectable,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  pointer-events: none;
+  .MapCard-header { @include opacity(0) }
+  .MapCard-content { @include opacity(0) }
+  .MapCard-fake { @include opacity(1) }
+}
+.MapsList.is-loading .MapCard:hover,
+.MapsList.is-loading .MapCard--selectable:hover,
+.MapsList.is-loading .MapCard--selectable.is-selected {
+  border: 1px solid transparent;
+  background-color: transparent;
+  cursor: default;
+  .MapCard-header { cursor: default }
 }
 
 // Animation function

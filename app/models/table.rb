@@ -6,11 +6,14 @@ require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
 require_relative './table/relator'
 require_relative './visualization/member'
+require_relative './visualization/collection'
 require_relative './visualization/overlays'
+require_relative './visualization/table_blender'
 require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 
 class Table < Sequel::Model(:user_tables)
@@ -59,6 +62,8 @@ class Table < Sequel::Model(:user_tables)
   }
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
+
+  DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
   # Associations
   many_to_one  :map
@@ -227,6 +232,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
 
+    # noinspection RubyArgCount
     vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |u|
       u.user_id == query_filters[:user_id]
     }.first
@@ -288,7 +294,7 @@ class Table < Sequel::Model(:user_tables)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
 
-      # if the table exists, is private, but the owner no longer has private privilidges
+      # if the table exists, is private, but the owner no longer has private privileges
       if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
@@ -564,12 +570,26 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.save
+
+      decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
+      if !decorator.nil? && decorator.decorates_layer?
+        self.map.layers.each do |layer|
+          decorator.decorate_layer!(layer)
+          layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
+        end
+      end
+
+      if @data_import.create_visualization
+        @data_import.visualization_id = self.create_derived_visualization.id
+        @data_import.save
+      end
     end
     add_table_to_stats
 
     update_table_pg_stats
 
     self.cartodbfy
+
   rescue => e
     self.handle_creation_error(e)
   end
@@ -593,7 +613,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization)
+      manager.propagate_to(visualization, privacy_changed?)
     }
   end
 
@@ -658,7 +678,26 @@ class Table < Sequel::Model(:user_tables)
 
     member.store
 
+    member.map.recalculate_bounds!
+
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
+  end
+
+  def create_derived_visualization
+    blender = CartoDB::Visualization::TableBlender.new(self.owner, [ self ])
+    map = blender.blend
+    vis = CartoDB::Visualization::Member.new(
+      {
+        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        map_id:   map.id,
+        type:     CartoDB::Visualization::Member::TYPE_DERIVED,
+        privacy:  blender.blended_privacy,
+        user_id:  self.owner.id
+      }
+    )
+    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
+    vis.store
+    vis
   end
 
   def before_destroy
@@ -683,7 +722,6 @@ class Table < Sequel::Model(:user_tables)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    delete_tile_style
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
   end
@@ -702,15 +740,15 @@ class Table < Sequel::Model(:user_tables)
 
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
-  def invalidate_varnish_cache
+  def invalidate_varnish_cache(propagate_to_visualizations=true)
     CartoDB::Varnish.new.purge("#{varnish_key}")
-    invalidate_cache_for(affected_visualizations) if id && table_visualization
+    invalidate_cache_for(affected_visualizations) if id && table_visualization && propagate_to_visualizations
     self
   end
 
   def invalidate_cache_for(visualizations)
     visualizations.each do |visualization|
-      visualization.invalidate_varnish_cache
+      visualization.invalidate_cache
     end
   end #invalidate_cache_for
 
@@ -1492,25 +1530,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_cdb_tablemetadata
-    # TODO: use upsert
     owner.in_database(as: :superuser).run(%Q{
-      INSERT INTO cartodb.cdb_tablemetadata (tabname, updated_at)
-      VALUES ('#{table_id}', NOW())
-    })
-  rescue Sequel::DatabaseError
-    owner.in_database(as: :superuser).run(%Q{
-      UPDATE cartodb.cdb_tablemetadata
-      SET updated_at = NOW()
-      WHERE tabname = '#{table_id}'
+      SELECT CDB_TableMetadataTouch('#{table_id}')
     })
   end
 
   def update_updated_at
     self.updated_at = Time.now
-  end
-
-  def update_updated_at!
-    update_updated_at && save_changes
   end
 
   def get_valid_name(name, options={})
@@ -1677,10 +1703,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def valid_geometry?(feature)
-    !feature.nil? && !feature.is_empty?
-  end
-
   def manage_tags
     if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -1705,49 +1727,6 @@ class Table < Sequel::Model(:user_tables)
         new_tag.save
       end
     end
-  end
-
-  def delete_tile_style
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/style?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
-  end
-
-  def flush_cache
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/flush_cache?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'cache#flush error', "#{exception.inspect}"
-  end
-
-  def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['internal']['domain']}"
-    port = Cartodb.config[:tiler]['internal']['port'] || 443
-    tiler_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? uri : Cartodb.config[:tiler]['internal']['host']
-    http_req = Net::HTTP.new tiler_ip, port
-    http_req.use_ssl = Cartodb.config[:tiler]['internal']['protocol'] == 'https' ? true : false
-    http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => uri}
-    case request_method
-      when 'GET'
-        http_res = http_req.request_get(request_uri, request_headers)
-      when 'POST'
-        http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
-      when 'DELETE'
-        extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
-      else
-        http_res = nil
-    end
-    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
-    http_res
   end
 
   def add_table_to_stats

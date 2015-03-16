@@ -23,11 +23,15 @@ module Concerns
 
     def delete_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(User) && organization.present?
-        if self.organization.owner && self.organization.owner != self
-          cartodb_central_client.delete_organization_user(organization.name, username)
+      if self.is_a?(User)
+        if organization.nil?
+          cartodb_central_client.delete_user(self.username)
         else
-          raise "Can't destroy the organization owner"
+          if self.organization.owner && self.organization.owner != self
+            cartodb_central_client.delete_organization_user(organization.name, username)
+          else
+            raise "Can't destroy the organization owner"
+          end
         end
       end
       return true
@@ -55,7 +59,8 @@ module Concerns
         [:account_type, :admin, :crypted_password, :database_host,
         :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
         :geocoding_block_price, :geocoding_quota, :map_view_block_price,
-        :map_view_quota, :max_layers, :name, :notification, :organization_id,
+        :map_view_quota, :max_layers, :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
+        :name, :notification, :organization_id,
         :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
         :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
         :user_timeout, :username, :website, :soft_geocoding_limit,

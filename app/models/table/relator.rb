@@ -75,7 +75,7 @@ module CartoDB
 
     def row_count_and_size
       begin
-        # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_CheckQuota()
+        # Keep in sync with lib/sql/scripts-available/CDB_Quota.sql -> CDB_UserDataSize()
         size_calc = @table.is_raster? ? "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"')"
                                       : "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"') / 2"
 

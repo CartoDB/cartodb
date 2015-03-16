@@ -91,6 +91,10 @@ module CartoDB
         false
       end
 
+      def set_limits(limits={})
+        # not supported
+      end
+
       attr_reader   :source_file, :datasource, :etag, :last_modified
       attr_accessor :url
 
@@ -195,6 +199,49 @@ module CartoDB
         else
           name
         end
+        name_with_extension(name, headers)
+      end
+
+      def name_with_extension(name, headers)
+        return name if content_type.nil? || content_type.empty?
+        extension = File.extname(name)
+        return name unless extension.nil? || extension.empty?
+        extension_from_content_type = content_type_extension(content_type)
+        return name if extension_from_content_type.nil?
+        "#{name}.#{extension_from_content_type}"
+      end
+
+      def content_type_extension(content_type)
+        case content_type
+        when %r{^text/plain}
+          'txt'
+        when %r{^text/csv}
+          'csv'
+        when %r{^application/vnd.ms-excel}
+          'xls'
+        when %r{^application/vnd.ms-excel.sheet.binary.macroEnabled.12}
+          'xlsb'
+        when %r{^application/vnd.openxmlformats-officedocument.spreadsheetml.sheet}
+          'xlsx'
+        when %r{^application/vnd.geo+json}
+          'geojson'
+        when %r{^application/vnd.google-earth.kml+xml}
+          'kml'
+        when %r{^application/vnd.google-earth.kmz}
+          'kmz'
+        when %r{^application/gpx+xml}
+          'gpx'
+        when %r{^application/zip}
+          'zip'
+        when %r{^application/json}
+          'json'
+        when %r{^text/javascript}
+          'json'
+        when %r{^application/javascript}
+          'json'
+        else
+          nil
+        end
       end
 
       def content_length_from(headers)
@@ -241,6 +288,12 @@ module CartoDB
 
       def filepath(name=nil)
         repository.fullpath_for(name || filename)
+      end
+
+      def content_type
+        headers.fetch('Content-Type', nil) ||
+          headers.fetch('Content-type', nil) ||
+          headers.fetch('content-type', nil)
       end
 
       def name_from_http(headers)

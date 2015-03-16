@@ -40,7 +40,7 @@ class Admin::UsersController < ApplicationController
       @user.set_fields(attributes, [:email])
     end
 
-    if attributes[:old_password].present? || attributes[:new_password].present? || attributes[:confirm_password].present?
+    if attributes[:new_password].present? || attributes[:confirm_password].present?
       @user.change_password(
         attributes[:old_password].presence,
         attributes[:new_password].presence,

@@ -1,3 +1,9 @@
+3.x.x (2015-xx-xx)
+------------------
+
+Bugfixes:
+* Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
+
 3.9.0 (2015-02-13)
 ------------------
 * New user account & profile management pages, inside CartoDB Editor.
@@ -11,6 +17,7 @@
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
 * Allows to remove overlays using the backspace key.
 * Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
+* Change new dashboard search behaviour [#2628](https://github.com/CartoDB/cartodb/issues/2628).
 
 Bugfixes:
 * Fix layer refresh when the method of a density visualization changes [#2673](https://github.com/CartoDB/cartodb/issues/2673)

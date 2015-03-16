@@ -478,7 +478,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def prepare_params_for_total_count(params)
-    params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge({type: 'table'}) : params
+    # TODO: refactor for making default parameters and total counting obvious
+    if params[:type].nil? || params[:type] == ''
+      types = params.fetch('types', '').split(',')
+      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL 
+      params.merge( { type: type } )
+    else
+      params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge( { type: Visualization::Member::TYPE_CANONICAL } ) : params
+    end
   end
 
   def index_not_logged_in

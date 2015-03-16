@@ -1,5 +1,25 @@
 module CartoDB
 
+  def self.is_domainless?(request)
+    has_subdomain = !self.extract_real_subdomain(request).nil? && self.extract_real_subdomain(request).length > 0
+    has_username_path = !(request.fullpath =~ /\/u\//i).nil?
+
+    if self.subdomains_allowed? && !self.subdomains_optional? && !has_subdomain
+      raise "Subdomain not found at url host"
+    end
+    if !self.subdomains_allowed? && has_subdomain
+      raise "Url host doesn't allows subdomains"
+    end
+    if !self.subdomains_allowed? && !has_username_path
+      raise "Username not found at url"
+    end
+    if !has_subdomain && !has_username_path
+      raise "Url missing subdomain and/or username"
+    end
+
+    !has_subdomain && has_username_path
+  end
+
   # "Smart" subdomain extraction from the request, depending on configuration and /u/xxx url fragment
   # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
@@ -22,16 +42,22 @@ module CartoDB
     default_protocol = self.use_https? ? 'https' : 'http'
     protocol = protocol_override.nil? ? default_protocol : protocol_override
 
-    if self.subdomains_allowed?
+    if self.subdomains_allowed? || self.subdomains_optional?
       base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{self.http_port}"
       unless org_username.nil?
         base_url << "/u/#{org_username}"
       end
     else
-      base_url ="#{protocol}://#{self.session_domain}#{self.http_port}"
+      base_url = domainless_base_url(protocol)
     end
 
     base_url
+  end
+
+  def self.domainless_base_url(protocol_override=nil)
+    default_protocol = self.use_https? ? 'https' : 'http'
+    protocol = protocol_override.nil? ? default_protocol : protocol_override
+    "#{protocol}://#{self.session_domain}#{self.http_port}"
   end
 
   # NOTE: Not intended for usage outside testing (where is needed to clean state between tests)

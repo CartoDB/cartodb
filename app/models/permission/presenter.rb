@@ -11,10 +11,10 @@ module CartoDB
       @org_presenter = CartoDB::PermissionOrganizationPresenter.new
     end
 
-    def to_poro
+    def to_poro(options={})
       {
         id:         @permission.id,
-        owner:      @user_presenter.decorate_user(@permission.owner),
+        owner:      @user_presenter.decorate_user(@permission.owner, options),
         entity: {
           id:       @permission.entity_id,
           type:     @permission.entity_type
@@ -22,7 +22,7 @@ module CartoDB
         acl:        @permission.acl.map { |entry|
           {
             type:   entry[:type],
-            entity: entity_decoration(entry),
+            entity: entity_decoration(entry, options),
             access: entry[:access]
           }
         },
@@ -31,9 +31,9 @@ module CartoDB
       }
     end
 
-    def entity_decoration(entry)
+    def entity_decoration(entry, options)
       if entry[:type] == CartoDB::Permission::TYPE_USER
-        @user_presenter.decorate(entry[:id])
+        @user_presenter.decorate(entry[:id], options)
       else
         @org_presenter.decorate(entry[:id])
       end

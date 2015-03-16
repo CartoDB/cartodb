@@ -8,8 +8,8 @@
 
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
   <script>
-    var vis_data = <%=raw @visualization.to_hash.to_json %>
-    , user_data = <%=raw current_user.data.to_json.html_safe %>
+    var vis_data = <%=raw @visualization.to_hash({request: request}).to_json %>
+    , user_data = <%=raw current_user.data(request: request).to_json.html_safe %>
     , config = <%=raw frontend_config.html_safe %>
     , map_data = <%=raw @visualization.map.public_values.to_json %>
     , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"

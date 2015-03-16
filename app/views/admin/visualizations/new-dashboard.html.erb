@@ -4,7 +4,7 @@
 <%= content_for(:js) do -%>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
-    var user_data = <%=raw current_user.data.to_json.html_safe %>;
+    var user_data = <%=raw current_user.data(request: request).to_json.html_safe %>;
     var config = <%=raw frontend_config.html_safe %>;
     var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
     var isFirstTimeViewingDashboard = <%= (!!@first_time).to_s %>;

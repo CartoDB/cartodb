@@ -38,8 +38,7 @@ class Api::Json::UsersController < Api::ApplicationController
     results = get_organization_name_and_fork_feature(current_viewer, referer, subdomain, referer_organization_username)
 
     render json: {
-      # TODO: Change this to use rails xxx_url helpers instead of handcrafting urls
-      urls: ["#{current_viewer.full_profile_url(results[:organization_name])}/dashboard"],
+      urls: ["#{current_viewer.public_url(results[:organization_name])}#{dashboard_bis_url}"],
       can_fork: results[:can_fork],
       username: current_viewer.username,
       avatar_url: current_viewer.avatar_url

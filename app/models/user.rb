@@ -2229,11 +2229,6 @@ TRIGGER
 
   # --- TODO: Extract this to a service object that handles urls
 
-  # return public user url -> string
-  def public_url
-    CartoDB.base_url(subdomain, organization_username)
-  end
-
   # Special url that goes to Central if active (for old dashboard only)
   def account_url(request_protocol)
     if CartoDB.account_host
@@ -2264,8 +2259,14 @@ TRIGGER
     end
   end
 
-  def full_profile_url(org_name_override=nil)
-    CartoDB.base_url(organization.nil? || org_name_override.nil? ? subdomain : org_name_override, organization_username)
+  # If subdomains are allowed but optional, will get more preference than domainless (use domainless_public_url() for them)
+  # @return String public user url, which is also the base url for a given user
+  def public_url(subdomain_override=nil)
+    CartoDB.base_url((organization.nil? || subdomain_override.nil?) ? subdomain : subdomain_override, organization_username)
+  end
+
+  def domainless_public_url
+    !CartoDB.subdomains_allowed? || CartoDB.subdomains_optional? ? "#{CartoDB.domainless_base_url}/u/#{username}" : nil
   end
 
   # ----------

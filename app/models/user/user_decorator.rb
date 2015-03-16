@@ -63,7 +63,7 @@ module CartoDB
         avatar_url: self.avatar_url,
         new_dashboard_enabled: self.new_dashboard_enabled,
         feature_flags: self.feature_flags,
-        base_url: self.public_url
+        base_url: CartoDB.is_domainless?(options[:request]) ? self.domainless_public_url : self.public_url
       }
 
       data[:organization] = self.organization.to_poro(self) if self.organization.present?

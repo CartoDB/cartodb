@@ -346,8 +346,8 @@ module CartoDB
       self.owner_id == subject.id
     end
 
-    def to_poro
-      CartoDB::PermissionPresenter.new(self).to_poro
+    def to_poro(options={})
+      CartoDB::PermissionPresenter.new(self).to_poro(options)
     end
 
     def destroy_shared_entities

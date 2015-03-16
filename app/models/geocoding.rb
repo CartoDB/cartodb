@@ -118,7 +118,7 @@ class Geocoding < Sequel::Model
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
     table_geocoder.process_results if state == 'completed'
     create_automatic_geocoding if automatic_geocoding_id.blank?
-    rows_geocoded_after = table_service.owner.in_database.select.from(table.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
     self.update(state: 'finished', real_rows: rows_geocoded_after - rows_geocoded_before, used_credits: calculate_used_credits)
     self.report
   rescue => e

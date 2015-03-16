@@ -39,6 +39,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def destroy
     @user.destroy
     respond_with(:superadmin, @user)
+  rescue => e
+    Rollbar.report_message('Error destroying user', 'error', { error: e.inspect, user: @user.inspect })
+    respond_with(:superadmin, @user, status: 500)
   end
 
   def dump

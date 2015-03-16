@@ -184,7 +184,7 @@ describe Geocoding do
   end
 
   describe '#cancel' do
-    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, user_table: @table) }
 
     it 'cancels the geocoding job' do
       geocoding.table_geocoder.expects(:cancel).times(1).returns(true)

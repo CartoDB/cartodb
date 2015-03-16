@@ -13,7 +13,7 @@ class Geocoding < Sequel::Model
                        :used_credits, :remaining_quota, :country_column, :data_import_id]
 
   many_to_one :user
-  many_to_one :table, class: :UserTable
+  many_to_one :user_table, :key => :table_id
   many_to_one :automatic_geocoding
   many_to_one :data_import
 
@@ -244,7 +244,7 @@ class Geocoding < Sequel::Model
   private
 
   def table_service
-    @table_service ||= Table.new(user_table: table) if table.present?
+    @table_service ||= Table.new(user_table: user_table) if user_table.present?
   end
 
 end

@@ -97,7 +97,7 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = ::Table.Storage.where(id: @table.id).first.try(:service)
+      @table = ::UserTable.where(id: @table.id).first.try(:service)
 
       render_jsonp(@table.public_values.merge(warnings: warnings))
     else

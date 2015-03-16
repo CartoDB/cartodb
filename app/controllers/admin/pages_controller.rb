@@ -164,7 +164,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def eligible_for_redirect?(user)
-    CartoDB.subdomains_allowed? && user.has_organization? &&
+    (CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?) && user.has_organization? &&
       CartoDB.extract_real_subdomain(request) != user.organization.name
   end
 
@@ -394,7 +394,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def belongs_to_organization
-    return unless CartoDB.subdomains_allowed?
+    return unless CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
 
     user_or_org_domain = CartoDB.extract_real_subdomain(request)
     user_domain = CartoDB.extract_subdomain(request)
@@ -402,7 +402,7 @@ class Admin::PagesController < ApplicationController
 
     unless user.nil?
       if user.username != user_or_org_domain and not user.belongs_to_organization?(get_organization_if_exists(user_or_org_domain))
-        render_404
+        render_404 unless CartoDB.subdomains_optional?
       end
     end
   end

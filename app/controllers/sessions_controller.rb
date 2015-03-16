@@ -26,7 +26,11 @@ class SessionsController < ApplicationController
     user = if params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
-        user_domain = CartoDB.subdomains_allowed? ? params[:user_domain] : user.username
+        if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+          user_domain = params[:user_domain].present? ?  params[:user_domain] : user.username
+        else
+          user_domain = user.username
+        end
         authenticate!(:google_access_token, scope: user_domain)
       elsif user == false
         # token not valid
@@ -46,14 +50,7 @@ class SessionsController < ApplicationController
     user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
     CartodbStats.increment_login_counter(user.email)
 
-    destination_url = dashboard_path(user_domain: user_domain, trailing_slash: true)
-    if user.organization.nil? || !CartoDB.subdomains_allowed?
-      destination_url = CartoDB.base_url(user.username) << destination_url
-    else
-      destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
-    end
-
-    redirect_to destination_url
+    redirect_to user.public_url << dashboard_path(user_domain: user_domain, trailing_slash: true)
   end
 
   def destroy

@@ -76,7 +76,7 @@ class Api::Json::OembedController < Api::ApplicationController
 
     data = nil
 
-    if CartoDB.subdomains_allowed?
+    if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
       begin
         data = from_url(url_fragments, protocol, domain)
       rescue UrlFRagmentsError

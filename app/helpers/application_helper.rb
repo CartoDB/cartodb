@@ -45,7 +45,7 @@ module ApplicationHelper
 
   def sql_api_template(privacy="private")
       sql_api = Cartodb.config[:sql_api][privacy]
-      if CartoDB.subdomains_allowed?
+      if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
         sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s + sql_api["endpoint"]
       else
         sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/u/{user}" + sql_api["endpoint"]
@@ -54,7 +54,7 @@ module ApplicationHelper
 
   def maps_api_template(privacy="private")
       maps_api = Cartodb.config[:tiler][privacy]
-      if CartoDB.subdomains_allowed?
+      if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
         maps_api["protocol"] + "://{user}." + maps_api["domain"] + ":" + maps_api["port"].to_s
       else
         maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"].to_s + "/u/{user}"

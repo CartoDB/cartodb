@@ -2227,39 +2227,51 @@ TRIGGER
     self.database_schema
   end
 
+  # --- TODO: Extract this to a service object that handles urls
+
   # return public user url -> string
   def public_url
-    subdomain = organization.nil? || !CartoDB.subdomains_allowed? ? username : organization.name
-    user_name = organization.nil? || !CartoDB.subdomains_allowed? ? nil : username
-
-    CartoDB.base_url(subdomain, user_name)
+    CartoDB.base_url(subdomain, organization_username)
   end
 
+  # Special url that goes to Central if active (for old dashboard only)
   def account_url(request_protocol)
     if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
     end
   end
 
+  # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
   end
 
+  # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     account_url(request_protocol) + '/upgrade'
   end
 
-  def subdomain
-    organization.nil? ? username : organization.name
+  def organization_username
+    return nil if organization.nil? || !CartoDB.subdomains_allowed?
+    username
   end
 
-  def name_or_username
-    name.present? ? name : username
+  def subdomain
+    if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+      organization.nil? ? username : organization.name
+    else
+      username
+    end
   end
 
   def full_profile_url(org_name_override=nil)
-    organization.nil? ? CartoDB.base_url(username) :
-                        CartoDB.base_url(org_name_override.nil? ? organization.name : org_name_override, username)
+    CartoDB.base_url(organization.nil? || org_name_override.nil? ? subdomain : org_name_override, organization_username)
+  end
+
+  # ----------
+
+  def name_or_username
+    name.present? ? name : username
   end
 
   private

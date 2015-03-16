@@ -29,7 +29,11 @@ class Api::Json::UsersController < Api::ApplicationController
 
     subdomain = referer_match[1].gsub(CartoDB.session_domain, '').downcase
 
-    referer_organization_username = CartoDB.subdomains_allowed? ? referer_match[5] : nil
+    if CartoDB.subdomains_allowed? || (CartoDB.subdomains_optional? && !referer_match[5].nil?)
+      referer_organization_username = referer_match[5]
+    else
+      referer_organization_username = nil
+    end
 
     results = get_organization_name_and_fork_feature(current_viewer, referer, subdomain, referer_organization_username)
 
@@ -47,7 +51,7 @@ class Api::Json::UsersController < Api::ApplicationController
   def get_organization_name_and_fork_feature(user, referrer, subdomain, referrer_organization_username=nil)
     organization_name = nil
 
-    can_fork = CartoDB.subdomains_allowed? ? can_user_fork_resource(referrer, user) : false
+    can_fork = CartoDB.subdomains_allowed? || CartoDB.subdomains_optional? ? can_user_fork_resource(referrer, user) : false
 
     # It doesn't have a organization username component. We assume it's not a organization referer
     if referrer_organization_username.nil?

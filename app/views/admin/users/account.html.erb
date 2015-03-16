@@ -51,8 +51,8 @@
           <div class="Form-rowInfo">
             <% if @user.errors[:email].present? %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
-            <% elsif @user.google_sign_in && !@user.can_change_email %>
-              <p class="Form-rowInfoText Form-rowInfoText--multipleLines">Your account is linked to your Google account. You can change the email if you set a password.</p>
+            <% elsif @user.google_sign_in %>
+              <p class="Form-rowInfoText <%= 'Form-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
             <% end %>
           </div>
         </div>

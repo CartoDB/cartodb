@@ -1315,9 +1315,17 @@ class Table
     nil
   end
 
+  def privacy
+    @user_table.privacy
+  end
+
+  def privacy_text
+    privacy.to_s
+  end
+
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy == UserTable::PRIVACY_LINK ? 'PUBLIC' : @user_table.privacy_text
+    privacy.link? ? CartoDB::UserTable::Privacy.PUBLIC.to_s : privacy_text
   end
 
   def relator

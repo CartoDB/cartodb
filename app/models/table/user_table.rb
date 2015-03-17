@@ -1,5 +1,7 @@
 # coding: UTF-8
 
+require_relative '../../../lib/cartodb/privacy'
+
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
 
@@ -32,9 +34,6 @@ class UserTable < Sequel::Model
     user_id=
     updated_at
     automatic_geocoding
-    privacy
-    privacy=
-    privacy_changed?
     destroy
     errors
     set_except

@@ -980,7 +980,8 @@ describe Api::Json::VisualizationsController do
       user_2 = create_user(
         username: 'testindexauth',
         email:    'test_auth@example.com',
-        password: 'testauth'
+        password: 'testauth',
+        private_maps_enabled: true
       )
 
       collection = CartoDB::Visualization::Collection.new.fetch(user_id: user_2.id)

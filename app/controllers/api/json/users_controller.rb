@@ -8,7 +8,7 @@ class Api::Json::UsersController < Api::ApplicationController
 
   def show
     user = current_user
-    render json: user.data
+    render json: user.data({request:request})
   end
 
   def get_authenticated_users

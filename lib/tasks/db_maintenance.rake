@@ -285,6 +285,14 @@ namespace :cartodb do
       user.create_function_invalidate_varnish
     end
 
+    desc 'Move user to its own schema'
+    task :move_user_to_schema, [:username] => :environment do |t, args|
+      user = User.find(username: args[:username])
+      user.create_own_schema
+      user.setup_schema
+      user.save
+    end
+
     desc 'Install/upgrade Varnish invalidation trigger'
     task :load_varnish_trigger, [:num_threads, :thread_sleep, :database_host, :sleep] => :environment do |t, args|
       threads = args[:num_threads].blank? ? 1 : args[:num_threads].to_i

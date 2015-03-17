@@ -34,6 +34,9 @@ class UserTable < Sequel::Model
     user_id=
     updated_at
     automatic_geocoding
+    privacy
+    privacy=
+    privacy_changed?
     destroy
     errors
     set_except
@@ -189,7 +192,7 @@ class UserTable < Sequel::Model
   end
 
   def privacy=(value)
-    @privacy = CartoDB::UserTable::Privacy.from_int_or_str(value)
+    @privacy = CartoDB::Privacy.from_anything(value)
     super(@privacy.to_i)
   end
 

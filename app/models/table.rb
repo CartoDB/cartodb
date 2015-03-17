@@ -107,7 +107,7 @@ class Table
   end
 
   def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
+    self.owner.try(:private_tables_enabled) ? CartoDB::Privacy::PRIVATE : CartoDB::Privacy::PUBLIC
   end
 
   def geometry_types_key
@@ -635,7 +635,7 @@ class Table
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  @user_table.description,
       tags:         (@user_table.tags.split(',') if @user_table.tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      privacy:      default_privacy_value.to_s,
       user_id:      self.owner.id,
       kind:         kind
     )

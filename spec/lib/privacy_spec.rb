@@ -13,10 +13,11 @@ module CartoDB
       config.mock_with :mocha
     end
 
-    describe '#from_symbol' do
-      it 'Creates privacy objects from symbols' do
-        p1 = Privacy.from_symbol(:private)
-        p1.should eq Pricacy.PRIVATE
+    describe '#new' do
+      it 'is private and raises an exception if invoked' do
+        expect {
+          Privacy.new(0)
+        }.to raise_error(NoMethodError)
       end
     end
 

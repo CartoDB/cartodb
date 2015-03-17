@@ -17,22 +17,24 @@ module CartoDB
 
     def initialize(value)
       @value = value
-      raise InvalidPrivacyValue, sym unless self.valid?
+      raise InvalidPrivacyValue, value unless self.valid?
       self
     end
 
     # Factory methods
-    def self.from_int_value(i)
+    def self.from_int(i)
       new(i)
     end
 
-    def self.from_symbol(sym)
-      value = VALID[sym] || raise InvalidPrivacyValue, sym
+    def self.from_sym(sym)
+      value = VALID[sym]
+      raise InvalidPrivacyValue, sym if value.nil?
       new(value)
     end
 
     def self.from_str(str)
-      value = VALID[str.downcase.to_sym] || InvalidPrivacyValue, str
+      value = VALID[str.downcase.to_sym]
+      raise InvalidPrivacyValue, str if value.nil?
       new(value)
     end
 
@@ -101,11 +103,9 @@ module CartoDB
     end
 
     # Convenience constants
-    PRIVATE = self.from_symbol(:private)
-    PUBLIC = self.from_symbol(:public)
-    LINK = self.from_symbol(:link)
-
-    private
+    PRIVATE = self.from_sym(:private)
+    PUBLIC = self.from_sym(:public)
+    LINK = self.from_sym(:link)
 
     def value
       @value

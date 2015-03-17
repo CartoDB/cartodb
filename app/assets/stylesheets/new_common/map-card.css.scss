@@ -55,6 +55,8 @@ $opacityTransition: 250ms;
   }
 }
 .MapCard-desc--fake {
+  display: block;
+  width: 100%;
   text-align: center;
   margin-bottom: $sMargin-element;
 }

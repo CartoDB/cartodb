@@ -17,6 +17,9 @@
 }
 .CreateDialog-footerInner {
   position: relative;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
   width: 940px;
   margin: 0 auto;
   padding: 15px 40px;
@@ -44,10 +47,9 @@
   background: $cStructure-mainLine;
   z-index: 2;
 }
-.CreateDialog-footerInner.is-expanded {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+.CreateDialog-footerInner.is-centered {
+  display: block;
+  @include justify-content(initial, initial);
 }
 .CreateDialog-footerInfo {
   font-size: $sFontSize-larger;

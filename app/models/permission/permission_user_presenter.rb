@@ -10,13 +10,17 @@ module CartoDB
 
     def decorate_user(user, options)
       return {} if user.nil?
-      {
-          id:         user.id,
-          username:   user.username,
-          avatar_url: user.avatar_url,
-          # For now, don't add complexity to frontend
-          base_url:   CartoDB.is_domainless?(options[:request]) ? user.domainless_public_url : user.public_url
+      data = {
+        id:         user.id,
+        username:   user.username,
+        avatar_url: user.avatar_url,
       }
+      #TODO: Make sure this can be optional (e.g. related/dependant visualizations)
+      unless options[:request].nil?
+        data[:base_url] = CartoDB.is_domainless?(options[:request]) ? user.domainless_public_url : user.public_url
+      end
+
+      data
     end
 
   end

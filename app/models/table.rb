@@ -83,13 +83,17 @@ class Table < Sequel::Model(:user_tables)
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
 
   def public_values(options = {}, viewer_user=nil)
-    selected_attrs = if options[:except].present?
-      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) }
-    else
-      PUBLIC_ATTRIBUTES
-    end
+    selected_attrs = options[:except].present? ?
+      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
 
-    attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+    attrs = Hash[selected_attrs.map{ |k, v|
+      if [:serialize_dependent_visualizations, :serialize_non_dependent_visualizations].include?(v)
+        [k, (self.send(v, options) rescue self[v].to_s)]
+      else
+        [k, (self.send(v) rescue self[v].to_s)]
+      end
+    }]
+
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
       attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end

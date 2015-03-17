@@ -1,3 +1,5 @@
+- Fixes a bug with fullscreen in Safari #361 
+
 3.12.12 (12//03//2015)
 - Fixes a bug that prevented generating previews of torque layers with named maps
 

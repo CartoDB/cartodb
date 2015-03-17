@@ -1366,6 +1366,27 @@ describe User do
     @user.crypted_password.should eq old_crypted_password
   end
 
+  describe "when user is signed up with google sign-in and don't have any password yet" do
+    before(:each) do
+      @user.google_sign_in = true
+      @user.last_password_change_date = nil
+      @user.save
+
+      new_valid_password = '123456'
+      @user.change_password("doesn't matter in this case", new_valid_password, new_valid_password)
+    end
+
+    it 'should allow updating password w/o a current password' do
+      @user.valid?.should eq true
+      @user.save
+    end
+
+    it 'should have updated last password change date' do
+      @user.last_password_change_date.should_not eq nil
+      @user.save
+    end
+  end
+
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name
@@ -1376,4 +1397,3 @@ describe User do
   end
 
 end
-

@@ -139,11 +139,11 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.public_table_count
 
-    @non_dependent_visualizations = @table.non_dependent_visualizations({request: request}).select{
+    @non_dependent_visualizations = @table.non_dependent_visualizations.select{
         |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
     }
 
-    @dependent_visualizations = @table.dependent_visualizations({request: request}).select{
+    @dependent_visualizations = @table.dependent_visualizations.select{
         |vis| vis.privacy == Visualization::Member::PRIVACY_PUBLIC
     }
 

@@ -173,6 +173,19 @@ class User < Sequel::Model
 
   end
 
+  def can_delete
+    !has_shared_entities?
+  end
+
+  def has_shared_entities?
+    # Right now, cannot delete users with entities shared with other users or the org.
+    has_shared_entities = false
+    CartoDB::Permission.where(owner_id: self.id).each { |permission|
+      has_shared_entities = has_shared_entities || !permission.acl.empty?
+    }
+    has_shared_entities
+  end
+
   def before_destroy
     org_id = nil
     @org_id_for_org_wipe = nil
@@ -187,6 +200,10 @@ class User < Sequel::Model
           CartoDB::Logger.info msg
           raise CartoDB::BaseCartoDBError.new(msg)
         end
+      end
+
+      unless can_delete
+        raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
       end
 
       has_organization = true
@@ -218,10 +235,6 @@ class User < Sequel::Model
 
     # Invalidate user cache
     invalidate_varnish_cache
-
-    CartoDB::Permission.where(owner_id: self.id).each { |permission|
-      permission.destroy
-    }
 
     # Delete the DB or the schema
     if has_organization

@@ -57,8 +57,17 @@ class Organization < Sequel::Model
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade
+    destroy_permissions
     destroy_non_owner_users
     self.owner.destroy
+  end
+
+  def destroy_permissions
+    self.users.each { |user|
+      CartoDB::Permission.where(owner_id: user.id).each { |permission|
+        permission.destroy
+      }
+    }
   end
 
   def destroy_non_owner_users

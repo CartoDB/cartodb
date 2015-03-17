@@ -192,12 +192,12 @@ class UserTable < Sequel::Model
   end
 
   def privacy=(value)
-    @privacy = CartoDB::Privacy.from_anything(value)
-    super(@privacy.to_i)
+    @privacy_value = CartoDB::Privacy.from_anything(value)
+    super(@privacy_value.to_i)
   end
 
   def privacy
-    @privacy
+    @privacy_value = CartoDB::Privacy.from_anything(super)
   end
 
   def privacy_changed?

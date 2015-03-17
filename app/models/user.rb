@@ -1488,12 +1488,16 @@ class User < Sequel::Model
       self.grant_user_in_database
     end.join
     self.load_cartodb_functions
+    self.create_own_schema
+    self.setup_schema
+  end
+
+  def create_own_schema
     self.database_schema = self.username
     self.this.update database_schema: self.database_schema
     self.create_user_schema
     self.set_database_search_path
     self.create_public_db_user
-    self.setup_schema
   end
 
   def setup_schema

@@ -47,6 +47,7 @@ module CartoDB
           create_the_geom_from_latlon           ||
           create_the_geom_from_ip_guessing      ||
           create_the_geom_from_country_guessing ||
+          create_the_geom_from_namedplaces_guessing ||
           create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -151,6 +152,31 @@ module CartoDB
         return false
       end
 
+      def create_the_geom_from_namedplaces_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying namedplaces guessing...'
+        begin
+          namedplace_column_name = nil
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            namedplace_column_name = @content_guesser.namedplace_column
+            @tracker.call('importing')
+          end
+          if namedplace_column_name
+            job.log "Found namedplace column: #{namedplace_column_name}"
+            create_the_geom_in table_name
+            return geocode_namedplaces namedplace_column_name
+          end
+        rescue Exception => ex
+          message = "create_the_geom_from_namedplaces_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
+        end
+        return false
+      end
+
       def create_the_geom_from_ip_guessing
         return false if not @content_guesser.enabled?
         job.log 'Trying ip guessing...'
@@ -178,6 +204,11 @@ module CartoDB
       def geocode_countries country_column_name
         job.log "Geocoding countries..."
         geocode(country_column_name, 'polygon', 'admin0')
+      end
+
+      def geocode_namedplaces namedplace_column_name
+        job.log "Geocoding namedplaces..."
+        geocode(namedplace_column_name, 'point', 'namedplace')
       end
 
       def geocode_ips ip_column_name

@@ -41,6 +41,14 @@ module CartoDB
         nil
       end
 
+      def namedplace_column
+        return nil if not enabled?
+        columns.each do |column|
+          return column[:column_name] if is_namedplace_column? column
+        end
+        nil
+      end
+
       def ip_column
         return nil if not enabled?
         columns.each do |column|
@@ -73,8 +81,28 @@ module CartoDB
         end
       end
 
+      def is_namedplace_column?(column)
+        return false unless is_text_type? column
+        entropy = metric_entropy(column, country_name_normalizer) # TODO: optimize
+        if entropy < minimum_entropy
+          false
+        else
+          proportion = namedplace_proportion(column)
+          if proportion < threshold
+            false
+          else
+            log_namedplace_guessing_match_metrics(proportion)
+            true
+          end
+        end
+      end
+
       def log_country_guessing_match_metrics(proportion)
         @importer_stats.gauge('country_proportion', proportion)
+      end
+
+      def log_namedplace_guessing_match_metrics(proportion)
+        @importer_stats.gauge('namedplace_proportion', proportion)
       end
 
       def log_ip_guessing_match_metrics(proportion)
@@ -135,6 +163,21 @@ module CartoDB
         country_proportion = matches.to_f / sample.count
         log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
         country_proportion
+      end
+
+      def namedplace_proportion(column)
+        column_name_sym = column[:column_name].to_sym
+        matches = count_namedplaces(sample, column_name_sym)
+        country_proportion = matches.to_f / sample.count
+        log "namedplace_proportion(#{column[:column_name]}) = #{country_proportion}"
+        country_proportion
+      end
+
+      def count_namedplaces(sample, column_name_sym)
+        sql_array = sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
+        query = "WITH geo_function as (SELECT (geocode_namedplace(Array[#{sql_array}])).*) select count(success) FROM geo_function where success = TRUE"
+        ret = geocoder_sql_api.fetch(query)
+        ret.first['count']
       end
 
       def log(msg)

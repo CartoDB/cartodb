@@ -2278,4 +2278,12 @@ TRIGGER
     Digest::SHA256.hexdigest(args.flatten.join)
   end
 
+  def move_tables_to_schema(old_schema, new_schema)
+    self.real_tables(old_schema).each do |t|
+      self.in_database(as: :superuser) do |database|
+        database.run(%Q{ ALTER TABLE #{old_schema}.#{t[:relname]} SET SCHEMA "#{new_schema}" })
+      end
+    end
+  end
+
 end

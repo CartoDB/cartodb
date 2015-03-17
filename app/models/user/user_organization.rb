@@ -23,7 +23,7 @@ module CartoDB
       raise "Organization is already active. You can't assign an admin" if @active
       @owner.create_schema(@owner.username, @owner.database_username)
       @owner.grant_all_on_user_schema_queries
-      move_user_tables_to_schema(@owner.id)
+      @owner.move_tables_to_schema('public', @owner.username)
       @owner.organization_id = @organization.id
       @owner.database_schema = @owner.username
       @organization.owner_id = @owner.id
@@ -77,17 +77,5 @@ module CartoDB
       end
     end
 
-    private
-
-    def move_user_tables_to_schema(user_id)
-      user = User.where(:id => user_id).first
-      raise "User doesn't exist" if user.nil?
-      user.real_tables.each do |t|
-        puts "TABLE: #{t}"
-        user.in_database(as: :superuser) do |database|
-          database.run(%Q{ ALTER TABLE public.#{t[:relname]} SET SCHEMA "#{user.username}" })
-        end
-      end
-    end
   end
 end

@@ -89,7 +89,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     end
 
-    @table.set_except(params, :name)
+    @table.set_except(params, :name) #TODO: this is bad, passing all params blindly to the table object
     if params.keys.include?('latitude_column') && params.keys.include?('longitude_column')
       latitude_column  = params[:latitude_column]  == 'nil' ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == 'nil' ? nil : params[:longitude_column].try(:to_sym)

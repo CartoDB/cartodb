@@ -41,6 +41,7 @@ class UserTable < Sequel::Model
     privacy_text
     destroy
     errors
+    set_except
   }
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }

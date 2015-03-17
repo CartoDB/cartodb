@@ -47,7 +47,8 @@ describe Visualization::Member do
         :cartodb_extension_version_pre_mu? => false,
         :rebuild_quota_trigger => nil,
         :setup_schema => nil,
-        :grant_publicuser_in_database => nil
+        :grant_publicuser_in_database => nil,
+        :move_tables_to_schema => nil
     )
 
     Organization.all.each { |org|

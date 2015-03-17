@@ -6,6 +6,16 @@ require 'yaml'
 require 'pg'
 require 'redis'
 
+script_name = "script/compare_metadata.rb"
+data = `ps aux | grep "#{script_name}"`
+         .split("\n")
+         .select { |item| item =~ /ruby #{script_name}/i  }
+         .select { |item| (item =~ / #{Process.pid} /i).nil? }
+if data.length > 0
+  puts "compare_metadata script already running, exiting"
+  exit 0
+end
+
 config = YAML.load(File.read('../config/app_config.yml'))
 database = YAML.load(File.read('../config/database.yml'))
 

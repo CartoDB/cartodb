@@ -391,11 +391,18 @@ class User < Sequel::Model
 
     return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
 
+    # Must be set AFTER validations
+    set_last_password_change_date
+
     self.password = new_password_value
   end
 
   def validate_old_password(old_password)
-    self.class.password_digest(old_password, self.salt) == self.crypted_password
+    (self.class.password_digest(old_password, self.salt) == self.crypted_password) || (google_sign_in && last_password_change_date.nil?)
+  end
+
+  def should_display_old_password?
+    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
   end
 
   def password_confirmation
@@ -403,7 +410,7 @@ class User < Sequel::Model
   end
 
   def password_confirmation=(password_confirmation)
-    self.last_password_change_date = Time.zone.now unless new?
+    set_last_password_change_date
     @password_confirmation = password_confirmation
   end
 
@@ -1068,7 +1075,7 @@ class User < Sequel::Model
 
   def link_ghost_tables_working
     # search in the first 100. This is random number
-    enqeued = Resque.peek(:users, 0, 100).select { |job| 
+    enqeued = Resque.peek(:users, 0, 100).select { |job|
       job && job['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
     }.length
     workers = Resque::Worker.all
@@ -2272,6 +2279,10 @@ TRIGGER
 
   def secure_digest(*args)
     Digest::SHA256.hexdigest(args.flatten.join)
+  end
+
+  def set_last_password_change_date
+    self.last_password_change_date = Time.zone.now unless new?
   end
 
 end

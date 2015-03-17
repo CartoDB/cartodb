@@ -568,5 +568,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(response)
   end
 
+  # Need to always send request object to visualizations upon rendering their json
+  def render_jsonp(obj, status = 200, options = {})
+    super(obj, status, options.merge({request: request}))
+  end
+
 end
 

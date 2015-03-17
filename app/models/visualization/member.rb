@@ -334,6 +334,11 @@ module CartoDB
         privacy == PRIVACY_PROTECTED
       end
 
+      # Called by controllers upon rendering
+      def to_json(options={})
+        ::JSON.dump(to_hash(options.merge({public_fields_only: true})))
+      end
+
       def to_hash(options={})
         presenter = Presenter.new(self, options.merge(real_privacy: true))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro

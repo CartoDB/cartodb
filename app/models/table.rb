@@ -93,7 +93,8 @@ class Table < Sequel::Model(:user_tables)
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
       attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end
-    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization, { real_privacy: true, user: viewer_user }).to_poro
+    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization,
+                                                      { real_privacy: true, user: viewer_user }.merge(options)).to_poro
     attrs
   end
 

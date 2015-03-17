@@ -722,7 +722,6 @@ class Table < Sequel::Model(:user_tables)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    delete_tile_style
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
   end
@@ -1520,7 +1519,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
-        FROM "#{self.name}"
+        FROM #{qualified_table_name}
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     }].all.map {|r| r[:st_geometrytype] }
@@ -1728,39 +1727,6 @@ class Table < Sequel::Model(:user_tables)
         new_tag.save
       end
     end
-  end
-
-  def delete_tile_style
-    if owner.organization.nil?
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
-    else
-      tile_request('DELETE', "/tiles/#{qualified_table_name}/style?map_key=#{owner.api_key}")
-    end
-  rescue => exception
-    CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
-  end
-
-  def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['internal']['domain']}"
-    port = Cartodb.config[:tiler]['internal']['port'] || 443
-    tiler_ip = Cartodb.config[:tiler]['internal']['host'].blank? ? uri : Cartodb.config[:tiler]['internal']['host']
-    http_req = Net::HTTP.new tiler_ip, port
-    http_req.use_ssl = Cartodb.config[:tiler]['internal']['protocol'] == 'https' ? true : false
-    http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => uri}
-    case request_method
-      when 'GET'
-        http_res = http_req.request_get(request_uri, request_headers)
-      when 'POST'
-        http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
-      when 'DELETE'
-        extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
-      else
-        http_res = nil
-    end
-    raise "#{http_res.inspect} #{uri}:#{port}" unless http_res.is_a?(Net::HTTPOK)
-    http_res
   end
 
   def add_table_to_stats

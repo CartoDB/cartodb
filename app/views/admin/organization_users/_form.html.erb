@@ -284,7 +284,7 @@
                   <% else %>
                     You enter
                   <% end %>
-                  through <%= link_to "#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}", "http://#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}" %></p>
+                  through <%= link_to "#{current_user.organization.name}#{CartoDB.session_domain}/u/#{@user.username}", "http://#{current_user.organization.name}#{CartoDB.session_domain}/u/#{@user.username}" %></p>
                 <% end -%>
             </div>
 

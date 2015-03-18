@@ -18,6 +18,9 @@ module CartoDB
           type:               'layergroup',
           options:            {
             user_name:          options.fetch(:user_name),
+            maps_api_template: ApplicationHelper.maps_api_template('public'),
+            sql_api_template: ApplicationHelper.sql_api_template('public'),
+            # tiler_* and sql_api_* are kept for backwards compatibility
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
             tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
             tiler_port:         (configuration[:tiler]["public"]["port"] rescue nil),

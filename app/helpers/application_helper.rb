@@ -61,6 +61,9 @@ module ApplicationHelper
       end
   end
 
+  module_function :maps_api_template
+  module_function :sql_api_template
+
   def frontend_config
     config = {
       maps_api_template:          maps_api_template,

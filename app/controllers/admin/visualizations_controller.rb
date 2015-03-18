@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
 require_relative '../../models/visualization/locator'
+require_dependency '../../lib/resque/user_jobs'
 
 class Admin::VisualizationsController < ApplicationController
 
@@ -11,6 +12,7 @@ class Admin::VisualizationsController < ApplicationController
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map, :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
+  before_filter :load_common_data, only: [:index]
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
@@ -24,6 +26,12 @@ class Admin::VisualizationsController < ApplicationController
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
       end
     end
+  end
+
+  def load_common_data
+    return true unless current_user.present?
+
+    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id) if current_user.should_load_common_data?
   end
 
   def index

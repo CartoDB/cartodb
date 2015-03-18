@@ -146,6 +146,10 @@ class User < Sequel::Model
     end
   end
 
+  def should_load_common_data?
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
+  end
+
   def load_common_data
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self)
   end
@@ -391,11 +395,18 @@ class User < Sequel::Model
 
     return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
 
+    # Must be set AFTER validations
+    set_last_password_change_date
+
     self.password = new_password_value
   end
 
   def validate_old_password(old_password)
-    self.class.password_digest(old_password, self.salt) == self.crypted_password
+    (self.class.password_digest(old_password, self.salt) == self.crypted_password) || (google_sign_in && last_password_change_date.nil?)
+  end
+
+  def should_display_old_password?
+    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
   end
 
   def password_confirmation
@@ -403,7 +414,7 @@ class User < Sequel::Model
   end
 
   def password_confirmation=(password_confirmation)
-    self.last_password_change_date = Time.zone.now unless new?
+    set_last_password_change_date
     @password_confirmation = password_confirmation
   end
 
@@ -626,7 +637,7 @@ class User < Sequel::Model
   end #map_tags
 
   def tables
-    ::Table.filter(:user_id => self.id).order(:id).reverse
+    ::UserTable.filter(:user_id => self.id).order(:id).reverse
   end
 
   def tables_including_shared
@@ -1068,7 +1079,7 @@ class User < Sequel::Model
 
   def link_ghost_tables_working
     # search in the first 100. This is random number
-    enqeued = Resque.peek(:users, 0, 100).select { |job| 
+    enqeued = Resque.peek(:users, 0, 100).select { |job|
       job && job['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
     }.length
     workers = Resque::Worker.all
@@ -1139,7 +1150,7 @@ class User < Sequel::Model
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
-      table = ::Table.find(:table_id => t[:oid])
+      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid]))
       begin
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
@@ -1189,11 +1200,12 @@ class User < Sequel::Model
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
 
     # Remove tables with oids that don't exist on the db
-    self.tables.where(table_id: dropped_tables).all.each do |table|
+    self.tables.where(table_id: dropped_tables).all.each do |user_table|
       Rollbar.report_message('ghost tables', 'debug', {
         :action => 'dropping table',
-        :new_table => table.name
+        :new_table => user_table.name
       })
+      table = Table.new(user_table: user_table)
       table.keep_user_database_table = true
       table.destroy
     end if dropped_tables.present?
@@ -2272,6 +2284,10 @@ TRIGGER
 
   def secure_digest(*args)
     Digest::SHA256.hexdigest(args.flatten.join)
+  end
+
+  def set_last_password_change_date
+    self.last_password_change_date = Time.zone.now unless new?
   end
 
 end

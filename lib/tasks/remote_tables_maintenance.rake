@@ -57,8 +57,8 @@ namespace :cartodb do
       users = User.order_by(:username)
       users = users.where("username > '#{args[:from_username]}'") unless args[:from_username].nil?
       users.all.each do |user|
-        added, updated, not_modified, failed = common_data_service.load_common_data_for_user(user)
-        printf("%20s: +%03d; *%03d; =%03d; e%03d\n", user.username, added, updated, not_modified, failed)
+        added, updated, not_modified, removed, failed = common_data_service.load_common_data_for_user(user)
+        printf("%20s: +%03d; *%03d; =%03d; -%03d; e%03d\n", user.username, added, updated, not_modified, removed, failed)
       end
       puts DateTime.now
     end

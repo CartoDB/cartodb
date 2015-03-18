@@ -23,18 +23,18 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   def tiler_regex
     if (tiler_port == '8888')
-      %r{http:\/\/127\.0\.0\.1:8888\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
+      %r{http:\/\/127\.0\.0\.1:8888\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
     else
-      %r{http:\/\/127\.0\.0\.1:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
+      %r{http:\/\/127\.0\.0\.1:8181\/api\/v1\/map\/named\/[a-zA-Z0-9_]+\?api_key=.*}
     end
   end
 
   def named_maps_url(user_api_key)
-    "http://127.0.0.1:#{tiler_port}/tiles/template?api_key=#{user_api_key}"
+    "http://127.0.0.1:#{tiler_port}/api/v1/map/named?api_key=#{user_api_key}"
   end
 
   def named_map_url(template_id, user_api_key)
-    "http://127.0.0.1:#{tiler_port}/tiles/template/#{template_id}?api_key=#{user_api_key}"
+    "http://127.0.0.1:#{tiler_port}/api/v1/map/named/#{template_id}?api_key=#{user_api_key}"
   end
 
   before(:all) do
@@ -123,7 +123,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       }
 
       table = create_table( user_id: @user.id )
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 
@@ -168,7 +168,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   describe 'public_table' do
     it 'public map with public visualization does not create a named map' do
       table = create_table( user_id: @user.id )
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
       table.should be_public
       table.table_visualization.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -383,7 +383,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 204, body: "" )
               )
 
-      table.privacy = Table::PRIVACY_PUBLIC
+      table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
       table.reload()  # Will trigger a DELETE
     end

@@ -3,7 +3,7 @@ require_relative '../../../lib/google_plus_api'
 require_relative '../../../lib/google_plus_config'
 
 class Admin::UsersController < ApplicationController
-  ssl_required  :account, :profile, :account_update, :profile_update
+  ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
   before_filter :login_required
   before_filter :setup_user
@@ -36,9 +36,18 @@ class Admin::UsersController < ApplicationController
 
   def account_update
     attributes = params[:user]
-    @user.set_fields(attributes, [:email]) if attributes[:email].present?
-    @user.change_password(attributes[:old_password].presence, attributes[:new_password].presence,
-                                 attributes[:confirm_password].presence)
+    if attributes[:new_password].present? || attributes[:confirm_password].present?
+      @user.change_password(
+        attributes[:old_password].presence,
+        attributes[:new_password].presence,
+        attributes[:confirm_password].presence
+      )
+    end
+
+    if @user.can_change_email && attributes[:email].present?
+      @user.set_fields(attributes, [:email])
+    end
+    
     @user.update_in_central
     @user.save(raise_on_failure: true)
 
@@ -86,6 +95,30 @@ class Admin::UsersController < ApplicationController
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "Error updating your profile details"
     render action: :profile, layout: 'new_application'
+  end
+
+  def delete
+    deletion_password_confirmation = params[:deletion_password_confirmation]
+    if !@user.validate_old_password(deletion_password_confirmation)
+      raise 'Password does not match'
+    end
+
+    @user.delete_in_central
+    @user.destroy
+
+    if Cartodb::Central.sync_data_with_cartodb_central?
+      redirect_to "http://www.cartodb.com"
+    else
+      render(file: "public/404.html", layout: false, status: 404)
+    end
+  rescue CartoDB::CentralCommunicationFailure => e
+    Rollbar.report_message('Central error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
+    flash.now[:error] = "Error deleting user: #{e.user_message}"
+    render 'account', layout: 'new_application'
+  rescue => e
+    Rollbar.report_message('Error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
+    flash.now[:error] = "Error deleting user: #{e.message}"
+    render action: :account, layout: 'new_application'
   end
 
   private

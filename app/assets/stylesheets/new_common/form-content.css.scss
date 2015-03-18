@@ -34,6 +34,10 @@
   @include justify-content(flex-start, start);
   padding: 10px 0;
 }
+.Form-row.Form-row--centered {
+  @include justify-content(center, center);
+  margin-left: -140px;
+}
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
 .Form-rowLabel {
   width: 140px;
@@ -287,6 +291,9 @@
 .Form-rowInfoText {
   font-size: $sFontSize-normal;
   color: $cTypography-help;
+}
+.Form-rowInfoText--multipleLines {
+  line-height: 20px;
 }
 .Form-rowInfoText--error { color: #DD3B37 }
 .Form-footer {

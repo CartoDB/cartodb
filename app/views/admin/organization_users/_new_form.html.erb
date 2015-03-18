@@ -109,11 +109,14 @@
     <div class="Form-rowLabel">
       <label class="Form-label">Extra geocoding</label>
     </div>
-    <div class="Form-rowData">
+    <div class="Form-rowData Form-rowData--med">
       <div class="Toggler">
         <%= f.check_box :soft_geocoding_limit, :id => "soft_geocoding_limit" %>
         <%= label_tag(:soft_geocoding_limit, '') %>
       </div>
+    </div>
+    <div class="Form-rowInfo">
+      <p class="Form-rowInfoText">User has permission to exceed organization's geocoding quota</p>
     </div>
   </div>
 
@@ -121,21 +124,23 @@
     <div class="Form-rowLabel">
       <label class="Form-label">Extra tweets</label>
     </div>
-    <div class="Form-rowData">
+    <div class="Form-rowData Form-rowData--med">
       <div class="Toggler">
         <%= f.check_box :soft_twitter_datasource_limit, :id => "soft_twitter_datasource_limit" %>
         <%= label_tag(:soft_twitter_datasource_limit, '') %>
       </div>
     </div>
+    <div class="Form-rowInfo">
+      <p class="Form-rowInfoText">User has permission to exceed organization's Twitter credits</p>
+    </div>
   </div>
 
   <div class="Form-footer">
     <% if !@user.new? && current_user.organization_owner? -%>
-      <%# @user != current_user %>
-      <% if false %>
-        <a href="<%= delete_organization_user_path(user_domain: params[:user_domain], id: @user.username) %>" class="Button Button--negative">
+      <% if @user != current_user %>
+        <button href="<%= delete_organization_user_path(user_domain: params[:user_domain], id: @user.username) %>" class="Button Button--secondary js-deleteAccount">
           <span>Delete this user</span>
-        </a>
+        </button>
       <% else %>
         <em></em>
       <% end %>

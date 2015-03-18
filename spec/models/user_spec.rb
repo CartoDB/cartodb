@@ -524,9 +524,9 @@ describe User do
 
   it "should have many tables" do
     @user2.tables.should be_empty
-    create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PRIVACY_PUBLIC
+    create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
     @user2.reload
-    @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
+    @user2.tables.all.should == [UserTable.first(:user_id => @user2.id)]
   end
 
   it "should generate a data report"
@@ -534,10 +534,10 @@ describe User do
   it "should update remaining quotas when adding or removing tables" do
     initial_quota = @user2.remaining_quota
 
-    expect { create_table :user_id => @user2.id, :privacy => Table::PRIVACY_PUBLIC }
+    expect { create_table :user_id => @user2.id, :privacy => UserTable::PRIVACY_PUBLIC }
       .to change { @user2.remaining_table_quota }.by(-1)
 
-    table = Table.filter(:user_id => @user2.id).first
+    table = Table.new(user_table: UserTable.filter(:user_id => @user2.id).first)
     50.times { |i| table.insert_row!(:name => "row #{i}") }
 
     @user2.remaining_quota.should be < initial_quota
@@ -823,7 +823,7 @@ describe User do
 
   it "should remove its database and database user after deletion" do
     doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
-    create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => Table::PRIVACY_PUBLIC
+    create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
     doomed_user.reload
     Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
       .first[:count].should == 1
@@ -851,7 +851,7 @@ describe User do
                       :data_source => '/../db/fake_data/clubbing.csv').run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
-    uuid      = Table.where(id: table_id).first.table_visualization.id
+    uuid      = UserTable.where(id: table_id).first.table_visualization.id
 
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{doomed_user.database_name}.*")
@@ -863,12 +863,11 @@ describe User do
       .with(".*#{uuid}:vizjson")
       .times(2 + 5)
       .returns(true)
-    Table.any_instance.expects(:delete_tile_style).returns(true)
 
     doomed_user.destroy
 
     DataImport.where(:user_id => doomed_user.id).count.should == 0
-    Table.where(:user_id => doomed_user.id).count.should == 0
+    UserTable.where(:user_id => doomed_user.id).count.should == 0
     Layer.db["SELECT * from layers_users WHERE user_id = '#{doomed_user.id}'"].count.should == 0
   end
 
@@ -1367,6 +1366,27 @@ describe User do
     @user.crypted_password.should eq old_crypted_password
   end
 
+  describe "when user is signed up with google sign-in and don't have any password yet" do
+    before(:each) do
+      @user.google_sign_in = true
+      @user.last_password_change_date = nil
+      @user.save
+
+      new_valid_password = '123456'
+      @user.change_password("doesn't matter in this case", new_valid_password, new_valid_password)
+    end
+
+    it 'should allow updating password w/o a current password' do
+      @user.valid?.should eq true
+      @user.save
+    end
+
+    it 'should have updated last password change date' do
+      @user.last_password_change_date.should_not eq nil
+      @user.save
+    end
+  end
+
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name
@@ -1377,4 +1397,3 @@ describe User do
   end
 
 end
-

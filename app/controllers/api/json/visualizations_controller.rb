@@ -458,7 +458,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def synchronizations_by_table_name(table_data)
     # TODO: Check for organization visualizations
     Hash[
-      ::Table.db.fetch(
+      # TODO this should never be done
+      Sequel::Model.db.fetch(
         'SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?',
         current_user.id,
         table_data.map{ |table|
@@ -477,7 +478,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def prepare_params_for_total_count(params)
-      params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge({type: 'table'}) : params
+    # TODO: refactor for making default parameters and total counting obvious
+    if params[:type].nil? || params[:type] == ''
+      types = params.fetch('types', '').split(',')
+      type = types.include?(Visualization::Member::TYPE_DERIVED) ? Visualization::Member::TYPE_DERIVED : Visualization::Member::TYPE_CANONICAL 
+      params.merge( { type: type } )
+    else
+      params[:type] == Visualization::Member::TYPE_REMOTE ? params.merge( { type: Visualization::Member::TYPE_CANONICAL } ) : params
+    end
   end
 
   def index_not_logged_in
@@ -491,7 +499,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       filtered_params = params.dup.merge(scope_for(user))
       filtered_params[:unauthenticated] = true
 
-      total_user_entries = Visualization::Collection.new.count_total(prepare_params_for_total_count(filtered_params))
+      params_for_total_count = prepare_params_for_total_count(filtered_params)
+      total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
 
       collection = Visualization::Collection.new.fetch(filtered_params)
       public_visualizations  = collection.map { |vis|
@@ -506,8 +515,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
       }.compact
 
-      total_liked_entries = collection.total_liked_entries
-      total_shared_entries = collection.total_shared_entries
+      total_liked_entries = collection.total_liked_entries(params_for_total_count[:type])
+      total_shared_entries = collection.total_shared_entries(params_for_total_count[:type])
     end
 
     response = {
@@ -526,7 +535,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     collection = Visualization::Collection.new.fetch(filters)
 
-    total_user_entries = Visualization::Collection.new.count_total(prepare_params_for_total_count(filters))
+    params_for_total_count = prepare_params_for_total_count(filters)
+    total_user_entries = Visualization::Collection.new.count_total(params_for_total_count)
 
     table_data = collection.map { |vis|
       if vis.table.nil?
@@ -558,8 +568,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       visualizations: representation,
       total_entries:  collection.total_entries,
       total_user_entries: total_user_entries,
-      total_likes:    collection.total_liked_entries,
-      total_shared:   collection.total_shared_entries
+      total_likes:    collection.total_liked_entries(params_for_total_count[:type]),
+      total_shared:   collection.total_shared_entries(params_for_total_count[:type])
     }
     render_jsonp(response)
   end

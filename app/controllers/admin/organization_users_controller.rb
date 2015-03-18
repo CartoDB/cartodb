@@ -78,6 +78,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
     render action: view, layout: layout
   rescue Sequel::ValidationFailed => e
+    flash.now[:error] = e.message
     render action: view, layout: layout
   end
 
@@ -119,16 +120,25 @@ class Admin::OrganizationUsersController < ApplicationController
   end
 
   def destroy
+    new_dashboard = current_user.has_feature_flag?('new_dashboard')
     @user.delete_in_central
     @user.destroy
     flash[:success] = "User was successfully deleted."
-    head :no_content
+    if new_dashboard
+      redirect_to organization_path(user_domain: params[:user_domain])
+    else
+      head :no_content
+    end
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e)
     if e.user_message =~ /No user found with username/
       @user.destroy
       flash[:success] = "User was deleted from the organization server. #{e.user_message}"
-      head :no_content
+      if new_dashboard
+        redirect_to organization_path(user_domain: params[:user_domain])
+      else
+        head :no_content
+      end
     else
       set_flash_flags(nil, true)
       flash[:error] = "User was not deleted. #{e.user_message}"

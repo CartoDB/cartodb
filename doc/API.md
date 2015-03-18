@@ -826,7 +826,7 @@ Shows a small tooltip on hover:
 <div class="code-title">cartodb.geo.ui.Tooltip</div>
 ```javascript
 var tooltip = vis.addOverlay({
-  type: 'tooltip'
+  type: 'tooltip',
   template: '<p>{{variable}}</p>' // mustache template
 });
 ```
@@ -847,7 +847,7 @@ Shows a small box when the user hovers on a map feature. The position is fixed:
 ```javascript
 var box = vis.addOverlay({
   type: 'infobox',
-  template: '<p>{{name_to_display}}</p>'
+  template: '<p>{{name_to_display}}</p>',
   width: 200, // width of the box
   position: 'bottom|right' // top, bottom, left and right are available
 });

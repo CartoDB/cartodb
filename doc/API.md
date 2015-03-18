@@ -231,7 +231,7 @@ Adds an overlay to the map that can be either a zoom control, a tooltip or an in
   - **layer** layer from the visualization where the overlay should be applied (optional)
   - **type** zoom / tooltip / infobox
 
-Extra options are available based on the UI component selected before.
+If no layer is provided, the overlay will be added to the first layer of the visualization. Extra options are available based on the specific UI component.
 
 ##### Returns
 

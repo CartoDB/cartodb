@@ -8,7 +8,7 @@
 .SupportBanner {
   display:block;
   width:100%;
-  padding: $sMargin-section 0;
+  padding: $sMargin-element 0 $sMargin-section;
 }
 .SupportBanner-label {
   display: block;

@@ -244,7 +244,7 @@ class Geocoding < Sequel::Model
   private
 
   def table_service
-    @table_service ||= Table.new(user_table: user_table)
+    @table_service ||= Table.new(user_table: user_table) if user_table.present?
   end
 
 end

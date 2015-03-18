@@ -136,8 +136,7 @@ describe Map do
     end
 
     it "recalculates bounds" do
-      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars',
-                        :tags => 'movies, personal'
+      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars', :tags => 'movies, personal'
       table.user_id = @user.id
       table.force_schema = "name text, address text, latitude float, longitude float"
       table.save
@@ -148,6 +147,8 @@ describe Map do
       table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
       table.reload
       table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      table.optimize
+
       table.map.recalculate_bounds!
       table.map.view_bounds_ne.should == "[40.428198, -3.699732]"
       table.map.view_bounds_sw.should == "[40.415113, -3.70957]"

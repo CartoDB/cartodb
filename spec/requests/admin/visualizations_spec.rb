@@ -229,6 +229,8 @@ describe Admin::VisualizationsController do
           :enable_remote_db_user => nil,
           :after_create => nil,
           :create_schema => nil,
+          :move_tables_to_schema => nil,
+          :setup_schema => nil,
           :create_public_db_user => nil,
           :set_database_search_path => nil,
           :load_cartodb_functions => nil,

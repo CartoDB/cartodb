@@ -403,7 +403,6 @@ describe("Vis", function() {
         });
     });
 
-
   });
 
   it ("should load modules", function(done) {

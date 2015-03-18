@@ -93,7 +93,7 @@ module CartoDB
           }
 
           if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
-               layer_vizjson[:infowindow].fetch('fields').size > 0
+               !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
             data[:infowindow] = layer_vizjson[:infowindow]
           end
 

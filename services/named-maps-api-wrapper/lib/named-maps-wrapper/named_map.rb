@@ -152,7 +152,7 @@ module CartoDB
               default:  layer[:visible] ? 1: 0
             }
 
-            if layer.include?(:infowindow) && !layer[:infowindow].nil? && layer[:infowindow].fetch('fields').size > 0
+            if layer.include?(:infowindow) && !layer[:infowindow].nil? && !layer[:infowindow].fetch('fields').nil? && layer[:infowindow].fetch('fields').size > 0
               layer_options[:interactivity] = layer[:options][:interactivity]
               layer_options[:attributes] = {
                 id:       'cartodb_id', 

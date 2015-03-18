@@ -346,8 +346,8 @@ module CartoDB
       self.owner_id == subject.id
     end
 
-    def to_poro
-      CartoDB::PermissionPresenter.new(self).to_poro
+    def to_poro(options={})
+      CartoDB::PermissionPresenter.new(self).to_poro(options)
     end
 
     def destroy_shared_entities
@@ -434,7 +434,7 @@ module CartoDB
         # check permissions, if the owner does not have permissions
         # to see the table the layers using this table are removed
         perm = visualization.permission
-        if not table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
           visualization.unlink_from(table)
         end
       end
@@ -443,7 +443,7 @@ module CartoDB
         # check permissions, if the owner does not have permissions
         # to see the table the visualization is removed
         perm = visualization.permission
-        if not table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
           visualization.delete
         end
       end

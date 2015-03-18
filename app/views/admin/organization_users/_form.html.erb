@@ -7,7 +7,7 @@
       organization_owner: u.organization_owner?
     }}.to_json -%>;
     <% if !@user.new? %>
-    var organization_user_data = <%= raw @user.data.to_json.html_safe -%>;
+    var organization_user_data = <%= raw @user.data(request: request).to_json.html_safe -%>;
     <% end %>
   </script>
 
@@ -284,7 +284,7 @@
                   <% else %>
                     You enter
                   <% end %>
-                  through <%= link_to "#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}", "http://#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}" %></p>
+                  through <%= link_to "#{current_user.organization.name}#{CartoDB.session_domain}/u/#{@user.username}", "http://#{current_user.organization.name}#{CartoDB.session_domain}/u/#{@user.username}" %></p>
                 <% end -%>
             </div>
 

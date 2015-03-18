@@ -14,7 +14,7 @@ module CartoDB
           options:  JSON.parse(overlay.options),
           template: overlay.template
         }
-      end #to_poro
+      end
 
       private
 

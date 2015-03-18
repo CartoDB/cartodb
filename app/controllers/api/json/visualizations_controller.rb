@@ -500,7 +500,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           vis.to_hash(
             public_fields_only: true,
             related: false,
-            table: vis.table
+            table: vis.table,
+            request: request
           )
         rescue => exception
           puts exception.to_s + exception.backtrace.join("\n")
@@ -549,7 +550,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           table_data: !(params[:table_data] =~ /false/),
           user:       current_user,
           table:      vis.table,
-          synchronization: synchronizations[vis.name]
+          synchronization: synchronizations[vis.name],
+          request: request
         )
       rescue => exception
         puts exception.to_s + exception.backtrace.join("\n")
@@ -564,6 +566,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       total_shared:   collection.total_shared_entries(params_for_total_count[:type])
     }
     render_jsonp(response)
+  end
+
+  # Need to always send request object to visualizations upon rendering their json
+  def render_jsonp(obj, status = 200, options = {})
+    super(obj, status, options.merge({request: request}))
   end
 
 end

@@ -176,7 +176,7 @@ class ApplicationController < ActionController::Base
 
   # By default, override Admin urls unless :dont_rewrite param is present
   def ensure_org_url_if_org_user
-    return unless CartoDB.subdomains_allowed?
+    return unless CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
 
     rewrite_url = !request.params[:dont_rewrite].present?
     if rewrite_url && !current_user.nil? && !current_user.organization.nil? &&

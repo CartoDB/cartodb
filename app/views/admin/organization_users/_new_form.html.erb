@@ -159,7 +159,7 @@
 
 <script type="text/javascript">
   <% if !@user.new? %>
-    var organization_user_data = <%= raw @user.data.to_json.html_safe -%>;
+    var organization_user_data = <%= raw @user.data(request: request).to_json.html_safe -%>;
   <% end %>
   <%
     assigned_quota_in_bytes = 0

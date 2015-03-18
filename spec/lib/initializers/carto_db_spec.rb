@@ -109,7 +109,7 @@ describe CartoDB do
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
       CartoDB.expects(:get_http_port).returns(expected_http_port)
 
-      CartoDB.expects(:use_https?).times(4).returns(false)
+      CartoDB.expects(:use_https?).at_least(4).returns(false)
 
       CartoDB.expects(:get_subdomains_allowed).returns(true)
       CartoDB.base_url(username, nil, nil).should eq "http://#{username}#{expected_session_domain}#{expected_http_port}"
@@ -137,7 +137,7 @@ describe CartoDB do
       CartoDB.expects(:get_http_port).returns(expected_http_port)
 
       CartoDB.unstub(:use_https?)
-      CartoDB.expects(:use_https?).times(4).returns(false)
+      CartoDB.expects(:use_https?).at_least(4).returns(false)
 
       CartoDB.unstub(:get_subdomains_allowed)
       CartoDB.expects(:get_subdomains_allowed).returns(false)
@@ -150,12 +150,248 @@ describe CartoDB do
         .should eq "#{protocol_override_https}://#{expected_session_domain}#{expected_http_port}"
 
       CartoDB.unstub(:use_https?)
-      CartoDB.expects(:use_https?).times(2).returns(true)
+      CartoDB.expects(:use_https?).at_least(2).returns(true)
 
       CartoDB.base_url(username, nil, nil).should eq "https://#{expected_session_domain}#{expected_http_port}"
 
       CartoDB.base_url(username, nil, protocol_override_http)
         .should eq "#{protocol_override_http}://#{expected_session_domain}#{expected_http_port}"
+    end
+
+  end
+
+  # Splitted into multiple tests to avoid the almost-useless error trace in case of unsatisfied expectations
+  describe 'Tests detect_url_format() with all combinations' do
+
+    # Requests with subdomain
+
+    it 'subdomain request with subdomains on and optional' do
+      username = 'test'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{username}#{expected_session_domain}",
+                                                    fullpath: ""
+                                                  })).should eq false
+    end
+
+    it 'subdomain request with subdomains on and mandatory' do
+      username = 'test'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{username}#{expected_session_domain}",
+                                                    fullpath: ""
+                                                  })).should eq false
+    end
+
+    it 'subdomain request with subdomains off and optional' do
+      username = 'test'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{username}#{expected_session_domain}",
+                                                      fullpath: ""
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'subdomain request with subdomains off and mandatory' do
+      username = 'test'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{username}#{expected_session_domain}",
+                                                      fullpath: ""
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'subdomain organization request with subdomains on and optional' do
+      username = 'test'
+      orgname = 'testorg'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{orgname}#{expected_session_domain}",
+                                                    fullpath: "/u/#{username}"
+                                                  })).should eq false
+    end
+
+    it 'subdomain organization request with subdomains on and mandatory' do
+      username = 'test'
+      orgname = 'testorg'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{orgname}#{expected_session_domain}",
+                                                    fullpath: "/u/#{username}"
+                                                  })).should eq false
+    end
+
+    it 'subdomain organization request with subdomains off and optional' do
+      username = 'test'
+      orgname = 'testorg'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{orgname}#{expected_session_domain}",
+                                                      fullpath: "/u/#{username}"
+                                                    })).should eq false
+      }.to raise_error
+    end
+
+    it 'subdomain organization request with subdomains off and mandatory' do
+      username = 'test'
+      orgname = 'testorg'
+      expected_session_domain = '.cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{orgname}#{expected_session_domain}",
+                                                      fullpath: "/u/#{username}"
+                                                    }))
+      }.to raise_error
+    end
+
+    # Now subdomainless requests
+
+    it 'domainless request without user, with subdomains on and optional' do
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{expected_session_domain}",
+                                                      fullpath: ""
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'domainless request without user, with subdomains on and mandatory' do
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{expected_session_domain}",
+                                                      fullpath: ""
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'domainless request without user, with subdomains off and optional' do
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{expected_session_domain}",
+                                                      fullpath: ""
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'domainless request without user, with subdomains off and mandatory' do
+      username = 'test'
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{expected_session_domain}",
+                                                      fullpath: ""
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'domainless request with user, with subdomains on and optional' do
+      username = 'test'
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{expected_session_domain}",
+                                                    fullpath: "/u/#{username}"
+                                                  })).should eq true
+    end
+
+    it 'domainless request with user, with subdomains on and mandatory' do
+      username = 'test'
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      expect {
+        CartoDB.expects(:subdomains_allowed?).at_least(1).returns(true)
+        CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+        CartoDB.is_domainless?(Doubles::Request.new({
+                                                      host: "#{expected_session_domain}",
+                                                      fullpath: "/u/#{username}"
+                                                    }))
+      }.to raise_error
+    end
+
+    it 'domainless request with user, with subdomains off and optional' do
+      username = 'test'
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(true)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{expected_session_domain}",
+                                                    fullpath: "/u/#{username}"
+                                                  })).should eq true
+    end
+
+    it 'domainless request with user, with subdomains off and mandatory' do
+      username = 'test'
+      expected_session_domain = 'cartodb.com'
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+
+      CartoDB.expects(:subdomains_allowed?).at_least(1).returns(false)
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+      CartoDB.is_domainless?(Doubles::Request.new({
+                                                    host: "#{expected_session_domain}",
+                                                    fullpath: "/u/#{username}"
+                                                  })).should eq true
     end
 
   end

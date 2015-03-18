@@ -62,9 +62,12 @@ module CartoDB
         notification: self.notification,
         avatar_url: self.avatar_url,
         new_dashboard_enabled: self.new_dashboard_enabled,
-        feature_flags: self.feature_flags,
-        base_url: self.public_url
+        feature_flags: self.feature_flags
       }
+
+      unless options[:request].nil?
+        data[:base_url] =  CartoDB.is_domainless?(options[:request]) ? self.domainless_public_url : self.public_url;
+      end
 
       data[:organization] = self.organization.to_poro(self) if self.organization.present?
 

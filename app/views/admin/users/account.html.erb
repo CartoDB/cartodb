@@ -6,7 +6,7 @@
     var username = "<%= @user.username %>";
     var config = <%=raw frontend_config.html_safe %>;
     var authenticity_token = "<%= form_authenticity_token %>";
-    var user_data = <%= raw @user.data.to_json.html_safe %>;
+    var user_data = <%= raw @user.data(request: request).to_json.html_safe %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>

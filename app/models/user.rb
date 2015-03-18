@@ -2227,39 +2227,52 @@ TRIGGER
     self.database_schema
   end
 
-  # return public user url -> string
-  def public_url
-    subdomain = organization.nil? || !CartoDB.subdomains_allowed? ? username : organization.name
-    user_name = organization.nil? || !CartoDB.subdomains_allowed? ? nil : username
+  # --- TODO: Extract this to a service object that handles urls
 
-    CartoDB.base_url(subdomain, user_name)
-  end
-
+  # Special url that goes to Central if active (for old dashboard only)
   def account_url(request_protocol)
     if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
     end
   end
 
+  # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
   end
 
+  # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     account_url(request_protocol) + '/upgrade'
   end
 
-  def subdomain
-    organization.nil? ? username : organization.name
+  def organization_username
+    return nil if organization.nil? || !CartoDB.subdomains_allowed?
+    username
   end
+
+  def subdomain
+    if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+      organization.nil? ? username : organization.name
+    else
+      username
+    end
+  end
+
+  # If subdomains are allowed but optional, will get more preference than domainless (use domainless_public_url() for them)
+  # @return String public user url, which is also the base url for a given user
+  def public_url(subdomain_override=nil)
+    CartoDB.base_url((organization.nil? || subdomain_override.nil?) ? subdomain : subdomain_override, organization_username)
+  end
+
+  def domainless_public_url
+    !CartoDB.subdomains_allowed? || CartoDB.subdomains_optional? ? "#{CartoDB.domainless_base_url}/u/#{username}" : nil
+  end
+
+  # ----------
 
   def name_or_username
     name.present? ? name : username
-  end
-
-  def full_profile_url(org_name_override=nil)
-    organization.nil? ? CartoDB.base_url(username) :
-                        CartoDB.base_url(org_name_override.nil? ? organization.name : org_name_override, username)
   end
 
   private

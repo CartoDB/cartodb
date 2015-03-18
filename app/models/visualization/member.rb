@@ -334,6 +334,11 @@ module CartoDB
         privacy == PRIVACY_PROTECTED
       end
 
+      # Called by controllers upon rendering
+      def to_json(options={})
+        ::JSON.dump(to_hash(options))
+      end
+
       def to_hash(options={})
         presenter = Presenter.new(self, options.merge(real_privacy: true))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
@@ -480,11 +485,7 @@ module CartoDB
       end
 
       def supports_private_maps?
-        if @user_data.nil? && !user.nil?
-          @user_data = user.data
-        end
-
-        !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+        !user.nil? && user.private_maps_enabled
       end
 
       # @param other_vis CartoDB::Visualization::Member|nil

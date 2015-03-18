@@ -185,7 +185,11 @@ describe Visualization::Member do
 
       parent.fetch
 
-      data = Visualization::Presenter.new(parent).to_poro
+      @request_mock = mock
+      @request_mock.stubs(:host).returns("#{@user_mock.username}#{CartoDB.session_domain}")
+      @request_mock.stubs(:fullpath).returns('')
+
+      data = Visualization::Presenter.new(parent,{request:@request_mock}).to_poro
 
       data[:children].length.should eq 5
 

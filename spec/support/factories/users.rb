@@ -41,8 +41,8 @@ module CartoDB
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
       user.admin                 = attributes[:admin] == false ? false : true
-      user.private_tables_enabled= attributes[:private_tables_enabled] == false ? false : true
-      user.private_maps_enabled= attributes[:private_maps_enabled] == true ? true : false
+      user.private_tables_enabled = attributes[:private_tables_enabled] == false ? false : true
+      user.private_maps_enabled  = attributes[:private_maps_enabled] == true ? true : false
       user.enabled               = attributes[:enabled] == false ? false : true
       user.table_quota           = attributes[:table_quota]     if attributes[:table_quota]
       user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]

@@ -13,7 +13,7 @@
 - Create a new branch to prepare the release.
 
 ```
-git flow release start 3.12.12
+git flow release start 3.12.13
 ```
 
 - Build CartoDB.js files choosing the new version:
@@ -25,7 +25,7 @@ grunt build
 - Update the NEWS file and commit the changes. Take into account that new CartoDB.js version will be replaced in ```API.md```, ```RELEASING.md```, ```README.md```, ```package.json```, ```cartodb.js``` and ```examples``` files.
 
 ```
-git commit -am "Files changed for version 3.12.12"
+git commit -am "Files changed for version 3.12.13"
 ```
 
 - Release it.
@@ -36,8 +36,8 @@ grunt publish
 
 - Check if those files have been updated in the CDN:
 ```
-http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.12.12/cartodb.js
-http://libs.cartocdn.com/cartodb.js/v3/3.12.12/cartodb.js
+http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.12.13/cartodb.js
+http://libs.cartocdn.com/cartodb.js/v3/3.12.13/cartodb.js
 http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.12/cartodb.js
 http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js
 ```
@@ -46,7 +46,7 @@ http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js
 - And to finish: close the release and push it.
 
 ```
-git flow release finish 3.12.12
+git flow release finish 3.12.13
 git push --all
 git push --tags
 ```
@@ -69,10 +69,10 @@ grunt build
 grunt publish
 ```
 
-For example, if we are in 3.12.12 and we want to go back to 3.12.12
+For example, if we are in 3.12.13 and we want to go back to 3.12.13
 
 ```
-git checkout 3.12.12
+git checkout 3.12.13
 grunt build
 grunt publish
 ```

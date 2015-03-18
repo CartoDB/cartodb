@@ -42,6 +42,7 @@ class UserTable < Sequel::Model
     destroy
     errors
     set_except
+    update_updated_at
   }
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }
@@ -245,9 +246,7 @@ class UserTable < Sequel::Model
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
-  # --------------------------------------------------------------------------------
-  private
-
+  # Needed by syncs
   def update_updated_at
     self.updated_at = Time.now
   end

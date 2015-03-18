@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative 'layer/presenter'
+require_relative 'table/user_table'
 
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow, :tooltip
@@ -33,7 +34,7 @@ class Layer < Sequel::Model
   many_to_many :user_tables,
                 join_table: :layers_user_tables,
                 left_key: :layer_id, right_key: :user_table_id,
-                reciprocal: :layers, class: ::Table
+                reciprocal: :layers, class: ::UserTable
 
   many_to_one :parent, :class => self
   one_to_many :children, :key=>:parent_id, :class => self

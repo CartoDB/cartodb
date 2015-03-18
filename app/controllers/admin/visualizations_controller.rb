@@ -225,7 +225,7 @@ class Admin::VisualizationsController < ApplicationController
     @user_domain = user_domain_variable(request)
 
     @public_tables_count    = @visualization.user.public_table_count
-    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+    @nonpublic_tables_count = @related_tables.select{|t| !t.public? }.count
 
     @is_liked    = is_liked(@visualization)
     @likes_count = @visualization.likes.count
@@ -262,7 +262,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
     @public_tables_count    = @visualization.user.public_table_count
-    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+    @nonpublic_tables_count = @related_tables.select{|p| !p.public? }.count
 
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
@@ -315,7 +315,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
     @public_tables_count    = @visualization.user.public_table_count
-    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+    @nonpublic_tables_count = @related_tables.select{|p| !p.public?  }.count
 
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)

@@ -3,7 +3,7 @@ class AutomaticGeocoding < Sequel::Model
 
   MAX_RETRIES = 5
 
-  many_to_one :table
+  many_to_one :table, class: :UserTable
   one_to_many :geocodings, order: :created_at
 
   def self.active

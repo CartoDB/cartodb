@@ -8,6 +8,7 @@ Bugfixes:
 * Fix Changing email requires new password [#2764](https://github.com/CartoDB/cartodb/pull/2764)
 * Fix "Update in multi-user account" [#2794](https://github.com/CartoDB/cartodb/pull/2794)
 * Fix incorrect quota value in dropdown [#2804](https://github.com/CartoDB/cartodb/issues/2804)
+* Fix Columns are no longer alphabetically ordered in the table view [#2825](https://github.com/CartoDB/cartodb/pull/2825)
 
 3.9.0 (2015-02-13)
 ------------------

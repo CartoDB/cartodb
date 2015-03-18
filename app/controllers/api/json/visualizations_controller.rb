@@ -508,6 +508,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           vis.to_hash(
             public_fields_only: true,
             related: false,
+            type: vis.type,
             table: vis.table
           )
         rescue => exception
@@ -557,6 +558,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           table_data: !(params[:table_data] =~ /false/),
           user:       current_user,
           table:      vis.table,
+          type:       vis.type,
           synchronization: synchronizations[vis.name]
         )
       rescue => exception

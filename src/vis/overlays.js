@@ -426,23 +426,12 @@ cdb.vis.Overlay.register('search', function(data, vis) {
 
 // tooltip
 cdb.vis.Overlay.register('tooltip', function(data, vis) {
-  var layer;
-  if (!data.layer) {
-    var layers = vis.getLayers();
-    if(layers.length > 1) {
-      layer = layers[1];
-    }
-    data.layer = layer;
-  }
-
-  if (!data.layer) {
+  if (!data.layer && vis.getLayers().length <= 1) {
     throw new Error("layer is null");
   }
-
+  data.layer = data.layer || vis.getLayers()[1];
   data.layer.setInteraction(true);
-  var tooltip = new cdb.geo.ui.Tooltip(data);
-  return tooltip;
-
+  return new cdb.geo.ui.Tooltip(data);;
 });
 
 cdb.vis.Overlay.register('infobox', function(data, vis) {

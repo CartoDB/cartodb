@@ -291,14 +291,14 @@ module CartoDB
         end
       end
 
-      def base_search_filter(filters)
+      def base_collection(filters)
         only_liked = filters.fetch(:only_liked, 'false')
         if only_liked == true || only_liked == 'true'
-          filters_without_user = filters.dup
-          filters_without_user.delete(:user_id)
-          filters_without_user
+          user_id = filters[:user_id]
+          dataset = repository.collection({}, [])
+          dataset.where { ( { privacy: Visualization::Member::PRIVACY_PUBLIC } ) | ( { user_id: user_id } ) }
         else
-          filters
+          repository.collection(filters, %w{ user_id })
         end
       end
 
@@ -320,7 +320,7 @@ module CartoDB
           dataset = repository.collection
           dataset = filter_by_only_shared(dataset, filters)
         else
-          dataset = repository.collection(base_search_filter(filters),  %w{ user_id })
+          dataset = base_collection(filters)
           locked_filter = filters.delete(:locked)
           unless locked_filter.nil?
             if locked_filter.to_s == 'true'

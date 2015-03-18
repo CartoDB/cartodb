@@ -368,6 +368,13 @@ describe Visualization::Collection do
       vis3.delete
     end
 
+    def create_table(user, name)
+      table = Table.new
+      table.user_id = user.id
+      table.name = name
+      table.save
+    end
+
     it "checks filtering by 'liked' " do
       # Restore Vis backend to normal table so Relator works
       Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
@@ -400,6 +407,9 @@ describe Visualization::Collection do
       table4.name = "viz#{rand(999)}_4"
       table4.save
 
+      table5 = create_table(user, "viz#{rand(999)}_4")
+      table6 = create_table(user, "viz#{rand(999)}_4")
+
       vis2 = table2.table_visualization
       vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
       vis2.store
@@ -410,6 +420,14 @@ describe Visualization::Collection do
 
       vis4 = table4.table_visualization
 
+      vis_link = table5.table_visualization
+      vis_link.privacy = Visualization::Member::PRIVACY_LINK
+      vis_link.store
+
+      vis_private = table6.table_visualization
+      vis_private.privacy = Visualization::Member::PRIVACY_PRIVATE
+      vis_private.store
+
       # vis1 0 likes
 
       vis2.add_like_from(user.id)
@@ -417,14 +435,18 @@ describe Visualization::Collection do
 
       vis3.add_like_from(user.id)
 
+      # since vis4 is not public it won't count for users 2 and 3
       vis4.add_like_from(user.id)
       vis4.add_like_from(user2.id)
       vis4.add_like_from(user3.id)
 
+      vis_link.add_like_from(user3.id)
+      vis_private.add_like_from(user3.id)
+
       collection = Visualization::Collection.new.fetch({
                                                          user_id: user.id
                                                        })
-      collection.count.should eq 4
+      collection.count.should eq 6
 
       collection = Visualization::Collection.new.fetch({
                                                          user_id: user.id,
@@ -473,6 +495,12 @@ describe Visualization::Collection do
 
       collection = Visualization::Collection.new.fetch({
                                                          user_id: user2.id,
+                                                         only_liked: true
+                                                       })
+      collection.count.should eq 1
+
+      collection = Visualization::Collection.new.fetch({
+                                                         user_id: user3.id,
                                                          only_liked: true
                                                        })
       collection.count.should eq 0

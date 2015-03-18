@@ -431,7 +431,7 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
   }
   data.layer = data.layer || vis.getLayers()[1];
   data.layer.setInteraction(true);
-  return new cdb.geo.ui.Tooltip(data);;
+  return new cdb.geo.ui.Tooltip(data);
 });
 
 cdb.vis.Overlay.register('infobox', function(data, vis) {

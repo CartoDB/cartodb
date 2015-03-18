@@ -63,7 +63,7 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        table = ::Table.new(::UserTable.where(name: table_name, user_id: user.id).first)
+        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
         table.force_schema = true
         table.send :update_updated_at
         table.import_to_cartodb(table_name)

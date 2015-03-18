@@ -33,7 +33,7 @@ describe "Imports API" do
 
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
-    table = Table[last_import.table_id]
+    table = UserTable[last_import.table_id]
     table.name.should == "column_number_to_boolean"
     table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
   end
@@ -172,7 +172,7 @@ describe "Imports API" do
 
     response.code.should be == '200'
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     post api_v1_imports_create_url(:api_key    => @user.api_key,
                         :table_name => 'wadus_2',
@@ -186,7 +186,7 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
-    import_table = Table.all.last
+    import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
   end
@@ -195,7 +195,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     post api_v1_imports_create_url(params.merge(:table_name => 'wadus_copy__copy',
                                      :table_copy => @table_from_import.name))
@@ -206,7 +206,7 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
-    import_table = Table.all.last
+    import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
   end
@@ -215,7 +215,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     post api_v1_imports_create_url(params.merge(:table_name => 'wadus_copy__copy',
                                      :table_copy => @table_from_import.name))
@@ -226,7 +226,7 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
-    import_table = Table.all.last
+    import_table = UserTable.all.last.service
     import_table.rows_counted.should be == @table_from_import.rows_counted
     import_table.should have_required_indexes_and_triggers
   end
@@ -246,7 +246,7 @@ describe "Imports API" do
       last_import = DataImport[response_json['item_queue_id']]
 
       last_import.state.should be == 'complete'
-      table = Table[last_import.table_id]
+      table = UserTable[last_import.table_id].service
 
       table.should have_required_indexes_and_triggers
       table.should have_no_invalid_the_geom
@@ -291,7 +291,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
     last_import = DataImport.order(:updated_at.desc).first
     last_import.state.should be == 'complete', "Import failure: #{last_import.log}"
 
@@ -311,7 +311,7 @@ describe "Imports API" do
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
-    @table_from_import = Table.all.last
+    @table_from_import = UserTable.all.last.service
 
     response.code.should be == '200'
     last_import = DataImport.order(:updated_at.desc).first

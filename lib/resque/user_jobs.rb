@@ -21,6 +21,18 @@ module Resque
     end
 
 
+    module CommonData
+      module LoadCommonData
+        @queue = :users
+
+        def self.perform(user_id)
+          User.where(id: user_id).first.load_common_data
+        end
+      end
+
+    end
+
+
     module Mail
 
       module NewOrganizationUser

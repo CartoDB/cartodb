@@ -820,6 +820,7 @@ namespace :cartodb do
     desc "Create new organization with owner"
     task :create_new_organization_with_owner => :environment do
       raise "You should provide a ORGANIZATION_NAME" if ENV['ORGANIZATION_NAME'].blank?
+      raise "You should provide a ORGANIZATION_DISPLAY_NAME" if ENV['ORGANIZATION_DISPLAY_NAME'].blank?
       raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
       raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
       raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
@@ -829,6 +830,7 @@ namespace :cartodb do
       if organization.nil?
         organization = Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
+        organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
         organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
         organization.save

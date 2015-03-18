@@ -1,5 +1,6 @@
 3.x.x (2015-xx-xx)
 ------------------
+* Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 * Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
 
 Bugfixes:

@@ -9,6 +9,8 @@ Bugfixes:
 * Fix "Update in multi-user account" [#2794](https://github.com/CartoDB/cartodb/pull/2794)
 * Fix incorrect quota value in dropdown [#2804](https://github.com/CartoDB/cartodb/issues/2804)
 * Fix Columns are no longer alphabetically ordered in the table view [#2825](https://github.com/CartoDB/cartodb/pull/2825)
+* Fix user creation with org [#2831](https://github.com/CartoDB/cartodb/pull/2831)
+* Fix sync tables state changes [#2838](https://github.com/CartoDB/cartodb/pull/2838)
 
 3.9.0 (2015-02-13)
 ------------------

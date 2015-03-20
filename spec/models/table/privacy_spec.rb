@@ -79,6 +79,15 @@ module CartoDB::Table
       end
     end
 
+    describe '#simplified_text' do
+      it 'provides a simplified text for vizs' do
+        Privacy.from_sym(:public).simplified_text.should eq 'PUBLIC'
+        Privacy.from_sym(:link).simplified_text.should eq 'PRIVATE'
+        Privacy.from_sym(:private).simplified_text.should eq 'PRIVATE'
+      end
+    end
+
+
     describe '#to_sym' do
       it 'converts a privacy object to the corresponding symbol' do
         Privacy.from_str('public').to_sym.should eq :public

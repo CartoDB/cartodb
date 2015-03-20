@@ -63,6 +63,14 @@ module CartoDB
         to_sym.to_s.upcase
       end
 
+      def simplified_text
+        if self.public?
+          self.to_s
+        else
+          PRIVATE.to_s
+        end
+      end
+
       def to_sym
         VALID.invert[@value]
       end

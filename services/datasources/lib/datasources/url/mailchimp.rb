@@ -162,10 +162,16 @@ module CartoDB
           total = nil
 
           begin
-            response = @api_client.lists.list({
+
+            response = @api_client.campaigns.list({
                                                 start: offset,
                                                 limit: limit
                                               })
+
+            #response = @api_client.lists.list({
+            #                                    start: offset,
+            #                                    limit: limit
+            #                                  })
             errors = response.fetch('errors', [])
             unless errors.empty?
               raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
@@ -175,7 +181,7 @@ module CartoDB
 
             response_data = response.fetch('data', [])
             response_data.each do |item|
-              all_results.push(format_item_data(item))
+              all_results.push(format_list_item_data(item))
             end
 
             offset += limit
@@ -198,10 +204,12 @@ module CartoDB
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
           contents = ''
-
           export_api = @api_client.get_exporter
 
-          content_iterator = export_api.list({id: id})
+          # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
+          content_iterator = export_api.campaign_subscriber_activity({id: id})
+
+          contents << campaign_csv_header
           content_iterator.each { |line|
             contents << streamed_json_to_csv(line)
           }
@@ -223,8 +231,10 @@ module CartoDB
 
           item_data = {}
 
+          # https://apidocs.mailchimp.com/api/2.0/campaigns/list.php
+          response = @api_client.campaigns.list({ filters: { campaign_id: id } })
+
           # No metadata call at API, so just retrieve same info but from specific list id
-          response = @api_client.lists.list({ filters: { list_id: id } })
           errors = response.fetch('errors', [])
           unless errors.empty?
             raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
@@ -233,7 +243,7 @@ module CartoDB
 
           response_data.each do |item|
             if item.fetch('id') == id
-              item_data = format_item_data(item)
+              item_data = format_list_item_data(item)
             end
           end
 
@@ -320,28 +330,48 @@ module CartoDB
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from MailChimp API
         # @return { :id, :title, :url, :service, :size }
-        def format_item_data(item_data)
-          filename = item_data.fetch('name').gsub(' ', '_')
-          member_count = item_data.fetch('stats').fetch('member_count')
+        def format_list_item_data(item_data)
+          filename = item_data.fetch('title').gsub(' ', '_')
           {
             id:       item_data.fetch('id'),
-            title:    "#{item_data.fetch('name')}",
+            title:    "#{item_data.fetch('title')}",
             filename: "#{filename}.csv",
             service:  DATASOURCE_NAME,
             checksum: '',
-            member_count: member_count,
+            member_count: item_data.fetch('emails_sent'),
             size:     NO_CONTENT_SIZE_PROVIDED
           }
         end
 
         # @see https://apidocs.mailchimp.com/export/1.0/#overview_description
-        def streamed_json_to_csv(contents='[]')
-          contents = ::JSON.parse(contents)
-          contents.each_with_index { |field, index|
-            contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
+        def streamed_json_to_csv(input_fields='[]')
+          opened_action = false
+          fields = []
+          contents = ::JSON.parse(input_fields)
+          contents.each { |subject, actions|
+            # Anonimize
+            fields.push("\"#{subject.to_s.gsub("\n", ' ').gsub('"', '""')}\"")
+            unless actions.length == 0
+              actions.each { |action|
+                if action["action"] == "open" && !opened_action
+                  fields.push("\"#{action["timestamp"]}\"")
+                  fields.push(action["ip"].nil? ? '' : "\"#{action["ip"]}\"")
+                  opened_action = true
+                end
+              }
+            end
           }
-          data = contents.join(',')
+          # Empty action scenario
+          unless opened_action
+            fields.push("\"\"")
+            fields.push("")
+          end
+          data = fields.join(',')
           data << "\n"
+        end
+
+        def campaign_csv_header
+          ["\"subject\"", "\"open_action_timestamp\"", "\"open_action_ip\""].join(',') << "\n"
         end
 
       end

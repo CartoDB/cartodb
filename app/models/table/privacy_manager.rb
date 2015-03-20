@@ -10,22 +10,22 @@ module CartoDB
     end
 
     def set_public
-      self.privacy = Privacy::PUBLIC
+      self.privacy = Table::Privacy::PUBLIC
       set_database_permissions(grant_query)
       self
     end
 
     def set_private
-      self.privacy = Privacy::PRIVATE
+      self.privacy = Table::Privacy::PRIVATE
       set_database_permissions(revoke_query)
       self
     end
 
     def set_from_table_privacy(table_privacy)
       case table_privacy
-        when Privacy::PUBLIC
+        when Table::Privacy::PUBLIC
           set_public
-        when Privacy::LINK
+        when Table::Privacy::LINK
           set_public_with_link_only
         else
           set_private
@@ -61,7 +61,7 @@ module CartoDB
     attr_accessor :privacy
 
     def set_public_with_link_only
-      self.privacy = Privacy::LINK
+      self.privacy = Table::Privacy::LINK
       set_database_permissions(grant_query)
     end
 

@@ -1,6 +1,6 @@
 # coding: UTF-8
 
-require_relative '../../../lib/cartodb/privacy'
+require_relative 'privacy'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
@@ -192,12 +192,12 @@ class UserTable < Sequel::Model
   end
 
   def privacy=(value)
-    @privacy_value = CartoDB::Privacy.from_anything(value)
+    @privacy_value = CartoDB::Table::Privacy.from_anything(value)
     super(@privacy_value.to_i)
   end
 
   def privacy
-    @privacy_value = CartoDB::Privacy.from_anything(super)
+    @privacy_value = CartoDB::Table::Privacy.from_anything(super)
   end
 
   def privacy_changed?

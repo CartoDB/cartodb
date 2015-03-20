@@ -107,7 +107,7 @@ class Table
   end
 
   def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? CartoDB::Privacy::PRIVATE : CartoDB::Privacy::PUBLIC
+    self.owner.try(:private_tables_enabled) ? CartoDB::Table::Privacy::PRIVATE : CartoDB::Table::Privacy::PUBLIC
   end
 
   def geometry_types_key
@@ -279,7 +279,7 @@ class Table
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? CartoDB::Privacy::PRIVATE : CartoDB::Privacy::PUBLIC)
+    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? CartoDB::Table::Privacy::PRIVATE : CartoDB::Table::Privacy::PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
@@ -1325,7 +1325,7 @@ class Table
 
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy.link? ? CartoDB::Privacy::PUBLIC.to_s : privacy_text
+    privacy.link? ? CartoDB::Table::Privacy::PUBLIC.to_s : privacy_text
   end
 
   def relator

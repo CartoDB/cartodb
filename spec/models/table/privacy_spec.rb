@@ -1,13 +1,12 @@
 # encoding: utf-8
 
 require  'mocha'
-require_relative '../../lib/cartodb/privacy'
+require_relative '../../../app/models/table/privacy'
 
 
-module CartoDB
+module CartoDB::Table
 
-
-  describe CartoDB::Privacy do
+  describe Privacy do
 
     RSpec.configure do |config|
       config.mock_with :mocha

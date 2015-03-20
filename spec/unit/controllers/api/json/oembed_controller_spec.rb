@@ -104,20 +104,17 @@ describe Api::Json::OembedController do
       expected_results = {
         username: username,
         organization_name: nil,
-        user_profile_url: "#{protocol}://#{domain}/u/#{username}",
+        user_profile_url: "#{CartoDB.base_url(username)}/u/#{username}",
         protocol: protocol
       }
-      controller.send(:url_fields_from_fragments, 'http://test.local/u/testuser', force_https)
+
+      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}/u/#{username}", force_https)
         .should eq expected_results
 
-      expected_results = {
-        username: username,
-        organization_name: nil,
-        user_profile_url: "#{protocol}://#{domain}/u/#{username}",
-        protocol: protocol
-      }
-      controller.send(:url_fields_from_fragments, 'http://test.local/u/testuser/something', force_https)
+      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}/u/#{username}/something", force_https)
         .should eq expected_results
+
+      #
 
       CartoDB.clear_internal_cache
       domain = 'cartodb.com'

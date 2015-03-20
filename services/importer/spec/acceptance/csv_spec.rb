@@ -149,8 +149,24 @@ describe 'csv regression tests' do
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
-    }].first.fetch(:count).should eq 7
+    }].first.fetch(:count).should eq 5
   end
+
+  it 'refuses to import csv with broken encoding' do
+    filepath    = path_to('broken_encoding.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[EncodingDetectionError]
+  end
+
 
   it 'displays a specific error message for a file with too many columns' do
     runner = runner_with_fixture('too_many_columns.csv')

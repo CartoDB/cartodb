@@ -134,6 +134,7 @@ module CartoDB
       def run
         importer = nil
         self.state    = STATE_SYNCING
+        self.store
 
         # First import is a "normal import" so still has no id, then run gets called and will get log first time
         # but we need this to fix old logs

@@ -349,8 +349,8 @@ module CartoDB
           fields = []
           contents = ::JSON.parse(input_fields)
           contents.each { |subject, actions|
-            # Anonimize
-            fields.push("\"#{subject.to_s.gsub("\n", ' ').gsub('"', '""')}\"")
+            # Anonimize by removing the name and leaving only the email domain
+            fields.push("\"#{subject.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/(.*)@/, "")}\"")
             unless actions.length == 0
               actions.each { |action|
                 if action["action"] == "open" && !opened_action

@@ -6,6 +6,8 @@
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 $opacityTransition: 250ms;
 
+$bannedColor: #E1A7A5;
+
 .DatasetsList {
   position: relative;
   width: 100%;
@@ -69,7 +71,7 @@ $opacityTransition: 250ms;
 // Position of the geometry type icon
 @mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
   @include background(image-url('layout/geometry-types-icons.png') no-repeat $x-pos $y-pos);
-  @include image-2x("layout/geometry-types-icons@x2.png", 200px, 80px, ($x-pos), ($y-pos));
+  @include image-2x("layout/geometry-types-icons@2x.png", 200px, 120px, ($x-pos), ($y-pos));
 }
 
 .DatasetsList-itemCategory {
@@ -116,6 +118,7 @@ $opacityTransition: 250ms;
 }
 .DatasetsList-itemStatus.iconFont-Book { font-size: 12px }
 .DatasetsList-itemStatus.is-public { color: $cHighlight-positive }
+.DatasetsList-itemStatus.is-banned { color: $bannedColor }
 .DatasetsList-itemStatus.is-failure { color: $cHighlight-negative }
 .DatasetsList-itemStatus.is-success { color: $cHighlight-positive }
 .DatasetsList-itemInfo {
@@ -161,7 +164,7 @@ $opacityTransition: 250ms;
 }
   .DatasetsList-itemMeta > * {
     width: auto;
-    margin-right: 10px;
+    margin-right: 18px;
     text-align: center;
   }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
@@ -176,6 +179,22 @@ $opacityTransition: 250ms;
   }
   .DatasetsList-itemTags .DefaultEditInline-input { text-align: right }
   .DatasetsList-itemDescription { margin-top: 4px }
+
+// Banned dataset
+.DatasetsList-item--banned {
+  .DatasetsList-itemTitle,
+  .DatasetsList-itemDescription,
+  .SizeIndicator,
+  .SizeIndicator .iconFont { color: $bannedColor }
+
+  .DatasetsList-itemCategory { @include geometry-type-icon(-160px, -80px) }
+  .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -80px) }
+  .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -80px) }
+  .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -80px) }
+  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -80px) }
+  
+  .DatasetsList-itemStatus { color: $bannedColor }
+}
 
 @media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
   .DatasetsList {
@@ -246,7 +265,7 @@ $opacityTransition: 250ms;
   }
   .DatasetsList-itemMeta > * {
     width: auto;
-    margin-right: 10px;
+    margin-right: 18px;
     text-align: center;
   }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }

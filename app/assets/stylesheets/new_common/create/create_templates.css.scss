@@ -65,10 +65,24 @@
   background: #6F9FD0;
 }
 // Templates icons
-.iconFont-People.CreateDialog-templatesButtonIcon {
+.CreateDialog-templatesButtonIcon.iconFont-People {
   line-height: 35px!important;
   font-size: 30px;
 }
+.CreateDialog-templatesButtonIcon.iconFont-Snake {
+  line-height: 35px!important;
+  font-size: 30px;
+}
+.CreateDialog-templatesButtonIcon.iconFont-Points {
+  line-height: 40px!important;
+  font-size: 24px;
+}
+.CreateDialog-templatesButtonIcon.iconFont-Notes { font-size: 26px }
+.CreateDialog-templatesButtonIcon.iconFont-Mountain {
+  font-size: 28px;
+  line-height: 40px!important
+}
+.CreateDialog-templatesButtonIcon.iconFont-Rectangles { font-size: 22px }
 .CreateDialog-templatesNewButton {
   font-size: 18px;
   background: #A9BE3F;

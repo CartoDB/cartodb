@@ -11,6 +11,7 @@ Bugfixes:
 * Fix Columns are no longer alphabetically ordered in the table view [#2825](https://github.com/CartoDB/cartodb/pull/2825)
 * Fix user creation with org [#2831](https://github.com/CartoDB/cartodb/pull/2831)
 * Fix sync tables state changes [#2838](https://github.com/CartoDB/cartodb/pull/2838)
+* Add specific error for wrongly encoded CSV files [#2847](https://github.com/CartoDB/cartodb/pull/2847)
 
 3.9.0 (2015-02-13)
 ------------------

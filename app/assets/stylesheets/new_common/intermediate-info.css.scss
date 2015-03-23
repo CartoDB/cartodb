@@ -8,7 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 .IntermediateInfo {
-  width: $sLayout-width;
+  width: 100%;
   @include display-flex();
   @include flex-direction(column);
   @include align-items(center);

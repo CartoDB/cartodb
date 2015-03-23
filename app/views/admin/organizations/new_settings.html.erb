@@ -10,7 +10,6 @@
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_organization_templates.js', 'new_organization_deps.js', 'new_organization.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= render 'shared/lato_font' %>
   <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 

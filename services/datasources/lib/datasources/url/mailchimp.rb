@@ -162,16 +162,10 @@ module CartoDB
           total = nil
 
           begin
-
             response = @api_client.campaigns.list({
                                                 start: offset,
                                                 limit: limit
                                               })
-
-            #response = @api_client.lists.list({
-            #                                    start: offset,
-            #                                    limit: limit
-            #                                  })
             errors = response.fetch('errors', [])
             unless errors.empty?
               raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
@@ -181,7 +175,8 @@ module CartoDB
 
             response_data = response.fetch('data', [])
             response_data.each do |item|
-              all_results.push(format_list_item_data(item))
+              # Skip items without tracking
+              all_results.push(format_activity_item_data(item)) if item['tracking']['opens']
             end
 
             offset += limit
@@ -203,16 +198,39 @@ module CartoDB
         def get_resource(id)
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
+          subscribers = []
           contents = ''
           export_api = @api_client.get_exporter
 
-          # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
-          content_iterator = export_api.campaign_subscriber_activity({id: id})
+          # Flow:
+          # 1) Retrieve campaign details
+          # 2) Retrieve subscriber activity
+          # 3) Update campaign details with subscriber activity results
+          # 4) anonymize data
 
-          contents << campaign_csv_header
-          content_iterator.each { |line|
-            contents << streamed_json_to_csv(line)
+          # 1)
+          campaign = get_resource_metadata(id)
+          campaign_details = export_api.list({id: campaign[:list_id]})
+          campaign = nil
+
+          # 2)
+          # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
+          subscribers_activity = export_api.campaign_subscriber_activity({id: id})
+          subscribers_activity.each { |line|
+            item_data = activity_data_item(line)
+            subscribers.push(item_data) if item_data[:opened]
           }
+          subscribers_activity = nil
+
+
+
+
+          # 3) & 4)
+          campaign_details.each_with_index { |line, index|
+            contents << list_json_to_csv(line, subscribers, index == 0)
+          }
+
+
 
           contents
         rescue Gibbon::MailChimpError => exception
@@ -231,10 +249,10 @@ module CartoDB
 
           item_data = {}
 
+          # No metadata call at API, so just retrieve same info but from specific campaign id
           # https://apidocs.mailchimp.com/api/2.0/campaigns/list.php
           response = @api_client.campaigns.list({ filters: { campaign_id: id } })
 
-          # No metadata call at API, so just retrieve same info but from specific list id
           errors = response.fetch('errors', [])
           unless errors.empty?
             raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
@@ -243,7 +261,7 @@ module CartoDB
 
           response_data.each do |item|
             if item.fetch('id') == id
-              item_data = format_list_item_data(item)
+              item_data = format_activity_item_data(item)
             end
           end
 
@@ -330,10 +348,11 @@ module CartoDB
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from MailChimp API
         # @return { :id, :title, :url, :service, :size }
-        def format_list_item_data(item_data)
+        def format_activity_item_data(item_data)
           filename = item_data.fetch('title').gsub(' ', '_')
           {
             id:       item_data.fetch('id'),
+            list_id:  item_data.fetch('list_id'),
             title:    "#{item_data.fetch('title')}",
             filename: "#{filename}.csv",
             service:  DATASOURCE_NAME,
@@ -344,7 +363,7 @@ module CartoDB
         end
 
         # @see https://apidocs.mailchimp.com/export/1.0/#overview_description
-        def streamed_json_to_csv(input_fields='[]')
+        def activity_json_to_csv(input_fields='[]')
           opened_action = false
           fields = []
           contents = ::JSON.parse(input_fields)
@@ -370,8 +389,42 @@ module CartoDB
           data << "\n"
         end
 
-        def campaign_csv_header
-          ["\"subject\"", "\"open_action_timestamp\"", "\"open_action_ip\""].join(',') << "\n"
+        def activity_data_item(input_fields='[]')
+          email = nil
+          opened_action = false
+          contents = ::JSON.parse(input_fields)
+          contents.each { |subject, actions|
+            email = subject
+            unless actions.length == 0
+              actions.each { |action|
+                opened_action = true if action["action"] == "open"
+              }
+            end
+          }
+
+          { subject: email, opened: opened_action }
+        end
+
+        # @param contents String containing a JSON Hash
+        # @param subscribers Array containing a Hash { subject, opened }
+        # @param header_row Boolean
+        def list_json_to_csv(contents='[]', subscribers=[], header_row=false)
+          opened_mail = false
+          contents = ::JSON.parse(contents)
+
+          opened_mail = (subscribers.index{ |item| item[:subject] == contents[0] } != nil) unless header_row == 0
+
+          contents.each_with_index { |field, index|
+            # Anonymize emails
+            if index == 0
+              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""').gsub(/^(.*)@/, "")}\""
+            else
+              contents[index] = "\"#{field.to_s.gsub("\n", ' ').gsub('"', '""')}\""
+            end
+          }
+          contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
+          data = contents.join(',')
+          data << "\n"
         end
 
       end

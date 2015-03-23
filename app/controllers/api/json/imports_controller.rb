@@ -78,7 +78,14 @@ class Api::Json::ImportsController < Api::ApplicationController
                                                      user_defined_limits: ::JSON.dump(options[:user_defined_limits])
                                                    }))
 
-    ExternalDataImport.new(data_import.id, external_source.id).save if external_source.present?
+    if external_source.present?
+      ExternalDataImport.new(data_import.id, external_source.id).save
+      if data_import.extra_options.nil?
+        data_import.extra_options = {:common_data => true}
+      else
+        data_import.extra_options = data_import.extra_options[:common_data] = true 
+      end
+    end
 
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
 

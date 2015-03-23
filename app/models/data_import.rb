@@ -83,9 +83,40 @@ class DataImport < Sequel::Model
     self.state    ||= STATE_PENDING
   end
 
+  def before_create
+    require 'debugger'; debugger
+    Rails.logger.info "*** #{Cartodb.config[:common_data]}"
+    if Cartodb.config[:common_data] && 
+       !Cartodb.config[:common_data]['username'].blank? && 
+       !Cartodb.config[:common_data]['host'].blank?
+      Rails.logger.info "*** #{self.data_source}"
+      if (self.extra_options.nil? ||
+         !self.extra_options.has_key?('common_data')) &&
+         self.data_source &&
+         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
+        if self.extra_options.nil?
+          self.extra_options = {:common_data => true}
+        else
+          self.extra_options = self.extra_options[:common_data] = true 
+        end
+      end
+    end
+  end
+
   def before_save
     self.logger = self.log.id unless self.logger.present?
     self.updated_at = Time.now
+  end
+      
+  def extra_options
+    return nil if self.import_extra_options.nil?
+    ::JSON.parse(self.import_extra_options).symbolize_keys
+  end
+
+  def extra_options=(value)
+    if !value.nil?
+      self.import_extra_options = ::JSON.dump(value)
+    end
   end
 
   def dataimport_logger

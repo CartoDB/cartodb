@@ -26,7 +26,10 @@ module CartoDB
 
           matches = /^#(.*) \{/.match(layer.options['tile_style'])
           unless matches.nil?
-            layer.options['tile_style'] << "\n##{matches[1]}[opened=true]{marker-fill: #006600;\n}"
+            layer.options['tile_style'] << "\n##{matches[1]}[opened=true] {\nmarker-fill: #006600;\n}"
+            # Needed for custom tile style:
+            layer.options['tile_style_custom'] = true
+            layer.options['wizard_properties'] = { type: "polygon", properties: {} }
           end
 
           nil

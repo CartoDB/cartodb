@@ -61,6 +61,24 @@ $opacityTransition: 250ms;
   text-align: center;
   margin-bottom: $sMargin-element;
 }
+.MapCard-tags {
+  height: 2 * $sLineHeight-normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: $sLineHeight-normal;
+    width: 2 * $sLineHeight-normal;
+    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+  }
+}
 .MapCard--selectable{
   &:hover {
     background-color: $cCard-hoverFill;

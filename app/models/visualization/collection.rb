@@ -72,6 +72,7 @@ module CartoDB
       #   except if 'exclude_shared' filter is also present and true,
       # - 'only_shared' forces to use different flow because if there are no shared there's nothing else to do
       # - 'locked' filter has special behaviour
+      # - If 'only_liked' it will return all liked visualizations, not only user's.
       def fetch(filters={})
         filters = filters.dup   # Avoid changing state
         @user_id = filters.fetch(:user_id, nil)
@@ -145,7 +146,7 @@ module CartoDB
       def total_shared_entries(type = nil)
         total = 0
         unless @unauthenticated_flag
-          if @user_id.nil? && raise_on_error
+          if @user_id.nil?
             raise KeyError.new("Can't retrieve shared count without specifying user id")
           else
             total = user_shared_entities_count(type) + organization_shared_entities_count(type)
@@ -158,11 +159,7 @@ module CartoDB
       def total_liked_entries(type = nil)
         type ||= @type
         if @user_id.nil?
-          if raise_on_error
-            raise KeyError.new("Can't retrieve likes count without specifying user id")
-          else
-            return 0
-          end
+          raise KeyError.new("Can't retrieve likes count without specifying user id")
         end
 
         if @unauthenticated_flag
@@ -181,23 +178,22 @@ module CartoDB
       # noinspection RubyArgCount
       def unauthenticated_likes(type)
         options = { :id.cast(:uuid) => :subject,
-              :user_id => @user_id,
               :privacy => Visualization::Member::PRIVACY_PUBLIC }
-        options.merge!({:type => type}) if type
-
-        CartoDB::Like.select(:subject)
-        .join(:visualizations, options)
-        .distinct
-        .count
+        count_likes(type, options)
       end
 
       # noinspection RubyArgCount
       def authenticated_likes(type)
-        options = { :id.cast(:uuid) => :subject,
-              :user_id => @user_id }
+        options = { :id.cast(:uuid) => :subject }
+
+        count_likes(type, options)
+      end
+
+      def count_likes(type, options)
         options.merge!({:type => type}) if type
 
         CartoDB::Like.select(:subject)
+        .where(:actor => @user_id)
         .join(:visualizations, options)
         .distinct
         .count
@@ -295,6 +291,17 @@ module CartoDB
         end
       end
 
+      def base_collection(filters)
+        only_liked = filters.fetch(:only_liked, 'false')
+        if only_liked == true || only_liked == 'true'
+          user_id = filters[:user_id]
+          dataset = repository.collection({}, [])
+          dataset.where { ( { privacy: Visualization::Member::PRIVACY_PUBLIC } ) | ( { user_id: user_id } ) }
+        else
+          repository.collection(filters, %w{ user_id })
+        end
+      end
+
       def compute_sharing_filter_dataset(filters)
         shared_filter = filters.delete(:shared)
         case shared_filter
@@ -313,7 +320,7 @@ module CartoDB
           dataset = repository.collection
           dataset = filter_by_only_shared(dataset, filters)
         else
-          dataset = repository.collection(filters,  %w{ user_id })
+          dataset = base_collection(filters)
           locked_filter = filters.delete(:locked)
           unless locked_filter.nil?
             if locked_filter.to_s == 'true'

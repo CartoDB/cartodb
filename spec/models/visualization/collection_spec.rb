@@ -398,6 +398,7 @@ describe Visualization::Collection do
 
       user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user2.stubs(:private_tables_enabled).returns(true)
 
       table11 = create_table(user1)
       v11 = table11.table_visualization
@@ -439,6 +440,15 @@ describe Visualization::Collection do
       liked(user2).count.should eq 2
       liked_count(user2).should eq 2
 
+      # Turning a visualization link should keep it from other users count
+      v21.privacy = Visualization::Member::PRIVACY_LINK
+      v21.stubs(:user).returns(user2)
+      v21.store
+      liked(user1).count.should eq 2
+      liked_count(user1).should eq 2
+      liked(user2).count.should eq 2
+      liked_count(user2).should eq 2
+
       # Turning a visualization private should remove it from other users count
       v21.privacy = Visualization::Member::PRIVACY_PRIVATE
       v21.store
@@ -446,6 +456,7 @@ describe Visualization::Collection do
       liked_count(user1).should eq 1
       liked(user2).count.should eq 2
       liked_count(user2).should eq 2
+
     end
 
     it "checks filtering by 'liked' " do

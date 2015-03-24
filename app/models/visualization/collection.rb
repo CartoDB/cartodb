@@ -194,11 +194,11 @@ module CartoDB
 
         user_id = @user_id
 
-        CartoDB::Like.select(:subject)
+        dataset = CartoDB::Like.select(:subject)
         .where(:actor => @user_id)
         .join(:visualizations, options)
-        .where { ( { privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC } ) | ( { user_id: user_id } ) }
-        .distinct
+        dataset = add_liked_by_conditions_to_dataset(dataset, user_id)
+        dataset.distinct
         .count
       end
 
@@ -294,12 +294,16 @@ module CartoDB
         end
       end
 
+      def add_liked_by_conditions_to_dataset(dataset, user_id)
+        dataset.where { ( { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] } ) | ( { user_id: user_id } ) }
+      end
+
       def base_collection(filters)
         only_liked = filters.fetch(:only_liked, 'false')
         if only_liked == true || only_liked == 'true'
           user_id = filters[:user_id]
           dataset = repository.collection({}, [])
-          dataset.where { ( { privacy: Visualization::Member::PRIVACY_PUBLIC } ) | ( { user_id: user_id } ) }
+          dataset = add_liked_by_conditions_to_dataset(dataset, user_id)
         else
           repository.collection(filters, %w{ user_id })
         end

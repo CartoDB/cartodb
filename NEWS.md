@@ -1,8 +1,10 @@
 3.x.x (2015-xx-xx)
 ------------------
+* Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
+* Fix Changing email requires new password [#2764](https://github.com/CartoDB/cartodb/pull/2764)
 
 3.9.0 (2015-02-13)
 ------------------

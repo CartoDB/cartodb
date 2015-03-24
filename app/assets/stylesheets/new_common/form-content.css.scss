@@ -292,6 +292,9 @@
   font-size: $sFontSize-normal;
   color: $cTypography-help;
 }
+.Form-rowInfoText--multipleLines {
+  line-height: 20px;
+}
 .Form-rowInfoText--error { color: #DD3B37 }
 .Form-footer {
   @include display-flex();

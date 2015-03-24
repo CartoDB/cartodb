@@ -137,13 +137,16 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
-    load_common_data if FeatureFlag.allowed?('load_common_data')
     monitor_user_notification
     sleep 1
     set_statement_timeouts
     if self.has_organization_enabled?
       ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
     end
+  end
+
+  def should_load_common_data?
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - 1.month
   end
 
   def load_common_data

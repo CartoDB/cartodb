@@ -750,7 +750,6 @@ describe Table do
       table.modify_column!(:name => "name", :type => "number")
     end
 
-
     it "can modify its schema" do
       table = create_table(user_id: @user.id)
       table.schema(cartodb_types: false).should be_equal_to_default_db_schema

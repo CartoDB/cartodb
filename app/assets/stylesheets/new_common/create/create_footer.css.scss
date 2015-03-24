@@ -25,10 +25,9 @@
   padding: 15px 40px;
   background: $cStructure-grayBkg;
 }
-.CreateDialog-footerInner:after {
-  content: '';
+.CreateDialog-footerShadow {
   position: absolute;
-  top: -18px;
+  top: -19px;
   left: 50%;
   width: 1020px;
   height: 18px;
@@ -36,10 +35,9 @@
   @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
   z-index: 2;
 }
-.CreateDialog-footerInner:before {
-  content: '';
+.CreateDialog-footerLine {
   position: absolute;
-  top: 0;
+  top: -1px;
   left: 50%;
   width: 940px;
   margin-left: -470px;

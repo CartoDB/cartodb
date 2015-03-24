@@ -22,7 +22,7 @@ module CartoDB
               type: CartoDB::Visualization::Member::TYPE_CANONICAL,
               description: table.description,
               tags: table.tags.to_s.split(','),
-              privacy: (table.privacy == ::Table::PRIVACY_PUBLIC ? ::Table::PRIVACY_PUBLIC_TEXT : ::Table::PRIVACY_PRIVATE_TEXT)
+              privacy: (table.public? ? ::UserTable::PRIVACY_PUBLIC_TEXT : ::UserTable::PRIVACY_PRIVATE_TEXT)
             ).store
 
             migrated!(table)
@@ -46,9 +46,9 @@ module CartoDB
 
     def rollback!
       # Remove any visualizations and related data
-      ::Table.db['delete from visualizations']
-      ::Table.db['delete from overlays']
-      ::Table.db['delete from layers_user_tables']
+      Sequel::Model.db['delete from visualizations']
+      Sequel::Model.db['delete from overlays']
+      Sequel::Model.db['delete from layers_user_tables']
       # Remove redis keys
       @tables_to_migrate.all.each do |table|
         $tables_metadata.hdel(key(table), "migrated_to_#{@version}")

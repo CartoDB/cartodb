@@ -458,7 +458,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def synchronizations_by_table_name(table_data)
     # TODO: Check for organization visualizations
     Hash[
-      ::Table.db.fetch(
+      # TODO this should never be done
+      Sequel::Model.db.fetch(
         'SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?',
         current_user.id,
         table_data.map{ |table|

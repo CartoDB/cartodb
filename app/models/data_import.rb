@@ -84,12 +84,9 @@ class DataImport < Sequel::Model
   end
 
   def before_create
-    require 'debugger'; debugger
-    Rails.logger.info "*** #{Cartodb.config[:common_data]}"
     if Cartodb.config[:common_data] && 
        !Cartodb.config[:common_data]['username'].blank? && 
        !Cartodb.config[:common_data]['host'].blank?
-      Rails.logger.info "*** #{self.data_source}"
       if (self.extra_options.nil? ||
          !self.extra_options.has_key?('common_data')) &&
          self.data_source &&
@@ -675,6 +672,9 @@ class DataImport < Sequel::Model
                   'file_stats'        => ::JSON.parse(self.stats),
                   'resque_ppid'       => self.resque_ppid
                  }
+    if !self.extra_options.nil?
+      import_log['extra_options'] = self.extra_options
+    end
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed

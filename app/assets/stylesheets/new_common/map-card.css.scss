@@ -62,10 +62,10 @@ $opacityTransition: 250ms;
   margin-bottom: $sMargin-element;
 }
 .MapCard-tags {
-  height: 2 * $sLineHeight-normal;
+  height: 1 * $sLineHeight-normal;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   &:after {
@@ -83,14 +83,16 @@ $opacityTransition: 250ms;
   &:hover {
     background-color: $cCard-hoverFill;
     border-color: $cCard-hoverBorder;
-    .MapCard-desc:after {
+    .MapCard-desc:after,
+    .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
     }
   }
   &.is-selected {
     background-color: $cCard-selectedFill;
     border-color: $cCard-selectedBorder;
-    .MapCard-desc:after {
+    .MapCard-desc:after,
+    .MapCard-tags:after {
       @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
     }
   }

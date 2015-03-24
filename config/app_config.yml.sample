@@ -8,7 +8,7 @@ defaults: &defaults
   # If true, both subdomain-based urls (xxx.cartodb.com) and subdomainless-urls (cartodb.com/u/xxxx) are allowed.
   #   This true state takes precedence over the `subdomains_allowed` param.
   # If false, `subdomains_allowed` will decide the type of urls allowed.
-  subdomains_optional: true
+  subdomains_optional: false
   # If true, we allow both "#{USER}#{session_domain}" and "#{ORG}#{session_domain}/u/#{USER}".
   # If false, only "#{session_domain}/u/#{USER}" is allowed (and organizations won't work).
   subdomains_allowed: true

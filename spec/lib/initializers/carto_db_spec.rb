@@ -106,6 +106,8 @@ describe CartoDB do
       protocol_override_https = 'https'
       protocol_override_http = 'http'
 
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
+
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
       CartoDB.expects(:get_http_port).returns(expected_http_port)
 
@@ -130,6 +132,8 @@ describe CartoDB do
       # Reset
       expected_session_domain = 'cartodb.com'   # Notice dot removed
       CartoDB.clear_internal_cache
+
+      CartoDB.expects(:subdomains_optional?).at_least(0).returns(false)
 
       CartoDB.unstub(:get_session_domain)
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
@@ -156,6 +160,9 @@ describe CartoDB do
 
       CartoDB.base_url(username, nil, protocol_override_http)
         .should eq "#{protocol_override_http}://#{expected_session_domain}#{expected_http_port}"
+
+      # TODO: Pending with subdomains optional set to true
+
     end
 
   end

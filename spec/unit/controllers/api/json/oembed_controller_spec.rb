@@ -99,6 +99,7 @@ describe Api::Json::OembedController do
       force_https = false
 
       # easy scenario
+      CartoDB.expects(:get_subdomains_optional).returns(false)
       CartoDB.expects(:get_subdomains_allowed).returns(false)
 
       expected_results = {
@@ -119,6 +120,7 @@ describe Api::Json::OembedController do
       CartoDB.clear_internal_cache
       domain = 'cartodb.com'
       orgname = 'testorg'
+      CartoDB.expects(:get_subdomains_optional).returns(false)
       CartoDB.expects(:get_session_domain).returns(domain)
       CartoDB.expects(:get_subdomains_allowed).returns(true)
       CartoDB.expects(:get_http_port).returns(nil)            # Easier to test without port specified

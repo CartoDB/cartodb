@@ -2,6 +2,11 @@
 ------------------
 * Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 * Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
+* New features
+  - Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)
+    - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
+    - New Config entry: 'subdomains_optional' (see config/app_config.yml.sample for further details)
+    - New Config entry: 'subdomains_allowed' (see config/app_config.yml.sample for further details)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
@@ -15,11 +20,6 @@ Bugfixes:
 
 3.9.0 (2015-02-13)
 ------------------
-* New features
-  - Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)
-    - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
-    - New Config entry: 'subdomains_optional' (see config/app_config.yml.sample for further details)
-    - New Config entry: 'subdomains_allowed' (see config/app_config.yml.sample for further details)
 * New user account & profile management pages, inside CartoDB Editor.
 * Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
 * Fixed Column wkb_geometry appears when importing [#2107](https://github.com/CartoDB/cartodb/issues/2107). Needs updating `ogr2ogr2-static-bin` package

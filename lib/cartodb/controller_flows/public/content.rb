@@ -40,6 +40,14 @@ module CartoDB
             return @renderer.old_user_content(viewed_user)
           end
         end
+
+        private
+
+        def eligible_for_redirect?(user)
+          (CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?) && user.has_organization? &&
+            !@request.params[:redirected].present? && CartoDB.extract_real_subdomain(@request) != user.organization.name
+        end
+
       end
 
     end

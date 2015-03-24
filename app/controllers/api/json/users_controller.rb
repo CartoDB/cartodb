@@ -35,14 +35,7 @@ class Api::Json::UsersController < Api::ApplicationController
       referer_organization_username = nil
     end
 
-    results = get_organization_name_and_fork_feature(current_viewer, referer, subdomain, referer_organization_username)
-
-    render json: {
-      urls: ["#{current_viewer.public_url(results[:organization_name])}#{dashboard_bis_url}"],
-      can_fork: results[:can_fork],
-      username: current_viewer.username,
-      avatar_url: current_viewer.avatar_url
-    }
+    get_organization_name_and_fork_feature(current_viewer, referer, subdomain, referer_organization_username)
   end
 
   private
@@ -79,7 +72,7 @@ class Api::Json::UsersController < Api::ApplicationController
     end
 
     render json: {
-      urls: ["#{CartoDB.base_url(current_viewer.username, organization_name)}/dashboard"],
+      urls: ["#{CartoDB.base_url(current_viewer.username, organization_name)}#{dashboard_bis_url}"],
       can_fork: can_fork,
       username: current_viewer.username,
       avatar_url: current_viewer.avatar_url,

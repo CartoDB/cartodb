@@ -368,15 +368,22 @@ describe Visualization::Collection do
       vis3.delete
     end
 
-    def create_table(user, name)
+    def create_table(user, name = "viz#{rand(999)}")
       table = Table.new
       table.user_id = user.id
       table.name = name
       table.save
     end
 
-    it "checks filtering by 'liked' " do
-      # Restore Vis backend to normal table so Relator works
+    def liked(user, type = Visualization::Member::TYPE_CANONICAL)
+      Visualization::Collection.new.fetch( { user_id: user.id, only_liked: true })
+    end
+
+    def liked_count(user, type = Visualization::Member::TYPE_CANONICAL)
+      liked(user,type).total_liked_entries(type)
+    end
+
+    def restore_vis_backend_to_normal_table_so_relator_works
       Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
       begin
         Visualization::Migrator.new(@db).drop(:visualizations)
@@ -384,6 +391,65 @@ describe Visualization::Collection do
         # Do nothing, visualizations table not existed before
       end
       Visualization::Migrator.new(@db).migrate(:visualizations)
+    end
+
+    it 'counts total liked' do
+      restore_vis_backend_to_normal_table_so_relator_works
+
+      user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+
+      table11 = create_table(user1)
+      v11 = table11.table_visualization
+      table12 = create_table(user1)
+      v12 = table12.table_visualization
+      table21 = create_table(user2)
+      v21 = table21.table_visualization
+      [[v11, user1], [v12, user1], [v21, user2]].each { |v, u|
+        v.privacy = Visualization::Member::PRIVACY_PUBLIC
+        v.store
+      }
+
+      liked(user1).count.should eq 0
+      liked_count(user1).should eq 0
+      liked(user2).count.should eq 0
+      liked_count(user2).should eq 0
+
+      v11.add_like_from(user2.id)
+      liked(user1).count.should eq 0
+      liked_count(user1).should eq 0
+      liked(user2).count.should eq 1
+      liked_count(user2).should eq 1
+
+      v12.add_like_from(user1.id)
+      liked(user1).count.should eq 1
+      liked_count(user1).should eq 1
+      liked(user2).count.should eq 1
+      liked_count(user2).should eq 1
+
+      v21.add_like_from(user2.id)
+      liked(user1).count.should eq 1
+      liked_count(user1).should eq 1
+      liked(user2).count.should eq 2
+      liked_count(user2).should eq 2
+
+      v21.add_like_from(user1.id)
+      liked(user1).count.should eq 2
+      liked_count(user1).should eq 2
+      liked(user2).count.should eq 2
+      liked_count(user2).should eq 2
+
+      # Turning a visualization private should remove it from other users count
+      v21.privacy = Visualization::Member::PRIVACY_PRIVATE
+      v21.store
+      liked(user1).count.should eq 1
+      liked_count(user1).should eq 1
+      liked(user2).count.should eq 2
+      liked_count(user2).should eq 2
+    end
+
+    it "checks filtering by 'liked' " do
+      restore_vis_backend_to_normal_table_so_relator_works
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)

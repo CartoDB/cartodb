@@ -192,9 +192,12 @@ module CartoDB
       def count_likes(type, options)
         options.merge!({:type => type}) if type
 
+        user_id = @user_id
+
         CartoDB::Like.select(:subject)
         .where(:actor => @user_id)
         .join(:visualizations, options)
+        .where { ( { privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC } ) | ( { user_id: user_id } ) }
         .distinct
         .count
       end

@@ -83,19 +83,17 @@ class DataImport < Sequel::Model
     self.state    ||= STATE_PENDING
   end
 
+  # This before_create should be only necessary to track old dashboard data imports.
+  # New ones are already tracked during the data_import create inside the controller
+  # For the old dashboard 
   def before_create
     if Cartodb.config[:common_data] && 
        !Cartodb.config[:common_data]['username'].blank? && 
        !Cartodb.config[:common_data]['host'].blank?
-      if (self.extra_options.nil? ||
-         !self.extra_options.has_key?('common_data')) &&
+      if !self.extra_options.has_key?('common_data') && 
          self.data_source &&
          self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
-        if self.extra_options.nil?
-          self.extra_options = {:common_data => true}
-        else
-          self.extra_options = self.extra_options[:common_data] = true 
-        end
+        self.extra_options = self.extra_options.merge({:common_data => true})
       end
     end
   end
@@ -106,7 +104,7 @@ class DataImport < Sequel::Model
   end
       
   def extra_options
-    return nil if self.import_extra_options.nil?
+    return {} if self.import_extra_options.nil?
     ::JSON.parse(self.import_extra_options).symbolize_keys
   end
 

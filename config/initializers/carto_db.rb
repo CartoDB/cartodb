@@ -161,7 +161,7 @@ module CartoDB
 
   def self.get_http_port
     config_port = Cartodb.config[:http_port]
-    config_port.nil? ? '' : ":#{config_port}"
+    config_port.nil? || config_port == '' || config_port.to_i == 80 ? '' : ":#{config_port}"
   end
 
   def self.get_domain

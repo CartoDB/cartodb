@@ -130,8 +130,9 @@ class Api::Json::OembedController < Api::ApplicationController
                                                       # url_fragments[5]: Path
     raise UrlFRagmentsError.new("URL needs username specified in the Path") if url_fragments[5][0..2] != "/u/"
 
-                  # url_fragments[3]: Host
-    port_fragment = url_fragments[3].nil? || url_fragments[3].to_i == 80 ? '' : ":#{url_fragments[3]}"
+    # url_fragments[3]: Host
+    port_fragment =
+      url_fragments[3].nil? || url_fragments[3] == '' || url_fragments[3].to_i == 80 ? '' : ":#{url_fragments[3]}"
 
     username = username_from_url_fragments(url_fragments)
     {

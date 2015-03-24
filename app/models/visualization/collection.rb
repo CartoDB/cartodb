@@ -295,7 +295,9 @@ module CartoDB
       end
 
       def add_liked_by_conditions_to_dataset(dataset, user_id)
-        dataset.where { ( { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] } ) | ( { user_id: user_id } ) }
+        user_shared_vis = user_shared_vis(user_id)
+        dataset = dataset.where { ( { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] } ) | ( { user_id: user_id } ) | ( { id: user_shared_vis } ) }
+        include_shared_entities(dataset, { user_id: user_id } )
       end
 
       def base_collection(filters)

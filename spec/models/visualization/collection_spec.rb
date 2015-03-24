@@ -397,8 +397,11 @@ describe Visualization::Collection do
       restore_vis_backend_to_normal_table_so_relator_works
 
       user1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user1.stubs(:organization).returns(nil)
+
       user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       user2.stubs(:private_tables_enabled).returns(true)
+      user2.stubs(:organization).returns(nil)
 
       table11 = create_table(user1)
       v11 = table11.table_visualization
@@ -457,6 +460,22 @@ describe Visualization::Collection do
       liked(user2).count.should eq 2
       liked_count(user2).should eq 2
 
+      # Adding permission to user should add it to count and list
+      permission = v21.permission
+      permission.acl = [ { type: CartoDB::Permission::TYPE_USER,
+          entity: {
+            id: user1.id,
+            username: user1.username
+          },
+          access: CartoDB::Permission::ACCESS_READONLY } ]
+      v21.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      permission.stubs(:entity).returns(v21)
+      permission.stubs(:notify_permissions_change).returns(nil)
+      permission.save
+      liked(user1).count.should eq 2
+      liked_count(user1).should eq 2
+      liked(user2).count.should eq 2
+      liked_count(user2).should eq 2
     end
 
     it "checks filtering by 'liked' " do

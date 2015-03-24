@@ -202,18 +202,12 @@ module CartoDB
           contents = ''
           export_api = @api_client.get_exporter
 
-          # Flow:
           # 1) Retrieve campaign details
-          # 2) Retrieve subscriber activity
-          # 3) Update campaign details with subscriber activity results
-          # 4) anonymize data
-
-          # 1)
           campaign = get_resource_metadata(id)
           campaign_details = export_api.list({id: campaign[:list_id]})
           campaign = nil
 
-          # 2)
+          # 2) Retrieve subscriber activity
           # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
           subscribers_activity = export_api.campaign_subscriber_activity({id: id})
           subscribers_activity.each { |line|
@@ -222,15 +216,11 @@ module CartoDB
           }
           subscribers_activity = nil
 
-
-
-
-          # 3) & 4)
+          # 3) Update campaign details with subscriber activity results
+          # 4) anonymize data (inside list_json_to_csv)
           campaign_details.each_with_index { |line, index|
             contents << list_json_to_csv(line, subscribers, index == 0)
           }
-
-
 
           contents
         rescue Gibbon::MailChimpError => exception

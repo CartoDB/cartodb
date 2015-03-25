@@ -234,7 +234,7 @@ module CartoDB
             kind: kind,
             max_rows: nil,
             country_column: country_column_name,
-            countries: "'#{country}'"
+            countries: country.present? ? "'#{country}'" : nil
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
 

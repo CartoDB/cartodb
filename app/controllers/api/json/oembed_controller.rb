@@ -38,7 +38,13 @@ class Api::Json::OembedController < Api::ApplicationController
     fields = url_fields_from_fragments(url, force_https)
 
     # build the url using full schema because any visuaization should work with any user
-    url = CartoDB.base_url(fields[:username], fields[:organization_name])  + public_visualizations_embed_map_path(id: uuid)
+    if fields[:organization_name].nil?
+      url = CartoDB.base_url(fields[:username])
+    else
+      url = CartoDB.base_url(fields[:organization_name], fields[:username])
+    end
+    url += public_visualizations_embed_map_path(id: uuid)
+
     # force the schema
     if fields[:protocol] == 'https' && !url.include?('https')
       url = url.sub('http', 'https')

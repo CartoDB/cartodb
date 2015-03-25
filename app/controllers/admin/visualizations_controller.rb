@@ -83,8 +83,7 @@ class Admin::VisualizationsController < ApplicationController
     return(pretty_404) if disallowed_type?(@visualization)
 
     return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain],
-                                                            id: request.params[:id])) \
-      if @visualization.derived?
+                                                            id: request.params[:id])) if @visualization.derived?
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=true)
@@ -99,14 +98,14 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local? or Rails.env.development?)
+    return(redirect_to :protocol => 'https://') if @visualization.organization? \
+                                                   and not (request.ssl? or request.local? or Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path( \
-          user_domain: @visualization.user.username, \
-          id: "#{params[:id]}", redirected:true) \
-        and return
+      redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path(
+          user_domain: @visualization.user.username,
+          id: "#{params[:id]}", redirected:true) and return
     end
 
     @vizjson = @visualization.to_vizjson
@@ -439,13 +438,11 @@ class Admin::VisualizationsController < ApplicationController
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id
-              url = CartoDB.base_url(organization.name)
+              url = CartoDB.base_url(organization.name, username)
               if for_table
-                url += public_tables_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
-                                               redirected:true)
+                url += public_tables_show_path(id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
               else
-                url += public_visualizations_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
-                                                       redirected:true)
+                url += public_visualizations_show_path(id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
               end
             end
           end

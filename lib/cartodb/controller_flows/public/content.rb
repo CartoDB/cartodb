@@ -30,8 +30,8 @@ module CartoDB
           # Redirect to org url if has only user
           if eligible_for_redirect?(viewed_user)
             # redirect username.host.ext => org-name.host.ext/u/username
-            @ctrl.redirect_to CartoDB.base_url(viewed_user.organization.name) <<
-              @renderer.organization_path(viewed_user) and return
+            @ctrl.redirect_to CartoDB.base_url(viewed_user.organization.name, viewed_user.username) <<
+              @renderer.organization_path and return
           end
 
           if viewed_user.has_feature_flag?('new_public_dashboard')

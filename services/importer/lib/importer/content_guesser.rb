@@ -103,10 +103,10 @@ module CartoDB
           text_columns.each do |candidate|
             column_name_sym = candidate[:column_name].to_sym
             places = @guesser.sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
-            query = "SELECT namedplace_guess_country(Array[#{places}])"
-            ret = @guesser.geocoder_sql_api.fetch(query)
-            if ret
-              @country = ret
+            query = "SELECT namedplace_guess_country(Array[#{places}]) as country"
+            country = @guesser.geocoder_sql_api.fetch(query).first['country']
+            if country
+              @country = country
               @column = candidate
               return @column
             end

@@ -92,7 +92,13 @@ Run `grunt availabletasks` to see available tasks.
 
 First time starting to work you need to run `grunt`, to build all static assets (will be written to `public/assets/:version`).
 
-After that, for typical frontend work, it's recommended to run:
+After that, for typical frontend work, it's recommended to run once:
+```bash
+grunt
+```
+
+and then
+
 ```bash
 grunt dev
 ```

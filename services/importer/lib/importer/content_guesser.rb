@@ -81,6 +81,10 @@ module CartoDB
           @country_column = (country_proportion(candidate) > @guesser.threshold) ? candidate : nil
         end
 
+        def country_column_name
+          country_column[:column_name] if country_column
+        end
+
         def country
           @country
         end

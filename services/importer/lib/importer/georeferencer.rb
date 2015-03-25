@@ -210,7 +210,7 @@ module CartoDB
         geocode(@content_guesser.namedplaces.column[:column_name],
                 'point',
                 'namedplace',
-                @content_guesser.namedplaces.country_column,
+                @content_guesser.namedplaces.country_column_name,
                 @content_guesser.namedplaces.country)
       end
 
@@ -219,7 +219,7 @@ module CartoDB
         geocode(ip_column_name, 'point', 'ipaddress')
       end
 
-      def geocode(formatter, geometry_type, kind, country_column=nil, country=nil)
+      def geocode(formatter, geometry_type, kind, country_column_name=nil, country=nil)
         geocoder = nil
         @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
@@ -233,9 +233,8 @@ module CartoDB
             geometry_type: geometry_type,
             kind: kind,
             max_rows: nil,
-            country_column: country_column[:column_name],
-            countries: country,
-            country_code: country
+            country_column: country_column_name,
+            countries: "'#{country}'"
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
 

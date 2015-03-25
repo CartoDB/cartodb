@@ -27,7 +27,7 @@ module CartoDB
         @geometry_type        = arguments.fetch(:geometry_type, '').to_sym
         @kind                 = arguments.fetch(:kind, '').to_sym
         @schema               = arguments[:schema] || 'cdb'
-        @batch_size           = (@geometry_type == :point ? 5000 : 10)
+        @batch_size           = (@geometry_type == :point ? 1000 : 10)
         @state                = 'submitted'
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
         @country_column = arguments[:country_column]

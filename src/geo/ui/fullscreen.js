@@ -76,7 +76,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
         // Reference: Ehttp://stackoverflow.com/questions/8427413/webkitrequestfullscreen-fails-when-passing-element-allow-keyboard-input-in-safar
         requestFullScreen.call(docEl, undefined);
       } else {
-        requestFullScreen.call(docEl);
+        // CartoDB.js #412 : 
+        // Nowadays (2015/03/25), fullscreen is not supported in iOS Mobile. Reference: http://caniuse.com/#feat=fullscreen
+        if (requestFullScreen !== undefined) {
+          requestFullScreen.call(docEl);
+        }
       }
 
       if (mapView) {

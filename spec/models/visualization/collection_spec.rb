@@ -253,6 +253,10 @@ describe Visualization::Collection do
       Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
       begin
         @db.run(%Q{alter table external_sources drop constraint external_sources_visualization_id_fkey})
+      rescue
+        # Do nothing
+      end
+      begin
         Visualization::Migrator.new(@db).drop(:visualizations)
       rescue
         # Do nothing, visualizations table not existed before
@@ -515,6 +519,7 @@ describe Visualization::Collection do
       vis3.store
 
       vis4 = table4.table_visualization
+      vis4.privacy.should eq Visualization::Member::PRIVACY_PRIVATE
 
       vis_link = table5.table_visualization
       vis_link.privacy = Visualization::Member::PRIVACY_LINK
@@ -599,7 +604,7 @@ describe Visualization::Collection do
                                                          user_id: user3.id,
                                                          only_liked: true
                                                        })
-      collection.count.should eq 0
+      collection.count.should eq 1 # Liked link privacy one
     end
   end
 

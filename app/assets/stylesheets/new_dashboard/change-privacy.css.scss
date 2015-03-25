@@ -14,31 +14,15 @@ $cBkg: #F9F9F9;
   padding: 20px 0;
   background: #F0F7FC;
 }
-.ChangePrivacy-upgradeBannerInner {
+.UpgradeElement.ChangePrivacy-upgradeBannerInner {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   margin: 0 $sMargin-group;
+  padding: 0;
+  background: none;
+  border: none;
 }
-.ChangePrivacy-upgradeInfo {
-  font-size: $sFontSize-large;
-  color: $cTypography-paragraphs;
-}
-.ChangePrivacy-upgradeAction {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-}
-.ChangePrivacy-upgradeActionButton { padding: 0 40px }
-.ChangePrivacy-upgradeActionTrial {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-  padding-right: 20px;
-  font-size: $sFontSize-normal;
-  color: $cTypography-paragraphs;
-}
-.ChangePrivacy-upgradeActionTrialIcon { margin-right: 5px }
 .ChangePrivacy-shareBanner {
   @include display-flex();
   @include justify-content(center);

@@ -78,7 +78,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
       } else {
         // CartoDB.js #412 :: Fullscreen button is throwing errors
         // Nowadays (2015/03/25), fullscreen is not supported in iOS Safari. Reference: http://caniuse.com/#feat=fullscreen
-        if (requestFullScreen !== undefined) {
+        if (requestFullScreen) {
           requestFullScreen.call(docEl);
         }
       }

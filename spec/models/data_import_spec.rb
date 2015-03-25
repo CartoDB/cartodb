@@ -226,6 +226,46 @@ describe DataImport do
 
     Dir.exists?(file_path).should be_false
   end
+  
+  it 'should add a common_data extra_option' do
+    DataImport.any_instance.stubs(:from_common_data?).returns(true)
+    data_import = DataImport.create(
+      :user_id         => @user.id,
+      :data_source     => "http://127.0.0.1/foo.csv"
+    )
+    data_import.reload
+    data_import.extra_options[:common_data].should eq true
+  end
+  
+  it 'should know that the import is from common data' do
+    Cartodb.config[:common_data]['username'] = 'mycommondata'
+    Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
+    data_import = DataImport.create(
+      :user_id         => @user.id,
+      :data_source     => "http://mycommondata.cartodb.wadus.com/foo.csv"
+    )
+    data_import.from_common_data?.should eq true
+  end
+  
+  it 'should not consider a import as common data if common_data config does not exist' do
+    Cartodb.config.delete('common_data')
+    data_import = DataImport.create(
+      :user_id         => @user.id,
+      :data_source     => "http://mycommondata.cartodb.wadus.com/foo.csv"
+    )
+    data_import.from_common_data?.should eq false
+  end
+  
+  it 'should not consider a import as common data if common_data config does not match with url' do
+    Cartodb.config[:common_data]['username'] = 'mycommondata'
+    Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
+    data_import = DataImport.create(
+      :user_id         => @user.id,
+      :data_source     => "http://mydatasource.cartodb.wadus.com/foo.csv"
+    )
+    data_import.from_common_data?.should eq false
+  end
+
 
   describe 'log' do
     it 'is initialized to a CartoDB::Log instance' do

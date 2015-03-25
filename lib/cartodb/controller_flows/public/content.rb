@@ -44,8 +44,9 @@ module CartoDB
         private
 
         def eligible_for_redirect?(user)
-          (CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?) && user.has_organization? &&
-            !@request.params[:redirected].present? && CartoDB.subdomain_from_request(@request) != user.organization.name
+          return if CartoDB.subdomainless_urls?
+          user.has_organization? && !@request.params[:redirected].present? &&
+            CartoDB.subdomain_from_request(@request) != user.organization.name
         end
 
       end

@@ -2258,8 +2258,7 @@ TRIGGER
   end
 
   def organization_username
-    return nil if organization.nil? || !CartoDB.subdomains_allowed?
-    username
+    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
 
   def subdomain

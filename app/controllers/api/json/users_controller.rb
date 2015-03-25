@@ -13,6 +13,7 @@ class Api::Json::UsersController < Api::ApplicationController
 
   def get_authenticated_users
     referer = request.env["HTTP_REFERER"]
+    # TODO: Change this to allow also /user/
     referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
     if referer_match.nil?
       render json: { error: "Referer #{referer} does not match" }, status: 400 and return
@@ -29,11 +30,8 @@ class Api::Json::UsersController < Api::ApplicationController
 
     subdomain = referer_match[1].gsub(CartoDB.session_domain, '').downcase
 
-    if CartoDB.subdomains_allowed? || (CartoDB.subdomains_optional? && !referer_match[5].nil?)
-      referer_organization_username = referer_match[5]
-    else
-      referer_organization_username = nil
-    end
+    # referer_match[5] == username
+    referer_organization_username = referer_match[5]
 
     get_organization_name_and_fork_feature(current_viewer, referer, subdomain, referer_organization_username)
   end
@@ -43,7 +41,7 @@ class Api::Json::UsersController < Api::ApplicationController
   def get_organization_name_and_fork_feature(user, referrer, subdomain, referrer_organization_username=nil)
     organization_name = nil
 
-    can_fork = CartoDB.subdomains_allowed? || CartoDB.subdomains_optional? ? can_user_fork_resource(referrer, user) : false
+    can_fork = can_user_fork_resource(referrer, user)
 
     # It doesn't have a organization username component. We assume it's not a organization referer
     if referrer_organization_username.nil?

@@ -407,8 +407,9 @@ class Admin::VisualizationsController < ApplicationController
   private
 
   def eligible_for_redirect?(user)
-    (CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?) && user.has_organization? &&
-      !request.params[:redirected].present? && CartoDB.subdomain_from_request(request) != user.organization.name
+    return false if CartoDB.subdomainless_urls?
+    user.has_organization? && !request.params[:redirected].present? &&
+      CartoDB.subdomain_from_request(request) != user.organization.name
   end
 
   def org_user_has_map_permissions?(user, visualization)
@@ -426,7 +427,7 @@ class Admin::VisualizationsController < ApplicationController
   def get_corrected_url_if_proceeds(for_table=true)
     url = nil
 
-    return url unless CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+    return url if CartoDB.subdomainless_urls?
 
     org_name = CartoDB.subdomain_from_request(request)
     if CartoDB.extract_subdomain(request) != org_name

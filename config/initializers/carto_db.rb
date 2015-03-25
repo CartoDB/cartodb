@@ -37,8 +37,6 @@ module CartoDB
     remove_class_variable(:@@session_domain) if defined?(@@session_domain)
     remove_class_variable(:@@domain) if defined?(@@domain)
     remove_class_variable(:@@subdomainless_urls) if defined?(@@subdomainless_urls)
-    remove_class_variable(:@@subdomains_allowed) if defined?(@@subdomains_allowed)
-    remove_class_variable(:@@subdomains_optional) if defined?(@@subdomains_optional)
     remove_class_variable(:@@account_host) if defined?(@@account_host)
     remove_class_variable(:@@account_path) if defined?(@@account_path)
   end
@@ -59,18 +57,6 @@ module CartoDB
   def self.subdomainless_urls?
     return @@subdomainless_urls if defined?(@@subdomainless_urls)
     @@subdomainless_urls = self.get_subdomainless_urls
-  end
-
-  # If true, we allow both 'user.cartodb.com' and 'org.cartodb.com/u/user'
-  # if false, only cartodb.com/u/user is allowed (and organizations won't work)
-  def self.subdomains_allowed?
-    return @@subdomains_allowed if defined?(@@subdomains_allowed)
-    @@subdomains_allowed = self.get_subdomains_allowed
-  end
-
-  def self.subdomains_optional?
-    return @@subdomains_optional if defined?(@@subdomains_optional)
-    @@subdomains_optional = self.get_subdomains_optional
   end
 
   def self.account_host
@@ -182,14 +168,6 @@ module CartoDB
 
   def self.get_subdomainless_urls
     Cartodb.config[:subdomainless_urls]
-  end
-
-  def self.get_subdomains_allowed
-    Cartodb.config[:subdomains_allowed]
-  end
-
-  def self.get_subdomains_optional
-    Cartodb.config[:subdomains_optional]
   end
 
   def self.get_account_host

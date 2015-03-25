@@ -75,7 +75,7 @@ class Api::Json::OembedController < Api::ApplicationController
     protocol = force_https ? "https" : URI.parse(url).scheme
 
     data = nil
-    if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+    unless CartoDB.subdomainless_urls?
       begin
         data = from_url(url_fragments, protocol, domain)
       rescue UrlFRagmentsError

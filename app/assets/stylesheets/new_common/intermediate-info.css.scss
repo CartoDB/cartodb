@@ -31,3 +31,4 @@ _:-ms-lang(x), .IntermediateInfo { padding-top: 100px }
   line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
+.IntermediateInfo-title--error { color: $cHighlight-negative }

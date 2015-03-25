@@ -11,7 +11,8 @@ $cBkg: #F9F9F9;
   @include align-content(space-between, justify);
 }
 .ChangePrivacy-upgradeBanner {
-  background-color: rgba(#E8F0D6, 0.3);
+  padding: 20px 0;
+  background: #F0F7FC;
 }
 .ChangePrivacy-upgradeBannerInner {
   @include display-flex();
@@ -19,10 +20,25 @@ $cBkg: #F9F9F9;
   @include align-items(center);
   margin: 0 $sMargin-group;
 }
-.ChangePrivacy-upgradeBannerIcon {
-  margin-right: $sMargin-group;
-  color: rgba(#ADAFA8, 1);
+.ChangePrivacy-upgradeInfo {
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
 }
+.ChangePrivacy-upgradeAction {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+}
+.ChangePrivacy-upgradeActionButton { padding: 0 40px }
+.ChangePrivacy-upgradeActionTrial {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+  padding-right: 20px;
+  font-size: $sFontSize-normal;
+  color: $cTypography-paragraphs;
+}
+.ChangePrivacy-upgradeActionTrialIcon { margin-right: 5px }
 .ChangePrivacy-shareBanner {
   @include display-flex();
   @include justify-content(center);

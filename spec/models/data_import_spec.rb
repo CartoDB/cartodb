@@ -233,7 +233,6 @@ describe DataImport do
       :user_id         => @user.id,
       :data_source     => "http://127.0.0.1/foo.csv"
     )
-    require 'debugger'; debugger
     data_import.reload
     data_import.extra_options[:common_data].should eq true
   end

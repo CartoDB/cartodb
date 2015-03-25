@@ -1,71 +1,42 @@
 module CartoDB
 
-  def self.is_domainless?(request)
-    has_subdomain = !self.extract_real_subdomain(request).nil? && self.extract_real_subdomain(request).length > 0
-    has_username_path = !(request.fullpath =~ /\/u\//i).nil?
-
-    if self.subdomains_allowed? && !self.subdomains_optional? && !has_subdomain
-      raise "Subdomain not found at url host"
-    end
-    if !self.subdomains_allowed? && has_subdomain
-      raise "Url host doesn't allows subdomains"
-    end
-    if !self.subdomains_allowed? && !has_username_path
-      raise "Username not found at url"
-    end
-    if !has_subdomain && !has_username_path
-      raise "Url missing subdomain and/or username"
-    end
-
-    !has_subdomain && has_username_path
-  end
-
   # "Smart" subdomain extraction from the request, depending on configuration and /u/xxx url fragment
   # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
-    self.subdomains_allowed? ? self.extract_username_flexible(request) : self.extract_username_strict(request)
+    user_domain = self.username_from_request(request)
+    user_domain.nil? ? self.subdomain_from_request(request) : user_domain
   end
 
   # Raw subdomain extraction from request
-  def self.extract_real_subdomain(request)
+  def self.subdomain_from_request(request)
     request.host.to_s.gsub(self.session_domain, '')
   end
 
-  # Flexible subdomain extraction: If /u/xxx present uses it, else uses reques thost (xxx.cartodb.com)
+  # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.cartodb.com)
   def self.extract_host_subdomain(request)
-    self.extract_username_strict(request).nil? ? nil : self.extract_real_subdomain(request)
+    self.username_from_request(request).nil? ? nil : self.subdomain_from_request(request)
   end
 
   # Warning, if subdomains are allowed includes the username as the subdomain,
   #  but else returns a base url WITHOUT '/u/username'
   def self.base_url(subdomain, org_username=nil, protocol_override=nil)
-    default_protocol = self.use_https? ? 'https' : 'http'
-    protocol = protocol_override.nil? ? default_protocol : protocol_override
-
-    if self.subdomains_allowed? || self.subdomains_optional?
-      base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{self.http_port}"
-      unless org_username.nil?
-        base_url << "/u/#{org_username}"
-      end
+    if self.subdomainless_urls?
+      base_url = self.domainless_base_url(subdomain, protocol_override)
     else
-      base_url = domainless_base_url(protocol)
+      base_url = self.subdomain_based_base_url(subdomain, org_username, protocol_override)
     end
 
     base_url
-  end
-
-  def self.domainless_base_url(protocol_override=nil)
-    default_protocol = self.use_https? ? 'https' : 'http'
-    protocol = protocol_override.nil? ? default_protocol : protocol_override
-    "#{protocol}://#{self.session_domain}#{self.http_port}"
   end
 
   # NOTE: Not intended for usage outside testing (where is needed to clean state between tests)
   def self.clear_internal_cache
     remove_class_variable(:@@hostname) if defined?(@@hostname)
     remove_class_variable(:@@http_port) if defined?(@@http_port)
+    remove_class_variable(:@@https_port) if defined?(@@http_ports)
     remove_class_variable(:@@session_domain) if defined?(@@session_domain)
     remove_class_variable(:@@domain) if defined?(@@domain)
+    remove_class_variable(:@@subdomainless_urls) if defined?(@@subdomainless_urls)
     remove_class_variable(:@@subdomains_allowed) if defined?(@@subdomains_allowed)
     remove_class_variable(:@@subdomains_optional) if defined?(@@subdomains_optional)
     remove_class_variable(:@@account_host) if defined?(@@account_host)
@@ -75,23 +46,19 @@ module CartoDB
   # Note: use ||= only for fields who always have a non-nil, non-false value
   #       else, rely on defined? and pure assignment to allow nils and values caching the value
 
-  def self.hostname
-    @@hostname ||= self.get_hostname
-  end
-
   # Stores the non-user part of the domain (e.g. '.cartodb.com')
   def self.session_domain
     @@session_domain ||= self.get_session_domain
   end
 
-  def self.http_port
-    return @@http_port if defined?(@@http_port)
-    @@http_port = self.get_http_port
-  end
-
   def self.domain
     return @@domain if defined?(@@domain)
     @@domain = self.get_domain
+  end
+
+  def self.subdomainless_urls?
+    return @@subdomainless_urls if defined?(@@subdomainless_urls)
+    @@subdomainless_urls = self.get_subdomainless_urls
   end
 
   # If true, we allow both 'user.cartodb.com' and 'org.cartodb.com/u/user'
@@ -143,14 +110,40 @@ module CartoDB
   # "private" methods, not intended for direct usage
   # ------------------------------------------------
 
-  # Allows both 'user.cartodb.com' and 'org.cartodb.com/u/user'
-  def self.extract_username_flexible(request)
-    user_domain = self.extract_username_strict(request)
-    user_domain.nil? ? self.extract_real_subdomain(request) : user_domain
+  def self.hostname
+    @@hostname ||= self.get_hostname
   end
 
-  # Allows 'org.cartodb.com/u/user' only
-  def self.extract_username_strict(request)
+  def self.http_port
+    return @@http_port if defined?(@@http_port)
+    @@http_port = self.get_http_port
+  end
+
+  def self.https_port
+    return @@https_port if defined?(@@https_port)
+    @@https_port = self.get_https_port
+  end
+
+  def self.protocol(protocol_override=nil)
+    default_protocol = self.use_https? ? 'https' : 'http'
+    protocol_override.nil? ? default_protocol : protocol_override
+  end
+
+  def self.subdomain_based_base_url(subdomain, org_username=nil, protocol_override=nil)
+    protocol = self.protocol(protocol_override)
+    base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{protocol == 'http' ? self.http_port : self.https_port}"
+    unless org_username.nil?
+      base_url << "/u/#{org_username}"
+    end
+    base_url
+  end
+
+  def self.domainless_base_url(subdomain, protocol_override=nil)
+    protocol = self.protocol(protocol_override)
+    "#{protocol}://#{self.session_domain}#{protocol == 'http' ? self.http_port : self.https_port}/user/#{subdomain}"
+  end
+
+  def self.username_from_request(request)
     request.params[:user_domain]
   end
 
@@ -162,6 +155,11 @@ module CartoDB
   def self.get_http_port
     config_port = Cartodb.config[:http_port]
     config_port.nil? || config_port == '' || config_port.to_i == 80 ? '' : ":#{config_port}"
+  end
+
+  def self.get_https_port
+    config_port = Cartodb.config[:https_port]
+    config_port.nil? || config_port == '' || config_port.to_i == 443 ? '' : ":#{config_port}"
   end
 
   def self.get_domain
@@ -180,6 +178,10 @@ module CartoDB
 
   def self.get_session_domain
     Cartodb.config[:session_domain]
+  end
+
+  def self.get_subdomainless_urls
+    Cartodb.config[:subdomainless_urls]
   end
 
   def self.get_subdomains_allowed

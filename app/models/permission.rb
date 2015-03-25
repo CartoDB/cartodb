@@ -464,7 +464,7 @@ module CartoDB
             check_related_visualizations(entity.table)
           end
         else
-          raise PermissionError.new('Unsupported entity type trying to grant permission')
+          raise PermissionError.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
       end
     end
 

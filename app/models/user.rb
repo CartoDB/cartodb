@@ -1513,9 +1513,13 @@ class User < Sequel::Model
   end
 
   def move_to_own_schema
-    if self.database_schema != self.username
-      old_database_schema_name = self.database_schema #should be "public"
-      self.database_schema = self.username
+    self.move_to_schema(self.username)
+  end
+
+  def move_to_schema(new_schema_name)
+    if self.database_schema != new_schema
+      old_database_schema_name = self.database_schema
+      self.database_schema = new_schema
       self.this.update database_schema: self.database_schema
       self.create_user_schema
       self.move_tables_to_schema(old_database_schema_name, self.database_schema)

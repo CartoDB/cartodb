@@ -288,7 +288,7 @@ namespace :cartodb do
     desc 'Move user to its own schema'
     task :move_user_to_schema, [:username] => :environment do |t, args|
       user = User.find(username: args[:username])
-      user.create_own_schema
+      user.move_to_own_schema
       user.setup_schema
       user.save
     end

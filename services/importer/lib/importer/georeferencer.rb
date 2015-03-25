@@ -156,16 +156,15 @@ module CartoDB
         return false if not @content_guesser.enabled?
         job.log 'Trying namedplaces guessing...'
         begin
-          namedplace_column_name = nil
           @importer_stats.timing('guessing') do
             @tracker.call('guessing')
-            namedplace_column_name = @content_guesser.namedplace_column
+            @content_guesser.namedplaces.run!
             @tracker.call('importing')
           end
-          if namedplace_column_name
-            job.log "Found namedplace column: #{namedplace_column_name}"
+          if @content_guesser.namedplaces.found?
+            #job.log "Found namedplace column: #{namedplace_column_name}"
             create_the_geom_in table_name
-            return geocode_namedplaces namedplace_column_name
+            return geocode_namedplaces
           end
         rescue Exception => ex
           message = "create_the_geom_from_namedplaces_guessing failed: #{ex.message}"
@@ -206,9 +205,13 @@ module CartoDB
         geocode(country_column_name, 'polygon', 'admin0')
       end
 
-      def geocode_namedplaces namedplace_column_name
+      def geocode_namedplaces
         job.log "Geocoding namedplaces..."
-        geocode(namedplace_column_name, 'point', 'namedplace')
+        geocode(@content_guesser.namedplaces.column[:column_name],
+                'point',
+                'namedplace',
+                @content_guesser.namedplaces.country_column,
+                @content_guesser.namedplaces.country)
       end
 
       def geocode_ips ip_column_name
@@ -216,7 +219,7 @@ module CartoDB
         geocode(ip_column_name, 'point', 'ipaddress')
       end
 
-      def geocode(formatter, geometry_type, kind)
+      def geocode(formatter, geometry_type, kind, country_column=nil, country=nil)
         geocoder = nil
         @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
@@ -230,12 +233,14 @@ module CartoDB
             geometry_type: geometry_type,
             kind: kind,
             max_rows: nil,
-            country_column: nil
+            country_column: country_column[:column_name],
+            countries: country,
+            country_code: country
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
 
           begin
-            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name)
+            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
             geocoding.force_geocoder(geocoder)
             geocoding.user = user
             geocoding.data_import_id = data_import.id unless data_import.nil?

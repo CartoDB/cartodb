@@ -41,12 +41,102 @@ module CartoDB
         nil
       end
 
-      def namedplace_column
-        return nil if not enabled?
-        columns.each do |column|
-          return column[:column_name] if is_namedplace_column? column
+      # This should return enough information to the caller so that it can geocode later on:
+      #   - whether there're nameplaces or not:      content_guesser.namedplaces.found?
+      #   - if there's a country column:             content_guesser.namedplaces.country_column.present?
+      #   - in that case, which one it is:           content_guesser.namedplaces.country_column
+      #   - otherwise, which is the guessed country: content_guesser.namedplaces.country
+      #   - what's the candidate column:             content_guesser.namedplaces.column
+      # TODO: move to a different file
+      class Namedplaces
+
+        def initialize(guesser)
+          @run = false
+          @guesser = guesser
         end
-        nil
+
+        def found?
+          raise ContentGuesserException, 'Namedplaces: not run yet!' unless @run
+          return !@column.nil?
+        end
+
+        def column
+          raise ContentGuesserException, 'Namedplaces: not run yet!' unless @run
+          @column
+        end
+
+        def run!
+          if country_column.present?
+            guess_with_country_column
+          else
+            guess_without_country_column
+          end
+          @run = true
+          self
+        end
+
+        def country_column
+          return @country_column if defined?(@country_column)
+          candidate = text_columns.sort{|a,b| country_proportion(a) <=> country_proportion(b)}.last
+          @country_column = (country_proportion(candidate) > @guesser.threshold) ? candidate : nil
+        end
+
+        def country
+          @country
+        end
+
+        private
+
+        #TODO this is a hack
+        #TODO this calculation should be performed just once
+        def country_proportion(column)
+          @guesser.country_proportion(column)
+        end
+
+        def guess_with_country_column
+          candidate_columns = text_columns.reject{|c| c == country_column}
+          candidate = candidate_columns.sort{|a,b| proportion(a) <=> proportion(b)}.last
+          @column = (proportion(candidate) > @guesser.threshold) ? candidate : nil
+        end
+
+        def guess_without_country_column
+          text_columns.each do |candidate|
+            column_name_sym = candidate[:column_name].to_sym
+            places = @guesser.sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
+            query = "SELECT namedplace_guess_country(Array[#{places}])"
+            ret = @guesser.geocoder_sql_api.fetch(query)
+            if ret
+              @country = ret
+              @column = candidate
+              return @column
+            end
+          end
+        end
+
+        def proportion(column)
+          column_name_sym = column[:column_name].to_sym
+          matches = count_namedplaces_with_country_column(column_name_sym)
+          proportion = matches.to_f / @guesser.sample.count
+          proportion
+        end
+
+        def count_namedplaces_with_country_column(column_name_sym)
+          places = @guesser.sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
+          country_column_sym = country_column[:column_name].to_sym
+          countries = @guesser.sample.map{|row| "'" + row[country_column_sym] + "'"}.join(',')
+          query = "WITH geo_function as (SELECT (geocode_namedplace(Array[#{places}], Array[#{countries}])).*) select count(success) FROM geo_function where success = TRUE"
+          ret = @guesser.geocoder_sql_api.fetch(query)
+          ret.first['count']
+        end
+
+        def text_columns
+          @text_columns ||= @guesser.columns.all.select{|c| @guesser.is_text_type?(c)}
+        end
+
+      end
+
+      def namedplaces
+        @namedplaces ||= Namedplaces.new(self)
       end
 
       def ip_column
@@ -81,28 +171,8 @@ module CartoDB
         end
       end
 
-      def is_namedplace_column?(column)
-        return false unless is_text_type? column
-        entropy = metric_entropy(column, country_name_normalizer) # TODO: optimize
-        if entropy < minimum_entropy
-          false
-        else
-          proportion = namedplace_proportion(column)
-          if proportion < threshold
-            false
-          else
-            log_namedplace_guessing_match_metrics(proportion)
-            true
-          end
-        end
-      end
-
       def log_country_guessing_match_metrics(proportion)
         @importer_stats.gauge('country_proportion', proportion)
-      end
-
-      def log_namedplace_guessing_match_metrics(proportion)
-        @importer_stats.gauge('namedplace_proportion', proportion)
       end
 
       def log_ip_guessing_match_metrics(proportion)
@@ -163,21 +233,6 @@ module CartoDB
         country_proportion = matches.to_f / sample.count
         log "country_proportion(#{column[:column_name]}) = #{country_proportion}"
         country_proportion
-      end
-
-      def namedplace_proportion(column)
-        column_name_sym = column[:column_name].to_sym
-        matches = count_namedplaces(sample, column_name_sym)
-        country_proportion = matches.to_f / sample.count
-        log "namedplace_proportion(#{column[:column_name]}) = #{country_proportion}"
-        country_proportion
-      end
-
-      def count_namedplaces(sample, column_name_sym)
-        sql_array = sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')
-        query = "WITH geo_function as (SELECT (geocode_namedplace(Array[#{sql_array}])).*) select count(success) FROM geo_function where success = TRUE"
-        ret = geocoder_sql_api.fetch(query)
-        ret.first['count']
       end
 
       def log(msg)

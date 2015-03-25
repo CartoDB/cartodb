@@ -25,11 +25,17 @@
 .UpgradeElement-infoIcon {
   border-color: #1899DD;
   color: #008EDA;
+  margin-right: $sMargin-element;
+  line-height: $sLineHeight-normal;
 }
 .UpgradeElement-infoText {
-  margin-left: $sMargin-element;
-  font-size: $sFontSize-normal;
+  font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
+}
+.UpgradeElement-actions {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center); 
 }
 .UpgradeElement-trial {
   @include display-flex();
@@ -42,3 +48,4 @@
   font-size: $sFontSize-normal;
 }
 .UpgradeElement-trialText { margin-left: 5px }
+.UpgradeElement-button { margin-left: 20px }

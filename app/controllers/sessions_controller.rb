@@ -22,30 +22,34 @@ class SessionsController < ApplicationController
     end
   end
 
-    def create
-      user = if params[:google_access_token].present? && @google_plus_config.present?
-        user = GooglePlusAPI.new.get_user(params[:google_access_token])
-        if user
-          user_domain = params[:user_domain].present? ?  params[:user_domain] : user.username
-          authenticate!(:google_access_token, scope: user_domain)
-        elsif user == false
-          # token not valid
-          nil
-        else
-          # token valid, unknown user
-          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-          nil
-        end
+  def create
+    user = if params[:google_access_token].present? && @google_plus_config.present?
+      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      if user
+        authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
+      elsif user == false
+        # token not valid
+        nil
       else
-        username = extract_username(request, params)
-        user = authenticate!(:password, scope: username)
+        # token valid, unknown user
+        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+        nil
       end
+    else
+      username = extract_username(request, params)
+      user = authenticate!(:password, scope: username)
+    end
 
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
-    user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
     CartodbStats.increment_login_counter(user.email)
 
+    # /u/xxx or /user/xxx will be added inside .public_url, so only handle scenario of different user domains
+    if user.present? && params[:user_domain].present? && params[:user_domain] != user.username
+      user_domain = params[:user_domain]
+    else
+      user_domain = nil
+    end
     redirect_to user.public_url << dashboard_path(user_domain: user_domain, trailing_slash: true)
   end
 

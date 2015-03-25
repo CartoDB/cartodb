@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_asset_debugging
-    CartoDB::Application.config.assets.debug = \
+    CartoDB::Application.config.assets.debug =
       (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
   end
 

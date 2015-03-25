@@ -62,6 +62,7 @@ class SessionsController < ApplicationController
   end
 
   def unauthenticated
+    debugger
     username = extract_username(request, params)
     CartodbStats.increment_failed_login_counter(username)
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting

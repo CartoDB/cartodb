@@ -13,8 +13,7 @@ class Api::Json::UsersController < Api::ApplicationController
 
   def get_authenticated_users
     referer = request.env["HTTP_REFERER"]
-    # TODO: Change this to allow also /user/
-    referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/(u\/([\w\-\.]+)))?/.match(referer)
+    referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/((u|user)\/([\w\-\.]+)))?/.match(referer)
     if referer_match.nil?
       render json: { error: "Referer #{referer} does not match" }, status: 400 and return
     end
@@ -30,8 +29,8 @@ class Api::Json::UsersController < Api::ApplicationController
 
     subdomain = referer_match[1].gsub(CartoDB.session_domain, '').downcase
 
-    # referer_match[5] == username
-    referer_organization_username = referer_match[5]
+    # referer_match[6] == username
+    referer_organization_username = referer_match[6]
 
     get_organization_name_and_fork_feature(current_viewer, referer, subdomain, referer_organization_username)
   end

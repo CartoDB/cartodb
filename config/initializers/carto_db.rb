@@ -1,5 +1,31 @@
 module CartoDB
 
+  begin
+    CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
+  rescue
+    CARTODB_REV = nil
+  end
+
+  PUBLIC_DB_USER  = 'publicuser'
+  PUBLIC_DB_USER_PASSWORD  = 'publicuser'
+  TILE_DB_USER    = 'tileuser'
+  SRID            = 4326
+
+  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
+  # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
+  POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
+                                  CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
+                                  CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
+                                  GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
+                                  LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY
+                                  REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
+                                  USING VERBOSE WHEN WHERE XMIN XMAX }
+
+  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid }
+
+  LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
+
+
   # "Smart" subdomain extraction from the request, depending on configuration and /u/xxx url fragment
   # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
@@ -31,6 +57,7 @@ module CartoDB
 
   # NOTE: Not intended for usage outside testing (where is needed to clean state between tests)
   def self.clear_internal_cache
+    remove_class_variable(:@@request_host) if defined?(@@request_host)
     remove_class_variable(:@@hostname) if defined?(@@hostname)
     remove_class_variable(:@@http_port) if defined?(@@http_port)
     remove_class_variable(:@@https_port) if defined?(@@http_ports)
@@ -67,34 +94,17 @@ module CartoDB
     @@account_path ||= self.get_account_path
   end
 
-  begin
-    CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
-  rescue
-    CARTODB_REV = nil
+  def self.request_host=(value)
+    @@request_host=value
   end
-
-  PUBLIC_DB_USER  = 'publicuser'
-  PUBLIC_DB_USER_PASSWORD  = 'publicuser'
-  TILE_DB_USER    = 'tileuser'
-  SRID            = 4326
-
-  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
-  POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
-                                  CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
-                                  CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
-                                  GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
-                                  LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY
-                                  REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
-                                  USING VERBOSE WHEN WHERE XMIN XMAX }
-
-  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid }
-
-  LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
-
 
   # "private" methods, not intended for direct usage
   # ------------------------------------------------
+
+  def self.request_host
+    return @@request_host if defined?(@@request_host)
+    @@request_host = nil
+  end
 
   def self.hostname
     @@hostname ||= self.get_hostname
@@ -126,6 +136,9 @@ module CartoDB
 
   def self.domainless_base_url(subdomain, protocol_override=nil)
     protocol = self.protocol(protocol_override)
+
+    
+
     "#{protocol}://#{self.session_domain}#{protocol == 'http' ? self.http_port : self.https_port}/user/#{subdomain}"
   end
 

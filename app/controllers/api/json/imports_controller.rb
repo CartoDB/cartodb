@@ -22,6 +22,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   # -------- Import process -------
 
   def index
+    debugger
     imports = current_user.importing_jobs
     render json: { imports: imports.map(&:id), success: true }
   end

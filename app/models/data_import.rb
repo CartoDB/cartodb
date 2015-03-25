@@ -87,14 +87,8 @@ class DataImport < Sequel::Model
   # New ones are already tracked during the data_import create inside the controller
   # For the old dashboard 
   def before_create
-    if Cartodb.config[:common_data] && 
-       !Cartodb.config[:common_data]['username'].blank? && 
-       !Cartodb.config[:common_data]['host'].blank?
-      if !self.extra_options.has_key?('common_data') && 
-         self.data_source &&
-         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
-        self.extra_options = self.extra_options.merge({:common_data => true})
-      end
+    if self.from_common_data?
+      self.extra_options = self.extra_options.merge({:common_data => true})
     end
   end
 
@@ -102,7 +96,20 @@ class DataImport < Sequel::Model
     self.logger = self.log.id unless self.logger.present?
     self.updated_at = Time.now
   end
-      
+  
+  def from_common_data?
+    if Cartodb.config[:common_data] && 
+       !Cartodb.config[:common_data]['username'].blank? && 
+       !Cartodb.config[:common_data]['host'].blank?
+      if !self.extra_options.has_key?('common_data') && 
+         self.data_source &&
+         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
+        return true
+      end
+    end
+    return false
+  end
+
   def extra_options
     return {} if self.import_extra_options.nil?
     ::JSON.parse(self.import_extra_options).symbolize_keys

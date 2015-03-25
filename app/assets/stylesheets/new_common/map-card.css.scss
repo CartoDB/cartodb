@@ -25,6 +25,25 @@
 $sBorderCompensation: 2px;
 $opacityTransition: 250ms;
 
+@mixin line-clamp($lines) {
+  height: $lines * $sLineHeight-normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: $sLineHeight-normal;
+    width: 2 * $sLineHeight-normal;
+    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+  }
+}
+
 .MapCard {
   position: relative;
   width: $sCard-width - 10px - $sBorderCompensation;
@@ -37,22 +56,7 @@ $opacityTransition: 250ms;
   width: 100%; // required for child text-overflow to work as expected in FF
 }
 .MapCard-desc {
-  height: 2 * $sLineHeight-normal;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  &:after {
-    content: ' ';
-    display: block;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    height: $sLineHeight-normal;
-    width: 2 * $sLineHeight-normal;
-    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
-  }
+  @include line-clamp(2);
 }
 .MapCard-desc--fake {
   display: block;
@@ -62,22 +66,7 @@ $opacityTransition: 250ms;
   margin-bottom: $sMargin-element;
 }
 .MapCard-tags {
-  height: 1 * $sLineHeight-normal;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  &:after {
-    content: ' ';
-    display: block;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    height: $sLineHeight-normal;
-    width: 2 * $sLineHeight-normal;
-    @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
-  }
+  @include line-clamp(1);
 }
 .MapCard--selectable{
   &:hover {

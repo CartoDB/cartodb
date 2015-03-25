@@ -1517,9 +1517,9 @@ class User < Sequel::Model
   end
 
   def move_to_schema(new_schema_name)
-    if self.database_schema != new_schema
+    if self.database_schema != new_schema_name
       old_database_schema_name = self.database_schema
-      self.database_schema = new_schema
+      self.database_schema = new_schema_name
       self.this.update database_schema: self.database_schema
       self.create_user_schema
       self.move_tables_to_schema(old_database_schema_name, self.database_schema)

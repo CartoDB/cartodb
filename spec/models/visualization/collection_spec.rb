@@ -480,6 +480,28 @@ describe Visualization::Collection do
       liked_count(user1).should eq 2
       liked(user2).count.should eq 2
       liked_count(user2).should eq 2
+
+      # Sharing a table won't count it as liked
+      table22 = create_table(user2)
+      v22 = table22.table_visualization
+      v22.privacy = Visualization::Member::PRIVACY_PRIVATE
+      v22.store
+      permission22 = v22.permission
+      permission22.acl = [ { type: CartoDB::Permission::TYPE_USER,
+          entity: {
+            id: user1.id,
+            username: user1.username
+          },
+          access: CartoDB::Permission::ACCESS_READONLY } ]
+      v22.stubs(:invalidate_cache_and_refresh_named_map).returns(nil)
+      permission22.stubs(:entity).returns(v22)
+      permission22.stubs(:notify_permissions_change).returns(nil)
+      permission22.save
+      liked(user1).count.should eq 2
+      liked_count(user1).should eq 2
+      liked(user2).count.should eq 2
+      liked_count(user2).should eq 2
+
     end
 
     it "checks filtering by 'liked' " do

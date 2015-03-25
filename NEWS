@@ -1,3 +1,6 @@
+
+- Fixes fullscreen button is throwing errors (#412)
+
 3.12.13 (18//03//2015)
 - Changes how infowindows handle null values (#406)
 - Updates the version of wax and upgrades mustache.js to v1.1.0 (403)

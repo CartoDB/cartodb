@@ -22,28 +22,24 @@ class SessionsController < ApplicationController
     end
   end
 
-  def create
-    user = if params[:google_access_token].present? && @google_plus_config.present?
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user
-        if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+    def create
+      user = if params[:google_access_token].present? && @google_plus_config.present?
+        user = GooglePlusAPI.new.get_user(params[:google_access_token])
+        if user
           user_domain = params[:user_domain].present? ?  params[:user_domain] : user.username
+          authenticate!(:google_access_token, scope: user_domain)
+        elsif user == false
+          # token not valid
+          nil
         else
-          user_domain = user.username
+          # token valid, unknown user
+          @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
+          nil
         end
-        authenticate!(:google_access_token, scope: user_domain)
-      elsif user == false
-        # token not valid
-        nil
       else
-        # token valid, unknown user
-        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-        nil
+        username = extract_username(request, params)
+        user = authenticate!(:password, scope: username)
       end
-    else
-      username = extract_username(request, params)
-      user = authenticate!(:password, scope: username)
-    end
 
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 

@@ -2263,10 +2263,10 @@ TRIGGER
   end
 
   def subdomain
-    if CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
-      organization.nil? ? username : organization.name
-    else
+    if CartoDB.subdomainless_urls?
       username
+    else
+      organization.nil? ? username : organization.name
     end
   end
 

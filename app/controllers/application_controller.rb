@@ -164,7 +164,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ensure_user_organization_valid
-    return if !CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+    return if CartoDB.subdomainless_urls?
 
     org_subdomain = CartoDB.extract_host_subdomain(request)
     unless org_subdomain.nil? || current_user.nil?
@@ -176,7 +176,7 @@ class ApplicationController < ActionController::Base
 
   # By default, override Admin urls unless :dont_rewrite param is present
   def ensure_org_url_if_org_user
-    return unless CartoDB.subdomains_allowed? || CartoDB.subdomains_optional?
+    return if CartoDB.subdomainless_urls?
 
     rewrite_url = !request.params[:dont_rewrite].present?
     if rewrite_url && !current_user.nil? && !current_user.organization.nil? &&

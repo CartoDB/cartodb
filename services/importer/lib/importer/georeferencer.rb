@@ -162,7 +162,7 @@ module CartoDB
             @tracker.call('importing')
           end
           if @content_guesser.namedplaces.found?
-            #job.log "Found namedplace column: #{namedplace_column_name}"
+            job.log "Found namedplace column: #{@content_guesser.namedplaces.column}"
             create_the_geom_in table_name
             return geocode_namedplaces
           end

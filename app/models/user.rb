@@ -1402,7 +1402,7 @@ class User < Sequel::Model
   end
 
   def belongs_to_organization?(organization)
-    organization_user? and self.organization_id == organization.id
+    organization_user? && organization != nil && self.organization_id == organization.id
   end
 
   def feature_flags

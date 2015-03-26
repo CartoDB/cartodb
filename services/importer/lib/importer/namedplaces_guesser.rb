@@ -19,20 +19,20 @@ module CartoDB
         end
 
         def found?
-          raise ContentGuesserException, 'Namedplaces: not run yet!' unless @run
-          return !@column.nil?
+          raise ContentGuesserException, 'not run yet!' unless @run
+          !column.nil?
         end
 
         def column
-          raise ContentGuesserException, 'Namedplaces: not run yet!' unless @run
+          raise ContentGuesserException, 'not run yet!' unless @run
           @column
         end
 
         def run!
-          if country_column.present?
+          if country_column
             guess_with_country_column
           else
-            guess_without_country_column
+            namedplace_guess_country
           end
           @run = true
           self
@@ -64,7 +64,7 @@ module CartoDB
           @column = (proportion(candidate) > @guesser.threshold) ? candidate : nil
         end
 
-        def guess_without_country_column
+        def namedplace_guess_country
           text_columns.each do |candidate|
             column_name_sym = candidate[:column_name].to_sym
             places = @guesser.sample.map{|row| "'" + row[column_name_sym] + "'"}.join(',')

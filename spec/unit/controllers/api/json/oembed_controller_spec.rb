@@ -18,6 +18,9 @@ describe Api::Json::OembedController do
       username = 'testuser'
       orgname = 'testorg'
 
+      # Not testing for now subdomainless support
+      CartoDB.expects(:get_subdomainless_urls).at_least(0).returns(false)
+
       # test.local/u/testuser
       url_fragments = [ '', '', domain, '', '', "/u/#{username}" ]
       expected_results = {
@@ -55,8 +58,10 @@ describe Api::Json::OembedController do
       username = 'testuser'
       orgname = 'testorg'
 
-      # Because from_url() uses CartoDB.base_url()
-      CartoDB.expects(:get_http_port).returns(nil)
+      # Not testing for now subdomainless support
+      CartoDB.expects(:get_subdomainless_urls).at_least(0).returns(false)
+
+      CartoDB.expects(:get_http_port).at_least(0).returns(nil)
       CartoDB.expects(:get_session_domain).returns(domain)
 
       # .test.local
@@ -93,39 +98,31 @@ describe Api::Json::OembedController do
       controller = Api::Json::OembedController.new
 
       protocol = 'http'
-      domain = 'test.local'
       username = 'testuser'
 
       force_https = false
 
-      # easy scenario
-      CartoDB.expects(:get_subdomains_optional).at_least(0).returns(false)
-      CartoDB.expects(:get_subdomains_allowed).returns(false)
+      # Not testing for now subdomainless support
+      CartoDB.expects(:get_subdomainless_urls).at_least(0).returns(false)
 
       expected_results = {
         username: username,
         organization_name: nil,
-        user_profile_url: "#{CartoDB.base_url(username)}/u/#{username}",
+        user_profile_url: "#{CartoDB.base_url(username)}",
         protocol: protocol
       }
 
-      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}/u/#{username}", force_https)
+      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}", force_https)
         .should eq expected_results
 
-      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}/u/#{username}/something", force_https)
+      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}/something", force_https)
         .should eq expected_results
-
-      #
 
       CartoDB.clear_internal_cache
       domain = 'cartodb.com'
       orgname = 'testorg'
-      CartoDB.expects(:get_subdomains_optional).at_least(0).returns(false)
       CartoDB.expects(:get_session_domain).returns(domain)
-      CartoDB.expects(:get_subdomains_allowed).returns(true)
-      CartoDB.expects(:get_http_port).returns(nil)            # Easier to test without port specified
-
-      # domainless urls allowing subdomains
+      CartoDB.expects(:get_http_port).at_least(0).returns(nil)            # Easier to test without port specified
 
       expected_results = {
         username: username,
@@ -144,8 +141,6 @@ describe Api::Json::OembedController do
       }
       controller.send(:url_fields_from_fragments, "http://#{domain}/u/#{username}/something", force_https)
       .should eq expected_results
-
-      # subdomain-based urls
 
       expect {
         controller.send(:url_fields_from_fragments, "http://#{domain}", force_https)

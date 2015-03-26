@@ -71,7 +71,6 @@ module CartoDB::Importer2
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
         namedplaces.stubs(:text_columns).returns([:my_country_column, :another_column])
-        country_proportion_stub = Proc.new {|column| puts "hola"; column[:country_proportion]}
         content_guesser.stubs(:country_proportion).with(:my_country_column).returns(0.9)
         content_guesser.stubs(:country_proportion).with(:another_column).returns(0.1)
         content_guesser.stubs(:threshold).returns(0.8)

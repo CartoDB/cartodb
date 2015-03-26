@@ -56,6 +56,7 @@ $br: 4px;
   @include display-flex();
   @include align-items(center, center);
   padding-top: 20px;
+  padding-bottom: 20px;
   margin: 0 20px;
   border-top: 1px solid $cStructure-mainLine;
 }
@@ -80,7 +81,6 @@ $br: 4px;
   border-top: 1px solid #BBD7F2!important;
   border-radius: 0 0 4px 4px;
   padding: 20px;
-  margin-top: 20px;
 }
 .DatasetSelected-upgradeButton {
   padding-left: 40px;

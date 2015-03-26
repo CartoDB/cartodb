@@ -12,4 +12,5 @@ class Carto::Api::VisualizationsController < Api::ApplicationController
     }
     render_jsonp(response)
   end
+
 end

@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
   around_filter :wrap_in_profiler
 
   before_filter :store_request_host
-  before_filter :ensure_user_domain_param
   before_filter :ensure_user_organization_valid
   before_filter :ensure_org_url_if_org_user
   before_filter :browser_is_html5_compliant?
@@ -166,11 +165,6 @@ class ApplicationController < ActionController::Base
     if banned_regex.map { |re| user_agent.match(re) }.compact.first
       raise NoHTML5Compliant
     end
-  end
-
-  # Views using MVC routes assume this param is always present
-  def ensure_user_domain_param
-    request.params[:user_domain] = nil unless request.params[:user_domain].present?
   end
 
   def ensure_user_organization_valid

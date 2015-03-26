@@ -27,7 +27,6 @@ module CartoDB
 
 
   # "Smart" subdomain extraction from the request, depending on configuration and /u/xxx url fragment
-  # Param enforced by app/controllers/application_controller -> ensure_user_domain_param (before_filter)
   def self.extract_subdomain(request)
     user_domain = self.username_from_request(request)
     user_domain.nil? ? self.subdomain_from_request(request) : user_domain

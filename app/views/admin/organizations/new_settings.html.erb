@@ -5,7 +5,7 @@
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
     var config = <%=raw frontend_config.html_safe %>;
-    var user_data = <%= raw current_user.data(request: request).to_json.html_safe %>;
+    var user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_organization_templates.js', 'new_organization_deps.js', 'new_organization.js' -%>
 <% end %>

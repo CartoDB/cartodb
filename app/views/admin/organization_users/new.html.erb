@@ -11,7 +11,7 @@
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
         }
-      , user_data = <%=raw current_user.data(request: request).to_json.html_safe %>;
+      , user_data = <%=raw current_user.data.to_json.html_safe %>;
   </script>
 <% end %>
 <%= content_for(:css) do %>

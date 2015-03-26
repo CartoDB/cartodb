@@ -508,8 +508,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           vis.to_hash(
             public_fields_only: true,
             related: false,
-            table: vis.table,
-            request: request
+            table: vis.table
           )
         rescue => exception
           puts exception.to_s + exception.backtrace.join("\n")
@@ -558,8 +557,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           table_data: !(params[:table_data] =~ /false/),
           user:       current_user,
           table:      vis.table,
-          synchronization: synchronizations[vis.name],
-          request: request
+          synchronization: synchronizations[vis.name]
         )
       rescue => exception
         puts exception.to_s + exception.backtrace.join("\n")

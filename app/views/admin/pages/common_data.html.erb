@@ -6,7 +6,7 @@
     <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'common_data.js' %>
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
-      var user_data = <%=raw current_user.data(request: request).to_json.html_safe %>;
+      var user_data = <%=raw current_user.data.to_json.html_safe %>;
       var config = <%=raw frontend_config.html_safe %>;
       var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
     </script>

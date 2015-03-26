@@ -19,7 +19,7 @@
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner?
         }}.to_json -%>
-      , user_data = <%= raw current_user.data(request: request).to_json.html_safe %>;
+      , user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
 <% end %>
 

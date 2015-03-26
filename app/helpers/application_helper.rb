@@ -61,8 +61,14 @@ module ApplicationHelper
       end
   end
 
+  def default_fallback_basemap
+    Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'] : {}
+  end
+
+  module_function :default_fallback_basemap
   module_function :maps_api_template
   module_function :sql_api_template
+
 
   def frontend_config
     config = {
@@ -82,7 +88,7 @@ module ApplicationHelper
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      default_fallback_basemap: Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow']: {}
+      default_fallback_basemap:   default_fallback_basemap
     }
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \

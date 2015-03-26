@@ -101,7 +101,7 @@
             }
           }
         <% else %>
-          fallbackBaselayer: <%= raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'].to_json : '{}' %>
+          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
     </script>

@@ -34,10 +34,13 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # To be used only when domainless urls are present, to replicate sent subdomain
   def store_request_host
-    referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?\/?/.match(referer)
-    unless referer_match.nil?
-      CartoDB.request_host = referer_match[1]
+    return unless CartoDB.subdomainless_urls?
+
+    match = /([\w\-\.]+)(:[\d]+)?\/?/.match(request.host.to_s)
+    unless match.nil?
+      CartoDB.request_host = match[1]
     end
   end
 

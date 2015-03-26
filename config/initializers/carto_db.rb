@@ -103,7 +103,7 @@ module CartoDB
 
   def self.request_host
     return @@request_host if defined?(@@request_host)
-    @@request_host = nil
+    @@request_host = ''
   end
 
   def self.hostname
@@ -136,10 +136,11 @@ module CartoDB
 
   def self.domainless_base_url(subdomain, protocol_override=nil)
     protocol = self.protocol(protocol_override)
+    port = protocol == 'http' ? self.http_port : self.https_port
+    request_subdomain = self.request_host.sub(self.session_domain, '')
+    request_subdomain += '.' if (request_subdomain.length > 0 && !request_subdomain.end_with?('.'))
 
-    
-
-    "#{protocol}://#{self.session_domain}#{protocol == 'http' ? self.http_port : self.https_port}/user/#{subdomain}"
+    "#{protocol}://#{request_subdomain}#{self.session_domain}#{port}/user/#{subdomain}"
   end
 
   def self.username_from_request(request)

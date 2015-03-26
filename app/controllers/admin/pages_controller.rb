@@ -248,6 +248,7 @@ class Admin::PagesController < ApplicationController
             exclude_raster: true
           }).first,
         content_type: content_type,
+        default_fallback_basemap: ApplicationHelper.default_fallback_basemap
       })
     set_shared_layout_vars(user, {
         name:       user.name_or_username,
@@ -274,6 +275,7 @@ class Admin::PagesController < ApplicationController
     @content_type        = required.fetch(:content_type)
     @maps_url            = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
     @datasets_url        = view_context.public_datasets_home_url(user_domain: params[:user_domain])
+    @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
   end
 
   def set_new_pagination_vars(required)

@@ -263,6 +263,10 @@ CartoDB::Application.routes.draw do
 
   end
 
+  scope :module => 'carto/api', :format => :json do
+    get     '(/u/:user_domain)/api/v11/viz'                                => 'visualizations#index',           as: :api_v11_visualizations_index
+  end
+
   scope :module => 'api/json', :format => :json do
 
     # V1

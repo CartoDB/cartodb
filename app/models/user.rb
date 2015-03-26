@@ -483,7 +483,7 @@ class User < Sequel::Model
   end
 
   def database_public_username
-    (self.database_schema != "public") ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
+    (self.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
   end
 
   def database_password

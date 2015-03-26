@@ -94,30 +94,64 @@ describe CartoDB do
 
       CartoDB.expects(:get_subdomainless_urls).returns(false)
 
+      CartoDB.expects(:use_https?).at_least(0).returns(false)
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
-      CartoDB.expects(:get_http_port).returns(expected_http_port)
-      CartoDB.expects(:get_https_port).returns(expected_https_port)
+      CartoDB.expects(:get_http_port).at_least(1).returns(expected_http_port)
+      CartoDB.expects(:get_https_port).at_least(1).returns(expected_https_port)
 
       CartoDB.base_url(username, nil, nil).should eq "http://#{username}#{expected_session_domain}#{expected_http_port}"
+
       CartoDB.base_url(username, nil, protocol_override_https)
         .should eq "#{protocol_override_https}://#{username}#{expected_session_domain}#{expected_https_port}"
+
       CartoDB.base_url(orgname, username, nil)
         .should eq "http://#{orgname}#{expected_session_domain}#{expected_http_port}/u/#{username}"
+
       CartoDB.base_url(orgname, username, protocol_override_https)
         .should eq "#{protocol_override_https}://#{orgname}#{expected_session_domain}#{expected_https_port}/u/#{username}"
 
       CartoDB.unstub(:use_https?)
-      CartoDB.expects(:use_https?).times(2).returns(true)
+      CartoDB.expects(:use_https?).at_least(0).returns(true)
+
       CartoDB.base_url(username, nil, nil)
         .should eq "https://#{username}#{expected_session_domain}#{expected_https_port}"
+
       CartoDB.base_url(username, nil, protocol_override_http)
-      .should eq "#{protocol_override_http}://#{username}#{expected_session_domain}#{expected_http_port}"
+        .should eq "#{protocol_override_http}://#{username}#{expected_session_domain}#{expected_http_port}"
 
-      # Reset
-      # TODO: Pending with subdomains optional set to true
+      # Reset and check without subdomains
+      CartoDB.clear_internal_cache
 
-      #CartoDB.expects(:get_subdomainless_urls).returns(true)
+      expected_session_domain = 'cartodb.com'
 
+      CartoDB.unstub(:get_subdomainless_urls)
+      CartoDB.expects(:get_subdomainless_urls).returns(true)
+
+      CartoDB.unstub(:get_session_domain)
+      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+      CartoDB.expects(:use_https?).at_least(0).returns(false)
+
+      CartoDB.base_url(username, nil, nil)
+        .should eq "http://#{expected_session_domain}#{expected_http_port}/user/#{username}"
+
+      CartoDB.base_url(username, nil, protocol_override_https)
+        .should eq "#{protocol_override_https}://#{expected_session_domain}#{expected_https_port}/user/#{username}"
+
+      # Because without subdomains organizations are ignored, acts as previous scenario
+      CartoDB.base_url(orgname, username, nil)
+        .should eq "http://#{expected_session_domain}#{expected_http_port}/user/#{orgname}"
+
+      CartoDB.base_url(orgname, username, protocol_override_https)
+      .should eq "#{protocol_override_https}://#{expected_session_domain}#{expected_https_port}/user/#{orgname}"
+
+      CartoDB.unstub(:use_https?)
+      CartoDB.expects(:use_https?).at_least(0).returns(true)
+
+      CartoDB.base_url(username, nil, nil)
+        .should eq "https://#{expected_session_domain}#{expected_https_port}/user/#{username}"
+
+      CartoDB.base_url(username, nil, protocol_override_http)
+        .should eq "#{protocol_override_http}://#{expected_session_domain}#{expected_http_port}/user/#{username}"
     end
 
   end

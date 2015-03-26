@@ -24,7 +24,7 @@ module CartoDB::Importer2
         namedplaces = NamedplacesGuesser.new(content_guesser)
         namedplaces.stubs(:column).returns(nil)
         namedplaces.stubs(:country_column).returns(nil)
-        namedplaces.stubs(:namedplace_guess_country)
+        namedplaces.stubs(:namedplaces_guess_country)
 
         namedplaces.run!
         namedplaces.found?.should be_false
@@ -35,7 +35,7 @@ module CartoDB::Importer2
         namedplaces = NamedplacesGuesser.new(content_guesser)
         namedplaces.stubs(:column).returns(:dummy_column)
         namedplaces.stubs(:country_column).returns(nil)
-        namedplaces.stubs(:namedplace_guess_country)
+        namedplaces.stubs(:namedplaces_guess_country)
 
         namedplaces.run!
         namedplaces.found?.should be_true
@@ -49,7 +49,7 @@ module CartoDB::Importer2
         namedplaces = NamedplacesGuesser.new(content_guesser)
         namedplaces.stubs(:country_column).returns(:dummy_column)
         namedplaces.expects(:guess_with_country_column).once
-        namedplaces.expects(:namedplace_guess_country).never
+        namedplaces.expects(:namedplaces_guess_country).never
 
         namedplaces.run!
       end
@@ -59,7 +59,7 @@ module CartoDB::Importer2
         namedplaces = NamedplacesGuesser.new(content_guesser)
         namedplaces.stubs(:country_column).returns(nil)
         namedplaces.expects(:guess_with_country_column).never
-        namedplaces.expects(:namedplace_guess_country).once
+        namedplaces.expects(:namedplaces_guess_country).once
 
         namedplaces.run!
       end

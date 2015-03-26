@@ -32,7 +32,7 @@ module CartoDB
           if country_column
             guess_with_country_column
           else
-            namedplace_guess_country
+            namedplaces_guess_country
           end
           @run = true
           self

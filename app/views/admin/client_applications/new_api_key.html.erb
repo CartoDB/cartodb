@@ -6,12 +6,12 @@
     var username = "<%= current_user.username %>";
     var config = <%=raw frontend_config.html_safe %>;
     var user_data = <%= raw current_user.data(request: request).to_json.html_safe %>;
+    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'new_keys_templates.js', 'new_keys_deps.js', 'new_keys.js' -%>
 <% end %>
 <%= content_for(:css) do %>
-  <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css', 'new_keys.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'new_keys.css', :media => 'all' %>
 <% end %>
 
 <div>

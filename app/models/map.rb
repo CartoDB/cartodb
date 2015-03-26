@@ -169,8 +169,8 @@ class Map < Sequel::Model
   def current_map_bounds_using_stats
     ::JSON.parse(user.in_database.fetch(%Q{
       SELECT _postgis_stats ('#{tables.first.name}', 'the_geom');
-    }).first[:_postgis_stats])['extent']
-  rescue Sequel::DatabaseError => e
+    }).first[:_postgis_stats])['extent'].symbolize_keys
+  rescue => e
     if e.message =~ /stats for (.*) do not exist/i
       current_map_bounds
     else

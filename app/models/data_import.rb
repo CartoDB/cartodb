@@ -84,9 +84,42 @@ class DataImport < Sequel::Model
     self.state    ||= STATE_PENDING
   end
 
+  # This before_create should be only necessary to track old dashboard data imports.
+  # New ones are already tracked during the data_import create inside the controller
+  # For the old dashboard 
+  def before_create
+    if self.from_common_data?
+      self.extra_options = self.extra_options.merge({:common_data => true})
+    end
+  end
+
   def before_save
     self.logger = self.log.id unless self.logger.present?
     self.updated_at = Time.now
+  end
+  
+  def from_common_data?
+    if Cartodb.config[:common_data] && 
+       !Cartodb.config[:common_data]['username'].blank? && 
+       !Cartodb.config[:common_data]['host'].blank?
+      if !self.extra_options.has_key?('common_data') && 
+         self.data_source &&
+         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
+        return true
+      end
+    end
+    return false
+  end
+
+  def extra_options
+    return {} if self.import_extra_options.nil?
+    ::JSON.parse(self.import_extra_options).symbolize_keys
+  end
+
+  def extra_options=(value)
+    if !value.nil?
+      self.import_extra_options = ::JSON.dump(value)
+    end
   end
 
   def dataimport_logger
@@ -645,6 +678,9 @@ class DataImport < Sequel::Model
                   'file_stats'        => ::JSON.parse(self.stats),
                   'resque_ppid'       => self.resque_ppid
                  }
+    if !self.extra_options.nil?
+      import_log['extra_options'] = self.extra_options
+    end
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed

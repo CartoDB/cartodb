@@ -483,7 +483,7 @@ class User < Sequel::Model
   end
 
   def database_public_username
-    has_organization_enabled? ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
+    (self.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
   end
 
   def database_password
@@ -1062,12 +1062,12 @@ class User < Sequel::Model
     end
   end
 
-  def real_tables
+  def real_tables(in_schema=self.database_schema)
     self.in_database(:as => :superuser)
     .select(:pg_class__oid, :pg_class__relname)
     .from(:pg_class)
     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-    .where(:relkind => 'r', :nspname => self.database_schema)
+    .where(:relkind => 'r', :nspname => in_schema)
     .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
     .all
   end
@@ -1498,13 +1498,33 @@ class User < Sequel::Model
       self.create_db_user
       self.grant_user_in_database
     end.join
+    self.create_own_schema
+    self.setup_schema
+  end
+
+  def create_own_schema
     self.load_cartodb_functions
     self.database_schema = self.username
     self.this.update database_schema: self.database_schema
     self.create_user_schema
     self.set_database_search_path
     self.create_public_db_user
-    self.setup_schema
+  end
+
+  def move_to_own_schema
+    self.move_to_schema(self.username)
+  end
+
+  def move_to_schema(new_schema_name)
+    if self.database_schema != new_schema_name
+      old_database_schema_name = self.database_schema
+      self.database_schema = new_schema_name
+      self.this.update database_schema: self.database_schema
+      self.create_user_schema
+      self.move_tables_to_schema(old_database_schema_name, self.database_schema)
+      self.create_public_db_user
+      self.set_database_search_path
+    end
   end
 
   def setup_schema
@@ -1515,6 +1535,15 @@ class User < Sequel::Model
     self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
+  end
+
+
+  def move_tables_to_schema(old_schema, new_schema)
+    self.real_tables(old_schema).each do |t|
+      self.in_database(as: :superuser) do |database|
+        database.run(%Q{ ALTER TABLE #{old_schema}.#{t[:relname]} SET SCHEMA "#{new_schema}" })
+      end
+    end
   end
 
   def reset_schema_owner

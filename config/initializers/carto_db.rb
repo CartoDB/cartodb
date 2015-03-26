@@ -6,6 +6,7 @@ module CartoDB
     CARTODB_REV = nil
   end
 
+  DEFAULT_DB_SCHEMA = 'public'
   PUBLIC_DB_USER  = 'publicuser'
   PUBLIC_DB_USER_PASSWORD  = 'publicuser'
   TILE_DB_USER    = 'tileuser'

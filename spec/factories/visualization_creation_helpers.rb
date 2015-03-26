@@ -55,5 +55,11 @@ shared_context 'visualization creation helpers' do
     CartoDB::Visualization.repository = @repository
   end
 
+  def create_table(user, name = "viz#{rand(999)}")
+    table = Table.new
+    table.user_id = user.id
+    table.name = name
+    table.save
+  end
 
 end

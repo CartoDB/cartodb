@@ -7,13 +7,6 @@ describe Carto::VisualizationQueryBuilder do
   include Warden::Test::Helpers
   include_context 'visualization creation helpers'
 
-  def create_table(user, name = "viz#{rand(999)}")
-    table = Table.new
-    table.user_id = user.id
-    table.name = name
-    table.save
-  end
-
   before(:each) do
     @vqb = Carto::VisualizationQueryBuilder.new
   end

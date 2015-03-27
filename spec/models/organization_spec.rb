@@ -62,6 +62,7 @@ describe Organization do
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
       user_org = CartoDB::UserOrganization.new(organization.id, user.id)
+      # This also covers the usecase of an user being moved to its own schema (without org)
       user_org.promote_user_to_admin
 
       organization.reload

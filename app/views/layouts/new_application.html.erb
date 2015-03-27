@@ -14,6 +14,15 @@
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>
+
+    <% if current_user.notification.present? %>
+      <div class="FlashMessage <%= 'FlashMessage--success' if (flash[:success]) %><%= 'FlashMessage--error' if flash[:error] %>">
+        <div class="u-inner">
+          <p class="FlashMessage-info"><%= current_user.notification %></p>
+        </div>
+      </div>
+    <% end %>
+
     <%= yield %>
     <% if ( ( controller_name == "visualizations" || controller_name == "tables" ) && action_name == "show" ) %>
       <%= render 'shared/olark' -%>

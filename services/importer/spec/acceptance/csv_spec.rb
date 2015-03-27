@@ -72,6 +72,13 @@ describe 'csv regression tests' do
     row_count(runner, result).should == 51
   end
 
+  it 'detects provincias XLS (converted) header' do
+    runner = runner_for('provincias_fails_headers_converted.xls')
+    runner.run
+    result = runner.results.first
+    row_count(runner, result).should == 51
+  end
+
   it 'detects receipts XLS header' do
     runner = runner_for('receipts.xls')
     runner.run

@@ -307,7 +307,7 @@ describe("Image", function() {
 
   });
 
-  it("should use maps_api_template when provided", function(done) {
+  it("should use maps_api_template when provided", function() {
 
     var layer_definition = {
       user_name: "documentation",

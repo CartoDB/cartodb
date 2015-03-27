@@ -19,7 +19,7 @@ module CartoDB
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
       NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
-      DIRECT_EXCEL_SUPPORT_EXTENSIONS = ['.xls', '.xlsx']
+      DIRECT_EXCEL_SUPPORT_EXTENSIONS = ['.xls']
 
       # Files matching any of this regexps will be forcibly normalized
       # @see services/datasources/lib/datasources/search/twitter.rb -> table_name

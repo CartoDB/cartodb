@@ -58,7 +58,7 @@
           <% end %>
           <% if current_user.organization.seats > @users.count %>
             <li class="OrganizationList-user OrganizationList-user--empty">
-              <a class="OrganizationList-userLink" href="<%= new_organization_user_path(user_domain: params[:user_domain]) %>">
+              <a class="OrganizationList-userLink" href="<%= CartoDB.path(self, 'new_organization_user') %>">
                 <div class="OrganizationList-userAvatar OrganizationList-userAvatar--default">
                   <i class="iconFont iconFont-DefaultUser"></i>
                 </div>
@@ -83,7 +83,7 @@
             <% else %>
               <em></em>
             <% end %>
-            <a href="<%= new_organization_user_path(user_domain: params[:user_domain]) %>" class="Button Button--main"><span>Create new user</span></a>
+            <a href="<%= CartoDB.path(self, 'new_organization_user') %>" class="Button Button--main"><span>Create new user</span></a>
           <% elsif !Cartodb.config[:cartodb_com_hosted].present? %>
             <p class="Form-footerText">
               <i class="iconFont iconFont-Info Form-footerIcon"></i>

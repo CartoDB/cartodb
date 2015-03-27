@@ -13,7 +13,7 @@ module Carto
           visualizations: visualizations.map { |v| VisualizationPresenter.new(v).to_poro },
           total_entries: visualizations.count,
           total_user_entries: visualizations.count,
-          total_likes: 0,
+          total_likes: VisualizationQueryBuilder.new.with_liked_by_user_id(current_user.id).build.count,
           total_shared: 0
         }
         render_jsonp(response)

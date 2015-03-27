@@ -9,6 +9,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_liked_by_user_id(user_id)
+    @liked_by_user_id = user_id
+    self
+  end
+
   def with_visualizations_shared_with(user_id)
     @shared_with_user_id = user_id
     self
@@ -21,9 +26,17 @@ class Carto::VisualizationQueryBuilder
       query = query.where(user_id: @user_id)
     end
 
+    if !@liked_by_user_id.nil?
+      # TODO: this is needed because of column type mismatch
+      #.joins(:likes)
+      query = query
+          .joins('inner join likes on likes.subject::text = visualizations.id')
+          .where(likes: { actor: @liked_by_user_id })
+    end
+
     if !@shared_with_user_id.nil?
       user = Carto::User.where(id: @shared_with_user_id).first
-      # INFO: we can't join both because of entity_id column type
+      # TODO: we can't join both because of visualization.id column type. Try improvement like Visuaization.likes association.
       query = query.where(id: visualization_shares(user).pluck(:entity_id)).joins(:user).includes(:user)
     end
 

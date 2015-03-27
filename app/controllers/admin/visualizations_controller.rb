@@ -103,9 +103,7 @@ class Admin::VisualizationsController < ApplicationController
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path(
-          user_domain: @visualization.user.username,
-          id: "#{params[:id]}", redirected:true) and return
+      redirect_to CartoDB.url(self, 'public_table', { id: "#{params[:id]}", redirected:true }, @visualization.user) and return
     end
 
     @vizjson = @visualization.to_vizjson
@@ -189,10 +187,8 @@ class Admin::VisualizationsController < ApplicationController
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_visualizations_public_map_path( \
-          user_domain: @visualization.user.username, \
-          id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true) \
-        and return
+      redirect to CartoDB.url(self, 'public_visualizations_public_map', {
+        id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true }, @visualization.user) and return
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -470,25 +466,25 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_url
     if request.path_info =~ %r{/tables/}
-      public_table_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_table', { id: full_table_id })
     else
-      public_visualization_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_visualization', { id: full_table_id })
     end
   end
 
   def public_map_url
     if request.path_info =~ %r{/tables/}
-      public_table_map_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_table_map', { id: full_table_id })
     else
-      public_visualizations_public_map_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_visualizations_public_map', { id: full_table_id })
     end
   end
 
   def embed_map_url_for(id)
     if request.path_info =~ %r{/tables/}
-      public_tables_embed_map_path(user_domain: params[:user_domain], id: id)
+      CartoDB.path(self, 'public_tables_embed_map', { id: id })
     else
-      public_visualizations_embed_map_path(user_domain: params[:user_domain], id: id)
+      CartoDB.path(self, 'public_visualizations_embed_map', { id: id })
     end
   end
 

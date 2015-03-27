@@ -40,8 +40,9 @@ class Admin::ClientApplicationsController < ApplicationController
       end
     rescue => e
       raise e
-    end 
-    redirect_to api_key_credentials_path(user_domain: params[:user_domain], type: 'api_key'), :flash => {:success => "Your API key has been regenerated successfully"}
+    end
+
+    redirect_to CartoDB.path(self, 'api_key_credentials', {type: 'api_key'}), :flash => {:success => "Your API key has been regenerated successfully"}
   end
 
   def regenerate_oauth
@@ -51,9 +52,9 @@ class Admin::ClientApplicationsController < ApplicationController
     
     new_dashboard = current_user.has_feature_flag?('new_dashboard')
     if new_dashboard
-      redirect_to oauth_credentials_path(user_domain: params[:user_domain], type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successfully"}
+      redirect_to CartoDB.path(self, 'oauth_credentials', {type: 'oauth'}), :flash => {:success => "Your OAuth credentials have been updated successfully"}
     else
-      redirect_to api_key_credentials_path(user_domain: params[:user_domain], type: 'oauth'), :flash => {:success => "Your OAuth credentials have been updated successfully"}
+      redirect_to CartoDB.path(self, 'api_key_credentials', {type: 'oauth'}), :flash => {:success => "Your OAuth credentials have been updated successfully"}
     end 
     
   end

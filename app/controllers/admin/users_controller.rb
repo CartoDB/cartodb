@@ -51,7 +51,7 @@ class Admin::UsersController < ApplicationController
     @user.update_in_central
     @user.save(raise_on_failure: true)
 
-    redirect_to account_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.path(self, 'account_user'), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e, params, @user)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
@@ -87,7 +87,7 @@ class Admin::UsersController < ApplicationController
     @user.update_in_central
     @user.save(raise_on_failure: true)
 
-    redirect_to profile_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.path(self, 'profile_user'), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e, params, @user)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"

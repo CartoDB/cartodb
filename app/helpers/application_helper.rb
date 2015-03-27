@@ -223,8 +223,8 @@ module ApplicationHelper
     end
   end
 
-  def vis_json_url(vis_id)
-    "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: vis_id).sub(/(http:|https:)/i, '') }.json"
+  def vis_json_url(vis_id, context, user=nil)
+    "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
   end
 
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation

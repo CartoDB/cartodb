@@ -65,12 +65,12 @@ class Admin::PagesController < ApplicationController
       case vis.type
         when Visualization::Member::TYPE_DERIVED
           {
-            loc: public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]),
+            loc: CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id] }, vis.user),
             lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
           }
         when Visualization::Member::TYPE_CANONICAL
           {
-            loc: public_table_url(user_domain: params[:user_domain], id: vis.name),
+            loc: CartoDB.url(self, 'public_table', {id: vis.name }, vis.user),
             lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
           }
         else
@@ -248,7 +248,8 @@ class Admin::PagesController < ApplicationController
             exclude_raster: true
           }).first,
         content_type: content_type,
-        default_fallback_basemap: ApplicationHelper.default_fallback_basemap
+        default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
+        user: user
       })
     set_shared_layout_vars(user, {
         name:       user.name_or_username,
@@ -256,6 +257,7 @@ class Admin::PagesController < ApplicationController
       }, {
         available_for_hire: user.available_for_hire,
         email:              user.email,
+        user: user
       })
   end
 
@@ -273,8 +275,8 @@ class Admin::PagesController < ApplicationController
   def set_new_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
-    @datasets_url        = view_context.public_datasets_home_url(user_domain: params[:user_domain])
+    @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
+    @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
   end
 
@@ -294,6 +296,7 @@ class Admin::PagesController < ApplicationController
     @avatar_url         = required.fetch(:avatar_url)
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
+    @user = optional.fetch(:user, nil)
   end
 
   def set_old_layout_vars_for_user(user, vis_type)

@@ -30,7 +30,7 @@ class GooglePlusController < ApplicationController
     user.save(raise_on_failure: true)
     user.create_in_central
 
-    redirect_to dashboard_path(user_domain: user.subdomain, trailing_slash: true)
+    redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
   
 end

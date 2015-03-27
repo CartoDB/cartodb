@@ -33,19 +33,19 @@
       var opts = this.options;
       var template = null;
       if(opts && opts.completeDomain) {
-        template = opts.completeDomain + '/api/' +  opts.version + '/sql'
+        template = opts.completeDomain;
       } else {
         var host = opts.host || 'cartodb.com';
         var protocol = opts.protocol || 'https';
-
-        template = protocol + '://{user}.' + host + '/api/' +  opts.version + '/sql';
+        template = protocol + '://{user}.' + host;
       }
       this.options.sql_api_template = template;
     }
   }
 
   SQL.prototype._host = function() {
-    return this.options.sql_api_template.replace('{user}', this.options.user);
+    var opts = this.options;
+    return opts.sql_api_template.replace('{user}', opts.user) + '/api/' +  opts.version + '/sql';
   },
 
   /**

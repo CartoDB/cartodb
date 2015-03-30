@@ -9,6 +9,7 @@ Sequel.migration do
     rescue => e
       puts "There was an error converting visualizations.id (or external_sources.visualization.id) from type text to uuid, please check id format: #{e.inspect}"
       puts "You can find non-matching ids with this query: `select id from visualizations where id not similar to '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}';`"
+      raise e
     end
 
     alter_table(:external_sources) do

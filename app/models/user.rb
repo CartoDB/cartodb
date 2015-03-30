@@ -10,7 +10,27 @@ require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
 
+
+class InMemoryCache
+  def initialize(options=nil)
+    @cache = ActiveSupport::Cache::MemoryStore.new(options)
+  end
+
+  def set(key, obj, time)
+    @cache.write(key, obj, ttl: time)
+  end
+
+  def get(key)
+    @cache.read(key)
+  end
+
+  def delete(key)
+    @cache.delete(key)
+  end
+end
+
 class User < Sequel::Model
+
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
@@ -45,6 +65,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
+  plugin :caching, InMemoryCache.new
 
   # Restrict to_json attributes
   @json_serializer_opts = {

@@ -75,7 +75,7 @@ module CartoDB
       end
 
       def user
-        @user ||= User.where(id: @user_id).first unless @user_id.nil?
+        @user ||= User[@user_id] unless @user_id.nil?
       end
 
       def table

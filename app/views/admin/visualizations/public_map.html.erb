@@ -40,21 +40,20 @@
 
               <p class="description"><%= raw @visualization.description_md %></p>
               <p class="options">
-                <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>" class="iframe">Full page map</a>
+                <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}) %>" class="iframe">Full page map</a>
               </p>
             </div>
           </div>
 
           <div class="user embed-right-col">
             <div class="user-info">
-              <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_home') %>" title="Maps by <%= @name %>" class="content">
                 <h4>by <%= @name %></h4>
               </a>
 
               <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
             </div>
-
-            <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
+            <a href="<%= CartoDB.url(self, 'public_visualizations_home') %>" title="Maps by <%= @name %>" class="content">
               <img src="<%= @avatar_url %>" class="avatar" />
             </a>
           </div>

@@ -54,9 +54,9 @@ class Admin::VisualizationsController < ApplicationController
   def show
     unless current_user.present?
       if request.original_fullpath =~ %r{/tables/}
-        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id]}))
       else
-        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}))
       end
     end
 
@@ -66,9 +66,9 @@ class Admin::VisualizationsController < ApplicationController
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
-        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+        CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
       else
-        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+        CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
       end
     end
 
@@ -81,9 +81,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(pretty_404) if disallowed_type?(@visualization)
-
-    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain],
-                                                            id: request.params[:id])) if @visualization.derived?
+    return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]})) if @visualization.derived?
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=true)

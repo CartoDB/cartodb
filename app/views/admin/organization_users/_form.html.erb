@@ -128,7 +128,7 @@
 
   <section class="block <%= 'margin40' if !current_user.organization_owner? %>">
     <% if current_user.organization_owner? %>
-      <%= link_to "back", organization_url(user_domain: params[:user_domain]), :class => "back" %>
+      <%= link_to "back", CartoDB.url(self, 'organization'), :class => "back" %>
     <% end %>
 
     <%= form_for @user, url: (@user.new? ? CartoDB.path(self, 'create_organization_user', {id: @organization}) : CartoDB.path(self, 'update_organization_user', {id: @user.username})) do |form| %>

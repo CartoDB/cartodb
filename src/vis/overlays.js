@@ -276,17 +276,16 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
     template: data.template,
+    template_type: data.templateType,
     alternative_names: data.alternative_names,
     fields: data.fields,
     template_name: data.template_name
   });
 
-  var templateType = data.templateType || 'mustache';
-
   var infowindow = new cdb.geo.ui.Infowindow({
      model: infowindowModel,
      mapView: vis.mapView,
-     template: new cdb.core.Template({ template: data.template, type: templateType}).asFunction()
+     template: data.template
   });
 
   return infowindow;

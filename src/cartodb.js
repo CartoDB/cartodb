@@ -52,7 +52,9 @@
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
         "../vendor/lzma.js",
+        "../vendor/html-css-sanitizer-bundle.js",
 
+        'core/sanitize.js',
         'core/decorator.js',
         'core/config.js',
         'core/log.js',

@@ -82,7 +82,7 @@ group :development, :test do
   gem 'mocha',                 '0.10.5'
   gem 'ci_reporter',           '1.8.4'
 
-  #gem 'debugger',              '1.6.8'
+  gem 'debugger',              '1.6.8'
 
   gem 'rspec-rails',           '2.10.1'
   gem 'capybara',              '1.1.2'

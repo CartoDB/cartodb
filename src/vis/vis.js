@@ -815,7 +815,6 @@ var Vis = cdb.core.View.extend({
       var legend = layer.legend;
 
       if ((legend.items && legend.items.length) || legend.template) {
-        layer.legend.index = i;
         var view = new cdb.geo.ui.Legend(layer.legend);
         layerView.bind('change:visibility', function(layer, hidden) {
           view[hidden? 'hide': 'show']();

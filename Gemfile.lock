@@ -78,6 +78,7 @@ GEM
       fssm (>= 0.2.7)
       sass (= 3.2.14)
     daemons (1.1.9)
+    db-query-matchers (0.3.0)
     dbf (2.0.6)
       fastercsv (~> 1.5.4)
     debugger (1.6.8)
@@ -328,6 +329,7 @@ DEPENDENCIES
   charlock_holmes (= 0.7.2)
   ci_reporter (= 1.8.4)
   compass (= 0.12.3)
+  db-query-matchers
   dbf (= 2.0.6)
   debugger (= 1.6.8)
   delorean

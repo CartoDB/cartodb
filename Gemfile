@@ -75,6 +75,10 @@ gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
+group :test do
+  gem 'db-query-matchers'
+end
+
 group :development, :test do
   gem 'rb-readline'
   gem 'webrick',               '1.3.1'

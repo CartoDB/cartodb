@@ -11,6 +11,10 @@ describe Carto::VisualizationQueryBuilder do
     @vqb = Carto::VisualizationQueryBuilder.new
   end
 
+  def query_first_vis_username
+    @vqb.build.first.user.username
+  end
+
   it 'searches for all visualizations' do
     table = create_table(@user1)
     table_visualization = table.table_visualization
@@ -32,7 +36,17 @@ describe Carto::VisualizationQueryBuilder do
 
   it 'can prefetch user' do
     table1 = create_table(@user1)
-    @vqb.with_join_prefetch_of(:user).build.first.user.username.should_not eq nil
+
+    # INFO: 'warm up' of Rails metadata queries
+    query_first_vis_username
+
+    expect {
+      query_first_vis_username.should_not eq nil
+    }.to make_database_queries(count: 2)
+
+    expect {
+      @vqb.with_join_prefetch_of(:user).build.first.user.username.should_not eq nil
+    }.to make_database_queries(count: 1)
   end
 
   it 'searches for shared visualizations' do

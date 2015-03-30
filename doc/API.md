@@ -334,7 +334,7 @@ Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not
     query: "SQL statement", 	// Required if table_name is not given
     table_name: "table_name", 	// Required if query is not given
     user_name: "your_user_name", // Required
-    cartocss: "CartoCSS styles", // Required
+    cartocss: "CartoCSS styles" // Required
   }
 }
 ```

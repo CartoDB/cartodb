@@ -3,6 +3,7 @@ require_relative './stats'
 require_relative '../visualization/collection'
 require_relative '../overlay/collection'
 require_relative './support_tables'
+require_relative '../map'
 
 module CartoDB
   module Visualization

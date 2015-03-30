@@ -1,6 +1,6 @@
 // cartodb.js version: 3.12.13
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0653354683848cbd9e05414b24a0767416166056
+// sha: 8c9657c380e7c0a1c9c02c98f1c9d5e51b34126e
 (function() {
   var root = this;
 
@@ -33474,7 +33474,6 @@ var Vis = cdb.core.View.extend({
       var legend = layer.legend;
 
       if ((legend.items && legend.items.length) || legend.template) {
-        layer.legend.index = i;
         var view = new cdb.geo.ui.Legend(layer.legend);
         layerView.bind('change:visibility', function(layer, hidden) {
           view[hidden? 'hide': 'show']();

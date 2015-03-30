@@ -27,7 +27,7 @@ module CartoDB
 
       def country
         country = @internal_geocoder.countries
-        country == %Q{'world'} ? 'null' : country
+        (country == %Q{'world'} || country.blank?) ? 'null' : country
       end
 
       def dest_table

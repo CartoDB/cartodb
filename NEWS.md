@@ -7,6 +7,7 @@
     - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
     - New Config entry: 'subdomains_optional' (see config/app_config.yml.sample for further details)
     - New Config entry: 'subdomains_allowed' (see config/app_config.yml.sample for further details)
+* Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)

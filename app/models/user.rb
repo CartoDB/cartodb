@@ -176,6 +176,19 @@ class User < Sequel::Model
 
   end
 
+  def can_delete
+    !has_shared_entities?
+  end
+
+  def has_shared_entities?
+    # Right now, cannot delete users with entities shared with other users or the org.
+    has_shared_entities = false
+    CartoDB::Permission.where(owner_id: self.id).each { |permission|
+      has_shared_entities = has_shared_entities || !permission.acl.empty?
+    }
+    has_shared_entities
+  end
+
   def before_destroy
     org_id = nil
     @org_id_for_org_wipe = nil
@@ -192,11 +205,6 @@ class User < Sequel::Model
         end
       end
 
-      # Right now, cannot delete users with entities shared with other users or the org.
-      can_delete = true
-      CartoDB::Permission.where(owner_id: self.id).each { |permission|
-        can_delete = can_delete && permission.acl.empty?
-      }
       unless can_delete
         raise CartoDB::BaseCartoDBError.new('Cannot delete user, has shared entities')
       end
@@ -238,7 +246,12 @@ class User < Sequel::Model
       if User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
       else
-        drop_database_and_user unless error_happened
+        if !error_happened
+          Thread.new do
+            drop_database_and_user
+          end.join
+          monitor_user_notification
+        end
       end
     end
 
@@ -265,7 +278,7 @@ class User < Sequel::Model
     end
   end
 
-  # Org users share the same db, so must only delete the schema
+  # Org users share the same db, so must only delete the schema unless he's the owner
   def drop_organization_user(org_id, is_owner=false)
     raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
 
@@ -302,21 +315,23 @@ class User < Sequel::Model
       conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_username}\"")
       conn.run("REVOKE ALL ON DATABASE \"#{database_name}\" FROM \"#{database_public_username}\"")
       conn.run("DROP USER \"#{database_public_username}\"")
-      conn.run("DROP USER \"#{database_username}\"")
+      if is_owner
+        drop_database_and_user if is_owner
+      else
+        conn.run("DROP USER \"#{database_username}\"")
+      end
+
     end.join
 
     monitor_user_notification
   end
 
   def drop_database_and_user
-    Thread.new do
-      conn = self.in_database(as: :cluster_admin)
-      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name, database_host)
-      conn.run("DROP DATABASE \"#{database_name}\"")
-      conn.run("DROP USER \"#{database_username}\"")
-    end.join
-    monitor_user_notification
+    conn = self.in_database(as: :cluster_admin)
+    conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+    User.terminate_database_connections(database_name, database_host)
+    conn.run("DROP DATABASE \"#{database_name}\"")
+    conn.run("DROP USER \"#{database_username}\"")
   end
 
   def self.terminate_database_connections(database_name, database_host)
@@ -483,7 +498,7 @@ class User < Sequel::Model
   end
 
   def database_public_username
-    has_organization_enabled? ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
+    (self.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
   end
 
   def database_password
@@ -1062,12 +1077,12 @@ class User < Sequel::Model
     end
   end
 
-  def real_tables
+  def real_tables(in_schema=self.database_schema)
     self.in_database(:as => :superuser)
     .select(:pg_class__oid, :pg_class__relname)
     .from(:pg_class)
     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-    .where(:relkind => 'r', :nspname => self.database_schema)
+    .where(:relkind => 'r', :nspname => in_schema)
     .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
     .all
   end
@@ -1498,13 +1513,33 @@ class User < Sequel::Model
       self.create_db_user
       self.grant_user_in_database
     end.join
+    self.create_own_schema
+    self.setup_schema
+  end
+
+  def create_own_schema
     self.load_cartodb_functions
     self.database_schema = self.username
     self.this.update database_schema: self.database_schema
     self.create_user_schema
     self.set_database_search_path
     self.create_public_db_user
-    self.setup_schema
+  end
+
+  def move_to_own_schema
+    self.move_to_schema(self.username)
+  end
+
+  def move_to_schema(new_schema_name)
+    if self.database_schema != new_schema_name
+      old_database_schema_name = self.database_schema
+      self.database_schema = new_schema_name
+      self.this.update database_schema: self.database_schema
+      self.create_user_schema
+      self.move_tables_to_schema(old_database_schema_name, self.database_schema)
+      self.create_public_db_user
+      self.set_database_search_path
+    end
   end
 
   def setup_schema
@@ -1515,6 +1550,15 @@ class User < Sequel::Model
     self.set_user_privileges # Set privileges
     self.set_user_as_organization_member
     self.rebuild_quota_trigger
+  end
+
+
+  def move_tables_to_schema(old_schema, new_schema)
+    self.real_tables(old_schema).each do |t|
+      self.in_database(as: :superuser) do |database|
+        database.run(%Q{ ALTER TABLE #{old_schema}.#{t[:relname]} SET SCHEMA "#{new_schema}" })
+      end
+    end
   end
 
   def reset_schema_owner

@@ -2,6 +2,7 @@
 ------------------
 * Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 * Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
+* Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)

@@ -41,7 +41,7 @@
 
               <div class="Sessions-sep"></div>
 
-              <%= form_tag create_session_path, class: "js-Loading-form" do %>
+              <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
                 <input type="hidden" value="" id="google_access_token" name="google_access_token" />
 
                 <div class="Sessions-field">

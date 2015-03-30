@@ -67,9 +67,7 @@
                 <span class="counter"><%= @likes_count %></span>
               </a>
 
-              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
-              <a href="<%= public_visualizations_show_url(user_domain: domain, id: @visualization.id) %>" class="edit button grey">Edit in CartoDB</a>
-              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
+              <a href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id}, @visualization.user) %>" class="edit button grey">Edit in CartoDB</a>
             </div>
           </div>
 
@@ -88,7 +86,7 @@
                     <% @related_tables.each do |table| %>
                       <% if table.privacy_text == "PUBLIC" %>
                         <li>
-                          <a href="<%= public_table_url(user_domain: (@user_domain.nil? ? nil : @related_tables_usernames[table.user_id]), id: table.name) %>" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span>
+                          <a href="<%= CartoDB.url(self, 'public_table', {id: table.name}, @user_domain.nil? ? nil : @related_tables_owners[table.user_id]) %>" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span>
                         </li>
                       <% end %>
                     <% end %>

@@ -17,7 +17,7 @@ module CartoDB
         end
 
         def organization_path
-          @ctrl.public_datasets_home_path
+          CartoDB.path(@ctrl, 'public_datasets_home')
         end
 
         def render_404

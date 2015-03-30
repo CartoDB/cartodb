@@ -18,7 +18,7 @@ class SessionsController < ApplicationController
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to dashboard_path(trailing_slash: true) and return
+      redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true}) and return
     end
   end
 

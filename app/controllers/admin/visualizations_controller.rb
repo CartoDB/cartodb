@@ -198,15 +198,15 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @related_tables_usernames = Hash.new
+    @related_tables_owners = Hash.new
     @related_tables.each { |table|
-      unless @related_tables_usernames.include?(table.user_id)
+      unless @related_tables_owners.include?(table.user_id)
         table_owner = User.where(id: table.user_id).first
         if table_owner.nil?
           # strange scenario, as user has been deleted but his table still exists
-          @related_tables_usernames[table.user_id] = nil
+          @related_tables_owners[table.user_id] = nil
         else
-          @related_tables_usernames[table.user_id] = table_owner.username
+          @related_tables_owners[table.user_id] = table_owner
         end
       end
     }
@@ -432,11 +432,12 @@ class Admin::VisualizationsController < ApplicationController
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id
-              url = CartoDB.base_url(organization.name, username)
               if for_table
-                url += public_tables_show_path(id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+                url = CartoDB.url(self, 'public_tables_show',
+                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
               else
-                url += public_visualizations_show_path(id: "#{params[:user_domain]}.#{params[:id]}", redirected:true)
+                url = CartoDB.url(self, 'public_visualizations_show',
+                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
               end
             end
           end

@@ -48,7 +48,7 @@ class Admin::PagesController < ApplicationController
     else
       # Redirect to org url if has only user
       if eligible_for_redirect?(viewed_user)
-        redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_path and return
+        redirect_to CartoDB.base_url(viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
       visualizations = Visualization::Collection.new.fetch({

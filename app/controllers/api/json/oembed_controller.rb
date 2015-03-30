@@ -43,7 +43,7 @@ class Api::Json::OembedController < Api::ApplicationController
     else
       url = CartoDB.base_url(fields[:organization_name], fields[:username])
     end
-    url += public_visualizations_embed_map_path(id: uuid)
+    url += CartoDB.path(self, 'public_visualizations_embed_map', {id: uuid})
 
     # force the schema
     if fields[:protocol] == 'https' && !url.include?('https')

@@ -8,7 +8,7 @@ module DataRepository
 
       def initialize(base_directory=DEFAULT_PREFIX)
         @base_directory = base_directory
-      end #initialize
+      end
 
       def create_base_directory
         FileUtils.mkpath @base_directory unless exists? @base_directory
@@ -30,15 +30,15 @@ module DataRepository
         end unless data.respond_to?(:bucket)
 
         path
-      end #store
+      end
 
       def fetch(path)
         File.open(fullpath_for(path), 'r')
-      end #fetch
+      end
 
       def exists?(path)
         File.exists?(fullpath_for(path))
-      end #exists?
+      end
 
       # Use from controlled environments always
       def remove(path)
@@ -49,7 +49,7 @@ module DataRepository
 
       def fullpath_for(path)
         File.join(base_directory, path)
-      end #fullpath_for
+      end
 
       private
 
@@ -64,16 +64,16 @@ module DataRepository
         ].flatten
           .uniq
           .delete_if { |entry| dot_directory?(entry) }
-      end #targets_for
+      end
 
       def dot_directory?(path)
         path == '.' || path == '..'
-      end #dot_directory?
+      end
 
       def relative_path_for(path, base_directory)
        (path.split('/') - base_directory.split('/')).join('/')
-      end #relative_path_for
-    end # Local
-  end # Filesystem
-end # DataRepository
+      end
+    end
+  end
+end
 

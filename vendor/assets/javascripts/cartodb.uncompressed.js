@@ -1,6 +1,6 @@
 // cartodb.js version: 3.12.13
 // uncompressed version: cartodb.uncompressed.js
-// sha: a89e333cf29036f7b850fa7f137e16d8f3f13a69
+// sha: 8c9657c380e7c0a1c9c02c98f1c9d5e51b34126e
 (function() {
   var root = this;
 
@@ -27613,7 +27613,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
         // Reference: Ehttp://stackoverflow.com/questions/8427413/webkitrequestfullscreen-fails-when-passing-element-allow-keyboard-input-in-safar
         requestFullScreen.call(docEl, undefined);
       } else {
-        requestFullScreen.call(docEl);
+        // CartoDB.js #412 :: Fullscreen button is throwing errors
+        // Nowadays (2015/03/25), fullscreen is not supported in iOS Safari. Reference: http://caniuse.com/#feat=fullscreen
+        if (requestFullScreen) {
+          requestFullScreen.call(docEl);
+        }
       }
 
       if (mapView) {
@@ -33470,7 +33474,6 @@ var Vis = cdb.core.View.extend({
       var legend = layer.legend;
 
       if ((legend.items && legend.items.length) || legend.template) {
-        layer.legend.index = i;
         var view = new cdb.geo.ui.Legend(layer.legend);
         layerView.bind('change:visibility', function(layer, hidden) {
           view[hidden? 'hide': 'show']();
@@ -35139,23 +35142,12 @@ cdb.vis.Overlay.register('search', function(data, vis) {
 
 // tooltip
 cdb.vis.Overlay.register('tooltip', function(data, vis) {
-  var layer;
-  if (!data.layer) {
-    var layers = vis.getLayers();
-    if(layers.length > 1) {
-      layer = layers[1];
-    }
-    data.layer = layer;
-  }
-
-  if (!data.layer) {
+  if (!data.layer && vis.getLayers().length <= 1) {
     throw new Error("layer is null");
   }
-
+  data.layer = data.layer || vis.getLayers()[1];
   data.layer.setInteraction(true);
-  var tooltip = new cdb.geo.ui.Tooltip(data);
-  return tooltip;
-
+  return new cdb.geo.ui.Tooltip(data);
 });
 
 cdb.vis.Overlay.register('infobox', function(data, vis) {

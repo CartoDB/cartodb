@@ -433,4 +433,17 @@ describe("Image", function() {
 
   });
 
+  it("should send the auth_tokens", function(done) {
+
+    var vizjson = "http://documentation.cartodb.com/api/v2/viz/8639778a-d6ea-11e4-861c-0e018d66dc29/viz.json"
+
+    var image = cartodb.Image(vizjson).size(400, 300);
+
+    image.getUrl(function(err, url) {
+      expect(image.options.layers.layers[1].options.auth_tokens.length > 0).toBe(true);
+      done();
+    });
+
+  });
+
 });

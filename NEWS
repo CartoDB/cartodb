@@ -1,5 +1,6 @@
-
+3.12.14 (30//03//2015)
 - Fixes fullscreen button is throwing errors (#412)
+- Updates Torque.js to 2.11
 
 3.12.13 (18//03//2015)
 - Changes how infowindows handle null values (#406)

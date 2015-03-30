@@ -45,6 +45,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_locked(locked)
+    @locked = locked
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -69,6 +74,10 @@ class Carto::VisualizationQueryBuilder
       query = query.where(type: @type)
     end
 
+    if !@locked.nil?
+      query = query.where(locked: @locked)
+    end
+
     @eager_load_associations.each { |association|
       query = query.eager_load(association)
     }
@@ -79,10 +88,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build_paged(page = 1, per_page = 20)
-    query = self.build
-    query.offset = (page - 1) * per_page
-    query.limit = per_page
-    query
+    self.build.offset((page - 1) * per_page).limit(per_page)
   end
 
   private

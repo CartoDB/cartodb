@@ -169,9 +169,6 @@ check: prepare-test-db check-prepared
 check-frontend:
 	grunt test
 
-travis: check-frontend check
-
-
 # update cartodb.js submodule files
 update_cdb:
 	cd $(CDB_PATH); make cartodb dist/cartodb.css

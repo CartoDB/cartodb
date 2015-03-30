@@ -124,10 +124,10 @@
 .Form-input.Form-input--error:focus,
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
 
-.Form-input::-webkit-input-placeholder { font-style: italic; }
-.Form-input:-moz-placeholder           { font-style: italic; }
-.Form-input::-moz-placeholder          { font-style: italic; }
-.Form-input:-ms-input-placeholder      { font-style: italic; }
+.Form-input::-webkit-input-placeholder { font-style: italic; color: #AAA }
+.Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
+.Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
+.Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
 
 // Sizes
 .Form-input--longer { width: 434px }
@@ -291,6 +291,9 @@
 .Form-rowInfoText {
   font-size: $sFontSize-normal;
   color: $cTypography-help;
+}
+.Form-rowInfoText--multipleLines {
+  line-height: 20px;
 }
 .Form-rowInfoText--error { color: #DD3B37 }
 .Form-footer {

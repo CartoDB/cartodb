@@ -243,10 +243,14 @@ a.Filters-cleanSearch { line-height:32px }
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
-.Filters-actionsText { color: $cTypography-help }
+.Filters-actionsText {
+  padding-left: 25px;
+  font-size: 13px;
+  color: $cTypography-help;
+}
 .Filters-actionsLink {
-  font-size:13px;
-  padding-left:25px;
+  font-size: 13px;
+  padding-left: 25px;
 }
 .Filters-actionsLink.is--critical {
   color:#FF6C6C;
@@ -277,4 +281,9 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters-progressBar {
   @include progress-bar(6px, 9px, true, false);
   width: 178px;
+}
+@media only screen and (max-width: 959px) {
+  .Filters-row {
+    padding: 0 20px;
+  }
 }

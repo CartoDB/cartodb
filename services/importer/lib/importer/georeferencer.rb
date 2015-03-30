@@ -47,6 +47,7 @@ module CartoDB
           create_the_geom_from_latlon           ||
           create_the_geom_from_ip_guessing      ||
           create_the_geom_from_country_guessing ||
+          create_the_geom_from_namedplaces_guessing ||
           create_the_geom_in(table_name)
 
         enable_autovacuum
@@ -151,6 +152,30 @@ module CartoDB
         return false
       end
 
+      def create_the_geom_from_namedplaces_guessing
+        return false if not @content_guesser.enabled?
+        job.log 'Trying namedplaces guessing...'
+        begin
+          @importer_stats.timing('guessing') do
+            @tracker.call('guessing')
+            @content_guesser.namedplaces.run!
+            @tracker.call('importing')
+          end
+          if @content_guesser.namedplaces.found?
+            job.log "Found namedplace column: #{@content_guesser.namedplaces.column}"
+            create_the_geom_in table_name
+            return geocode_namedplaces
+          end
+        rescue Exception => ex
+          message = "create_the_geom_from_namedplaces_guessing failed: #{ex.message}"
+          Rollbar.report_message(message,
+                                 'warning',
+                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          job.log "WARNING: #{message}"
+        end
+        return false
+      end
+
       def create_the_geom_from_ip_guessing
         return false if not @content_guesser.enabled?
         job.log 'Trying ip guessing...'
@@ -180,12 +205,21 @@ module CartoDB
         geocode(country_column_name, 'polygon', 'admin0')
       end
 
+      def geocode_namedplaces
+        job.log "Geocoding namedplaces..."
+        geocode(@content_guesser.namedplaces.column[:column_name],
+                'point',
+                'namedplace',
+                @content_guesser.namedplaces.country_column_name,
+                @content_guesser.namedplaces.country)
+      end
+
       def geocode_ips ip_column_name
         job.log "Geocoding ips..."
         geocode(ip_column_name, 'point', 'ipaddress')
       end
 
-      def geocode(formatter, geometry_type, kind)
+      def geocode(formatter, geometry_type, kind, country_column_name=nil, country=nil)
         geocoder = nil
         @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
@@ -199,12 +233,13 @@ module CartoDB
             geometry_type: geometry_type,
             kind: kind,
             max_rows: nil,
-            country_column: nil
+            country_column: country_column_name,
+            countries: country.present? ? "'#{country}'" : nil
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
 
           begin
-            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name)
+            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
             geocoding.force_geocoder(geocoder)
             geocoding.user = user
             geocoding.data_import_id = data_import.id unless data_import.nil?

@@ -8,15 +8,17 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 .IntermediateInfo {
-  width: $sLayout-width;
+  width: 100%;
   @include display-flex();
   @include flex-direction(column);
-  @include align-items(center);
-  @include justify-content(center);
+  @include align-items(center, center);
+  @include justify-content(center, center);
   margin: 0 auto;
   min-height: 360px;
   text-align: center;
 }
+_:-ms-lang(x), .IntermediateInfo { padding-top: 100px }
+
 // Let a flex layout position it rather than enforcing a min-height
 .IntermediateInfo--flex {
   min-height: 0;
@@ -29,3 +31,4 @@
   line-height: $sLineHeight-largest;
   color: $cTypography-paragraphs;
 }
+.IntermediateInfo-title--error { color: $cHighlight-negative }

@@ -30,7 +30,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = ::Table.where(id: @table.id).first
+      @table = ::UserTable.where(id: @table.id).first.try(:service)
       render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
@@ -89,7 +89,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     end
 
-    @table.set_except(params, :name)
+    @table.set_except(params, :name) #TODO: this is bad, passing all params blindly to the table object
     if params.keys.include?('latitude_column') && params.keys.include?('longitude_column')
       latitude_column  = params[:latitude_column]  == 'nil' ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == 'nil' ? nil : params[:longitude_column].try(:to_sym)
@@ -97,7 +97,7 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = ::Table.where(id: @table.id).first
+      @table = ::UserTable.where(id: @table.id).first.try(:service)
 
       render_jsonp(@table.public_values.merge(warnings: warnings))
     else

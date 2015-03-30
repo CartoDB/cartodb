@@ -11,17 +11,17 @@ $cBkg: #F9F9F9;
   @include align-content(space-between, justify);
 }
 .ChangePrivacy-upgradeBanner {
-  background-color: rgba(#E8F0D6, 0.3);
+  padding: 20px 0;
+  background: #F0F7FC;
 }
-.ChangePrivacy-upgradeBannerInner {
+.UpgradeElement.ChangePrivacy-upgradeBannerInner {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   margin: 0 $sMargin-group;
-}
-.ChangePrivacy-upgradeBannerIcon {
-  margin-right: $sMargin-group;
-  color: rgba(#ADAFA8, 1);
+  padding: 0;
+  background: none;
+  border: none;
 }
 .ChangePrivacy-shareBanner {
   @include display-flex();

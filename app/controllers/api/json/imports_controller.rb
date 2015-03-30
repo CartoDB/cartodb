@@ -63,13 +63,7 @@ class Api::Json::ImportsController < Api::ApplicationController
                      })
     elsif params[:remote_visualization_id].present?
       external_source = external_source(params[:remote_visualization_id])
-      options.merge!({
-                        content_guessing: false,
-                        type_guessing: true,
-                        quoted_fields_guessing: true,
-                        data_source: external_source.import_url.presence,
-                        create_visualization: false
-                     })
+      options.merge!( { data_source: external_source.import_url.presence } )
     else
       results = upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
       options.merge!({
@@ -84,7 +78,9 @@ class Api::Json::ImportsController < Api::ApplicationController
                                                      user_defined_limits: ::JSON.dump(options[:user_defined_limits])
                                                    }))
 
-    ExternalDataImport.new(data_import.id, external_source.id).save if external_source.present?
+    if external_source.present?
+      ExternalDataImport.new(data_import.id, external_source.id).save
+    end
 
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
 

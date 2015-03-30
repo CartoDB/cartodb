@@ -28,13 +28,13 @@ $size: 40px;
     color: #3C93D8;
   }
 }
-.Logo--round {
+.Logo--grey {
   min-width: $size;
   width: $size;
   height: $size;
   background-color:#CCCCCC;
-  border-radius: $size;
-  line-height: 50px;
+  border-radius: 3px;
+  line-height: 53px;
   text-align: center;
   i {
     font-size: 24px;

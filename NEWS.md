@@ -1,4 +1,21 @@
-3.9.0 (2015-02-xx)
+3.x.x (2015-xx-xx)
+------------------
+* Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
+* Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
+* Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
+
+Bugfixes:
+* Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
+* Fix Changing email requires new password [#2764](https://github.com/CartoDB/cartodb/pull/2764)
+* Fix "Update in multi-user account" [#2794](https://github.com/CartoDB/cartodb/pull/2794)
+* Fix incorrect quota value in dropdown [#2804](https://github.com/CartoDB/cartodb/issues/2804)
+* Fix Columns are no longer alphabetically ordered in the table view [#2825](https://github.com/CartoDB/cartodb/pull/2825)
+* Fix user creation with org [#2831](https://github.com/CartoDB/cartodb/pull/2831)
+* Fix sync tables state changes [#2838](https://github.com/CartoDB/cartodb/pull/2838)
+* Add specific error for wrongly encoded CSV files [#2847](https://github.com/CartoDB/cartodb/pull/2847)
+* Fixed infinite loop saving overlays #2827
+
+3.9.0 (2015-02-13)
 ------------------
 * New user account & profile management pages, inside CartoDB Editor.
 * Fixed UNIX timestamps converted to a date column loses time [#990](https://github.com/CartoDB/cartodb/issues/990)
@@ -11,6 +28,7 @@
 * Hiding SaaS links in open source edition [#2646](https://github.com/CartoDB/cartodb/pull/2646)
 * Allows to remove overlays using the backspace key.
 * Update favicon to retina [#2686](https://github.com/CartoDB/cartodb/issues/2686)
+* Change new dashboard search behaviour [#2628](https://github.com/CartoDB/cartodb/issues/2628).
 
 Bugfixes:
 * Fix layer refresh when the method of a density visualization changes [#2673](https://github.com/CartoDB/cartodb/issues/2673)

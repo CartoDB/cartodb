@@ -6,7 +6,7 @@ feature "Tables", :js => true do
     @user  = FactoryGirl.create(:user_with_private_tables)
     @table = FactoryGirl.create(:table, :user_id => @user.id,
                                         :name => 'Twitter followers',
-                                        :privacy => Table::PRIVACY_PRIVATE,
+                                        :privacy => UserTable::PRIVACY_PRIVATE,
                                         :tags => 'twitter')
 
     log_in_as @user

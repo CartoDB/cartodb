@@ -190,7 +190,7 @@ module CartoDB
           result = @client.execute(uri: item_data.fetch(:url))
 
           if result.status != 200
-            if result.data['error'].nil? || result.data['error']['message'].nil?
+            if result.data.nil? || result.data['error'].nil? || result.data['error']['message'].nil?
               error_message = 'Unknown error'
             else
               error_message = result.data['error']['message']

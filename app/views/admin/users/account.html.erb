@@ -7,12 +7,9 @@
     var config = <%=raw frontend_config.html_safe %>;
     var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= raw @user.data.to_json.html_safe %>;
+    var upgrade_url = <%= cartodb_com_hosted? ? 'undefined' : "'#{current_user.upgrade_url(request.protocol)}'" %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
-<% end %>
-<%= content_for(:css) do %>
-  <%= render 'shared/lato_font' %>
-  <%= stylesheet_link_tag 'cartodb.css', 'new_common.css',  :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/new_flash_message' %>
@@ -46,30 +43,32 @@
             <label class="Form-label">Email</label>
           </div>
           <div class="Form-rowData">
-            <%= f.text_field :email, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? }" %>
+            <%= f.text_field :email, class: "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email }", readonly: !@user.can_change_email %>
           </div>
           <div class="Form-rowInfo">
-            <% if (@user.errors[:email].present?) %>
+            <% if @user.errors[:email].present? %>
               <p class="Form-rowInfoText Form-rowInfoText--error">Email not valid</p>
-            <% else %>
-              <p class="Form-rowInfoText">You enter through <%= link_to 'here', @user.public_url %></p>
+            <% elsif @user.google_sign_in %>
+              <p class="Form-rowInfoText <%= 'Form-rowInfoText--multipleLines' unless @user.should_display_old_password? %>">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
             <% end %>
           </div>
         </div>
 
-        <div class="Form-row">
-          <div class="Form-rowLabel">
-            <label class="Form-label">Old password</label>
+        <% if @user.should_display_old_password? %>
+          <div class="Form-row">
+            <div class="Form-rowLabel">
+              <label class="Form-label">Old password</label>
+            </div>
+            <div class="Form-rowData">
+              <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
+            </div>
+            <div class="Form-rowInfo">
+              <% if (@user.errors[:old_password].present?) %>
+                <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+              <% end %>
+            </div>
           </div>
-          <div class="Form-rowData">
-            <%= f.password_field :old_password, :class => "Form-input Form-input--long #{ 'Form-input--error' if @user.errors[:old_password].present? }" %>
-          </div>
-          <div class="Form-rowInfo">
-            <% if (@user.errors[:old_password].present?) %>
-              <p class="Form-rowInfoText Form-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
-            <% end %>
-          </div>
-        </div>
+        <% end %>
 
         <div class="Form-row">
           <div class="Form-rowLabel">

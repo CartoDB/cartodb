@@ -35,7 +35,7 @@ module Carto
     end
 
     def get_synchronization
-      Synchronization.where(user_id: user_id, name: name).first
+      Carto::Synchronization.where(user_id: user_id, name: name).first
     end
 
   end

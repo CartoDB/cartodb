@@ -7,7 +7,7 @@ module Carto
     class VisualizationsController < ::Api::ApplicationController
 
       def index
-        vqb = VisualizationQueryBuilder.new.with_user_id(current_user.id)
+        vqb = VisualizationQueryBuilder.new.with_user_id(current_user.id).with_prefetch_user.with_prefetch_table.with_prefetch_permission
         visualizations = vqb.build.all
         response = {
           visualizations: visualizations.map { |v| VisualizationPresenter.new(v).to_poro },

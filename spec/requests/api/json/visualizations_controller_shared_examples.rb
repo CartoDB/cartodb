@@ -21,6 +21,10 @@ shared_examples_for "visualization controllers" do
     login_as(user, scope: user.subdomain)
   end
 
+  def base_url
+    '/api/v1/viz'
+  end
+
   def response_body
     get base_url, nil, @headers
     last_response.status.should == 200

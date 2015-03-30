@@ -5,7 +5,8 @@ require_relative '../../models/carto/shared_entity'
 class Carto::VisualizationQueryBuilder
 
   def initialize
-    @prefetch_associations = []
+    @inner_join_prefetch_associations = []
+    @left_join_prefetch_associations = []
   end
 
   def with_user_id(user_id)
@@ -23,9 +24,16 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_join_prefetch_of(association)
-    @prefetch_associations << association
-    self
+  def with_prefetch_user
+    with_inner_join_prefetch_of(:user)
+  end
+
+  def with_prefetch_table
+    with_left_join_prefetch_of(:table)
+  end
+
+  def with_prefetch_permission
+    with_left_join_prefetch_of(:permission)
   end
 
   def build
@@ -47,14 +55,28 @@ class Carto::VisualizationQueryBuilder
           .joins(:shared_entities).where(:shared_entities => { recipient_id: recipient_ids(user) })
     end
 
-    @prefetch_associations.each { |association|
+    @inner_join_prefetch_associations.each { |association|
       query = query.joins(association).includes(association)
+    }
+
+    @left_join_prefetch_associations.each { |association|
+      query = query.eager_load(association)
     }
 
     query
   end
 
   private
+
+  def with_inner_join_prefetch_of(association)
+    @inner_join_prefetch_associations << association
+    self
+  end
+
+  def with_left_join_prefetch_of(association)
+    @left_join_prefetch_associations << association
+    self
+  end
 
   # TODO: move this to SharedEntityQueryBuilder?
   #def visualization_shares(user)

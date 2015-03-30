@@ -5,6 +5,18 @@
 # defaults: { dont_rewrite: true } -> Use this to force an individual action to not get rewritten to org-url
 # Can be also done at controller source files by using -> skip_before_filter :ensure_org_url_if_org_user
 
+class Carto::FeatureFlagConstraint
+
+  def initialize(feature_flag)
+    @feature_flag = feature_flag
+  end
+
+  def matches?(request)
+    user = Carto::User.where(username: CartoDB.extract_subdomain(request)).first
+    user && user.has_feature_flag?(@feature_flag)
+  end
+end
+
 CartoDB::Application.routes.draw do
   # Double use: for user public dashboard AND org dashboard
   root :to => 'admin/pages#index'
@@ -264,7 +276,7 @@ CartoDB::Application.routes.draw do
   end
 
   scope :module => 'carto/api', :format => :json do
-    get     '(/u/:user_domain)/api/v11/viz'                                => 'visualizations#index',           as: :api_v11_visualizations_index
+    get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v11_visualizations_index, constraints: Carto::FeatureFlagConstraint.new('active_record_vis_endpoint')
   end
 
   scope :module => 'api/json', :format => :json do

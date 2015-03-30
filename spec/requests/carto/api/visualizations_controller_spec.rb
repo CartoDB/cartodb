@@ -6,7 +6,18 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 
 describe Carto::Api::VisualizationsController do
   it_behaves_like 'visualization controllers' do
-    let(:base_url) { '/api/v11/viz' }
+  end
+
+  before(:all) do
+    @ff = Carto::FeatureFlag.new
+    @ff.id = 666666
+    @ff.name = 'active_record_vis_endpoint'
+    @ff.restricted = false
+    @ff.save
+  end
+
+  after(:all) do
+    @ff.destroy if @ff
   end
 
   include Rack::Test::Methods

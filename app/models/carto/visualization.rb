@@ -23,7 +23,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def synchronization
-    table.synchronization
+    table.nil? ? nil : table.synchronization
   end
 
   def children

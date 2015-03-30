@@ -17,6 +17,7 @@ class Carto::Api::UserTablePresenter
   end
 
   def to_poro
+    return {} if @user_table.nil?
     {
       id: @user_table.id,
       name: @user_table.name,

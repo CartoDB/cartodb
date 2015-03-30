@@ -4,6 +4,9 @@ class Carto::User < ActiveRecord::Base
   has_many :visualizations, inverse_of: :user
   belongs_to :organization, inverse_of: :users
 
+  has_many :feature_flags_user, dependent: :destroy
+  has_many :feature_flags, :through => :feature_flags_user
+
   def public_url
     user_name = organization.nil? ? nil : username
     CartoDB.base_url(self.subdomain, user_name)
@@ -11,6 +14,14 @@ class Carto::User < ActiveRecord::Base
 
   def subdomain
     organization.nil? ? username : organization.name
+  end
+
+  def feature_flags_list
+    @feature_flag_names ||= (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
+  end
+
+  def has_feature_flag?(feature_flag_name)
+    self.feature_flags_list.present? && self.feature_flags_list.include?(feature_flag_name)
   end
 
 end

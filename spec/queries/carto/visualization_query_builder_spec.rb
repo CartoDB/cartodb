@@ -9,10 +9,20 @@ describe Carto::VisualizationQueryBuilder do
 
   before(:each) do
     @vqb = Carto::VisualizationQueryBuilder.new
-  end
 
-  def query_first_vis_username
-    @vqb.build.first.user.username
+    DBQueryMatchers.configure do |config|
+      config.ignores = []
+      config.ignores << /SHOW client_min_messages/
+      config.ignores << /SET client_min_messages TO 'panic'/
+      config.ignores << /SET standard_conforming_strings = on/
+      config.ignores << /SET client_min_messages TO 'notice'/
+      config.ignores << /SHOW TIME ZONE/
+      config.ignores << /SELECT a.attname, format_type(a.atttypid, a.atttypmod), d.adsrc, a.attnotnull/
+      config.ignores << /SHOW search_path/
+      config.ignores << /LEFT JOIN pg_namespace n ON n.oid = c.relnamespace/
+      config.ignores << /INNER JOIN pg_depend dep ON attr.attrelid = dep.refobjid AND attr.attnum = dep.refobjsubid/
+      config.ignores << /WHERE a.attrelid = '".*"'::regclass/
+    end
   end
 
   it 'searches for all visualizations' do
@@ -37,15 +47,24 @@ describe Carto::VisualizationQueryBuilder do
   it 'can prefetch user' do
     table1 = create_table(@user1)
 
-    # INFO: 'warm up' of Rails metadata queries
-    query_first_vis_username
-
     expect {
-      query_first_vis_username.should_not eq nil
+      @vqb.build.first.user.username.should_not eq nil
     }.to make_database_queries(count: 2)
 
     expect {
-      @vqb.with_join_prefetch_of(:user).build.first.user.username.should_not eq nil
+      @vqb.with_prefetch_user.build.first.user.username.should_not eq nil
+    }.to make_database_queries(count: 1)
+  end
+
+  it 'can prefetch table' do
+    table1 = create_table(@user1)
+
+    expect {
+      @vqb.build.where(id: table1.table_visualization.id).first.table.name
+    }.to make_database_queries(count: 2)
+
+    expect {
+      @vqb.with_prefetch_table.build.where(id: table1.table_visualization.id).first.table.name
     }.to make_database_queries(count: 1)
   end
 

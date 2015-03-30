@@ -10,22 +10,22 @@ module CartoDB
     end
 
     def set_public
-      self.privacy = ::UserTable::PRIVACY_PUBLIC
+      self.privacy = Table::Privacy::PUBLIC
       set_database_permissions(grant_query)
       self
     end
 
     def set_private
-      self.privacy = ::UserTable::PRIVACY_PRIVATE
+      self.privacy = Table::Privacy::PRIVATE
       set_database_permissions(revoke_query)
       self
     end
 
     def set_from_table_privacy(table_privacy)
       case table_privacy
-        when ::UserTable::PRIVACY_PUBLIC
+        when Table::Privacy::PUBLIC
           set_public
-        when ::UserTable::PRIVACY_LINK
+        when Table::Privacy::LINK
           set_public_with_link_only
         else
           set_private
@@ -42,7 +42,7 @@ module CartoDB
 
     def propagate_to(visualization, table_privacy_changed=false)
       visualization.store_using_table({
-                                        privacy_text: ::UserTable::PRIVACY_VALUES_TO_TEXTS[privacy],
+                                        privacy_text: privacy.to_s,
                                         map_id: visualization.map_id
                                       }, table_privacy_changed)
       self
@@ -61,7 +61,7 @@ module CartoDB
     attr_accessor :privacy
 
     def set_public_with_link_only
-      self.privacy = ::UserTable::PRIVACY_LINK
+      self.privacy = Table::Privacy::LINK
       set_database_permissions(grant_query)
     end
 

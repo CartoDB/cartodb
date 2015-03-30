@@ -1,5 +1,7 @@
 # coding: UTF-8
 
+require_relative 'privacy'
+
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
 
@@ -32,13 +34,9 @@ class UserTable < Sequel::Model
     user_id=
     updated_at
     automatic_geocoding
-    private?
-    public?
-    public_with_link_only?
     privacy
     privacy=
     privacy_changed?
-    privacy_text
     destroy
     errors
     set_except
@@ -46,16 +44,6 @@ class UserTable < Sequel::Model
   }
 
   RESERVED_TABLE_NAMES = %W{ layergroup all }
-
-  PRIVACY_PRIVATE = 0
-  PRIVACY_PUBLIC = 1
-  PRIVACY_LINK = 2
-
-  PRIVACY_VALUES_TO_TEXTS = {
-      PRIVACY_PRIVATE => 'private',
-      PRIVACY_PUBLIC => 'public',
-      PRIVACY_LINK => 'link'
-  }
 
   # Associations
   many_to_one  :map
@@ -149,7 +137,7 @@ class UserTable < Sequel::Model
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
-    if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
+    if !privacy.valid?
       errors.add(:privacy, "has an invalid value '#{privacy}'")
     end
 
@@ -204,40 +192,17 @@ class UserTable < Sequel::Model
     service.table_visualization
   end
 
-
-  def privacy_text
-    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
-  end
-
-  # TODO move privacy to value object
-  # enforce standard format for this field
   def privacy=(value)
-    case value
-      when 'PUBLIC', PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
-        self[:privacy] = PRIVACY_PUBLIC
-      when 'LINK', PRIVACY_LINK, PRIVACY_LINK.to_s
-        self[:privacy] = PRIVACY_LINK
-      when 'PRIVATE', PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
-        self[:privacy] = PRIVACY_PRIVATE
-      else
-        raise "Invalid privacy value '#{value}'"
-    end
+    @privacy_value = CartoDB::Table::Privacy.from_anything(value)
+    super(@privacy_value.to_i)
   end
 
-  def private?
-    self.privacy == PRIVACY_PRIVATE
-  end #private?
-
-  def public?
-    self.privacy == PRIVACY_PUBLIC
-  end #public?
-
-  def public_with_link_only?
-    self.privacy == PRIVACY_LINK
-  end #public_with_link_only?
+  def privacy
+    @privacy_value = CartoDB::Table::Privacy.from_anything(super)
+  end
 
   def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
+    self.previous_changes.keys.include?(:privacy)
   end
 
   # TODO move tags to value object. A set is more appropriate

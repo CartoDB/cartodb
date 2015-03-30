@@ -107,7 +107,7 @@ class Table
   end
 
   def default_privacy_value
-    self.owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC
+    self.owner.try(:private_tables_enabled) ? CartoDB::Table::Privacy::PRIVATE : CartoDB::Table::Privacy::PUBLIC
   end
 
   def geometry_types_key
@@ -259,17 +259,17 @@ class Table
     # Branch if owner does not have private table privileges
     unless self.owner.try(:private_tables_enabled)
       # If it's a new table and the user is trying to make it private
-      if self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE
+      if self.new? && @user_table.privacy.private?
         @user_table.errors.add(:privacy, 'unauthorized to create private tables')
       end
 
       # if the table exists, is private, but the owner no longer has private privileges
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_PRIVATE && @user_table.changed_columns.include?(:privacy)
+      if !self.new? && @user_table.privacy.private? && @user_table.changed_columns.include?(:privacy)
         @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
 
       # cannot change any existing table to 'with link'
-      if !self.new? && @user_table.privacy == UserTable::PRIVACY_LINK && @user_table.changed_columns.include?(:privacy)
+      if !self.new? && @user_table.privacy.link? && @user_table.changed_columns.include?(:privacy)
         @user_table.errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 
@@ -279,7 +279,7 @@ class Table
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
+    @user_table.privacy ||= (owner.try(:private_tables_enabled) ? CartoDB::Table::Privacy::PRIVATE : CartoDB::Table::Privacy::PUBLIC)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
@@ -635,7 +635,7 @@ class Table
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  @user_table.description,
       tags:         (@user_table.tags.split(',') if @user_table.tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      privacy:      default_privacy_value.to_s,
       user_id:      self.owner.id,
       kind:         kind
     )
@@ -1316,9 +1316,17 @@ class Table
     nil
   end
 
+  def privacy
+    @user_table.privacy
+  end
+
+  def privacy_text
+    privacy.to_s
+  end
+
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    privacy == UserTable::PRIVACY_LINK ? 'PUBLIC' : @user_table.privacy_text
+    privacy.link? ? CartoDB::Table::Privacy::PUBLIC.to_s : privacy_text
   end
 
   def relator

@@ -200,15 +200,13 @@ module ApplicationHelper
     content_tag :div, error_messages, :class => 'field_error' if error_messages.present?
   end
 
-  # TODO: Check this for MU
   def v1_vizjson_url(visualization)
     "/api/v1/viz/#{visualization.id}/viz"
-  end #v1_vizjson_url
+  end
 
-  # TODO: Check this for MU
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
-  end #v2_vizjson_url
+  end
 
   def formatted_tags(tags)
     visibleCount = 3

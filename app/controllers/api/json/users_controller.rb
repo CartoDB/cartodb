@@ -69,7 +69,7 @@ class Api::Json::UsersController < Api::ApplicationController
     end
 
     render json: {
-      urls: ["#{CartoDB.base_url(current_viewer.username, organization_name)}#{dashboard_bis_url}"],
+      urls: ["#{CartoDB.base_url(current_viewer.username, organization_name)}#{CartoDB.url(self, 'dashboard_bis')}"],
       can_fork: can_fork,
       username: current_viewer.username,
       avatar_url: current_viewer.avatar_url,

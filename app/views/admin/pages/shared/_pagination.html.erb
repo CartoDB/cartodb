@@ -11,7 +11,7 @@
       total_count: <%= @total_count %>,
       per_page: <%= @per_page %>,
       url_to: function(page) {
-        return '<%= url_for(page: 12321) %>'.replace('12321', page);
+        return '<%= @numbered_page_url %>'.replace('<%= @page_number_placeholder %>', page);
       }
     }
   </script>

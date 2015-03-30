@@ -13,6 +13,7 @@ class Admin::PagesController < ApplicationController
   NEW_DATASETS_PER_PAGE = 20
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
+  PAGE_NUMBER_PLACEHOLDER = '-666'
 
   ssl_required :common_data, :public, :datasets
 
@@ -26,13 +27,13 @@ class Admin::PagesController < ApplicationController
   def index
     # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
     if !current_user.nil? && !current_viewer.nil? && current_user.id == current_viewer.id
-      redirect_to dashboard_url
+      redirect_to CartoDB.url(self, 'dashboard')
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
     elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
-      redirect_to public_maps_home_url
+      redirect_to CartoDB.url(self, 'public_maps_home')
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
     else
-      redirect_to public_maps_home_url
+      redirect_to CartoDB.url(self, 'public_maps_home')
     end
   end
 
@@ -99,7 +100,7 @@ class Admin::PagesController < ApplicationController
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
         per_page: NEW_DATASETS_PER_PAGE,
-      })
+      }), user
     )
   end
 
@@ -115,7 +116,7 @@ class Admin::PagesController < ApplicationController
         user:     user,
         vis_type: Visualization::Member::TYPE_DERIVED,
         per_page: MAPS_PER_PAGE,
-      })
+      }), user
     )
   end
 
@@ -170,10 +171,12 @@ class Admin::PagesController < ApplicationController
 
   private
 
-  def render_new_datasets(vis_list)
+  def render_new_datasets(vis_list, user=nil)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    NEW_DATASETS_PER_PAGE,
+        first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
+        numbered_page_url: CartoDB.url(self, 'public_datasets_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
 
     @datasets = []
@@ -206,10 +209,12 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def render_new_maps(vis_list)
+  def render_new_maps(vis_list, user=nil)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    MAPS_PER_PAGE,
+        first_page_url: CartoDB.url(self, 'public_maps_home', {}, user),
+        numbered_page_url: CartoDB.url(self, 'public_maps_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
 
     @visualizations = []
@@ -284,6 +289,9 @@ class Admin::PagesController < ApplicationController
     @total_count  = required.fetch(:total_count)
     @per_page     = required.fetch(:per_page)
     @current_page = current_page
+    @first_page_url = required.fetch(:first_page_url)
+    @numbered_page_url = required.fetch(:numbered_page_url)
+    @page_number_placeholder = PAGE_NUMBER_PLACEHOLDER
   end
 
   # Shared as in shared for both new and old layout

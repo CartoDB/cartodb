@@ -81,7 +81,14 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(pretty_404) if disallowed_type?(@visualization)
-    return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]})) if @visualization.derived?
+    if @visualization.derived?
+      if current_user.nil? || current_user.username != request.params[:user_domain]
+        destination_user = User.where(username: request.params[:user_domain]).first
+      else
+        destination_user = nil
+      end
+      return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}, destination_user))
+    end
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=true)

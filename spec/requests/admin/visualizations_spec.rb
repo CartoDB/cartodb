@@ -289,8 +289,7 @@ describe Admin::VisualizationsController do
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
-      url = CartoDB.base_url(org.name) + public_visualizations_show_path(user_domain: user_b.username,
-                                                                 id: "#{user_a.username}.#{vis.name}") \
+      url = CartoDB.base_url(org.name, user_b.username) + public_visualizations_show_path(id: "#{user_a.username}.#{vis.name}") \
                                + "?redirected=true"
       last_response.location.should eq url
 

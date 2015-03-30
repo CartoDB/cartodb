@@ -65,7 +65,7 @@ class Admin::OrganizationUsersController < ApplicationController
     copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
     @user.create_in_central
-    redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
+    redirect_to CartoDB.path(self, 'organization'), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e)
     begin
@@ -110,7 +110,7 @@ class Admin::OrganizationUsersController < ApplicationController
 
     @user.save(raise_on_failure: true)
 
-    redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.path(self, 'edit_organization_user', { id: @user.username }), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -125,7 +125,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.destroy
     flash[:success] = "User was successfully deleted."
     if new_dashboard
-      redirect_to organization_path(user_domain: params[:user_domain])
+      redirect_to CartoDB.path(self, 'organization')
     else
       head :no_content
     end
@@ -135,7 +135,7 @@ class Admin::OrganizationUsersController < ApplicationController
       @user.destroy
       flash[:success] = "User was deleted from the organization server. #{e.user_message}"
       if new_dashboard
-        redirect_to organization_path(user_domain: params[:user_domain])
+        redirect_to CartoDB.path(self, 'organization')
       else
         head :no_content
       end

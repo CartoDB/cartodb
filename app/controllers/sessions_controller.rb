@@ -44,12 +44,7 @@ class SessionsController < ApplicationController
 
     CartodbStats.increment_login_counter(user.email)
 
-    # /u/xxx or /user/xxx will be added inside .public_url, so only handle scenario of different user domains
-    if user.present? && params[:user_domain].present? && params[:user_domain] != user.username
-      redirect_to user.public_url << dashboard_path(user_domain: params[:user_domain], trailing_slash: true)
-    else
-      redirect_to user.public_url << dashboard_path(trailing_slash: true)
-    end
+    redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
 
   def destroy

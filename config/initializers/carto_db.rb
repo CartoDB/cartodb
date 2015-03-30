@@ -26,6 +26,30 @@ module CartoDB
 
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
+  # Helper method to encapsulate Rails full URL generation compatible with our subdomainless mode
+  # @param context ActionController::Base or a View or something that holds a request
+  # @param path String Rails route name
+  # @param params Hash Parameters to send to the url (Optional)
+  # @param user User (Optional) If not sent will use subdomain or /user/xxx from controller request
+  def self.url(context, path, params={}, user = nil)
+    if user.nil?
+      subdomain = self.extract_subdomain(context.request)
+      org_username = nil
+    else
+      subdomain = user.subdomain
+      org_username = user.organization_username
+    end
+    # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
+    CartoDB.base_url(subdomain, org_username) + context.polymorphic_path(path, params.merge({user_domain:nil}))
+  end
+
+  # Helper method to encapsulate Rails URL path generation compatible with our subdomainless mode
+  # @param controller ActionController::Base
+  # @param path String Rails route name
+  # @param params Hash Parameters to send to the url (Optional)
+  def self.path(controller, path, params={})
+    controller.polymorphic_path(path, params)
+  end
 
   # "Smart" subdomain extraction from the request, depending on configuration and /u/xxx url fragment
   def self.extract_subdomain(request)

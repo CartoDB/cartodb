@@ -30,6 +30,11 @@ describe Carto::VisualizationQueryBuilder do
     ids.should_not include table_visualization2.id
   end
 
+  it 'can prefetch user' do
+    table1 = create_table(@user1)
+    @vqb.with_join_prefetch_of(:user).build.first.user.username.should_not eq nil
+  end
+
   it 'searches for shared visualizations' do
     table = create_table(@user1)
     shared_visualization = table.table_visualization

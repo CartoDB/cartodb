@@ -7,9 +7,8 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, inverse_of: :visualizations
   belongs_to :permission
 
-  # TODO: this doesn't work because visualizations.id type is text instead of UUID, change when fixed
-  #has_many :likes, foreign_key: :subject
-  has_many :likes, finder_sql: proc { "select * from likes where subject = '#{id}'" }
+  has_many :likes, foreign_key: :subject
+  has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 
   belongs_to :table, class_name: UserTable, primary_key: :map_id, foreign_key: :map_id
   has_one :external_source

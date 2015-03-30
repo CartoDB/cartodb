@@ -5,7 +5,7 @@ module Carto
   class UserTable < ActiveRecord::Base
 
     def geometry_types
-      table.geometry_types
+      @geometry_types ||= table.geometry_types
     end
 
     def size
@@ -21,6 +21,7 @@ module Carto
     end
 
     def synchronization
+      # TODO: replace with an association so it can be joined and eager loaded
       @synchronization ||= get_synchronization
     end
 

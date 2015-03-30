@@ -4,13 +4,9 @@ require_relative 'user_table_presenter'
 
 class Carto::Api::VisualizationPresenter
 
-  def initialize(visualization)
+  def initialize(visualization, current_viewer)
     @visualization = visualization
-  end
-
-  def with_viewing_user(user)
-    @viewing_user_id = user.id
-    self
+    @current_viewer = current_viewer
   end
 
   def to_poro
@@ -42,7 +38,7 @@ class Carto::Api::VisualizationPresenter
       external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
       synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
       children: @visualization.children.map { |v| children_poro(v) },
-      liked: @visualization.liked_by?(@viewing_user_id)
+      liked: @visualization.liked_by?(@current_viewer.id)
     }
   end
 

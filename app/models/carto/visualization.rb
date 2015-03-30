@@ -14,6 +14,11 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
+  TYPE_CANONICAL  = 'table'
+  TYPE_DERIVED    = 'derived'
+  TYPE_SLIDE      = 'slide'
+  TYPE_REMOTE = 'remote'
+
   def stats
     @stats ||= CartoDB::Visualization::Stats.new(self).to_poro
   end
@@ -42,7 +47,11 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def liked_by?(user_id)
-    !likes.index { |l| l.actor == user_id }.nil?
+    likes_by(user_id).count > 0
+  end
+
+  def likes_by(user_id)
+    likes.where(actor: user_id)
   end
 
 end

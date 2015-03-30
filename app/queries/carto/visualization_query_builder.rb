@@ -5,8 +5,8 @@ require_relative '../../models/carto/shared_entity'
 class Carto::VisualizationQueryBuilder
 
   def initialize
-    @inner_join_prefetch_associations = []
-    @left_join_prefetch_associations = []
+    @eager_load_associations = []
+    @eager_load_nested_associations = {}
   end
 
   def with_user_id(user_id)
@@ -25,15 +25,24 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_user
-    with_inner_join_prefetch_of(:user)
+    with_eager_load_of(:user)
   end
 
   def with_prefetch_table
-    with_left_join_prefetch_of(:table)
+    with_eager_load_of(:table)
   end
 
   def with_prefetch_permission
-    with_left_join_prefetch_of(:permission)
+    with_eager_load_of_nested_associations(:permission => :owner)
+  end
+
+  def with_prefetch_external_source
+    with_eager_load_of(:external_source)
+  end
+
+  def with_type(type)
+    @type = type == nil || type == '' ? nil : type
+    self
   end
 
   def build
@@ -52,36 +61,41 @@ class Carto::VisualizationQueryBuilder
     if !@shared_with_user_id.nil?
       user = Carto::User.where(id: @shared_with_user_id).first
       query = query
-          .joins(:shared_entities).where(:shared_entities => { recipient_id: recipient_ids(user) })
+          .joins(:shared_entities)
+          .where(:shared_entities => { recipient_id: recipient_ids(user) })
     end
 
-    @inner_join_prefetch_associations.each { |association|
-      query = query.joins(association).includes(association)
-    }
+    if !@type.nil?
+      query = query.where(type: @type)
+    end
 
-    @left_join_prefetch_associations.each { |association|
+    @eager_load_associations.each { |association|
       query = query.eager_load(association)
     }
 
+    query = query.eager_load(@eager_load_nested_associations) if @eager_load_nested_associations != {}
+
+    query
+  end
+
+  def build_paged(page = 1, per_page = 20)
+    query = self.build
+    query.offset = (page - 1) * per_page
+    query.limit = per_page
     query
   end
 
   private
 
-  def with_inner_join_prefetch_of(association)
-    @inner_join_prefetch_associations << association
+  def with_eager_load_of(association)
+    @eager_load_associations << association
     self
   end
 
-  def with_left_join_prefetch_of(association)
-    @left_join_prefetch_associations << association
+  def with_eager_load_of_nested_associations(associations_hash)
+    @eager_load_nested_associations.merge!(associations_hash)
     self
   end
-
-  # TODO: move this to SharedEntityQueryBuilder?
-  #def visualization_shares(user)
-  #  Carto::SharedEntity.shared_visualizations.where(:recipient_id => recipient_ids(user))
-  #end
 
   def recipient_ids(user)
     [ user.id, user.organization_id ].compact

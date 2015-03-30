@@ -132,6 +132,8 @@
           this.options.user_name = dataLayer.options.user_name;
         }
 
+        this.auth_tokens = data.auth_tokens;
+
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
         this.endPoint = "/api/v1/map";
@@ -365,10 +367,17 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      return { type: "named",
-        options: {
-          name: layerDefinition.named_map.name
-        }
+      var options = {
+        name: layerDefinition.named_map.name
+      };
+
+      if (this.auth_tokens && this.auth_tokens.length > 0) {
+        options.auth_tokens = this.auth_tokens;
+      }
+
+      return {
+        type: "named",
+        options: options
       }
 
     },

@@ -7,13 +7,10 @@ namespace :cartodb do
       end
     end
 
-    desc "purge vizjson redis cache"
+    desc "purge redis vizjson cache"
     task :purge_vizjson => :environment do
       User.each do |user|
-        collection = CartoDB::Visualization::Collection.new.fetch({user_id: user.id})
-        collection.each do |visualization|
-          visualization.invalidate_redis_cache
-        end
+        user.purge_redis_vizjson_cache
       end
     end
   end

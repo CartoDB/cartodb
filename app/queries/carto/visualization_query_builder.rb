@@ -13,6 +13,7 @@ class Carto::VisualizationQueryBuilder
   def initialize
     @eager_load_associations = []
     @eager_load_nested_associations = {}
+    @order = {}
   end
 
   def with_user_id(user_id)
@@ -61,6 +62,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_order(order, asc_desc = :asc)
+    @order[order] = asc_desc
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -100,6 +106,11 @@ class Carto::VisualizationQueryBuilder
     }
 
     query = query.eager_load(@eager_load_nested_associations) if @eager_load_nested_associations != {}
+
+    @order.each { |k, v|
+      query = query.order(k)
+      query = query.reverse_order if v == :desc
+    }
 
     query
   end

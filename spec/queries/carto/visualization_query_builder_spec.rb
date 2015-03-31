@@ -26,15 +26,15 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'searches for all visualizations' do
-    table = create_table(@user1)
+    table = create_random_table(@user1)
     table_visualization = table.table_visualization
     table_visualization.store
     @vqb.build.map(&:id).should include table_visualization.id
   end
 
   it 'searches for all visualizations for a user' do
-    table1 = create_table(@user1)
-    table2 = create_table(@user2)
+    table1 = create_random_table(@user1)
+    table2 = create_random_table(@user2)
     table_visualization1 = table1.table_visualization
     table_visualization1.store
     table_visualization2 = table2.table_visualization
@@ -45,7 +45,7 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'can prefetch user' do
-    table1 = create_table(@user1)
+    table1 = create_random_table(@user1)
 
     expect {
       @vqb.build.first.user.username.should_not eq nil
@@ -57,7 +57,7 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'can prefetch table' do
-    table1 = create_table(@user1)
+    table1 = create_random_table(@user1)
 
     expect {
       @vqb.build.where(id: table1.table_visualization.id).first.table.name
@@ -69,7 +69,7 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'searches for shared visualizations' do
-    table = create_table(@user1)
+    table = create_random_table(@user1)
     shared_visualization = table.table_visualization
     shared_entity = CartoDB::SharedEntity.new(
       recipient_id:   @user2.id,

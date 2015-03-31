@@ -103,8 +103,12 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
 
   },
 
-  _onChangeText: function(e) {
-    this.$el.find(".text").html(this.model.get("text"));
+  _onChangeText: function() {
+    this.$el.find(".text").html(this._sanitizedText());
+  },
+
+  _sanitizedText: function() {
+    return cdb.core.sanitize.html(this.model.get("text"), this.model.get('sanitizeText'));
   },
 
   _getStandardPropertyName: function(name) {
@@ -323,13 +327,13 @@ cdb.geo.ui.Annotation = cdb.core.View.extend({
   },
 
   render: function() {
-
-    var self = this;
-
-    this.$el.html(this.template(this.model.attributes));
+    var d = _.clone(this.model.attributes);
+    d.text = this._sanitizedText();
+    this.$el.html(this.template(d));
 
     this._fixLinks();
 
+    var self = this;
     setTimeout(function() {
       self._applyStyle();
       self._applyZoomLevelStyle();

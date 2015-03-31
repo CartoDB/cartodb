@@ -25,6 +25,7 @@ module.exports = {
           "vendor/mod/jquery-ui/jquery.ui.widget.js",
           "vendor/mod/jquery-ui/jquery.ui.mouse.js",
           "vendor/mod/jquery-ui/jquery.ui.slider.js",
+          "vendor/html-css-sanitizer-bundle.js",
           "test/lib/sinon-1.3.4.js",
           "test/lib/sinon-ie.js",
           "src/cartodb.js",
@@ -87,7 +88,7 @@ module.exports = {
           keepRunner: true,
           outfile: 'test/SpecRunner.html',
           specs: 'test/spec/**/*.js',
-          helpers: 'spec/*Helper.js',
+          helpers: 'test/spec/SpecHelper.js',
           vendor: [ "https://maps.googleapis.com/maps/api/js?v=3.exp" ],
           summary: true,
           display: 'short'

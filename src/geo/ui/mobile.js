@@ -9,7 +9,7 @@ cdb.geo.ui.MobileLayer = cdb.core.View.extend({
 
   className: "cartodb-mobile-layer has-toggle",
 
-  template: cdb.core.Template.compile("<% if (show_title) { %><h3><%= layer_name %><% } %><a href='#' class='toggle<%= toggle_class %>'></a></h3>"),
+  template: cdb.core.Template.compile("<% if (show_title) { %><h3><%- layer_name %><% } %><a href='#' class='toggle<%- toggle_class %>'></a></h3>"),
 
   /**
    *  Stop event propagation
@@ -651,11 +651,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         has_header = true;
       }
 
-      var $hgroup = title_template({ 
-        title: extra.title,
+      var $hgroup = title_template({
+        title: cdb.core.sanitize.html(extra.title),
         show_title:show_title,
-        description: extra.description,
-        show_description: show_description 
+        description: cdb.core.sanitize.html(extra.description),
+        show_description: show_description
       });
 
       if (has_header) {

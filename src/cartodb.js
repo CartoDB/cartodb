@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.12.12";
+    cdb.VERSION = "3.13.0";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -41,6 +41,7 @@
         "../vendor/underscore-min.js",
         "../vendor/json2.js",
         "../vendor/backbone.js",
+        "../vendor/mustache.js",
 
         "../vendor/leaflet.js",
         "../vendor/wax.cartodb.js",
@@ -51,7 +52,9 @@
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
         "../vendor/lzma.js",
+        "../vendor/html-css-sanitizer-bundle.js",
 
+        'core/sanitize.js',
         'core/decorator.js',
         'core/config.js',
         'core/log.js',

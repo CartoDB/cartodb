@@ -185,13 +185,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     options = options || {};
     var render_fields = [];
     for(var j = 0; j < fields.length; ++j) {
-      var f = fields[j];
-      var value = String(attributes[f.name]);
-      if(options.empty_fields || (attributes[f.name] !== undefined && value != "")) {
+      var field = fields[j];
+      var value = attributes[field.name];
+      if(options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
-          title: f.title ? f.name : null,
-          value: attributes[f.name],
-          index: j ? j : null
+          title: field.title ? field.name : null,
+          value: cdb.core.sanitize.html(attributes[field.name]),
+          index: j
         });
       }
     }
@@ -201,7 +201,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       render_fields.push({
         title: null,
         value: 'No data available',
-        index: j ? j : null,
+        index: 0,
         type: 'empty'
       });
     }
@@ -264,6 +264,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:latlng',              this._update, this);
     this.model.bind('change:visibility',          this.toggle, this);
     this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:sanitizeTemplate',    this._compileTemplate, this);
     this.model.bind('change:alternative_names',   this.render, this);
     this.model.bind('change:width',               this.render, this);
     this.model.bind('change:maxHeight',           this.render, this);
@@ -388,7 +389,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-        template: template,
+        template: cdb.core.sanitize.html(template, this.model.get('sanitizeTemplate')),
         type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {

@@ -222,7 +222,7 @@ class Admin::PagesController < ApplicationController
     return {
       id:          vis.id,
       title:       vis.name,
-      desc:        vis.description_clean,
+      description_html_safe: vis.description_html_safe,
       tags:        vis.tags,
       updated_at:  vis.updated_at,
       owner:       vis.user,
@@ -325,7 +325,7 @@ class Admin::PagesController < ApplicationController
     vis_list.each do |dataset|
       @datasets.push({
         title:       dataset.name,
-        description: dataset.description_clean,
+        description_html_safe: dataset.description_html_safe,
         updated_at:  dataset.updated_at,
         owner:       dataset.user,
         tags:        dataset.tags
@@ -344,7 +344,7 @@ class Admin::PagesController < ApplicationController
     vis_list.each do |vis|
       @visualizations.push({
         title:       vis.name,
-        description: vis.description_clean,
+        description_html_safe: vis.description_html_safe,
         id:          vis.id,
         tags:        vis.tags,
         layers:      vis.layers(:carto_and_torque),

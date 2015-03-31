@@ -190,7 +190,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       if(options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
           title: field.title ? field.name : null,
-          value: attributes[field.name],
+          value: cdb.core.sanitize.html(attributes[field.name]),
           index: j
         });
       }
@@ -264,6 +264,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:latlng',              this._update, this);
     this.model.bind('change:visibility',          this.toggle, this);
     this.model.bind('change:template',            this._compileTemplate, this);
+    this.model.bind('change:sanitizeTemplate',    this._compileTemplate, this);
     this.model.bind('change:alternative_names',   this.render, this);
     this.model.bind('change:width',               this.render, this);
     this.model.bind('change:maxHeight',           this.render, this);
@@ -388,7 +389,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-        template: template,
+        template: cdb.core.sanitize.html(template, this.model.get('sanitizeTemplate')),
         type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {

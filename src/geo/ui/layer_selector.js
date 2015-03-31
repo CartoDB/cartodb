@@ -155,8 +155,8 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   defaults: {
     template: '\
-      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
+      <a class="layer" href="#/change-layer"><%- layer_name %></a>\
+      <a href="#switch" class="right <%- visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
 

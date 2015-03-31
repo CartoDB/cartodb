@@ -431,11 +431,8 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
     it("should compile the template when changes", function() {
-      view.compile = function() {};
-      spyOn(view, 'compile');
-      view.model.bind('change:template', view.compile);
       view.model.set('template', '<div>{{test1}}</div>');
-      expect(view.compile).toHaveBeenCalled();
+      expect(view.template({ test1: 'new' })).toEqual('<div>new</div>');
     });
 
     it("should render properly when there is only a field without title", function() {
@@ -462,6 +459,35 @@ describe("cdb.geo.ui.infowindow", function() {
       spyOn(view, '_sanitizeField');
       view.render();
       expect(view._sanitizeField).not.toHaveBeenCalled();
+    });
+
+    it('should sanitize the template output by default', function() {
+      view.model.set('template', 'no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no');
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe> no</iframe>');
+    });
+
+    it('should allow to override sanitization', function() {
+      view.model.set({
+        template: 'no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no',
+        sanitizeTemplate: false
+      });
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"></iframe> no');
+
+      view.model.set('sanitizeTemplate', null);
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"></iframe> no');
+
+      customSanitizeSpy = jasmine.createSpy('sanitizeTemplateSpy').and.returnValue('<p>custom sanitizied result</p>');
+      view.model.set('sanitizeTemplate', customSanitizeSpy);
+      expect(customSanitizeSpy).toHaveBeenCalledWith('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no');
+      view.render();
+      expect(view.$el.html()).toEqual('<p>custom sanitizied result</p>');
+
+      view.model.set('sanitizeTemplate', undefined);
+      view.render();
+      expect(view.$el.html()).toEqual('no <iframe> no</iframe>');
     });
   });
 

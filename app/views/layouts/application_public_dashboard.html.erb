@@ -12,7 +12,7 @@
     <meta property="og:title" content="Maps by <%= @name %> on CartoDB" />
     <meta property="og:description" content="<%= @name %> is creating maps and visualizations using CartoDB" /> 
     <meta property="og:type" content="Visualizations list"/>
-    <meta property="og:url" content="<%= request.fullpath %>" />
+    <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= @avatar_url %>">
 
     <meta name="twitter:card" content="summary">
@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="Maps by <%= @name %> on CartoDB">
     <meta name="twitter:description" content="<%= @name %> is creating maps and visualizations using CartoDB.">
     <meta name="twitter:image" content="<%= @avatar_url %>">
-    <meta name="twitter:url" content="<%= request.fullpath %>" />
+    <meta name="twitter:url" content="<%= request.original_url %>" />
 
     <%= stylesheet_link_tag "cartodb.css", "public_dashboard" %>
 

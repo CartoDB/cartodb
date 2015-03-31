@@ -4223,7 +4223,7 @@ var Profiler = require('../profiler');
     _tilerHost: function() {
       var opts = this.options;
       var user = opts.user_name || opts.user;
-      return opts.maps_api_template.replace('{user}', opts.user);
+      return opts.maps_api_template.replace('{user}', user);
     },
 
     url: function () {

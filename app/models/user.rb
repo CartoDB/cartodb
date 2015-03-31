@@ -11,22 +11,21 @@ require_relative './external_data_import'
 require_relative './feature_flag'
 
 
-class InMemoryCache
-  def initialize(options=nil)
-    @cache = ActiveSupport::Cache::MemoryStore.new(options)
+module PerRequestCache
+
+  def self.set(key, obj, ttl)
+    # Please note ttl is ignored
+    RequestStore.write(key, obj)
   end
 
-  def set(key, obj, time)
-    @cache.write(key, obj, ttl: time)
+  def self.get(key)
+    RequestStore.read(key)
   end
 
-  def get(key)
-    @cache.read(key)
+  def self.delete(key)
+    RequestStore.delete(key)
   end
 
-  def delete(key)
-    @cache.delete(key)
-  end
 end
 
 class User < Sequel::Model
@@ -65,7 +64,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
-  plugin :caching, InMemoryCache.new
+  plugin :caching, PerRequestCache
 
   # Restrict to_json attributes
   @json_serializer_opts = {

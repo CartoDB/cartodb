@@ -595,6 +595,11 @@ module CartoDB
 
       attr_accessor :register_table_only
 
+      def invalidate_redis_cache
+        redis_cache.del(redis_vizjson_key)
+      end
+
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -626,10 +631,6 @@ module CartoDB
 
       def redis_cache
         @redis_cache ||= $tables_metadata
-      end
-
-      def invalidate_redis_cache
-        redis_cache.del(redis_vizjson_key)
       end
 
       def invalidate_varnish_cache

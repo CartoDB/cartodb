@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../spec_helper'
+require_relative '../support/factories/tables'
 
 include CartoDB
 
@@ -55,11 +56,24 @@ shared_context 'visualization creation helpers' do
     CartoDB::Visualization.repository = @repository
   end
 
-  def create_table(user, name = "viz#{rand(999)}")
-    table = Table.new
-    table.user_id = user.id
-    table.name = name
-    table.save
+  def create_random_table(user, name = "viz#{rand(999)}")
+    create_table( { user_id: user.id, name: name } )
+  end
+
+  def factory(user, attributes={})
+    {
+      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
+      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
+      description:              attributes.fetch(:description, 'bogus'),
+      type:                     attributes.fetch(:type, 'derived'),
+      privacy:                  attributes.fetch(:privacy, 'public'),
+      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
+      parent_id:                attributes.fetch(:parent_id, nil),
+      locked:                   attributes.fetch(:locked, false),
+      prev_id:                  attributes.fetch(:prev_id, nil),
+      next_id:                  attributes.fetch(:next_id, nil)
+    }
   end
 
 end

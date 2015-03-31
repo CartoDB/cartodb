@@ -6,12 +6,30 @@ module Carto
 
     class VisualizationsController < ::Api::ApplicationController
 
+      FILTER_SHARED_YES = 'yes'
+      FILTER_SHARED_NO = 'no'
+      FILTER_SHARED_ONLY = 'only'
+
       def index
         types = params.fetch(:types, '').split(',')
         type = params[:type].present? ? params[:type] : default_type(types)
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         only_liked = params[:only_liked] == 'true'
+        only_shared = params[:only_shared] == 'true'
+        exclude_shared = params[:exclude_shared] == 'true'
+        shared = params[:shared]
+        case shared
+          when FILTER_SHARED_YES
+            only_shared = false
+            exclude_shared = false
+          when FILTER_SHARED_NO
+            only_shared = false
+            exclude_shared = true
+          when FILTER_SHARED_ONLY
+            only_shared = true
+            exclude_shared = false
+        end
         locked = params[:locked]
 
         vqb = VisualizationQueryBuilder.new
@@ -28,10 +46,19 @@ module Carto
           vqb.with_locked(false)
         end
 
-        if only_liked
-          vqb.with_liked_by_user_id(current_user.id)
+        if only_liked || only_shared
+          if only_liked
+            vqb.with_liked_by_user_id(current_user.id)
+          end
+          if only_shared
+            vqb.with_shared_with_user_id(current_user.id)
+          end
         else
-          vqb.with_user_id(current_user.id)
+          if exclude_shared
+            vqb.with_user_id(current_user.id)
+          else
+            vqb.with_owned_by_or_shared_with_user_id(current_user.id)
+          end
         end
 
         response = {

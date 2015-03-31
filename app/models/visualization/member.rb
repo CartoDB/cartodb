@@ -595,6 +595,15 @@ module CartoDB
 
       attr_accessor :register_table_only
 
+      def invalidate_redis_cache
+        self.class.redis_cache.del(redis_vizjson_key)
+      end
+
+      def self.redis_cache
+        @@redis_cache ||= $tables_metadata
+      end
+
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -613,23 +622,15 @@ module CartoDB
       end
 
       def redis_cached(key)
-        value = redis_cache.get(key)
+        value = self.class.redis_cache.get(key)
         if value.present?
           return JSON.parse(value, symbolize_names: true)
         else
           result = yield
           serialized = JSON.generate(result)
-          redis_cache.setex(key, 24.hours.to_i, serialized)
+          self.class.redis_cache.setex(key, 24.hours.to_i, serialized)
           return result
         end
-      end
-
-      def redis_cache
-        @redis_cache ||= $tables_metadata
-      end
-
-      def invalidate_redis_cache
-        redis_cache.del(redis_vizjson_key)
       end
 
       def invalidate_varnish_cache

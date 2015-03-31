@@ -3,9 +3,9 @@
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-    var type = "oauth"
-    var config = <%= safe_js_object frontend_config
+    var username = "<%= current_user.username %>";
+    var type = "oauth";
+    var config = <%= safe_js_object frontend_config %>;
     var organization_quota = {
       seats: <%= current_user.organization.seats %>,
       quota_in_bytes: <%= current_user.organization.quota_in_bytes %>

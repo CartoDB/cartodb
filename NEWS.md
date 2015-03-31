@@ -2,12 +2,11 @@
 ------------------
 * Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 * Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
-* New features
-  - Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)
-    - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
-    - New Config entry: 'subdomains_optional' (see config/app_config.yml.sample for further details)
-    - New Config entry: 'subdomains_allowed' (see config/app_config.yml.sample for further details)
 * Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
+* Internal code refactor to allow to disable subdomain-based general application behaviour, to rely instead on URIs like 'domain.com/u/USER/...', or allow to have both systems working at the same time (subdomainless and with subdomain)
+  - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
+  - New Config entry: 'https_port' (see config/app_config.yml.sample for further details)
+  - New Config entry: 'subdomainless_urls' (see config/app_config.yml.sample for further details)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)

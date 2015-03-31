@@ -78,7 +78,7 @@ describe Carto::VisualizationQueryBuilder do
       entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
     )
     shared_entity.save
-    vq = @vqb.with_visualizations_shared_with(@user2.id)
+    vq = @vqb.with_shared_with_user_id(@user2.id)
     vq.build.all.map(&:id).should include(shared_visualization.id)
   end
 

@@ -34,16 +34,12 @@ module Carto
           vqb.with_user_id(current_user.id)
         end
 
-        qb_with_type = VisualizationQueryBuilder.new.with_type(type)
-
-        # TODO:
-        # - total_shared
         response = {
           visualizations: vqb.build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer).to_poro },
           total_entries: vqb.build.count,
-          total_user_entries: qb_with_type.with_user_id(current_user.id).build.count,
-          total_likes: qb_with_type.with_liked_by_user_id(current_user.id).build.count,
-          total_shared: 0
+          total_user_entries: VisualizationQueryBuilder.new.with_type(type).with_user_id(current_user.id).build.count,
+          total_likes: VisualizationQueryBuilder.new.with_type(type).with_liked_by_user_id(current_user.id).build.count,
+          total_shared: VisualizationQueryBuilder.new.with_type(type).with_shared_with_user_id(current_user.id).build.count
         }
         render_jsonp(response)
       end

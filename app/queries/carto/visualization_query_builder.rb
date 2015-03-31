@@ -19,7 +19,7 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_visualizations_shared_with(user_id)
+  def with_shared_with_user_id(user_id)
     @shared_with_user_id = user_id
     self
   end

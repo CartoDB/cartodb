@@ -7,7 +7,8 @@ module Carto
     class VisualizationsController < ::Api::ApplicationController
 
       def index
-        type = params[:type].present? ? params[:type] : Carto::Visualization::TYPE_CANONICAL
+        types = params.fetch(:types, '').split(',')
+        type = params[:type].present? ? params[:type] : default_type(types)
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         only_liked = params[:only_liked] == 'true'
@@ -47,9 +48,9 @@ module Carto
 
       private
 
-      def representation(visualization)
+      def default_type(types)
+        types.include?(Carto::Visualization::TYPE_DERIVED) ? Carto::Visualization::TYPE_DERIVED : Carto::Visualization::TYPE_CANONICAL
       end
-
     end
 
   end

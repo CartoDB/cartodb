@@ -20,6 +20,31 @@ describe Organization do
     end
   end
 
+  describe '#destroy_cascade' do
+    it 'Destroys users and owner as well' do
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+
+      owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      owner_org.promote_user_to_admin
+      owner.reload
+      organization.reload
+
+      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      CartoDB::Relocator::Worker.organize(user, organization)
+      user.save
+      user.reload
+      organization.reload
+
+      organization.destroy_cascade
+      Organization.where(id: organization.id).first.should be nil
+      User.where(id: user.id).first.should be nil
+      User.where(id: owner.id).first.should be nil
+    end
+  end
+
+
+
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
       org_quota = 1234567890

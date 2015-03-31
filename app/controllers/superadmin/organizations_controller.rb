@@ -34,8 +34,11 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   end
 
   def destroy
-    @organization.destroy
+    @organization.destroy_cascade
     respond_with(:superadmin, @organization)
+  rescue => e
+    Rollbar.report_message('Error deleting organization', 'error', { error: e.inspect, organization: self.inspect })
+    respond_with({ errors: [ e.inspect ]})
   end
 
   private

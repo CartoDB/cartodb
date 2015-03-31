@@ -8,15 +8,15 @@
 ### Release a new version
 
 - First of all: **MAKE SURE ALL THE TESTS ARE GREEN.**
-- Then install the dependencies, follow main README.md instructions.
+- Then install the dependencies, follow main README.md instructions, + [git flow](https://github.com/nvie/gitflow/wiki/Installation)
 - Be sure you have a valid secrets.json file (DON'T SHARE IT).
-- Create a new branch to prepare the release.
+- Create a new branch to prepare the release:
 
 ```
 git flow release start 3.12.15
 ```
 
-- Build CartoDB.js files choosing the new version:
+- Build CartoDB.js files, choosing the new version:
 
 ```
 grunt build
@@ -76,4 +76,3 @@ git checkout 3.12.14
 grunt build
 grunt publish
 ```
-

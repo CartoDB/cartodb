@@ -2311,6 +2311,11 @@ TRIGGER
     name.present? ? name : username
   end
 
+  def purge_redis_vizjson_cache
+    redis_keys = CartoDB::Visualization::Collection.new.fetch(user_id: self.id).map(&:redis_vizjson_key)
+    CartoDB::Visualization::Member.redis_cache.del redis_keys
+  end
+
   private
 
   def name_exists_in_organizations?

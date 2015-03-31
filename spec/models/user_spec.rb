@@ -1387,6 +1387,26 @@ describe User do
     end
   end
 
+  describe "#purge_redis_vizjson_cache" do
+    it "shall iterate on the user's visualizations and purge their redis cache" do
+      # Create a few tables with their default vizs
+      (1..3).each do |i|
+        t = Table.new
+        t.user_id = @user.id
+        t.save
+      end
+
+      collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
+      redis_keys = collection.map(&:redis_vizjson_key)
+
+      redis_cache_mock = mock
+      redis_cache_mock.expects(:del).once.with(redis_keys)
+      CartoDB::Visualization::Member.expects(:redis_cache).once.returns(redis_cache_mock)
+
+      @user.purge_redis_vizjson_cache
+    end
+  end
+
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name

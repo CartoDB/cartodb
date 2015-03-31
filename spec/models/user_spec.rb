@@ -1398,12 +1398,24 @@ describe User do
 
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
       redis_keys = collection.map(&:redis_vizjson_key)
+      redis_keys.should_not be_empty
 
       redis_cache_mock = mock
       redis_cache_mock.expects(:del).once.with(redis_keys)
       CartoDB::Visualization::Member.expects(:redis_cache).once.returns(redis_cache_mock)
 
       @user.purge_redis_vizjson_cache
+    end
+
+    it "shall not fail if the user does not have visualizations" do
+      user = create_user
+      collection = CartoDB::Visualization::Collection.new.fetch({user_id: user.id})
+      redis_keys = collection.map(&:redis_vizjson_key)
+      redis_keys.should be_empty
+
+      CartoDB::Visualization::Member.expects(:redis_cache).never
+
+      user.purge_redis_vizjson_cache
     end
   end
 

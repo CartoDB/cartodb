@@ -38,7 +38,7 @@
             <div class="content">
               <h1><%= @visualization.name %></h1>
 
-              <p class="description"><%= raw @visualization.description_md %></p>
+              <p class="description"><%= raw @visualization.description_html_safe %></p>
               <p class="options">
                 <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}) %>" class="iframe">Full page map</a>
               </p>
@@ -156,13 +156,13 @@
       return params;
     }
 
-    var user_name = '<%= raw @user_domain %>';
-    var owner_username = '<%= raw @visualization.user.username %>';
+    var user_name = '<%= @user_domain %>';
+    var owner_username = '<%= @visualization.user.username %>';
     var vis_id = "<%= @visualization.id %>";
     var vis_name = "<%= @visualization.name %>";
     var belong_organization = <%= @visualization.user.has_organization? %>;
-    var config = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
-    var vizdata = <%= raw @visualization.to_vizjson.to_json %>
+    var config = <%= safe_js_object frontend_config_public({https_sql_api: request.protocol == 'https://' }) %>;
+    var vizdata = <%= safe_js_object @visualization.to_vizjson.to_json %>;
 
     // Generating map options
     var bool_fn = function(v) { return v == 'true' };

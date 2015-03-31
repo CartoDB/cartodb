@@ -6,7 +6,7 @@
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "key"
-      , config = <%=raw frontend_config.html_safe %>;
+      , config = <%= safe_js_object frontend_config %>;
   </script>
 <% end %>
 <%= content_for(:css) do %>

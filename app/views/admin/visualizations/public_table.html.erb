@@ -17,16 +17,16 @@
   <script>
     var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
     var table_id            = '<%= @table.id %>';
-    var schema              = <%=raw @table.schema.to_json %>;
-    var user_name           = '<%=raw @user.username %>';
-    var owner_username      = '<%=raw @table.owner.username %>';
+    var schema              = <%= safe_js_object @table.schema.to_json %>;
+    var user_name           = '<%= @user.username %>';
+    var owner_username      = '<%= @table.owner.username %>';
     var belong_organization = <%= @table.owner.has_organization? %>;
-    var map                 = <%=raw @table.map.to_json %>;
-    var config              = <%=raw frontend_config_public({https_sql_api: request.protocol == 'https://' }).html_safe %>;
-    var vizjson             = <%=raw @vizjson.to_json %>;
-    var auth_token          = <%=raw @auth_tokens.to_json %>;
+    var map                 = <%= safe_js_object @table.map.to_json %>;
+    var config              = <%= safe_js_object frontend_config_public({https_sql_api: request.protocol == 'https://' }) %>;
+    var vizjson             = <%= safe_js_object @vizjson.to_json %>;
+    var auth_token          = <%= safe_js_object @auth_tokens.to_json %>;
     var use_https           = <%= @use_https =%>;
-    var api_key             = <%=raw @api_key.to_json %>;
+    var api_key             = <%= safe_js_object @api_key.to_json %>;
 
     var debug = false;
     <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
@@ -79,7 +79,7 @@
           <div class="details embed-left-col">
             <div class="content">
               <h1><%= @visualization.name %></h1>
-              <p><%=raw @visualization.description_md %></p>
+              <p><%=raw @visualization.description_html_safe %></p>
             </div>
           </div>
 

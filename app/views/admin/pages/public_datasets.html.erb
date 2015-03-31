@@ -40,7 +40,7 @@
                 <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
                 <a href="<%= CartoDB.url(self, 'public_tables_show', {id: dataset[:title]}, dataset[:owner]) %>" class="edit button grey small">edit</a>
                 <h2><a href="<%= CartoDB.url(self, 'public_table', {id: dataset[:title]}, dataset[:owner]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
-                <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>
+                <p><%= raw (dataset[:description_html_safe] ? dataset[:description_html_safe].truncate(80) : "") %></p>
               </div>
 
               <% if dataset[:tags].size > 0 %>

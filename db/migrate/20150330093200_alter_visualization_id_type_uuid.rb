@@ -1,3 +1,4 @@
+# INFO: needed at editor_backend_refactor branch, merged before master validation
 Sequel.migration do
 
   up do

@@ -291,12 +291,12 @@ module CartoDB
 
       def description_clean
         if description.present?
-          description_md.strip_tags
+          description_html_safe.strip_tags
         end
       end
-      def description_md
+      def description_html_safe
         if description.present?
-          renderer = MarkdownRenderer.new(no_images: true, no_styles: true) 
+          renderer = Redcarpet::Render::Safe
           markdown = Redcarpet::Markdown.new(renderer, extensions = {})
           markdown.render description 
         end
@@ -862,4 +862,3 @@ module CartoDB
     end
   end
 end
-

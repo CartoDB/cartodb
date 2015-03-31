@@ -48,8 +48,8 @@ class Admin::UsersController < ApplicationController
       @user.set_fields(attributes, [:email])
     end
     
-    @user.update_in_central
     @user.save(raise_on_failure: true)
+    @user.update_in_central
 
     redirect_to CartoDB.path(self, 'account_user'), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e

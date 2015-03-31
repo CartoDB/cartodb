@@ -1,4 +1,5 @@
 # coding: UTF-8
+require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -10,26 +11,7 @@ require_relative '../services/visualization/common_data_service'
 require_relative './external_data_import'
 require_relative './feature_flag'
 
-
-module PerRequestCache
-
-  def self.set(key, obj, ttl)
-    # Please note ttl is ignored
-    RequestStore.write(key, obj)
-  end
-
-  def self.get(key)
-    RequestStore.read(key)
-  end
-
-  def self.delete(key)
-    RequestStore.delete(key)
-  end
-
-end
-
 class User < Sequel::Model
-
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
@@ -64,7 +46,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
-  plugin :caching, PerRequestCache
+  plugin :caching, PerRequestSequelCache
 
   # Restrict to_json attributes
   @json_serializer_opts = {

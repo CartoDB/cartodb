@@ -2,6 +2,8 @@
 ------------------
 * Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 * Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
+* Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
+* Added script to purge redis vizjson cache [#2968](https://github.com/CartoDB/cartodb/pull/2968)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
@@ -12,6 +14,7 @@ Bugfixes:
 * Fix user creation with org [#2831](https://github.com/CartoDB/cartodb/pull/2831)
 * Fix sync tables state changes [#2838](https://github.com/CartoDB/cartodb/pull/2838)
 * Add specific error for wrongly encoded CSV files [#2847](https://github.com/CartoDB/cartodb/pull/2847)
+* Fixed infinite loop saving overlays #2827
 
 3.9.0 (2015-02-13)
 ------------------

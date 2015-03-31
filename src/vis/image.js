@@ -1,6 +1,6 @@
 (function() {
 
-  function Queue() {
+  Queue = function() {
 
     // callback storage
     this._methods = [];
@@ -52,7 +52,7 @@
 
   };
 
-  var Image = function() {
+  StaticImage = function() {
 
     Map.call(this, this); 
 
@@ -75,7 +75,7 @@
 
   };
 
-  Image.prototype = _.extend({}, Map.prototype, {
+  StaticImage.prototype = _.extend({}, Map.prototype, {
 
     load: function(vizjson, options) {
 
@@ -530,7 +530,7 @@
 
     if (!options) options = {};
 
-    var image = new Image();
+    var image = new StaticImage();
 
     if (typeof data === 'string') {
       image.load(data, options);

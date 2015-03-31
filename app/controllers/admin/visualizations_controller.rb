@@ -108,7 +108,11 @@ class Admin::VisualizationsController < ApplicationController
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect_to CartoDB.url(self, 'public_table', { id: "#{params[:id]}", redirected:true }, @visualization.user) and return
+      redirect_to CartoDB.url(self,
+                              'public_table',
+                              { id: "#{params[:id]}", redirected:true },
+                              @visualization.user
+                              ) and return
     end
 
     @vizjson = @visualization.to_vizjson
@@ -192,8 +196,14 @@ class Admin::VisualizationsController < ApplicationController
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect to CartoDB.url(self, 'public_visualizations_public_map', {
-        id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true }, @visualization.user) and return
+      redirect to CartoDB.url(self,
+                                'public_visualizations_public_map',
+                                {
+                                  id: "#{@visualization.user.organization.name}.#{params[:id]}",
+                                  redirected:true
+                                },
+                                @visualization.user
+                              ) and return
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"

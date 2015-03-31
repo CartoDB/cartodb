@@ -13,12 +13,12 @@ class Admin::PagesController < ApplicationController
   NEW_DATASETS_PER_PAGE = 20
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
-  PAGE_NUMBER_PLACEHOLDER = '-666'
+  PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
   ssl_required :common_data, :public, :datasets
 
   before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
-  before_filter :belongs_to_organization
+  before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
@@ -406,7 +406,7 @@ class Admin::PagesController < ApplicationController
     params[:tag]
   end
 
-  def belongs_to_organization
+  def ensure_organization_correct
     return if CartoDB.subdomainless_urls?
 
     user_or_org_domain = CartoDB.subdomain_from_request(request)

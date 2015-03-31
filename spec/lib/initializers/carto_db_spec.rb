@@ -3,6 +3,20 @@
 require_relative '../../spec_helper'
 require_relative '../../../spec/doubles/request'
 
+module CartoDB
+  def self.clear_internal_cache
+    remove_class_variable(:@@request_host) if defined?(@@request_host)
+    remove_class_variable(:@@hostname) if defined?(@@hostname)
+    remove_class_variable(:@@http_port) if defined?(@@http_port)
+    remove_class_variable(:@@https_port) if defined?(@@http_ports)
+    remove_class_variable(:@@session_domain) if defined?(@@session_domain)
+    remove_class_variable(:@@domain) if defined?(@@domain)
+    remove_class_variable(:@@subdomainless_urls) if defined?(@@subdomainless_urls)
+    remove_class_variable(:@@account_host) if defined?(@@account_host)
+    remove_class_variable(:@@account_path) if defined?(@@account_path)
+  end
+end
+
 describe CartoDB do
   after(:each) do
     CartoDB.clear_internal_cache

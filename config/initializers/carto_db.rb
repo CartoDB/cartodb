@@ -79,19 +79,6 @@ module CartoDB
     base_url
   end
 
-  # NOTE: Not intended for usage outside testing (where is needed to clean state between tests)
-  def self.clear_internal_cache
-    remove_class_variable(:@@request_host) if defined?(@@request_host)
-    remove_class_variable(:@@hostname) if defined?(@@hostname)
-    remove_class_variable(:@@http_port) if defined?(@@http_port)
-    remove_class_variable(:@@https_port) if defined?(@@http_ports)
-    remove_class_variable(:@@session_domain) if defined?(@@session_domain)
-    remove_class_variable(:@@domain) if defined?(@@domain)
-    remove_class_variable(:@@subdomainless_urls) if defined?(@@subdomainless_urls)
-    remove_class_variable(:@@account_host) if defined?(@@account_host)
-    remove_class_variable(:@@account_path) if defined?(@@account_path)
-  end
-
   # Note: use ||= only for fields who always have a non-nil, non-false value
   #       else, rely on defined? and pure assignment to allow nils and values caching the value
 

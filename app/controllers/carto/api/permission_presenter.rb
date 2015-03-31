@@ -26,4 +26,35 @@ class Carto::Api::PermissionPresenter
     }
   end
 
+  def entity_decoration(entry)
+    if entry[:type] == Carto::Permission::TYPE_USER
+      user_decoration(entry[:id])
+    elsif entry[:type] == Carto::Permission::TYPE_ORGANIZATION
+      organization_decoration(entry[:id])
+    else
+      raise "Unknown entity type: #{entry[:type]}"
+    end
+  end
+
+  def user_decoration(user_id)
+    user = User.where(id: user_id).first
+    return {} if user.nil?
+    {
+        id:         user.id,
+        username:   user.username,
+        avatar_url: user.avatar_url,
+        base_url:   user.public_url
+    }
+  end
+
+  def organization_decoration(org_id)
+    org = Carto::Organization.where(id: org_id).first
+    return {} if org.nil?
+    {
+        id:         org.id,
+        name:       org.name,
+        avatar_url: org.avatar_url
+    }
+  end
+
 end

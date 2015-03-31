@@ -2,9 +2,12 @@ require 'active_record'
 
 module Carto
 
-  DEFAULT_ACL_VALUE = []
-
   class Permission < ActiveRecord::Base
+    DEFAULT_ACL_VALUE = []
+
+    TYPE_USER         = 'user'
+    TYPE_ORGANIZATION = 'org'
+
     belongs_to :owner, class_name: User
 
     def acl

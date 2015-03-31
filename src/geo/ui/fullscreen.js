@@ -71,9 +71,16 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
 
       if (docEl.webkitRequestFullScreen) {
-        requestFullScreen.call(docEl, Element.ALLOW_KEYBOARD_INPUT);
+        // Cartodb.js #361 :: Full screen button not working on Safari 8.0.3 #361
+        // Safari has a bug that fullScreen doestn't work with Element.ALLOW_KEYBOARD_INPUT);
+        // Reference: Ehttp://stackoverflow.com/questions/8427413/webkitrequestfullscreen-fails-when-passing-element-allow-keyboard-input-in-safar
+        requestFullScreen.call(docEl, undefined);
       } else {
-        requestFullScreen.call(docEl);
+        // CartoDB.js #412 :: Fullscreen button is throwing errors
+        // Nowadays (2015/03/25), fullscreen is not supported in iOS Safari. Reference: http://caniuse.com/#feat=fullscreen
+        if (requestFullScreen) {
+          requestFullScreen.call(docEl);
+        }
       }
 
       if (mapView) {

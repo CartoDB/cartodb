@@ -87,7 +87,7 @@ module.exports = {
           keepRunner: true,
           outfile: 'test/SpecRunner.html',
           specs: 'test/spec/**/*.js',
-          helpers: 'spec/*Helper.js',
+          helpers: 'test/spec/SpecHelper.js',
           vendor: [ "https://maps.googleapis.com/maps/api/js?v=3.exp" ],
           summary: true,
           display: 'short'

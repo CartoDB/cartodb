@@ -231,7 +231,7 @@ Adds an overlay to the map that can be either a zoom control, a tooltip or an in
   - **layer** layer from the visualization where the overlay should be applied (optional)
   - **type** zoom / tooltip / infobox
 
-Extra options are available based on the UI component selected before.
+If no layer is provided, the overlay will be added to the first layer of the visualization. Extra options are available based on the specific UI component.
 
 ##### Returns
 
@@ -334,7 +334,7 @@ Used for [Torque maps](https://github.com/CartoDB/torque). Note that it does not
     query: "SQL statement", 	// Required if table_name is not given
     table_name: "table_name", 	// Required if query is not given
     user_name: "your_user_name", // Required
-    cartocss: "CartoCSS styles", // Required
+    cartocss: "CartoCSS styles" // Required
   }
 }
 ```
@@ -826,7 +826,7 @@ Shows a small tooltip on hover:
 <div class="code-title">cartodb.geo.ui.Tooltip</div>
 ```javascript
 var tooltip = vis.addOverlay({
-  type: 'tooltip'
+  type: 'tooltip',
   template: '<p>{{variable}}</p>' // mustache template
 });
 ```
@@ -847,7 +847,7 @@ Shows a small box when the user hovers on a map feature. The position is fixed:
 ```javascript
 var box = vis.addOverlay({
   type: 'infobox',
-  template: '<p>{{name_to_display}}</p>'
+  template: '<p>{{name_to_display}}</p>',
   width: 200, // width of the box
   position: 'bottom|right' // top, bottom, left and right are available
 });

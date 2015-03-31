@@ -342,18 +342,67 @@ describe("Vis", function() {
     expect(this.vis.getOverlaysByType("tooltip").length).toEqual(0);
   });
 
-  it("should add an overlay", function() {
-    var v = this.vis.addOverlay({
-      type: 'tooltip',
-      template: 'test',
-      layer: new L.CartoDBGroupLayer({
-        layer_definition: {version: '1.0.0', layers: [] }
-      })
+  describe('addOverlay', function() {
+
+    it("should throw an error if no layers are available", function() {
+      expect(function() {
+        this.vis.addOverlay({
+          type: 'tooltip',
+          template: 'test'
+        })
+      }.bind(this)).toThrow(new Error("layer is null"));
     });
-    expect(this.vis.getOverlay('tooltip')).toEqual(v);
-    expect(this.vis.getOverlays().length).toEqual(1);
-    v.clean();
-    expect(this.vis.getOverlays().length).toEqual(0);
+
+    it("should add an overlay to the specified layer and enable interaction", function() {
+      var layer = new L.CartoDBGroupLayer({
+        layer_definition: {version: '1.0.0', layers: [] }
+      });
+
+      var tooltip = this.vis.addOverlay({
+        type: 'tooltip',
+        template: 'test',
+        layer: layer
+      });
+
+      expect(tooltip.options.layer).toEqual(layer);
+      expect(layer.interactionEnabled).toEqual([true]);
+    });
+
+    it("should add an overlay to the first layer and enable interaction", function(done) {
+      var layer;
+      var vizjson = {
+        layers: [
+          {
+            type: 'tiled',
+            options: {
+              urlTemplate: ''
+            }
+          },
+          {
+            type: 'layergroup',
+            options: {
+              layer_definition: {
+                layers: []
+              }
+            }
+          }
+        ]
+      };
+      cartodb.createVis('map', vizjson, {})
+        .done(function(vis, layers) {
+          var tooltip = vis.addOverlay({
+            type: 'tooltip',
+            template: 'test'
+          });
+          var layer = vis.getLayers()[1];
+
+          expect(tooltip.options.layer).toEqual(layer);
+          expect(layer.interactionEnabled).toEqual([true]);
+
+          done();
+        });
+    });
+
   });
 
   it ("should load modules", function(done) {

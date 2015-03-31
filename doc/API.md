@@ -661,6 +661,8 @@ Toggles the visibility of the sublayer and returns a boolean that indicates the 
 ##### Arguments
 
 - **template**: Custom HTML template for the infowindow. You can write simple HTML or use [Mustache templates](http://mustache.github.com/).
+- **sanitizeTemplate**: By default all templates are sanitized from unsafe tags/attrs (e.g. <script>), set this to `false`
+to skip sanitization, or a function to provide your own sanitization (e.g. `function(inputHtml) { return inputHtml })`).
 - **width**: Width of the infowindow (value must be a number).
 - **maxHeight**: Max height of the scrolled content (value must be a number).
 

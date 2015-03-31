@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.12.13";
+    cdb.VERSION = "3.12.14";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -52,7 +52,9 @@
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
         "../vendor/lzma.js",
+        "../vendor/html-css-sanitizer-bundle.js",
 
+        'core/sanitize.js',
         'core/decorator.js',
         'core/config.js',
         'core/log.js',

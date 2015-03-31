@@ -6,7 +6,7 @@ cdb.geo.ui.SlidesControllerItem = cdb.core.View.extend({
     "click a": "_onClick",
   },
 
-  template: cdb.core.Template.compile('<a href="#" class="<%= transition_trigger %>"></a>'),
+  template: cdb.core.Template.compile('<a href="#" class="<%- transition_trigger %>"></a>'),
 
   initialize: function() {
 

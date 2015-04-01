@@ -142,7 +142,7 @@ module ApplicationHelper
     end
   end
 
-  def insert_trackjs(app = :editor)
+  def insert_trackjs(app = 'editor')
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
       customer = Cartodb.config[:trackjs]['customer']
       enabled = Cartodb.config[:trackjs]['enabled']

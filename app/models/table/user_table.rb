@@ -141,7 +141,7 @@ class UserTable < Sequel::Model
     user_table = PerRequestSequelCache.get(key)
     if user_table.nil?
       user_table = self[map_id: map_id]
-      PerRequestSequelCache.set(key, user_table, nil)
+      PerRequestSequelCache.set(key, user_table, nil) unless user_table.nil?
     end
     user_table
   end

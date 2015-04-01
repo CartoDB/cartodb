@@ -208,12 +208,12 @@ class UserTable < Sequel::Model
   end
 
   def before_update
-    PerRequestSequelCache.delete(self.from_map_id_key(self.map_id))
+    PerRequestSequelCache.delete(self.class.from_map_id_key(self.map_id))
     super
   end
 
   def delete
-    PerRequestSequelCache.delete(self.from_map_id_key(self.map_id))
+    PerRequestSequelCache.delete(self.class.from_map_id_key(self.map_id))
     super
   end
 

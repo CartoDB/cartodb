@@ -8,7 +8,6 @@ require_relative '../../../../app/models/visualization/member'
 # - ...
 
 shared_examples_for "visualization controllers" do
-  include_context 'visualization creation helpers'
 
   NORMALIZED_DATE_ATTRIBUTES = %w{ created_at updated_at }
 
@@ -38,7 +37,24 @@ shared_examples_for "visualization controllers" do
     body
   end
 
+  def factory(user, attributes={})
+    {
+      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
+      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
+      description:              attributes.fetch(:description, 'bogus'),
+      type:                     attributes.fetch(:type, 'derived'),
+      privacy:                  attributes.fetch(:privacy, 'public'),
+      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
+      parent_id:                attributes.fetch(:parent_id, nil),
+      locked:                   attributes.fetch(:locked, false),
+      prev_id:                  attributes.fetch(:prev_id, nil),
+      next_id:                  attributes.fetch(:next_id, nil)
+    }
+  end
+
   describe 'index' do
+    include_context 'visualization creation helpers'
 
     before(:each) do
       login(@user1)
@@ -73,6 +89,47 @@ shared_examples_for "visualization controllers" do
       visualization2.add_like_from(@user1.id)
 
       response_body['total_likes'].should == 1
+    end
+
+  end
+
+  describe 'main behaviour' do
+    # INFO: this tests come from spec/requests/api/visualizations_spec.rb
+
+    before(:all) do
+      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      @user = create_user(
+        username: 'test',
+        email:    'client@example.com',
+        password: 'clientex',
+        private_tables_enabled: true
+      )
+      @api_key = @user.api_key
+    end
+
+    before(:each) do
+      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      @db = Rails::Sequel.connection
+      Sequel.extension(:pagination)
+
+      CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
+      CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
+
+      begin
+        delete_user_data @user
+      rescue => exception
+        # Silence named maps problems only here upon data cleaning, not in specs
+        raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
+      end
+
+      @headers = {
+        'CONTENT_TYPE'  => 'application/json',
+        'HTTP_HOST'     => 'test.localhost.lan'
+      }
+    end
+
+    after(:all) do
+      @user.destroy if @user
     end
 
     it 'tests exclude_shared and only_shared filters' do

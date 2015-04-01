@@ -13,7 +13,7 @@ shared_context 'visualization creation helpers' do
 
   before(:all) do
     @user1 = create_user(
-      username: 'test',
+      username: 'test1',
       email: 'client@example.com',
       password: 'clientex'
     )
@@ -30,7 +30,7 @@ shared_context 'visualization creation helpers' do
     delete_user_data @user2
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
-      'HTTP_HOST'     => 'test.localhost.lan'
+      'HTTP_HOST'     => 'test1.localhost.lan'
     }
   end
 
@@ -40,8 +40,8 @@ shared_context 'visualization creation helpers' do
   end
 
   after(:all) do
-    @user1.destroy
-    @user2.destroy
+    @user1.destroy if @user1
+    @user2.destroy if @user2
   end
 
   before(:each) do
@@ -58,22 +58,6 @@ shared_context 'visualization creation helpers' do
 
   def create_random_table(user, name = "viz#{rand(999)}")
     create_table( { user_id: user.id, name: name } )
-  end
-
-  def factory(user, attributes={})
-    {
-      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
-      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
-      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
-      description:              attributes.fetch(:description, 'bogus'),
-      type:                     attributes.fetch(:type, 'derived'),
-      privacy:                  attributes.fetch(:privacy, 'public'),
-      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
-      parent_id:                attributes.fetch(:parent_id, nil),
-      locked:                   attributes.fetch(:locked, false),
-      prev_id:                  attributes.fetch(:prev_id, nil),
-      next_id:                  attributes.fetch(:next_id, nil)
-    }
   end
 
 end

@@ -74,31 +74,28 @@
   order: $v;
 }
 @mixin justify-content($v, $ie-v: "") {
-  $ie-v: $v !default;
   -webkit-justify-content: $v;
   -moz-justify-content: $v;
   -ms-justify-content: $v;
   justify-content: $v;
   // Hello IE10
-  -ms-flex-pack: $ie-v;
+  -ms-flex-pack: if($ie-v != "", $ie-v, $v);
 }
 @mixin align-items($v, $ie-v: "") {
-  $ie-v: $v !default;
   -webkit-align-items: $v;
   -moz-align-items: $v;
   -ms-align-items: $v;
   align-items: $v;
   // Hello IE10
-  -ms-flex-align: $ie-v;
+  -ms-flex-align: if($ie-v != "", $ie-v, $v);
 }
 @mixin align-content($v, $ie-v: "") {
-  $ie-v: $v !default;
   -webkit-align-content: $v;
   -moz-align-content: $v;
   -ms-align-content: $v;
   align-content: $v;
   // Hello IE10
-  -ms-flex-align: $ie-v;
+  -ms-flex-align: if($ie-v != "", $ie-v, $v);
 }
 
 // CSS3 typical functions
@@ -167,6 +164,16 @@
   @else {
     @include css3-prefix('transition', $what: all, $length: 1s, $easing: ease-in-out);
   }
+}
+
+
+/* FONT FACE */
+@mixin font-face($fontFamily: myFont, $eotFileSrc: 'myFont.eot', $woffFileSrc: 'myFont.woff', $ttfFileSrc: 'myFont.ttf', $svgFileSrc: 'myFont.svg', $svgFontID: '#myFont') {
+  font-family: $fontFamily;
+  src: url($eotFileSrc)  format('eot'),
+       url($woffFileSrc) format('woff'),
+       url($ttfFileSrc)  format('truetype'),
+       url($svgFileSrc + $svgFontID) format('svg');
 }
 
 @mixin keyframes($animation-name) {

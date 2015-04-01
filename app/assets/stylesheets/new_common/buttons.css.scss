@@ -51,6 +51,17 @@
     border-color: $cHighlight-positive;
   }
 }
+.Button--invert {
+  background-color: none;
+  color: $cTypography-link;
+  border-color: $cTypography-link;
+  span { color: $cTypography-link }
+  &:hover {
+    background-color: $cTypography-link;
+    color: white;
+    span { color: white }
+  }
+}
 .Button--negative {
   background-color: $cHighlight-negative;
   border-color: $cHighlight-negative;

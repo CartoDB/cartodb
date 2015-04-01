@@ -18,7 +18,7 @@
   end %>
 
   <script type="text/javascript">
-    var visualizations = <%= raw urls.to_json %>;
+    var visualizations = <%= safe_js_object urls.to_json %>;
     var no_cdn =  <%= !Rails.env.production? ? true : false %>;
     var user_name = '<%= @username %>';
     var cartodb_com_hosted = <%= cartodb_com_hosted? %>;
@@ -57,7 +57,7 @@
 
                 <div class="title">
                   <h2><a href="<%= public_visualizations_public_map_url(user_domain: domain, id: vis[:id]) %>"><%= vis[:title] %></a></h2>
-                  <p><%= raw (vis[:description] ? vis[:description] : "") %></p>
+                  <p><%= raw (vis[:description_html_safe] ? vis[:description_html_safe] : "") %></p>
                 </div>
                 <div class="gradient"></div>
 

@@ -70,6 +70,7 @@ describe Table do
       table         = Table.new
       table.user_id = @user.id
       table.name    = 'layergroup'
+      table.name.should eq 'layergroup_t'
       table.valid?.should == true
     end
 
@@ -735,6 +736,18 @@ describe Table do
       table = create_table(:user_id => @user.id)
       resp = table.modify_column!(:name => "name", :new_name => "1")
       resp.should == {:name => "_1", :type => "text", :cartodb_type => "string"}
+    end
+
+    it "should invalidate varnish cache after modifying a column" do
+      table = create_table(:user_id => @user.id)
+      table.expects(:invalidate_varnish_cache)
+      table.modify_column!(:name => "name", :type => "number")
+    end
+
+    it "should update public.cdb_tablemetadata after modifying a column" do
+      table = create_table(:user_id => @user.id)
+      table.expects(:update_cdb_tablemetadata).once
+      table.modify_column!(:name => "name", :type => "number")
     end
 
     it "can modify its schema" do

@@ -11,11 +11,7 @@
       total_count: <%= @total_count %>,
       per_page: <%= @per_page %>,
       url_to: function(page) {
-        if (page === 1) {
-          return '<%= url_for(page: nil) %>';
-        } else {
-          return '<%= url_for(page: 12321) %>'.replace('12321', page);
-        }
+        return '<%= url_for(page: 12321) %>'.replace('12321', page);
       }
     }
   </script>

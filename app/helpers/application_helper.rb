@@ -116,9 +116,11 @@ module ApplicationHelper
     config.to_json
   end
 
-  def frontend_config_public(options={ https_sql_api: false })
+  def frontend_config_public(options={ https_apis: false })
+    api_type = (options[:https_apis].present? && options[:https_apis]) ? 'private' : 'public'
+
     config = {
-      maps_api_template:   maps_api_template("public"),
+      maps_api_template:   maps_api_template(api_type),
       user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
       account_host:        CartoDB.account_host,
@@ -127,8 +129,7 @@ module ApplicationHelper
     }
 
     # Assumption: it is safe to expose private SQL API endpoint (or it is the same just using HTTPS)
-    sql_api_type = (options[:https_sql_api].present? && options[:https_sql_api]) ? 'private' : 'public'
-    config[:sql_api_template] =  sql_api_template(sql_api_type)
+    config[:sql_api_template] =  sql_api_template(api_type)
 
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']

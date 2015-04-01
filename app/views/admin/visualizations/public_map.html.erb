@@ -161,7 +161,7 @@
     var vis_id = "<%= @visualization.id %>";
     var vis_name = "<%= @visualization.name %>";
     var belong_organization = <%= @visualization.user.has_organization? %>;
-    var config = <%= safe_js_object frontend_config_public({https_sql_api: request.protocol == 'https://' }) %>;
+    var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizdata = <%= safe_js_object @visualization.to_vizjson.to_json %>;
 
     // Generating map options

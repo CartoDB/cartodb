@@ -12,7 +12,6 @@ module CartoDB
 
       def migrate(relation=:visualizations)
         @db.create_table(relation.to_sym) do
-          # TODO: does Clinkr use this and local doesn't?
           UUID      :id, primary_key: true
           String    :name
           String    :description

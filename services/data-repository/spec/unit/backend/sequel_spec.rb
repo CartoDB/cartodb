@@ -8,7 +8,7 @@ describe DataRepository::Backend::Sequel do
   before do
     db = Rails::Sequel.connection
     db.create_table :visualizations do
-      String    :id, primary_key: true
+      UUID      :id, primary_key: true
       String    :name
       String    :title
       String    :description

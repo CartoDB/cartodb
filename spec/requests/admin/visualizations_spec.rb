@@ -171,11 +171,11 @@ describe Admin::VisualizationsController do
     it 'renders embed map error when an exception is raised' do
       login_as(@user, scope: 'test')
 
-      get "/viz/non_existent/embed_map", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
 
-      get "/viz/non_existent/embed_map.js", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map.js", {}, @headers
       last_response.status.should == 404
       last_response.body.should =~ /404/
     end
@@ -195,13 +195,13 @@ describe Admin::VisualizationsController do
     it 'returns 404' do
       login_as(@user, scope: 'test')
 
-      get "/viz/9999?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/viz/9999/public?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/public?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/viz/9999/embed_map?api_key=#{@api_key}", {}, @headers
+      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
   end # non existent visualization

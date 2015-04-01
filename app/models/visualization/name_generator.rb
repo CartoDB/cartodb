@@ -13,10 +13,10 @@ module CartoDB
 
       def name(candidate=PATTERN, iteration=0)
         candidate = (candidate || PATTERN).strip
-        return candidate if checker.available?(candidate)
+        new_candidate = iteration > 0 ? "#{candidate} #{iteration}" : candidate
+        return new_candidate if checker.available?(new_candidate)
 
-        new_candidate = "#{candidate} #{iteration}"
-        name(new_candidate, iteration + 1)
+        name(candidate, iteration + 1)
       end
 
       private

@@ -69,6 +69,7 @@ module CartoDB
       new_dashboard_templates.js
       new_public_dashboard_deps.js
       new_public_dashboard.js
+      new_table.js
       dashboard.js
       account_templates.js
       account_deps.js
@@ -128,6 +129,7 @@ module CartoDB
       public_ie.css
       specs.css
       table.css
+      new_table.css
       tables.css
       frontend
 

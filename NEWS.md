@@ -7,6 +7,7 @@
   - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
   - New Config entry: 'https_port' (see config/app_config.yml.sample for further details)
   - New Config entry: 'subdomainless_urls' (see config/app_config.yml.sample for further details)
+* Fixed Google+ disconnection in new dashboard [#2378](https://github.com/CartoDB/cartodb/issues/2378)
 * Added script to purge redis vizjson cache [#2968](https://github.com/CartoDB/cartodb/pull/2968)
 
 Bugfixes:

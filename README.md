@@ -248,9 +248,9 @@ queries. This is the heart of CartoDB!
 
 ```bash
 cd /usr/local/src
-sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.2.tar.gz
-sudo tar -xvzf postgis-2.1.2.tar.gz
-cd postgis-2.1.2
+sudo wget http://download.osgeo.org/postgis/source/postgis-2.1.7.tar.gz
+sudo tar -xvzf postgis-2.1.7.tar.gz
+cd postgis-2.1.7
 sudo ./configure --with-raster --with-topology
 sudo make
 sudo make install
@@ -261,7 +261,7 @@ Finally, CartoDB depends on a geospatial database template named
 
 ```bash
 sudo su - postgres
-POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.2
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.1.7
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"

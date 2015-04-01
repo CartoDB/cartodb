@@ -55,7 +55,6 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
-      central: ''
   hubspot: ''
   common_data:
     protocol: 'https'

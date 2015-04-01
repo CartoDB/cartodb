@@ -53,7 +53,6 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
-      central: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

@@ -7,6 +7,7 @@
   - New Config entry: 'http_port' (see config/app_config.yml.sample for further details)
   - New Config entry: 'https_port' (see config/app_config.yml.sample for further details)
   - New Config entry: 'subdomainless_urls' (see config/app_config.yml.sample for further details)
+* Added script to purge redis vizjson cache [#2968](https://github.com/CartoDB/cartodb/pull/2968)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)

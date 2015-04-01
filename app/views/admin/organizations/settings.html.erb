@@ -7,7 +7,7 @@
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
-      , config = <%= safe_js_object frontend_config
+      , config = <%= safe_js_object frontend_config %>
       , organization_quota = {
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
@@ -109,7 +109,7 @@
               <div class="row">
                 <p class="margin20">Moderate the comments in your organization maps using your Disqus shortname. <a href="#/how-to" class="disqus_help">Here's how</a>.</p>
               </div>
-              
+
             </div>
 
           </div>

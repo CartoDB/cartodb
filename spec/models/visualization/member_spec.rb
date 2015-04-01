@@ -1040,7 +1040,7 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).returns(nil).once # cache miss
       redis_cache.expects(:setex).once
-      member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
 
       any_hash = {
         any_key: 'any_value'
@@ -1066,7 +1066,7 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).returns(nil).once # cache miss
       redis_cache.expects(:setex).once.with(key, 24.hours.to_i, any_hash.to_json)
-      member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
 
       member.send(:redis_cached, key) do
         any_hash
@@ -1085,7 +1085,7 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).returns(any_hash_serialized).once # cache hit
       redis_cache.expects(:setex).never
-      member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
 
       member.send(:redis_cached, key) do
         nil #not really interested in this block when there's a hit
@@ -1101,7 +1101,7 @@ describe Visualization::Member do
       redis_cache = mock
       redis_cache.expects(:get).once.returns(any_hash_serialized) # cache hit
       redis_cache.expects(:setex).never
-      member.stubs(:redis_cache).returns(redis_cache)
+      Visualization::Member.stubs(:redis_cache).returns(redis_cache)
 
       member.send(:redis_cached, key) do
         fail "this block shall not be executed"
@@ -1127,10 +1127,10 @@ describe Visualization::Member do
       member.expects(:calculate_vizjson).returns(mocked_vizjson).once
 
       vizjson = member.to_vizjson
-      member.send(:redis_cache).get(member.redis_vizjson_key).should eq vizjson.to_json
+      Visualization::Member.send(:redis_cache).get(member.redis_vizjson_key).should eq vizjson.to_json
 
       member.invalidate_cache
-      member.send(:redis_cache).get(member.redis_vizjson_key).should be_nil
+      Visualization::Member.send(:redis_cache).get(member.redis_vizjson_key).should be_nil
     end
   end
 end

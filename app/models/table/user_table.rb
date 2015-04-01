@@ -133,7 +133,7 @@ class UserTable < Sequel::Model
   end
 
   def self.from_map_id_key(map_id)
-    'UserTable:from_map_id:#{map_id}'
+    "UserTable:from_map_id:#{map_id}"
   end
 
   def self.from_map_id(map_id)

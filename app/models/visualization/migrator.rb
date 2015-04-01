@@ -25,7 +25,7 @@ module CartoDB
           String    :password_salt
           String    :url_options
           UUID      :user_id
-          String    :permission_id
+          UUID      :permission_id
           Boolean   :locked
           String    :license
           String    :source

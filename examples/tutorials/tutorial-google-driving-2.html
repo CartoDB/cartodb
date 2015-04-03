@@ -50,14 +50,12 @@
         .addTo(map)
         .done(function(layers) {
             var subLayer = layers.getSubLayer(0);
-            // Change our SQL applied to the layer to include Lat and Lon values in the response
-            subLayer.set({"interactivity":"cartodb_id, lon, lat", "sql": "SELECT *, ST_X(the_geom) lon, ST_Y(the_geom) lat FROM schools_public_pt"})
             subLayer.setInteraction(true); // Interaction for that layer must be enabled
             cdb.vis.Vis.addCursorInteraction(map, subLayer); // undo with removeCursorInteraction
             // Setup our event when an object is clicked
             layers.on('featureClick', function(e, latlng, pos, data){
               // the location of the clicked school
-              var school = new google.maps.LatLng(data.lat, data.lon);
+              var school = new google.maps.LatLng(latlng[0], latlng[1]);
               var request = {
                   origin : school,
                   destination : exploratorium,

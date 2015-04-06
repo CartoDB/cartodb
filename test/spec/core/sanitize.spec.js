@@ -10,6 +10,10 @@ describe("core.core.sanitize", function() {
         expect(cdb.core.sanitize.html('<img src="fail.png" onerror="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'" /> nono')).toEqual('<img src="fail.png"> nono');
         expect(cdb.core.sanitize.html('nono <scrip src="ext.js"></script>')).toEqual('nono ');
       });
+
+      it('should allow target attributes for links', function() {
+        expect(cdb.core.sanitize.html('<a href="http://cartodb.com/" target="_blank">cartodb.com</a>')).toEqual('<a href="http://cartodb.com/" target="_blank">cartodb.com</a>');
+      });
     });
 
     describe('when given an 2nd param with a function', function() {

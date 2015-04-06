@@ -11,6 +11,7 @@
 // Additional changes after the built file above:
 // - Added: This header
 // - Modified: `sanitizeAttribs` at end, to allow "data-*"" attributes (lines ~4750-4760)
+// - changed policy for a::target attribute to be allowed (html4.ATTRIBS: { 'a::target': ... changed value from 10 to 0)
 // -------------------------------------------------------------------------------------------------------------------
 
 /* Copyright Google Inc.
@@ -3205,7 +3206,7 @@ html4.ATTRIBS = {
   'a::onblur': 2,
   'a::onfocus': 2,
   'a::shape': 0,
-  'a::target': 10,
+  'a::target': 0,
   'a::type': 0,
   'area::accesskey': 0,
   'area::alt': 0,

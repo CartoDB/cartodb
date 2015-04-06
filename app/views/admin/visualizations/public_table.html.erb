@@ -89,7 +89,7 @@
                 <h4>by <%= @name %></h4>
               </a>
 
-              <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>
+              <h5><%= "#{@public_tables_count} dataset#{@public_tables_count != 1 ? "s" :""} created" %></h5>
             </div>
 
             <a href="<%= public_datasets_home_url %>" title="Datasets by <%= @name %>" class="content">
@@ -125,7 +125,7 @@
         <div class="map-info embed-right-col">
           <div class="content">
 
-            <h2>Visualizations using this data</h2>
+            <h2>Maps using this data</h2>
             <ul>
 
               <% if @total_visualizations.count == 0 && @total_nonpublic_total_vis_count == 0 %>
@@ -143,7 +143,7 @@
               <% if @total_nonpublic_total_vis_count > 0 %>
 
                 <li class="private">
-                  <%= @total_nonpublic_total_vis_count %> private visualization<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @total_nonpublic_total_vis_count %> map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span>
+                  <%= @total_nonpublic_total_vis_count %> private map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %><span class="help" original-title="This dataset is used in <%= @total_nonpublic_total_vis_count %> map<%= @total_nonpublic_total_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span>
                 </li>
               <% end %>
             </ul>

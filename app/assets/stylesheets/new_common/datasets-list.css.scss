@@ -22,7 +22,7 @@ $bannedColor: #E1A7A5;
   @include display-flex();
   width: 100%;
   padding: $sMargin-group 0;
-  border-bottom: 1px solid $cStructure-mainLine;
+  border-bottom: 1px solid $cStructure-softLine;
 }
 .DatasetsList-item--selectable:hover,
 .DatasetsList-item--selectable.is--selected {
@@ -98,7 +98,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -40px) }
   .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -40px) }
   .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -40px) }
-  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -40px) }  
+  .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -40px) }
 }
 
 .DatasetsList-itemStatus {
@@ -173,7 +173,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemMeta > *:nth-child(4) { @include flex-order(4) }
   .DatasetsList-itemMeta > *:nth-child(5) { @include flex-order(5) }
 
-  .DatasetsList-itemTags { 
+  .DatasetsList-itemTags {
     margin-top: 4px;
     text-align: right;
   }
@@ -192,7 +192,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -80px) }
   .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -80px) }
   .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -80px) }
-  
+
   .DatasetsList-itemStatus { color: $bannedColor }
 }
 

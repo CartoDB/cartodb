@@ -164,13 +164,13 @@ cdb.geo.ui.Text = cdb.core.View.extend({
   },
 
   render: function() {
-
-    var self = this;
-
-    this.$el.html(this.template(_.extend(this.model.attributes, { text: this.model.attributes.extra.rendered_text })));
+    var text = cdb.core.sanitize.html(this.model.get("extra").rendered_text, this.model.get('sanitizeText'));
+    var data = _.chain(this.model.attributes).clone().extend({ text: text }).value();
+    this.$el.html(this.template(data));
 
     this._fixLinks();
 
+    var self = this;
     setTimeout(function() {
       self._applyStyle();
       self._place();

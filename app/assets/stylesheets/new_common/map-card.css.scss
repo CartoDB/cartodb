@@ -127,11 +127,37 @@ $opacityTransition: 250ms;
   right: $sMargin-element;
 }
 .MapCard-headerFakeIcon {
-  width: 36px;
-  height: 36px;
-  font-size: 36px;
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50px;
+  line-height: 48px!important; // Overwritten by icon font style
+  font-size: 20px;
+  text-align:center;
+  border: 1px solid #EEE;
   color: #EEE;
+  background: transparent;
 }
+
+.MapCard-headerFakeIcon.iconFont-People {
+  line-height: 35px!important;
+  font-size: 30px;
+}
+.MapCard-headerFakeIcon.iconFont-Snake {
+  line-height: 33px!important;
+  font-size: 30px;
+}
+.MapCard-headerFakeIcon.iconFont-Points {
+  line-height: 38px!important;
+  font-size: 24px;
+}
+.MapCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
+.MapCard-headerFakeIcon.iconFont-Mountain {
+  font-size: 28px;
+  line-height: 40px!important
+}
+.MapCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
+
 .MapCard-headerGraph {
   position:absolute;
   width: 70px;

@@ -92,7 +92,7 @@
       // Edit menu
       &.edit {
         bottom:0;
-        a.merge_tables {border-top:1px solid rgba(#999999,0.25);}
+        a.merge_datasets {border-top:1px solid rgba(#999999,0.25);}
       }
 
       a {
@@ -120,7 +120,7 @@
         // tool buttons
         &.add_row {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
         &.add_column {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
-        &.merge_tables {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
+        &.merge_datasets {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
 
         &.add_feature {
           border-top:1px solid rgba(#999999,0.25);

@@ -1301,7 +1301,7 @@ class Table
   end
 
   def owner
-    @owner ||= User.where(id: self.user_id).first
+    @owner ||= User[self.user_id]
   end
 
   def table_style

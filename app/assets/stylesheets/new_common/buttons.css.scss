@@ -52,14 +52,14 @@
   }
 }
 .Button--invert {
-  background-color: white;
+  background-color: none;
   color: $cTypography-link;
-  border-color: $cStructure-mainLine;
+  border-color: $cTypography-link;
   span { color: $cTypography-link }
   &:hover {
-    color: $cTypography-link;
-    border-color: $cTypography-link;
-    span { color: $cTypography-link }
+    background-color: $cTypography-link;
+    color: white;
+    span { color: white }
   }
 }
 .Button--negative {

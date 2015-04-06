@@ -142,9 +142,12 @@ module ApplicationHelper
     end
   end
 
-  def insert_trackjs
+  def insert_trackjs(app = 'editor')
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
-      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'], enabled: Cartodb.config[:trackjs]['enabled'] })
+      customer = Cartodb.config[:trackjs]['customer']
+      enabled = Cartodb.config[:trackjs]['enabled']
+      app_key = Cartodb.config[:trackjs]['app_keys'][app]
+      render(:partial => 'shared/trackjs', :locals => { customer: customer, enabled: enabled, app_key: app_key })
     end
   end
 
@@ -221,5 +224,18 @@ module ApplicationHelper
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation
   def cartodb_com_hosted?
     Cartodb.config[:cartodb_com_hosted].nil? || Cartodb.config[:cartodb_com_hosted]
+  end
+
+  # Wraps a JSON object to be loaded as a JS object in a safe way.
+  #
+  # @example expected usage (my-template.erb), illustrated with a Visualization object
+  #   <script>
+  #     var vizdata = <%= safe_js_object vis.to_vizjson.to_json %>;
+  #   </script>
+  #
+  # @return string
+  def safe_js_object(obj)
+    # see http://api.rubyonrails.org/v3.2.21/classes/ERB/Util.html#method-c-j
+    raw "JSON.parse('#{ j(obj.html_safe) }')"
   end
 end

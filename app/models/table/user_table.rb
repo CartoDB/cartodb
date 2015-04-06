@@ -27,6 +27,7 @@ class UserTable < Sequel::Model
     map
     tags
     tags=
+    set_tag_array
     data_import_id
     data_import_id=
     user_id
@@ -269,7 +270,12 @@ class UserTable < Sequel::Model
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value
-    self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
+    set_tag_array(value.split(','))
+  end
+
+  def set_tag_array(tag_array)
+    return unless tag_array
+    self[:tags] = tag_array.map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
   # Needed by syncs

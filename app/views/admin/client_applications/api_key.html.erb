@@ -4,8 +4,8 @@
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
-      , config = <%=raw frontend_config.html_safe %>
-      , user_data = <%= raw current_user.data.to_json.html_safe %>;
+      , config = <%= safe_js_object frontend_config %>
+      , user_data = <%= safe_js_object current_user.data.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'keys.js', 'templates.js' %>
 <% end %>

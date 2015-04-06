@@ -64,7 +64,7 @@ body.is-inDialog {
 .Dialog-header--expanded { @include flex-grow(1) }
 .Dialog-body--expanded {
   @include flex-grow(100);
-  background-color: rgba(#F9F9F9, 1);
+  background-color: $cStructure-grayBkg;
 }
 .Dialog-footer--expanded {
   width: 100%;

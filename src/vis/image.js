@@ -1,6 +1,6 @@
 (function() {
 
-  function Queue() {
+  Queue = function() {
 
     // callback storage
     this._methods = [];
@@ -52,7 +52,7 @@
 
   };
 
-  var Image = function() {
+  StaticImage = function() {
 
     Map.call(this, this); 
 
@@ -75,7 +75,7 @@
 
   };
 
-  Image.prototype = _.extend({}, Map.prototype, {
+  StaticImage.prototype = _.extend({}, Map.prototype, {
 
     load: function(vizjson, options) {
 
@@ -131,6 +131,8 @@
         if (dataLayer.options) {
           this.options.user_name = dataLayer.options.user_name;
         }
+
+        this.auth_tokens = data.auth_tokens;
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
@@ -365,10 +367,17 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      return { type: "named",
-        options: {
-          name: layerDefinition.named_map.name
-        }
+      var options = {
+        name: layerDefinition.named_map.name
+      };
+
+      if (this.auth_tokens && this.auth_tokens.length > 0) {
+        options.auth_tokens = this.auth_tokens;
+      }
+
+      return {
+        type: "named",
+        options: options
       }
 
     },
@@ -521,7 +530,7 @@
 
     if (!options) options = {};
 
-    var image = new Image();
+    var image = new StaticImage();
 
     if (typeof data === 'string') {
       image.load(data, options);

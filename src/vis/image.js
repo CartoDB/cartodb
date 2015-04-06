@@ -1,6 +1,6 @@
 (function() {
 
-  function Queue() {
+  Queue = function() {
 
     // callback storage
     this._methods = [];
@@ -52,7 +52,7 @@
 
   };
 
-  var Image = function() {
+  StaticImage = function() {
 
     Map.call(this, this); 
 
@@ -75,7 +75,7 @@
 
   };
 
-  Image.prototype = _.extend({}, Map.prototype, {
+  StaticImage.prototype = _.extend({}, Map.prototype, {
 
     load: function(vizjson, options) {
 
@@ -143,6 +143,7 @@
           this.options.maps_api_template = dataLayer.options.maps_api_template;
         }
 
+        this.auth_tokens = data.auth_tokens;
 
         this.endPoint = "/api/v1/map";
 
@@ -377,10 +378,17 @@
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      return { type: "named",
-        options: {
-          name: layerDefinition.named_map.name
-        }
+      var options = {
+        name: layerDefinition.named_map.name
+      };
+
+      if (this.auth_tokens && this.auth_tokens.length > 0) {
+        options.auth_tokens = this.auth_tokens;
+      }
+
+      return {
+        type: "named",
+        options: options
       }
 
     },
@@ -533,7 +541,7 @@
 
     if (!options) options = {};
 
-    var image = new Image();
+    var image = new StaticImage();
 
     if (typeof data === 'string') {
       image.load(data, options);

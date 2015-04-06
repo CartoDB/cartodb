@@ -1,3 +1,12 @@
+3.13.1 (06//04//2015)
+* Allows to request a Static Map of a password protected visualization
+
+3.13.0 (31//03//2015)
+* Breaking Changes
+  - Sanitize output by default (#2972), see doc change and example below how to override:
+    - docs: https://github.com/CartoDB/cartodb.js/blob/v3.13.0/doc/API.md#arguments-11
+    - example: https://github.com/CartoDB/cartodb.js/blob/v3.13.0/examples/infowindow_with_graph.html
+
 3.12.14 (30//03//2015)
 - Fixes fullscreen button is throwing errors (#412)
 - Updates Torque.js to 2.11
@@ -31,7 +40,7 @@
 - By default we now serve the Static API images through CartoDB's CDN.
 
 3.12.6 (23//02//2015)
-- Fixes mobile and IE interaction issues (#346, #313, #223, #139). 
+- Fixes mobile and IE interaction issues (#346, #313, #223, #139).
 
 3.12.5 (20//02/2015)
 - Fixes request to generate an image when the vizjson contains a named map and a torque layer with a named map
@@ -86,8 +95,8 @@
 - #255 - Adds new fonts for the overlays
 
 3.11.27 (19//12//2014)
-- #245 - Fixed a bug with error messages named map instantiation 
-- #224 - Public method close infowindow 
+- #245 - Fixed a bug with error messages named map instantiation
+- #224 - Public method close infowindow
 
 3.11.26 (17//12//2014)
 - #235 - Allows to use the input fields in fullscreen on Chrome
@@ -168,7 +177,7 @@
 - Fixed problem breaking words in infowindow content.
 
 3.11.06 (12//09/2014)
-- Fixed problem in infowindow showing horizontal scrollbar when it was not needed 
+- Fixed problem in infowindow showing horizontal scrollbar when it was not needed
 - Fixed creating search overlay
 
 3.11.05 (20//08/2014)
@@ -306,9 +315,9 @@
 - fixed problems with infowindow when there are hidden layers
 
 3.7.04 (27//02//2014)
-- fixed layer update in gmaps 
-- when jsonp is used errors are not reported to the layer 
-- updated torque, fix problem with some cartocss options (step) 
+- fixed layer update in gmaps
+- when jsonp is used errors are not reported to the layer
+- updated torque, fix problem with some cartocss options (step)
 
 3.7.03 (25//02//2014)
 - Fixed https in torque tiles

@@ -8,15 +8,15 @@
 ### Release a new version
 
 - First of all: **MAKE SURE ALL THE TESTS ARE GREEN.**
-- Then install the dependencies, follow main README.md instructions.
+- Then install the dependencies, follow main README.md instructions, + [git flow](https://github.com/nvie/gitflow/wiki/Installation)
 - Be sure you have a valid secrets.json file (DON'T SHARE IT).
-- Create a new branch to prepare the release.
+- Create a new branch to prepare the release:
 
 ```
-git flow release start 3.12.15
+git flow release start 3.13.1
 ```
 
-- Build CartoDB.js files choosing the new version:
+- Build CartoDB.js files, choosing the new version:
 
 ```
 grunt build
@@ -25,7 +25,7 @@ grunt build
 - Update the NEWS file and commit the changes. Take into account that new CartoDB.js version will be replaced in ```API.md```, ```RELEASING.md```, ```README.md```, ```package.json```, ```cartodb.js``` and ```examples``` files.
 
 ```
-git commit -am "Files changed for version 3.12.15"
+git commit -am "Files changed for version 3.13.1"
 ```
 
 - Release it.
@@ -36,8 +36,8 @@ grunt publish
 
 - Check if those files have been updated in the CDN:
 ```
-http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.12.15/cartodb.js
-http://libs.cartocdn.com/cartodb.js/v3/3.12.15/cartodb.js
+http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.13.1/cartodb.js
+http://libs.cartocdn.com/cartodb.js/v3/3.13.1/cartodb.js
 http://libs.cartocdn.com.s3.amazonaws.com/cartodb.js/v3/3.12/cartodb.js
 http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js
 ```
@@ -46,7 +46,7 @@ http://libs.cartocdn.com/cartodb.js/v3/3.12/cartodb.js
 - And to finish: close the release and push it.
 
 ```
-git flow release finish 3.12.15
+git flow release finish 3.13.1
 git push --all
 git push --tags
 ```
@@ -69,11 +69,10 @@ grunt build
 grunt publish
 ```
 
-For example, if we are in 3.12.15 and we want to go back to 3.12.14
+For example, if we are in 3.13.1 and we want to go back to 3.12.14
 
 ```
 git checkout 3.12.14
 grunt build
 grunt publish
 ```
-

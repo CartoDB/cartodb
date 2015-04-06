@@ -144,7 +144,7 @@ var Vis = cdb.core.View.extend({
         done();
       }
     }
-    
+
     cdb.config.bind('moduleLoaded', loaded);
     _.defer(loaded);
   },
@@ -517,7 +517,7 @@ var Vis = cdb.core.View.extend({
     });
     if (torque) {
       this.torqueLayer = torque;
-      // send step events from torque layer 
+      // send step events from torque layer
       this.torqueLayer.bind('change:time', function(s) {
         this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
       }, this);
@@ -666,7 +666,7 @@ var Vis = cdb.core.View.extend({
           var to = slide.transition_options;
           if (to.transition_trigger === 'time') {
             states.push(WaitAction(seq, to.time * 1000));
-          } else { //default is click 
+          } else { //default is click
             NextTrigger(seq, i).then(seq.next, seq);
             PrevTrigger(seq, i).then(seq.prev, seq);
           }
@@ -701,7 +701,7 @@ var Vis = cdb.core.View.extend({
       if (type === 'image' || type === 'text' || type === 'annotation') {
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
-        if (!options[type] && options[type] !== undefined) { 
+        if (!options[type] && options[type] !== undefined) {
           return;
         }
       }
@@ -985,7 +985,7 @@ var Vis = cdb.core.View.extend({
         });
       }
     }
- 
+
 
     if (opt.layer_selector) {
       if (!search_overlay('layer_selector')) {
@@ -1213,6 +1213,7 @@ var Vis = cdb.core.View.extend({
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
             'alternative_names': infowindowFields.alternative_names,
+            'sanitizeTemplate': infowindowFields.sanitizeTemplate,
             'offset': extra.offset,
             'width': extra.width,
             'maxHeight': extra.maxHeight
@@ -1427,7 +1428,7 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    // try to change interactivity, it the layer is a named map 
+    // try to change interactivity, it the layer is a named map
     // it's inmutable so it'a assumed the interactivity already has
     // the fields it needs
     try {

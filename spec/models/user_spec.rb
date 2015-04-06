@@ -522,6 +522,46 @@ describe User do
     end
   end
 
+  describe "organization user deletion" do
+    it "should transfer geocodings and tweet imports to owner" do
+      u1 = create_user(email: 'u1@example.com', username: 'u1', password: 'admin123')
+      org = create_org('cartodbtest', 1234567890, 5)
+
+      u1.organization = org
+      u1.save
+      u1.reload
+      org = u1.organization
+      org.owner_id = u1.id
+      org.save
+      u1.reload
+
+      u2 = create_user(email: 'u2@example.com', username: 'u2', password: 'admin123', organization: org)
+
+      FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, formatter: 'b')
+
+      st = SearchTweet.new
+      st.user = u2
+      st.table_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
+      st.data_import_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
+      st.service_item_id = '555'
+      st.retrieved_items = 5
+      st.state = ::SearchTweet::STATE_COMPLETE
+      st.save
+
+      u1.reload
+      u2.reload
+      u2.get_geocoding_calls.should == 1
+      u2.get_twitter_imports_count.should == 5
+      u1.get_geocoding_calls.should == 0
+      u1.get_twitter_imports_count.should == 0
+
+      u2.destroy
+      u1.reload
+      u1.get_geocoding_calls.should == 1
+      u1.get_twitter_imports_count.should == 5
+    end
+  end
+
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC

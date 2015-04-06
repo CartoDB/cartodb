@@ -16,6 +16,7 @@ Bugfixes:
 * Fix sync tables state changes [#2838](https://github.com/CartoDB/cartodb/pull/2838)
 * Add specific error for wrongly encoded CSV files [#2847](https://github.com/CartoDB/cartodb/pull/2847)
 * Fixed infinite loop saving overlays #2827
+* New index for visualizations.parent_id [#3017](https://github.com/CartoDB/cartodb/pull/3017)
 
 3.9.0 (2015-02-13)
 ------------------

@@ -115,7 +115,7 @@ class Admin::VisualizationsController < ApplicationController
                               ) and return
     end
 
-    @vizjson = @visualization.to_vizjson
+    @vizjson = @visualization.to_vizjson({https_request: request.protocol == 'https://'})
     @auth_tokens = nil
     @use_https = false
     @api_key = nil

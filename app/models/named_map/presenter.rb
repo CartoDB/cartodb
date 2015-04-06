@@ -41,7 +41,8 @@ module CartoDB
           # When there are no layers don't return named map data
           nil
         else
-          privacy_type = @visualization.password_protected? ? 'private': 'public'
+          api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
+          privacy_type = @visualization.password_protected? ? 'private': api_templates_type
           {
             type:     NAMED_MAP_TYPE,
             order:    1,

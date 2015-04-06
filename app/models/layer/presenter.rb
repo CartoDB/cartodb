@@ -124,6 +124,7 @@ module CartoDB
         # Make torque always have a SQL query too (as vizjson v2)
         layer.options['query'] = wrap(sql_from(layer.options), layer.options)
 
+        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(layer.options, @decoration_data)
 
         {
@@ -135,8 +136,8 @@ module CartoDB
           legend:     layer.legend,
           options:    {
             stat_tag:           options.fetch(:visualization_id),
-            maps_api_template: ApplicationHelper.maps_api_template('public'),
-            sql_api_template: ApplicationHelper.sql_api_template('public'),
+            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type),
             # tiler_* is kept for backwards compatibility
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
             tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),

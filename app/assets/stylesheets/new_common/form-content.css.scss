@@ -239,7 +239,22 @@
     color: $cTypography-linkHover;
   }
 }
-
+.Form-link {
+  color: $cTypography-link;
+  text-decoration: underline;
+  &:hover {
+    color: $cTypography-linkHover;
+    cursor: pointer;
+  }
+}
+.Form-link.is-disabled {
+  color: $cTypography-help;
+  text-decoration: none;
+  &:hover {
+    color: $cTypography-help;
+    cursor: default;
+  }
+}
 .Form-file {
   &:hover .Button--main { background: #007fbd }
   &:hover .Button--negative { background-color: rgba(#B93F37, 1) }

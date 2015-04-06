@@ -3,6 +3,7 @@
 * Major refactor of the `Table` class: extract the `UserTable` model from it [#2775](https://github.com/CartoDB/cartodb/pull/2775)
 * Update common data metadata task [#2741](https://github.com/CartoDB/cartodb/pull/2741)
 * Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
+* Fixed Google+ disconnection in new dashboard [#2378](https://github.com/CartoDB/cartodb/issues/2378)
 * Added script to purge redis vizjson cache [#2968](https://github.com/CartoDB/cartodb/pull/2968)
 
 Bugfixes:

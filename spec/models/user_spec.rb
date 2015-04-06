@@ -1269,13 +1269,16 @@ describe User do
 
   end
 
-  it "should notify a new user created from a organization" do
+  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info 
+  it "can notify a new user creation" do
 
     ::Resque.stubs(:enqueue).returns(nil)
 
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
     user1 = new_user(:username => 'test', :email => "client@example.com", :organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
     user1.id = UUIDTools::UUID.timestamp_create.to_s
+
+    user.notify_new_organization_user
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
 

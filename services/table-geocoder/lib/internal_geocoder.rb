@@ -46,7 +46,7 @@ module CartoDB
         raise e
       ensure
         drop_temp_table
-        FileUtils.rm_rf @working_dir
+        FileUtils.remove_entry_secure @working_dir
       end
 
       def download_results

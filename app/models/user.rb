@@ -1,4 +1,5 @@
 # coding: UTF-8
+require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -45,6 +46,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
+  plugin :caching, PerRequestSequelCache
 
   # Restrict to_json attributes
   @json_serializer_opts = {

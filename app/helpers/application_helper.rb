@@ -161,9 +161,12 @@ module ApplicationHelper
     end
   end
 
-  def insert_trackjs
+  def insert_trackjs(app = 'editor')
     if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
-      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'], enabled: Cartodb.config[:trackjs]['enabled'] })
+      customer = Cartodb.config[:trackjs]['customer']
+      enabled = Cartodb.config[:trackjs]['enabled']
+      app_key = Cartodb.config[:trackjs]['app_keys'][app]
+      render(:partial => 'shared/trackjs', :locals => { customer: customer, enabled: enabled, app_key: app_key })
     end
   end
 

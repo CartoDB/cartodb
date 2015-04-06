@@ -19,7 +19,7 @@ class Api::Json::PermissionsController < Api::ApplicationController
 
     permission.save
 
-    render json: permission.to_poro({request: request})
+    render json: permission.to_poro
   end
 
   def show
@@ -28,7 +28,7 @@ class Api::Json::PermissionsController < Api::ApplicationController
     return head(404) if permission.nil?
     return head(401) unless permission.is_owner?(current_user)
 
-    render json: permission.to_poro({request: request})
+    render json: permission.to_poro
   end
 
 end

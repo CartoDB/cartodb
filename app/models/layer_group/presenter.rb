@@ -37,7 +37,7 @@ module CartoDB
             }
           }
         }
-      end #to_poro
+      end
 
       private
 

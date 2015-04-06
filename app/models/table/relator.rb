@@ -28,12 +28,12 @@ module CartoDB
       ).first
     end
 
-    def serialize_dependent_visualizations(options={})
-      dependent_visualizations.map { |object| preview_for(object, options) }
+    def serialize_dependent_visualizations
+      dependent_visualizations.map { |object| preview_for(object) }
     end
 
-    def serialize_non_dependent_visualizations(options={})
-      non_dependent_visualizations.map { |object| preview_for(object, options) }
+    def serialize_non_dependent_visualizations
+      non_dependent_visualizations.map { |object| preview_for(object) }
     end
 
     def dependent_visualizations
@@ -50,14 +50,14 @@ module CartoDB
         .map  { |attributes| Visualization::Member.new(attributes) }
     end
 
-    def preview_for(object, options={})
+    def preview_for(object)
       data = {
         id:         object.id,
         name:       object.name,
         updated_at: object.updated_at
       }
       if object[:permission_id].present? && !object.permission.nil?
-        data[:permission] = object.permission.to_poro(options).select {|key, val|
+        data[:permission] = object.permission.to_poro.select {|key, val|
           [:id, :owner].include?(key)
         }
       end

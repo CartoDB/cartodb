@@ -8,7 +8,6 @@ module CartoDB
     class Presenter
       def initialize(visualization, options={})
         @visualization   = visualization
-        @options         = options
         @viewing_user    = options.fetch(:user, nil)
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
@@ -31,7 +30,7 @@ module CartoDB
           stats: visualization.stats,
           created_at: visualization.created_at,
           updated_at: visualization.updated_at,
-          permission: permission.nil? ? nil : permission.to_poro(@options),
+          permission: permission.nil? ? nil : permission.to_poro,
           locked: visualization.locked,
           source: visualization.source,
           title: visualization.title,
@@ -108,7 +107,7 @@ module CartoDB
         table_visualization = table.table_visualization
         unless table_visualization.nil?
           table_data[:permission] = (!permission.nil? && table_visualization.id == permission.entity_id) ?
-                                      permission.to_poro(@options) : table_visualization.permission.to_poro(@options)
+                                      permission.to_poro : table_visualization.permission.to_poro
           table_data[:geometry_types] = table.geometry_types
         end
 

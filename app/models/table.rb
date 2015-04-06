@@ -97,11 +97,7 @@ class Table
       PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
 
     attrs = Hash[selected_attrs.map{ |k, v|
-      if [:serialize_dependent_visualizations, :serialize_non_dependent_visualizations].include?(v)
-        [k, (self.send(v, options) rescue self[v].to_s)]
-      else
-        [k, (self.send(v) rescue self[v].to_s)]
-      end
+      [k, (self.send(v) rescue self[v].to_s)]
     }]
 
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id

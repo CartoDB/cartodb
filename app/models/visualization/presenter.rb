@@ -9,6 +9,7 @@ module CartoDB
       def initialize(visualization, options={})
         @visualization   = visualization
         @viewing_user    = options.fetch(:user, nil)
+        @options         = options
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         # Expose real privacy (used for normal JSON purposes)

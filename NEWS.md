@@ -5,6 +5,7 @@
 * Guessing of namedplaces on import [#2809](https://github.com/CartoDB/cartodb/pull/2809)
 * Fixed Google+ disconnection in new dashboard [#2378](https://github.com/CartoDB/cartodb/issues/2378)
 * Added script to purge redis vizjson cache [#2968](https://github.com/CartoDB/cartodb/pull/2968)
+* Allows to generate a static map of a password protected visualization [#3028] (https://github.com/CartoDB/cartodb/pull/3028)
 
 Bugfixes:
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.12.14
+// cartodb.js version: 3.13.1
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9144dffe95608641119500709f5c8e30070b074c
+// sha: 0eaa09e1bd1c87ab30f095e1a53c8e0287fce71d
 (function() {
   var root = this;
 
@@ -25651,7 +25651,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.12.14";
+    cdb.VERSION = "3.13.1";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -37674,7 +37674,7 @@ var Vis = cdb.core.View.extend({
         done();
       }
     }
-    
+
     cdb.config.bind('moduleLoaded', loaded);
     _.defer(loaded);
   },
@@ -38047,7 +38047,7 @@ var Vis = cdb.core.View.extend({
     });
     if (torque) {
       this.torqueLayer = torque;
-      // send step events from torque layer 
+      // send step events from torque layer
       this.torqueLayer.bind('change:time', function(s) {
         this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
       }, this);
@@ -38196,7 +38196,7 @@ var Vis = cdb.core.View.extend({
           var to = slide.transition_options;
           if (to.transition_trigger === 'time') {
             states.push(WaitAction(seq, to.time * 1000));
-          } else { //default is click 
+          } else { //default is click
             NextTrigger(seq, i).then(seq.next, seq);
             PrevTrigger(seq, i).then(seq.prev, seq);
           }
@@ -38231,7 +38231,7 @@ var Vis = cdb.core.View.extend({
       if (type === 'image' || type === 'text' || type === 'annotation') {
         var isDevice = data.options.device == "mobile" ? true : false;
         if (this.mobile !== isDevice) return;
-        if (!options[type] && options[type] !== undefined) { 
+        if (!options[type] && options[type] !== undefined) {
           return;
         }
       }
@@ -38515,7 +38515,7 @@ var Vis = cdb.core.View.extend({
         });
       }
     }
- 
+
 
     if (opt.layer_selector) {
       if (!search_overlay('layer_selector')) {
@@ -38743,6 +38743,7 @@ var Vis = cdb.core.View.extend({
             'template': infowindowFields.template,
             'template_type': infowindowFields.template_type,
             'alternative_names': infowindowFields.alternative_names,
+            'sanitizeTemplate': infowindowFields.sanitizeTemplate,
             'offset': extra.offset,
             'width': extra.width,
             'maxHeight': extra.maxHeight
@@ -38957,7 +38958,7 @@ var Vis = cdb.core.View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    // try to change interactivity, it the layer is a named map 
+    // try to change interactivity, it the layer is a named map
     // it's inmutable so it'a assumed the interactivity already has
     // the fields it needs
     try {
@@ -39051,7 +39052,7 @@ cdb.vis.Vis = Vis;
 })();
 (function() {
 
-  function Queue() {
+  Queue = function() {
 
     // callback storage
     this._methods = [];
@@ -39103,7 +39104,7 @@ cdb.vis.Vis = Vis;
 
   };
 
-  var Image = function() {
+  StaticImage = function() {
 
     Map.call(this, this); 
 
@@ -39126,7 +39127,7 @@ cdb.vis.Vis = Vis;
 
   };
 
-  Image.prototype = _.extend({}, Map.prototype, {
+  StaticImage.prototype = _.extend({}, Map.prototype, {
 
     load: function(vizjson, options) {
 
@@ -39182,6 +39183,8 @@ cdb.vis.Vis = Vis;
         if (dataLayer.options) {
           this.options.user_name = dataLayer.options.user_name;
         }
+
+        this.auth_tokens = data.auth_tokens;
 
         this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
 
@@ -39416,10 +39419,17 @@ cdb.vis.Vis = Vis;
 
       var layerDefinition = new NamedMap(options.named_map, options);
 
-      return { type: "named",
-        options: {
-          name: layerDefinition.named_map.name
-        }
+      var options = {
+        name: layerDefinition.named_map.name
+      };
+
+      if (this.auth_tokens && this.auth_tokens.length > 0) {
+        options.auth_tokens = this.auth_tokens;
+      }
+
+      return {
+        type: "named",
+        options: options
       }
 
     },
@@ -39572,7 +39582,7 @@ cdb.vis.Vis = Vis;
 
     if (!options) options = {};
 
-    var image = new Image();
+    var image = new StaticImage();
 
     if (typeof data === 'string') {
       image.load(data, options);

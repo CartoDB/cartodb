@@ -22,7 +22,7 @@
   <div class="CredentialsContent">
     <div class="u-inner">
 
-      <%= form_for @user, url: CartoDB.path(self, 'profile_update_user', {id: @user.username}) do |f| %>
+      <%= form_for @user, url: CartoDB.url(self, 'profile_update_user', {id: @user.username}, current_user) do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">

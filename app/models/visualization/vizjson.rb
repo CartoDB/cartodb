@@ -30,7 +30,7 @@ module CartoDB
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
           likes:          visualization.likes.count,
-          description:    visualization.description_md,
+          description:    visualization.description_html_safe,
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,
           url:            options.delete(:url),
@@ -53,7 +53,7 @@ module CartoDB
         poro_data.merge!({slides: children}) if children.length > 0
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(@user)
-          poro_data[:description] = visualization.parent.description_md
+          poro_data[:description] = visualization.parent.description_html_safe
         end
 
         poro_data

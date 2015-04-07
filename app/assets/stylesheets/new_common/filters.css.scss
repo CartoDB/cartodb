@@ -282,6 +282,10 @@ a.Filters-cleanSearch { line-height:32px }
   @include progress-bar(6px, 9px, true, false);
   width: 178px;
 }
+.Filters-link:hover {
+  text-decoration: none;
+  .Filters-progressSize { color: $cTypography-paragraphs }
+}
 @media only screen and (max-width: 959px) {
   .Filters-row {
     padding: 0 20px;

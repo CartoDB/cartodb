@@ -120,6 +120,8 @@ class Admin::OrganizationUsersController < ApplicationController
   end
 
   def destroy
+    raise "Can't delete user. #{'Has shared entities' if @user.has_shared_entities?}" unless @user.can_delete
+
     new_dashboard = current_user.has_feature_flag?('new_dashboard')
     @user.delete_in_central
     @user.destroy
@@ -142,6 +144,13 @@ class Admin::OrganizationUsersController < ApplicationController
     else
       set_flash_flags(nil, true)
       flash[:error] = "User was not deleted. #{e.user_message}"
+      head :no_content
+    end
+  rescue => e
+    flash[:error] = "User was not deleted. #{e.message}"
+    if new_dashboard
+      redirect_to organization_path(user_domain: params[:user_domain])
+    else
       head :no_content
     end
   end

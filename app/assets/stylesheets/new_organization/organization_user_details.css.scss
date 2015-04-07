@@ -56,15 +56,7 @@
   line-height: 24px;
   font-size: 24px;
 }
-
-
-
-// <div class="OrganizationUser">
-//       <ul class="OrganizationUser-stats">
-//         <li class="OrganizationUser-stat">
-//           <i class="iconFont iconFont-Document OrganizationUser-statIcon"></i>
-//           <div class="OrganizationUser-statInfo">
-//             <em class="OrganizationUser-statTitle"><%= @user.tables.count %></em>
-//             <label class="OrganizationUser-statLabel"><%= "Dataset".pluralize(@user.tables.count) %></label>
-//           </div>
-//         </li>
+.iconFont-Twitter.OrganizationUser-statIcon {
+  line-height: 32px;
+  font-size: 22px;
+}

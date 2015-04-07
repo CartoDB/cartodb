@@ -51,6 +51,9 @@ var cancelAnimationFrame = global.cancelAnimationFrame
         this.running = true;
         requestAnimationFrame(this._tick);
         this.options.onStart && this.options.onStart();
+        if(this.options.steps === 1){
+          this.running = false;
+        }
     },
 
     isRunning: function() {
@@ -85,6 +88,7 @@ var cancelAnimationFrame = global.cancelAnimationFrame
       this.range = torque.math.linear(0, this.options.steps);
       this.rangeInv = this.range.invert();
       this.time(this._time);
+      this.start();
       return this;
     },
 
@@ -123,9 +127,12 @@ var cancelAnimationFrame = global.cancelAnimationFrame
       this._t0 = t1;
       this._time += delta;
       if(this.step() >= this.options.steps) {
-        this._time = 0;
         if(!this.options.loop){
-          this.stop();
+          // set time to max time
+          this.time(this.options.animationDuration);
+          this.pause();
+        } else {
+          this._time = 0;
         }
       }
       if(this.running) {
@@ -666,6 +673,7 @@ module.exports.TorqueLayer = TorqueLayer;
   var types = {
     Uint8Array: typeof(global['Uint8Array']) !== 'undefined' ? global.Uint8Array : Array,
     Uint32Array: typeof(global['Uint32Array']) !== 'undefined' ? global.Uint32Array : Array,
+    Int16Array: typeof(global['Int16Array']) !== 'undefined' ? global.Int16Array : Array,
     Int32Array: typeof(global['Int32Array']) !== 'undefined' ? global.Int32Array: Array
   };
 
@@ -1580,7 +1588,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
 
   providers: {
     'sql_api': torque.providers.json,
-    'url_template': torque.providers.jsonarray,
+    'url_template': torque.providers.JsonArray,
     'windshaft': torque.providers.windshaft
   },
 
@@ -1706,7 +1714,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
       if (tile) {
         pos = this.getTilePos(tile.coord);
         ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
-        this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+        this.renderer.renderTile(tile, this.key);
       }
     }
   },
@@ -1755,6 +1763,14 @@ GMapsTorqueLayer.prototype = torque.extend({},
     var times = this.provider.getKeySpan();
     var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
     return new Date(time);
+  },
+
+  timeToStep: function(timestamp) {
+    if (typeof timestamp === "Date") timestamp = timestamp.getTime();
+    if (!this.provider) return 0;
+    var times = this.provider.getKeySpan();
+    var step = (this.provider.getSteps() * (timestamp - times.start)) / (times.end - times.start);
+    return step;
   },
 
   getStep: function() {
@@ -2326,7 +2342,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   providers: {
     'sql_api': torque.providers.json,
-    'url_template': torque.providers.jsonarray,
+    'url_template': torque.providers.JsonArray,
     'windshaft': torque.providers.windshaft
   },
 
@@ -2611,6 +2627,14 @@ L.TorqueLayer = L.CanvasLayer.extend({
     var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
     return new Date(time);
   },
+  
+  timeToStep: function(timestamp) {
+    if (typeof timestamp === "Date") timestamp = timestamp.getTime();
+    if (!this.provider) return 0;
+    var times = this.provider.getKeySpan();
+    var step = (this.provider.getSteps() * (timestamp - times.start)) / (times.end - times.start);
+    return step;
+  },
 
   getStep: function() {
     return this.key;
@@ -2628,7 +2652,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
    * returns an object with the start and end times
    */
   getTimeSpan: function() {
-    var times = this.provider.getKeySpan();
+    return this.provider.getKeySpan();
   },
 
   /**
@@ -3813,6 +3837,8 @@ var Profiler = require('../profiler');
     this.options.tiler_domain = options.tiler_domain || 'cartodb.com';
     this.options.tiler_port = options.tiler_port || 80;
 
+    this.options.coordinates_data_type = this.options.coordinates_data_type || Uint8Array;
+
     if (this.options.data_aggregation) {
       this.options.cumulative = this.options.data_aggregation === 'cumulative';
     }
@@ -3838,8 +3864,8 @@ var Profiler = require('../profiler');
      */
     proccessTile: function(rows, coord, zoom) {
       var r;
-      var x = new Uint8Array(rows.length);
-      var y = new Uint8Array(rows.length);
+      var x = new this.options.coordinates_data_type(rows.length);
+      var y = new this.options.coordinates_data_type(rows.length);
 
       var prof_mem = Profiler.metric('torque.provider.windshaft.mem');
       var prof_point_count = Profiler.metric('torque.provider.windshaft.points');
@@ -3883,13 +3909,7 @@ var Profiler = require('../profiler');
       for (var r = 0; r < rows.length; ++r) {
         var row = rows[r];
         x[r] = row.x__uint8 * this.options.resolution;
-        // fix value when it's in the tile EDGE
-        // TODO: this should be fixed in SQL query
-        if (row.y__uint8 === -1) {
-          y[r] = 0;
-        } else {
-          y[r] = row.y__uint8 * this.options.resolution;
-        }
+        y[r] = row.y__uint8 * this.options.resolution;
 
         var dates = row.dates__uint16;
         var vals = row.vals__uint8;
@@ -4324,7 +4344,7 @@ var Profiler = require('../profiler');
       if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
         ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
       }
-      ctx.drawImage(img, -img.w, -img.h, img.w*2, img.h*2);
+      ctx.drawImage(img, 0, 0, img.width, img.height);
     }
   }
 
@@ -4346,7 +4366,7 @@ var torque = require('../');
 var cartocss = require('./cartocss_render');
 var Profiler = require('../profiler');
 var carto = global.carto || require('carto');
-var filters = require('./torque_filters');
+var Filters = require('./torque_filters');
 
   var TAU = Math.PI * 2;
   var DEFAULT_CARTOCSS = [
@@ -4395,7 +4415,8 @@ var filters = require('./torque_filters');
     this._sprites = []; // sprites per layer
     this._shader = null;
     this._icons = {};
-    this._filters = filters(this._canvas);
+    this._iconsToLoad = 0;
+    this._filters = new Filters(this._canvas, {canvasClass: options.canvasClass});
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
     this.TILE_SIZE = 256;
     this._style = null;
@@ -4472,25 +4493,29 @@ var filters = require('./torque_filters');
       }
 
       var canvas = this._createCanvas();
-      // take into account the exterior ring to calculate the size
-      var canvasSize = (st['marker-line-width'] || 0) + pointSize*2;
       var ctx = canvas.getContext('2d');
-      var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
-      ctx.translate(w/2, w/2);
 
-      function qualifyURL(url) {
-            var a = document.createElement('a');
-              a.href = url;
-              return a.href;
-          };
-      var img_name = qualifyURL(st["marker-file"] || st["point-file"]);
-      if (img_name && this._icons.itemsToLoad <= 0) {
-          var img = this._icons[img_name];
-          img.w = st['marker-width'] || img.width;
-          img.h = st['marker-width'] || st['marker-height'];
-          cartocss.renderSprite(ctx, img, st);
-      } 
-      else {
+      var markerFile = st["marker-file"] || st["point-file"];
+      var qualifiedUrl = markerFile && this._qualifyURL(markerFile);
+
+      if (qualifiedUrl && this._iconsToLoad <= 0 && this._icons[qualifiedUrl]) {
+        var img = this._icons[qualifiedUrl];
+
+        var dWidth = st['marker-width'] * 2 || img.width;
+        var dHeight = (st['marker-height'] || dWidth) * (img.width / img.height);
+
+        canvas.width = ctx.width = dWidth;
+        canvas.height = ctx.height = dHeight;
+
+        ctx.scale(dWidth/img.width, dHeight/img.height);
+
+        cartocss.renderSprite(ctx, img, st);
+      } else {
+        // take into account the exterior ring to calculate the size
+        var canvasSize = (st['marker-line-width'] || 0) + pointSize*2;
+        var w = ctx.width = canvas.width = ctx.height = canvas.height = Math.ceil(canvasSize);
+        ctx.translate(w/2, w/2);
+
         var mt = st['marker-type'];
         if (mt && mt === 'rectangle') {
           cartocss.renderRectangle(ctx, st);
@@ -4511,7 +4536,13 @@ var filters = require('./torque_filters');
     //
     // renders all the layers (and frames for each layer) from cartocss
     //
-    renderTile: function(tile, key) {
+    renderTile: function(tile, key, callback) {
+      if (this._iconsToLoad > 0) {
+          this.on('allIconsLoaded', function() {
+              this.renderTile.apply(this, [tile, key, callback]);
+          });
+          return false;
+      }
       var prof = Profiler.metric('torque.renderer.point.renderLayers').start();
       var layers = this._shader.getLayers();
       for(var i = 0, n = layers.length; i < n; ++i ) {
@@ -4528,6 +4559,8 @@ var filters = require('./torque_filters');
       }
       
       prof.end(true);
+
+      return callback && callback(null);
     },
 
     _createCanvas: function() {
@@ -4540,6 +4573,31 @@ var filters = require('./torque_filters');
       return this.options.imageClass
         ? new this.options.imageClass()
         : new Image();
+    },
+
+    _setImageSrc: function(img, url, callback) {
+      if (this.options.setImageSrc) {
+        this.options.setImageSrc(img, url, callback);
+      } else {
+        img.onload = function(){
+            callback(null);
+        };
+        img.onerror = function(){
+            callback(new Error('Could not load image'));
+        };
+        img.src = url;
+      }
+    },
+
+    _qualifyURL: function(url) {
+      if (typeof this.options.qualifyURL !== "undefined"){
+        return this.options.qualifyURL(url);
+      }
+      else{
+        var a = document.createElement('a');
+        a.href = url;
+        return a.href;
+      }
     },
 
     //
@@ -4561,6 +4619,7 @@ var filters = require('./torque_filters');
       }
       var tileMax = this.options.resolution * (this.TILE_SIZE/this.options.resolution - 1)
       var activePixels = tile.timeCount[key];
+      var anchor = this.options.resolution/2;
       if (activePixels) {
         var pixelIndex = tile.timeIndex[key];
         for(var p = 0; p < activePixels; ++p) {
@@ -4572,8 +4631,8 @@ var filters = require('./torque_filters');
              sp = sprites[c] = this.generateSprite(shader, c, torque.extend({ zoom: tile.z, 'frame-offset': frame_offset }, shaderVars));
            }
            if (sp) {
-             var x = tile.x[posIdx]- (sp.width >> 1);
-             var y = tileMax - tile.y[posIdx]; // flip mercator
+             var x = tile.x[posIdx]- (sp.width >> 1) + anchor;
+             var y = tileMax - tile.y[posIdx] + anchor; // flip mercator
              ctx.drawImage(sp, x, y - (sp.height >> 1));
            }
           }
@@ -4652,49 +4711,61 @@ var filters = require('./torque_filters');
       }
       return null;
     },
-    _preloadIcons: function(img_names){
+
+    _preloadIcons: function(img_names) {
       var self = this;
-      this._icons = {};
-      if (img_names.length > 0 && !this._forcePoints){
-        for (var i = 0; i<img_names.length; i++){
-          var new_img = this._createImage();
-          function qualifyURL(url) {
-            var a = document.createElement('a');
-              a.href = url;
-              return a.href;
+
+      if (img_names.length > 0 && !this._forcePoints) {
+
+        var qualifiedImageUrlSet = Object.keys(img_names.reduce(function(imgNamesMap, imgName) {
+            var qualifiedUrl = self._qualifyURL(imgName);
+            if (!self._icons[qualifiedUrl]) {
+                imgNamesMap[qualifiedUrl] = true;
+            }
+            return imgNamesMap;
+        }, {}));
+
+        var filtered = self._shader.getLayers().some(function(layer) {
+          return typeof layer.shader["image-filters"] !== "undefined";
+        });
+
+        this._iconsToLoad += qualifiedImageUrlSet.length;
+
+        qualifiedImageUrlSet.forEach(function(qualifiedImageUrl) {
+          self._icons[qualifiedImageUrl] = null;
+
+          var img = self._createImage();
+
+          if (filtered) {
+            img.crossOrigin = 'Anonymous';
           }
-          this._icons[qualifyURL(img_names[i])] = null;
-          if (typeof self._icons.itemsToLoad === 'undefined'){
-            this._icons.itemsToLoad = img_names.length;
-          }
-          var filtered = self._shader.getLayers().some(function(layer){return typeof layer.shader["image-filters"] !== "undefined"});
-          if (filtered){
-            new_img.crossOrigin = 'Anonymous';
-          }
-          new_img.onload = function(e){
-            self._icons[this.src] = this;
-            if (Object.keys(self._icons).length === img_names.length + 1){
-              self._icons.itemsToLoad--;
-              if (self._icons.itemsToLoad <= 0){
+
+          self._setImageSrc(img, qualifiedImageUrl, function(err) {
+            if (err) {
+              self._forcePoints = true;
+              self.clearSpriteCache();
+              self._iconsToLoad = 0;
+              self.fire("allIconsLoaded");
+              if(filtered) {
+                console.info("Only CORS-enabled, or same domain image-files can be used in combination with image-filters");
+              }
+              console.error("Couldn't get marker-file " + qualifiedImageUrl);
+            } else {
+              self._icons[qualifiedImageUrl] = img;
+              self._iconsToLoad--;
+
+              if (self._iconsToLoad <= 0){
                 self.clearSpriteCache();
                 self.fire("allIconsLoaded");
               }
             }
-          };
-          new_img.onerror = function(){
-            self._forcePoints = true;
-            self.clearSpriteCache();
-            if(filtered){
-              console.info("Only CORS-enabled, or same domain image-files can be used in combination with image-filters");
-            }
-            console.error("Couldn't get marker-file " + this.src);
-          };
-          this.itemsToLoad++;
-          new_img.src = img_names[i];
-        }
+          });
+        });
+      } else {
+          this.fire("allIconsLoaded");
       }
-
   },
+
   applyFilters: function(){
     if(this._style){
       if(this._style['image-filters']){
@@ -4853,7 +4924,7 @@ var carto = global.carto || require('carto');
     // renders a tile in the canvas for key defined in 
     // the torque tile
     //
-    renderTile: function(tile, key, px, py) {
+    renderTile: function(tile, key, callback) {
       if(!this._canvas) return;
 
       var res = this.options.resolution;
@@ -4895,6 +4966,7 @@ var carto = global.carto || require('carto');
         //ctx.putImageData(imageData, 0, 0);
       }
       //prof.end();
+      return callback && callback(null);
     }
   };
 
@@ -4912,9 +4984,11 @@ module.exports = RectanbleRenderer;
 
 'use strict';
 
-function torque_filters(canvas) {
+function torque_filters(canvas, options) {
     // jshint newcap: false, validthis: true
-    if (!(this instanceof torque_filters)) { return new torque_filters(canvas); }
+    if (!(this instanceof torque_filters)) { return new torque_filters(canvas, options); }
+
+    options = options || {};
 
     this._canvas = canvas = typeof canvas === 'string' ? document.getElementById(canvas) : canvas;
 
@@ -4924,6 +4998,8 @@ function torque_filters(canvas) {
 
     this._max = 1;
     this._data = [];
+
+    this.canvasClass = options.canvasClass;
 }
 
 torque_filters.prototype = {
@@ -4938,7 +5014,7 @@ torque_filters.prototype = {
 
     gradient: function (grad) {
         // create a 256x1 gradient that we'll use to turn a grayscale heatmap into a colored one
-        var canvas = document.createElement('canvas'),
+        var canvas = this._createCanvas(),
             ctx = canvas.getContext('2d'),
             gradient = ctx.createLinearGradient(0, 0, 0, 256);
 
@@ -4946,7 +5022,7 @@ torque_filters.prototype = {
         canvas.height = 256;
 
         for (var i in grad) {
-            gradient.addColorStop(i, grad[i]);
+            gradient.addColorStop(+i, grad[i]);
         }
 
         ctx.fillStyle = gradient;
@@ -4980,6 +5056,12 @@ torque_filters.prototype = {
                 pixels[i - 1] = gradient[j + 2];
             }
         }
+    },
+
+    _createCanvas: function() {
+        return this.canvasClass
+            ? new this.canvasClass()
+            : document.createElement('canvas');
     }
 };
 

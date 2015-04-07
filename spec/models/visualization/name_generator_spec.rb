@@ -55,26 +55,30 @@ describe Visualization::NameGenerator do
       generator   = Visualization::NameGenerator.new(user, checker)
       generator.name(nil).should == Visualization::NameGenerator::PATTERN
     end
+
+    it 'assigns an incremental number' do
+      user = Object.new
+      candidate = 'Untitled map'
+      Visualization::NameGenerator.new(user, negative_checker([])).name(candidate).should == candidate
+      Visualization::NameGenerator.new(user, negative_checker([candidate])).name(candidate).should == "#{candidate} 1"
+      Visualization::NameGenerator.new(user, negative_checker([candidate, "#{candidate} 1"])).name(candidate).should == "#{candidate} 2"
+      Visualization::NameGenerator.new(user, negative_checker([candidate, "#{candidate} 1", "#{candidate} 2"])).name(candidate).should == "#{candidate} 3"
+    end
   end
 
   def positive_checker
     checker = Object.new
     def checker.available?(*args); true; end
     checker
-  end #positive_checker
+  end
 
-  def negative_checker
-    checker = Object.new
+  def negative_checker(existing = [ 'visualization 1', 'Untitled visualization', 'Untitled visualization 0', 'Untitled visualization 1'])
+    checker = OpenStruct.new
+    checker.existing = existing
     def checker.available?(candidate)
-      existing = [
-        'visualization 1',
-        'Untitled visualization',
-        'Untitled visualization 0',
-        'Untitled visualization 1',
-      ]
       !existing.include?(candidate)
     end
     checker
-  end #negative_checker
-end # Visualization::NameGenerator
+  end
+end
 

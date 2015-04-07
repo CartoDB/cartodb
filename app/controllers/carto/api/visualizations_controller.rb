@@ -37,16 +37,15 @@ module Carto
         only_shared = params[:only_shared] == 'true'
         exclude_shared = params[:exclude_shared] == 'true'
         shared = params[:shared] || compose_shared(only_shared, exclude_shared)
-        locked = params[:locked]
 
         vqb = VisualizationQueryBuilder.new
             .with_prefetch_user
             .with_prefetch_table
             .with_prefetch_permission
             .with_prefetch_external_source
-            .with_locked(locked)
             .with_type(type)
 
+        locked = params[:locked]
         if locked == 'true'
           vqb.with_locked(true)
         elsif locked == 'false'

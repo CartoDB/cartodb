@@ -5,6 +5,14 @@ require_relative '../../models/carto/shared_entity'
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder
 
+    PARTIAL_MATCH_QUERY = %Q{
+      to_tsvector(
+        'english', coalesce("visualizations"."name", '') || ' '
+        || coalesce("visualizations"."description", '')
+      ) @@ plainto_tsquery('english', ?)
+      OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
+    }
+
   def self.shared_with_user_id(user_id)
     vqb = ::Carto::VisualizationQueryBuilder.new
     vqb.with_shared_with_user_id(user_id)
@@ -67,6 +75,10 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_partial_match(tainted_search_pattern)
+    @tainted_search_pattern = tainted_search_pattern
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -99,6 +111,10 @@ class Carto::VisualizationQueryBuilder
 
     if !@locked.nil?
       query = query.where(locked: @locked)
+    end
+
+    if !@tainted_search_pattern.nil?
+      query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
     end
 
     @eager_load_associations.each { |association|

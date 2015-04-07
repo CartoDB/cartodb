@@ -110,7 +110,8 @@ module CartoDB
       cartodb.css
       fonts_ie.css
       front.css
-
+      
+      editor.css
       new_keys.css
       keys.css
       leaflet.css
@@ -129,7 +130,6 @@ module CartoDB
       public_ie.css
       specs.css
       table.css
-      new_table.css
       tables.css
       frontend
 

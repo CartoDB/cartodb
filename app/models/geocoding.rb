@@ -241,7 +241,7 @@ class Geocoding < Sequel::Model
     end
     if !started_at.nil? && !finished_at.nil?
       payload.merge!(
-                     processing_time: finished_at - started_at
+                     processing_time: finished_at - started_at,
                      queue_time: started_at - created_at
                      )
     end

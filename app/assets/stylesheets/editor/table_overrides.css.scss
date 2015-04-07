@@ -23,7 +23,15 @@ div.vis_navigation nav a.tab {
 }
 .metadata_dialog label {
   margin: 0;
-  line-height: 1;
   margin-bottom: 7px;
 }
-.metadata_dialog .hint { line-height: 1 }
+div.dropdown ul li a,
+.select2-results .select2-result-label,
+.metadata_dialog label,
+.metadata_dialog .hint,
+.form_spinner,
+.infowindow_panel .fields li .switches,
+.infowindow_panel .fields li.drag_field {
+  line-height: 1;
+}
+.CodeMirror { font-size: 15px }

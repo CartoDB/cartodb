@@ -8,24 +8,22 @@ $size: 40px;
 
 .Logo {
   position: relative;
-  @include inline-block();
+  display: inline-block;
 }
 .Logo:after {
   content: '';
   position: absolute;
   top: -4px;
   left: -4px;
-  width: $size + 4;
-  height: $size + 4;
+  width: $size + 5;
+  height: $size + 5;
   border-radius: 100%;
   background-color: #fff;
   @include opacity(0);
-  // -webkit-animation-fill-mode: both;
-  // animation-fill-mode: both;
-  border: 2px solid #fff;
+  border: 2px solid rgba(#fff,.7);
   border-bottom-color: transparent;
   background: transparent;
-  @include transition(all, .5s, linear);
+  @include transition(all, .4s, ease-in);
 }
 .Logo--text {
   i {
@@ -42,7 +40,7 @@ $size: 40px;
   background: white;
   border-radius: 2px;
   text-align: center;
-  @include transition(all, 2.5s, linear);
+  @include transition(border-radius, .2s, linear);
 
   i {
     font-size: 25px;

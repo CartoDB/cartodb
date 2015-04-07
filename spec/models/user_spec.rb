@@ -1269,7 +1269,8 @@ describe User do
 
   end
 
-  it "should notify a new user created from a organization" do
+  # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info 
+  it "can notify a new user creation" do
 
     ::Resque.stubs(:enqueue).returns(nil)
 
@@ -1280,6 +1281,8 @@ describe User do
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
 
     user1.save
+    # INFO: if user must be synched with a remote server it should happen before notifying
+    user1.notify_new_organization_user
 
     organization.destroy
   end

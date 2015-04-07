@@ -142,9 +142,10 @@ class User < Sequel::Model
     monitor_user_notification
     sleep 1
     set_statement_timeouts
-    if self.has_organization_enabled?
-      ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
-    end
+  end
+
+  def notify_new_organization_user
+    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
   end
 
   def should_load_common_data?

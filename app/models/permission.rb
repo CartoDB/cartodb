@@ -232,7 +232,7 @@ module CartoDB
 
     # @return User|nil
     def owner
-      @owner ||= User.where(id:self.owner_id).first
+      @owner ||= User[self.owner_id] # See http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/Caching.html
     end
 
     # @param value User

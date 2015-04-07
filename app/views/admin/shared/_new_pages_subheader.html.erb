@@ -15,6 +15,10 @@
           </ul>
         </div>
         <div class="Filters-order"> 
+          <% if !Cartodb.config[:cartodb_com_hosted].present? %>
+            <a class="Filters-link" href="<%= current_user.plan_url(request.protocol) %>">
+          <% end %>
+
           <div class="Filters-progress">
             <% per = (current_user.db_size_in_bytes * 100) / current_user.quota_in_bytes %>
             <% className = '' %>
@@ -30,6 +34,10 @@
               </div>
             </div>
           </div>
+
+          <% if !Cartodb.config[:cartodb_com_hosted].present? %>
+            </a>
+          <% end %>
         </div>
       </div>
     </div>

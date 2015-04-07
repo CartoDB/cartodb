@@ -345,7 +345,7 @@ module CartoDB
       end
 
       def redis_vizjson_key(https_flag=false)
-        @vizjson_key ||= "visualization:#{id}:vizjson:#{https_flag ? 'https' : 'http'}"
+        "visualization:#{id}:vizjson:#{https_flag ? 'https' : 'http'}"
       end
 
       def to_vizjson(options={})

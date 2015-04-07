@@ -1278,11 +1278,11 @@ describe User do
     user1 = new_user(:username => 'test', :email => "client@example.com", :organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
-    user1.notify_new_organization_user
-
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
 
     user1.save
+    # INFO: if user must be synched with a remote server it should happen before notifying
+    user1.notify_new_organization_user
 
     organization.destroy
   end

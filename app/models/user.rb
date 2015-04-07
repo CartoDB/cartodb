@@ -142,9 +142,10 @@ class User < Sequel::Model
     monitor_user_notification
     sleep 1
     set_statement_timeouts
-    if self.has_organization_enabled?
-      ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
-    end
+  end
+
+  def notify_new_organization_user
+    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
   end
 
   def should_load_common_data?
@@ -227,9 +228,16 @@ class User < Sequel::Model
       self.data_imports.each { |d| d.destroy }
       self.maps.each { |m| m.destroy }
       self.layers.each { |l| remove_layer l }
-      self.geocodings.each { |g| g.destroy }
       self.assets.each { |a| a.destroy }
       CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
+
+      if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
+        self.geocodings.each { |g| g.destroy }
+      else
+        assign_geocodings_to_organization_owner
+      end
+
+      assign_search_tweets_to_organization_owner
     rescue StandardError => exception
       error_happened = true
       CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
@@ -2319,6 +2327,30 @@ TRIGGER
   end
 
   private
+
+  # INFO: assigning to owner is necessary because of payment reasons
+  def assign_search_tweets_to_organization_owner
+    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
+    self.search_tweets_dataset.each { |st|
+      st.user = self.organization.owner
+      st.save
+    }
+  rescue => e
+    Rollbar.report_message('Error assigning search tweets to org owner', 'error', { user: self.inspect, error: e.inspect })
+  end
+
+  # INFO: assigning to owner is necessary because of payment reasons
+  def assign_geocodings_to_organization_owner
+    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
+    self.geocodings.each { |g|
+      g.user = self.organization.owner
+      g.data_import_id = nil
+      g.save
+    }
+  rescue => e
+    Rollbar.report_message('Error assigning geocodings to org owner, fallback to deletion', 'error', { user: self.inspect, error: e.inspect })
+    self.geocodings.each { |g| g.destroy }
+  end
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?

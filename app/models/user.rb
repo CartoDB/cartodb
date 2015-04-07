@@ -228,7 +228,7 @@ class User < Sequel::Model
       self.assets.each { |a| a.destroy }
       CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
 
-      if self.id == self.organization.owner.id
+      if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
         self.geocodings.each { |g| g.destroy }
       else
         assign_geocodings_to_organization_owner
@@ -2327,7 +2327,7 @@ TRIGGER
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
-    return if self.id == self.organization.owner.id
+    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
     self.search_tweets_dataset.each { |st|
       st.user = self.organization.owner
       st.save
@@ -2338,7 +2338,7 @@ TRIGGER
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
-    return if self.id == self.organization.owner.id
+    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
     self.geocodings.each { |g|
       g.user = self.organization.owner
       g.data_import_id = nil

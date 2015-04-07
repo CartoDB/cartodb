@@ -1,3 +1,7 @@
+3.13.2 (07//04//2015)
+* Fix double escaping on infowindows
+* Fix a-tag's target attribute not working
+
 3.13.1 (06//04//2015)
 * Allows to request a Static Map of a password protected visualization
 

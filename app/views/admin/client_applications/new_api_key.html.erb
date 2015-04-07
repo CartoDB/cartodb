@@ -20,7 +20,7 @@
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_tag(CartoDB.url(self, 'regenerate_api_key'), :method => "POST", :id => 'regenerate_api_key', :class => 'Form') do %>
+      <%= form_tag(CartoDB.url(self, 'regenerate_api_key', {}, current_user), :method => "POST", :id => 'regenerate_api_key', :class => 'Form') do %>
 
         <div class="Form-title">
           <p class="Form-titleText">This offers the simplest way to access your private data or perform writes and updates to your account.</p>

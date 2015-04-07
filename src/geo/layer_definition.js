@@ -1063,8 +1063,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    //var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
-    var host = this._host('a');
+    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
     var url = [
       host,
       //'api',

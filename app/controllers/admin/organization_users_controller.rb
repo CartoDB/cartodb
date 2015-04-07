@@ -4,6 +4,7 @@ require_relative '../../../lib/google_plus_config'
 
 class Admin::OrganizationUsersController < ApplicationController
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
+  ssl_required  :new, :create, :edit, :update, :destroy
 
   before_filter :get_config
   before_filter :login_required, :check_permissions

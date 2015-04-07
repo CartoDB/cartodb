@@ -20,6 +20,7 @@ Bugfixes:
 * Add specific error for wrongly encoded CSV files [#2847](https://github.com/CartoDB/cartodb/pull/2847)
 * Fixed infinite loop saving overlays #2827
 * New index for visualizations.parent_id [#3017](https://github.com/CartoDB/cartodb/pull/3017)
+* Fix sanitization issues in custom HTML infowindows [#3059](https://github.com/CartoDB/cartodb/pull/3059)
 
 3.9.0 (2015-02-13)
 ------------------

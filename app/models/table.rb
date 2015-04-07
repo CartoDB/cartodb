@@ -653,7 +653,7 @@ class Table
     map = blender.blend
     vis = CartoDB::Visualization::Member.new(
       {
-        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        name:     beautify_name([self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' ')),
         map_id:   map.id,
         type:     CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
@@ -1302,7 +1302,7 @@ class Table
   end
 
   def owner
-    @owner ||= User.where(id: self.user_id).first
+    @owner ||= User[self.user_id]
   end
 
   def table_style
@@ -1445,6 +1445,11 @@ class Table
   end
 
   private
+
+  def beautify_name(name)
+    return name unless name
+    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
+  end
 
   def query_geometry_types
     owner.in_database[ %Q{

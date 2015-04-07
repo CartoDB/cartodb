@@ -52,6 +52,9 @@ defaults: &defaults
   trackjs:
     enabled: false
     customer: ''
+    app_keys:
+      editor: ''
+      embeds: ''
   hubspot: ''
   common_data:
     protocol: 'https'

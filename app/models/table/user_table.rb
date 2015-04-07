@@ -1,4 +1,5 @@
 # coding: UTF-8
+require 'cartodb/per_request_sequel_cache'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
@@ -26,6 +27,7 @@ class UserTable < Sequel::Model
     map
     tags
     tags=
+    set_tag_array
     data_import_id
     data_import_id=
     user_id
@@ -131,6 +133,20 @@ class UserTable < Sequel::Model
     table
   end
 
+  def self.from_map_id_key(map_id)
+    "UserTable:from_map_id:#{map_id}"
+  end
+
+  def self.from_map_id(map_id)
+    key = self.from_map_id_key(map_id)
+    user_table = PerRequestSequelCache.get(key)
+    if user_table.nil?
+      user_table = self[map_id: map_id]
+      PerRequestSequelCache.set(key, user_table, nil) unless user_table.nil?
+    end
+    user_table
+  end
+
 
 
   # Hooks definition -----------------------------------------------------------
@@ -191,6 +207,17 @@ class UserTable < Sequel::Model
     super
     service.after_destroy
   end
+
+  def before_update
+    PerRequestSequelCache.delete(self.class.from_map_id_key(self.map_id))
+    super
+  end
+
+  def delete
+    PerRequestSequelCache.delete(self.class.from_map_id_key(self.map_id))
+    super
+  end
+
   # --------------------------------------------------------------------------------
 
 
@@ -243,7 +270,12 @@ class UserTable < Sequel::Model
   # TODO move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value
-    self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
+    set_tag_array(value.split(','))
+  end
+
+  def set_tag_array(tag_array)
+    return unless tag_array
+    self[:tags] = tag_array.map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
   # Needed by syncs

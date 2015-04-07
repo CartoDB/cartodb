@@ -20,7 +20,7 @@
               <h3 class="DatasetsList-itemTitle DefaultTitle">
                 <a href="<%= public_table_url(user_domain: user_domain, id: vis[:title]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
               </h3>
-              <p class="DefaultDescription u-ellipsLongText"><%= raw vis[:desc] %></p>
+              <p class="DefaultDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></p>
             </div>
             <div class="DatasetsList-itemSecondaryInfo">
               <div class="DatasetsList-itemMeta">

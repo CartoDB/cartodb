@@ -1,4 +1,5 @@
 # coding: UTF-8
+require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -45,6 +46,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
+  plugin :caching, PerRequestSequelCache
 
   # Restrict to_json attributes
   @json_serializer_opts = {
@@ -2309,6 +2311,11 @@ TRIGGER
 
   def name_or_username
     name.present? ? name : username
+  end
+
+  def purge_redis_vizjson_cache
+    redis_keys = CartoDB::Visualization::Collection.new.fetch(user_id: self.id).map(&:redis_vizjson_key)
+    CartoDB::Visualization::Member.redis_cache.del redis_keys unless redis_keys.empty?
   end
 
   private

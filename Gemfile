@@ -17,10 +17,11 @@ gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.2.1'
 gem 'hiredis',                 '0.6.0'
-gem 'nokogiri',                '1.6.0'
+gem 'nokogiri',                '~> 1.6.6.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 gem 'ruby-prof',               '0.15.1'
+gem 'request_store',           '1.1.0'
 
 # It's used in the dataimport and arcgis.
 # It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI
@@ -63,7 +64,7 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.1.1'
+gem 'redcarpet', '3.2.2'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

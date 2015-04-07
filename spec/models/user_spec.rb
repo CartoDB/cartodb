@@ -524,8 +524,8 @@ describe User do
 
   describe "organization user deletion" do
     it "should transfer geocodings and tweet imports to owner" do
-      u1 = create_user(email: 'u1@example.com', username: 'u1', password: 'admin123')
-      org = create_org('cartodbtest', 1234567890, 5)
+      u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
+      org = create_org('cartodbtestb', 1234567890, 5)
 
       u1.organization = org
       u1.save
@@ -535,7 +535,7 @@ describe User do
       org.save
       u1.reload
 
-      u2 = create_user(email: 'u2@example.com', username: 'u2', password: 'admin123', organization: org)
+      u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
 
       FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, formatter: 'b')
 

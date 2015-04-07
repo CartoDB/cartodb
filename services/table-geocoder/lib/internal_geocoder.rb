@@ -18,7 +18,6 @@ module CartoDB
         @sql_api              = CartoDB::SQLApi.new arguments.fetch(:internal)
         @connection           = arguments.fetch(:connection)
         @working_dir          = Dir.mktmpdir
-        `chmod 777 #{@working_dir}`
         @table_name           = arguments[:table_name]
         @table_schema         = arguments[:table_schema]
         @qualified_table_name = arguments[:qualified_table_name]
@@ -47,7 +46,7 @@ module CartoDB
         raise e
       ensure
         drop_temp_table
-        FileUtils.rm_rf @working_dir
+        FileUtils.remove_entry_secure @working_dir
       end
 
       def download_results

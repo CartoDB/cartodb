@@ -13,6 +13,10 @@
           </ul>
         </div>
         <div class="Filters-order"> 
+          <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+            <a class="Filters-link" href="<%= current_user.plan_url(request.protocol) %>">
+          <% end %>
+          
           <div class="Filters-progress">
             <% per = (current_user.organization.users.count * 100) / current_user.organization.seats %>
             <% className = '' %>
@@ -26,8 +30,12 @@
               <div class="progress-bar">
                 <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
               </div>
-            </div>
+            </div>  
           </div>
+
+          <% if (!Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?))  %>
+            </a>
+          <% end %>
         </div>
       </div>
     </div>

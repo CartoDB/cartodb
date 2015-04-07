@@ -222,9 +222,6 @@ $opacityTransition: 250ms;
   @include justify-content(center);
   @include align-items(center);
 }
-.MapCard-contentBodyRow--flex .DefaultTitle-link {
-  @include display-inline-flex();
-}
 .MapCard-contentFooter {
   @include display-flex();
   @include justify-content(space-between, justify);

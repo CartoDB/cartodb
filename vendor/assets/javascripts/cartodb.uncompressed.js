@@ -1,6 +1,6 @@
-// cartodb.js version: 3.13.1
+// cartodb.js version: 3.13.2
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5c10cf50770d3cc64a7f492ec548f58a61dd5605
+// sha: 8fdecd11cbcf7b15134a0cbb772133bb60c222ed
 (function() {
   var root = this;
 
@@ -20794,6 +20794,7 @@ this.LZMA = LZMA;
 // Additional changes after the built file above:
 // - Added: This header
 // - Modified: `sanitizeAttribs` at end, to allow "data-*"" attributes (lines ~4750-4760)
+// - changed policy for a::target attribute to be allowed (html4.ATTRIBS: { 'a::target': ... changed value from 10 to 0)
 // -------------------------------------------------------------------------------------------------------------------
 
 /* Copyright Google Inc.
@@ -23988,7 +23989,7 @@ html4.ATTRIBS = {
   'a::onblur': 2,
   'a::onfocus': 2,
   'a::shape': 0,
-  'a::target': 10,
+  'a::target': 0,
   'a::type': 0,
   'area::accesskey': 0,
   'area::alt': 0,
@@ -25651,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.13.1";
+    cdb.VERSION = "3.13.2";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -30126,7 +30127,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       if(options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
           title: field.title ? field.name : null,
-          value: cdb.core.sanitize.html(attributes[field.name]),
+          value: attributes[field.name],
           index: j
         });
       }
@@ -30234,7 +30235,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-      
+
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -30264,7 +30265,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           }
         },values);
 
-      this.$el.html(this.template(obj));
+      this.$el.html(
+        cdb.core.sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
+      );
 
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
@@ -30325,7 +30328,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-        template: cdb.core.sanitize.html(template, this.model.get('sanitizeTemplate')),
+        template: template,
         type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {
@@ -33602,8 +33605,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    //var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
-    var host = this._host('a');
+    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
     var url = [
       host,
       //'api',

@@ -1,3 +1,10 @@
+3.13.2 (07//04//2015)
+* Fix double escaping on infowindows
+* Fix a-tag's target attribute not working
+
+3.13.1 (06//04//2015)
+* Allows to request a Static Map of a password protected visualization
+
 3.13.0 (31//03//2015)
 * Breaking Changes
   - Sanitize output by default (#2972), see doc change and example below how to override:

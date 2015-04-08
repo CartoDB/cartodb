@@ -43,18 +43,18 @@ module Cartodb
         :enable_starttls_auto => Cartodb.config[:mailer]['enable_starttls_auto'] }
     end
 
-    if @config[:basemaps].present?
-      default_attrs = {}
+    if @config[:basemaps].present? && !@config[:basemaps]['default'].present?
+      @config[:basemaps]['default'] = {}
+      new_default = false
       @config[:basemaps].each do |bfamily,ba|
+        break if new_default
         ba.each do |bname,battrs|
           if battrs['default']
-            default_attrs = battrs
+            @config[:basemaps]['default'] = battrs
+            new_default = true
             break
           end
         end
-      end
-      if !@config[:basemaps]['default'].present?
-        @config[:basemaps]['default'] = default_attrs
       end
     end
   end

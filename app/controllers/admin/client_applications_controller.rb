@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class Admin::ClientApplicationsController < ApplicationController
-  ssl_required :oauth, :api_key, :regenerate_api_key
+  ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
 
   before_filter :login_required
 

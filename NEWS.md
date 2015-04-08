@@ -13,6 +13,8 @@
 * Allows to generate a static map of a password protected visualization [#3028] (https://github.com/CartoDB/cartodb/pull/3028)
 
 Bugfixes:
+* Removes duplicated maps in the delete warning dialog [3055](https://github.com/CartoDB/cartodb/pull/3055)
+* Fix "all" infowindow field switch [3021](https://github.com/CartoDB/cartodb/pull/3021)
 * Fix "create table from query or clear view" banner covers zoom overlay and search box [#2762](https://github.com/CartoDB/cartodb/pull/2762)
 * Fix Changing email requires new password [#2764](https://github.com/CartoDB/cartodb/pull/2764)
 * Fix "Update in multi-user account" [#2794](https://github.com/CartoDB/cartodb/pull/2794)
@@ -23,6 +25,7 @@ Bugfixes:
 * Add specific error for wrongly encoded CSV files [#2847](https://github.com/CartoDB/cartodb/pull/2847)
 * Fixed infinite loop saving overlays #2827
 * New index for visualizations.parent_id [#3017](https://github.com/CartoDB/cartodb/pull/3017)
+* Fix sanitization issues in custom HTML infowindows [#3059](https://github.com/CartoDB/cartodb/pull/3059)
 
 3.9.0 (2015-02-13)
 ------------------

@@ -92,6 +92,7 @@ describe Visualization::Member do
       vis_mock.stubs(:transition_options).returns({})
       vis_mock.stubs(:active_child).returns(nil)
       vis_mock.stubs(:likes).returns([])
+      vis_mock.stubs(:likes_count).returns(0)
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro

@@ -386,6 +386,7 @@ module CartoDB
       def lazy_order_by_mapviews(objects)
         objects.sort! { |obj_a, obj_b|
           # Stats have format [ date, value ]
+          # TODO: refactor with mapviews method at refactor
           obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
         }
       end

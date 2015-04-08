@@ -14,6 +14,7 @@ namespace :cartodb do
         visualization_map_id uuid,
         visualization_title text,
         visualization_likes integer,
+        visualization_mapviews integer,
         user_id uuid,
         user_username text,
         user_organization_id uuid,
@@ -147,7 +148,7 @@ namespace :cartodb do
             visualization_id, visualization_name, visualization_description,
             visualization_type, visualization_tags, visualization_created_at,
             visualization_updated_at, visualization_map_id, visualization_title, 
-            visualization_likes,
+            visualization_likes, visualization_mapviews,
             user_id, user_username, user_organization_id,
             user_twitter_username, user_website, user_avatar_url,
             user_available_for_hire
@@ -165,7 +166,7 @@ namespace :cartodb do
           '#{v.id}', '#{v.name}', '#{v.description}',
           '#{v.type}', ARRAY[#{tags}], '#{v.created_at.iso8601(6)}',
           '#{v.updated_at.iso8601(6)}', '#{v.map_id}', '#{v.title}',
-          '#{v.likes_count}',
+          '#{v.likes_count}', '#{v.mapviews}',
           '#{u.id}', '#{u.username}', '#{u.organization_id}',
           '#{u.twitter_username}', '#{u.website}', '#{u.avatar_url}',
           '#{u.available_for_hire}'

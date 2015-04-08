@@ -14,7 +14,7 @@ module CartoDB
                         others:           :other_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
+      INTERFACE     = %w{ overlays map user table related_tables layers stats mapviews single_data_layer? synchronization
                           permission parent children support_tables prev_list_item next_list_item likes likes_count reload_likes }
 
       def initialize(attributes={})
@@ -101,6 +101,10 @@ module CartoDB
 
       def stats(user=nil)
         @stats ||= Visualization::Stats.new(self, user).to_poro
+      end
+
+      def mapviews(user=nil)
+        @mapviews ||= stats(user).collect { |o| o[1] }.reduce(:+)
       end
 
       def single_data_layer?

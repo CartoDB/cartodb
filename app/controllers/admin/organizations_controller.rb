@@ -50,7 +50,7 @@ class Admin::OrganizationsController < ApplicationController
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
-    redirect_to organization_settings_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"

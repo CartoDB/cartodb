@@ -43,18 +43,40 @@ module ApplicationHelper
     end
   end
 
+  def sql_api_template(privacy="private")
+      sql_api = Cartodb.config[:sql_api][privacy]
+      if CartoDB.subdomainless_urls?
+        sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/{user}"
+      else
+        sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s
+      end
+  end
+
+  def maps_api_template(privacy="private")
+      maps_api = Cartodb.config[:tiler][privacy]
+      if CartoDB.subdomainless_urls?
+        maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"].to_s + "/user/{user}"
+      else
+        maps_api["protocol"] + "://{user}." + maps_api["domain"] + ":" + maps_api["port"].to_s
+      end
+  end
+
+  def default_fallback_basemap
+    Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'] : {}
+  end
+
+  module_function :default_fallback_basemap
+  module_function :maps_api_template
+  module_function :sql_api_template
+
+
   def frontend_config
     config = {
-      tiler_protocol:             Cartodb.config[:tiler]["private"]["protocol"],
-      tiler_port:                 Cartodb.config[:tiler]["private"]["port"],
-      tiler_domain:               Cartodb.config[:tiler]["private"]["domain"],
-      sql_api_protocol:           Cartodb.config[:sql_api]["private"]["protocol"],
-      sql_api_domain:             Cartodb.config[:sql_api]["private"]["domain"],
-      sql_api_endpoint:           Cartodb.config[:sql_api]["private"]["endpoint"],
-      sql_api_port:               Cartodb.config[:sql_api]["private"]["port"],
+      maps_api_template:          maps_api_template,
+      sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted],
-      account_host:               Cartodb.config[:account_host],
+      account_host:               CartoDB.account_host,
       dropbox_api_key:            Cartodb.config[:dropbox_api_key],
       gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
@@ -66,6 +88,7 @@ module ApplicationHelper
       tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
+      default_fallback_basemap:   default_fallback_basemap
     }
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
@@ -93,24 +116,20 @@ module ApplicationHelper
     config.to_json
   end
 
-  def frontend_config_public(options={ https_sql_api: false })
+  def frontend_config_public(options={ https_apis: false })
+    api_type = (options[:https_apis].present? && options[:https_apis]) ? 'private' : 'public'
+
     config = {
-      tiler_protocol:      Cartodb.config[:tiler]["public"]["protocol"],
-      tiler_port:          Cartodb.config[:tiler]["public"]["port"],
-      tiler_domain:        Cartodb.config[:tiler]["public"]["domain"],
+      maps_api_template:   maps_api_template(api_type),
       user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
-      account_host:        Cartodb.config[:account_host],
+      account_host:        CartoDB.account_host,
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
       api_key:             ''
     }
 
     # Assumption: it is safe to expose private SQL API endpoint (or it is the same just using HTTPS)
-    sql_api_type = (options[:https_sql_api].present? && options[:https_sql_api]) ? 'private' : 'public'
-    config[:sql_api_protocol] = Cartodb.config[:sql_api][sql_api_type]['protocol']
-    config[:sql_api_domain]   = Cartodb.config[:sql_api][sql_api_type]['domain']
-    config[:sql_api_endpoint] = Cartodb.config[:sql_api][sql_api_type]['endpoint']
-    config[:sql_api_port]     = Cartodb.config[:sql_api][sql_api_type]['port']
+    config[:sql_api_template] =  sql_api_template(api_type)
 
     if Cartodb.config[:graphite_public].present?
       config[:statsd_host] = Cartodb.config[:graphite_public]['host']
@@ -185,24 +204,13 @@ module ApplicationHelper
     content_tag :div, error_messages, :class => 'field_error' if error_messages.present?
   end
 
-  # TODO: Check this for MU
   def v1_vizjson_url(visualization)
     "/api/v1/viz/#{visualization.id}/viz"
-  end #v1_vizjson_url
+  end
 
-  # TODO: Check this for MU
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
-  end #v2_vizjson_url
-
-  # TODO reactivate in order to allow CartoDB plugins
-  # to inject content into the CartoDB admin UI
-  # def content_from_plugins_for(hook)
-  #   ::CartoDB::Plugin.registered.map do |plugin|
-  #     hook_name = "#{plugin.name.underscore}_#{hook}_hook"
-  #     send(hook_name) if defined?(hook_name)
-  #   end.join('').html_safe
-  # end
+  end
 
   def formatted_tags(tags)
     visibleCount = 3
@@ -217,8 +225,8 @@ module ApplicationHelper
     end
   end
 
-  def vis_json_url(vis_id)
-    "#{ api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: vis_id).sub(/(http:|https:)/i, '') }.json"
+  def vis_json_url(vis_id, context, user=nil)
+    "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
   end
 
   #if cartodb_com_hosted is false, means that it is SaaS. If it's true (or doesn't exist), it's a custom installation

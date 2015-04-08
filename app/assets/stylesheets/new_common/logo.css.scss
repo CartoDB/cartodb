@@ -7,7 +7,23 @@
 $size: 40px;
 
 .Logo {
-  @include inline-block();
+  position: relative;
+  display: inline-block;
+}
+.Logo:after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: $size + 4;
+  height: $size + 4;
+  border-radius: $size;
+  background-color: #fff;
+  @include opacity(0);
+  border: 2px solid rgba(#fff,.7);
+  border-bottom-color: transparent;
+  background: transparent;
+  @include transition(all, .4s, ease-in);
 }
 .Logo--text {
   i {
@@ -17,12 +33,16 @@ $size: 40px;
   }
 }
 .Logo--avatar {
-  width: $size+1;
-  height: $size+1;
+  display: inline-block;
+  vertical-align: top;
+  width: $size;
+  height: $size;
   line-height: 54px;
   background: white;
   border-radius: 2px;
   text-align: center;
+  @include transition(border-radius, .2s, linear);
+
   i {
     font-size: 25px;
     color: #3C93D8;
@@ -39,5 +59,20 @@ $size: 40px;
   i {
     font-size: 24px;
     color: white;
+  }
+}
+
+.Logo.is-loading {
+  .Logo--avatar { border-radius: $size+1 }
+  
+  &:after {
+    @include animation(spin 0.7s linear infinite);
+    @include opacity(1);
+  }
+}
+
+@include keyframes(spin){
+  100%{
+    @include transform(rotate(360deg));
   }
 }

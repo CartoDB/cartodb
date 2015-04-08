@@ -22,7 +22,7 @@
     var owner_username      = '<%= @table.owner.username %>';
     var belong_organization = <%= @table.owner.has_organization? %>;
     var map                 = <%= safe_js_object @table.map.to_json %>;
-    var config              = <%= safe_js_object frontend_config_public({https_sql_api: request.protocol == 'https://' }) %>;
+    var config              = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizjson             = <%= safe_js_object @vizjson.to_json %>;
     var auth_token          = <%= safe_js_object @auth_tokens.to_json %>;
     var use_https           = <%= @use_https =%>;
@@ -110,10 +110,8 @@
               <span class="counter"><%= @likes_count %></span>
             </a>
 
-            <% domain = @table.owner.organization ? @table.owner.username : nil %>
-
             <!--a href="#/clone-in-cartodb" class="clone button green"><i class="clone-icon"></i>Clone in CartoDB</a-->
-            <a href="<%= public_tables_show_url(user_domain: domain, id: @table.name) %>" class="edit button grey">Edit in CartoDB</a>
+            <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="edit button grey">Edit in CartoDB</a>
           </div>
         </div>
       </div>
@@ -135,7 +133,7 @@
               <% @total_visualizations.each do |vis| %>
                 <% if vis.privacy == "public" %>
                   <li>
-                    <a href="<%= public_visualizations_public_map_url(user_domain: @user_domain, id: vis.id) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
+                    <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}) %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a>
                   </li>
                 <% end %>
               <% end %>

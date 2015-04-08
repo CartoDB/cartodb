@@ -7,8 +7,7 @@ module DataRepository
   class Collection
     include Enumerable
 
-    INTERFACE  = %w{ signature add delete store fetch each to_json repository
-    count } + Enumerable.instance_methods
+    INTERFACE  = %w{ signature add delete store fetch each to_json repository count } + Enumerable.instance_methods
 
     attr_reader   :signature
     attr_accessor :storage

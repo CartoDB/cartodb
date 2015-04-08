@@ -11,10 +11,10 @@ module CartoDB
     def decorate_user(user)
       return {} if user.nil?
       {
-          id:         user.id,
-          username:   user.username,
-          avatar_url: user.avatar_url,
-          base_url:   user.public_url
+        id:         user.id,
+        username:   user.username,
+        avatar_url: user.avatar_url,
+        base_url: user.public_url
       }
     end
 

@@ -140,9 +140,9 @@ namespace :cartodb do
         page: page,
         per_page: BATCH_SIZE,
         order: :created_at,
-        types: [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED],
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       }
+      filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
       filter[:min_created_at] = min_created_at if min_created_at
       filter[:min_updated_at] = min_updated_at if min_updated_at
       filter

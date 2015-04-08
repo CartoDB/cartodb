@@ -54,9 +54,9 @@ class Admin::VisualizationsController < ApplicationController
   def show
     unless current_user.present?
       if request.original_fullpath =~ %r{/tables/}
-        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id]}))
       else
-        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}))
       end
     end
 
@@ -66,9 +66,9 @@ class Admin::VisualizationsController < ApplicationController
 
     unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
       if request.original_fullpath =~ %r{/tables/}
-        return(redirect_to public_table_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+        CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
       else
-        return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain], id: request.params[:id], redirected:true))
+        CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
       end
     end
 
@@ -81,10 +81,14 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = resolve_visualization_and_table(request)
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(pretty_404) if disallowed_type?(@visualization)
-
-    return(redirect_to public_visualizations_public_map_url(user_domain: request.params[:user_domain],
-                                                            id: request.params[:id])) \
-      if @visualization.derived?
+    if @visualization.derived?
+      if current_user.nil? || current_user.username != request.params[:user_domain]
+        destination_user = User.where(username: request.params[:user_domain]).first
+      else
+        destination_user = nil
+      end
+      return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}, destination_user))
+    end
 
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=true)
@@ -99,19 +103,19 @@ class Admin::VisualizationsController < ApplicationController
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.organization? and not (request.ssl? or request.local? or Rails.env.development?)
+    return(redirect_to :protocol => 'https://') if @visualization.organization? \
+                                                   and not (request.ssl? or request.local? or Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
-    if @visualization.user.has_organization? && !request.params[:redirected].present?
-      if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
-        redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_table_path( \
-            user_domain: @visualization.user.username, \
-            id: "#{params[:id]}", redirected:true) \
-          and return
-      end
+    if eligible_for_redirect?(@visualization.user)
+      redirect_to CartoDB.url(self,
+                              'public_table',
+                              { id: "#{params[:id]}", redirected:true },
+                              @visualization.user
+                              ) and return
     end
 
-    @vizjson = @visualization.to_vizjson
+    @vizjson = @visualization.to_vizjson({https_request: request.protocol == 'https://'})
     @auth_tokens = nil
     @use_https = false
     @api_key = nil
@@ -191,13 +195,15 @@ class Admin::VisualizationsController < ApplicationController
     end
 
     # Legacy redirect, now all public pages also with org. name
-    if @visualization.user.has_organization? && !request.params[:redirected].present?
-      if CartoDB.extract_real_subdomain(request) != @visualization.user.organization.name
-        redirect_to CartoDB.base_url(@visualization.user.organization.name) << public_visualizations_public_map_path( \
-            user_domain: @visualization.user.username, \
-            id: "#{@visualization.user.organization.name}.#{params[:id]}", redirected:true) \
-          and return
-      end
+    if eligible_for_redirect?(@visualization.user)
+      redirect to CartoDB.url(self,
+                                'public_visualizations_public_map',
+                                {
+                                  id: "#{@visualization.user.organization.name}.#{params[:id]}",
+                                  redirected:true
+                                },
+                                @visualization.user
+                              ) and return
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -209,15 +215,15 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
-    @related_tables_usernames = Hash.new
+    @related_tables_owners = Hash.new
     @related_tables.each { |table|
-      unless @related_tables_usernames.include?(table.user_id)
+      unless @related_tables_owners.include?(table.user_id)
         table_owner = User.where(id: table.user_id).first
         if table_owner.nil?
           # strange scenario, as user has been deleted but his table still exists
-          @related_tables_usernames[table.user_id] = nil
+          @related_tables_owners[table.user_id] = nil
         else
-          @related_tables_usernames[table.user_id] = table_owner.username
+          @related_tables_owners[table.user_id] = table_owner
         end
       end
     }
@@ -410,6 +416,12 @@ class Admin::VisualizationsController < ApplicationController
 
   private
 
+  def eligible_for_redirect?(user)
+    return false if CartoDB.subdomainless_urls?
+    user.has_organization? && !request.params[:redirected].present? &&
+      CartoDB.subdomain_from_request(request) != user.organization.name
+  end
+
   def org_user_has_map_permissions?(user, visualization)
     user && visualization && visualization.organization? &&
       visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
@@ -424,7 +436,10 @@ class Admin::VisualizationsController < ApplicationController
   # Messing with sessions is bad so just redirect to newly formed url and let new request handle permissions/access
   def get_corrected_url_if_proceeds(for_table=true)
     url = nil
-    org_name = CartoDB.extract_real_subdomain(request)
+
+    return url if CartoDB.subdomainless_urls?
+
+    org_name = CartoDB.subdomain_from_request(request)
     if CartoDB.extract_subdomain(request) != org_name
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
@@ -434,13 +449,12 @@ class Admin::VisualizationsController < ApplicationController
           user = User.where(username:username).first
           if url.nil? && !user.nil? && !user.organization.nil?
             if user.organization.id == organization.id
-              url = CartoDB.base_url(organization.name)
               if for_table
-                url += public_tables_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
-                                               redirected:true)
+                url = CartoDB.url(self, 'public_tables_show',
+                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
               else
-                url += public_visualizations_show_path(user_domain: username, id: "#{params[:user_domain]}.#{params[:id]}",
-                                                       redirected:true)
+                url = CartoDB.url(self, 'public_visualizations_show',
+                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
               end
             end
           end
@@ -468,25 +482,25 @@ class Admin::VisualizationsController < ApplicationController
 
   def public_url
     if request.path_info =~ %r{/tables/}
-      public_table_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_table', { id: full_table_id })
     else
-      public_visualization_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_visualization', { id: full_table_id })
     end
   end
 
   def public_map_url
     if request.path_info =~ %r{/tables/}
-      public_table_map_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_table_map', { id: full_table_id })
     else
-      public_visualizations_public_map_path(user_domain: params[:user_domain], id: full_table_id)
+      CartoDB.path(self, 'public_visualizations_public_map', { id: full_table_id })
     end
   end
 
   def embed_map_url_for(id)
     if request.path_info =~ %r{/tables/}
-      public_tables_embed_map_path(user_domain: params[:user_domain], id: id)
+      CartoDB.path(self, 'public_tables_embed_map', { id: id })
     else
-      public_visualizations_embed_map_path(user_domain: params[:user_domain], id: id)
+      CartoDB.path(self, 'public_visualizations_embed_map', { id: id })
     end
   end
 
@@ -521,7 +535,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def user_domain_variable(request)
     if params[:user_domain].present?
-      CartoDB.extract_real_subdomain(request) != params[:user_domain] ? params[:user_domain] : nil
+      CartoDB.subdomain_from_request(request) != params[:user_domain] ? params[:user_domain] : nil
     else
       nil
     end

@@ -29,7 +29,7 @@ module CartoDB
           self.exit_code      = thread.value
         }
         self
-      end #run
+      end
 
       def command
         %Q(#{command_path} ) +
@@ -38,23 +38,23 @@ module CartoDB
         %Q(--user=#{pg_options.fetch(:user)} )  +
         %Q(--file=- )                           +
         %Q(#{pg_options.fetch(:database)} )
-      end #command
+      end
       
       def command_path
         `which psql`.strip
-      end #command_path
+      end
 
       def create_table_statement(stream)
         stream.rewind
         skip_lines(stream, START_CREATE_TABLE_REGEX) 
         %Q(CREATE TABLE "#{SCHEMA}"."#{table_name}" (\n#{schema_from(stream)});\n)
-      end #create_table_statement
+      end
 
       def copy_statement(stream)
         stream.rewind
         line = skip_lines(stream, START_COPY_REGEX)
         line.gsub(START_COPY_REGEX, %Q[COPY "#{SCHEMA}"."#{table_name}" (])
-      end #copy_statement
+      end
 
       def schema_from(stream)
         schema = ''
@@ -65,23 +65,23 @@ module CartoDB
         end
 
         schema
-      end #schema_from
+      end
 
       def skip_lines(stream, regex)
         while line = stream.readline do break if regex.match(line) end
         line
-      end #skip_lines
+      end
 
       def copy_records(stream, stdin)
         while line = stream.readline do
           stdin.write(line)
           break if END_COPY_REGEX.match(line)
         end
-      end #copy_records
+      end
 
       attr_accessor :table_name, :filepath, :pg_options,
                     :command_output, :exit_code
-    end # Psql
-  end # Importer2
-end # CartoDB
+    end
+  end
+end
 

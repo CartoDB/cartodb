@@ -26,7 +26,7 @@
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_for @user, url: account_update_user_path(user_domain: params[:user_domain]), :class => "Form" do |f| %>
+      <%= form_for @user, url: CartoDB.url(self, 'account_update_user', {}, current_user), :class => "Form" do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">

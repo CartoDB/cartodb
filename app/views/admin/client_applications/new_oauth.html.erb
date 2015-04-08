@@ -20,7 +20,7 @@
 
   <div class="CredentialsContent">
     <div class="u-inner">
-      <%= form_tag(regenerate_oauth_url(user_domain: params[:user_domain]), :method => "DELETE", :id => 'regenerate_oauth_keys', :class => "Form") do %>
+      <%= form_tag(CartoDB.url(self, 'regenerate_oauth', {}, current_user), :method => :delete, :id => 'regenerate_oauth_keys', :class => "Form") do %>
 
         <div class="Form-title">
           <p class="Form-titleText">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
@@ -56,7 +56,7 @@
             <label class="Form-label">Request token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= request_token_url(user_domain: params[:user_domain]) %>" readonly />
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>
@@ -66,7 +66,7 @@
             <label class="Form-label">Access token URL</label>
           </div>
           <div class="Form-rowData">
-            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= access_token_url(user_domain: params[:user_domain]) %>" readonly />
+            <input type="text" class="Form-input Form-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
             <i data-title="Copy this" class="iconFont iconFont-Anchor Form-inputIcon Form-copyIcon js-copy-value"></i>
           </div>
         </div>

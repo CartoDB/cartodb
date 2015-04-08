@@ -230,7 +230,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
-    render_jsonp(visualization.to_vizjson)
+    render_jsonp(visualization.to_vizjson({https_request: request.protocol == 'https://'}))
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
@@ -272,14 +272,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       last_children = prev_vis.parent.children.last
       last_children.set_next_list_item!(prev_vis)
 
-      render_jsonp(last_children.to_vizjson)
+      render_jsonp(last_children.to_vizjson({https_request: request.protocol == 'https://'}))
     else
       next_vis = Visualization::Member.new(id: next_id).fetch
       return(head 403) unless next_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
       prev_vis.set_next_list_item!(next_vis)
 
-      render_jsonp(prev_vis.to_vizjson)
+      render_jsonp(prev_vis.to_vizjson({https_request: request.protocol == 'https://'}))
     end
   rescue KeyError
     head(404)
@@ -572,6 +572,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       total_shared:   collection.total_shared_entries(params_for_total_count[:type])
     }
     render_jsonp(response)
+  end
+
+  # Need to always send request object to visualizations upon rendering their json
+  def render_jsonp(obj, status = 200, options = {})
+    super(obj, status, options.merge({request: request}))
   end
 
 end

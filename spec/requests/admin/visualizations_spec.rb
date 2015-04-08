@@ -268,6 +268,7 @@ describe Admin::VisualizationsController do
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
+      user_a.reload
 
       user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
 
@@ -282,16 +283,16 @@ describe Admin::VisualizationsController do
 
       host! "#{org.name}.localhost.lan"
 
-      source_url = public_table_url(user_domain: user_a.username, id: vis.name)
+      source_url = CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+
       get source_url, {}, get_headers(org.name)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
-      url = CartoDB.base_url(org.name) + public_visualizations_show_path(user_domain: user_b.username,
-                                                                 id: "#{user_a.username}.#{vis.name}") \
-                               + "?redirected=true"
+      url = CartoDB.base_url(org.name, user_b.username) +
+        CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
       last_response.location.should eq url
 
       org.destroy

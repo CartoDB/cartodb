@@ -21,6 +21,6 @@ describe Overlay::Presenter do
       representation.fetch(:type)     .should == overlay.type
       representation.fetch(:options)  .should == overlay.options
     end
-  end #to_poro
-end # CartoDB
+  end
+end
 

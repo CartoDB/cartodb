@@ -7,12 +7,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   layout 'application'
 
   def show
-    respond_with(@user.data(:extended => true))
+    respond_with(@user.data({:extended => true}))
   end
 
   def index
     @users = (params[:overquota].present? ? User.overquota(0.20) : User.all)
-    respond_with(:superadmin, @users.map(&:data))
+    respond_with(:superadmin, @users.map { |user| user.data })
   end
 
   def create

@@ -35,13 +35,11 @@
         <ul>
           <% @datasets.each_with_index do |dataset, i| %>
 
-            <% domain = dataset[:owner] && dataset[:owner].organization ? dataset[:owner].username : nil %>
-
             <li>
               <div class="title">
                 <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
-                <a href="<%= public_tables_show_url(user_domain: domain, id: dataset[:title]) %>" class="edit button grey small">edit</a>
-                <h2><a href="<%= public_table_url(user_domain: domain, id: dataset[:title]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
+                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: dataset[:title]}, dataset[:owner]) %>" class="edit button grey small">edit</a>
+                <h2><a href="<%= CartoDB.url(self, 'public_table', {id: dataset[:title]}, dataset[:owner]) %>" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a></h2>
                 <p><%= raw (dataset[:description_html_safe] ? dataset[:description_html_safe].truncate(80) : "") %></p>
               </div>
 
@@ -49,7 +47,7 @@
                 <% if dataset[:tags].size > 0 %>
                   <ul class="tags">
                     <% dataset[:tags].each do |tag| %>
-                      <li><h3><%= link_to tag, public_datasets_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
+                      <li><h3><%= link_to tag, CartoDB.url(self, 'public_datasets_tag', {tag: tag}, dataset[:owner]), :rel => "tag" %></h3></li>
                     <% end %>
                   </ul>
                 <% end %>
@@ -66,9 +64,9 @@
             <% if @pages > 1 && params[:page].to_i > 1 %>
               <% p = params[:page] || 1 %>
               <% if params[:tag] %>
-                <a class="prev" href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i-1)) %>">Prev</a>
+                <a class="prev" href="<%= CartoDB.url(self, 'public_datasets_tag_page', {tag: params[:tag], page: (p.to_i-1)}) %>">Prev</a>
               <% else %>
-                <a class="prev" href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(p.to_i-1)) %>">Prev</a>
+                <a class="prev" href="<%= CartoDB.url(self, 'public_datasets_page', {page:(p.to_i-1)}) %>">Prev</a>
               <% end %>
             <% end %>
 
@@ -76,11 +74,11 @@
               <% @pages.times do |i| %>
                 <% if params[:tag] %>
                   <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                    <a href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (i+1)) %>"></a>
+                    <a href="<%= CartoDB.url(self, 'public_datasets_tag_page', {tag: params[:tag], page: (i+1)}) %>"></a>
                   </li>
                 <% else %>
                   <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                    <a href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(i+1)) %>"></a>
+                    <a href="<%= CartoDB.url(self, 'public_datasets_page', {page:(i+1)}) %>"></a>
                   </li>
                 <% end %>
               <% end %>
@@ -89,9 +87,9 @@
             <% if @pages > 1 && (params[:page].to_i < @pages) %>
               <% p = params[:page] || 1 %>
               <% if params[:tag] %>
-                <a class="next" href="<%= public_datasets_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i+1)) %>">Next</a>
+                <a class="next" href="<%= CartoDB.url(self, 'public_datasets_tag_page', {tag: params[:tag], page: (p.to_i+1)}) %>">Next</a>
               <% else %>
-                <a class="next" href="<%= public_datasets_page_url(user_domain: params[:user_domain], page:(p.to_i+1)) %>">Next</a>
+                <a class="next" href="<%= CartoDB.url(self, 'public_datasets_page', {page:(p.to_i+1)}) %>">Next</a>
               <% end %>
             <% end %>
 

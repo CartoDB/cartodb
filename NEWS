@@ -1,3 +1,9 @@
+3.14.0 ()
+* Infowindow in anonymous maps are requested by attributes endpoint in maps api so SQL API is not used anymore
+* Changed the way remote host is set for maps and sql API.
+* Deprecation warning:
+    - tiler_host, tiler_prototol, tiler_port, sql_api_domain, sql_api_protocol are deprecated, use sql_api_template and maps_api_template instead.
+
 3.13.2 (07//04//2015)
 * Fix double escaping on infowindows
 * Fix a-tag's target attribute not working

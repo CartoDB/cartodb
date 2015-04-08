@@ -42,7 +42,7 @@ namespace :cartodb do
         user.in_database.run "CREATE INDEX #{VISUALIZATIONS_TABLE}_#{c}_fts_idx ON #{VISUALIZATIONS_TABLE} USING gin(to_tsvector(language, #{c}))"
       }
       # TODO: needed/useful?
-      #user.in_database.run "select cartodb.CDB_CartodbfyTable('#{user.database_schema}', '#{VISUALIZATIONS_TABLE}')"
+      # user.in_database.run "select cartodb.CDB_CartodbfyTable('#{user.database_schema}', '#{VISUALIZATIONS_TABLE}')"
     end
 
     task :drop => [:environment] do
@@ -75,10 +75,10 @@ namespace :cartodb do
         visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
         visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: visualization_ids})
-        updated_count = 0
+        full_updated_count = 0
+        mapviews_liked_updated_count = 0
         visualizations.map { |v|
           explore_visualization = explore_visualizations_by_visualization_id[v.id]
-          # TODO: update likes count
           if v.updated_at != explore_visualization[:visualization_updated_at]
             if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
               privated_visualization_ids << v.id
@@ -86,12 +86,17 @@ namespace :cartodb do
               # TODO: update instead of delete-insert
               user.in_database.run delete_query([v.id])
               user.in_database.run insert_query([values_sql(v)])
-              updated_count += 1
+              full_updated_count += 1
             end
+          else
+            # INFO: retrieving mapviews makes this much slower
+            # TODO: only update when there're new mapviews or likes
+            user.in_database.run update_mapviews_and_likes_query(v)
+            mapviews_liked_updated_count += 1
           end
         }
 
-        print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{updated_count}\n"
+        print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{full_updated_count} \tMapviews and liked updates: #{mapviews_liked_updated_count}\n"
 
         deleted_visualization_ids +=  visualization_ids - visualizations.collect(&:id)
 
@@ -121,8 +126,8 @@ namespace :cartodb do
       puts "INSERTING NEW CREATED"
       page = 1
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, most_recent_created_date))).count > 0 do
-        print "Batch ##{page}. \t Insertions: #{visualizations.count}\n"
         user.in_database.run insert_query(visualizations.map { |v| values_sql(v) })
+        print "Batch ##{page}. \t Insertions: #{visualizations.count}\n"
         page += 1
       end
 
@@ -172,6 +177,14 @@ namespace :cartodb do
           '#{u.available_for_hire}'
         )
       }.gsub("''", "NULL")
+    end
+
+    def update_mapviews_and_likes_query(visualization)
+      v = visualization
+      %Q{ UPDATE #{VISUALIZATIONS_TABLE} set
+            visualization_mapviews = #{v.mapviews},
+            visualization_likes = #{v.likes_count}
+          where visualization_id = '#{v.id}' }
     end
 
     def common_data_user

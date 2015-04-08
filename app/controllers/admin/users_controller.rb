@@ -7,7 +7,7 @@ class Admin::UsersController < ApplicationController
 
   before_filter :login_required
   before_filter :setup_user
-  #before_filter :initialize_google_plus_config, only: [:profile, :account]
+  before_filter :initialize_google_plus_config, only: [:profile, :account]
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'

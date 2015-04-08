@@ -364,9 +364,9 @@ shared_examples_for "visualization controllers" do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
 
         user_2 = create_user(
-          username: 'test2',
-          email:    'client2@example.com',
-          password: 'clientex'
+            username: "test#{rand(9999)}-2",
+            email: "client#{rand(9999)}@cartodb.com",
+            password: 'clientex',
         )
 
         post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),

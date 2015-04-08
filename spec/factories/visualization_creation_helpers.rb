@@ -14,7 +14,7 @@ shared_context 'visualization creation helpers' do
   before(:all) do
     @user1 = create_user(
       username: 'test1',
-      email: 'client@example.com',
+      email: 'client1@example.com',
       password: 'clientex'
     )
 

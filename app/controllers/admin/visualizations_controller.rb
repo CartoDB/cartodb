@@ -7,7 +7,8 @@ class Admin::VisualizationsController < ApplicationController
 
   include CartoDB
 
-  ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
+  ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table,
+              :show_organization_public_map, :show_organization_embed_map
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map, :show_protected_embed_map, :embed_map]
@@ -193,13 +194,12 @@ class Admin::VisualizationsController < ApplicationController
         @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
       return(show_organization_public_map)
     end
-
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect to CartoDB.url(self,
+      redirect_to CartoDB.url(self,
                                 'public_visualizations_public_map',
                                 {
-                                  id: "#{@visualization.user.organization.name}.#{params[:id]}",
+                                  id: "#{@visualization.user.username}.#{params[:id]}",
                                   redirected:true
                                 },
                                 @visualization.user

@@ -132,7 +132,23 @@ namespace :cartodb do
         page += 1
       end
 
-      # TODO: insert old creations, new public
+      puts "INSERTING OLD MADE PUBLIC"
+      page = 1
+      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_created_date))).count > 0 do
+        updated_ids = visualizations.collect(&:id)
+
+        existing_ids = user.in_database[%Q{ select visualization_id from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{updated_ids.join("','")}')}].all.map { |row| row[:visualization_id] }
+
+        missing_ids = updated_ids - existing_ids
+
+        if missing_ids.length > 0
+          missing_visualizations = visualizations.select { |v| missing_ids.include?(v.id) }
+          user.in_database.run insert_query(missing_visualizations.map { |v| values_sql(v) })
+          print "Batch ##{page}. \t Insertions: #{missing_visualizations.length}\n"
+        end
+        page += 1
+      end
+
     end
 
     def filter(page, min_created_at = nil, min_updated_at = nil)

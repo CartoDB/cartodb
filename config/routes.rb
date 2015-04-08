@@ -355,7 +355,6 @@ CartoDB::Application.routes.draw do
     get     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
     put     '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     delete  '(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
-    get     '(/u/:user_domain)/api/v1/viz/:id/viz'                        => 'visualizations#vizjson1',        as: :api_v1_visualizations_vizjson,         constraints: { id: /[^\/]+/ }
     get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',                 as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
     post    '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',                as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
     get     '(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',                  as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }

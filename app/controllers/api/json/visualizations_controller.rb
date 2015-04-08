@@ -14,14 +14,14 @@ require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wra
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_allowed  :vizjson1, :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
+  ssl_allowed  :vizjson2, :notify_watching, :list_watching, :likes_count, :likes_list, :add_like, :is_liked,
                :remove_like
   ssl_required :index, :show, :create, :update, :destroy, :set_next_id
-  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2, :likes_count, :likes_list, :add_like,
+  skip_before_filter :api_authorization_required, only: [:vizjson2, :likes_count, :likes_list, :add_like,
                                                          :is_liked, :remove_like, :index]
   before_filter :optional_api_authorization, only: [:likes_count, :likes_list, :add_like, :is_liked, :remove_like,
                                                     :index, :vizjson2]
-  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson1, :vizjson2,
+  before_filter :table_and_schema_from_params, only: [:show, :update, :destroy, :stats, :vizjson2,
                                                       :notify_watching, :list_watching, :likes_count, :likes_list,
                                                       :add_like, :is_liked, :remove_like, :set_next_id]
 
@@ -209,22 +209,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     head(404)
   end
 
-  def vizjson1
-    visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
-    return(head 404) unless visualization
-    return(head 403) unless allow_vizjson_v1_for?(visualization.table)
-    set_vizjson_response_headers_for(visualization)
-    render_jsonp(CartoDB::Map::Presenter.new(
-      visualization.map, 
-      { full: false, url: "/api/v1/tables/#{visualization.table.id}" },
-      Cartodb.config, 
-      CartoDB::Logger
-    ).to_poro)
-  rescue => exception
-    CartoDB.notify_exception(exception)
-    raise exception
-  end
-
   def vizjson2
     visualization,  = locator.get(@table_id, CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
@@ -408,10 +392,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def scope_for(user)
     { user_id: user.id }
-  end
-
-  def allow_vizjson_v1_for?(table)
-    table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
   end
 
   def allow_vizjson_v2_for?(visualization)

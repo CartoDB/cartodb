@@ -6,9 +6,25 @@ module Carto
 
     class VisualizationsController < ::Api::ApplicationController
 
+      before_filter :table_and_schema_from_params
+      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked]
+
       FILTER_SHARED_YES = 'yes'
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
+
+      def table_and_schema_from_params
+        if params.fetch('id', nil) =~ /\./
+          @table_id, @schema = params.fetch('id').split('.').reverse
+        else
+          @table_id, @schema = [params.fetch('id', nil), nil]
+        end
+      end
+
+      def load_visualization
+        @visualization = Visualization.find(@table_id)
+        return render(text: exception.message, status: 403) if !@visualization.is_viewable_by?(current_viewer)
+      end
 
       def index
         types = params.fetch(:types, '').split(',')
@@ -75,11 +91,34 @@ module Carto
         render_jsonp(response)
       end
 
+      def likes_count
+        render_jsonp({
+          id: @visualization.id,
+          likes: @visualization.likes.count
+        })
+      end
+
+      def likes_list
+        render_jsonp({
+          id: @visualization.id,
+          likes: @visualization.likes.map { |like| { actor_id: like.actor } }
+        })
+      end
+
+      def is_liked
+        render_jsonp({
+          id: @visualization.id,
+          likes: @visualization.likes.count,
+          liked: @visualization.liked_by?(current_viewer.id)
+        })
+      end
+
       private
 
       def default_type(types)
         types.include?(Carto::Visualization::TYPE_DERIVED) ? Carto::Visualization::TYPE_DERIVED : Carto::Visualization::TYPE_CANONICAL
       end
+
     end
 
   end

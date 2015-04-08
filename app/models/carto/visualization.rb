@@ -14,10 +14,15 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  TYPE_CANONICAL  = 'table'
-  TYPE_DERIVED    = 'derived'
-  TYPE_SLIDE      = 'slide'
+  TYPE_CANONICAL = 'table'
+  TYPE_DERIVED = 'derived'
+  TYPE_SLIDE = 'slide'
   TYPE_REMOTE = 'remote'
+
+
+  PRIVACY_PUBLIC = 'public'
+  PRIVACY_PRIVATE = 'private'
+  PRIVACY_LINK = 'link'
 
   def stats
     @stats ||= CartoDB::Visualization::Stats.new(self).to_poro
@@ -46,12 +51,35 @@ class Carto::Visualization < ActiveRecord::Base
     ordered
   end
 
+  # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
   def liked_by?(user_id)
     likes_by(user_id).count > 0
   end
 
   def likes_by(user_id)
     likes.where(actor: user_id)
+  end
+
+  def is_viewable_by?(user)
+    is_viewable_with_link? || has_read_permission?(user)
+  end
+
+  private
+
+  def is_viewable_with_link?
+    is_public? || self.privacy == PRIVACY_LINK
+  end
+
+  def is_public?
+    self.privacy == PRIVACY_PUBLIC
+  end
+
+  def has_read_permission?(user)
+    is_owner?(user) || (permission && permission.can_read?(user))
+  end
+
+  def is_owner?(user)
+    self.user_id == user.id
   end
 
 end

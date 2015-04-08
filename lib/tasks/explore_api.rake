@@ -32,6 +32,7 @@ namespace :cartodb do
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
 
+    desc "Creates #{VISUALIZATIONS_TABLE} at common-data user and loads the data for the very first time. This table contains an aggregated, desnormalized view of the public data at visualizations, and it's used by Explore API"
     task :setup => [:environment] do
       user = target_user
       user.in_database.run CREATE_TABLE_SQL
@@ -45,10 +46,12 @@ namespace :cartodb do
       # user.in_database.run "select cartodb.CDB_CartodbfyTable('#{user.database_schema}', '#{VISUALIZATIONS_TABLE}')"
     end
 
+    desc "Deletes the #{VISUALIZATIONS_TABLE} table"
     task :drop => [:environment] do
       target_user.in_database.run DROP_TABLE_SQL
     end
 
+    desc "Updates the data at #{VISUALIZATIONS_TABLE}"
     task :update => [:environment] do
       update(target_user)
     end

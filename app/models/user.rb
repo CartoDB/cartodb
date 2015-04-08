@@ -225,17 +225,17 @@ class User < Sequel::Model
       # Remove user data imports, maps, layers and assets
       self.delete_external_data_imports
       self.delete_external_sources
-      self.data_imports.each { |d| d.destroy }
-      self.maps.each { |m| m.destroy }
-      self.layers.each { |l| remove_layer l }
-      self.assets.each { |a| a.destroy }
-      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
-
+      # There's a FK from geocodings to data_import.id so must be deleted in proper order
       if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
         self.geocodings.each { |g| g.destroy }
       else
         assign_geocodings_to_organization_owner
       end
+      self.data_imports.each { |d| d.destroy }
+      self.maps.each { |m| m.destroy }
+      self.layers.each { |l| remove_layer l }
+      self.assets.each { |a| a.destroy }
+      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
 
       assign_search_tweets_to_organization_owner
     rescue StandardError => exception

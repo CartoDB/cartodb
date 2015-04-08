@@ -356,6 +356,8 @@ module CartoDB
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
+        dataset = filter_by_min_created_at(dataset, filters.delete(:min_created_at))
+        dataset = filter_by_ids(dataset, filters.delete(:ids))
         order(dataset, filters.delete(:order))
       end
 
@@ -452,6 +454,20 @@ module CartoDB
       def filter_by_kind(dataset, filter_value)
         return dataset if filter_value.nil? || !filter_value
         dataset.where('kind=?', Member::KIND_GEOM)
+      end
+
+      def filter_by_min_created_at(dataset, min_created_at, included = false)
+        return dataset if !min_created_at
+        if included
+          dataset.where('created_at >= ?', min_created_at)
+        else
+          dataset.where('created_at > ?', min_created_at)
+        end
+      end
+
+      def filter_by_ids(dataset, ids)
+        return dataset if !ids
+        dataset.where(:id => ids)
       end
 
       def filter_by_only_shared(dataset, filters)

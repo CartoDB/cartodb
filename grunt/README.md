@@ -8,6 +8,8 @@ These are the tasks(*) we provide:
 - [x] ```grunt clean```       => clean temporary and dist folders.
 - [x] ```grunt invalidate```  => invalidate library files through fastly.
 - [x] ```grunt test```        => run library test suite (it will generate a SpecRunner.html file in test folder).
+  - ```grunt test -d```       => if you need to print failing tests.
+  - ```grunt test -f```       => if you need to know where was the problem.
 - [x] ```grunt build```       => generate library and website in dist folder.
 - [x] ```grunt dist```        => same as build task.
 - [x] ```grunt pages```       => deploy static cartodb.js webpage to gh-pages.

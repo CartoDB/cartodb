@@ -25,6 +25,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       tiler_protocol: layerModel.get('tiler_protocol'),
       tiler_domain: layerModel.get('tiler_domain'),
       tiler_port: layerModel.get('tiler_port'),
+      maps_api_template: layerModel.get('maps_api_template'),
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),

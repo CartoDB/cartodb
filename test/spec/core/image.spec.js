@@ -307,6 +307,36 @@ describe("Image", function() {
 
   });
 
+  it("should use maps_api_template when provided", function() {
+
+    var layer_definition = {
+      user_name: "documentation",
+      maps_api_template: 'http://cartodb.com/user/{user}/api/v1/maps',
+      tiler_domain: "cartodb.com",
+      tiler_port: "80",
+      tiler_protocol: "http",
+      layers: [{
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+          subdomains: [ "a", "b", "c" ]
+        }
+      }, {
+        type: "cartodb",
+        options: {
+          sql: "SELECT * FROM nyc_wifi",
+          cartocss: "#ncy_wifi{ marker-fill-opacity: 0.8; marker-line-color: #FFFFFF; marker-line-width: 3; marker-line-opacity: .8; marker-placement: point; marker-type: ellipse; marker-width: 16; marker-fill: #6ac41c; marker-allow-overlap: true; }",
+          cartocss_version: "2.1.1"
+        }
+      }]
+    };
+
+    expect(cartodb.Image(layer_definition)._tilerHost()).toEqual(
+      'http://cartodb.com/user/documentation/api/v1/maps'
+    )
+
+  });
+
   it("should generate an image using a layer definition for a plain color", function(done) {
 
     var layer_definition = {

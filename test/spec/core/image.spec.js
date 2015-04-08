@@ -311,7 +311,7 @@ describe("Image", function() {
 
     var layer_definition = {
       user_name: "documentation",
-      maps_api_template: 'http://test.com/user/{user}/api/v1/maps',
+      maps_api_template: 'http://cartodb.com/user/{user}/api/v1/maps',
       tiler_domain: "cartodb.com",
       tiler_port: "80",
       tiler_protocol: "http",
@@ -332,7 +332,7 @@ describe("Image", function() {
     };
 
     expect(cartodb.Image(layer_definition)._tilerHost()).toEqual(
-      'http://test.com/user/documentation/api/v1/maps'
+      'http://cartodb.com/user/documentation/api/v1/maps'
     )
 
   });

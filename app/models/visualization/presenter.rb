@@ -8,8 +8,8 @@ module CartoDB
     class Presenter
       def initialize(visualization, options={})
         @visualization   = visualization
-        @options         = options
         @viewing_user    = options.fetch(:user, nil)
+        @options         = options
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         # Expose real privacy (used for normal JSON purposes)

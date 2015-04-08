@@ -1440,6 +1440,7 @@ describe User do
       end
 
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
+      # Not grabbing https version of keys
       redis_keys = collection.map(&:redis_vizjson_key)
       redis_keys.should_not be_empty
 
@@ -1453,7 +1454,11 @@ describe User do
     it "shall not fail if the user does not have visualizations" do
       user = create_user
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: user.id})
+      # 'http' keys
       redis_keys = collection.map(&:redis_vizjson_key)
+      redis_keys.should be_empty
+      # 'https' keys
+      redis_keys = collection.map { |item| item.redis_vizjson_key(true) }
       redis_keys.should be_empty
 
       CartoDB::Visualization::Member.expects(:redis_cache).never

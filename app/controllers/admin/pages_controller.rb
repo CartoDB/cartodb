@@ -13,25 +13,27 @@ class Admin::PagesController < ApplicationController
   NEW_DATASETS_PER_PAGE = 20
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
+  PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
 
   ssl_required :common_data, :public, :datasets
 
   before_filter :login_required, :except => [:public, :datasets, :sitemap, :index]
-  before_filter :belongs_to_organization
+  before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
+
 
   # Just an entrypoint to dispatch to different places according to
   def index
     # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
     if !current_user.nil? && !current_viewer.nil? && current_user.id == current_viewer.id
-      redirect_to dashboard_url
+      redirect_to CartoDB.url(self, 'dashboard')
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the username is not the user's username
     elsif !current_viewer.nil?    # Asummes either current_user nil or at least different from current_viewer
-      redirect_to public_maps_home_url
+      redirect_to CartoDB.url(self, 'public_maps_home')
     # username.cartodb.com should redirect to the public user dashboard in the maps view if the user is not logged in
     else
-      redirect_to public_maps_home_url
+      redirect_to CartoDB.url(self, 'public_maps_home')
     end
   end
 
@@ -46,10 +48,8 @@ class Admin::PagesController < ApplicationController
       visualizations += (org.public_datasets.to_a || [])
     else
       # Redirect to org url if has only user
-      if viewed_user.has_organization?
-        if CartoDB.extract_real_subdomain(request) != viewed_user.organization.name
-          redirect_to CartoDB.base_url(viewed_user.organization.name) <<  public_sitemap_path and return
-        end
+      if eligible_for_redirect?(viewed_user)
+        redirect_to CartoDB.base_url(viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
       visualizations = Visualization::Collection.new.fetch({
@@ -66,12 +66,12 @@ class Admin::PagesController < ApplicationController
       case vis.type
         when Visualization::Member::TYPE_DERIVED
           {
-            loc: public_visualizations_public_map_url(user_domain: params[:user_domain], id: vis[:id]),
+            loc: CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id] }, vis.user),
             lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
           }
         when Visualization::Member::TYPE_CANONICAL
           {
-            loc: public_table_url(user_domain: params[:user_domain], id: vis.name),
+            loc: CartoDB.url(self, 'public_table', {id: vis.name }, vis.user),
             lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
           }
         else
@@ -100,7 +100,7 @@ class Admin::PagesController < ApplicationController
         user:  user,
         vis_type: Visualization::Member::TYPE_CANONICAL,
         per_page: NEW_DATASETS_PER_PAGE,
-      })
+      }), user
     )
   end
 
@@ -116,7 +116,7 @@ class Admin::PagesController < ApplicationController
         user:     user,
         vis_type: Visualization::Member::TYPE_DERIVED,
         per_page: MAPS_PER_PAGE,
-      })
+      }), user
     )
   end
 
@@ -164,12 +164,19 @@ class Admin::PagesController < ApplicationController
     render_404
   end
 
+  def eligible_for_redirect?(user)
+    return false if CartoDB.subdomainless_urls?
+    user.has_organization? && CartoDB.subdomain_from_request(request) != user.organization.name
+  end
+
   private
 
-  def render_new_datasets(vis_list)
+  def render_new_datasets(vis_list, user=nil)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    NEW_DATASETS_PER_PAGE,
+        first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
+        numbered_page_url: CartoDB.url(self, 'public_datasets_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
 
     @datasets = []
@@ -202,10 +209,12 @@ class Admin::PagesController < ApplicationController
     end
   end
 
-  def render_new_maps(vis_list)
+  def render_new_maps(vis_list, user=nil)
     set_new_pagination_vars({
         total_count: vis_list.total_entries,
         per_page:    MAPS_PER_PAGE,
+        first_page_url: CartoDB.url(self, 'public_maps_home', {}, user),
+        numbered_page_url: CartoDB.url(self, 'public_maps_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
 
     @visualizations = []
@@ -244,6 +253,8 @@ class Admin::PagesController < ApplicationController
             exclude_raster: true
           }).first,
         content_type: content_type,
+        default_fallback_basemap: ApplicationHelper.default_fallback_basemap,
+        user: user
       })
     set_shared_layout_vars(user, {
         name:       user.name_or_username,
@@ -251,6 +262,7 @@ class Admin::PagesController < ApplicationController
       }, {
         available_for_hire: user.available_for_hire,
         email:              user.email,
+        user: user
       })
   end
 
@@ -268,14 +280,18 @@ class Admin::PagesController < ApplicationController
   def set_new_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = view_context.public_visualizations_home_url(user_domain: params[:user_domain])
-    @datasets_url        = view_context.public_datasets_home_url(user_domain: params[:user_domain])
+    @maps_url            = CartoDB.url(view_context, 'public_visualizations_home', {}, required.fetch(:user, nil))
+    @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
+    @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
   end
 
   def set_new_pagination_vars(required)
     @total_count  = required.fetch(:total_count)
     @per_page     = required.fetch(:per_page)
     @current_page = current_page
+    @first_page_url = required.fetch(:first_page_url)
+    @numbered_page_url = required.fetch(:numbered_page_url)
+    @page_number_placeholder = PAGE_NUMBER_PLACEHOLDER
   end
 
   # Shared as in shared for both new and old layout
@@ -288,6 +304,7 @@ class Admin::PagesController < ApplicationController
     @avatar_url         = required.fetch(:avatar_url)
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
+    @user = optional.fetch(:user, nil)
   end
 
   def set_old_layout_vars_for_user(user, vis_type)
@@ -389,8 +406,10 @@ class Admin::PagesController < ApplicationController
     params[:tag]
   end
 
-  def belongs_to_organization
-    user_or_org_domain = CartoDB.extract_real_subdomain(request)
+  def ensure_organization_correct
+    return if CartoDB.subdomainless_urls?
+
+    user_or_org_domain = CartoDB.subdomain_from_request(request)
     user_domain = CartoDB.extract_subdomain(request)
     user = User.where(username: user_domain).first
 

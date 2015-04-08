@@ -17,7 +17,7 @@
 
   <div class="OrganizationContent">
     <div class="u-inner">
-      <%= form_for @organization, url: organization_settings_update_path(user_domain: params[:user_domain]), multipart: true do |f| %>
+      <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
         <%= csrf_meta_tags %>
 
         <div class="Form-title">

@@ -135,15 +135,31 @@ class String
     self.gsub(/<[^>]+>/m,'').strip
   end
 
+
+  def get_cartodb_types
+    {
+      "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial", "real"],
+      "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/, /char\s*\(\d+\)/, /character\s*\(\d+\)/],
+      "boolean" => ["boolean"],
+      "date"    => [
+        "timestamptz",
+        "timestamp with time zone",
+        "timestamp without time zone"
+      ]
+    }
+  end
+
   def convert_to_db_type
-    if CartoDB::TYPES.keys.include?(self.downcase)
+    cartodb_types = get_cartodb_types
+
+    if cartodb_types.keys.include?(self.downcase)
       case (self.downcase)
         when "number"
           "double precision"
         when "string"          
           "text"
         else
-          CartoDB::TYPES[self.downcase].first
+          cartodb_types[self.downcase].first
       end
     else
       self.downcase
@@ -152,7 +168,7 @@ class String
 
   # {"integer"=>:number, "real"=>:number, "varchar"=>:string, "text"=>:string, "timestamp"=>:date, "boolean"=>:boolean}
   def convert_to_cartodb_type
-    inverse_types = CartoDB::TYPES.invert.inject({}){ |h, e| e.first.each{ |k| h[k] = e.last }; h}
+    inverse_types = get_cartodb_types.invert.inject({}){ |h, e| e.first.each{ |k| h[k] = e.last }; h}
     if inverse_types.keys.include?(self.downcase)
       inverse_types[self.downcase]
     else

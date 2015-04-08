@@ -77,7 +77,7 @@ class Api::Json::LayersController < Api::ApplicationController
   def load_parent
     @parent = user_from(params) || map_from(params)
     raise RecordNotFound if @parent.nil?
-  end #load_parent
+  end
 
   def user_from(params={})
     current_user if params[:user_id]

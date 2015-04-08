@@ -17,7 +17,8 @@
   <% if !@user.new? && !current_user.organization_owner? -%>
     <section class="block account">
 
-      <%= form_for @user, url: update_organization_user_path(user_domain: params[:user_domain], id: @user.username) do |f| %>
+
+      <%= form_for @user, url: CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user) do |f| %>
 
         <%= f.hidden_field :private_tables_enabled %>
         <%= hidden_field_tag :show_dashboard_details_flash, true %>
@@ -127,10 +128,10 @@
 
   <section class="block <%= 'margin40' if !current_user.organization_owner? %>">
     <% if current_user.organization_owner? %>
-      <%= link_to "back", organization_url(user_domain: params[:user_domain]), :class => "back" %>
+      <%= link_to "back", CartoDB.url(self, 'organization'), :class => "back" %>
     <% end %>
 
-    <%= form_for @user, url: (@user.new? ? create_organization_user_path(user_domain: params[:user_domain], id: @organization) : update_organization_user_path(user_domain: params[:user_domain], id: @user.username)) do |form| %>
+    <%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', {id: @organization}, current_user) : CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user)) do |form| %>
 
       <%= form.hidden_field :private_tables_enabled %>
       <%= hidden_field_tag :show_account_settings_flash, true %>
@@ -284,7 +285,7 @@
                   <% else %>
                     You enter
                   <% end %>
-                  through <%= link_to "#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}", "http://#{current_user.organization.name}#{Cartodb.config[:session_domain]}/u/#{@user.username}" %></p>
+                  through <%= link_to "#{current_user.organization.name}#{CartoDB.session_domain}/u/#{@user.username}", "http://#{current_user.organization.name}#{CartoDB.session_domain}/u/#{@user.username}" %></p>
                 <% end -%>
             </div>
 
@@ -303,7 +304,7 @@
 
       <div class="foot">
         <% if !@user.new? -%>
-          <%= link_to("delete this user", delete_organization_user_path(user_domain: params[:user_domain], id: @user.username), :class => "left delete red margin15") if current_user.organization_owner? %>
+          <%= link_to("delete this user", CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user), :class => "left delete red margin15") if current_user.organization_owner? %>
           <%= form.submit 'Save changes', :class => "right grey button new" %>
         <% else %>
           <%= form.submit 'Create user', :class => "right grey button new" %>

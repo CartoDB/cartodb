@@ -89,18 +89,18 @@
 
     <%= render 'admin/shared/new_footer' %>
     <script type="text/javascript">
-      var account_host = '<%= Cartodb.config[:account_host] %>';
+      var account_host = '<%= CartoDB.account_host %>';
       var favMapViewAttrs = {
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
-            url: '<%= vis_json_url(@most_viewed_vis_map.id) %>',
+            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, @user) %>',
             opts: {
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
           }
         <% else %>
-          fallbackBaselayer: <%= raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'].to_json : '{}' %>
+          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
     </script>

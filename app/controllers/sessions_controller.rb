@@ -13,12 +13,12 @@ class SessionsController < ApplicationController
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(Cartodb.config, signup_action)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to dashboard_path(trailing_slash: true) and return
+      redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true}) and return
     end
   end
 
@@ -26,8 +26,7 @@ class SessionsController < ApplicationController
     user = if params[:google_access_token].present? && @google_plus_config.present?
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
       if user
-        user_domain = user.username
-        authenticate!(:google_access_token, scope: user_domain)
+        authenticate!(:google_access_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
       elsif user == false
         # token not valid
         nil
@@ -37,27 +36,20 @@ class SessionsController < ApplicationController
         nil
       end
     else
-      authenticate!(:password, scope: extract_user_id(request, params))
+      username = extract_username(request, params)
+      user = authenticate!(:password, scope: username)
     end
 
     render :action => 'new' and return unless params[:user_domain].present? || user.present?
 
-    user_domain = params[:user_domain].present? ? params[:user_domain] : user.subdomain
     CartodbStats.increment_login_counter(user.email)
 
-    destination_url = dashboard_path(trailing_slash: true)
-    if user.organization.nil?
-      destination_url = CartoDB.base_url(user.username) << destination_url
-    else
-      destination_url = CartoDB.base_url(user.organization.name, user.username) << destination_url
-    end
-    # Removed ATM for multiuser: session[:return_to] || ...
-    redirect_to destination_url
+    redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
 
   def destroy
     logout(CartoDB.extract_subdomain(request))
-    redirect_to Cartodb.config[:account_host].blank? ? 'http://www.cartodb.com' : "http://#{Cartodb.config[:account_host]}"
+    redirect_to CartoDB.account_host.blank? ? 'http://www.cartodb.com' : "http://#{CartoDB.account_host}"
   end
 
   def show
@@ -65,10 +57,12 @@ class SessionsController < ApplicationController
   end
 
   def unauthenticated
-    CartodbStats.increment_failed_login_counter(params[:email])
+    username = extract_username(request, params)
+    CartodbStats.increment_failed_login_counter(username)
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one    
-    @password_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @password_error = (params[:email].blank? && params[:password].blank?) ?
+                    'Can\'t be blank' : 'Your account or your password is not ok'
 
     respond_to do |format|
       format.html do
@@ -82,7 +76,7 @@ class SessionsController < ApplicationController
 
   private
 
-  def extract_user_id(request, params)
+  def extract_username(request, params)
     (params[:email].present? ? username_from_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
   end
 

@@ -116,8 +116,7 @@
 
     var loadingTime  = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
     var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
-
-    cartodb.createVis('map', <%= safe_js_object @visualization.to_vizjson.to_json %>, opt, function(vis) {
+    cartodb.createVis('map', <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>, opt, function(vis) {
       visReadyTime.end();
       vis.on('load', function() {
         loadingTime.end();

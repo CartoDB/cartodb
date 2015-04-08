@@ -1717,6 +1717,7 @@ GMapsTorqueLayer.prototype = torque.extend({},
         this.renderer.renderTile(tile, this.key);
       }
     }
+    this.renderer.applyFilters();
   },
 
   getActivePointsBBox: function(step) {
@@ -1821,6 +1822,42 @@ GMapsTorqueLayer.prototype = torque.extend({},
     this.animator.stop();
     this._removeTileLoader();
     google.maps.event.removeListener(this._cacheListener);
+  },
+
+  getValueForPos: function(x, y, step) {
+    step = step === undefined ? this.key: step;
+    var t, tile, pos, value = null, xx, yy;
+    for(t in this._tiles) {
+      tile = this._tiles[t];
+      pos = this.getTilePos(tile.coord);
+      xx = x - pos.x;
+      yy = y - pos.y;
+      if (xx >= 0 && yy >= 0 && xx < this.renderer.TILE_SIZE && yy <= this.renderer.TILE_SIZE) {
+        value = this.renderer.getValueFor(tile, step, xx, yy);
+      }
+      if (value !== null) {
+        return value;
+      }
+    }
+    return null;
+  },
+  getValueForBBox: function(x, y, w, h) {
+    var xf = x + w, yf = y + h;
+    var sum = 0;
+    for(_y = y; y<yf; y+=this.options.resolution){
+      for(_x = x; x<xf; x+=this.options.resolution){
+        var thisValue = this.getValueForPos(_x,_y);
+        if (thisValue){
+          var bb = thisValue.bbox;
+          var proj = this.getProjection()
+          var xy = proj.fromLatLngToContainerPixel(new google.maps.LatLng(bb[1].lat, bb[1].lon));
+          if(xy.x < xf && xy.y < yf){
+            sum += thisValue.value;
+          }
+        }
+      }
+    }
+    return sum;
   }
 
 });
@@ -2714,6 +2751,24 @@ L.TorqueLayer = L.CanvasLayer.extend({
       }
     }
     return null;
+  },
+
+  getValueForBBox: function(x, y, w, h) {
+    var xf = x + w, yf = y + h, _x=x;
+    var sum = 0;
+    for(_y = y; _y<yf; _y+=this.options.resolution){
+      for(_x = x; _x<xf; _x+=this.options.resolution){
+        var thisValue = this.getValueForPos(_x,_y);
+        if (thisValue){
+          var bb = thisValue.bbox;
+          var xy = this._map.latLngToContainerPoint([bb[1].lat, bb[1].lon]);
+          if(xy.x < xf && xy.y < yf){
+            sum += thisValue.value;
+          }
+        }
+      }
+    }
+    return sum;
   },
 
   invalidate: function() {
@@ -3827,7 +3882,7 @@ var Profiler = require('../profiler');
     return str;
   }
 
-  var json = function (options) {
+  var windshaft = function (options) {
     this._ready = false;
     this._tileQueue = [];
     this.options = options;
@@ -3836,6 +3891,13 @@ var Profiler = require('../profiler');
     this.options.tiler_protocol = options.tiler_protocol || 'http';
     this.options.tiler_domain = options.tiler_domain || 'cartodb.com';
     this.options.tiler_port = options.tiler_port || 80;
+
+    // backwards compatible
+    if (!options.maps_api_template) {
+      this._buildMapsApiTemplate(this.options);
+    } else {
+      this.options.maps_api_template =  options.maps_api_template;
+    }
 
     this.options.coordinates_data_type = this.options.coordinates_data_type || Uint8Array;
 
@@ -3851,7 +3913,7 @@ var Profiler = require('../profiler');
     }
   };
 
-  json.prototype = {
+  windshaft.prototype = {
 
     /**
      * return the torque tile encoded in an efficient javascript
@@ -4150,31 +4212,53 @@ var Profiler = require('../profiler');
       }
     },
 
-    _tilerHost: function() {
-      var opts = this.options;
-      var user = (opts.user_name || opts.user);
-      return opts.tiler_protocol +
-           "://" + (user ? user + "." : "")  +
+    _buildMapsApiTemplate: function(opts) {
+       var user = opts.user_name || opts.user;
+       opts.maps_api_template = opts.tiler_protocol +
+           "://" + ((user) ? "{user}.":"")  +
            opts.tiler_domain +
            ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
     },
 
-    url: function() {
+    _tilerHost: function() {
       var opts = this.options;
-      var protocol = opts.tiler_protocol || 'http';
-      if (!this.options.cdn_url || this.options.no_cdn) {
-        return this._tilerHost();
-      }
-      var h = protocol + "://"
-      if (protocol === 'http') {
-        h += "{s}.";
-      }
+      var user = opts.user_name || opts.user;
+      return opts.maps_api_template.replace('{user}', user);
+    },
+
+    url: function () {
+      var opts = this.options;
       var cdn_host = opts.cdn_url;
-      if(!cdn_host.http && !cdn_host.https) {
-        throw new Error("cdn_host should contain http and/or https entries");
+      var has_empty_cdn = !cdn_host || (cdn_host && (!cdn_host.http && !cdn_host.https));
+
+      if (opts.no_cdn || has_empty_cdn) {
+        return this._tilerHost();
+      } else {
+        var protocol = this.isHttps() ? 'https': 'http';
+        var h = protocol + "://";
+        if (!this.isHttps()) {
+          h += "{s}.";
+        }
+        var cdn_url = cdn_host[protocol];
+        // build default template url if the cdn url is not templatized
+        // this is for backwards compatiblity, ideally we should use the url
+        // that tiler sends to us right away
+        if (!this._isUserTemplateUrl(cdn_url)) {
+          cdn_url = cdn_url  + "/{user}";
+        }
+        var user = opts.user_name || opts.user;
+        h += cdn_url.replace('{user}', user)
+        return h;
       }
-      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user);
-      return h;
+
+    },
+
+    _isUserTemplateUrl: function(t) {
+      return t && t.indexOf('{user}') !== -1;
+    },
+
+    isHttps: function() {
+      return this.options.maps_api_template.indexOf('https') === 0;
     },
 
     _generateCartoCSS: function() {
@@ -4262,7 +4346,7 @@ var Profiler = require('../profiler');
 
   };
 
-  module.exports = json;
+  module.exports = windshaft;
 
 },{"../":10,"../profiler":17}],22:[function(require,module,exports){
   var TAU = Math.PI*2;
@@ -4282,19 +4366,20 @@ var Profiler = require('../profiler');
     ctx.beginPath();
     ctx.arc(0, 0, pixel_size, 0, TAU, true, true);
     ctx.closePath();
+
+    if (st['marker-opacity'] !== undefined )  st['marker-fill-opacity'] = st['marker-line-opacity'] = st['marker-opacity'];
+
     if (st['marker-fill']) {
-      if (st['marker-fill-opacity'] !== undefined || st['marker-opacity'] !== undefined) {
-        ctx.globalAlpha = st['marker-fill-opacity'] || st['marker-opacity'];
+        ctx.globalAlpha = st['marker-fill-opacity'] >= 0? st['marker-fill-opacity']: 1;
+
+      if (ctx.globalAlpha > 0) {
+        ctx.fill();
       }
-      ctx.fill();
     }
 
     // stroke
-    ctx.globalAlpha = 1.0;
     if (st['marker-line-color'] && st['marker-line-width'] && st['marker-line-width'] > LINEWIDTH_MIN_VALUE) {
-      if (st['marker-line-opacity'] !== undefined) {
-        ctx.globalAlpha = st['marker-line-opacity'];
-      }
+      ctx.globalAlpha = st['marker-line-opacity'] >= 0? st['marker-line-opacity']: 1;
       if (st['marker-line-width'] !== undefined) {
         ctx.lineWidth = st['marker-line-width'];
       }
@@ -5199,6 +5284,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       tiler_protocol: layerModel.get('tiler_protocol'),
       tiler_domain: layerModel.get('tiler_domain'),
       tiler_port: layerModel.get('tiler_port'),
+      maps_api_template: layerModel.get('maps_api_template'),
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
@@ -5309,6 +5395,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       tiler_protocol: layerModel.get('tiler_protocol'),
       tiler_domain: layerModel.get('tiler_domain'),
       tiler_port: layerModel.get('tiler_port'),
+      maps_api_template: layerModel.get('maps_api_template'),
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),

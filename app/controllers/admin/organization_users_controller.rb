@@ -4,6 +4,7 @@ require_relative '../../../lib/google_plus_config'
 
 class Admin::OrganizationUsersController < ApplicationController
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
+  ssl_required  :new, :create, :edit, :update, :destroy
 
   before_filter :get_config
   before_filter :login_required, :check_permissions
@@ -18,7 +19,7 @@ class Admin::OrganizationUsersController < ApplicationController
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(Cartodb.config, signup_action)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def new
@@ -66,7 +67,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.save(raise_on_failure: true)
     @user.create_in_central
     @user.notify_new_organization_user
-    redirect_to organization_path(user_domain: params[:user_domain]), flash: { success: "New user created successfully" }
+    redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e)
     begin
@@ -111,7 +112,8 @@ class Admin::OrganizationUsersController < ApplicationController
 
     @user.save(raise_on_failure: true)
 
-    redirect_to edit_organization_user_path(user_domain: params[:user_domain], id: @user.username), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user),
+                flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -128,7 +130,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.destroy
     flash[:success] = "User was successfully deleted."
     if new_dashboard
-      redirect_to organization_path(user_domain: params[:user_domain])
+      redirect_to CartoDB.url(self, 'organization', {}, current_user)
     else
       head :no_content
     end
@@ -138,7 +140,7 @@ class Admin::OrganizationUsersController < ApplicationController
       @user.destroy
       flash[:success] = "User was deleted from the organization server. #{e.user_message}"
       if new_dashboard
-        redirect_to organization_path(user_domain: params[:user_domain])
+        redirect_to CartoDB.url(self, 'organization', {}, current_user)
       else
         head :no_content
       end

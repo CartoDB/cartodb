@@ -1427,7 +1427,7 @@ class User < Sequel::Model
   end
 
   def belongs_to_organization?(organization)
-    organization_user? and self.organization_id == organization.id
+    organization_user? && organization != nil && self.organization_id == organization.id
   end
 
   def feature_flags
@@ -2292,30 +2292,47 @@ TRIGGER
     self.database_schema
   end
 
-  # return public user url -> string
-  def public_url
-    user_name = organization.nil? ? nil : username
+  # --- TODO: Extract this to a service object that handles urls
 
-    CartoDB.base_url(self.subdomain, user_name)
-  end
-
+  # Special url that goes to Central if active (for old dashboard only)
   def account_url(request_protocol)
-    if Cartodb.config[:account_host]
+    if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
     end
   end
 
+  # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
   end
 
+  # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     account_url(request_protocol) + '/upgrade'
   end
 
-  def subdomain
-    organization.nil? ? username : organization.name
+  def organization_username
+    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
   end
+
+  def organization_username
+    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
+  end
+
+  def subdomain
+    if CartoDB.subdomainless_urls?
+      username
+    else
+      organization.nil? ? username : organization.name
+    end
+  end
+
+  # @return String public user url, which is also the base url for a given user
+  def public_url(subdomain_override=nil)
+    CartoDB.base_url(subdomain_override.nil? ? subdomain : subdomain_override, organization_username)
+  end
+
+  # ----------
 
   def name_or_username
     name.present? ? name : username

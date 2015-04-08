@@ -1,6 +1,6 @@
-// cartodb.js version: 3.13.1
+// cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0eaa09e1bd1c87ab30f095e1a53c8e0287fce71d
+// sha: c7b47c5cae9ae4722b62cc38d0a2f60117a4d40e
 (function() {
   var root = this;
 
@@ -20794,6 +20794,7 @@ this.LZMA = LZMA;
 // Additional changes after the built file above:
 // - Added: This header
 // - Modified: `sanitizeAttribs` at end, to allow "data-*"" attributes (lines ~4750-4760)
+// - changed policy for a::target attribute to be allowed (html4.ATTRIBS: { 'a::target': ... changed value from 10 to 0)
 // -------------------------------------------------------------------------------------------------------------------
 
 /* Copyright Google Inc.
@@ -23988,7 +23989,7 @@ html4.ATTRIBS = {
   'a::onblur': 2,
   'a::onfocus': 2,
   'a::shape': 0,
-  'a::target': 10,
+  'a::target': 0,
   'a::type': 0,
   'area::accesskey': 0,
   'area::alt': 0,
@@ -25651,7 +25652,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.13.1";
+    cdb.VERSION = "3.13.2";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25945,12 +25946,31 @@ if(!window.JSON) {
         REPORT_ERROR_URL: '/api/v0/error',
         ERROR_TRACK_ENABLED: false,
 
-        getSqlApiUrl: function() {
-          var url = this.get('sql_api_protocol') + '://' +
-            this.get('user_name') + '.' +
-            this.get('sql_api_domain') + ':' +
-            this.get('sql_api_port');
+        /**
+         * returns the base url to compose the final url
+         * http://user.cartodb.com/
+         */
+        getSqlApiBaseUrl: function() {
+          var url;
+          if (this.get('sql_api_template')) {
+            url = this.get("sql_api_template").replace('{user}', this.get('user_name'));
+          } else {
+            url = this.get('sql_api_protocol') + '://' +
+              this.get('user_name') + '.' +
+              this.get('sql_api_domain') + ':' +
+              this.get('sql_api_port');
+          }
           return url;
+        },
+
+        /**
+         * returns the full sql api url, including the api endpoint
+         * allos to specify the version
+         * http://user.cartodb.com/api/v1/sql
+         */
+        getSqlApiUrl: function(version) {
+          version = version || 'v2';
+          return this.getSqlApiBaseUrl() + "/api/" + version + "/sql";
         }
 
 
@@ -30107,7 +30127,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       if(options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
           title: field.title ? field.name : null,
-          value: cdb.core.sanitize.html(attributes[field.name]),
+          value: attributes[field.name],
           index: j
         });
       }
@@ -30215,7 +30235,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
-      
+
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -30245,7 +30265,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           }
         },values);
 
-      this.$el.html(this.template(obj));
+      this.$el.html(
+        cdb.core.sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
+      );
 
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
@@ -30306,7 +30328,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-        template: cdb.core.sanitize.html(template, this.model.get('sanitizeTemplate')),
+        template: template,
         type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {
@@ -32545,7 +32567,13 @@ function Map(options) {
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
+
+  // build template url
+  if (!this.options.maps_api_template) {
+    this._buildMapsApiTemplate(this.options);
+  }
 }
+
 
 Map.BASE_URL = '/api/v1/map';
 Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -32601,6 +32629,13 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 };
 
 Map.prototype = {
+
+  _buildMapsApiTemplate: function(opts) {
+    opts.maps_api_template = opts.tiler_protocol +
+         "://" + ((opts.user_name) ? "{user}.":"")  +
+         opts.tiler_domain +
+         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+  },
 
   /*
    * TODO: extract these two functions to some core module
@@ -32855,6 +32890,28 @@ Map.prototype = {
     });
   },
 
+  // for named maps attributes are fetch from attributes service
+  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
+    this._attrCallbackName = this._attrCallbackName || this._callbackName();
+    var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
+    ajax({
+      dataType: 'jsonp',
+      url: this._attributesUrl(layer_index, feature_id),
+      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
+      cache: true,
+      success: function(data) {
+        loadingTime.end();
+        callback(data);
+      },
+      error: function(data) {
+        loadingTime.end();
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+        callback(null);
+      }
+    });
+  },
+
   _getLayerToken: function(callback) {
     var self = this;
     var params = [];
@@ -32984,7 +33041,7 @@ Map.prototype = {
   },
 
   isHttps: function() {
-    return this.options.tiler_protocol === 'https';
+    return this.options.maps_api_template.indexOf('https') === 0;
   },
 
   _layerGroupTiles: function(layerGroupId, params) {
@@ -33111,10 +33168,7 @@ Map.prototype = {
 
   _tilerHost: function() {
     var opts = this.options;
-    return opts.tiler_protocol +
-         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-         opts.tiler_domain +
-         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    return opts.maps_api_template.replace('{user}', opts.user_name);
   },
 
   _host: function(subhost) {
@@ -33126,16 +33180,27 @@ Map.prototype = {
     if (opts.no_cdn || has_empty_cdn) {
       return this._tilerHost();
     } else {
-
-      var h = opts.tiler_protocol + "://";
-
+      var protocol = this.isHttps() ? 'https': 'http';
+      var h = protocol + "://";
       if (subhost) {
         h += subhost + ".";
       }
 
-      h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
+      var cdn_url = cdn_host[protocol];
+      // build default template url if the cdn url is not templatized
+      // this is for backwards compatiblity, ideally we should use the url
+      // that tiler sends to us right away
+      if (!this._isUserTemplateUrl(cdn_url)) {
+        cdn_url = cdn_url  + "/{user}";
+      }
+      h += cdn_url.replace('{user}', opts.user_name)
+
       return h;
     }
+  },
+
+  _isUserTemplateUrl: function(t) {
+    return t && t.indexOf('{user}') !== -1;
   },
 
   getTooltipData: function(layer) {
@@ -33296,7 +33361,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
+    var host = this._host();
     var url = [
       host,
       //'api',
@@ -33323,27 +33388,6 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     return url;
   },
 
-  // for named maps attributes are fetch from attributes service
-  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
-    this._attrCallbackName = this._attrCallbackName || this._callbackName();
-    var ajax = this.options.ajax;
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
-    ajax({
-      dataType: 'jsonp',
-      url: this._attributesUrl(layer_index, feature_id),
-      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
-      cache: true,
-      success: function(data) {
-        loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        loadingTime.end();
-        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
-      }
-    });
-  },
 
   setSQL: function(sql) {
     throw new Error("SQL is read-only in NamedMaps");
@@ -33426,7 +33470,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       };
 
       if (layer.options.interactivity) {
+        function fields(f) {
+          var n = []
+          for(var i = 0; i < f.length; ++i) {
+            n.push(f[i].name);
+          }
+          return n;
+        }
         layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
+        var infowindow = this.getInfowindowData(i);
+        var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
+        if (attrs) {
+          layer_def.options.attributes = {
+             id: 'cartodb_id',
+             columns: attrs
+          }
+        }
       }
 
       if (layer.options.raster) {
@@ -33544,61 +33603,21 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     return this.getSubLayer(this.getLayerCount() - 1);
   },
 
-  _getSqlApi: function(attrs) {
-    attrs = attrs || {};
-    var port = attrs.sql_api_port
-    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
-    var protocol = attrs.sql_api_protocol;
-    var version = 'v1';
-    if (domain.indexOf('cartodb.com') !== -1) {
-      //protocol = 'http';
-      domain = "cartodb.com";
-      version = 'v2';
-    }
+  _attributesUrl: function(layer, feature_id) {
+    // /api/maps/:map_id/:layer_index/attributes/:feature_id
+    var host = this._host();
+    var url = [
+      host,
+      //'api',
+      //'v1',
+      Map.BASE_URL.slice(1),
+      this.layerToken,
+      layer,
+      'attributes',
+      feature_id].join('/');
 
-    var sql = new cartodb.SQL({
-      user: attrs.user_name,
-      protocol: protocol,
-      host: domain,
-      version: version
-    });
-
-    return sql;
+    return url;
   },
-
-  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
-    var layer = this.getLayer(layer_index);
-    var sql = this._getSqlApi(this.options);
-    this._attrCallbackName = this._attrCallbackName || this._callbackName();
-
-    // prepare columns with double quotes
-    columnNames = _.map(columnNames, function(n) {
-      return "\"" + n + "\"";
-    }).join(',');
-
-    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
-    // execute the sql
-    sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
-      fields: columnNames,
-      cartodb_id: feature_id,
-      sql: layer.options.sql
-    }, {
-      cache: true, // don't include timestamp
-      jsonpCallback: '_cdbi_layer_attributes_' + this._attrCallbackName,
-      jsonp: true
-    }).done(function(interact_data) {
-      loadingTime.end();
-      if (interact_data.rows.length === 0 ) {
-        callback(null);
-        return;
-      }
-      callback(interact_data.rows[0]);
-    }).error(function() {
-      loadingTime.end();
-      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
-      callback(null);
-    });
-  }
 
 
 });
@@ -39164,7 +39183,11 @@ cdb.vis.Vis = Vis;
       this.options.tiler_protocol = layerDefinition.tiler_protocol;
       this.options.tiler_domain   = layerDefinition.tiler_domain;
       this.options.tiler_port     = layerDefinition.tiler_port;
+      this.options.maps_api_template = layerDefinition.maps_api_template;
       this.endPoint = "/api/v1/map";
+      if (!this.options.maps_api_template) {
+        this._buildMapsApiTemplate(this.options);
+      }
 
       this.options.layers = layerDefinition;
 
@@ -39184,9 +39207,14 @@ cdb.vis.Vis = Vis;
           this.options.user_name = dataLayer.options.user_name;
         }
 
-        this.auth_tokens = data.auth_tokens;
+        // keep this for backward compatibility with tiler_* variables
+        if (!dataLayer.options.maps_api_template) {
+          this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
+        } else {
+          this.options.maps_api_template = dataLayer.options.maps_api_template;
+        }
 
-        this._setupTilerConfiguration(dataLayer.options.tiler_protocol, dataLayer.options.tiler_domain, dataLayer.options.tiler_port);
+        this.auth_tokens = data.auth_tokens;
 
         this.endPoint = "/api/v1/map";
 
@@ -39286,6 +39314,8 @@ cdb.vis.Vis = Vis;
         this.options.tiler_protocol = "https";
         this.options.tiler_port     = 443;
       }
+
+      this._buildMapsApiTemplate(this.options);
 
     },
 
@@ -40426,19 +40456,25 @@ Layers.register('torque', function(vis, data) {
       protocol: loc,
       jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
     })
+
+    if (!this.options.sql_api_template) {
+      var opts = this.options;
+      var template = null;
+      if(opts && opts.completeDomain) {
+        template = opts.completeDomain;
+      } else {
+        var host = opts.host || 'cartodb.com';
+        var protocol = opts.protocol || 'https';
+        template = protocol + '://{user}.' + host;
+      }
+      this.options.sql_api_template = template;
+    }
   }
 
   SQL.prototype._host = function() {
     var opts = this.options;
-    if(opts && opts.completeDomain) {
-      return opts.completeDomain + '/api/' +  opts.version + '/sql'
-    } else {
-      var host = opts.host || 'cartodb.com';
-      var protocol = opts.protocol || 'https';
-
-      return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
-    }
-  }
+    return opts.sql_api_template.replace('{user}', opts.user) + '/api/' +  opts.version + '/sql';
+  },
 
   /**
    * var sql = new SQL('cartodb_username');

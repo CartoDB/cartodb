@@ -42,6 +42,21 @@ module Cartodb
         :authentication       => Cartodb.config[:mailer]['authentication'],
         :enable_starttls_auto => Cartodb.config[:mailer]['enable_starttls_auto'] }
     end
+
+    if @config[:basemaps].present?
+      default_attrs = {}
+      @config[:basemaps].each do |bfamily,ba|
+        ba.each do |bname,battrs|
+          if battrs['default']
+            default_attrs = battrs
+            break
+          end
+        end
+      end
+      if !@config[:basemaps]['default'].present?
+        @config[:basemaps]['default'] = default_attrs
+      end
+    end
   end
 
   def self.error_codes

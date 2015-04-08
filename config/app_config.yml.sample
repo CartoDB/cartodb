@@ -263,6 +263,7 @@ defaults: &defaults
   basemaps:
     CartoDB:
       positron_rainbow:
+        default: true
         url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'

@@ -13,6 +13,7 @@ namespace :cartodb do
         visualization_updated_at timestamp with time zone,
         visualization_map_id uuid,
         visualization_title text,
+        visualization_likes integer,
         user_id uuid,
         user_username text,
         user_organization_id uuid,
@@ -24,7 +25,8 @@ namespace :cartodb do
       ) }
     FULL_TEXT_SEARCHABLE_COLUMNS = %w{ visualization_name visualization_description visualization_title }
     DROP_TABLE_SQL = %Q{ drop table #{VISUALIZATIONS_TABLE} }
-    MOST_RECENT_SQL = %Q{ select max(visualization_created_at) from #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_CREATED_SQL = %Q{ select max(visualization_created_at) from #{VISUALIZATIONS_TABLE} }
+    MOST_RECENT_UPDATED_SQL = %Q{ select max(visualization_updated_at) from #{VISUALIZATIONS_TABLE} }
     BATCH_SIZE = 1000
     # TODO: "in" searches are limited to 300. To increase batch replace with date ranges
     UPDATE_BATCH_SIZE = 300
@@ -38,6 +40,7 @@ namespace :cartodb do
       FULL_TEXT_SEARCHABLE_COLUMNS.each { |c|
         user.in_database.run "CREATE INDEX #{VISUALIZATIONS_TABLE}_#{c}_fts_idx ON #{VISUALIZATIONS_TABLE} USING gin(to_tsvector(language, #{c}))"
       }
+      # TODO: needed/useful?
       #user.in_database.run "select cartodb.CDB_CartodbfyTable('#{user.database_schema}', '#{VISUALIZATIONS_TABLE}')"
     end
 
@@ -56,8 +59,10 @@ namespace :cartodb do
 
     def update_existing_visualizations_at_user(user)
       deleted_visualization_ids = []
+      privated_visualization_ids = []
 
       puts "UPDATING"
+      # INFO: we need to check all known visualizations because they might've been deleted
       offset = 0
       while (explore_visualizations = user.in_database[%Q{ select visualization_id, visualization_updated_at from #{VISUALIZATIONS_TABLE} order by visualization_created_at asc limit #{UPDATE_BATCH_SIZE} offset #{offset} }].all).length > 0
         
@@ -72,71 +77,58 @@ namespace :cartodb do
         updated_count = 0
         visualizations.map { |v|
           explore_visualization = explore_visualizations_by_visualization_id[v.id]
+          # TODO: update likes count
           if v.updated_at != explore_visualization[:visualization_updated_at]
-            updated_count += 1
+            if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
+              privated_visualization_ids << v.id
+            else
+              # TODO: update instead of delete-insert
+              user.in_database.run delete_query([v.id])
+              user.in_database.run insert_query([values_sql(v)])
+              updated_count += 1
+            end
           end
         }
 
         print "Batch size: #{explore_visualizations.length}.\tMatches: #{visualizations.count}.\tUpdated #{updated_count}\n"
 
-        deleted_visualization_ids = visualization_ids - visualizations.collect(&:id)
+        deleted_visualization_ids +=  visualization_ids - visualizations.collect(&:id)
 
         offset += explore_visualizations.length
       end
 
-      puts "DELETING #{deleted_visualization_ids.length} VISUALIZATIONS"
+      puts "DELETING #{deleted_visualization_ids.length} DELETED VISUALIZATIONS"
       if deleted_visualization_ids.length > 0
-        user.in_database.run %Q{ delete from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{deleted_visualization_ids.join("', '")}') }
+        user.in_database.run delete_query(deleted_visualization_ids)
       end
 
+      puts "DELETING #{privated_visualization_ids.length} PRIVATED VISUALIZATIONS"
+      if privated_visualization_ids.length > 0
+        user.in_database.run delete_query(privated_visualization_ids)
+      end
+
+    end
+
+    def delete_query(ids)
+      %Q{ delete from #{VISUALIZATIONS_TABLE} where visualization_id in ('#{ids.join("', '")}') }
     end
 
     def insert_new_visualizations_at_user(user)
-      puts "INSERTING"
-      most_recent_known_date = user.in_database[MOST_RECENT_SQL].first[:max]
+      most_recent_created_date = user.in_database[MOST_RECENT_CREATED_SQL].first[:max]
+      most_recent_updated_date = user.in_database[MOST_RECENT_UPDATED_SQL].first[:max]
 
+      puts "INSERTING NEW CREATED"
       page = 1
-      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, most_recent_known_date))).count > 0 do
-        current_batch_size = visualizations.count
-        print "#{page} \t #{current_batch_size}\n"
-
-        values = []
-        visualizations.map { |v|
-          u = v.user
-
-          tags = "'#{v.tags.map { |t| t.gsub("'", %q(\\\')) }.join("','")}'"
-
-          values << %Q{
-            (
-              '#{v.id}', '#{v.name}', '#{v.description}',
-              '#{v.type}', ARRAY[#{tags}], '#{v.created_at.iso8601(6)}',
-              '#{v.updated_at.iso8601(6)}', '#{v.map_id}', '#{v.title}',
-              '#{u.id}', '#{u.username}', '#{u.organization_id}',
-              '#{u.twitter_username}', '#{u.website}', '#{u.avatar_url}',
-              '#{u.available_for_hire}'
-            )
-          }.gsub("''", "NULL")
-
-        }
-
-        full_insert_query = %Q{
-            insert into #{VISUALIZATIONS_TABLE} (
-              visualization_id, visualization_name, visualization_description,
-              visualization_type, visualization_tags, visualization_created_at,
-              visualization_updated_at, visualization_map_id, visualization_title, 
-              user_id, user_username, user_organization_id,
-              user_twitter_username, user_website, user_avatar_url,
-              user_available_for_hire)
-            values #{values.join(',')}
-        }
-        
-        user.in_database.run full_insert_query
-
+      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, most_recent_created_date))).count > 0 do
+        print "Batch ##{page}. \t Insertions: #{visualizations.count}\n"
+        user.in_database.run insert_query(visualizations.map { |v| values_sql(v) })
         page += 1
       end
+
+      # TODO: insert old creations, new public
     end
 
-    def filter(page, min_created_at)
+    def filter(page, min_created_at = nil, min_updated_at = nil)
       filter = {
         page: page,
         per_page: BATCH_SIZE,
@@ -145,7 +137,40 @@ namespace :cartodb do
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       }
       filter[:min_created_at] = min_created_at if min_created_at
+      filter[:min_updated_at] = min_updated_at if min_updated_at
       filter
+    end
+
+    def insert_query(values)
+      insert_query = %Q{
+          insert into #{VISUALIZATIONS_TABLE} (
+            visualization_id, visualization_name, visualization_description,
+            visualization_type, visualization_tags, visualization_created_at,
+            visualization_updated_at, visualization_map_id, visualization_title, 
+            visualization_likes,
+            user_id, user_username, user_organization_id,
+            user_twitter_username, user_website, user_avatar_url,
+            user_available_for_hire
+            )
+          values #{values.join(',')}
+      }
+    end
+
+    def values_sql(visualization)
+      v = visualization
+      u = v.user
+      tags = "'#{v.tags.map { |t| t.gsub("'", %q(\\\')) }.join("','")}'"
+      %Q{
+        (
+          '#{v.id}', '#{v.name}', '#{v.description}',
+          '#{v.type}', ARRAY[#{tags}], '#{v.created_at.iso8601(6)}',
+          '#{v.updated_at.iso8601(6)}', '#{v.map_id}', '#{v.title}',
+          '#{v.likes_count}',
+          '#{u.id}', '#{u.username}', '#{u.organization_id}',
+          '#{u.twitter_username}', '#{u.website}', '#{u.avatar_url}',
+          '#{u.available_for_hire}'
+        )
+      }.gsub("''", "NULL")
     end
 
     def common_data_user

@@ -15,7 +15,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats single_data_layer? synchronization
-                          permission parent children support_tables prev_list_item next_list_item likes reload_likes }
+                          permission parent children support_tables prev_list_item next_list_item likes likes_count reload_likes }
 
       def initialize(attributes={})
         @id             = attributes.fetch(:id)
@@ -112,7 +112,11 @@ module CartoDB
       end
 
       def likes
-        @likes ||= Like.where(subject: @id).all.to_a
+        @likes ||= likes_search.all.to_a
+      end
+
+      def likes_count
+        @likes_count ||= likes_search.count
       end
 
       def reload_likes
@@ -121,6 +125,12 @@ module CartoDB
       end
 
       attr_reader :id, :map_id
+
+      private
+
+      def likes_search
+        Like.where(subject: @id)
+      end
     end
   end
 end

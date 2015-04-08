@@ -356,6 +356,7 @@ module CartoDB
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
         dataset = filter_by_kind(dataset, filters.delete(:exclude_raster))
+        dataset = filter_by_min_updated_at(dataset, filters.delete(:min_updated_at))
         dataset = filter_by_min_created_at(dataset, filters.delete(:min_created_at))
         dataset = filter_by_ids(dataset, filters.delete(:ids))
         order(dataset, filters.delete(:order))
@@ -457,12 +458,17 @@ module CartoDB
       end
 
       def filter_by_min_created_at(dataset, min_created_at, included = false)
-        return dataset if !min_created_at
-        if included
-          dataset.where('created_at >= ?', min_created_at)
-        else
-          dataset.where('created_at > ?', min_created_at)
-        end
+        filter_by_min_date('created_at', dataset, min_created_at, included)
+      end
+
+      def filter_by_min_updated_at(dataset, min_updated_at, included = false)
+        filter_by_min_date('updated_at', dataset, min_updated_at, included)
+      end
+
+      def filter_by_min_date(column, dataset, date, included = false)
+        return dataset if !date
+        comparison = included ? '>=' : '>'
+        dataset.where("#{column} #{comparison} ?", date)
       end
 
       def filter_by_ids(dataset, ids)

@@ -29,7 +29,7 @@ class Table
 
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS & RESERVED_COLUMN_NAMES
+  # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = {
       :id                           => :id,
@@ -50,6 +50,7 @@ class Table
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
+  VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
   DEFAULT_DERIVED_VISUALIZATION_POSTFIX = 'Map'
 
 
@@ -92,17 +93,18 @@ class Table
 
 
   def public_values(options = {}, viewer_user=nil)
-    selected_attrs = if options[:except].present?
-      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) }
-    else
-      PUBLIC_ATTRIBUTES
-    end
+    selected_attrs = options[:except].present? ?
+      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
 
-    attrs = Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+    attrs = Hash[selected_attrs.map{ |k, v|
+      [k, (self.send(v) rescue self[v].to_s)]
+    }]
+
     if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
       attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
     end
-    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization, { real_privacy: true, user: viewer_user }).to_poro
+    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization,
+                                                      { real_privacy: true, user: viewer_user }.merge(options)).to_poro
     attrs
   end
 
@@ -652,7 +654,7 @@ class Table
     map = blender.blend
     vis = CartoDB::Visualization::Member.new(
       {
-        name:     [self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' '),
+        name:     beautify_name([self.name, DEFAULT_DERIVED_VISUALIZATION_POSTFIX].join(' ')),
         map_id:   map.id,
         type:     CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy:  blender.blended_privacy,
@@ -1189,7 +1191,7 @@ class Table
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end
-    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless CartoDB::VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
+    raise CartoDB::InvalidGeomType.new(self.the_geom_type_value) unless VALID_GEOMETRY_TYPES.include?(self.the_geom_type_value)
   end
 
   # if the table is already renamed, we just need to update the name attribute
@@ -1301,7 +1303,7 @@ class Table
   end
 
   def owner
-    @owner ||= User.where(id: self.user_id).first
+    @owner ||= User[self.user_id]
   end
 
   def table_style
@@ -1419,6 +1421,11 @@ class Table
 
   private
 
+  def beautify_name(name)
+    return name unless name
+    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
+  end
+
   def query_geometry_types
     owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
@@ -1494,11 +1501,16 @@ class Table
   end
 
   def get_new_column_type(invalid_column)
+    next_cartodb_type = {
+      "number" => "double precision",
+      "string" => "text"
+    }
+
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema(cartodb_types: false).flatten
     flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    CartoDB::NEXT_TYPE[cartodb_column_type]
+    next_cartodb_type[cartodb_column_type]
   end
 
   def set_the_geom_column!(type = nil)
@@ -1542,7 +1554,7 @@ class Table
       end
     end
 
-    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 
     type = type.to_s.upcase
 

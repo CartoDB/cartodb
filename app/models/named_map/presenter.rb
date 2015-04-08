@@ -41,12 +41,17 @@ module CartoDB
           # When there are no layers don't return named map data
           nil
         else
+          api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
+          privacy_type = @visualization.password_protected? ? 'private': api_templates_type
           {
             type:     NAMED_MAP_TYPE,
             order:    1,
             options:  {
               type:             NAMED_MAP_TYPE,
               user_name:        @options.fetch(:user_name),
+              maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
+              sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
+              # tiler_* and sql_api_* are kept for backwards compatibility
               tiler_protocol:   @visualization.password_protected? ?
                                   @configuration[:tiler]['private']['protocol'] : 
                                   @configuration[:tiler]['public']['protocol'],

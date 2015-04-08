@@ -334,18 +334,24 @@ module CartoDB
         privacy == PRIVACY_PROTECTED
       end
 
+      # Called by controllers upon rendering
+      def to_json(options={})
+        ::JSON.dump(to_hash(options))
+      end
+
       def to_hash(options={})
         presenter = Presenter.new(self, options.merge(real_privacy: true))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 
-      def redis_vizjson_key
-        @vizjson_key ||= "visualization:#{id}:vizjson"
+      def redis_vizjson_key(https_flag=false)
+        "visualization:#{id}:vizjson:#{https_flag ? 'https' : 'http'}"
       end
 
-      def to_vizjson
-        redis_cached(redis_vizjson_key) do
-          calculate_vizjson
+      def to_vizjson(options={})
+        key = redis_vizjson_key(options.fetch(:https_request, false))
+        redis_cached(key) do
+          calculate_vizjson(options)
         end
       end
 
@@ -480,11 +486,7 @@ module CartoDB
       end
 
       def supports_private_maps?
-        if @user_data.nil? && !user.nil?
-          @user_data = user.data
-        end
-
-        !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+        !user.nil? && user.private_maps_enabled
       end
 
       # @param other_vis CartoDB::Visualization::Member|nil
@@ -597,6 +599,7 @@ module CartoDB
 
       def invalidate_redis_cache
         self.class.redis_cache.del(redis_vizjson_key)
+        self.class.redis_cache.del(redis_vizjson_key(true))
       end
 
       def self.redis_cache
@@ -609,16 +612,16 @@ module CartoDB
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :description_changed, :permission_change_valid
 
-      def calculate_vizjson
-        options = {
+      def calculate_vizjson(options={})
+        vizjson_options = {
           full: false,
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
           viewer_user: user,
           dynamic_cdn_enabled: user != nil ? user.dynamic_cdn_enabled: false
-        }
-        VizJSON.new(self, options, configuration).to_poro
+        }.merge(options)
+        VizJSON.new(self, vizjson_options, configuration).to_poro
       end
 
       def redis_cached(key)

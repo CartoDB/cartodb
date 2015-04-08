@@ -232,7 +232,7 @@ module CartoDB
 
     # @return User|nil
     def owner
-      @owner ||= User.where(id:self.owner_id).first
+      @owner ||= User[self.owner_id] # See http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/Caching.html
     end
 
     # @param value User
@@ -434,7 +434,7 @@ module CartoDB
         # check permissions, if the owner does not have permissions
         # to see the table the layers using this table are removed
         perm = visualization.permission
-        if not table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
           visualization.unlink_from(table)
         end
       end
@@ -443,7 +443,7 @@ module CartoDB
         # check permissions, if the owner does not have permissions
         # to see the table the visualization is removed
         perm = visualization.permission
-        if not table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
+        unless table_visualization.has_permission?(perm.owner, CartoDB::Visualization::Member::PERMISSION_READONLY)
           visualization.delete
         end
       end

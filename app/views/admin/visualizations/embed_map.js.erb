@@ -2,7 +2,7 @@
 (function() {
 
     var INCLUDE_GMAPS = <% if @visualization.map.provider == 'googlemaps' %> true <% else %> false <% end %>;
-    var VIZJSON_URL = '<%= api_v2_visualizations_vizjson_url(user_domain: params[:user_domain], id: @visualization.id) %>';
+    var VIZJSON_URL = '<%= CartoDB.url(self, 'api_v2_visualizations_vizjson', {id: @visualization.id}) %>';
     var ACCOUNT_TYPE = "<%= @visualization.user.account_type.downcase %>";
     var IS_CUSTOM_INSTALL = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
 

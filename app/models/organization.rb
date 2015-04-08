@@ -51,7 +51,7 @@ class Organization < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-    raise errors unless valid?
+    raise errors.join('; ') unless valid?
   end
 
   # INFO: replacement for destroy because destroying owner triggers

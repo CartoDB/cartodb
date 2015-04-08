@@ -7,7 +7,7 @@ class Admin::UsersController < ApplicationController
 
   before_filter :login_required
   before_filter :setup_user
-  before_filter :initialize_google_plus_config, only: [:profile, :account]
+  #before_filter :initialize_google_plus_config, only: [:profile, :account]
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
@@ -65,14 +65,7 @@ class Admin::UsersController < ApplicationController
     attributes = params[:user]
 
     if attributes[:avatar_url].present?
-      asset = Asset.new
-      asset.raise_on_save_failure = true
-      asset.user_id = @user.id
-      asset.asset_file = attributes[:avatar_url]
-      asset.kind = Asset::KIND_ORG_AVATAR
-      if asset.save
-        @user.avatar_url = asset.public_url
-      end
+      @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
     # This fields are optional

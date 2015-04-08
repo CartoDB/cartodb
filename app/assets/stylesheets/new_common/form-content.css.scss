@@ -209,9 +209,21 @@
 
 }
 .Form-avatarPreview {
+  position: relative;
+}
+.Form-avatarPreviewImage {
+  position: relative;
   width: 100px;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
+  background: $cStructure-grayBkg;
+}
+.Spinner.Form-avatarPreviewLoader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -18px 0 0 -18px;
+  z-index: 2;
 }
 .Form-avatar .input-group {
   position: absolute;

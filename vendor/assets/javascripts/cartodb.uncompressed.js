@@ -1,6 +1,6 @@
-// cartodb.js version: 3.13.2
+// cartodb.js version: 3.14.0
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8fdecd11cbcf7b15134a0cbb772133bb60c222ed
+// sha: c7b47c5cae9ae4722b62cc38d0a2f60117a4d40e
 (function() {
   var root = this;
 
@@ -33361,7 +33361,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
+    var host = this._host();
     var url = [
       host,
       //'api',
@@ -33605,7 +33605,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var host = this.options.dynamic_cdn ? this._host(): this._tilerHost();
+    var host = this._host();
     var url = [
       host,
       //'api',

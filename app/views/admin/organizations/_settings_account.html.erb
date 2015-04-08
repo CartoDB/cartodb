@@ -1,7 +1,7 @@
 <% if current_user.organization_owner? %>
   <nav class="account-settings">
     <div class="inner">
-      <a href="<%= organization_url(user_domain: params[:user_domain]) %>"
+      <a href="<%= CartoDB.url(self, 'organization') %>"
          class="<%= 'selected' if ['admin/organizations', 'admin/users'].include?(params[:controller]) && !['settings'].include?(params[:action]) %>">
         <span class="icon organization"></span>
         <span class="info">
@@ -9,7 +9,7 @@
           <p><%= current_user.organization.users.count %> of <%= current_user.organization.seats %> in use</p>
         </span>
       </a>
-      <a href="<%= organization_settings_url(user_domain: params[:user_domain]) %>"
+      <a href="<%= CartoDB.url(self, 'organization_settings') %>"
          class="<%= 'selected' if ['settings'].include?(params[:action]) %>">
         <span class="icon stats"></span>
         <span class="info">

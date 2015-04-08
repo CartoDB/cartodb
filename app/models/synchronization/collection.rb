@@ -53,7 +53,7 @@ module CartoDB
 
       def to_poro
         map { |member| member.to_hash }
-      end #to_poro
+      end
 
       attr_reader :total_entries
 

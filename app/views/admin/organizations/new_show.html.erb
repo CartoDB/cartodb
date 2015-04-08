@@ -32,7 +32,7 @@
         <ul class="OrganizationList <% 'OrganizationList--centered' if @users.count === 4 %>">
           <% @users.each do |u| %>
             <li class="OrganizationList-user">
-              <a class="OrganizationList-userLink" href="<%= edit_organization_user_path(user_domain: params[:user_domain], id: u.username) %>" data-title="<%= number_to_human_size(u.db_size_in_bytes) %> of <%= number_to_human_size(u.quota_in_bytes) %> used">
+              <a class="OrganizationList-userLink" href="<%= CartoDB.url(self, 'edit_organization_user', {id: u.username}, current_user) %>" data-title="<%= number_to_human_size(u.db_size_in_bytes) %> of <%= number_to_human_size(u.quota_in_bytes) %> used">
                 <div class="OrganizationList-userAvatar UserAvatar">
                   <img src="<%= u.avatar_url %>" alt="<%= u.username %>" src="<%= u.username %>" class="UserAvatar-img UserAvatar-img--medium" />
                 </div>
@@ -58,7 +58,7 @@
           <% end %>
           <% if current_user.organization.seats > @users.count %>
             <li class="OrganizationList-user OrganizationList-user--empty">
-              <a class="OrganizationList-userLink" href="<%= new_organization_user_path(user_domain: params[:user_domain]) %>">
+              <a class="OrganizationList-userLink" href="<%= CartoDB.url(self, 'new_organization_user', {}, current_user) %>">
                 <div class="OrganizationList-userAvatar OrganizationList-userAvatar--default">
                   <i class="iconFont iconFont-DefaultUser"></i>
                 </div>
@@ -83,7 +83,7 @@
             <% else %>
               <em></em>
             <% end %>
-            <a href="<%= new_organization_user_path(user_domain: params[:user_domain]) %>" class="Button Button--main"><span>Create new user</span></a>
+            <a href="<%= CartoDB.url(self, 'new_organization_user', {}, current_user) %>" class="Button Button--main"><span>Create new user</span></a>
           <% elsif !Cartodb.config[:cartodb_com_hosted].present? %>
             <p class="Form-footerText">
               <i class="iconFont iconFont-Info Form-footerIcon"></i>

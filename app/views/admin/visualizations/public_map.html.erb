@@ -40,21 +40,20 @@
 
               <p class="description"><%= raw @visualization.description_html_safe %></p>
               <p class="options">
-                <a href="<%= public_visualizations_embed_map_url(user_domain: params[:user_domain], id: @visualization.id) %>" class="iframe">Full page map</a>
+                <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}) %>" class="iframe">Full page map</a>
               </p>
             </div>
           </div>
 
           <div class="user embed-right-col">
             <div class="user-info">
-              <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_home') %>" title="Maps by <%= @name %>" class="content">
                 <h4>by <%= @name %></h4>
               </a>
 
               <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
             </div>
-
-            <a href="<%= public_visualizations_home_url(user_domain: @user_domain) %>" title="Maps by <%= @name %>" class="content">
+            <a href="<%= CartoDB.url(self, 'public_visualizations_home') %>" title="Maps by <%= @name %>" class="content">
               <img src="<%= @avatar_url %>" class="avatar" />
             </a>
           </div>
@@ -68,9 +67,7 @@
                 <span class="counter"><%= @likes_count %></span>
               </a>
 
-              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
-              <a href="<%= public_visualizations_show_url(user_domain: domain, id: @visualization.id) %>" class="edit button grey">Edit in CartoDB</a>
-              <% domain = @visualization.user.organization ? @visualization.user.username : nil %>
+              <a href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id}, @visualization.user) %>" class="edit button grey">Edit in CartoDB</a>
             </div>
           </div>
 
@@ -89,7 +86,7 @@
                     <% @related_tables.each do |table| %>
                       <% if table.privacy_text == "PUBLIC" %>
                         <li>
-                          <a href="<%= public_table_url(user_domain: (@user_domain.nil? ? nil : @related_tables_usernames[table.user_id]), id: table.name) %>" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span>
+                          <a href="<%= CartoDB.url(self, 'public_table', {id: table.name}, @user_domain.nil? ? nil : @related_tables_owners[table.user_id]) %>" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span>
                         </li>
                       <% end %>
                     <% end %>
@@ -161,11 +158,12 @@
 
     var user_name = '<%= @user_domain %>';
     var owner_username = '<%= @visualization.user.username %>';
+    var base_url = '<%= @visualization.user.public_url %>';
     var vis_id = "<%= @visualization.id %>";
     var vis_name = "<%= @visualization.name %>";
     var belong_organization = <%= @visualization.user.has_organization? %>;
-    var config = <%= safe_js_object frontend_config_public({https_sql_api: request.protocol == 'https://' }) %>;
-    var vizdata = <%= safe_js_object @visualization.to_vizjson.to_json %>;
+    var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
+    var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
 
     // Generating map options
     var bool_fn = function(v) { return v == 'true' };

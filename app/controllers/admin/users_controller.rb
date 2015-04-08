@@ -11,7 +11,7 @@ class Admin::UsersController < ApplicationController
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(Cartodb.config, signup_action)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def profile
@@ -51,7 +51,7 @@ class Admin::UsersController < ApplicationController
     @user.save(raise_on_failure: true)
     @user.update_in_central
 
-    redirect_to account_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.url(self, 'account_user', {}, current_user), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e, params, @user)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
@@ -87,7 +87,7 @@ class Admin::UsersController < ApplicationController
     @user.update_in_central
     @user.save(raise_on_failure: true)
 
-    redirect_to profile_user_path(user_domain: params[:user_domain]), flash: { success: "Updated successfully" }
+    redirect_to CartoDB.url(self, 'profile_user', {}, current_user), flash: { success: "Updated successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e, params, @user)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"

@@ -23,7 +23,7 @@ class Admin::TablesController < ApplicationController
         download_formats @table, format
       end
     else
-      redirect_to public_table_path(user_domain: params[:user_domain], id: params[:id], :format => params[:format])
+      redirect_to CartoDB.path(self, 'public_table', { id: params[:id], :format => params[:format] })
     end
   end
 

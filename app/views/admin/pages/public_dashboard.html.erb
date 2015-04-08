@@ -12,7 +12,7 @@
 
   <% @visualizations.map do |v| 
     urls.push(
-      :url => vis_json_url(v[:id]),
+      :url => vis_json_url(v[:id], self, v[:owner]),
       :layer_visibility => v[:layers].map{ |layer| { visible: layer.options["visible"] ? true : false } },
     )
   end %>
@@ -47,8 +47,6 @@
         <ul>
           <% @visualizations.each_with_index do |vis, i| %>
 
-            <% domain = vis[:owner] && vis[:owner].organization ? vis[:owner].username : nil %>
-
             <li>
               <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">
 
@@ -56,12 +54,12 @@
                 <div id="map_<%= i %>" class="map"></div>
 
                 <div class="title">
-                  <h2><a href="<%= public_visualizations_public_map_url(user_domain: domain, id: vis[:id]) %>"><%= vis[:title] %></a></h2>
+                  <h2><a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id]}, vis[:owner]) %>"><%= vis[:title] %></a></h2>
                   <p><%= raw (vis[:description_html_safe] ? vis[:description_html_safe] : "") %></p>
                 </div>
                 <div class="gradient"></div>
 
-                <a href="<%= public_visualizations_show_url(user_domain: domain, id: vis[:id]) %>" class="edit button grey small">edit this</a>
+                <a href="<%= CartoDB.url(self, 'public_visualizations_show', {id: vis[:id]}, vis[:owner]) %>" class="edit button grey small">edit this</a>
               </div>
 
               <% if vis[:tags].size > 0 %>
@@ -69,7 +67,7 @@
                 <% if vis[:tags].size > 0 %>
                   <ul class="tags">
                     <% vis[:tags].each do |tag| %>
-                      <li><h3><%= link_to tag, public_tag_url(user_domain: params[:user_domain], tag: tag), :rel => "tag" %></h3></li>
+                      <li><h3><%= link_to tag, CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]), :rel => "tag" %></h3></li>
                     <% end %>
                   </ul>
                 <% end %>
@@ -87,9 +85,9 @@
             <% if @pages > 1 && params[:page].to_i > 1 %>
               <% p = params[:page] || 1 %>
               <% if params[:tag] %>
-                <a class="prev" href="<%= public_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i-1)) %>">Prev</a>
+                <a class="prev" href="<%= CartoDB.url(self, 'public_tag_page', {tag: params[:tag], page: (p.to_i-1)}) %>">Prev</a>
               <% else %>
-                <a class="prev" href="<%= public_page_url(user_domain: params[:user_domain], page: (p.to_i-1)) %>">Prev</a>
+                <a class="prev" href="<%= CartoDB.url(self, 'public_page', {page: (p.to_i-1)}) %>">Prev</a>
               <% end %>
             <% end %>
 
@@ -97,11 +95,12 @@
               <% @pages.times do |i| %>
                 <% if params[:tag] %>
                   <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                    <a href="<%= public_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (i+1)) %>"></a>
+
+                    <a href="<%= CartoDB.url(self, 'public_tag_page', {tag: params[:tag], page: (i+1)}) %>"></a>
                   </li>
                 <% else %>
                   <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>>
-                    <a href="<%= public_page_url(user_domain: params[:user_domain], page: (i+1)) %>"></a>
+                    <a href="<%= CartoDB.url(self, 'public_page', {page: (i+1)}) %>"></a>
                   </li>
                 <% end %>
               <% end %>
@@ -110,9 +109,9 @@
             <% if @pages > 1 && (params[:page].to_i < @pages) %>
               <% p = params[:page] || 1 %>
               <% if params[:tag] %>
-                <a class="next" href="<%= public_tag_page_url(user_domain: params[:user_domain], tag: params[:tag], page: (p.to_i+1)) %>">Next</a>
+                <a class="next" href="<%= CartoDB.url(self, 'public_tag_page', {tag: params[:tag], page: (p.to_i+1)}) %>">Next</a>
               <% else %>
-                <a class="next" href="<%= public_page_url(user_domain: params[:user_domain], page: (p.to_i+1)) %>">Next</a>
+                <a class="next" href="<%= CartoDB.url(self, 'public_page', {page: (p.to_i+1)}) %>">Next</a>
               <% end %>
             <% end %>
 

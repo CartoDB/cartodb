@@ -31,7 +31,7 @@
   <%= render partial: "settings_account" %>
 <% end %>
 
-<%= form_for @organization, url: organization_settings_update_path(user_domain: params[:user_domain]), multipart: true do |form| %>
+<%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |form| %>
 
     <article class="settings">
       <div class="inner">

@@ -5,6 +5,10 @@ defaults: &defaults
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
+  # If activated, urls will use usernames in format //SESSION_DOMAIN/user/USERNAME and ignore subdomains if present
+  subdomainless_urls: false
+  http_port:           # nil|integer. HTTP port to use when building urls. Leave empty to use default (80)
+  https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost.lan:3000'
   account_path:       '/account'
@@ -366,6 +370,7 @@ defaults: &defaults
 
 development:
   <<: *defaults
+  http_port: 3000
   varnish_management:
     critical: false
     host: '127.0.0.1'
@@ -378,6 +383,7 @@ development:
 
 test:
   <<: *defaults
+  http_port: 53716
   redis:
     host: '127.0.0.1'
     port: 6335

@@ -227,19 +227,21 @@ module CartoDB
       end
 
       def delete(from_table_deletion=false)
-        # Named map must be deleted before the map, or we lose the reference to it
-
-        begin
-          named_map = has_named_map?
-          named_map.delete if named_map
-        rescue NamedMapsWrapper::HTTPResponseError => exception
-          # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
-          unless from_table_deletion
-            CartoDB.notify_exception(exception, { user: user })
+        # Remote tables never have named maps, nor are used from slides
+        unless type == TYPE_REMOTE
+          begin
+            named_map = has_named_map?
+            # Named map must be deleted before the map, or we lose the reference to it
+            named_map.delete if named_map
+          rescue NamedMapsWrapper::HTTPResponseError => exception
+            # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
+            unless from_table_deletion
+              CartoDB.notify_exception(exception, { user: user })
+            end
           end
-        end
 
-        unlink_self_from_list!
+          unlink_self_from_list!
+        end
 
         support_tables.delete_all
 

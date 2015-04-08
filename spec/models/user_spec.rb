@@ -1467,6 +1467,43 @@ describe User do
     end
   end
 
+  describe "#regressions" do
+    it "Tests geocodings and data import FK not breaking user destruction" do
+      user = create_user
+      user_id = user.id
+
+      data_import_id = '11111111-1111-1111-1111-111111111111'
+
+      Rails::Sequel.connection.run(%Q{
+        INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
+          "created_at","tables_created_count",
+          "table_names","append","id","table_id","user_id",
+          "service_name","service_item_id","stats","type_guessing","quoted_fields_guessing","content_guessing","server","host",
+          "resque_ppid","upload_host","create_visualization","user_defined_limits")
+          VALUES('test','url','test','complete','t','11111111-1111-1111-1111-111111111112',
+            '2015-03-17 00:00:00.94006+00','2015-03-17 00:00:00.810581+00','1',
+            'test','f','#{data_import_id}','11111111-1111-1111-1111-111111111113',
+            '#{user_id}','public_url', 'test',
+            '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
+        })
+
+      Rails::Sequel.connection.run(%Q{
+        INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
+          "id","user_id",
+          "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",
+          "data_import_id"
+          ) VALUES('importer_123456','197','2015-03-17 00:00:00.279934+00','2015-03-17 00:00:00.536383+00','field_1','finished',
+            '11111111-1111-1111-1111-111111111114','#{user_id}','0','admin0','polygon','195','0','0',
+            '#{data_import_id}');
+        })
+
+      user.destroy
+
+      User.find(id:user_id).should eq nil
+
+    end
+  end
+
   def create_org(org_name, org_quota, org_seats)
     organization = Organization.new
     organization.name = org_name

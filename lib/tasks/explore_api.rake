@@ -205,7 +205,7 @@ namespace :cartodb do
     end
 
     def common_data_user
-      username = Cartodb.config[:common_data]['username']
+      username = ENV['RAILS_ENV'] == "staging" ? "common-data-ded02" : Cartodb.config[:common_data]['username']
       User.where(username: username).first
     end
 

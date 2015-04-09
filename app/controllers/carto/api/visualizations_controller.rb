@@ -23,7 +23,7 @@ module Carto
 
       def load_visualization
         @visualization = Visualization.find(@table_id)
-        return render(text: exception.message, status: 403) if !@visualization.is_viewable_by?(current_viewer)
+        return render(text: exception.message, status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
       end
 
       def index
@@ -96,7 +96,7 @@ module Carto
         render_jsonp({
           id: @visualization.id,
           likes: @visualization.likes.count,
-          liked: @visualization.liked_by?(current_viewer.id)
+          liked: @visualization.is_liked_by_user_id?(current_viewer.id)
         })
       end
 

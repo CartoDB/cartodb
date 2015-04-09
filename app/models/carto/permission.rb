@@ -14,18 +14,14 @@ module Carto
       @acl ||= self.access_control_list.nil? ? DEFAULT_ACL_VALUE : JSON.parse(self.access_control_list, symbolize_names: true)
     end
 
-    def can_read?(user)
-      is_owner?(user) || has_read_permission?(user)
+    def user_has_read_permission?(user)
+      is_owner_user?(user) || !acl_entries_for_user(user).empty?
     end
 
     private
 
-    def is_owner?(user)
+    def is_owner_user?(user)
       self.owner_id == user.id
-    end
-
-    def has_read_permission?(user)
-      !acl_entries_for_user(user).empty?
     end
 
     def acl_entries_for_user(user)

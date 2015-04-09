@@ -52,15 +52,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def liked_by?(user_id)
-    likes_by(user_id).count > 0
+  def is_liked_by_user_id?(user_id)
+    likes_by_user_id(user_id).count > 0
   end
 
-  def likes_by(user_id)
+  def likes_by_user_id(user_id)
     likes.where(actor: user_id)
   end
 
-  def is_viewable_by?(user)
+  def is_viewable_by_user?(user)
     is_viewable_with_link? || has_read_permission?(user)
   end
 
@@ -75,10 +75,10 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_read_permission?(user)
-    is_owner?(user) || (permission && permission.can_read?(user))
+    is_owner_user?(user) || (permission && permission.user_has_read_permission?(user))
   end
 
-  def is_owner?(user)
+  def is_owner_user?(user)
     self.user_id == user.id
   end
 

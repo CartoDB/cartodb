@@ -38,7 +38,7 @@ class Carto::Api::VisualizationPresenter
       external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
       synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
       children: @visualization.children.map { |v| children_poro(v) },
-      liked: @visualization.liked_by?(@current_viewer.id)
+      liked: @visualization.is_liked_by_user_id?(@current_viewer.id)
     }
   end
 

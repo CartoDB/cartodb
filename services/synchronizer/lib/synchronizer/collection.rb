@@ -47,18 +47,19 @@ module CartoDB
         begin
           if force_all_syncs
             query = db.query(%Q(
-              SELECT * FROM #{relation} WHERE
+              SELECT name, id FROM #{relation} WHERE
               state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
               OR state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
             ))
           else
             query = db.query(%Q(
-              SELECT * FROM #{relation}
+              SELECT name, id FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
               AND 
                 (
                   state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
-              OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}' and retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES})
+                  OR (state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}'
+                      AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES})
                 )
             ))
           end
@@ -71,9 +72,13 @@ module CartoDB
 
         if success
           print_log "Populating #{query.count} records after fetch"
-          hydrate(query).each { |record|
-            print_log "Enqueueing #{record.name} (#{record.id})"
-           record.enqueue
+          query.each { |record|
+            print_log "Enqueueing '#{record['name']}' (#{record['id']})"
+            Resque.enqueue(Resque::SynchronizationJobs, job_id: record['id'])
+            db.query(%Q(
+               UPDATE #{relation} SET state = '#{CartoDB::Synchronization::Member::STATE_QUEUED}'
+                WHERE id = '#{record['id']}'
+             ))
           }
         end
 

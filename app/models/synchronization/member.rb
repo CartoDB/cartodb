@@ -30,6 +30,9 @@ module CartoDB
       SYNC_NOW_TIMESPAN = 900
 
       STATE_CREATED   = 'created'
+      # Already at resque, waiting for slot
+      STATE_QUEUED   = 'queued'
+      # Actually syncing
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'

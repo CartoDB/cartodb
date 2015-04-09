@@ -229,7 +229,7 @@
   left: 0;
   width: 100px;
   height: 100px;
-  background: rgba(black, 0.6);
+  background: rgba(black, 0.4);
   border-radius: 4px;
   z-index: 2;
 }
@@ -264,6 +264,14 @@
     cursor: pointer;
     text-decoration: underline;
     color: $cTypography-linkHover;
+  }
+}
+.Form-avatar .btn[disabled] {
+  color: $cTypography-help;
+  &:hover {
+    cursor: default;
+    text-decoration: none;
+    color: $cTypography-help;
   }
 }
 .Form-link {

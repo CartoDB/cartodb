@@ -266,17 +266,12 @@ CartoDB::Application.routes.draw do
   scope :module => 'carto/api', :format => :json do
     # TODO: lambdas instead of classes because breaks reloading
     # get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v11_visualizations_index, constraints: Carto::FeatureFlagConstraint.new('active_record_vis_endpoint')
-    constraints(lambda { |request|
-      user = Carto::User.where(username: CartoDB.extract_subdomain(request)).first
-      user && user.has_feature_flag?('active_record_vis_endpoint')
-    }) do
 
-      get     '(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v11_visualizations_index
-      get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v11_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
-      get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v11_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
-      get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v11_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
+    get     '(/u/:user_domain)/api/v1_1/viz'                                => 'visualizations#index',           as: :api_v11_visualizations_index
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v11_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v11_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
+    get     '(/user/:user_domain)(/u/:user_domain)/api/v1_1/viz/:id/like'                       => 'visualizations#is_liked',        as: :api_v11_visualizations_is_liked,        constraints: { id: /[^\/]+/ }
 
-    end
   end
 
   scope :module => 'api/json', :format => :json do

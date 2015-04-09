@@ -31,14 +31,7 @@ class Admin::OrganizationsController < ApplicationController
     attributes = params[:organization]
 
     if attributes.include?(:avatar_url)
-      asset = Asset.new
-      asset.raise_on_save_failure = true
-      asset.user_id = current_user.id
-      asset.asset_file = attributes[:avatar_url]
-      asset.kind = Asset::KIND_ORG_AVATAR
-      if asset.save
-        @organization.avatar_url = asset.public_url
-      end
+      @organization.avatar_url = attributes[:avatar_url]
     end
 
     @organization.website = attributes[:website]

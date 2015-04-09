@@ -65,12 +65,14 @@
           </div>
         </div>
 
-        <div class="Form-row">
+        <div class="Form-row js-avatarSelector">
           <div class="Form-rowLabel">
             <label class="Form-label">Avatar</label>
           </div>
           <div class="Form-rowData Form-avatar">
-            <img src="<%= @user.avatar_url %>" title="" alt="" class="Form-avatarPreview" />
+            <div class="Form-avatarPreview">
+              <img src="<%= @user.avatar_url %>" class="Form-avatarPreviewImage" />  
+            </div>
             <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Change avatar" %>
           </div>
           <div class="Form-rowInfo">

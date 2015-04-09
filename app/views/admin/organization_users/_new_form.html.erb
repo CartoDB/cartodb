@@ -164,8 +164,10 @@
   <% end %>
   <%
     assigned_quota_in_bytes = 0
-    current_user.organization.users.map { |u| 
-      assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes 
+    current_user.organization.users.map { |u|
+      if (u.username != @user.username) 
+        assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes 
+      end
     }
   %>
   var assigned_user_quota = <%= @user.quota_in_bytes %>;

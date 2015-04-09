@@ -659,6 +659,18 @@
     });
   });
 
+  it("should generate the right attributes url", function() {
+     layerDefinition.layerToken = 'testing';
+     expect(layerDefinition._attributesUrl(0, 1)).toEqual(
+      'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
+     );
+     layerDefinition.getSubLayer(0).hide();
+     layerDefinition.layerToken = 'testing';
+     expect(layerDefinition._attributesUrl(1, 1)).toEqual(
+      'http://rambo.cartodb.com:8081/api/v1/map/testing/0/attributes/1'
+     );
+  });
+
 });
 
 describe("NamedMap", function() {

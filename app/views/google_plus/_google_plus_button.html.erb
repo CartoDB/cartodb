@@ -1,60 +1,59 @@
-<div>
-  <span id="signinButton">
-    <iframe src="<%= config.iframe_src %>" width="300" height="50"></iframe>
-  </span>
-</div>
+<% content_for :js do %>
+  <script>
+    document.domain = '<%= config.domain %>'
 
-<script>
-  document.domain = '<%= config.domain %>'
+    function signinCallback(authResult) {
+      if (typeof authResult.access_token != 'undefined') {
 
-  function signinCallback(authResult) {
-    if (typeof authResult.access_token != 'undefined') {
-      var access_token_field = document.getElementById('<%= config.access_token_field_id %>');
-      var google_signup_access_token = document.getElementById('google_signup_access_token');
-      // INFO: user exists, let's sign in
-      if (authResult['status']['signed_in'] && access_token_field.value === '' && google_signup_access_token.value === '') {
-        access_token_field.value = authResult.access_token;
+        if (authResult['status']['signed_in'] && access_token_field.value === '' && google_signup_access_token.value === '') {
+          access_token_field.value = authResult.access_token;
 
-        var access_token_filled = document.getElementById('google_access_filled');
-
-        if (access_token_filled.value === "1") {
-          access_token_field.form.submit();
-        } else {
-          access_token_filled.value = "1";
-          $('.Sessions-loggedin').removeClass('is-active');
-          $('.Sessions-notloggedin').addClass('is-active');
+          // INFO: user exists and button loaded, let's sign in
+          if (access_token_filled.value === "1") {
+            access_token_field.form.submit();
+          } else {
+            access_token_filled.value = "1";
+            $('.Sessions-loggedin').removeClass('is-active');
+            $('.Sessions-notloggedin').addClass('is-active');
+          }
         }
+      } else {
+        access_token_filled.value = "1";
+
+        $('.Sessions-loggedin').removeClass('is-active');
+        $('.Sessions-notloggedin').addClass('is-active');
       }
-    } else {
-      var access_token_filled = document.getElementById('google_access_filled');
-      access_token_filled.value = "1";
-
-      $('.Sessions-loggedin').removeClass('is-active');
-      $('.Sessions-notloggedin').addClass('is-active');
     }
-  }
 
-  function signinCallbackClick(authResult) {
-    var access_token_field = document.getElementById('<%= config.access_token_field_id %>');
-    var google_signup_access_token = document.getElementById('google_signup_access_token');
-    var google_access_filled = document.getElementById('google_access_filled');
-    // INFO: user exists, let's sign in
-    if (authResult['status']['signed_in'] && access_token_field.value !== '' && google_signup_access_token.value === '' && google_access_filled.value === '1') {
-      access_token_field.value = authResult.access_token;
-      access_token_field.form.submit();
+    function signinCallbackClick(authResult) {
+      // INFO: user exists and button clicked, let's sign in
+      if (authResult['status']['signed_in'] && access_token_field.value !== '' && google_signup_access_token.value === '' && access_token_filled.value === '1') {
+        access_token_field.value = authResult.access_token;
+        access_token_field.form.submit();
+      }
     }
-  }
-</script>
+
+    $(function() {
+      window.access_token_filled = document.getElementById('google_access_filled');
+      window.access_token_field = document.getElementById('<%= config.access_token_field_id %>');
+      window.google_signup_access_token = document.getElementById('google_signup_access_token');
+
+      // INFO: we have a valid access token but no user yet, let's sign up
+      if (google_signup_access_token.value != '') {
+        google_signup_access_token.form.submit();
+      }
+
+      // TODO: just in case callback takes so long
+      setTimeout(function() {
+        $('.Sessions-loggedin').removeClass('is-active');
+        $('.Sessions-notloggedin').addClass('is-active');
+      }, 15000);
+    });
+  </script>
+<% end %>
+
+<iframe src="<%= config.iframe_src %>" width="300" height="41"></iframe>
 
 <form action="<%= config.signup_action %>" method="POST">
   <input type="hidden" value="<%= config.unauthenticated_valid_access_token %>" id="google_signup_access_token" name="google_signup_access_token" />
 </form>
-
-<script>
-  var access_token_field = document.getElementById('google_signup_access_token');
-  // INFO: we have a valid access token but no user yet, let's sign up
-  if(access_token_field.value != '') {
-    access_token_field.form.submit();
-  }
-</script>
-

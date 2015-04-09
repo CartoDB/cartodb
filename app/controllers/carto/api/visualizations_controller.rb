@@ -32,22 +32,11 @@ module Carto
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || 20).to_i
         only_liked = params[:only_liked] == 'true'
-        only_shared = params[:only_shared] == 'true'
-        exclude_shared = params[:exclude_shared] == 'true'
         order = (params[:order] || 'updated_at').to_sym
 
-        shared = params[:shared]
-        case shared
-          when FILTER_SHARED_YES
-            only_shared = false
-            exclude_shared = false
-          when FILTER_SHARED_NO
-            only_shared = false
-            exclude_shared = true
-          when FILTER_SHARED_ONLY
-            only_shared = true
-            exclude_shared = false
-        end
+        only_shared = params[:only_shared] == 'true'
+        exclude_shared = params[:exclude_shared] == 'true'
+        shared = params[:shared] || compose_shared(only_shared, exclude_shared)
         locked = params[:locked]
 
         vqb = VisualizationQueryBuilder.new
@@ -64,19 +53,17 @@ module Carto
           vqb.with_locked(false)
         end
 
-        if only_liked || only_shared
-          if only_liked
-            vqb.with_liked_by_user_id(current_user.id)
-          end
-          if only_shared
-            vqb.with_shared_with_user_id(current_user.id)
-          end
-        else
-          if exclude_shared
-            vqb.with_user_id(current_user.id)
-          else
-            vqb.with_owned_by_or_shared_with_user_id(current_user.id)
-          end
+        if only_liked
+          vqb.with_liked_by_user_id(current_user.id)
+        end
+
+        case shared
+        when FILTER_SHARED_YES
+          vqb.with_owned_by_or_shared_with_user_id(current_user.id)
+        when FILTER_SHARED_NO
+          vqb.with_user_id(current_user.id)
+        when FILTER_SHARED_ONLY
+          vqb.with_shared_with_user_id(current_user.id)
         end
 
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
@@ -117,6 +104,19 @@ module Carto
 
       def default_type(types)
         types.include?(Carto::Visualization::TYPE_DERIVED) ? Carto::Visualization::TYPE_DERIVED : Carto::Visualization::TYPE_CANONICAL
+      end
+
+      def compose_shared(only_shared, exclude_shared)
+        if only_shared
+          FILTER_SHARED_ONLY
+        elsif exclude_shared
+          FILTER_SHARED_NO
+        elsif exclude_shared == false
+          FILTER_SHARED_YES
+        else
+          # INFO: exclude_shared == nil && !only_shared
+          nil
+        end
       end
 
     end

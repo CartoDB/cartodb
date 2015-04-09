@@ -19,7 +19,7 @@
               <h3 class="DatasetsList-itemTitle DefaultTitle">
                 <a href="<%= CartoDB.url(self, 'public_table', {id: vis[:title]}, vis[:owner]) %>" title="<%= vis[:title] %>" class="DefaultTitle-link u-ellipsLongText"><%= vis[:title] %></a>
               </h3>
-              <p class="DefaultDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></p>
+              <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis[:description_html_safe] %></div>
             </div>
             <div class="DatasetsList-itemSecondaryInfo">
               <div class="DatasetsList-itemMeta">

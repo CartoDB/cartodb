@@ -62,7 +62,7 @@ module ApplicationHelper
   end
 
   def default_fallback_basemap
-    Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps]['CartoDB']['positron_rainbow'] : {}
+    Cartodb.config[:basemaps].present? and Cartodb.config[:basemaps]['default'].present? ? Cartodb.config[:basemaps]['default'] : {}
   end
 
   module_function :default_fallback_basemap

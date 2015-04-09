@@ -936,7 +936,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
           return n;
         }
         layer_def.options.interactivity = this._cleanInteractivity(layer.options.interactivity);
-        var infowindow = this.getInfowindowData(i);
+        var infowindow = this.getInfowindowData(this.getLayerNumberByIndex(i));
         var attrs = layer.options.attributes ? this._cleanInteractivity(this.options.attributes):(infowindow && fields(infowindow.fields));
         if (attrs) {
           layer_def.options.attributes = {
@@ -1070,7 +1070,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       //'v1',
       Map.BASE_URL.slice(1),
       this.layerToken,
-      layer,
+      this.getLayerIndexByNumber(layer),
       'attributes',
       feature_id].join('/');
 

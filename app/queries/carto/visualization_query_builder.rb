@@ -5,11 +5,6 @@ require_relative '../../models/carto/shared_entity'
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder
 
-  def self.shared_with_user_id(user_id)
-    vqb = ::Carto::VisualizationQueryBuilder.new
-    vqb.with_shared_with_user_id(user_id)
-  end
-
   def initialize
     @eager_load_associations = []
     @eager_load_nested_associations = {}
@@ -18,6 +13,11 @@ class Carto::VisualizationQueryBuilder
 
   def with_user_id(user_id)
     @user_id = user_id
+    self
+  end
+
+  def with_privacy(privacy)
+    @privacy = privacy
     self
   end
 
@@ -74,6 +74,10 @@ class Carto::VisualizationQueryBuilder
       query = query.where(user_id: @user_id)
     end
 
+    if !@privacy.nil?
+      query = query.where(privacy: @privacy)
+    end
+
     if !@liked_by_user_id.nil?
       query = query
           .joins(:likes)
@@ -90,7 +94,7 @@ class Carto::VisualizationQueryBuilder
     if !@owned_by_or_shared_with_user_id.nil?
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
-      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',  @owned_by_or_shared_with_user_id, self.class.shared_with_user_id(@owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id'))
+      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',  @owned_by_or_shared_with_user_id, ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id'))
     end
 
     if !@type.nil?

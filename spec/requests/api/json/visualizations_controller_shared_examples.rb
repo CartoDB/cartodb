@@ -629,6 +629,276 @@ shared_examples_for "visualization controllers" do
 
     end
 
+    describe 'index endpoint' do
+
+      it 'tests normal users authenticated and unauthenticated calls' do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        user_2 = create_user(
+          username: 'testindexauth',
+          email:    'test_auth@example.com',
+          password: 'testauth',
+          private_maps_enabled: true
+        )
+
+        collection = CartoDB::Visualization::Collection.new.fetch(user_id: user_2.id)
+        collection.map(&:delete)
+
+        post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
+             factory(user_2).to_json, @headers
+        last_response.status.should == 200
+        pub_vis_id = JSON.parse(last_response.body).fetch('id')
+
+        put api_v1_visualizations_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: pub_vis_id),
+             {
+               privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+             }.to_json, @headers
+        last_response.status.should == 200
+
+        post api_v1_visualizations_create_url(user_domain: user_2.username, api_key: user_2.api_key),
+             factory(user_2).to_json, @headers
+        last_response.status.should == 200
+        priv_vis_id = JSON.parse(last_response.body).fetch('id')
+
+        put api_v1_visualizations_update_url(user_domain: user_2.username, api_key: user_2.api_key, id: priv_vis_id),
+             {
+               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+             }.to_json, @headers
+        last_response.status.should == 200
+
+        get api_v1_visualizations_index_url(user_domain: user_2.username, type: 'derived'), @headers
+        body = JSON.parse(last_response.body)
+
+        body['total_entries'].should eq 1
+        vis = body['visualizations'].first
+        vis['id'].should eq pub_vis_id
+        vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
+
+        get api_v1_visualizations_index_url(user_domain: user_2.username, type: 'derived', api_key: user_2.api_key,
+                                            order: 'updated_at'),
+          {}, @headers
+        body = JSON.parse(last_response.body)
+
+        body['total_entries'].should eq 2
+        vis = body['visualizations'][0]
+        vis['id'].should eq priv_vis_id
+        vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PRIVATE.upcase
+        vis = body['visualizations'][1]
+        vis['id'].should eq pub_vis_id
+        vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
+      end
+
+      it 'tests organization users authenticated and unauthenticated calls' do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        org_name = "org#{rand(9999)}"
+
+        user_2 = create_user(
+          username: "test#{rand(9999)}",
+          email:    "client#{rand(9999)}@cartodb.com",
+          password: 'clientex'
+        )
+
+        organization = Organization.new
+        organization.name = org_name
+        organization.quota_in_bytes = 1234567890
+        organization.seats = 5
+        organization.save
+        organization.valid?.should eq true
+
+        user_org = CartoDB::UserOrganization.new(organization.id, user_2.id)
+        user_org.promote_user_to_admin
+        organization.reload
+        user_2.reload
+
+        post "http://#{org_name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
+                                                                                 api_key: user_2.api_key)}",
+             factory(user_2).to_json, @headers
+        last_response.status.should == 200
+        pub_vis_id = JSON.parse(last_response.body).fetch('id')
+
+        put "http://#{org_name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
+                                                                               api_key: user_2.api_key,
+                                                                               id: pub_vis_id)}",
+            {
+              privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+            }.to_json, @headers
+        last_response.status.should == 200
+
+        post "http://#{org_name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
+                                                                                api_key: user_2.api_key)}",
+             factory(user_2).to_json, @headers
+        last_response.status.should == 200
+        priv_vis_id = JSON.parse(last_response.body).fetch('id')
+
+        put "http://#{org_name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
+                                                                               api_key: user_2.api_key,
+                                                                               id: priv_vis_id)}",
+            {
+              privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+            }.to_json, @headers
+        last_response.status.should == 200
+
+        get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+                                                                               type: 'derived')}", @headers
+        body = JSON.parse(last_response.body)
+
+        body['total_entries'].should eq 1
+        vis = body['visualizations'].first
+        vis['id'].should eq pub_vis_id
+        vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
+
+
+        get "http://#{org_name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
+                                                                               api_key: user_2.api_key,
+                                                                               type: 'derived',
+                                                                               order: 'updated_at')}", {}, @headers
+        body = JSON.parse(last_response.body)
+
+        body['total_entries'].should eq 2
+        vis = body['visualizations'][0]
+        vis['id'].should eq priv_vis_id
+        vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PRIVATE.upcase
+        vis = body['visualizations'][1]
+        vis['id'].should eq pub_vis_id
+        vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
+
+        user_2.destroy
+      end
+
+      it 'tests privacy of vizjsons' do
+        CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
+        user_1 = create_user(
+          username: "test#{rand(9999)}-1",
+          email: "client#{rand(9999)}@cartodb.com",
+          password: 'clientex',
+          private_tables_enabled: true
+        )
+
+        user_2 = create_user(
+          username: "test#{rand(9999)}-2",
+          email: "client#{rand(9999)}@cartodb.com",
+          password: 'clientex',
+          private_tables_enabled: true
+        )
+
+        organization = Organization.new
+        organization.name = "org#{rand(9999)}"
+        organization.quota_in_bytes = 1234567890
+        organization.seats = 5
+        organization.save
+        organization.valid?.should eq true
+
+        user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
+        user_org.promote_user_to_admin
+        organization.reload
+        user_1.reload
+
+        user_2.organization_id = organization.id
+        user_2.save.reload
+        organization.reload
+
+        post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
+             factory(user_1).to_json, @headers
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        u1_vis_1_id = body.fetch('id')
+        u1_vis_1_perm_id = body.fetch('permission').fetch('id')
+        # By default derived vis from private tables are WITH_LINK, so setprivate
+        put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
+            { privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE }.to_json, @headers
+        last_response.status.should == 200
+
+        # Share vis with user_2 in readonly (vis can never be shared in readwrite)
+        put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
+            {acl: [{
+                     type: CartoDB::Permission::TYPE_USER,
+                     entity: {
+                       id:   user_2.id,
+                     },
+                     access: CartoDB::Permission::ACCESS_READONLY
+                   }]}.to_json, @headers
+        last_response.status.should == 200
+
+        # privacy private checks
+        # ----------------------
+
+        # Owner, authenticated
+        # TODO: api_v2 endpoint replacement
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Other user, has it shared in readonly mode
+        get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Unauthenticated user
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+        last_response.status.should == 403
+
+        # Unauthenticated user
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+        last_response.status.should == 403
+
+        # Now with link
+        # -------------
+        put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
+            { privacy: CartoDB::Visualization::Member::PRIVACY_LINK }.to_json, @headers
+        last_response.status.should == 200
+
+        # Owner authenticated
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Other user has it shared in readonly mode
+        get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Unauthenticated user
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Now public
+        # ----------
+        put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
+            { privacy: CartoDB::Visualization::Member::PRIVACY_LINK }.to_json, @headers
+        last_response.status.should == 200
+
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Other user has it shared in readonly mode
+        get api_v2_visualizations_vizjson_url(user_domain: user_2.username, id: u1_vis_1_id, api_key: user_2.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+        # Unauthenticated user
+        get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: @user.api_key)
+        last_response.status.should == 200
+        body = JSON.parse(last_response.body)
+        body['id'].should eq u1_vis_1_id
+
+      end
+
+    end
+
   end
 
 end

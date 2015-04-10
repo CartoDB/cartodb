@@ -1075,7 +1075,7 @@ for any ``cartodb`` function call.
 
 The format of those templates is like:
 
-```
+```javascript
 sql_api_template: 'https://{user}.test.com'
 ```
 

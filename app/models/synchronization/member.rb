@@ -138,7 +138,7 @@ module CartoDB
       # This should be joined with data_import to stop the madness of duplicated code
       def run
         importer = nil
-        self.state    = STATE_SYNCING
+        self.state = STATE_SYNCING
         self.store
 
         # First import is a "normal import" so still has no id, then run gets called and will get log first time

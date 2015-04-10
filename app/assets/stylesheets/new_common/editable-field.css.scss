@@ -6,6 +6,9 @@
 @import "../new_variables/mixins";
 
 .EditableField {
+  a {
+    font-style: italic;
+  }
   textarea {
     display: none;
     height: 100%;

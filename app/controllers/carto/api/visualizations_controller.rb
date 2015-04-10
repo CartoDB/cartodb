@@ -8,7 +8,7 @@ module Carto
 
       before_filter :table_and_schema_from_params
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked]
-
+      ssl_required :index
       skip_before_filter :api_authorization_required, only: [:index]
       before_filter :optional_api_authorization, only: [:index]
 

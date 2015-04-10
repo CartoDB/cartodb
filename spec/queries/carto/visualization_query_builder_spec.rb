@@ -52,7 +52,7 @@ describe Carto::VisualizationQueryBuilder do
     }.to make_database_queries(count: 2)
 
     expect {
-      @vqb.with_prefetch_user.build.first.user.username.should_not eq nil
+      @vqb.with_prefetch_user(true).build.first.user.username.should_not eq nil
     }.to make_database_queries(count: 1)
   end
 

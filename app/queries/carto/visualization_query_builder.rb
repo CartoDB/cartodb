@@ -14,6 +14,7 @@ class Carto::VisualizationQueryBuilder
     }
 
   def initialize
+    @include_associations = []
     @eager_load_associations = []
     @eager_load_nested_associations = {}
     @order = {}
@@ -44,8 +45,12 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_prefetch_user
-    with_eager_load_of(:user)
+  def with_prefetch_user(force_join = false)
+    if force_join
+      with_eager_load_of(:user)
+    else
+      with_include_of(:user)
+    end
   end
 
   def with_prefetch_table
@@ -122,6 +127,10 @@ class Carto::VisualizationQueryBuilder
       query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
     end
 
+    @include_associations.each { |association|
+      query = query.includes(association)
+    }
+
     @eager_load_associations.each { |association|
       query = query.eager_load(association)
     }
@@ -141,6 +150,11 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
+
+  def with_include_of(association)
+    @include_associations << association
+    self
+  end
 
   def with_eager_load_of(association)
     @eager_load_associations << association

@@ -1221,7 +1221,7 @@ class User < Sequel::Model
     metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
                                          .map{ |table| table[:table_id] }
 
-    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
+    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]} - [nil]
 
     # Remove tables with oids that don't exist on the db
     self.tables.where(table_id: dropped_tables).all.each do |user_table|
@@ -1235,7 +1235,8 @@ class User < Sequel::Model
     end if dropped_tables.present?
 
     # Remove tables with null oids unless the table name exists on the db
-    self.tables.filter(table_id: nil).all.each do |t|
+    self.tables.filter(table_id: nil).all.each do |user_table|
+      t = Table.new(user_table: user_table)
       t.keep_user_database_table = true
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
     end if dropped_tables.present? && dropped_tables.include?(nil)

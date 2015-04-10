@@ -57,17 +57,17 @@ module Carto
             .with_type(type)
 
         if current_user
+          if only_liked
+            vqb.with_liked_by_user_id(current_user.id)
+          end
+
           case shared
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)
           when FILTER_SHARED_NO
-            vqb.with_user_id(current_user.id)
+            vqb.with_user_id(current_user.id) if !only_liked
           when FILTER_SHARED_ONLY
             vqb.with_shared_with_user_id(current_user.id)
-          end
-
-          if only_liked
-            vqb.with_liked_by_user_id(current_user.id)
           end
 
           if locked == 'true'
